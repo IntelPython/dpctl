@@ -12,7 +12,7 @@ setup(
     description="A lightweight Python wrapper for a subset of OpenCL and SYCL API.",
     license="BSD",
     author="Intel Corporation",
-    url='https://github.intel.com/SAT/DP-Glue',
+    url='https://github.intel.com/SAT/dppy',
     packages=['dppy'],
     setup_requires=requirements,
     cffi_modules=[
