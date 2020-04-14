@@ -1,0 +1,38 @@
+{% set name = "dppy" %}
+{% set version = "v0.1" %}
+
+package:
+    name: {{ name|lower }}
+    version: {{ version }}
+
+source:
+    path: ..
+
+build:
+    number: 0
+    skip: True  # [not linux]
+
+requirements:
+    build:
+        - {{ compiler('cxx') }}
+    host:
+        - cffi >=1.0.0
+        - cmake
+        - python >=3.5
+        - make
+        - ocl-icd
+        - numpy >=1.17
+    run:
+        - python >=3.5
+        - numpy >=1.17
+        - cffi >=1.0.0
+        - ocl-icd
+        - ocl-icd-system
+
+about:
+    home: https://github.intel.com/SAT/DP-Glue.git
+    summary: 'A lightweight Python wrapper for a subset of OpenCL and SYCL API.'
+
+extra:
+  recipe-maintainers:
+        - diptorup deb
