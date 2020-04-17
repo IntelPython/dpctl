@@ -25,5 +25,6 @@ if [[ conda_build_ret -ne 0 ]]; then
     esac
 fi
 
-conda-build --output-folder ./${CONDA_PKG_DIR} -c conda-forge conda.recipe/
+conda-build ${DPPY_EXTRA_CHANNELS} --output-folder ./${CONDA_PKG_DIR} -c conda-forge conda.recipe/
 conda install dppy -c `pwd`/${CONDA_PKG_DIR}  -c conda-forge
+conda index `pwd`/${CONDA_PKG_DIR}

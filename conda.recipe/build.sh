@@ -7,6 +7,8 @@ cd build
 cmake                                    \
     -DCMAKE_INSTALL_PREFIX=${PREFIX}     \
     -DCMAKE_PREFIX_PATH=${PREFIX}        \
+    -DLIBUSM_INCLUDE_DIR=${CONDA_PREFIX}/include/ \
+    -DLIBUSM_LIBDIR=${CONDA_PREFIX}/lib/ \
     ..
 
 make -n -j 4 && make install
