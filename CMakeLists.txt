@@ -28,8 +28,8 @@ add_library(
 target_include_directories(dpglue PRIVATE ${CMAKE_SOURCE_DIR}/include/)
 target_include_directories(dpglue PUBLIC ${OpenCL_INCLUDE_DIR})
 target_include_directories(dpglue PUBLIC ${LIBUSM_INCLUDE_DIR})
-link_directories(${LIBUSM_LIBDIR})
-target_link_libraries(dpglue PUBLIC libusm)
+#link_directories(${LIBUSM_LIBDIR})
+#target_link_libraries(dpglue PUBLIC libusm)
 
 install(TARGETS dpglue LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/")
 
