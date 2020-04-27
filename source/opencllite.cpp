@@ -297,7 +297,8 @@ static int create_dp_env_t (cl_platform_id* platforms,
 
     device = (cl_device_id*)malloc(sizeof(cl_device_id));
 
-    err1 = get_first_device(platforms, nplatforms, device, device_ty, device_platform_id);
+    err1 = get_first_device(platforms, nplatforms, device, device_ty,
+                            device_platform_id);
     CHECK_DPGLUE_ERROR(err1, "Failed inside get_first_device");
 
     // get the CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS for this device
@@ -363,7 +364,7 @@ env_t default_env = NULL;
  */
 static int init_runtime_t_obj (runtime_t rt)
 {
-    cl_int status;
+    cl_int err;
     int ret;
     cl_platform_id *platforms;
     cl_platform_id gpu_platform_id;
@@ -371,8 +372,8 @@ static int init_runtime_t_obj (runtime_t rt)
     check_runtime_id(rt);
 #endif
     // get count of available platforms
-    status = clGetPlatformIDs(0, NULL, &(rt->num_platforms));
-    CHECK_OPEN_CL_ERROR(status, "Failed to get platform count.");
+    err = clGetPlatformIDs(0, NULL, &(rt->num_platforms));
+    CHECK_OPEN_CL_ERROR(err, "Failed to get platform count.");
 
     if(!rt->num_platforms) {
         fprintf(stderr, "No OpenCL platforms found.\n");
@@ -386,8 +387,9 @@ static int init_runtime_t_obj (runtime_t rt)
     CHECK_MALLOC_ERROR(cl_platform_id, rt->platform_ids);
 
     // Get the platforms
-    status = clGetPlatformIDs(rt->num_platforms, (cl_platform_id*)rt->platform_ids, NULL);
-    CHECK_OPEN_CL_ERROR(status, "Failed to get platform ids");
+    err = clGetPlatformIDs(rt->num_platforms,
+                           (cl_platform_id*)rt->platform_ids, NULL);
+    CHECK_OPEN_CL_ERROR(err, "Failed to get platform ids");
     // Cast rt->platforms to a pointer of type cl_platform_id, as we cannot do
     // pointer arithmetic on void*.
     platforms = (cl_platform_id*)rt->platform_ids;
@@ -416,7 +418,8 @@ static int init_runtime_t_obj (runtime_t rt)
 //        dump_dp_runtime_info(rt);
         char *platform_name = NULL;
         get_platform_name(gpu_platform_id, &platform_name);
-        printf("DEBUG: initializing libusm for platform %s...\n", platform_name);
+        printf("DEBUG: initializing libusm for platform %s...\n",
+                platform_name);
         free(platform_name);
 #endif
         libusm::initialize(gpu_platform_id);
@@ -965,7 +968,8 @@ int create_dp_kernel_arg (const void *arg_value,
     kernel_arg->is_usm = is_usm;
 
 #if DEBUG
-    printf("DEBUG: Kernel arg created %p, %ld, %d\n", arg_value, arg_size, is_usm);
+    printf("DEBUG: Kernel arg created %p, %ld, %d\n", arg_value, arg_size,
+           is_usm);
     fflush(stdout);
 #endif
 
@@ -1396,6 +1400,7 @@ int usm_free(env_t env_t_ptr,
 error:
     return DP_GLUE_FAILURE;
 }
+
 
 /*!
  *
