@@ -18,12 +18,12 @@ requirements:
     host:
         - cffi >=1.0.0
         - cmake
-        - python >=3.5
+        - python
         - make
         - ocl-icd
         - numpy >=1.17
     run:
-        - python >=3.5
+        - python
         - numpy >=1.17
         - cffi >=1.0.0
         - ocl-icd
