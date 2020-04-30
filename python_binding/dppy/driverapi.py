@@ -23,7 +23,7 @@ if dpglue_incldir is None:
                      "dp_glue.h")
 
 glue_h = ''.join(list(filter(lambda x: len(x) > 0 and x[0] != "#", 
-                             open(dpglue_incldir + '/include/dp_glue.h', 'r')
+                             open(dpglue_incldir + '/dp_glue.h', 'r')
                              .readlines())))
 
 # cdef() expects a single string declaring the C types, functions and
@@ -37,7 +37,7 @@ ffi.set_source(
     """
          #include "dp_glue.h"   // the C header of the library
     """,
-    include_dirs=[dpglue_incldir+"/include"],
+    include_dirs=[dpglue_incldir],
     library_dirs=[dpglue_libdir, opencl_libdir, libusm_libdir],
     libraries=["dpglue", "OpenCL", "libusm"],
 )   # library name, for the linker

@@ -15,7 +15,7 @@ make -n -j 4 && make install
 
 cd ../python_binding
 export DP_GLUE_LIBDIR=${PREFIX}
-export DP_GLUE_INCLDIR=${PREFIX}
+export DP_GLUE_INCLDIR=${PREFIX}/include
 export OPENCL_LIBDIR=${BUILD_PREFIX}/lib
 export LIBUSM_LIBDIR=${BUILD_PREFIX}/lib
 
