@@ -195,6 +195,7 @@ int destroy_dp_kernel (kernel_t *kernel_ptr);
  */
 int create_dp_kernel_arg (const void *arg_value,
                           size_t arg_size,
+                          bool is_usm,
                           kernel_arg_t *kernel_arg_t_ptr);
 
 
