@@ -22,15 +22,17 @@ requirements:
         - make
         - ocl-icd
         - numpy >=1.17
+        - libusm
     run:
         - python
         - numpy >=1.17
         - cffi >=1.0.0
         - ocl-icd
         - ocl-icd-system
+        - libusm
 
 about:
-    home: https://github.intel.com/SAT/DP-Glue.git
+    home: https://github.intel.com/SAT/dppy.git
     summary: 'A lightweight Python wrapper for a subset of OpenCL and SYCL API.'
 
 extra:

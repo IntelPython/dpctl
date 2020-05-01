@@ -65,6 +65,7 @@ struct dp_kernel_arg
     unsigned id_;
     const void *arg_value;
     size_t arg_size;
+    bool is_usm;
 };
 
 typedef struct dp_kernel_arg* kernel_arg_t;
@@ -194,6 +195,7 @@ int destroy_dp_kernel (kernel_t *kernel_ptr);
  */
 int create_dp_kernel_arg (const void *arg_value,
                           size_t arg_size,
+                          bool is_usm,
                           kernel_arg_t *kernel_arg_t_ptr);
 
 
@@ -246,6 +248,94 @@ int retain_dp_context (env_t env_t_ptr);
  */
 int release_dp_context (env_t env_t_ptr);
 
+
+/*!
+ *
+ */
+int usm_convert (env_t env_t_ptr,
+                 size_t size,
+                 unsigned alignment,
+                 void **buffer);
+
+
+/*!
+ *
+ */
+int usm_convert_default (size_t size,
+                         unsigned alignment,
+                         void **buffer);
+
+
+/*!
+ *
+ */
+int usm_shared_malloc (env_t env_t_ptr,
+                       size_t size,
+                       unsigned alignment,
+                       void **buffer);
+
+
+/*!
+ *
+ */
+int usm_shared_malloc_alignment_default (size_t size,
+                                         unsigned alignment,
+                                         void **buffer);
+
+
+/*!
+ *
+ */
+void * usm_shared_malloc_default (size_t size);
+
+
+/*!
+ *
+ */
+void * usm_shared_realloc_default (void *buffer, size_t size);
+
+
+/*!
+/*!
+ *
+ */
+int usm_free (env_t env_t_ptr,
+              void *buffer);
+
+
+/*!
+ *
+ */
+int usm_free_default (void *buffer);
+
+
+/*!
+ *
+ */
+int dp_free_default (void *buffer);
+
+
+/*!
+ *
+ */
+int usm_memcpy (env_t env_t_ptr,
+                void *dst,
+                void *src,
+                size_t size);
+
+
+/*!
+ *
+ */
+int usm_memcpy_default (void *dst,
+                        void *src,
+                        size_t size);
+
+/*!
+ *
+ */
+int usm_memory_type_default(void *buffer,
+                            int *mem_type);
 
 //---- TODO:
 
