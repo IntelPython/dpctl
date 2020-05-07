@@ -64,17 +64,10 @@ typedef struct oneapi_interface_mem_usm* mem_usm_t;
  */
 struct oneapi_interface_device_env
 {
-    unsigned int id_;
-    void         *sycl_context;
-    void         *sycl_device;
-    void         *sycl_queue;
-    void         *ocl_context;
-    void         *ocl_device;
-    void         *ocl_queue;
-    unsigned int max_work_item_dims;
-    unsigned int max_work_group_size;
+        unsigned int id_;
+        void         *sycl_queue;
 
-    int (*dump_fn) (void *);
+        int (*dump_fn) (oneapi_interface_device_env *);
 };
 
 typedef struct oneapi_interface_device_env* env_t;
@@ -109,12 +102,13 @@ struct oneapi_interface_runtime
     bool         has_gpu;
     unsigned int num_cpus;
     unsigned int num_gpus;
+    env_t        current_env;
 
     int (*get_default_env) (env_t *);
     int (*get_gpu_env)     (env_t *, int);
     int (*get_cpu_env)     (env_t *, int);
-
-    int (*dump_fn)         (void *);
+    int (*get_fpga_env)    (env_t *, int);
+    int (*dump_fn)         (oneapi_interface_runtime *);
 };
 
 typedef struct oneapi_interface_runtime* runtime_t;
@@ -140,6 +134,16 @@ int create_oneapi_interface_runtime (runtime_t *rt);
  * @return An error code indicating if resource freeing was successful.
  */
 int destroy_oneapi_interface_runtime (runtime_t *rt);
+
+
+////////////////////////////////////////////////////////////////////////////////
+//////////////////////////// OpenCL Interoperability ///////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+int get_ocl_device (env_t Env);
+
+int release_ocl_device (env_t Env);
 
 
 #endif /*--- DPPY_ONEAPI_INTERFACE_H_ ---*/
