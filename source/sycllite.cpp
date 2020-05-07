@@ -73,6 +73,18 @@ void dump_platform_info (const platform & Platform)
     std::cout << ss.str();
 }
 
+
+void create_create_oneapi_interface_env (env_t *Env, device Device)
+{
+    // TODO
+}
+
+int get_default_device_env (env_t *Env)
+{
+
+}
+
+
 /*!
  * @brief Prints out the metadata of a oneapi_interface_runtime object
  *
@@ -104,13 +116,6 @@ int dump_oneapi_interface_runtime (void *RuntimeObj)
 }
 
 
-void create_create_oneapi_interface_env (env_t *Env, device Device)
-{
-    // TODO
-
-}
-
-
 void init_runtime (runtime_t Runtime)
 {
     Runtime->id_ = RUNTIME_ID;
@@ -135,9 +140,16 @@ void init_runtime (runtime_t Runtime)
     Runtime->dump_fn = dump_oneapi_interface_runtime;
 }
 
-}
+} /* end of anonymous namespace */
 
-/*------------------------------- Public API ---------------------------------*/
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////// Public API //////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+int destroy_oneapi_interface_device_env (env_t *e)
+{
+    //TODO
+}
 
 /*!
  * @brief Initializes a new dp_runtime_t object
