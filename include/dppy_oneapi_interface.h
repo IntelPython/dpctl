@@ -65,9 +65,10 @@ typedef struct oneapi_interface_mem_usm* mem_usm_t;
 struct oneapi_interface_device_env
 {
         unsigned int id_;
+        void         * sycl_device;
         void         *sycl_queue;
 
-        int (*dump_fn) (oneapi_interface_device_env *);
+        int (*dump_fn) (struct oneapi_interface_device_env *);
 };
 
 typedef struct oneapi_interface_device_env* env_t;
@@ -108,7 +109,7 @@ struct oneapi_interface_runtime
     int (*get_gpu_env)     (env_t *, int);
     int (*get_cpu_env)     (env_t *, int);
     int (*get_fpga_env)    (env_t *, int);
-    int (*dump_fn)         (oneapi_interface_runtime *);
+    int (*dump_fn)         (struct oneapi_interface_runtime *);
 };
 
 typedef struct oneapi_interface_runtime* runtime_t;

@@ -1,3 +1,17 @@
+//===-- dppy_oneapi_interface.cpp - DPPY-SYCL interface ---*- C++ -*-------===//
+//
+//                     Data Parallel Python (DPPY)
+//
+// This file is distributed under the University of Illinois Open Source
+// License. See LICENSE.TXT for details.
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file implements the the data types and functions declared in
+/// dppy_oneapi_interface.h
+///
+//===----------------------------------------------------------------------===//
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -7,7 +21,6 @@ extern "C" {
 #endif
 
 #include "error_check_macros.h"
-
 #include <cassert>
 #include <CL/sycl.hpp>  /* SYCL headers */
 #include <iomanip>
@@ -89,10 +102,9 @@ int get_default_device_env (env_t *Env)
  * @brief Prints out the metadata of a oneapi_interface_runtime object
  *
  */
-int dump_oneapi_interface_runtime (void *RuntimeObj)
+int dump_oneapi_interface_runtime (runtime_t rt)
 {
     size_t i = 0;
-    auto rt = static_cast<runtime_t>(RuntimeObj);
 
     // Print out the info for each platform
     auto platforms = platform::get_platforms();
