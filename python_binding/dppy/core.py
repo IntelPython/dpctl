@@ -115,6 +115,9 @@ class DeviceArray:
     def get_data_ptr(self):
         return self._dataPtr
 
+    def get_ndarray(self):
+        return self._ndarray
+
 ##########################################################################
 # Program class
 ##########################################################################
@@ -442,6 +445,10 @@ def is_available():
     """Return a boolean to indicate the availability of a DPPY device.
     """
     return runtime.has_cpu_device()  or runtime.has_gpu_device()
+
+has_cpu_device = runtime.has_cpu_device()
+has_gpu_device = runtime.has_gpu_device()
+
 
 def dppy_error():
     _raise_driver_error()
