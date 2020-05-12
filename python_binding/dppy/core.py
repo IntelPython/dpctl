@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 from ._dppy_bindings import ffi, lib
 from numpy import ndarray
+from contextlib import contextmanager
 import ctypes
 
 ##########################################################################
@@ -323,7 +324,7 @@ class DeviceEnv():
         return self._env_ptr.max_work_group_size
 
     def dump(self):
-        retval = self._env_ptr.dump_fn(self._env_ptr)
+        retval = self._env_ptr[0].dump_fn(self._env_ptr)
         if retval == -1:
             _raise_driver_error("env dump_fn", -1)
 
@@ -340,9 +341,10 @@ class _Runtime():
     runtime object also stores the context and command queue for the
     first available GPU on the system.
     """
-    _runtime = None
-    _cpu_device = None
-    _gpu_device = None
+    _runtime     = None
+    _cpu_device  = None
+    _gpu_device  = None
+    _curr_device = None
 
     def __new__(cls):
         obj = cls._runtime
@@ -372,6 +374,8 @@ class _Runtime():
                 # Same as the cpu case above.
                 print("No GPU device")
 
+            cls._curr_device = DeviceEnv(cls._runtime[0][0].curr_env)
+
         return obj
 
     def __init__(self):
@@ -384,33 +388,42 @@ class _Runtime():
             _raise_driver_error("destroy_dp_runtime", -1)
 
     def has_cpu_device(self):
-        return self._cpu_device is not None
+        return _Runtime._cpu_device is not None
 
     def has_gpu_device(self):
-        return self._gpu_device is not None
+        return _Runtime._gpu_device is not None
 
     def get_cpu_device(self):
-        if(self._cpu_device is None):
+        if(_Runtime._cpu_device is None):
             _raise_device_not_found_error("get_cpu_device")
 
-        return self._cpu_device
+        return _Runtime._cpu_device
 
     def get_gpu_device(self):
-        if(self._gpu_device is None):
+        if(_Runtime._gpu_device is None):
             _raise_device_not_found_error("get_gpu_device")
 
-        return self._gpu_device
+        return _Runtime._gpu_device
+
+    def get_current_device(self):
+        return _Runtime._curr_device
+
+    def get_runtime_ptr(self):
+        return _Runtime._runtime[0]
 
     def dump(self):
-        retval = self._runtime.dump_fn(self._runtime)
+        retval = _Runtime._runtime[0].dump_fn(_Runtime._runtime[0])
         if retval == -1:
             _raise_driver_error("runtime dump_fn", -1)
-
-runtime = _Runtime()
 
 ##########################################################################
 # Public API
 ##########################################################################
+
+# Global variables
+runtime = _Runtime()
+has_cpu_device = runtime.has_cpu_device()
+has_gpu_device = runtime.has_gpu_device()
 
 
 def enqueue_kernel(device_env, kernel, kernelargs, global_work_size,
@@ -444,11 +457,41 @@ def enqueue_kernel(device_env, kernel, kernelargs, global_work_size,
 def is_available():
     """Return a boolean to indicate the availability of a DPPY device.
     """
-    return runtime.has_cpu_device()  or runtime.has_gpu_device()
-
-has_cpu_device = runtime.has_cpu_device()
-has_gpu_device = runtime.has_gpu_device()
+    return runtime.has_cpu_device() or runtime.has_gpu_device()
 
 
 def dppy_error():
     _raise_driver_error()
+
+
+@contextmanager
+def igpu_context(*args, **kwds):
+    device_id = 0
+    # some validation code
+    if(args):
+        assert(len(args) == 1 and args[0] == 0)
+    #print("Set the current env to igpu device queue", device_id)
+    lib.set_curr_env(runtime.get_runtime_ptr(),
+                     runtime.get_gpu_device().get_env_ptr())
+    device_env = runtime.get_current_device()
+    yield device_env
+
+    # After yield as the exit method
+    #TODO : one exit reset the current env to previous value
+    #print("Exit method called")
+
+
+@contextmanager
+def cpu_context(*args, **kwds):
+    device_id = 0
+    # some validation code
+    if(args):
+        assert(len(args) == 1 and args[0] == 0)
+    #print("Set the current env to cpu device queue", device_id)
+    lib.set_curr_env(runtime.get_runtime_ptr(),
+                     runtime.get_cpu_device().get_env_ptr())
+    device_env = runtime.get_current_device()
+    yield device_env
+
+    # After yield as the exit method
+    #print("Exit method called")
