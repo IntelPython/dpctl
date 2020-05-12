@@ -8,6 +8,7 @@ cmake                                    \
     -DCMAKE_INSTALL_PREFIX=${PREFIX}     \
     -DCMAKE_PREFIX_PATH=${PREFIX}        \
     ..
+    #-DCMAKE_BUILD_TYPE=Debug             \
 
 make -n -j 4 && make install
 
