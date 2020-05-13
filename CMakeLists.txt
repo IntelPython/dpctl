@@ -1,14 +1,23 @@
 cmake_minimum_required(VERSION 3.3.2 FATAL_ERROR)
 project("DPPPY-Oneapi-Interface - A lightweigth SYCL wrapper for Python libraries")
 
-if(ONEAPI_ROOT)
-  set(ONEAPI_HOME "${ONEAPI_ROOT}")
-  message(STATUS "ONEAPI_ROOT (read from command line): ${ONEAPI_HOME}")
-elseif(DEFINED ENV{ONEAPI_ROOT})
-  set(ONEAPI_HOME "$ENV{ONEAPI_ROOT}")
-  message(STATUS "ONEAPI_ROOT (read from envar): ${ONEAPI_HOME}")
+set (dpcpp_cmd "dpcpp")
+set (dpcpp_arg "--version")
+
+execute_process(
+    COMMAND ${dpcpp_cmd} ${dpcpp_arg}
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    RESULT_VARIABLE dpcpp_result
+    OUTPUT_VARIABLE dpcpp_ver)
+
+if(${dpcpp_result} MATCHES "0")
+    string(REPLACE "\n" ";" DPCPP_VERSION_LIST "${dpcpp_ver}")
+    list(GET DPCPP_VERSION_LIST 0 dpcpp_ver_line)
+    foreach(X ${DPCPP_VERSION_LIST})
+        message(STATUS "dpcpp ver[${dpcpp_result}]: ${X}")
+    endforeach()
 else()
-  message(FATAL_ERROR "oneAPI needed to build DPPY-Oneapi-Interface")
+    message(FATAL_ERROR "oneAPI needed to build DPPY-Oneapi-Interface")
 endif()
 
 # TODO check if the oneapi root exists
@@ -17,18 +26,6 @@ if(WIN32)
   set(CMAKE_CXX_COMPILER "dpcpp-cl")
   set(CMAKE_C_COMPILER "clang-cl")
 else()
-  # Populate the DPCPP-specific variables.
-  # TODO These should be done more cleanly inside a FindDPCPP.cmake file.
-
-  set(DPCPP_HOME ${ONEAPI_HOME}/compiler/latest)
-  message(STATUS "DPCPP HOME: ${DPCPP_HOME}")
-  set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH} ${DPCPP_HOME}/linux/bin/intel64")
-  set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH} ${DPCPP_HOME}/linux/bin")
-  set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH} ${DPCPP_HOME}/ioc/bin")
-
-  set(DPCPP_INCLUDE_DIR "${DPCPP_HOME}/linux/include")
-  set(DPCPP_LIBRARY "${DPCPP_HOME}/linux/lib")
-
   set(CMAKE_CXX_COMPILER "dpcpp")
   set(CMAKE_C_COMPILER "clang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}                                          \
