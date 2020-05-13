@@ -22,4 +22,3 @@ export LIBUSM_LIBDIR=${BUILD_PREFIX}/lib
 ${PYTHON} setup.py clean --all
 ${PYTHON} setup.py build
 ${PYTHON} setup.py install
-#${PYTHON} setup.py build_ext --inplace --single-version-externally-managed --record=record.txt 
