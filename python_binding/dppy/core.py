@@ -305,7 +305,7 @@ class DeviceEnv():
             print("Error Code  : ", retval)
             _raise_driver_error("read_dp_mem_buffer_from_device", -1)
 
-    def alloc_array_in_device(self, array):
+    def create_device_array(self, array):
         if not ((isinstance(array, ndarray) or getattr(array, '__module__', None)
               == "ctypes")):
             _raise_unsupported_type_error("alloc_array_in_device")
