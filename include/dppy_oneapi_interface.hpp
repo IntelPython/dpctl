@@ -25,14 +25,20 @@
 #ifndef DPPY_ONEAPI_INTERFACE_HPP_
 #define DPPY_ONEAPI_INTERFACE_HPP_
 
+#include <deque>
 #include <memory>
 #include <CL/sycl.hpp>                /* SYCL headers */
 
-
+namespace dppy_rt
+{
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// DppyOneAPIContext /////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+enum class ErrorCode
+{
+    DPPY_SUCCESS, DPPY_FAILURE
+};
 
 /*! \class DppyOneAPIContext
  *  \brief A convenience wrapper encapsulating a SYCL queue
@@ -40,40 +46,51 @@
  */
 class DppyOneAPIContext
 {
-    std::shared_ptr<cl::sycl::queue> queue_;
+    cl::sycl::queue queue_;
 
 public:
+
+    auto getSyclQueue     () const;
+    auto getSyclContext   () const;
+    auto getSyclDevice    () const;
+    auto getOpenCLQueue   () const;
+    auto getOpenCLContext () const;
+    auto getOpenCLDevice  () const;
+
     auto dump ();
 
     DppyOneAPIContext(const cl::sycl::device_selector & dev_sel
                           = cl::sycl::default_selector());
+    DppyOneAPIContext(const cl::sycl::device & dev);
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////
-////////////////////////////DppyOneAPIContextFactory ///////////////////////////
+//////////////////////////////// DppyOneAPIRuntime /////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
-/*! \class DppyOneAPIContextFactory
- *  \brief A singleton class shared by all users DPPY
+/*! \class DppyOneAPIRuntime
+ *  \brief A runtime and context factory class
  *
  */
-class DppyOneAPIContextFactory
+class DppyOneAPIRuntime
 {
-    size_t num_platforms_;
-    size_t num_cpus_;
-    size_t num_gpus_;
+    size_t                                   num_platforms_;
+    cl::sycl::vector_class<cl::sycl::device> cpu_contexts_;
+    cl::sycl::vector_class<cl::sycl::device> gpu_contexts_;
+    std::deque<DppyOneAPIContext>            available_contexts_;
 
 public:
-    auto getGPUContext     ()               const;
-    auto getGPUContext     (size_t gpu_id)  const;
-    auto getCPUContext     (size_t cpu_id)  const;
-    auto getFPGAContext    (size_t fpga_id) const;
-    auto dump              ()               const;
+    ErrorCode getDefaultContext (DppyOneAPIContext * ctx) const;
+    ErrorCode getCurrentContext (DppyOneAPIContext * ctx) const;
+    ErrorCode setCurrentContext (cl::sycl::info::device_type ty,
+                                 size_t device_num);
+    ErrorCode dump              ()                        const;
 
-    DppyOneAPIContextFactory();
-    ~DppyOneAPIContextFactory();
+    DppyOneAPIRuntime();
+    ~DppyOneAPIRuntime();
 };
+
+} /* end of namespace dppy_rt */
 
 #endif /*--- DPPY_ONEAPI_INTERFACE_HPP_ ---*/

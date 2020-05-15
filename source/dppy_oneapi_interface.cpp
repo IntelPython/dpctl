@@ -2,7 +2,6 @@
 //
 //                     Data Parallel Python (DPPY)
 //
-// This file is distributed under the University of Illinois Open Source
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -30,6 +29,7 @@
 #include <sstream>
 
 using namespace cl::sycl;
+using namespace dppy_rt;
 
 /*------------------------------- Private helpers ----------------------------*/
 
@@ -72,17 +72,22 @@ void dump_platform_info (const platform & Platform)
 } /* end of anonymous namespace */
 
 ////////////////////////////////////////////////////////////////////////////////
-//////////////////////////// DppyOneAPIContextFactory //////////////////////////
+/////////////////////////////// DppyOneAPIRuntime //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-DppyOneAPIContextFactory::DppyOneAPIContextFactory ()
+DppyOneAPIRuntime::DppyOneAPIRuntime ()
     :num_platforms_(platform::get_platforms().size()),
-     num_cpus_(device::get_devices(info::device_type::cpu).size()),
-     num_gpus_(device::get_devices(info::device_type::gpu).size())
+     cpu_contexts_(device::get_devices(info::device_type::cpu)),
+     gpu_contexts_(device::get_devices(info::device_type::gpu))
 { }
 
 
-auto DppyOneAPIContextFactory::dump () const
+DppyOneAPIRuntime::~DppyOneAPIRuntime ()
+{
+
+}
+
+ErrorCode DppyOneAPIRuntime::dump () const
 {
     size_t i = 0;
 
@@ -95,14 +100,35 @@ auto DppyOneAPIContextFactory::dump () const
     }
 
     // Print out the info for CPU devices
-    if(num_cpus_)
+    if (cpu_contexts_.size())
         std::cout << "Number of available SYCL CPU devices: "
-                  << num_cpus_ << '\n';
+                  << cpu_contexts_.size() << '\n';
 
     // Print out the info for GPU devices
-    if(num_gpus_)
+    if (gpu_contexts_.size())
         std::cout << "Number of available SYCL GPU devices: "
-                  << num_gpus_ << '\n';
+                  << gpu_contexts_.size() << '\n';
+
+    return ErrorCode::DPPY_SUCCESS;
+}
+
+ErrorCode DppyOneAPIRuntime::getDefaultContext (DppyOneAPIContext *ctx) const
+{
+    if(available_contexts_.empty()) {
+        std::cerr << "ERROR: Why are there no available contexts. There should "
+                     "have been at least the default context.\n";
+        return ErrorCode::DPPY_FAILURE;
+    }
+
+    // TODO copy stuff into ctx from back of deque
+
+    return ErrorCode::DPPY_SUCCESS;
+}
+
+ErrorCode DppyOneAPIRuntime::setCurrentContext (info::device_type ty,
+                                                size_t device_num)
+{
+    return ErrorCode::DPPY_SUCCESS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -111,5 +137,5 @@ auto DppyOneAPIContextFactory::dump () const
 
 auto DppyOneAPIContext::dump ()
 {
-    dump_device_info(queue_->get_device());
+    dump_device_info(queue_.get_device());
 }
