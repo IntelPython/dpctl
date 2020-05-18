@@ -41,13 +41,13 @@ void dump_device_info (const device & Device)
 {
     std::stringstream ss;
 
-    ss << std::setw(4) << " " << std::left << std::setw(12) << "Name"
+    ss << std::setw(4) << " " << std::left << std::setw(16) << "Name"
        << Device.get_info<info::device::name>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(12) << "Driver version"
+    ss << std::setw(4) << " " << std::left << std::setw(16) << "Driver version"
        << Device.get_info<info::device::driver_version>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(12) << "Vendor"
+    ss << std::setw(4) << " " << std::left << std::setw(16) << "Vendor"
        << Device.get_info<info::device::vendor>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(12) << "Profile"
+    ss << std::setw(4) << " " << std::left << std::setw(16) << "Profile"
        << Device.get_info<info::device::profile>() << '\n';
 
     std::cout << ss.str();
@@ -76,16 +76,23 @@ void dump_platform_info (const platform & Platform)
 ////////////////////////////////////////////////////////////////////////////////
 
 DppyOneAPIRuntime::DppyOneAPIRuntime ()
-    :num_platforms_(platform::get_platforms().size()),
-     cpu_contexts_(device::get_devices(info::device_type::cpu)),
-     gpu_contexts_(device::get_devices(info::device_type::gpu))
-{ }
+    : num_platforms_(platform::get_platforms().size()),
+      cpu_devices_(device::get_devices(info::device_type::cpu)),
+      gpu_devices_(device::get_devices(info::device_type::gpu))
+{
+    contexts_.emplace_back(
+        std::make_shared<DppyOneAPIContext>(default_selector())
+        //std::shared_ptr<DppyOneAPIContext>(
+        //    new DppyOneAPIContext(default_selector()))
+    );
+}
 
 
 DppyOneAPIRuntime::~DppyOneAPIRuntime ()
 {
 
 }
+
 
 ErrorCode DppyOneAPIRuntime::dump () const
 {
@@ -94,40 +101,98 @@ ErrorCode DppyOneAPIRuntime::dump () const
     // Print out the info for each platform
     auto platforms = platform::get_platforms();
     for (auto &p : platforms) {
-        std::cout << "Platform " << i << '\n';
+        std::cout << "---Platform " << i << '\n';
         dump_platform_info(p);
         ++i;
     }
 
     // Print out the info for CPU devices
-    if (cpu_contexts_.size())
-        std::cout << "Number of available SYCL CPU devices: "
-                  << cpu_contexts_.size() << '\n';
+    if (cpu_devices_.size())
+        std::cout << "---Number of available SYCL CPU devices: "
+                  << cpu_devices_.size() << '\n';
+    else
+        std::cout << "---No available SYCL CPU device\n";
 
     // Print out the info for GPU devices
-    if (gpu_contexts_.size())
-        std::cout << "Number of available SYCL GPU devices: "
-                  << gpu_contexts_.size() << '\n';
+    if (gpu_devices_.size())
+        std::cout << "---Number of available SYCL GPU devices: "
+                  << gpu_devices_.size() << '\n';
+    else
+        std::cout << "---No available SYCL GPU device\n";
+
+    std::cout << "---Default DppyOneAPIContext initialized to device :\n";
+    contexts_.front()->dump();
 
     return ErrorCode::DPPY_SUCCESS;
 }
 
-ErrorCode DppyOneAPIRuntime::getDefaultContext (DppyOneAPIContext *ctx) const
+ErrorCode
+DppyOneAPIRuntime::getCurrentContext (std::shared_ptr<DppyOneAPIContext> & Ctx)
+const
 {
-    if(available_contexts_.empty()) {
+    if(contexts_.empty()) {
         std::cerr << "ERROR: Why are there no available contexts. There should "
                      "have been at least the default context.\n";
         return ErrorCode::DPPY_FAILURE;
     }
 
-    // TODO copy stuff into ctx from back of deque
+    if(Ctx.get() != nullptr) {
+        std::cerr << "ERROR: Context argument needs to be uninitialized\n";
+        return ErrorCode::DPPY_FAILURE;
+    }
 
+    Ctx = contexts_.front();
     return ErrorCode::DPPY_SUCCESS;
 }
 
-ErrorCode DppyOneAPIRuntime::setCurrentContext (info::device_type ty,
+
+ErrorCode DppyOneAPIRuntime::setCurrentContext (info::device_type Ty,
                                                 size_t device_num)
 {
+    switch(Ty)
+    {
+    case info::device_type::gpu:
+        if (device_num < gpu_devices_.size())
+            contexts_.emplace_front(
+                std::shared_ptr<DppyOneAPIContext>(
+                    new DppyOneAPIContext(default_selector())
+            ));
+        else {
+            std::cerr << "ERROR: SYCL GPU device " << device_num
+                      << " does not exist.\n";
+            return ErrorCode::DPPY_FAILURE;
+        }
+        break;
+    case info::device_type::cpu:
+        if (device_num < cpu_devices_.size())
+            contexts_.emplace_front(
+                std::shared_ptr<DppyOneAPIContext>(
+                    new DppyOneAPIContext(default_selector())
+            ));
+        else {
+            std::cerr << "ERROR: SYCL CPU device " << device_num
+                      << " does not exist.\n";
+            return ErrorCode::DPPY_FAILURE;
+        }
+        break;
+        break;
+    default:
+        std::cerr << "ERROR: Device type not currently supported.\n";
+        return ErrorCode::DPPY_FAILURE;
+        break;
+    }
+    return ErrorCode::DPPY_SUCCESS;
+}
+
+
+ErrorCode DppyOneAPIRuntime::resetCurrentContext ()
+{
+    if(contexts_.size() > 1) {
+        std::cerr << "ERROR: Resetting current context would leave no "
+                     "usable contexts\n";
+        return ErrorCode::DPPY_FAILURE;
+    }
+    contexts_.pop_front();
     return ErrorCode::DPPY_SUCCESS;
 }
 
@@ -135,7 +200,81 @@ ErrorCode DppyOneAPIRuntime::setCurrentContext (info::device_type ty,
 ///////////////////////////////// DppyOneAPIContext ////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-auto DppyOneAPIContext::dump ()
+DppyOneAPIContext::DppyOneAPIContext (const device_selector & DeviceSelector)
+    : queue_(DeviceSelector)
+{
+}
+
+DppyOneAPIContext::DppyOneAPIContext (const device & Device)
+    : queue_(Device)
+{
+}
+
+DppyOneAPIContext::DppyOneAPIContext (const DppyOneAPIContext & Ctx)
+    : queue_(Ctx.queue_)
+{
+    std::cout << "Copy...\n";
+}
+
+DppyOneAPIContext::DppyOneAPIContext (DppyOneAPIContext && Ctx)
+{
+    queue_ = Ctx.queue_;
+    std::cout << "Move...\n";
+}
+
+DppyOneAPIContext& DppyOneAPIContext::operator=(const DppyOneAPIContext & Ctx)
+{
+    std::cout << "Copy assign...\n";
+    if (this != &Ctx) {
+       queue_ = Ctx.queue_;
+    }
+    return *this;
+}
+
+DppyOneAPIContext& DppyOneAPIContext::operator=(DppyOneAPIContext && Ctx)
+{
+    std::cout << "Move assign...\n";
+
+    if (this != &Ctx) {
+        queue_ = std::move(Ctx.queue_);
+    }
+    return *this;
+}
+
+ErrorCode DppyOneAPIContext::getSyclQueue (cl::sycl::queue * Queue) const
+{
+    return ErrorCode::DPPY_SUCCESS;
+}
+
+ErrorCode DppyOneAPIContext::getSyclContext (cl::sycl::context * Context) const
+{
+    return ErrorCode::DPPY_SUCCESS;
+}
+
+ErrorCode DppyOneAPIContext::getSyclDevice (cl::sycl::device * Device) const
+{
+    return ErrorCode::DPPY_SUCCESS;
+}
+
+#if 0
+ErrorCode DppyOneAPIContext::getOpenCLQueue () const
+{
+
+}
+
+ErrorCode DppyOneAPIContext::getOpenCLContext () const
+{
+
+}
+
+ErrorCode DppyOneAPIContext::getOpenCLDevice () const
+{
+
+}
+#endif
+
+ErrorCode DppyOneAPIContext::dump ()
 {
     dump_device_info(queue_.get_device());
+    return ErrorCode::DPPY_SUCCESS;
 }

@@ -27,7 +27,8 @@
 
 #include <deque>
 #include <memory>
-#include <CL/sycl.hpp>                /* SYCL headers */
+#include <CL/sycl.hpp>                /* SYCL headers   */
+//#include <CL/cl.h>                    /* OpenCL headers */
 
 namespace dppy_rt
 {
@@ -50,18 +51,22 @@ class DppyOneAPIContext
 
 public:
 
-    auto getSyclQueue     () const;
-    auto getSyclContext   () const;
-    auto getSyclDevice    () const;
-    auto getOpenCLQueue   () const;
-    auto getOpenCLContext () const;
-    auto getOpenCLDevice  () const;
+    ErrorCode getSyclQueue (cl::sycl::queue * Queue) const;
+    ErrorCode getSyclContext (cl::sycl::context * Context) const;
+    ErrorCode getSyclDevice (cl::sycl::device * Device) const;
+#if 0
+    ErrorCode getOpenCLQueue (cl_command_queue * Cl_Queue) const;
+    ErrorCode getOpenCLContext (cl_context * CL_Context) const;
+    ErrorCode getOpenCLDevice (cl_device_id * CL_Device) const;
+#endif
+    ErrorCode dump ();
 
-    auto dump ();
-
-    DppyOneAPIContext(const cl::sycl::device_selector & dev_sel
-                          = cl::sycl::default_selector());
-    DppyOneAPIContext(const cl::sycl::device & dev);
+    DppyOneAPIContext (const cl::sycl::device_selector & DeviceSelector);
+    DppyOneAPIContext (const cl::sycl::device & Device);
+    DppyOneAPIContext (const DppyOneAPIContext & Ctx);
+    DppyOneAPIContext (DppyOneAPIContext && Ctx);
+    DppyOneAPIContext& operator=(const DppyOneAPIContext & Ctx);
+    DppyOneAPIContext& operator=(DppyOneAPIContext && other);
 };
 
 
@@ -75,17 +80,17 @@ public:
  */
 class DppyOneAPIRuntime
 {
-    size_t                                   num_platforms_;
-    cl::sycl::vector_class<cl::sycl::device> cpu_contexts_;
-    cl::sycl::vector_class<cl::sycl::device> gpu_contexts_;
-    std::deque<DppyOneAPIContext>            available_contexts_;
+    size_t                                         num_platforms_;
+    cl::sycl::vector_class<cl::sycl::device>       cpu_devices_;
+    cl::sycl::vector_class<cl::sycl::device>       gpu_devices_;
+    std::deque<std::shared_ptr<DppyOneAPIContext>> contexts_;
 
 public:
-    ErrorCode getDefaultContext (DppyOneAPIContext * ctx) const;
-    ErrorCode getCurrentContext (DppyOneAPIContext * ctx) const;
+    ErrorCode getCurrentContext (std::shared_ptr<DppyOneAPIContext> & C) const;
     ErrorCode setCurrentContext (cl::sycl::info::device_type ty,
                                  size_t device_num);
-    ErrorCode dump              ()                        const;
+    ErrorCode resetCurrentContext ();
+    ErrorCode dump () const;
 
     DppyOneAPIRuntime();
     ~DppyOneAPIRuntime();
