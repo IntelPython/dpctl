@@ -189,7 +189,7 @@ ErrorCode DppyOneAPIRuntime::resetCurrentContext ()
 {
     if(contexts_.size() > 1) {
         std::cerr << "ERROR: Resetting current context would leave no "
-                     "usable contexts\n";
+                     "usable context.\n";
         return ErrorCode::DPPY_FAILURE;
     }
     contexts_.pop_front();
