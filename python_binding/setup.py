@@ -6,14 +6,14 @@ requirements = [
 ]
 
 setup(
-    name='dppy',
+    name='dppy_rt',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description="A lightweight Python wrapper for a subset of OpenCL and SYCL API.",
-    license="BSD",
+    license="Apache 2.0",
     author="Intel Corporation",
     url='https://github.intel.com/SAT/dppy',
-    packages=['dppy'],
+    packages=['dppy_rt'],
     setup_requires=requirements,
     cffi_modules=[
         "./dppy/driverapi.py:ffi"

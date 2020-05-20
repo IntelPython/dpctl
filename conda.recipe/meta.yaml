@@ -1,4 +1,4 @@
-{% set name = "dppy" %}
+{% set name = "dppy_rt" %}
 {% set version = "v0.1" %}
 
 package:
