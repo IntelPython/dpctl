@@ -80,24 +80,23 @@ typedef struct dp_kernel_arg* kernel_arg_t;
  *  @var dp_runtime_t::platforms_ids
  *  An array of OpenCL platforms.
  *
- *  @var numba_one_api_runtime_t::platform_infos
- *  An array of platform_t objects each corresponding to an OpenCL platform
  */
 struct dp_runtime
 {
     unsigned id_;
     unsigned num_platforms;
     void *platform_ids;
-    //platform_t *platform_infos;
     bool has_cpu;
     bool has_gpu;
     env_t first_cpu_env;
     env_t first_gpu_env;
+    env_t curr_env;
     int (*dump_fn) (void *);
 };
 
 typedef struct dp_runtime* runtime_t;
 
+int set_curr_env (runtime_t rt, env_t env);
 
 /*!
  * @brief Initializes a new dp_runtime_t object

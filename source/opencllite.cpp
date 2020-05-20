@@ -434,6 +434,13 @@ static int init_runtime_t_obj (runtime_t rt)
     fflush(stdout);
 #endif
 
+    if(rt->has_gpu)
+        rt->curr_env = rt->first_gpu_env;
+    else if(rt->has_cpu)
+        rt->curr_env = rt->first_cpu_env;
+    else
+        goto error;
+
     return DP_GLUE_SUCCESS;
 
 malloc_error:
@@ -447,6 +454,14 @@ error:
 
 /*-------------------------- End of private helpers --------------------------*/
 
+int set_curr_env (runtime_t rt, env_t env)
+{
+    if(env && rt) {
+        rt->curr_env = env;
+        return DP_GLUE_SUCCESS;
+    }
+    return DP_GLUE_FAILURE;
+}
 
 /*!
  * @brief Initializes a new dp_runtime_t object

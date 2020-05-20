@@ -9,6 +9,7 @@ cmake                                    \
     -DCMAKE_PREFIX_PATH=${PREFIX}        \
     -DLIBUSM_INCLUDE_DIR=${PREFIX}/include/ \
     ..
+    #-DCMAKE_BUILD_TYPE=Debug             \
 
 make -n -j 4 && make install
 #    -DLIBUSM_LIBDIR=${PREFIX}/lib/ \
