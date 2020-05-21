@@ -20,7 +20,6 @@ else()
     message(FATAL_ERROR "oneAPI needed to build DPPY-Oneapi-Interface")
 endif()
 
-# TODO check if the oneapi root exists
 
 if(WIN32)
   set(CMAKE_CXX_COMPILER "dpcpp-cl")
@@ -38,8 +37,8 @@ endif()
 # We need OpenCL support
 find_package(OpenCL REQUIRED)
 
-message(STATUS "OCL_INCLUDE_DIR: ${OpenCL_INCLUDE_DIR}")
-message(STATUS "OCL_LIBRARY: ${OpenCL_LIBRARY}")
+message(STATUS "OCL_INCLUDE_DIR : ${OpenCL_INCLUDE_DIR}")
+message(STATUS "OCL_LIBRARY : ${OpenCL_LIBRARY}")
 
 # Todo : Add build rules for unit tests
 
@@ -48,8 +47,13 @@ message(STATUS "OCL_LIBRARY: ${OpenCL_LIBRARY}")
 add_library(
   DDPYOneapiInterface
   SHARED
-#  source/opencllite.cpp
   source/dppy_oneapi_interface.cpp
+)
+
+add_library(
+  dpglue
+  SHARED
+  source/opencllite.cpp
 )
 
 target_include_directories(
@@ -64,11 +68,12 @@ target_include_directories(
   ${OpenCL_INCLUDE_DIR}
 )
 
-#target_include_directories(DDPYOneapiInterface PUBLIC ${LIBUSM_INCLUDE_DIR})
+target_include_directories(dpglue PRIVATE ${CMAKE_SOURCE_DIR}/include/)
+target_include_directories(dpglue PUBLIC ${OpenCL_INCLUDE_DIR})
 
-if (UNIX)
-  target_include_directories(DDPYOneapiInterface PUBLIC ${DPCPP_INCLUDE_DIR})
-endif()
+#if (UNIX)
+#  target_include_directories(DDPYOneapiInterface PUBLIC ${DPCPP_INCLUDE_DIR})
+#endif()
 
 install(
   TARGETS
@@ -77,8 +82,10 @@ install(
   "${CMAKE_INSTALL_PREFIX}/lib/"
 )
 
+install(TARGETS dpglue LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/")
+
 # Install all headers
-file(GLOB DPPY_ONEAPI_INTERFACE_HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
+file(GLOB DPPY_ONEAPI_INTERFACE_HEADERS "${CMAKE_SOURCE_DIR}/include/*.h*")
 foreach(HEADER ${DPPY_ONEAPI_INTERFACE_HEADERS})
   install(FILES "${HEADER}" DESTINATION include)
 endforeach()
