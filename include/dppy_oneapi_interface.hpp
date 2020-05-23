@@ -33,7 +33,7 @@
 namespace dppy_rt
 {
 
-enum class ErrorCode
+enum : int64_t
 {
     DPPY_FAILURE = -1,
     DPPY_SUCCESS
@@ -71,15 +71,15 @@ class DppyOneAPIContext
 
 public:
 
-    ErrorCode getSyclQueue (cl::sycl::queue * Queue) const;
-    ErrorCode getSyclContext (cl::sycl::context * Context) const;
-    ErrorCode getSyclDevice (cl::sycl::device * Device) const;
+    int64_t getSyclQueue (cl::sycl::queue * Queue) const;
+    int64_t getSyclContext (cl::sycl::context * Context) const;
+    int64_t getSyclDevice (cl::sycl::device * Device) const;
 #if 0
-    ErrorCode getOpenCLQueue (cl_command_queue * Cl_Queue) const;
-    ErrorCode getOpenCLContext (cl_context * CL_Context) const;
-    ErrorCode getOpenCLDevice (cl_device_id * CL_Device) const;
+    int64_t getOpenCLQueue (cl_command_queue * Cl_Queue) const;
+    int64_t getOpenCLContext (cl_context * CL_Context) const;
+    int64_t getOpenCLDevice (cl_device_id * CL_Device) const;
 #endif
-    ErrorCode dump ();
+    int64_t dump ();
 
     DppyOneAPIContext (const cl::sycl::device_selector & DeviceSelector);
     DppyOneAPIContext (const cl::sycl::device & Device);
@@ -106,11 +106,11 @@ class DppyOneAPIRuntime
     std::deque<std::shared_ptr<DppyOneAPIContext>> contexts_;
 
 public:
-    ErrorCode getCurrentContext (std::shared_ptr<DppyOneAPIContext> & C) const;
-    ErrorCode setCurrentContext (cl::sycl::info::device_type ty,
+    int64_t getCurrentContext (std::shared_ptr<DppyOneAPIContext> & C) const;
+    int64_t setCurrentContext (cl::sycl::info::device_type ty,
                                  size_t device_num);
-    ErrorCode resetCurrentContext ();
-    ErrorCode dump () const;
+    int64_t resetCurrentContext ();
+    int64_t dump () const;
 
     DppyOneAPIRuntime();
     ~DppyOneAPIRuntime();

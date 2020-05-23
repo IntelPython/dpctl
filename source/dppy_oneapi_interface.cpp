@@ -94,7 +94,7 @@ DppyOneAPIRuntime::~DppyOneAPIRuntime ()
 }
 
 
-ErrorCode DppyOneAPIRuntime::dump () const
+int64_t DppyOneAPIRuntime::dump () const
 {
     size_t i = 0;
 
@@ -123,30 +123,30 @@ ErrorCode DppyOneAPIRuntime::dump () const
     std::cout << "---Default DppyOneAPIContext initialized to device :\n";
     contexts_.front()->dump();
 
-    return ErrorCode::DPPY_SUCCESS;
+    return DPPY_SUCCESS;
 }
 
-ErrorCode
+int64_t
 DppyOneAPIRuntime::getCurrentContext (std::shared_ptr<DppyOneAPIContext> & Ctx)
 const
 {
     if(contexts_.empty()) {
         std::cerr << "ERROR: Why are there no available contexts. There should "
                      "have been at least the default context.\n";
-        return ErrorCode::DPPY_FAILURE;
+        return DPPY_FAILURE;
     }
 
     if(Ctx.get() != nullptr) {
         std::cerr << "ERROR: Context argument needs to be uninitialized\n";
-        return ErrorCode::DPPY_FAILURE;
+        return DPPY_FAILURE;
     }
 
     Ctx = contexts_.front();
-    return ErrorCode::DPPY_SUCCESS;
+    return DPPY_SUCCESS;
 }
 
 
-ErrorCode DppyOneAPIRuntime::setCurrentContext (info::device_type Ty,
+int64_t DppyOneAPIRuntime::setCurrentContext (info::device_type Ty,
                                                 size_t device_num)
 {
     switch(Ty)
@@ -160,7 +160,7 @@ ErrorCode DppyOneAPIRuntime::setCurrentContext (info::device_type Ty,
         else {
             std::cerr << "ERROR: SYCL GPU device " << device_num
                       << " does not exist.\n";
-            return ErrorCode::DPPY_FAILURE;
+            return DPPY_FAILURE;
         }
         break;
     case info::device_type::cpu:
@@ -172,28 +172,28 @@ ErrorCode DppyOneAPIRuntime::setCurrentContext (info::device_type Ty,
         else {
             std::cerr << "ERROR: SYCL CPU device " << device_num
                       << " does not exist.\n";
-            return ErrorCode::DPPY_FAILURE;
+            return DPPY_FAILURE;
         }
         break;
         break;
     default:
         std::cerr << "ERROR: Device type not currently supported.\n";
-        return ErrorCode::DPPY_FAILURE;
+        return DPPY_FAILURE;
         break;
     }
-    return ErrorCode::DPPY_SUCCESS;
+    return DPPY_SUCCESS;
 }
 
 
-ErrorCode DppyOneAPIRuntime::resetCurrentContext ()
+int64_t DppyOneAPIRuntime::resetCurrentContext ()
 {
     if(contexts_.size() > 1) {
         std::cerr << "ERROR: Resetting current context would leave no "
                      "usable context.\n";
-        return ErrorCode::DPPY_FAILURE;
+        return DPPY_FAILURE;
     }
     contexts_.pop_front();
-    return ErrorCode::DPPY_SUCCESS;
+    return DPPY_SUCCESS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -241,40 +241,40 @@ DppyOneAPIContext& DppyOneAPIContext::operator=(DppyOneAPIContext && Ctx)
     return *this;
 }
 
-ErrorCode DppyOneAPIContext::getSyclQueue (cl::sycl::queue * Queue) const
+int64_t DppyOneAPIContext::getSyclQueue (cl::sycl::queue * Queue) const
 {
-    return ErrorCode::DPPY_SUCCESS;
+    return DPPY_SUCCESS;
 }
 
-ErrorCode DppyOneAPIContext::getSyclContext (cl::sycl::context * Context) const
+int64_t DppyOneAPIContext::getSyclContext (cl::sycl::context * Context) const
 {
-    return ErrorCode::DPPY_SUCCESS;
+    return DPPY_SUCCESS;
 }
 
-ErrorCode DppyOneAPIContext::getSyclDevice (cl::sycl::device * Device) const
+int64_t DppyOneAPIContext::getSyclDevice (cl::sycl::device * Device) const
 {
-    return ErrorCode::DPPY_SUCCESS;
+    return DPPY_SUCCESS;
 }
 
 #if 0
-ErrorCode DppyOneAPIContext::getOpenCLQueue () const
+int64_t DppyOneAPIContext::getOpenCLQueue () const
 {
 
 }
 
-ErrorCode DppyOneAPIContext::getOpenCLContext () const
+int64_t DppyOneAPIContext::getOpenCLContext () const
 {
 
 }
 
-ErrorCode DppyOneAPIContext::getOpenCLDevice () const
+int64_t DppyOneAPIContext::getOpenCLDevice () const
 {
 
 }
 #endif
 
-ErrorCode DppyOneAPIContext::dump ()
+int64_t DppyOneAPIContext::dump ()
 {
     dump_device_info(queue_.get_device());
-    return ErrorCode::DPPY_SUCCESS;
+    return DPPY_SUCCESS;
 }
