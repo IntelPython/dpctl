@@ -61,7 +61,7 @@ add_library(
 add_library(
   dpglue
   SHARED
-  source/opencllite.cpp
+  source/opencllite.c
 )
 
 target_include_directories(
