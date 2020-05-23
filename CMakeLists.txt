@@ -22,17 +22,24 @@ endif()
 
 
 if(WIN32)
+  set(ONEAPI_HOME "$ENV{ONEAPI_ROOT}")
+  message(STATUS "ONEAPI_ROOT (read from environment): ${ONEAPI_HOME}")
   set(CMAKE_CXX_COMPILER "dpcpp-cl")
   set(CMAKE_C_COMPILER "clang-cl")
+  set(CMAKE_LINKER "lld-link")
+  message(STATUS "Resetting CXX compiler to: " ${CMAKE_CXX_COMPILER})
+  message(STATUS "Resetting C compiler to: " ${CMAKE_C_COMPILER})
+  message(STATUS "Resetting Linker to: " ${CMAKE_LINK})
 else()
   set(CMAKE_CXX_COMPILER "dpcpp")
   set(CMAKE_C_COMPILER "clang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}                                          \
      -Wall -Wextra -Winit-self -Wuninitialized -Wmissing-declarations          \
-     -fdiagnostics-color=auto -pedantic-errors                                 \
+     -fdiagnostics-color=auto                                                  \
   ")
-  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3 -DDEBUG ")
 endif()
+
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3 -DDEBUG ")
 
 # We need OpenCL support
 find_package(OpenCL REQUIRED)
@@ -45,11 +52,12 @@ message(STATUS "OCL_LIBRARY : ${OpenCL_LIBRARY}")
 # Todo : Add build rules for doxygen
 
 add_library(
-  DDPYOneapiInterface
+  DPPYOneapiInterface
   SHARED
   source/dppy_oneapi_interface.cpp
 )
 
+# Install OpenCLlite as a separate library to be removed later
 add_library(
   dpglue
   SHARED
@@ -57,35 +65,38 @@ add_library(
 )
 
 target_include_directories(
-  DDPYOneapiInterface
+  DPPYOneapiInterface
   PRIVATE
   ${CMAKE_SOURCE_DIR}/include/
-)
-
-target_include_directories(
-  DDPYOneapiInterface
-  PUBLIC
-  ${OpenCL_INCLUDE_DIR}
 )
 
 target_include_directories(dpglue PRIVATE ${CMAKE_SOURCE_DIR}/include/)
 target_include_directories(dpglue PUBLIC ${OpenCL_INCLUDE_DIR})
 
-#if (UNIX)
-#  target_include_directories(DDPYOneapiInterface PUBLIC ${DPCPP_INCLUDE_DIR})
-#endif()
+if (UNIX)
+  target_include_directories(DPPYOneapiInterface PUBLIC ${DPCPP_INCLUDE_DIR})
+elseif(WIN32)
+  target_include_directories(DPPYOneapiInterface PUBLIC ${ONEAPI_HOME}/compiler/latest/windows/include/sycl)
+  #target_link_libraries(DPPYOneapiInterface sycl)
+endif()
 
 install(
   TARGETS
-  DDPYOneapiInterface
+  DPPYOneapiInterface
   LIBRARY DESTINATION
   "${CMAKE_INSTALL_PREFIX}/lib/"
 )
 
-install(TARGETS dpglue LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/")
+install(
+  TARGETS
+  dpglue
+  LIBRARY
+  DESTINATION
+  "${CMAKE_INSTALL_PREFIX}/lib/"
+)
 
 # Install all headers
-file(GLOB DPPY_ONEAPI_INTERFACE_HEADERS "${CMAKE_SOURCE_DIR}/include/*.h*")
-foreach(HEADER ${DPPY_ONEAPI_INTERFACE_HEADERS})
+file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/*.h*")
+foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION include)
 endforeach()
