@@ -17,21 +17,24 @@
 # distutils: language = c++
 # cython: language_level=2
 
-
+from libc.stdint cimport int64_t
 from cpython.ref cimport PyObject, Py_INCREF
-
 
 cdef extern from "dppy_oneapi_interface.hpp" namespace "dppy_rt":
     cdef cppclass DppyOneAPIRuntime:
         DppyOneAPIRuntime() except +
-        ErrorCode getCurrentContext ()
+        int64_t getCurrentContext ()
+        int64_t dump()
 
 
 cdef class DppyRuntime:
     cdef DppyOneAPIRuntime rt
 
     def __cinit__(self):
-        self.c_rect = DppyOneAPIRuntime()
+        self.rt = DppyOneAPIRuntime()
 
     def dump(self):
-        return self.rt.dump() except -1
+        return self.rt.dump()
+
+runtime = DppyRuntime()
+runtime.dump()
