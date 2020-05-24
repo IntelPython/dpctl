@@ -1,4 +1,4 @@
-{% set name = "dppy_rt" %}
+{% set name = "dppy" %}
 {% set version = "v0.1" %}
 
 package:
@@ -11,6 +11,9 @@ source:
 build:
     number: 0
     skip: True  # [not linux]
+    script_env:
+        - DPCPP_VAR
+
 
 requirements:
     build:
@@ -22,14 +25,14 @@ requirements:
         - make
         - ocl-icd
         - numpy >=1.17
-        - libusm
+
     run:
         - python
         - numpy >=1.17
         - cffi >=1.0.0
         - ocl-icd
         - ocl-icd-system
-        - libusm
+
 
 about:
     home: https://github.intel.com/SAT/dppy.git
