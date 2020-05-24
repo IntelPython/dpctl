@@ -26,8 +26,8 @@ export DPPY_ONEAPI_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
 
 export CC=clang
 export CXX=dpcpp
-# FIXME: How to pass this using setup.py? This flags is needed when
-# dpcpp compiles the generated cpp file.
+# FIXME: How to pass this using setup.py? The fPIC flag is needed when
+# dpcpp compiles the Cython generated cpp file.
 export CFLAGS=-fPIC
 python setup.py clean --all
 python setup.py build_ext --inplace
