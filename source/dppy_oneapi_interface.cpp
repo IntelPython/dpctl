@@ -147,7 +147,7 @@ const
 
 
 int64_t DppyOneAPIRuntime::setCurrentContext (info::device_type Ty,
-                                                size_t device_num)
+                                              size_t device_num)
 {
     switch(Ty)
     {

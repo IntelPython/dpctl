@@ -108,7 +108,7 @@ class DppyOneAPIRuntime
 public:
     int64_t getCurrentContext (std::shared_ptr<DppyOneAPIContext> & C) const;
     int64_t setCurrentContext (cl::sycl::info::device_type ty,
-                                 size_t device_num);
+                               size_t device_num);
     int64_t resetCurrentContext ();
     int64_t dump () const;
 
