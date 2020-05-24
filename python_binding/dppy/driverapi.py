@@ -8,7 +8,6 @@ ffi = FFI()
 dpglue_incldir = os.environ.get('DP_GLUE_INCLDIR', None)
 dpglue_libdir  = os.environ.get('DP_GLUE_LIBDIR', None)
 opencl_libdir  = os.environ.get('OPENCL_LIBDIR', None)
-libusm_libdir = os.environ.get('LIBUSM_LIBDIR', None)
 
 if opencl_libdir is None:
     raise ValueError("Abort! Set the OPENCL_LIBDIR envar to point to "
@@ -38,8 +37,8 @@ ffi.set_source(
          #include "dp_glue.h"   // the C header of the library
     """,
     include_dirs=[dpglue_incldir],
-    library_dirs=[dpglue_libdir, opencl_libdir, libusm_libdir],
-    libraries=["dpglue", "OpenCL", "libusm"],
+    library_dirs=[dpglue_libdir, opencl_libdir],
+    libraries=["dpglue", "OpenCL"],
 )   # library name, for the linker
 
 
