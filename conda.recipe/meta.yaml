@@ -12,7 +12,7 @@ build:
     number: 0
     skip: True  # [not linux]
     script_env:
-        - DPCPP_VAR
+        - ONEAPI_ROOT
 
 
 requirements:
@@ -20,19 +20,16 @@ requirements:
         - {{ compiler('cxx') }}
     host:
         - cffi >=1.0.0
+        - cython
         - cmake
         - python
         - make
-        - ocl-icd
         - numpy >=1.17
 
     run:
         - python
         - numpy >=1.17
         - cffi >=1.0.0
-        - ocl-icd
-        - ocl-icd-system
-
 
 about:
     home: https://github.intel.com/SAT/dppy.git

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # We need dpcpp to compile dppy_oneapi_interface
-if [ ! -z "${DPCPP_VAR}" ]; then
-    source ${DPCPP_VAR}
+if [ ! -z "${ONEAPI_ROOT}" ]; then
+    source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
     export CC=clang
     export CXX=dpcpp
 else
@@ -20,7 +20,7 @@ cmake                                    \
     -DCMAKE_PREFIX_PATH=${PREFIX}        \
     ..
 
-make -n -j 4 && make install
+make -n && make V=1 -j 4 && make install
 
 cd ../python_binding
 export DP_GLUE_LIBDIR=${PREFIX}
@@ -28,7 +28,6 @@ export DP_GLUE_INCLDIR=${PREFIX}/include
 export OPENCL_LIBDIR=${BUILD_PREFIX}/lib
 export DPPY_ONEAPI_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
 export DPPY_ONEAPI_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
-
 
 # FIXME: How to pass this using setup.py? This flags is needed when
 # dpcpp compiles the generated cpp file.

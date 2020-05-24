@@ -1,8 +1,24 @@
 cmake_minimum_required(VERSION 3.3.2 FATAL_ERROR)
 project("DPPPY-Oneapi-Interface - A lightweigth SYCL wrapper for Python libraries")
 
-set (dpcpp_cmd "dpcpp")
-set (dpcpp_arg "--version")
+set(ONEAPI_ROOT "$ENV{ONEAPI_ROOT}")
+string(COMPARE EQUAL "${ONEAPI_ROOT}" "" ONEAPI_ROOT_EMPTY)
+if(${ONEAPI_ROOT_EMPTY})
+    message(FATAL_ERROR "Please set an environment varaible ONEAPI_ROOT \
+                         pointing to you oneAPI install directory.")
+else()
+    message(STATUS "oneAPI Root:" ${ONEAPI_ROOT})
+endif()
+
+if(WIN32)
+    set (dpcpp_cmd "${ONEAPI_ROOT}/compiler/latest/windows/bin/dpcpp-cl")
+    set (dpcpp_arg "--version")
+elseif(UNIX)
+    set (dpcpp_cmd "${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp")
+    set (dpcpp_arg "--version")
+else()
+    message(FATAL_ERROR "Unsupported system.")
+  endif()
 
 execute_process(
     COMMAND ${dpcpp_cmd} ${dpcpp_arg}
@@ -17,29 +33,32 @@ if(${dpcpp_result} MATCHES "0")
         message(STATUS "dpcpp ver[${dpcpp_result}]: ${X}")
     endforeach()
 else()
-    message(FATAL_ERROR "oneAPI needed to build DPPY-Oneapi-Interface")
+    message(FATAL_MESSAGE "DPCPP needed to build DPPY-Oneapi-Interface")
 endif()
-
 
 if(WIN32)
-  set(ONEAPI_HOME "$ENV{ONEAPI_ROOT}")
-  message(STATUS "ONEAPI_ROOT (read from environment): ${ONEAPI_HOME}")
-  set(CMAKE_CXX_COMPILER "dpcpp-cl")
-  set(CMAKE_C_COMPILER "clang-cl")
-  set(CMAKE_LINKER "lld-link")
-  message(STATUS "Resetting CXX compiler to: " ${CMAKE_CXX_COMPILER})
-  message(STATUS "Resetting C compiler to: " ${CMAKE_C_COMPILER})
-  message(STATUS "Resetting Linker to: " ${CMAKE_LINK})
+    set(CMAKE_CXX_COMPILER:PATH "${ONEAPI_ROOT}/compiler/latest/windows/bin/dpcpp-cl")
+    set(CMAKE_C_COMPILER:PATH "${ONEAPI_ROOT}/compiler/latest/windows/bin/clang-cl")
+    set(CMAKE_LINKER:PATH "${ONEAPI_ROOT}/compiler/latest/windows/bin/lld-link")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}                                          \
+       -Wall -Wextra -Winit-self -Wuninitialized -Wmissing-declarations          \
+       -fdiagnostics-color=auto -O3                                              \
+    ")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3 -DDEBUG ")
+    message(STATUS "Resetting CXX compiler to: " ${CMAKE_CXX_COMPILER})
+    message(STATUS "Resetting C compiler to: " ${CMAKE_C_COMPILER})
+    message(STATUS "Resetting Linker to: " ${CMAKE_LINK})
+elseif(UNIX)
+    set(CMAKE_CXX_COMPILER "${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp")
+    set(CMAKE_C_COMPILER "${ONEAPI_ROOT}/compiler/latest/linux/bin/clang")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}                                          \
+       -Wall -Wextra -Winit-self -Wuninitialized -Wmissing-declarations          \
+       -fdiagnostics-color=auto -O3                                              \
+    ")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3 -DDEBUG ")
 else()
-  set(CMAKE_CXX_COMPILER "dpcpp")
-  set(CMAKE_C_COMPILER "clang")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}                                          \
-     -Wall -Wextra -Winit-self -Wuninitialized -Wmissing-declarations          \
-     -fdiagnostics-color=auto                                                  \
-  ")
+    message(FATAL_ERROR "Unsupported system.")
 endif()
-
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3 -DDEBUG ")
 
 # We need OpenCL support
 find_package(OpenCL REQUIRED)
@@ -57,7 +76,7 @@ add_library(
   source/dppy_oneapi_interface.cpp
 )
 
-# Install OpenCLlite as a separate library to be removed later
+# Install dpglue as a separate library to be removed later
 add_library(
   dpglue
   SHARED
@@ -73,11 +92,13 @@ target_include_directories(
 target_include_directories(dpglue PRIVATE ${CMAKE_SOURCE_DIR}/include/)
 target_include_directories(dpglue PUBLIC ${OpenCL_INCLUDE_DIR})
 
-if (UNIX)
-  target_include_directories(DPPYOneapiInterface PUBLIC ${DPCPP_INCLUDE_DIR})
-elseif(WIN32)
-  target_include_directories(DPPYOneapiInterface PUBLIC ${ONEAPI_HOME}/compiler/latest/windows/include/sycl)
-  #target_link_libraries(DPPYOneapiInterface sycl)
+if(WIN32)
+    message(STATUS "SYCL_INCLUDE_DIR : " ${ONEAPI_ROOT}/compiler/latest/windows/include/sycl)
+    target_include_directories(DPPYOneapiInterface PUBLIC ${ONEAPI_ROOT}/compiler/latest/windows/include/sycl)
+   #target_link_libraries(DPPYOneapiInterface sycl)
+elseif(UNIX)
+    message(STATUS "SYCL_INCLUDE_DIR : " ${ONEAPI_ROOT}/compiler/latest/linux/include/sycl)
+    target_include_directories(DPPYOneapiInterface SYSTEM PUBLIC /opt/intel/inteloneapi/compiler/latest/linux/include/sycl)
 endif()
 
 install(

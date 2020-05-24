@@ -5,7 +5,8 @@ mkdir build
 cd build
 
 INSTALL_PREFIX=`pwd`/install
-DPCPP_ROOT=/opt/intel/inteloneapi/compiler/latest
+export ONEAPI_ROOT=/opt/intel/inteloneapi
+DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest
 
 cmake                                                       \
     -DCMAKE_BUILD_TYPE=Release                              \
@@ -15,7 +16,7 @@ cmake                                                       \
     -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/linux/bin/dpcpp \
     ..
 
-make -n -j 4 && make install
+make V=1 -n -j 4 && make install
 
 cd ../python_binding
 export DP_GLUE_LIBDIR=${INSTALL_PREFIX}/lib

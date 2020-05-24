@@ -57,7 +57,6 @@ def get_sdl_ldflags():
     elif IS_WIN:
         return ['-NXCompat', '-DynamicBase']
 
-
 def getpyexts():
     # Security flags
     eca = get_sdl_cflags()
@@ -69,7 +68,7 @@ def getpyexts():
                                 depends=[dppy_oneapi_interface_include,],
                                 include_dirs=[np.get_include(),
                                               dppy_oneapi_interface_include],
-                                extra_compile_args=eca+['-fsycl'],
+                                extra_compile_args=eca+['-O3','-fsycl'],
                                 extra_link_args=ela,
                                 libraries=libs,
                                 library_dirs=[dppy_oneapi_interface_lib],

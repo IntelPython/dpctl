@@ -26,7 +26,7 @@ if [[ conda_build_ret -ne 0 ]]; then
 fi
 
 
-export DPCPP_VAR="/opt/intel/inteloneapi/compiler/latest/env/vars.sh"
+export ONEAPI_ROOT="/opt/intel/inteloneapi"
 
 echo "conda-build"
 conda-build ${DPPY_EXTRA_CHANNELS} --output-folder ./${CONDA_PKG_DIR} -c conda-forge conda.recipe/
