@@ -7,7 +7,7 @@ ffi = FFI()
 
 dpglue_incldir = os.environ.get('DP_GLUE_INCLDIR', None)
 dpglue_libdir  = os.environ.get('DP_GLUE_LIBDIR', None)
-opencl_libdir  = os.environ.get('OPENCL_LIBDIR', None)
+opencl_libdir  = os.environ.get('OpenCL_LIBDIR', None)
 
 if opencl_libdir is None:
     raise ValueError("Abort! Set the OPENCL_LIBDIR envar to point to "

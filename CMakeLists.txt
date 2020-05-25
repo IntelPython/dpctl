@@ -60,11 +60,27 @@ else()
     message(FATAL_ERROR "Unsupported system.")
 endif()
 
-# We need OpenCL support
-find_package(OpenCL REQUIRED)
+# We need OpenCL
+set(OPENCL_LIBDIR "$ENV{OpenCL_LIBDIR}")
+string(COMPARE EQUAL "${OPENCL_LIBDIR}" "" OPENCL_LIBDIR_EMPTY)
 
-message(STATUS "OCL_INCLUDE_DIR : ${OpenCL_INCLUDE_DIR}")
-message(STATUS "OCL_LIBRARY : ${OpenCL_LIBRARY}")
+# This is a temporary hack to pass in the OpenCL install directory
+# using an environment variable. We are doing this as we want to pass
+# OpenCL_LIBDR to build.sh.
+if(${OPENCL_LIBDIR_EMPTY})
+#    find_package(OpenCL REQUIRED)
+    message(FATAL_ERROR "Set the OpenCL_LIBDIR and OpenCL_INCLUDE_DIR  \
+                         environment variables to point to an OpenCL installation.")
+endif()
+
+if(WIN32)
+    set(OpenCL_LIBRARY ${OpencL_LIBDIR}/libOpenCL.lib)
+elseif(UNIX)
+    set(OpenCL_LIBRARY ${OpencL_LIBDIR}/libOpenCL.so)
+endif()
+
+#message(STATUS "OpenCL_INCLUDE_DIR : ${OpenCL_INCLUDE_DIR}")
+message(STATUS "OpenCL_LIBRARY : ${OpenCL_LIBRARY}")
 
 # Todo : Add build rules for unit tests
 
@@ -90,15 +106,15 @@ target_include_directories(
 )
 
 target_include_directories(dpglue PRIVATE ${CMAKE_SOURCE_DIR}/include/)
-target_include_directories(dpglue PUBLIC ${OpenCL_INCLUDE_DIR})
+#target_include_directories(dpglue PUBLIC ${OpenCL_INCLUDE_DIR})
 
 if(WIN32)
     message(STATUS "SYCL_INCLUDE_DIR : " ${ONEAPI_ROOT}/compiler/latest/windows/include/sycl)
     target_include_directories(DPPYOneapiInterface PUBLIC ${ONEAPI_ROOT}/compiler/latest/windows/include/sycl)
-   #target_link_libraries(DPPYOneapiInterface sycl)
+    #target_link_libraries(DPPYOneapiInterface sycl)
 elseif(UNIX)
     message(STATUS "SYCL_INCLUDE_DIR : " ${ONEAPI_ROOT}/compiler/latest/linux/include/sycl)
-    target_include_directories(DPPYOneapiInterface SYSTEM PUBLIC /opt/intel/inteloneapi/compiler/latest/linux/include/sycl)
+    #target_include_directories(DPPYOneapiInterface SYSTEM PUBLIC /opt/intel/inteloneapi/compiler/latest/linux/include/sycl)
 endif()
 
 install(
