@@ -1,5 +1,3 @@
-                                 DPPY
-                                =======
 What?
 ====
 A minimal Python module exposing a subset of OpenCL and SYCL functionalities.
