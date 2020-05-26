@@ -16,25 +16,34 @@ int main ()
     std::cout << "==========================\n";
     std::cout << "Num platforms : " << nPlats << '\n';
 
-    rt.getDefaultContext(&ctx);
+    rt.getCurrentContext(&ctx);
     std::cout << "==========================\n";
     std::cout << "Current context set to : \n";
     ctx->dump();
 
     std::cout << "==========================\n";
     std::cout << "Change the current context to : CPU 0 \n";
-    std::shared_ptr<DppyOneAPIContext> cpuCtx;
-    rt.pushCPUContext(&cpuCtx, 0);
-    cpuCtx->dump();
+    rt.pushCPUContext(&ctx, 0);
+    ctx->dump();
+    rt.popContext();
 
     std::cout << "==========================\n";
     std::cout << "Try to change the current context to non-existent GPU 1 \n";
-    std::shared_ptr<DppyOneAPIContext> gpuCtx;
     auto ret= 0;
-    if((ret = rt.pushGPUContext(&gpuCtx, 1)) == DPPY_SUCCESS)
-        gpuCtx->dump();
+    if((ret = rt.pushGPUContext(&ctx, 1)) == DPPY_SUCCESS) {
+        ctx->dump();
+        rt.popContext();
+    }
     else
-        std::cout << "Sorry! no such device\n";
+        std::cout << "Sorry! no such device.\n";
+
+
+    rt.setGlobalContextWithCPU(0);
+    rt.getCurrentContext(&ctx);
+    std::cout << "==========================\n";
+    std::cout << "Current context set to : \n";
+    ctx->dump();
+
 
     return 0;
 }

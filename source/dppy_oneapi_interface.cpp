@@ -84,12 +84,15 @@ int64_t error_reporter (const std::string & msg)
 /////////////////////////////// DppyOneAPIRuntime //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+
 DppyOneAPIRuntime::DppyOneAPIRuntime ()
     : num_platforms_(platform::get_platforms().size()),
       cpu_devices_(device::get_devices(info::device_type::cpu)),
       gpu_devices_(device::get_devices(info::device_type::gpu))
 {
-    default_context_ = std::make_shared<DppyOneAPIContext>(default_selector());
+    active_contexts_.emplace_front(
+        std::make_shared<DppyOneAPIContext>(default_selector())
+    );
 }
 
 
@@ -125,8 +128,8 @@ int64_t DppyOneAPIRuntime::dump () const
     else
         std::cout << "---No available SYCL GPU device\n";
 
-    std::cout << "---Default DppyOneAPIContext initialized to device :\n";
-    default_context_->dump();
+    std::cout << "---Current DppyOneAPIContext :\n";
+    active_contexts_.front()->dump();
 
     std::cout << "---Number of active DppyOneAPIContexts : "
               << active_contexts_.size() << '\n';
@@ -143,44 +146,47 @@ int64_t DppyOneAPIRuntime::getNumPlatforms (size_t *platforms) const
 
 
 int64_t
-DppyOneAPIRuntime::getDefaultContext (std::shared_ptr<DppyOneAPIContext> * Ctx)
+DppyOneAPIRuntime::getCurrentContext (std::shared_ptr<DppyOneAPIContext> * Ctx)
 const
 {
-    *Ctx = default_context_;
+    if (active_contexts_.empty())
+        return error_reporter("No currently active context.");
+
+    *Ctx = active_contexts_.front();
     return DPPY_SUCCESS;
 }
 
 
 int64_t
-DppyOneAPIRuntime::setDefaultContext (std::shared_ptr<DppyOneAPIContext> * Ctx,
-                                      info::device_type DTy,
-                                      size_t DNum)
+DppyOneAPIRuntime::setGlobalContextWithGPU (size_t DNum)
 {
-    switch(DTy)
-    {
-    case info::device_type::gpu:
-        if(DNum > gpu_devices_.size()) {
-            std::stringstream ss;
-            ss << "SYCL GPU device " << DNum << " not found on system.";
-            return error_reporter(ss.str());
-        }
-        default_context_ = std::make_shared<DppyOneAPIContext>(
-                               gpu_devices_[DNum]);
-        *Ctx = default_context_;
-        break;
-    case info::device_type::cpu:
-        if(DNum > cpu_devices_.size()) {
-            std::stringstream ss;
-            ss << "SYCL CPU device " << DNum << " not found on system.";
-            return error_reporter(ss.str());
-        }
-        default_context_ = std::make_shared<DppyOneAPIContext>(
-                               cpu_devices_[DNum]);
-        *Ctx = default_context_;
-        break;
-    default:
-        break;
+    if(active_contexts_.empty())
+        return error_reporter("Why is there no previous global context?");
+    if(DNum > gpu_devices_.size()) {
+        std::stringstream ss;
+        ss << "SYCL GPU device " << DNum << " not found on system.";
+        return error_reporter(ss.str());
     }
+    active_contexts_.pop_back();
+    active_contexts_.push_back(std::make_shared<DppyOneAPIContext>(
+                               gpu_devices_[DNum]));
+    return DPPY_SUCCESS;
+}
+
+
+int64_t
+DppyOneAPIRuntime::setGlobalContextWithCPU (size_t DNum)
+{
+    if(active_contexts_.empty())
+        return error_reporter("Why is there no previous global context?");
+    if(DNum > cpu_devices_.size()) {
+        std::stringstream ss;
+        ss << "SYCL CPU device " << DNum << " not found on system.";
+        return error_reporter(ss.str());
+    }
+    active_contexts_.pop_back();
+    active_contexts_.push_back(std::make_shared<DppyOneAPIContext>(
+                               cpu_devices_[DNum]));
     return DPPY_SUCCESS;
 }
 
@@ -203,6 +209,7 @@ DppyOneAPIRuntime::pushGPUContext (std::shared_ptr<DppyOneAPIContext> * C,
     return DPPY_SUCCESS;
 }
 
+
 int64_t
 DppyOneAPIRuntime::pushCPUContext (std::shared_ptr<DppyOneAPIContext> * C,
                                    size_t device_num)
@@ -221,6 +228,7 @@ DppyOneAPIRuntime::pushCPUContext (std::shared_ptr<DppyOneAPIContext> * C,
     return DPPY_SUCCESS;
 }
 
+
 int64_t DppyOneAPIRuntime::popContext ()
 {
     if(active_contexts_.empty()) return error_reporter("No active contexts");
@@ -237,16 +245,19 @@ DppyOneAPIContext::DppyOneAPIContext (const device_selector & DeviceSelector)
 {
 }
 
+
 DppyOneAPIContext::DppyOneAPIContext (const device & Device)
     : queue_(new queue(Device))
 {
 }
+
 
 DppyOneAPIContext::DppyOneAPIContext (const DppyOneAPIContext & Ctx)
     : queue_(Ctx.queue_)
 {
     std::cout << "Copy...\n";
 }
+
 
 DppyOneAPIContext::DppyOneAPIContext (DppyOneAPIContext && Ctx)
 {
@@ -264,6 +275,7 @@ DppyOneAPIContext& DppyOneAPIContext::operator=(const DppyOneAPIContext & Ctx)
     return *this;
 }
 
+
 DppyOneAPIContext& DppyOneAPIContext::operator=(DppyOneAPIContext && Ctx)
 {
     std::cout << "Move assign...\n";
@@ -279,10 +291,12 @@ int64_t DppyOneAPIContext::getSyclQueue (cl::sycl::queue * Queue) const
     return DPPY_SUCCESS;
 }
 
+
 int64_t DppyOneAPIContext::getSyclContext (cl::sycl::context * Context) const
 {
     return DPPY_SUCCESS;
 }
+
 
 int64_t DppyOneAPIContext::getSyclDevice (cl::sycl::device * Device) const
 {
@@ -313,6 +327,7 @@ int64_t DppyOneAPIContext::dump ()
     dump_device_info(queue_->get_device());
     return DPPY_SUCCESS;
 }
+
 
 DppyOneAPIContext::~DppyOneAPIContext ()
 {

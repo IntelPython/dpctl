@@ -105,15 +105,13 @@ class DppyOneAPIRuntime
     size_t                                         num_platforms_;
     cl::sycl::vector_class<cl::sycl::device>       cpu_devices_;
     cl::sycl::vector_class<cl::sycl::device>       gpu_devices_;
-    std::shared_ptr<DppyOneAPIContext>             default_context_;
     std::deque<std::shared_ptr<DppyOneAPIContext>> active_contexts_;
 
 public:
     int64_t getNumPlatforms (size_t *platforms) const;
-    int64_t getDefaultContext (std::shared_ptr<DppyOneAPIContext> * C) const;
-    int64_t setDefaultContext (std::shared_ptr<DppyOneAPIContext> * C,
-                               cl::sycl::info::device_type DTy,
-                               size_t DNum);
+    int64_t getCurrentContext (std::shared_ptr<DppyOneAPIContext> * C) const;
+    int64_t setGlobalContextWithGPU (size_t DNum);
+    int64_t setGlobalContextWithCPU (size_t DNum);
     /*!
      * Try to create a new DppyOneAPIContext and add it to the front of the
      * deque. If a new DppyOneAPIContext, return it encapsulated within the
