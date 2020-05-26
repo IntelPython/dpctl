@@ -26,8 +26,7 @@ from cpython.pycapsule cimport (PyCapsule_New,
                                 PyCapsule_GetPointer)
 
 cdef extern from "<CL/sycl.hpp>" namespace "cl::sycl":
-    cdef cppclass queue:
-        pass
+    cdef cppclass queue
 
 from enum import Enum, auto
 
