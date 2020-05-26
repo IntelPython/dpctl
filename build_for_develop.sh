@@ -6,6 +6,7 @@ cd build
 
 INSTALL_PREFIX=`pwd`/install
 export ONEAPI_ROOT=/opt/intel/inteloneapi
+export OpenCL_LIBDIR="/usr/lib/x86_64-linux-gnu"
 DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest
 
 cmake                                                       \

@@ -2,6 +2,8 @@
 //
 //                     Data Parallel Python (DPPY)
 //
+// Copyright 2020 Intel Corporation
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -29,7 +31,7 @@
 #include <sstream>
 
 using namespace cl::sycl;
-using namespace dppy_rt;
+using namespace dppy;
 
 /*------------------------------- Private helpers ----------------------------*/
 
@@ -69,6 +71,13 @@ void dump_platform_info (const platform & Platform)
     std::cout << ss.str();
 }
 
+int64_t error_reporter (const std::string & msg)
+{
+    std::cerr << "Error: " << msg << '\n';
+    return DPPY_FAILURE;
+}
+
+
 } /* end of anonymous namespace */
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -80,11 +89,7 @@ DppyOneAPIRuntime::DppyOneAPIRuntime ()
       cpu_devices_(device::get_devices(info::device_type::cpu)),
       gpu_devices_(device::get_devices(info::device_type::gpu))
 {
-    contexts_.emplace_back(
-        std::make_shared<DppyOneAPIContext>(default_selector())
-        //std::shared_ptr<DppyOneAPIContext>(
-        //    new DppyOneAPIContext(default_selector()))
-    );
+    default_context_ = std::make_shared<DppyOneAPIContext>(default_selector());
 }
 
 
@@ -121,78 +126,105 @@ int64_t DppyOneAPIRuntime::dump () const
         std::cout << "---No available SYCL GPU device\n";
 
     std::cout << "---Default DppyOneAPIContext initialized to device :\n";
-    contexts_.front()->dump();
+    default_context_->dump();
 
+    std::cout << "---Number of active DppyOneAPIContexts : "
+              << active_contexts_.size() << '\n';
+
+    return DPPY_SUCCESS;
+}
+
+
+int64_t DppyOneAPIRuntime::getNumPlatforms (size_t *platforms) const
+{
+    *platforms = num_platforms_;
+    return DPPY_SUCCESS;
+}
+
+
+int64_t
+DppyOneAPIRuntime::getDefaultContext (std::shared_ptr<DppyOneAPIContext> * Ctx)
+const
+{
+    *Ctx = default_context_;
+    return DPPY_SUCCESS;
+}
+
+
+int64_t
+DppyOneAPIRuntime::setDefaultContext (std::shared_ptr<DppyOneAPIContext> * Ctx,
+                                      info::device_type DTy,
+                                      size_t DNum)
+{
+    switch(DTy)
+    {
+    case info::device_type::gpu:
+        if(DNum > gpu_devices_.size()) {
+            std::stringstream ss;
+            ss << "SYCL GPU device " << DNum << " not found on system.";
+            return error_reporter(ss.str());
+        }
+        default_context_ = std::make_shared<DppyOneAPIContext>(
+                               gpu_devices_[DNum]);
+        *Ctx = default_context_;
+        break;
+    case info::device_type::cpu:
+        if(DNum > cpu_devices_.size()) {
+            std::stringstream ss;
+            ss << "SYCL CPU device " << DNum << " not found on system.";
+            return error_reporter(ss.str());
+        }
+        default_context_ = std::make_shared<DppyOneAPIContext>(
+                               cpu_devices_[DNum]);
+        *Ctx = default_context_;
+        break;
+    default:
+        break;
+    }
+    return DPPY_SUCCESS;
+}
+
+
+int64_t
+DppyOneAPIRuntime::pushGPUContext (std::shared_ptr<DppyOneAPIContext> * C,
+                                   size_t DNum)
+{
+    if(DNum >= gpu_devices_.size()) {
+        std::stringstream ss;
+        ss << "SYCL GPU device " << DNum << " not found on system.";
+        return error_reporter(ss.str());
+    }
+
+    active_contexts_.emplace_front(
+        std::shared_ptr<DppyOneAPIContext>(
+            new DppyOneAPIContext(gpu_devices_[DNum])
+    ));
+    *C = active_contexts_.front();
     return DPPY_SUCCESS;
 }
 
 int64_t
-DppyOneAPIRuntime::getCurrentContext (std::shared_ptr<DppyOneAPIContext> & Ctx)
-const
+DppyOneAPIRuntime::pushCPUContext (std::shared_ptr<DppyOneAPIContext> * C,
+                                   size_t device_num)
 {
-    if(contexts_.empty()) {
-        std::cerr << "ERROR: Why are there no available contexts. There should "
-                     "have been at least the default context.\n";
-        return DPPY_FAILURE;
+    if(device_num >= cpu_devices_.size()) {
+        std::stringstream ss;
+        ss << "SYCL CPU device " << device_num << " not found on system.";
+        return error_reporter(ss.str());
     }
 
-    if(Ctx.get() != nullptr) {
-        std::cerr << "ERROR: Context argument needs to be uninitialized\n";
-        return DPPY_FAILURE;
-    }
-
-    Ctx = contexts_.front();
+    active_contexts_.emplace_front(
+        std::shared_ptr<DppyOneAPIContext>(
+            new DppyOneAPIContext(cpu_devices_[device_num])
+    ));
+    *C = active_contexts_.front();
     return DPPY_SUCCESS;
 }
 
-
-int64_t DppyOneAPIRuntime::setCurrentContext (info::device_type Ty,
-                                              size_t device_num)
+int64_t DppyOneAPIRuntime::popContext ()
 {
-    switch(Ty)
-    {
-    case info::device_type::gpu:
-        if (device_num < gpu_devices_.size())
-            contexts_.emplace_front(
-                std::shared_ptr<DppyOneAPIContext>(
-                    new DppyOneAPIContext(default_selector())
-            ));
-        else {
-            std::cerr << "ERROR: SYCL GPU device " << device_num
-                      << " does not exist.\n";
-            return DPPY_FAILURE;
-        }
-        break;
-    case info::device_type::cpu:
-        if (device_num < cpu_devices_.size())
-            contexts_.emplace_front(
-                std::shared_ptr<DppyOneAPIContext>(
-                    new DppyOneAPIContext(default_selector())
-            ));
-        else {
-            std::cerr << "ERROR: SYCL CPU device " << device_num
-                      << " does not exist.\n";
-            return DPPY_FAILURE;
-        }
-        break;
-        break;
-    default:
-        std::cerr << "ERROR: Device type not currently supported.\n";
-        return DPPY_FAILURE;
-        break;
-    }
-    return DPPY_SUCCESS;
-}
-
-
-int64_t DppyOneAPIRuntime::resetCurrentContext ()
-{
-    if(contexts_.size() > 1) {
-        std::cerr << "ERROR: Resetting current context would leave no "
-                     "usable context.\n";
-        return DPPY_FAILURE;
-    }
-    contexts_.pop_front();
+    if(active_contexts_.empty()) return error_reporter("No active contexts");
+    active_contexts_.pop_front();
     return DPPY_SUCCESS;
 }
 
@@ -201,12 +233,12 @@ int64_t DppyOneAPIRuntime::resetCurrentContext ()
 ////////////////////////////////////////////////////////////////////////////////
 
 DppyOneAPIContext::DppyOneAPIContext (const device_selector & DeviceSelector)
-    : queue_(DeviceSelector)
+    : queue_(new queue(DeviceSelector))
 {
 }
 
 DppyOneAPIContext::DppyOneAPIContext (const device & Device)
-    : queue_(Device)
+    : queue_(new queue(Device))
 {
 }
 
@@ -226,7 +258,8 @@ DppyOneAPIContext& DppyOneAPIContext::operator=(const DppyOneAPIContext & Ctx)
 {
     std::cout << "Copy assign...\n";
     if (this != &Ctx) {
-       queue_ = Ctx.queue_;
+        delete queue_;
+        queue_ = Ctx.queue_;
     }
     return *this;
 }
@@ -234,8 +267,8 @@ DppyOneAPIContext& DppyOneAPIContext::operator=(const DppyOneAPIContext & Ctx)
 DppyOneAPIContext& DppyOneAPIContext::operator=(DppyOneAPIContext && Ctx)
 {
     std::cout << "Move assign...\n";
-
     if (this != &Ctx) {
+        delete queue_;
         queue_ = std::move(Ctx.queue_);
     }
     return *this;
@@ -275,6 +308,13 @@ int64_t DppyOneAPIContext::getOpenCLDevice () const
 
 int64_t DppyOneAPIContext::dump ()
 {
-    dump_device_info(queue_.get_device());
+    if(!queue_)
+        return DPPY_FAILURE;
+    dump_device_info(queue_->get_device());
     return DPPY_SUCCESS;
+}
+
+DppyOneAPIContext::~DppyOneAPIContext ()
+{
+    delete queue_;
 }

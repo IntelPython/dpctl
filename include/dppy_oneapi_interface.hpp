@@ -2,6 +2,8 @@
 //
 //                     Data Parallel Python (DPPY)
 //
+// Copyright 2020 Intel Corporation
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -30,7 +32,8 @@
 #include <CL/sycl.hpp>                /* SYCL headers   */
 //#include <CL/cl.h>                    /* OpenCL headers */
 
-namespace dppy_rt
+
+namespace dppy
 {
 
 enum : int64_t
@@ -67,10 +70,9 @@ class DppyOneAPIBuffer1D
  */
 class DppyOneAPIContext
 {
-    cl::sycl::queue queue_;
+    cl::sycl::queue *queue_ = nullptr;
 
 public:
-
     int64_t getSyclQueue (cl::sycl::queue * Queue) const;
     int64_t getSyclContext (cl::sycl::context * Context) const;
     int64_t getSyclDevice (cl::sycl::device * Device) const;
@@ -80,7 +82,7 @@ public:
     int64_t getOpenCLDevice (cl_device_id * CL_Device) const;
 #endif
     int64_t dump ();
-
+    ~DppyOneAPIContext ();
     DppyOneAPIContext (const cl::sycl::device_selector & DeviceSelector);
     DppyOneAPIContext (const cl::sycl::device & Device);
     DppyOneAPIContext (const DppyOneAPIContext & Ctx);
@@ -103,13 +105,27 @@ class DppyOneAPIRuntime
     size_t                                         num_platforms_;
     cl::sycl::vector_class<cl::sycl::device>       cpu_devices_;
     cl::sycl::vector_class<cl::sycl::device>       gpu_devices_;
-    std::deque<std::shared_ptr<DppyOneAPIContext>> contexts_;
+    std::shared_ptr<DppyOneAPIContext>             default_context_;
+    std::deque<std::shared_ptr<DppyOneAPIContext>> active_contexts_;
 
 public:
-    int64_t getCurrentContext (std::shared_ptr<DppyOneAPIContext> & C) const;
-    int64_t setCurrentContext (cl::sycl::info::device_type ty,
-                               size_t device_num);
-    int64_t resetCurrentContext ();
+    int64_t getNumPlatforms (size_t *platforms) const;
+    int64_t getDefaultContext (std::shared_ptr<DppyOneAPIContext> * C) const;
+    int64_t setDefaultContext (std::shared_ptr<DppyOneAPIContext> * C,
+                               cl::sycl::info::device_type DTy,
+                               size_t DNum);
+    /*!
+     * Try to create a new DppyOneAPIContext and add it to the front of the
+     * deque. If a new DppyOneAPIContext, return it encapsulated within the
+     * passed in shared_ptr. Caller should check the return flag to check if
+     * a new DppyOneAPIContext was created, before using the shared_ptr.
+     *
+     */
+    int64_t pushGPUContext (std::shared_ptr<DppyOneAPIContext> * C,
+                            size_t DNum);
+    int64_t pushCPUContext (std::shared_ptr<DppyOneAPIContext> * C,
+                            size_t DNum);
+    int64_t popContext ();
     int64_t dump () const;
 
     DppyOneAPIRuntime();
@@ -117,5 +133,6 @@ public:
 };
 
 } /* end of namespace dppy_rt */
+
 
 #endif /*--- DPPY_ONEAPI_INTERFACE_HPP_ ---*/
