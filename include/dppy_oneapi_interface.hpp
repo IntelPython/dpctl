@@ -70,19 +70,21 @@ class DppyOneAPIBuffer1D
  */
 class DppyOneAPIContext
 {
-    cl::sycl::queue *queue_ = nullptr;
+    std::shared_ptr<cl::sycl::queue> queue_;
 
 public:
-    int64_t getSyclQueue (cl::sycl::queue * Queue) const;
+    int64_t getSyclQueue (std::shared_ptr<cl::sycl::queue> * Queue) const;
+
+#if 0
     int64_t getSyclContext (cl::sycl::context * Context) const;
     int64_t getSyclDevice (cl::sycl::device * Device) const;
-#if 0
     int64_t getOpenCLQueue (cl_command_queue * Cl_Queue) const;
     int64_t getOpenCLContext (cl_context * CL_Context) const;
     int64_t getOpenCLDevice (cl_device_id * CL_Device) const;
 #endif
+
     int64_t dump ();
-    ~DppyOneAPIContext ();
+    virtual ~DppyOneAPIContext () = default;
     DppyOneAPIContext (const cl::sycl::device_selector & DeviceSelector);
     DppyOneAPIContext (const cl::sycl::device & Device);
     DppyOneAPIContext (const DppyOneAPIContext & Ctx);

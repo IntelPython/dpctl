@@ -253,23 +253,19 @@ DppyOneAPIContext::DppyOneAPIContext (const device & Device)
 
 
 DppyOneAPIContext::DppyOneAPIContext (const DppyOneAPIContext & Ctx)
-    : queue_(Ctx.queue_)
 {
-    std::cout << "Copy...\n";
+    queue_ = Ctx.queue_;
 }
 
 
 DppyOneAPIContext::DppyOneAPIContext (DppyOneAPIContext && Ctx)
 {
     queue_ = Ctx.queue_;
-    std::cout << "Move...\n";
 }
 
 DppyOneAPIContext& DppyOneAPIContext::operator=(const DppyOneAPIContext & Ctx)
 {
-    std::cout << "Copy assign...\n";
     if (this != &Ctx) {
-        delete queue_;
         queue_ = Ctx.queue_;
     }
     return *this;
@@ -278,20 +274,22 @@ DppyOneAPIContext& DppyOneAPIContext::operator=(const DppyOneAPIContext & Ctx)
 
 DppyOneAPIContext& DppyOneAPIContext::operator=(DppyOneAPIContext && Ctx)
 {
-    std::cout << "Move assign...\n";
     if (this != &Ctx) {
-        delete queue_;
         queue_ = std::move(Ctx.queue_);
     }
     return *this;
 }
 
-int64_t DppyOneAPIContext::getSyclQueue (cl::sycl::queue * Queue) const
+int64_t
+DppyOneAPIContext::getSyclQueue (std::shared_ptr<cl::sycl::queue> * Queue) const
 {
+    if(!queue_.get()) return error_reporter("No valid queue exists.");
+    *Queue = queue_;
     return DPPY_SUCCESS;
 }
 
 
+#if 0
 int64_t DppyOneAPIContext::getSyclContext (cl::sycl::context * Context) const
 {
     return DPPY_SUCCESS;
@@ -303,11 +301,12 @@ int64_t DppyOneAPIContext::getSyclDevice (cl::sycl::device * Device) const
     return DPPY_SUCCESS;
 }
 
-#if 0
+
 int64_t DppyOneAPIContext::getOpenCLQueue () const
 {
 
 }
+
 
 int64_t DppyOneAPIContext::getOpenCLContext () const
 {
@@ -326,10 +325,4 @@ int64_t DppyOneAPIContext::dump ()
         return DPPY_FAILURE;
     dump_device_info(queue_->get_device());
     return DPPY_SUCCESS;
-}
-
-
-DppyOneAPIContext::~DppyOneAPIContext ()
-{
-    delete queue_;
 }

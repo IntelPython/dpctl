@@ -25,6 +25,10 @@ from cpython.pycapsule cimport (PyCapsule_New,
                                 PyCapsule_IsValid,
                                 PyCapsule_GetPointer)
 
+cdef extern from "<CL/sycl.hpp>" namespace "cl::sycl":
+    cdef cppclass queue:
+        pass
+
 from enum import Enum, auto
 
 class device_type(Enum):
@@ -42,6 +46,7 @@ cdef extern from "dppy_oneapi_interface.hpp" namespace "dppy":
     cdef cppclass DppyOneAPIContext:
         DppyOneAPIContext (const DppyOneAPIContext & C) except +
         int64_t dump () except -1
+        int64_t getSyclQueue (shared_ptr[queue] * Q) except -1
 
 
 cdef extern from "dppy_oneapi_interface.hpp" namespace "dppy":
@@ -74,8 +79,13 @@ cdef class DppyContext:
     def __dealloc__ (self):
         del self.ctx
 
+    def get_sycl_queue (self):
+        cdef shared_ptr[queue] *Q = new shared_ptr[queue]()
+        self.ctx.get().getSyclQueue(Q)
+        return PyCapsule_New(Q, NULL, NULL)
+
     def dump (self):
-        (self.ctx).get().dump()
+        self.ctx.get().dump()
 
 
 cdef class DppyRuntime:
@@ -118,7 +128,7 @@ cdef class DppyRuntime:
         self.rt.getCurrentContext(ctx);
         return DppyContext(PyCapsule_New(ctx, NULL, NULL))
 
-    def change_global_context_to (self, device_ty, device_id):
+    def set_global_context (self, device_ty, device_id):
         if device_ty == device_type.gpu:
             self.rt.setGlobalContextWithGPU(device_id)
         elif device_ty == device_type.cpu:
