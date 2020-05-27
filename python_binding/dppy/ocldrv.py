@@ -389,7 +389,7 @@ class _Runtime():
         pass
 
     def __del__(self):
-        print("Delete dp_runtime object.")
+        # print("Delete dp_runtime object.")
         retval = (lib.destroy_dp_runtime(_Runtime._runtime))
         if(retval):
             _raise_driver_error("destroy_dp_runtime", -1)
