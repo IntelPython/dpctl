@@ -2,4 +2,5 @@
 
 set -e
 
-${PYTHON} -c "import dppy.core"
+${PYTHON} -c "import dppy"
+${PYTHON} -c "import dppy.ocldrv"
