@@ -1,5 +1,4 @@
 #!/bin/bash
-0;136;0c
 rm -rf build
 mkdir build
 cd build
