@@ -29,6 +29,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 using namespace cl::sycl;
 using namespace dppy;

@@ -24,13 +24,13 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#ifndef DPPY_ONEAPI_INTERFACE_HPP_
-#define DPPY_ONEAPI_INTERFACE_HPP_
+#pragma once
 
-#include <deque>
-#include <memory>
 #include <CL/sycl.hpp>                /* SYCL headers   */
 //#include <CL/cl.h>                    /* OpenCL headers */
+#include <deque>
+#include <memory>
+#include <variant>
 
 
 namespace dppy
@@ -42,7 +42,7 @@ enum : int64_t
     DPPY_SUCCESS
 };
 
-
+#if 0
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// DppyOneAPIBuffer //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -51,14 +51,23 @@ enum : int64_t
 /*! \class DppyOneAPIBuffer1D
  *
  */
-class DppyOneAPIBuffer1D
+template <typename T>
+class DppyOneAPIBuffer
 {
-    // 1D sycl::buffer
-    void *buffer_ptr;
+    std::variant<
+        cl::sycl::buffer<T, 1>,
+        cl::sycl::buffer<T, 2>,
+        cl::sycl::buffer<T, 3>
+    > buffer;
+
     // Stores the size of the buffer_ptr (e.g sizeof(cl_mem))
-    size_t sizeof_buffer_ptr;
+    size_t sizeof_buffer_ptr_;
+public:
+
+    DppyOneAPIBuffer (T *hostData, const property_list& propList = {});
 };
 
+#endif
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// DppyOneAPIContext /////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -133,6 +142,3 @@ public:
 };
 
 } /* end of namespace dppy_rt */
-
-
-#endif /*--- DPPY_ONEAPI_INTERFACE_HPP_ ---*/
