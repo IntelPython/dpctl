@@ -26,9 +26,11 @@
 #include "dppy_oneapi_interface.hpp"
 #include "error_check_macros.h"
 #include <cassert>
+#include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
 using namespace cl::sycl;
@@ -77,7 +79,6 @@ int64_t error_reporter (const std::string & msg)
     std::cerr << "Error: " << msg << '\n';
     return DPPY_FAILURE;
 }
-
 
 } /* end of anonymous namespace */
 
@@ -326,4 +327,120 @@ int64_t DppyOneAPIContext::dump ()
         return DPPY_FAILURE;
     dump_device_info(queue_->get_device());
     return DPPY_SUCCESS;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////// DppyOneAPIContext ////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+DppyOneAPIBuffer<T>::DppyOneAPIBuffer (T* hostData, size_t ndims,
+                                       const size_t dims[],
+                                       const property_list & propList)
+    : ndims_(ndims)
+{
+    switch (ndims)
+    {
+    case 1:
+    {
+        auto r = range(dims[0]);
+        buff_ = buffer<T>(hostData, r, propList);
+        break;
+    }
+    case 2:
+    {
+        auto r = range<2>(dims[0], dims[1]);
+        buff_ = buffer<T>(hostData, r, propList);
+        break;
+    }
+    case 3:
+    {
+        auto r = range<3>(dims[0], dims[1], dims[2]);
+        buff_ = buffer<T>(hostData, r, propList);
+        break;
+    }
+    default:
+        throw std::invalid_argument("number of dimensions cannot be "
+                                    "greater than three");
+    }
+
+    dims_ = new size_t[ndims];
+    std::memmove(dims_, dims, ndims * sizeof(size_t));
+}
+
+
+template <typename T>
+DppyOneAPIBuffer<T>::DppyOneAPIBuffer(const T* hostData, size_t ndims,
+                                      const size_t dims[],
+                                      const property_list& propList)
+    : ndims_(ndims)
+{
+    switch (ndims)
+    {
+    case 1:
+    {
+        auto r = range(dims[0]);
+        buff_ = buffer<T>(hostData, r, propList);
+        break;
+    }
+    case 2:
+    {
+        auto r = range<2>(dims[0], dims[1]);
+        buff_ = buffer<T>(hostData, r, propList);
+        break;
+    }
+    case 3:
+    {
+        auto r = range<3>(dims[0], dims[1], dims[2]);
+        buff_ = buffer<T>(hostData, r, propList);
+        break;
+    }
+    default:
+        throw std::invalid_argument("number of dimensions cannot be "
+                                    "greater than three");
+    }
+    dims_ = new size_t[ndims];
+    std::memmove(dims_, dims, ndims * sizeof(size_t));
+}
+
+
+template <typename T>
+DppyOneAPIBuffer<T>::DppyOneAPIBuffer(size_t ndims, const size_t dims[],
+                                      const property_list& propList)
+    : ndims_(ndims)
+{
+    switch (ndims)
+    {
+    case 1:
+    {
+        auto r = range(dims[0]);
+        buff_ = buffer<T>(r, propList);
+        break;
+    }
+    case 2:
+    {
+        auto r = range<2>(dims[0], dims[1]);
+        buff_ = buffer<T>(r, propList);
+        break;
+    }
+    case 3:
+    {
+        auto r = range<3>(dims[0], dims[1], dims[2]);
+        buff_ = buffer<T>(r, propList);
+        break;
+    }
+    default:
+        throw std::invalid_argument("number of dimensions cannot be "
+                                    "greater than three");
+    }
+    dims_ = new size_t[ndims];
+    std::memmove(dims_, dims, ndims * sizeof(size_t));
+}
+
+
+template <typename T>
+DppyOneAPIBuffer<T>::~DppyOneAPIBuffer()
+{
+    delete dims_;
 }

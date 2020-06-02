@@ -42,7 +42,7 @@ enum : int64_t
     DPPY_SUCCESS
 };
 
-#if 0
+
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// DppyOneAPIBuffer //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,20 +54,39 @@ enum : int64_t
 template <typename T>
 class DppyOneAPIBuffer
 {
-    std::variant<
-        cl::sycl::buffer<T, 1>,
-        cl::sycl::buffer<T, 2>,
-        cl::sycl::buffer<T, 3>
-    > buffer;
+public:
+    using buff_variant = std::variant<
+                             cl::sycl::buffer<T, 1>,
+                             cl::sycl::buffer<T, 2>,
+                             cl::sycl::buffer<T, 3>
+                         >;
+private:
+
+    buff_variant buff_;
 
     // Stores the size of the buffer_ptr (e.g sizeof(cl_mem))
     size_t sizeof_buffer_ptr_;
+    size_t ndims_;
+    size_t *dims_;
+
 public:
 
-    DppyOneAPIBuffer (T *hostData, const property_list& propList = {});
+    DppyOneAPIBuffer (T *hostData, size_t ndims, const size_t dims[],
+                      const sycl::property_list & propList = {});
+
+    DppyOneAPIBuffer (const T* hostData, size_t ndims, const size_t dims[],
+                      const sycl::property_list & propList = {});
+
+    DppyOneAPIBuffer (size_t ndims, const size_t dims[],
+                      const sycl::property_list& propList = {});
+
+    // TODO : Copy, Move Ctors, copy assign operators
+
+    ~DppyOneAPIBuffer ();
 };
 
-#endif
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// DppyOneAPIContext /////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
