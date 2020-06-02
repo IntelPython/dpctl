@@ -215,7 +215,7 @@ class KernelArg():
             else:
                 # it has to be of type ctypes
                 if getattr(arg, '__module__', None) == "ctypes":
-                    self.ptr_to_arg_p = ffi.cast("void *", 
+                    self.ptr_to_arg_p = ffi.cast("void *",
                                                  ctypes.addressof(arg))
                     retval = (lib.create_dp_kernel_arg(self.ptr_to_arg_p,
                                                        ctypes.sizeof(arg),
@@ -389,7 +389,6 @@ class _Runtime():
         pass
 
     def __del__(self):
-        # print("Delete dp_runtime object.")
         retval = (lib.destroy_dp_runtime(_Runtime._runtime))
         if(retval):
             _raise_driver_error("destroy_dp_runtime", -1)
