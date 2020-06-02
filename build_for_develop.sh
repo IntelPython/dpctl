@@ -5,7 +5,7 @@ cd build
 
 INSTALL_PREFIX=`pwd`/install
 export ONEAPI_ROOT=/opt/intel/inteloneapi
-export OpenCL_LIBDIR="/usr/lib/x86_64-linux-gnu"
+#export OpenCL_LIBDIR="/usr/lib/x86_64-linux-gnu"
 DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest
 
 cmake                                                       \
@@ -21,7 +21,7 @@ make V=1 -n -j 4 && make install
 cd ../python_binding
 export DP_GLUE_LIBDIR=${INSTALL_PREFIX}/lib
 export DP_GLUE_INCLDIR=${INSTALL_PREFIX}/include
-export OPENCL_LIBDIR=/usr/lib/x86_64-linux-gnu/
+export OpenCL_LIBDIR=/usr/lib/x86_64-linux-gnu/
 export DPPY_ONEAPI_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
 export DPPY_ONEAPI_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
 
