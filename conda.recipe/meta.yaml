@@ -20,6 +20,7 @@ requirements:
     build:
         - {{ compiler('cxx') }}
     host:
+        - setuptools
         - cffi >=1.0.0
         - cython
         - cmake
