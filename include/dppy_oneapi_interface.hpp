@@ -26,10 +26,8 @@
 
 #pragma once
 
-#include <CL/sycl.hpp>                /* SYCL headers   */
+#include <cstdint>
 #include <deque>
-#include <variant>
-
 
 namespace dppy
 {
@@ -41,46 +39,19 @@ enum : int64_t
 };
 
 
-////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// DppyOneAPIBuffer //////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-
-/*! \class DppyOneAPIBuffer1D
- *
+/*!
+ * Redefinition of Sycl's device_type so that we do not have to include
+ * sycl.hpp here, and in the Python bindings.
  */
-template <typename T>
-class DppyOneAPIBuffer
+enum class sycl_device_type : unsigned int
 {
-public:
-    using buff_variant = std::variant<
-                             cl::sycl::buffer<T, 1>,
-                             cl::sycl::buffer<T, 2>,
-                             cl::sycl::buffer<T, 3>
-                         >;
-private:
-
-    buff_variant buff_;
-
-    // Stores the size of the buffer_ptr (e.g sizeof(cl_mem))
-    size_t sizeof_buffer_ptr_;
-    size_t ndims_;
-    size_t *dims_;
-
-public:
-
-    DppyOneAPIBuffer (T *hostData, size_t ndims, const size_t dims[],
-                      const sycl::property_list & propList = {});
-
-    DppyOneAPIBuffer (const T* hostData, size_t ndims, const size_t dims[],
-                      const sycl::property_list & propList = {});
-
-    DppyOneAPIBuffer (size_t ndims, const size_t dims[],
-                      const sycl::property_list& propList = {});
-
-    // TODO : Copy, Move Ctors, copy assign operators
-
-    ~DppyOneAPIBuffer ();
+    cpu,
+    gpu,
+    accelerator,
+    custom,
+    automatic,
+    host,
+    all
 };
 
 
@@ -92,34 +63,25 @@ public:
  *  \brief A runtime and context factory class
  *
  */
-class DppyOneAPIRuntime
+struct DppyOneAPIRuntime
 {
-    size_t                                  num_platforms_;
-    cl::sycl::vector_class<cl::sycl::queue> cpu_queues_;
-    cl::sycl::vector_class<cl::sycl::queue> gpu_queues_;
-    std::deque<cl::sycl::queue>             active_queues_;
-
-public:
     int64_t getNumPlatforms (size_t *platforms) const;
-    int64_t getCurrentQueue (cl::sycl::queue **Q) const;
-    int64_t getQueue (cl::sycl::queue **Q,
-                      cl::sycl::info::device_type DeviceTy,
+    int64_t getCurrentQueue (void **Q) const;
+    int64_t getQueue (void **Q,
+                      dppy::sycl_device_type DeviceTy,
                       size_t DNum = 0) const;
-    int64_t resetGlobalQueue (cl::sycl::info::device_type DeviceTy,
+    int64_t resetGlobalQueue (dppy::sycl_device_type DeviceTy,
                               size_t DNum = 0);
     /*!
      * Push a new sycl queue to the top of the activate_queues deque. The
      * newly activated queue is returned to caller inside the Q object.
      */
-    int64_t activateQueue (cl::sycl::queue **Q,
-                           cl::sycl::info::device_type DeviceTy,
+    int64_t activateQueue (void **Q,
+                           dppy::sycl_device_type DeviceTy,
                            size_t DNum);
     int64_t deactivateCurrentQueue ();
     int64_t dump () const;
-    int64_t dump_queue (const cl::sycl::queue *Q) const;
-
-    DppyOneAPIRuntime();
-    ~DppyOneAPIRuntime();
+    int64_t dump_queue (const void *Q) const;
 };
 
 

@@ -24,16 +24,6 @@ from libcpp.memory cimport shared_ptr, make_shared
 from cpython.pycapsule cimport (PyCapsule_New,
                                 PyCapsule_IsValid,
                                 PyCapsule_GetPointer)
-
-cdef extern from "<CL/sycl.hpp>" namespace "cl::sycl":
-    cdef cppclass queue
-
-cdef extern from "<CL/sycl.hpp>" namespace "cl::sycl":
-    cdef enum _device_type 'info::device_type':
-        _GPU 'cl::sycl::info::device_type::gpu'
-        _CPU 'cl::sycl::info::device_type::cpu'
-
-
 from enum import Enum, auto
 
 class device_type(Enum):
@@ -51,19 +41,22 @@ cdef extern from "dppy_oneapi_interface.hpp" namespace "dppy":
     cdef cppclass DppyOneAPIRuntime:
         DppyOneAPIRuntime () except +
         int64_t getNumPlatforms (size_t *num_platform) except -1
-        int64_t getCurrentQueue (queue **Q) except -1
-        int64_t getQueue (queue **Q, _device_type DTy,
+        int64_t getCurrentQueue (void **Q) except -1
+        int64_t getQueue (void **Q, _device_type DTy,
                           size_t device_num) except -1
         int64_t resetGlobalQueue (_device_type DTy,
                                   size_t device_num) except -1
-        int64_t activateQueue (queue **Q, _device_type DTy,
+        int64_t activateQueue (void **Q, _device_type DTy,
                                size_t device_num) except -1
         int64_t deactivateCurrentQueue () except -1
         int64_t dump () except -1
-        int64_t dump_queue (const queue *Q) except -1
+        int64_t dump_queue (const void *Q) except -1
 
     cdef int64_t deleteQueue (void *Q) except -1
 
+    cdef enum _device_type 'sycl_device_type':
+        _GPU 'dppy::sycl_device_type::gpu'
+        _CPU 'dppy::sycl_device_type::cpu'
 
 # Destructor for a PyCapsule containing a SYCL queue
 cdef void delete_queue (object cap):
@@ -82,7 +75,7 @@ cdef class DppyRuntime:
         return num_platforms
 
     def _activate_queue (self, device_ty, device_id):
-        cdef queue *queue_ptr
+        cdef void *queue_ptr
         if device_ty == device_type.gpu:
             self.rt.activateQueue(&queue_ptr, _device_type._GPU, device_id)
         elif device_ty == device_type.cpu:
@@ -97,7 +90,7 @@ cdef class DppyRuntime:
         self.rt.deactivateCurrentQueue()
 
     def get_current_queue (self):
-        cdef queue* queue_ptr = NULL;
+        cdef void* queue_ptr = NULL;
         self.rt.getCurrentQueue(&queue_ptr);
         return PyCapsule_New(queue_ptr, NULL, &delete_queue)
 
@@ -115,7 +108,7 @@ cdef class DppyRuntime:
 
     def dump_queue (self, queue_cap):
         if PyCapsule_IsValid(queue_cap, NULL):
-            self.rt.dump_queue(<const queue*>PyCapsule_GetPointer(queue_cap, NULL))
+            self.rt.dump_queue(PyCapsule_GetPointer(queue_cap, NULL))
         else:
             raise ValueError("Expected a PyCapsule encapsulating a SYCL queue")
 

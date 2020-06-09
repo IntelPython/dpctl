@@ -33,6 +33,8 @@
 #include <stdexcept>
 #include <string>
 
+#include <CL/sycl.hpp>                /* SYCL headers   */
+
 using namespace cl::sycl;
 using namespace dppy;
 
@@ -80,6 +82,34 @@ int64_t error_reporter (const std::string & msg)
     return DPPY_FAILURE;
 }
 
+class DppyOneAPIRuntimeHelper
+{
+    size_t                                  num_platforms_;
+    cl::sycl::vector_class<cl::sycl::queue> cpu_queues_;
+    cl::sycl::vector_class<cl::sycl::queue> gpu_queues_;
+    std::deque<cl::sycl::queue>             active_queues_;
+public:
+    DppyOneAPIRuntimeHelper ()
+        : num_platforms_(platform::get_platforms().size())
+    {
+        for(auto d : device::get_devices(info::device_type::cpu))
+            cpu_queues_.emplace_back(d);
+        for(auto d : device::get_devices(info::device_type::gpu))
+            gpu_queues_.emplace_back(d);
+
+        active_queues_.emplace_back(default_selector());
+    }
+
+    ~DppyOneAPIRuntimeHelper ()
+    {
+
+    }
+
+    friend dppy::DppyOneAPIRuntime;
+};
+
+DppyOneAPIRuntimeHelper gRtHelper;
+
 } /* end of anonymous namespace */
 
 
@@ -100,27 +130,10 @@ int64_t dppy::deleteQueue (void *Q)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-DppyOneAPIRuntime::DppyOneAPIRuntime ()
-    : num_platforms_(platform::get_platforms().size())
+int64_t DppyOneAPIRuntime::dump_queue (const void *QPtr) const
 {
-    for(auto d : device::get_devices(info::device_type::cpu))
-        cpu_queues_.emplace_back(d);
-    for(auto d : device::get_devices(info::device_type::gpu))
-        gpu_queues_.emplace_back(d);
-
-    active_queues_.emplace_back(default_selector());
-}
-
-
-DppyOneAPIRuntime::~DppyOneAPIRuntime ()
-{
-
-}
-
-
-int64_t DppyOneAPIRuntime::dump_queue (const queue *Queue)  const
-{
-    dump_device_info(Queue->get_device());
+    auto Q = static_cast<const queue*>(QPtr);
+    dump_device_info(Q->get_device());
     return DPPY_SUCCESS;
 }
 
@@ -137,24 +150,24 @@ int64_t DppyOneAPIRuntime::dump () const
     }
 
     // Print out the info for CPU devices
-    if (cpu_queues_.size())
+    if (gRtHelper.cpu_queues_.size())
         std::cout << "---Number of available SYCL CPU queues: "
-                  << cpu_queues_.size() << '\n';
+                  << gRtHelper.cpu_queues_.size() << '\n';
     else
         std::cout << "---No available SYCL CPU device\n";
 
     // Print out the info for GPU devices
-    if (gpu_queues_.size())
+    if (gRtHelper.gpu_queues_.size())
         std::cout << "---Number of available SYCL GPU queues: "
-                  << gpu_queues_.size() << '\n';
+                  << gRtHelper.gpu_queues_.size() << '\n';
     else
         std::cout << "---No available SYCL GPU device\n";
 
     std::cout << "---Current queue :\n";
-    dump_queue(&active_queues_.front());
+    dump_queue(&gRtHelper.active_queues_.front());
 
     std::cout << "---Number of active queues : "
-              << active_queues_.size() << '\n';
+              << gRtHelper.active_queues_.size() << '\n';
 
     return DPPY_SUCCESS;
 }
@@ -162,26 +175,27 @@ int64_t DppyOneAPIRuntime::dump () const
 
 int64_t DppyOneAPIRuntime::getNumPlatforms (size_t *platforms) const
 {
-    *platforms = num_platforms_;
+    *platforms = gRtHelper.num_platforms_;
     return DPPY_SUCCESS;
 }
 
 
-int64_t DppyOneAPIRuntime::getCurrentQueue (queue **Q) const
+int64_t DppyOneAPIRuntime::getCurrentQueue (void **QPtr) const
 {
-    if (active_queues_.empty())
+    if (gRtHelper.active_queues_.empty())
         return error_reporter("No currently active queues.");
-    *Q = new queue(active_queues_.front());
+
+    *QPtr = new queue(gRtHelper.active_queues_.front());
     return DPPY_SUCCESS;
 }
 
 
-int64_t DppyOneAPIRuntime::getQueue (queue **Q, info::device_type DeviceTy,
+int64_t DppyOneAPIRuntime::getQueue (void **QPtr, sycl_device_type DeviceTy,
                                      size_t DNum) const
 {
-    if (DeviceTy == info::device_type::cpu) {
+    if (DeviceTy == sycl_device_type::cpu) {
         try {
-            *Q = new queue(cpu_queues_.at(DNum));
+            *QPtr = new queue(gRtHelper.cpu_queues_.at(DNum));
         }
         catch (const std::out_of_range& e) {
             std::stringstream ss;
@@ -190,9 +204,9 @@ int64_t DppyOneAPIRuntime::getQueue (queue **Q, info::device_type DeviceTy,
         }
         return DPPY_SUCCESS;
     }
-    else if (DeviceTy == info::device_type::gpu) {
+    else if (DeviceTy == sycl_device_type::gpu) {
         try {
-            *Q = new queue(gpu_queues_.at(DNum));
+            *QPtr = new queue(gRtHelper.gpu_queues_.at(DNum));
         }
         catch (const std::out_of_range& e) {
             std::stringstream ss;
@@ -207,22 +221,22 @@ int64_t DppyOneAPIRuntime::getQueue (queue **Q, info::device_type DeviceTy,
 }
 
 
-int64_t DppyOneAPIRuntime::resetGlobalQueue (info::device_type DeviceTy,
+int64_t DppyOneAPIRuntime::resetGlobalQueue (sycl_device_type DeviceTy,
                                              size_t DNum)
 {
-    if(active_queues_.empty())
+    if(gRtHelper.active_queues_.empty())
         return error_reporter("Why is there no previous global context?");
 
     // Remove the previous global queue, which is the first queue added
     // to the deque when the Runtime is initialized
-    active_queues_.pop_back();
+    gRtHelper.active_queues_.pop_back();
 
     switch (DeviceTy)
     {
-    case info::device_type::cpu:
+    case sycl_device_type::cpu:
     {
         try {
-            active_queues_.push_back(cpu_queues_.at(DNum));
+            gRtHelper.active_queues_.push_back(gRtHelper.cpu_queues_.at(DNum));
         }
         catch (const std::out_of_range& e) {
             std::stringstream ss;
@@ -231,10 +245,10 @@ int64_t DppyOneAPIRuntime::resetGlobalQueue (info::device_type DeviceTy,
         }
         break;
     }
-    case info::device_type::gpu:
+    case sycl_device_type::gpu:
     {
         try {
-            active_queues_.push_back(gpu_queues_.at(DNum));
+            gRtHelper.active_queues_.push_back(gRtHelper.gpu_queues_.at(DNum));
         }
         catch (const std::out_of_range& e) {
             std::stringstream ss;
@@ -254,19 +268,21 @@ int64_t DppyOneAPIRuntime::resetGlobalQueue (info::device_type DeviceTy,
 
 
 int64_t
-DppyOneAPIRuntime::activateQueue (cl::sycl::queue **Q,
-                                  cl::sycl::info::device_type DeviceTy,
+DppyOneAPIRuntime::activateQueue (void **QPtr,
+                                  sycl_device_type DeviceTy,
                                   size_t DNum)
 {
-    if(active_queues_.empty())
+    if(gRtHelper.active_queues_.empty())
         return error_reporter("Why is there no previous global context?");
 
     switch (DeviceTy)
     {
-    case info::device_type::cpu:
+    case sycl_device_type::cpu:
     {
         try {
-            active_queues_.emplace_front(cpu_queues_.at(DNum));
+            gRtHelper.active_queues_.emplace_front(
+                gRtHelper.cpu_queues_.at(DNum)
+            );
         }
         catch (const std::out_of_range& e) {
             std::stringstream ss;
@@ -275,10 +291,12 @@ DppyOneAPIRuntime::activateQueue (cl::sycl::queue **Q,
         }
         break;
     }
-    case info::device_type::gpu:
+    case sycl_device_type::gpu:
     {
         try {
-            active_queues_.emplace_front(gpu_queues_.at(DNum));
+            gRtHelper.active_queues_.emplace_front(
+                gRtHelper.gpu_queues_.at(DNum)
+            );
         }
         catch (const std::out_of_range& e) {
             std::stringstream ss;
@@ -293,130 +311,15 @@ DppyOneAPIRuntime::activateQueue (cl::sycl::queue **Q,
     }
     }
 
-    *Q = new queue(active_queues_.front());
+    *QPtr = new queue(gRtHelper.active_queues_.front());
     return DPPY_SUCCESS;
 }
 
 
 int64_t DppyOneAPIRuntime::deactivateCurrentQueue ()
 {
-    if(active_queues_.empty()) return error_reporter("No active contexts");
-    active_queues_.pop_front();
+    if(gRtHelper.active_queues_.empty())
+        return error_reporter("No active contexts");
+    gRtHelper.active_queues_.pop_front();
     return DPPY_SUCCESS;
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// DppyOneAPIBuffer /////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-template <typename T>
-DppyOneAPIBuffer<T>::DppyOneAPIBuffer (T* hostData, size_t ndims,
-                                       const size_t dims[],
-                                       const property_list & propList)
-    : ndims_(ndims)
-{
-    switch (ndims)
-    {
-    case 1:
-    {
-        auto r = range(dims[0]);
-        buff_ = buffer<T>(hostData, r, propList);
-        break;
-    }
-    case 2:
-    {
-        auto r = range<2>(dims[0], dims[1]);
-        buff_ = buffer<T>(hostData, r, propList);
-        break;
-    }
-    case 3:
-    {
-        auto r = range<3>(dims[0], dims[1], dims[2]);
-        buff_ = buffer<T>(hostData, r, propList);
-        break;
-    }
-    default:
-        throw std::invalid_argument("number of dimensions cannot be "
-                                    "greater than three");
-    }
-
-    dims_ = new size_t[ndims];
-    std::memmove(dims_, dims, ndims * sizeof(size_t));
-}
-
-
-template <typename T>
-DppyOneAPIBuffer<T>::DppyOneAPIBuffer(const T* hostData, size_t ndims,
-                                      const size_t dims[],
-                                      const property_list& propList)
-    : ndims_(ndims)
-{
-    switch (ndims)
-    {
-    case 1:
-    {
-        auto r = range(dims[0]);
-        buff_ = buffer<T>(hostData, r, propList);
-        break;
-    }
-    case 2:
-    {
-        auto r = range<2>(dims[0], dims[1]);
-        buff_ = buffer<T>(hostData, r, propList);
-        break;
-    }
-    case 3:
-    {
-        auto r = range<3>(dims[0], dims[1], dims[2]);
-        buff_ = buffer<T>(hostData, r, propList);
-        break;
-    }
-    default:
-        throw std::invalid_argument("number of dimensions cannot be "
-                                    "greater than three");
-    }
-    dims_ = new size_t[ndims];
-    std::memmove(dims_, dims, ndims * sizeof(size_t));
-}
-
-
-template <typename T>
-DppyOneAPIBuffer<T>::DppyOneAPIBuffer(size_t ndims, const size_t dims[],
-                                      const property_list& propList)
-    : ndims_(ndims)
-{
-    switch (ndims)
-    {
-    case 1:
-    {
-        auto r = range(dims[0]);
-        buff_ = buffer<T>(r, propList);
-        break;
-    }
-    case 2:
-    {
-        auto r = range<2>(dims[0], dims[1]);
-        buff_ = buffer<T>(r, propList);
-        break;
-    }
-    case 3:
-    {
-        auto r = range<3>(dims[0], dims[1], dims[2]);
-        buff_ = buffer<T>(r, propList);
-        break;
-    }
-    default:
-        throw std::invalid_argument("number of dimensions cannot be "
-                                    "greater than three");
-    }
-    dims_ = new size_t[ndims];
-    std::memmove(dims_, dims, ndims * sizeof(size_t));
-}
-
-
-template <typename T>
-DppyOneAPIBuffer<T>::~DppyOneAPIBuffer()
-{
-    delete dims_;
 }
