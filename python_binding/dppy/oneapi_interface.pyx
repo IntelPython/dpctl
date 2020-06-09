@@ -28,6 +28,12 @@ from cpython.pycapsule cimport (PyCapsule_New,
 cdef extern from "<CL/sycl.hpp>" namespace "cl::sycl":
     cdef cppclass queue
 
+cdef extern from "<CL/sycl.hpp>" namespace "cl::sycl":
+    cdef enum _device_type 'info::device_type':
+        _GPU 'cl::sycl::info::device_type::gpu'
+        _CPU 'cl::sycl::info::device_type::cpu'
+
+
 from enum import Enum, auto
 
 class device_type(Enum):
@@ -42,49 +48,26 @@ cdef class UnsupportedDeviceTypeError(Exception):
 
 
 cdef extern from "dppy_oneapi_interface.hpp" namespace "dppy":
-    cdef cppclass DppyOneAPIContext:
-        DppyOneAPIContext (const DppyOneAPIContext & C) except +
-        int64_t dump () except -1
-        int64_t getSyclQueue (shared_ptr[queue] * Q) except -1
-
-
-cdef extern from "dppy_oneapi_interface.hpp" namespace "dppy":
     cdef cppclass DppyOneAPIRuntime:
         DppyOneAPIRuntime () except +
-        int64_t getNumPlatforms (size_t * num_platform) except -1
-        int64_t getCurrentContext (shared_ptr[DppyOneAPIContext] * C) except -1
-        int64_t setGlobalContextWithGPU (size_t device_num) except -1
-        int64_t setGlobalContextWithCPU (size_t device_num) except -1
-        int64_t pushCPUContext (shared_ptr[DppyOneAPIContext] * C,
-                                size_t device_num) except -1
-        int64_t pushGPUContext (shared_ptr[DppyOneAPIContext] * C,
-                                   size_t device_num) except -1
-        int64_t popContext () except -1
+        int64_t getNumPlatforms (size_t *num_platform) except -1
+        int64_t getCurrentQueue (queue **Q) except -1
+        int64_t getQueue (queue **Q, _device_type DTy,
+                          size_t device_num) except -1
+        int64_t resetGlobalQueue (_device_type DTy,
+                                  size_t device_num) except -1
+        int64_t activateQueue (queue **Q, _device_type DTy,
+                               size_t device_num) except -1
+        int64_t deactivateCurrentQueue () except -1
         int64_t dump () except -1
+        int64_t dump_queue (const queue *Q) except -1
+
+    cdef int64_t deleteQueue (void *Q) except -1
 
 
-cdef class DppyContext:
-    cdef shared_ptr[DppyOneAPIContext] *ctx;
-
-    def __cinit__ (self, ctx):
-        if PyCapsule_IsValid(ctx, NULL):
-            self.ctx = (
-                <shared_ptr[DppyOneAPIContext]*>PyCapsule_GetPointer(ctx, NULL)
-            )
-        else:
-            raise ValueError("Expected a PyCapsule with a \
-                              shared_ptr<DppyOneAPIContext>*")
-
-    def __dealloc__ (self):
-        del self.ctx
-
-    def get_sycl_queue (self):
-        cdef shared_ptr[queue] *Q = new shared_ptr[queue]()
-        self.ctx.get().getSyclQueue(Q)
-        return PyCapsule_New(Q, NULL, NULL)
-
-    def dump (self):
-        self.ctx.get().dump()
+# Destructor for a PyCapsule containing a SYCL queue
+cdef void delete_queue (object cap):
+    deleteQueue(PyCapsule_GetPointer(cap, NULL))
 
 
 cdef class DppyRuntime:
@@ -98,46 +81,43 @@ cdef class DppyRuntime:
         self.rt.getNumPlatforms(&num_platforms)
         return num_platforms
 
-    def _set_context (self, device_ty, device_id):
-        # Create a dynamically allocated std::shared_ptr<DppyOneAPIContext>
-        # instance. The shapred_ptr is initialized inside pushXXXContext. The
-        # instantiated shared_ptr is then stored inside the encapsulating
-        # DppyContext object that is returned to the caller. The shared_ptr
-        # is freed when the DppyObject is destroyed.
-        cdef shared_ptr[DppyOneAPIContext] *ctx = (
-            new shared_ptr[DppyOneAPIContext]()
-        )
+    def _activate_queue (self, device_ty, device_id):
+        cdef queue *queue_ptr
         if device_ty == device_type.gpu:
-            self.rt.pushGPUContext(ctx, device_id)
+            self.rt.activateQueue(&queue_ptr, _device_type._GPU, device_id)
         elif device_ty == device_type.cpu:
-            self.rt.pushCPUContext(ctx, device_id)
+            self.rt.activateQueue(&queue_ptr, _device_type._CPU, device_id)
         else:
             e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
             raise e
 
-        return DppyContext(PyCapsule_New(ctx, NULL, NULL))
+        return PyCapsule_New(queue_ptr, NULL, &delete_queue)
 
-    def _pop_context (self):
-        self.rt.popContext()
+    def _deactivate_current_queue (self):
+        self.rt.deactivateCurrentQueue()
 
-    def get_current_context (self):
-        cdef shared_ptr[DppyOneAPIContext] *ctx = (
-            new shared_ptr[DppyOneAPIContext]()
-        )
-        self.rt.getCurrentContext(ctx);
-        return DppyContext(PyCapsule_New(ctx, NULL, NULL))
+    def get_current_queue (self):
+        cdef queue* queue_ptr = NULL;
+        self.rt.getCurrentQueue(&queue_ptr);
+        return PyCapsule_New(queue_ptr, NULL, &delete_queue)
 
-    def set_global_context (self, device_ty, device_id):
-        if device_ty == device_type.gpu:
-            self.rt.setGlobalContextWithGPU(device_id)
-        elif device_ty == device_type.cpu:
-            self.rt.setGlobalContextWithCPU(device_id)
-        else:
-            e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
-            raise e
+#    def set_global_queue (self, device_ty, device_id):
+#        if device_ty == device_type.gpu:
+#            self.rt.setGlobalContextWithGPU(device_id)
+#        elif device_ty == device_type.cpu:
+#            self.rt.setGlobalContextWithCPU(device_id)
+#        else:
+#            e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
+#            raise e
 
     def dump (self):
         self.rt.dump()
+
+    def dump_queue (self, queue_cap):
+        if PyCapsule_IsValid(queue_cap, NULL):
+            self.rt.dump_queue(<const queue*>PyCapsule_GetPointer(queue_cap, NULL))
+        else:
+            raise ValueError("Expected a PyCapsule encapsulating a SYCL queue")
 
 # Global runtime object
 runtime = DppyRuntime()
@@ -151,18 +131,16 @@ def device_context (dev=device_type.gpu, device_num=0):
     # Also return a reference to the context. The behavior allows consumers
     # of the context manager to either use the new context by indirectly
     # calling get_current_context, or use the returned context object directly.
-    #
+
     # If set_context is unable to create a new context an exception is raised.
     try:
         ctxt = None
-        ctxt = runtime._set_context(dev, device_num)
+        ctxt = runtime._activate_queue(dev, device_num)
         yield ctxt
-    except:
-        print("Context could not be created")
     finally:
         # Code to release resource
         if ctxt:
-            print("Debug: Remove the context from the deque of active contexts")
-            runtime._pop_context()
+            print("Debug: Removing the context from the deque of active contexts")
+            runtime._deactivate_current_queue()
         else:
             print("Debug: No context was created so nothing to do")

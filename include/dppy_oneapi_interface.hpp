@@ -27,9 +27,7 @@
 #pragma once
 
 #include <CL/sycl.hpp>                /* SYCL headers   */
-//#include <CL/cl.h>                    /* OpenCL headers */
 #include <deque>
-#include <memory>
 #include <variant>
 
 
@@ -86,42 +84,6 @@ public:
 };
 
 
-
-////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// DppyOneAPIContext /////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-
-/*! \class DppyOneAPIContext
- *  \brief A convenience wrapper encapsulating a SYCL queue
- *
- */
-class DppyOneAPIContext
-{
-    std::shared_ptr<cl::sycl::queue> queue_;
-
-public:
-    int64_t getSyclQueue (std::shared_ptr<cl::sycl::queue> * Queue) const;
-
-#if 0
-    int64_t getSyclContext (cl::sycl::context * Context) const;
-    int64_t getSyclDevice (cl::sycl::device * Device) const;
-    int64_t getOpenCLQueue (cl_command_queue * Cl_Queue) const;
-    int64_t getOpenCLContext (cl_context * CL_Context) const;
-    int64_t getOpenCLDevice (cl_device_id * CL_Device) const;
-#endif
-
-    int64_t dump ();
-    virtual ~DppyOneAPIContext () = default;
-    DppyOneAPIContext (const cl::sycl::device_selector & DeviceSelector);
-    DppyOneAPIContext (const cl::sycl::device & Device);
-    DppyOneAPIContext (const DppyOneAPIContext & Ctx);
-    DppyOneAPIContext (DppyOneAPIContext && Ctx);
-    DppyOneAPIContext& operator=(const DppyOneAPIContext & Ctx);
-    DppyOneAPIContext& operator=(DppyOneAPIContext && other);
-};
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// DppyOneAPIRuntime /////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -132,32 +94,35 @@ public:
  */
 class DppyOneAPIRuntime
 {
-    size_t                                         num_platforms_;
-    cl::sycl::vector_class<cl::sycl::device>       cpu_devices_;
-    cl::sycl::vector_class<cl::sycl::device>       gpu_devices_;
-    std::deque<std::shared_ptr<DppyOneAPIContext>> active_contexts_;
+    size_t                                  num_platforms_;
+    cl::sycl::vector_class<cl::sycl::queue> cpu_queues_;
+    cl::sycl::vector_class<cl::sycl::queue> gpu_queues_;
+    std::deque<cl::sycl::queue>             active_queues_;
 
 public:
     int64_t getNumPlatforms (size_t *platforms) const;
-    int64_t getCurrentContext (std::shared_ptr<DppyOneAPIContext> * C) const;
-    int64_t setGlobalContextWithGPU (size_t DNum);
-    int64_t setGlobalContextWithCPU (size_t DNum);
+    int64_t getCurrentQueue (cl::sycl::queue **Q) const;
+    int64_t getQueue (cl::sycl::queue **Q,
+                      cl::sycl::info::device_type DeviceTy,
+                      size_t DNum = 0) const;
+    int64_t resetGlobalQueue (cl::sycl::info::device_type DeviceTy,
+                              size_t DNum = 0);
     /*!
-     * Try to create a new DppyOneAPIContext and add it to the front of the
-     * deque. If a new DppyOneAPIContext, return it encapsulated within the
-     * passed in shared_ptr. Caller should check the return flag to check if
-     * a new DppyOneAPIContext was created, before using the shared_ptr.
-     *
+     * Push a new sycl queue to the top of the activate_queues deque. The
+     * newly activated queue is returned to caller inside the Q object.
      */
-    int64_t pushGPUContext (std::shared_ptr<DppyOneAPIContext> * C,
-                            size_t DNum);
-    int64_t pushCPUContext (std::shared_ptr<DppyOneAPIContext> * C,
-                            size_t DNum);
-    int64_t popContext ();
+    int64_t activateQueue (cl::sycl::queue **Q,
+                           cl::sycl::info::device_type DeviceTy,
+                           size_t DNum);
+    int64_t deactivateCurrentQueue ();
     int64_t dump () const;
+    int64_t dump_queue (const cl::sycl::queue *Q) const;
 
     DppyOneAPIRuntime();
     ~DppyOneAPIRuntime();
 };
 
-} /* end of namespace dppy_rt */
+
+int64_t deleteQueue (void *Q);
+
+} /* end of namespace dppy */

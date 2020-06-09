@@ -82,19 +82,33 @@ int64_t error_reporter (const std::string & msg)
 
 } /* end of anonymous namespace */
 
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////// Free functions //////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+int64_t dppy::deleteQueue (void *Q)
+{
+    delete static_cast<queue*>(Q);
+    return DPPY_SUCCESS;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// DppyOneAPIRuntime //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 
 DppyOneAPIRuntime::DppyOneAPIRuntime ()
-    : num_platforms_(platform::get_platforms().size()),
-      cpu_devices_(device::get_devices(info::device_type::cpu)),
-      gpu_devices_(device::get_devices(info::device_type::gpu))
+    : num_platforms_(platform::get_platforms().size())
 {
-    active_contexts_.emplace_front(
-        std::make_shared<DppyOneAPIContext>(default_selector())
-    );
+    for(auto d : device::get_devices(info::device_type::cpu))
+        cpu_queues_.emplace_back(d);
+    for(auto d : device::get_devices(info::device_type::gpu))
+        gpu_queues_.emplace_back(d);
+
+    active_queues_.emplace_back(default_selector());
 }
 
 
@@ -103,6 +117,12 @@ DppyOneAPIRuntime::~DppyOneAPIRuntime ()
 
 }
 
+
+int64_t DppyOneAPIRuntime::dump_queue (const queue *Queue)  const
+{
+    dump_device_info(Queue->get_device());
+    return DPPY_SUCCESS;
+}
 
 int64_t DppyOneAPIRuntime::dump () const
 {
@@ -117,24 +137,24 @@ int64_t DppyOneAPIRuntime::dump () const
     }
 
     // Print out the info for CPU devices
-    if (cpu_devices_.size())
-        std::cout << "---Number of available SYCL CPU devices: "
-                  << cpu_devices_.size() << '\n';
+    if (cpu_queues_.size())
+        std::cout << "---Number of available SYCL CPU queues: "
+                  << cpu_queues_.size() << '\n';
     else
         std::cout << "---No available SYCL CPU device\n";
 
     // Print out the info for GPU devices
-    if (gpu_devices_.size())
-        std::cout << "---Number of available SYCL GPU devices: "
-                  << gpu_devices_.size() << '\n';
+    if (gpu_queues_.size())
+        std::cout << "---Number of available SYCL GPU queues: "
+                  << gpu_queues_.size() << '\n';
     else
         std::cout << "---No available SYCL GPU device\n";
 
-    std::cout << "---Current DppyOneAPIContext :\n";
-    active_contexts_.front()->dump();
+    std::cout << "---Current queue :\n";
+    dump_queue(&active_queues_.front());
 
-    std::cout << "---Number of active DppyOneAPIContexts : "
-              << active_contexts_.size() << '\n';
+    std::cout << "---Number of active queues : "
+              << active_queues_.size() << '\n';
 
     return DPPY_SUCCESS;
 }
@@ -147,191 +167,147 @@ int64_t DppyOneAPIRuntime::getNumPlatforms (size_t *platforms) const
 }
 
 
-int64_t
-DppyOneAPIRuntime::getCurrentContext (std::shared_ptr<DppyOneAPIContext> * Ctx)
-const
+int64_t DppyOneAPIRuntime::getCurrentQueue (queue **Q) const
 {
-    if (active_contexts_.empty())
-        return error_reporter("No currently active context.");
-
-    *Ctx = active_contexts_.front();
+    if (active_queues_.empty())
+        return error_reporter("No currently active queues.");
+    *Q = new queue(active_queues_.front());
     return DPPY_SUCCESS;
 }
 
 
-int64_t
-DppyOneAPIRuntime::setGlobalContextWithGPU (size_t DNum)
+int64_t DppyOneAPIRuntime::getQueue (queue **Q, info::device_type DeviceTy,
+                                     size_t DNum) const
 {
-    if(active_contexts_.empty())
+    if (DeviceTy == info::device_type::cpu) {
+        try {
+            *Q = new queue(cpu_queues_.at(DNum));
+        }
+        catch (const std::out_of_range& e) {
+            std::stringstream ss;
+            ss << "SYCL CPU device " << DNum << " not found on system.";
+            return error_reporter(ss.str());
+        }
+        return DPPY_SUCCESS;
+    }
+    else if (DeviceTy == info::device_type::gpu) {
+        try {
+            *Q = new queue(gpu_queues_.at(DNum));
+        }
+        catch (const std::out_of_range& e) {
+            std::stringstream ss;
+            ss << "SYCL GPU device " << DNum << " not found on system.";
+            return error_reporter(ss.str());
+        }
+        return DPPY_SUCCESS;
+    }
+    else {
+        return error_reporter("Unsupported device type.");
+    }
+}
+
+
+int64_t DppyOneAPIRuntime::resetGlobalQueue (info::device_type DeviceTy,
+                                             size_t DNum)
+{
+    if(active_queues_.empty())
         return error_reporter("Why is there no previous global context?");
-    if(DNum > gpu_devices_.size()) {
-        std::stringstream ss;
-        ss << "SYCL GPU device " << DNum << " not found on system.";
-        return error_reporter(ss.str());
+
+    // Remove the previous global queue, which is the first queue added
+    // to the deque when the Runtime is initialized
+    active_queues_.pop_back();
+
+    switch (DeviceTy)
+    {
+    case info::device_type::cpu:
+    {
+        try {
+            active_queues_.push_back(cpu_queues_.at(DNum));
+        }
+        catch (const std::out_of_range& e) {
+            std::stringstream ss;
+            ss << "SYCL CPU device " << DNum << " not found on system.";
+            return error_reporter(ss.str());
+        }
+        break;
     }
-    active_contexts_.pop_back();
-    active_contexts_.push_back(std::make_shared<DppyOneAPIContext>(
-                               gpu_devices_[DNum]));
+    case info::device_type::gpu:
+    {
+        try {
+            active_queues_.push_back(gpu_queues_.at(DNum));
+        }
+        catch (const std::out_of_range& e) {
+            std::stringstream ss;
+            ss << "SYCL GPU device " << DNum << " not found on system.";
+            return error_reporter(ss.str());
+        }
+        break;
+    }
+    default:
+    {
+        return error_reporter("Unsupported device type.");
+    }
+    }
+
     return DPPY_SUCCESS;
 }
 
 
 int64_t
-DppyOneAPIRuntime::setGlobalContextWithCPU (size_t DNum)
+DppyOneAPIRuntime::activateQueue (cl::sycl::queue **Q,
+                                  cl::sycl::info::device_type DeviceTy,
+                                  size_t DNum)
 {
-    if(active_contexts_.empty())
+    if(active_queues_.empty())
         return error_reporter("Why is there no previous global context?");
-    if(DNum > cpu_devices_.size()) {
-        std::stringstream ss;
-        ss << "SYCL CPU device " << DNum << " not found on system.";
-        return error_reporter(ss.str());
+
+    switch (DeviceTy)
+    {
+    case info::device_type::cpu:
+    {
+        try {
+            active_queues_.emplace_front(cpu_queues_.at(DNum));
+        }
+        catch (const std::out_of_range& e) {
+            std::stringstream ss;
+            ss << "SYCL CPU device " << DNum << " not found on system.";
+            return error_reporter(ss.str());
+        }
+        break;
     }
-    active_contexts_.pop_back();
-    active_contexts_.push_back(std::make_shared<DppyOneAPIContext>(
-                               cpu_devices_[DNum]));
-    return DPPY_SUCCESS;
-}
-
-
-int64_t
-DppyOneAPIRuntime::pushGPUContext (std::shared_ptr<DppyOneAPIContext> * C,
-                                   size_t DNum)
-{
-    if(DNum >= gpu_devices_.size()) {
-        std::stringstream ss;
-        ss << "SYCL GPU device " << DNum << " not found on system.";
-        return error_reporter(ss.str());
+    case info::device_type::gpu:
+    {
+        try {
+            active_queues_.emplace_front(gpu_queues_.at(DNum));
+        }
+        catch (const std::out_of_range& e) {
+            std::stringstream ss;
+            ss << "SYCL GPU device " << DNum << " not found on system.";
+            return error_reporter(ss.str());
+        }
+        break;
     }
-
-    active_contexts_.emplace_front(
-        std::shared_ptr<DppyOneAPIContext>(
-            new DppyOneAPIContext(gpu_devices_[DNum])
-    ));
-    *C = active_contexts_.front();
-    return DPPY_SUCCESS;
-}
-
-
-int64_t
-DppyOneAPIRuntime::pushCPUContext (std::shared_ptr<DppyOneAPIContext> * C,
-                                   size_t device_num)
-{
-    if(device_num >= cpu_devices_.size()) {
-        std::stringstream ss;
-        ss << "SYCL CPU device " << device_num << " not found on system.";
-        return error_reporter(ss.str());
+    default:
+    {
+        return error_reporter("Unsupported device type.");
+    }
     }
 
-    active_contexts_.emplace_front(
-        std::shared_ptr<DppyOneAPIContext>(
-            new DppyOneAPIContext(cpu_devices_[device_num])
-    ));
-    *C = active_contexts_.front();
+    *Q = new queue(active_queues_.front());
     return DPPY_SUCCESS;
 }
 
 
-int64_t DppyOneAPIRuntime::popContext ()
+int64_t DppyOneAPIRuntime::deactivateCurrentQueue ()
 {
-    if(active_contexts_.empty()) return error_reporter("No active contexts");
-    active_contexts_.pop_front();
-    return DPPY_SUCCESS;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// DppyOneAPIContext ////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-DppyOneAPIContext::DppyOneAPIContext (const device_selector & DeviceSelector)
-    : queue_(new queue(DeviceSelector))
-{
-}
-
-
-DppyOneAPIContext::DppyOneAPIContext (const device & Device)
-    : queue_(new queue(Device))
-{
-}
-
-
-DppyOneAPIContext::DppyOneAPIContext (const DppyOneAPIContext & Ctx)
-{
-    queue_ = Ctx.queue_;
-}
-
-
-DppyOneAPIContext::DppyOneAPIContext (DppyOneAPIContext && Ctx)
-{
-    queue_ = Ctx.queue_;
-}
-
-DppyOneAPIContext& DppyOneAPIContext::operator=(const DppyOneAPIContext & Ctx)
-{
-    if (this != &Ctx) {
-        queue_ = Ctx.queue_;
-    }
-    return *this;
-}
-
-
-DppyOneAPIContext& DppyOneAPIContext::operator=(DppyOneAPIContext && Ctx)
-{
-    if (this != &Ctx) {
-        queue_ = std::move(Ctx.queue_);
-    }
-    return *this;
-}
-
-int64_t
-DppyOneAPIContext::getSyclQueue (std::shared_ptr<cl::sycl::queue> * Queue) const
-{
-    if(!queue_.get()) return error_reporter("No valid queue exists.");
-    *Queue = queue_;
-    return DPPY_SUCCESS;
-}
-
-
-#if 0
-int64_t DppyOneAPIContext::getSyclContext (cl::sycl::context * Context) const
-{
-    return DPPY_SUCCESS;
-}
-
-
-int64_t DppyOneAPIContext::getSyclDevice (cl::sycl::device * Device) const
-{
-    return DPPY_SUCCESS;
-}
-
-
-int64_t DppyOneAPIContext::getOpenCLQueue () const
-{
-
-}
-
-
-int64_t DppyOneAPIContext::getOpenCLContext () const
-{
-
-}
-
-int64_t DppyOneAPIContext::getOpenCLDevice () const
-{
-
-}
-#endif
-
-int64_t DppyOneAPIContext::dump ()
-{
-    if(!queue_)
-        return DPPY_FAILURE;
-    dump_device_info(queue_->get_device());
+    if(active_queues_.empty()) return error_reporter("No active contexts");
+    active_queues_.pop_front();
     return DPPY_SUCCESS;
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// DppyOneAPIContext ////////////////////////////
+///////////////////////////////// DppyOneAPIBuffer /////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
