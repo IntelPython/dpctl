@@ -98,14 +98,14 @@ message(STATUS "OpenCL_LIBRARY : ${OpenCL_LIBRARY}")
 
 add_library(
   DPPYOneapiInterface
-  SHARED
+  STATIC
   source/dppy_oneapi_interface.cpp
 )
 
 # Install dpglue as a separate library to be removed later
 add_library(
   dpglue
-  SHARED
+  STATIC
   source/opencllite.c
 )
 

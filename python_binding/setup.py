@@ -41,13 +41,14 @@ else:
 
 dppy_oneapi_interface_lib     = os.environ['DPPY_ONEAPI_INTERFACE_LIBDIR']
 dppy_oneapi_interface_include = os.environ['DPPY_ONEAPI_INTERFACE_INCLDIR']
+sycl_lib = os.environ['ONEAPI_ROOT']+"\compiler\latest\windows\lib"
 
 def get_sdl_cflags():
     if IS_LIN or IS_MAC:
         return ['-fstack-protector', '-fPIC',
                 '-D_FORTIFY_SOURCE=2', '-Wformat', '-Wformat-security',]
     elif IS_WIN:
-        return ['-GS',]
+        return []
 
 def get_sdl_ldflags():
     if IS_LIN:
@@ -55,23 +56,48 @@ def get_sdl_ldflags():
     elif IS_MAC:
         return []
     elif IS_WIN:
-        return ['-NXCompat', '-DynamicBase']
+        return ['/NXCompat', '/DynamicBase']
+
+def get_other_cxxflags():
+    if IS_LIN:
+        return ['-O3', '-std=c++17']
+    elif IS_MAC:
+        return []
+    elif IS_WIN:
+        # FIXME: These are specific to MSVC and we should first make sure
+        # what compiler we are using.
+        return ['/Ox', '/std:c++17']
 
 def getpyexts():
     # Security flags
     eca = get_sdl_cflags()
     ela = get_sdl_ldflags()
+    libs = []
+    librarys = []
 
-    libs = ["rt", "DPPYOneapiInterface"]
+    if IS_LIN:
+        libs += ['rt', 'DPPYOneapiInterface']
+    elif IS_MAC:
+        pass
+    elif IS_WIN:
+        libs += ['DPPYOneapiInterface', 'sycl']
+
+    if IS_LIN:
+        librarys = [dppy_oneapi_interface_lib]
+    elif IS_WIN:
+        librarys = [dppy_oneapi_interface_lib, sycl_lib]
+    elif IS_MAC:
+        librarys = [dppy_oneapi_interface_lib]
+
     exts = cythonize(Extension('dppy._oneapi_interface',
                                [os.path.abspath('dppy/oneapi_interface.pyx'),],
                                 depends=[dppy_oneapi_interface_include,],
                                 include_dirs=[np.get_include(),
                                               dppy_oneapi_interface_include],
-                                extra_compile_args=eca+['-O3', '-std=c++17'],
+                                extra_compile_args=eca + get_other_cxxflags(),
                                 extra_link_args=ela,
                                 libraries=libs,
-                                library_dirs=[dppy_oneapi_interface_lib],
+                                library_dirs=librarys,
                                 language='c++'))
     return exts
 
@@ -86,9 +112,9 @@ setup(
     packages=['dppy'],
     ext_modules = getpyexts(),
     setup_requires=requirements,
-    cffi_modules=[
-        "./dppy/driverapi.py:ffi"
-    ],
+    #cffi_modules=[
+    #    "./dppy/driverapi.py:ffi"
+    #],
     install_requires=requirements,
     keywords='dppy',
     classifiers=[

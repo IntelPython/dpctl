@@ -6,15 +6,16 @@ rmdir /Q /S build
 )
 
 if NOT ["%errorlevel%"]==["0"] (
-	pause
+    pause
     exit /b %errorlevel%
 )
 
 mkdir build
 cd build
-
+set WIN_SDK_LATEST=10.0.18362.0
 set INSTALL_PREFIX=%topdir%\install
 set DPCPP_ROOT=%ONEAPI_ROOT%\compiler\latest
+REM set PATH=%PATH%;"C:\Program Files (x86)\Windows Kits\10\bin\10.0.18362.0\x64"
 
 cmake                                                        ^
     -GNinja                                                  ^
@@ -28,7 +29,7 @@ if NOT ["%errorlevel%"]==["0"] (
     exit /b %errorlevel%
 )
 
-ninja
+ninja -n
 ninja install
 
 if NOT ["%errorlevel%"]==["0"] (
@@ -44,8 +45,6 @@ set OpenCL_LIBDIR="C:\Program Files (x86)\IntelSWTools\sw_dev_tools\OpenCL\sdk\l
 set DPPY_ONEAPI_INTERFACE_LIBDIR=%INSTALL_PREFIX%\lib
 set DPPY_ONEAPI_INTERFACE_INCLDIR=%INSTALL_PREFIX%\include
 
-set CC=dpcpp
-set CXX=dpcpp
 REM FIXME: How to pass this using setup.py? The fPIC flag is needed when
 REM dpcpp compiles the Cython generated cpp file.
 REM set CFLAGS=-fPIC
