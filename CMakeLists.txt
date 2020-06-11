@@ -98,8 +98,9 @@ message(STATUS "OpenCL_LIBRARY : ${OpenCL_LIBRARY}")
 
 add_library(
   DPPYOneapiInterface
-  STATIC
+  SHARED
   source/dppy_oneapi_interface.cpp
+  source/dppy_device_array.cpp
 )
 
 # Install dpglue as a separate library to be removed later
