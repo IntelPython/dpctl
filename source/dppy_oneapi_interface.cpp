@@ -19,18 +19,16 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file implements the the data types and functions declared in
-/// dppy_oneapi_interface.h
+/// This file implements the data types and functions declared in
+/// dppy_oneapi_interface.hpp
 ///
 //===----------------------------------------------------------------------===//
 #include "dppy_oneapi_interface.hpp"
-#include "error_check_macros.h"
+#include "dppy_error_codes.hpp"
 #include <cassert>
-#include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <stdexcept>
 #include <string>
 
 #include <CL/sycl.hpp>                /* SYCL headers   */

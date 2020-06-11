@@ -32,13 +32,6 @@
 namespace dppy
 {
 
-enum : int64_t
-{
-    DPPY_FAILURE = -1,
-    DPPY_SUCCESS
-};
-
-
 /*!
  * Redefinition of Sycl's device_type so that we do not have to include
  * sycl.hpp here, and in the Python bindings.
@@ -63,8 +56,9 @@ enum class sycl_device_type : unsigned int
  *  \brief A runtime and context factory class
  *
  */
-struct DppyOneAPIRuntime
+class DppyOneAPIRuntime
 {
+public:
     int64_t getNumPlatforms (size_t *platforms) const;
     int64_t getCurrentQueue (void **Q) const;
     int64_t getQueue (void **Q,
