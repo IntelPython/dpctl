@@ -31,6 +31,15 @@ export ONEAPI_ROOT="/opt/intel/inteloneapi"
 export OpenCL_LIBDIR="/usr/lib/x86_64-linux-gnu"
 
 conda build --output-folder ${CONDA_PKG_DIR} ${CHANNELS} conda.recipe
-conda install dppy -c ${CONDA_PKG_DIR} ${CHANNELS}
-echo "conda index"
-conda index ${CONDA_PKG_DIR}
+
+# Commented because main goal of this script is building the package.
+# You can run the following commands manually if you want to install the package
+# to your current conda environment.
+
+# conda install dppy -c ${CONDA_PKG_DIR} ${CHANNELS}
+
+# Indexing is commented because conda-build indexes the output folder.
+# Aslo, the current script clears any old build directories.
+
+# echo "conda index"
+# conda index ${CONDA_PKG_DIR}
