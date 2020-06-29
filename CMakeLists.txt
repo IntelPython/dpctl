@@ -84,9 +84,9 @@ endif()
 #---- We need OpenCL
 find_package(OpenCL REQUIRED)
 if(WIN32)
-    set(OpenCL_LIBRARY ${OpencL_LIBDIR}/libOpenCL.lib)
+    set(OpenCL_LIBRARY ${OpenCL_LIBDIR}/libOpenCL.lib)
 elseif(UNIX)
-    set(OpenCL_LIBRARY ${OpencL_LIBDIR}/libOpenCL.so)
+    set(OpenCL_LIBRARY ${OpenCL_LIBDIR}/libOpenCL.so)
 endif()
 
 message(STATUS "OpenCL_INCLUDE_DIR : ${OpenCL_INCLUDE_DIR}")
