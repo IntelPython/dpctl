@@ -29,7 +29,9 @@ fi
 export ONEAPI_ROOT="/opt/intel/inteloneapi"
 export OpenCL_LIBDIR="/usr/lib/x86_64-linux-gnu"
 
-conda build --output-folder ${CONDA_PKG_DIR} -c conda-forge conda.recipe/
-conda install dppy -c ${CONDA_PKG_DIR} -c conda-forge
+CHANNELS="-c conda-forge"
+
+conda build --output-folder ${CONDA_PKG_DIR} ${CHANNELS} conda.recipe/
+conda install dppy -c ${CONDA_PKG_DIR} ${CHANNELS}
 echo "conda index"
 conda index ${CONDA_PKG_DIR}
