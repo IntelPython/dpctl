@@ -106,7 +106,7 @@ add_library(
 # Install dpglue as a separate library to be removed later
 add_library(
   dpglue
-  STATIC
+  SHARED
   source/opencllite.c
 )
 
