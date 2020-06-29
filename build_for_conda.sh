@@ -6,6 +6,8 @@ rm -rf ${CONDA_PKG_DIR}
 # Recreate the build directory
 mkdir ${CONDA_PKG_DIR}
 
+CHANNELS="-c defaults"
+
 # Check if conda-build is installed
 conda-build --version
 
@@ -16,7 +18,7 @@ if [[ conda_build_ret -ne 0 ]]; then
     shopt -s nocasematch
     case "$ok" in
 	"y" )
-	    conda install conda-build -c conda-forge
+	    conda install conda-build ${CHANNELS}
 	    ;;
 	*)
 	    echo "Aborting dp-glue setup"
@@ -27,8 +29,6 @@ fi
 
 export ONEAPI_ROOT="/opt/intel/inteloneapi"
 export OpenCL_LIBDIR="/usr/lib/x86_64-linux-gnu"
-
-CHANNELS="-c defaults"
 
 conda build --output-folder ${CONDA_PKG_DIR} ${CHANNELS} conda.recipe
 conda install dppy -c ${CONDA_PKG_DIR} ${CHANNELS}
