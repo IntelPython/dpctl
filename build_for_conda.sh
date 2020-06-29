@@ -25,7 +25,6 @@ if [[ conda_build_ret -ne 0 ]]; then
     esac
 fi
 
-
 export ONEAPI_ROOT="/opt/intel/inteloneapi"
 export OpenCL_LIBDIR="/usr/lib/x86_64-linux-gnu"
 
