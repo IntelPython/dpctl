@@ -15,7 +15,6 @@ build:
         - ONEAPI_ROOT
         - OpenCL_LIBDIR
 
-
 requirements:
     build:
         - {{ compiler('cxx') }}
@@ -27,7 +26,6 @@ requirements:
         - python
         - make
         - numpy >=1.17
-
     run:
         - python
         - numpy >=1.17
@@ -38,5 +36,5 @@ about:
     summary: 'A lightweight Python wrapper for a subset of OpenCL and SYCL API.'
 
 extra:
-  recipe-maintainers:
+    recipe-maintainers:
         - diptorup deb
