@@ -30,7 +30,7 @@ export OpenCL_LIBDIR="/usr/lib/x86_64-linux-gnu"
 
 CHANNELS="-c defaults"
 
-conda build --output-folder ${CONDA_PKG_DIR} ${CHANNELS} conda.recipe/
+conda build --output-folder ${CONDA_PKG_DIR} ${CHANNELS} conda.recipe
 conda install dppy -c ${CONDA_PKG_DIR} ${CHANNELS}
 echo "conda index"
 conda index ${CONDA_PKG_DIR}
