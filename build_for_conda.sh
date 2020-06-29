@@ -1,10 +1,10 @@
 #!/bin/bash
 
-CONDA_PKG_DIR=dppy_conda_pkg
+CONDA_PKG_DIR=${PWD}/dppy_conda_pkg
 # Remove any old build directory
-rm -rf ./${CONDA_PKG_DIR}
+rm -rf ${CONDA_PKG_DIR}
 # Recreate the build directory
-mkdir ./${CONDA_PKG_DIR}
+mkdir ${CONDA_PKG_DIR}
 
 # Check if conda-build is installed
 conda-build --version
@@ -29,7 +29,7 @@ fi
 export ONEAPI_ROOT="/opt/intel/inteloneapi"
 export OpenCL_LIBDIR="/usr/lib/x86_64-linux-gnu"
 
-conda-build --output-folder ./${CONDA_PKG_DIR} -c conda-forge conda.recipe/
-conda install dppy -c `pwd`/${CONDA_PKG_DIR}  -c conda-forge
+conda-build --output-folder ${CONDA_PKG_DIR} -c conda-forge conda.recipe/
+conda install dppy -c ${CONDA_PKG_DIR} -c conda-forge
 echo "conda index"
-conda index `pwd`/${CONDA_PKG_DIR}
+conda index ${CONDA_PKG_DIR}
