@@ -112,9 +112,9 @@ setup(
     packages=['dppy'],
     ext_modules = getpyexts(),
     setup_requires=requirements,
-    #cffi_modules=[
-    #    "./dppy/driverapi.py:ffi"
-    #],
+    cffi_modules=[
+       "./dppy/driverapi.py:ffi"
+    ],
     install_requires=requirements,
     keywords='dppy',
     classifiers=[
