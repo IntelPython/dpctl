@@ -60,7 +60,7 @@ def get_sdl_ldflags():
 
 def get_other_cxxflags():
     if IS_LIN:
-        return ['-O3', '-std=c++17']
+        return ['-O3', '-fsycl', '-std=c++17']
     elif IS_MAC:
         return []
     elif IS_WIN:
@@ -112,9 +112,9 @@ setup(
     packages=['dppy'],
     ext_modules = getpyexts(),
     setup_requires=requirements,
-    #cffi_modules=[
-    #    "./dppy/driverapi.py:ffi"
-    #],
+    cffi_modules=[
+       "./dppy/driverapi.py:ffi"
+    ],
     install_requires=requirements,
     keywords='dppy',
     classifiers=[

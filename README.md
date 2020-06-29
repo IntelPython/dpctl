@@ -24,6 +24,16 @@ How to install?
 Examples:
 ===
    Run dppy_example1.py under examples.
-   
+
    `python examples/dppy_examples1.py`
- 
+
+Development
+===========
+
+Install `conda`.
+Create and activate build environment:
+```bash
+conda env create -n dppy-env -f environment.yml
+conda activate dppy-env
+```
+Run `build_for_conda.sh`.
