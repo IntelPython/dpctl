@@ -2,7 +2,11 @@
 
 # We need dpcpp to compile dppy_oneapi_interface
 if [ ! -z "${ONEAPI_ROOT}" ]; then
-    source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
+    if [ -f "${ONEAPI_ROOT}/compiler/latest/env/vars.no_fpga.sh" ]; then
+        source ${ONEAPI_ROOT}/compiler/latest/env/vars.no_fpga.sh
+    else
+        source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
+    fi
     export CC=clang
     export CXX=dpcpp
 else
