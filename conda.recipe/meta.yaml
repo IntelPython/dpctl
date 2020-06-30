@@ -11,6 +11,9 @@ source:
 build:
     number: 0
     skip: True  # [not linux]
+    script_env:
+        - ONEAPI_ROOT
+        - OpenCL_LIBDIR
 
 requirements:
     build:
@@ -18,22 +21,20 @@ requirements:
     host:
         - setuptools
         - cffi >=1.0.0
+        - cython
         - cmake
         - python
         - make
-        - ocl-icd
         - numpy >=1.17
     run:
         - python
         - numpy >=1.17
         - cffi >=1.0.0
-        - ocl-icd
-        - ocl-icd-system
 
 about:
-    home: https://github.intel.com/SAT/DP-Glue.git
+    home: https://github.intel.com/SAT/dppy.git
     summary: 'A lightweight Python wrapper for a subset of OpenCL and SYCL API.'
 
 extra:
-  recipe-maintainers:
+    recipe-maintainers:
         - diptorup deb

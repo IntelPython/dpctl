@@ -166,7 +166,7 @@ static int dump_dp_runtime_info (void *obj)
         for(i = 0; i < rt->num_platforms; ++i) {
             char *platform_name = NULL;
             get_platform_name(platforms[i], &platform_name);
-            printf("Platform #%ld: %s\n", i, platform_name);
+            printf("Platform #%zu: %s\n", i, platform_name);
             free(platform_name);
         }
     }
@@ -187,6 +187,7 @@ static int dump_dp_kernel_info (void *obj)
     cl_kernel kernel;
     kernel_t kernel_t_ptr;
 
+    value = NULL;
     kernel_t_ptr = (kernel_t)obj;
 #if DEBUG
     check_kernel_id(kernel_t_ptr);
@@ -740,7 +741,7 @@ int create_dp_program_from_spirv (env_t env_t_ptr,
     prog->program = clCreateProgramWithIL(context, il, length, &err);
     CHECK_OPEN_CL_ERROR(err, "Could not create program with IL");
 #if DEBUG
-    printf("DEBUG: CL program created from spirv of length %ld...\n", length);
+    printf("DEBUG: CL program created from spirv of length %zu...\n", length);
 #endif
 
     *program_t_ptr = prog;
@@ -1007,13 +1008,13 @@ int set_args_and_enqueue_dp_kernel (env_t env_t_ptr,
     // Set the kernel arguments
     for(i = 0; i < nargs; ++i) {
 #if DEBUG
-        printf("DEBUG: clSetKernelArgs for arg # %ld\n", i);
+        printf("DEBUG: clSetKernelArgs for arg # %zu\n", i);
 #endif
         kernel_arg_t this_arg = array_of_args[i];
 #if DEBUG
         check_kernelarg_id(this_arg);
         void **tp = (void**)this_arg->arg_value;
-        printf("DEBUG: clSetKernelArgs for arg # %ld (size %ld, addr %p)\n", i,
+        printf("DEBUG: clSetKernelArgs for arg # %zu (size %zu, addr %p)\n", i,
                 this_arg->arg_size, *tp);
 #endif
         err = clSetKernelArg(kernel, i, this_arg->arg_size,

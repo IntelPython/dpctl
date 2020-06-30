@@ -2,4 +2,7 @@
 
 set -e
 
-${PYTHON} -c "import dppy.core"
+source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
+
+${PYTHON} -c "import dppy"
+${PYTHON} -c "import dppy.ocldrv"

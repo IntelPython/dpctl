@@ -7,7 +7,7 @@ ffi = FFI()
 
 dpglue_incldir = os.environ.get('DP_GLUE_INCLDIR', None)
 dpglue_libdir  = os.environ.get('DP_GLUE_LIBDIR', None)
-opencl_libdir  = os.environ.get('OPENCL_LIBDIR', None)
+opencl_libdir  = os.environ.get('OpenCL_LIBDIR', None)
 
 if opencl_libdir is None:
     raise ValueError("Abort! Set the OPENCL_LIBDIR envar to point to "
@@ -22,7 +22,7 @@ if dpglue_incldir is None:
                      "dp_glue.h")
 
 glue_h = ''.join(list(filter(lambda x: len(x) > 0 and x[0] != "#", 
-                             open(dpglue_incldir + '/include/dp_glue.h', 'r')
+                             open(dpglue_incldir + '/dp_glue.h', 'r')
                              .readlines())))
 
 # cdef() expects a single string declaring the C types, functions and
@@ -36,7 +36,7 @@ ffi.set_source(
     """
          #include "dp_glue.h"   // the C header of the library
     """,
-    include_dirs=[dpglue_incldir+"/include"],
+    include_dirs=[dpglue_incldir],
     library_dirs=[dpglue_libdir, opencl_libdir],
     libraries=["dpglue", "OpenCL"],
 )   # library name, for the linker

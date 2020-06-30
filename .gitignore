@@ -7,9 +7,12 @@ __pycache__/
 # C extensions and binary files
 *.o
 *.so
+*.exe
+*.lib
 
-# CMake build directory
+# CMake build and local install directory
 build
+install
 
 # Emacs temp files
 *~
