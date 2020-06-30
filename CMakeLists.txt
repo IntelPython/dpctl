@@ -7,7 +7,7 @@ if(${ONEAPI_ROOT_EMPTY})
     message(FATAL_ERROR "Please set an environment varaible ONEAPI_ROOT \
                          pointing to you oneAPI install directory.")
 else()
-    message(STATUS "oneAPI Root:" ${ONEAPI_ROOT})
+    message(STATUS "oneAPI Root: ${ONEAPI_ROOT}")
 endif()
 
 if(WIN32)
@@ -89,8 +89,8 @@ elseif(UNIX)
     set(OpenCL_LIBRARY ${OpenCL_LIBDIR}/libOpenCL.so)
 endif()
 
-message(STATUS "OpenCL_INCLUDE_DIR : ${OpenCL_INCLUDE_DIR}")
-message(STATUS "OpenCL_LIBRARY : ${OpenCL_LIBRARY}")
+message(STATUS "OpenCL_INCLUDE_DIR: ${OpenCL_INCLUDE_DIR}")
+message(STATUS "OpenCL_LIBRARY: ${OpenCL_LIBRARY}")
 
 # Todo : Add build rules for unit tests
 
@@ -122,7 +122,7 @@ target_include_directories(dpglue PUBLIC ${OpenCL_INCLUDE_DIR})
 if(WIN32)
     message(
         STATUS
-        "SYCL_INCLUDE_DIR : "
+        "SYCL_INCLUDE_DIR: "
         ${ONEAPI_ROOT}/compiler/latest/windows/include/sycl
     )
     target_include_directories(
@@ -143,7 +143,7 @@ if(WIN32)
 elseif(UNIX)
     message(
         STATUS
-        "SYCL_INCLUDE_DIR : "
+        "SYCL_INCLUDE_DIR: "
         ${ONEAPI_ROOT}/compiler/latest/linux/include/sycl
     )
     #target_include_directories(
