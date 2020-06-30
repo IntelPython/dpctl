@@ -82,12 +82,15 @@ endif()
 # endif()
 
 #---- We need OpenCL
-find_package(OpenCL REQUIRED)
-if(WIN32)
-    set(OpenCL_LIBRARY ${OpenCL_LIBDIR}/libOpenCL.lib)
-elseif(UNIX)
-    set(OpenCL_LIBRARY ${OpenCL_LIBDIR}/libOpenCL.so)
-endif()
+# find_package(OpenCL REQUIRED)
+# if(WIN32)
+#     set(OpenCL_LIBRARY ${OpenCL_LIBDIR}/libOpenCL.lib)
+# elseif(UNIX)
+#     set(OpenCL_LIBRARY ${OpenCL_LIBDIR}/libOpenCL.so)
+# endif()
+
+set(OpenCL_INCLUDE_DIR "${ONEAPI_ROOT}/compiler/latest/linux/include/sycl")
+set(OpenCL_LIBRARY "${ONEAPI_ROOT}/compiler/latest/linux/lib/libOpenCL.so")
 
 message(STATUS "OpenCL_INCLUDE_DIR: ${OpenCL_INCLUDE_DIR}")
 message(STATUS "OpenCL_LIBRARY: ${OpenCL_LIBRARY}")
