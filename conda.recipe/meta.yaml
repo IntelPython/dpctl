@@ -13,7 +13,6 @@ build:
     skip: True  # [not linux]
     script_env:
         - ONEAPI_ROOT
-        - OpenCL_LIBDIR
 
 requirements:
     build:

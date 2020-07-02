@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include <cstdint>
+#include <cstdlib>
 #include <deque>
 
 namespace dppy

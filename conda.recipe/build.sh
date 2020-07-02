@@ -2,7 +2,11 @@
 
 # We need dpcpp to compile dppy_oneapi_interface
 if [ ! -z "${ONEAPI_ROOT}" ]; then
-    source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
+    if [ -f "${ONEAPI_ROOT}/compiler/latest/env/vars.no_fpga.sh" ]; then
+        source ${ONEAPI_ROOT}/compiler/latest/env/vars.no_fpga.sh
+    else
+        source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
+    fi
     export CC=clang
     export CXX=dpcpp
 else
@@ -23,9 +27,12 @@ cmake                                    \
 make -j 4 && make install
 
 cd ../python_binding
+
+# required by dpglue
 export DP_GLUE_LIBDIR=${PREFIX}
 export DP_GLUE_INCLDIR=${PREFIX}/include
-#export OPENCL_LIBDIR=${BUILD_PREFIX}/lib
+export OpenCL_LIBDIR=${ONEAPI_ROOT}/compiler/latest/linux/lib
+# required by oneapi_interface
 export DPPY_ONEAPI_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
 export DPPY_ONEAPI_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
 
