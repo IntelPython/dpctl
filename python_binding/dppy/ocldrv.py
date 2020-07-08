@@ -389,9 +389,11 @@ class _Runtime():
         pass
 
     def __del__(self):
-        retval = (lib.destroy_dp_runtime(_Runtime._runtime))
-        if(retval):
-            _raise_driver_error("destroy_dp_runtime", -1)
+        if _Runtime._runtime:
+            retval = (lib.destroy_dp_runtime(_Runtime._runtime))
+            if(retval):
+                _raise_driver_error("destroy_dp_runtime", -1)
+
 
     def has_cpu_device(self):
         return _Runtime._cpu_device is not None
