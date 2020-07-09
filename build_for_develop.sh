@@ -25,8 +25,8 @@ export OpenCL_LIBDIR=/usr/lib/x86_64-linux-gnu/
 export DPPY_ONEAPI_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
 export DPPY_ONEAPI_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
 
-#export CC=clang
-#export CXX=dpcpp
+export CC=clang
+export CXX=dpcpp
 # FIXME: How to pass this using setup.py? The fPIC flag is needed when
 # dpcpp compiles the Cython generated cpp file.
 export CFLAGS=-fPIC

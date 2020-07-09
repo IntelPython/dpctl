@@ -5,6 +5,21 @@ from numpy import ndarray
 from contextlib import contextmanager
 import ctypes
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.WARNING)
+# create formatter
+formatter = logging.Formatter('DPPY-%(levelname)s - %(message)s')
+# add formatter to ch
+ch.setFormatter(formatter)
+# add ch to logger
+logger.addHandler(ch)
+
+
 ##########################################################################
 # Exception classes
 ##########################################################################
@@ -34,28 +49,27 @@ class UnsupportedTypeError(Exception):
 
 
 def _raise_driver_error(fname, errcode):
-    e = DPPyDriverError("DP_GLUE_FAILURE encountered")
+    e = DPPyDriverError("Could not find an OpenCL Driver. Ensure OpenCL driver is installed.")
     e.fname = fname
     e.code = errcode
     raise e
 
 
 def _raise_device_not_found_error(fname):
-    e = DeviceNotFoundError("This type of device not available on the system")
+    e = DeviceNotFoundError("OpenCL device not available on the system.")
     e.fname = fname
     raise e
 
 
 def _raise_unsupported_type_error(fname):
-    e = UnsupportedTypeError("Type needs to be DeviceArray or numpy.ndarray")
+    e = UnsupportedTypeError("Type needs to be DeviceArray or numpy.ndarray.")
     e.fname = fname
     raise e
 
 
 def _raise_unsupported_kernel_arg_error(fname):
     e = (UnsupportedTypeError("Type needs to be DeviceArray or a supported "
-                              "ctypes type "
-                              "(refer _is_supported_ctypes_raw_obj)"))
+                              "ctypes type."))
     e.fname = fname
     raise e
 
@@ -95,13 +109,13 @@ class DeviceArray:
                                               self._buffSize,
                                               self._buffObj))
         if retval == -1:
-            print("Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("create_dp_rw_mem_buffer", -1)
 
     def __del__(self):
         retval = (lib.destroy_dp_rw_mem_buffer(self._buffObj))
         if retval == -1:
-            print("Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("destroy_dp_rw_mem_buffer", -1)
 
     def get_buffer_obj(self):
@@ -133,20 +147,20 @@ class Program():
                                                    len(spirv_module),
                                                    self._prog_t_obj))
         if retval == -1:
-            print("Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error(
                 "create_dp_program_from_spirv", -1)
 
         retval = (lib.build_dp_program(device_env.get_env_ptr(),
                                        self._prog_t_obj[0]))
         if retval == -1:
-            print("Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("build_dp_program", -1)
 
     def __del__(self):
         retval = (lib.destroy_dp_program(self._prog_t_obj))
         if retval == -1:
-            print("Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("destroy_dp_program", -1)
 
     def get_prog_t_obj(self):
@@ -167,13 +181,13 @@ class Kernel():
                                        kernel_name.encode(),
                                        self._kernel_t_obj))
         if retval == -1:
-            print("Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("create_dp_kernel", -1)
 
     def __del__(self):
         retval = (lib.destroy_dp_kernel(self._kernel_t_obj))
         if retval == -1:
-            print("Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("destroy_dp_kernel", -1)
 
     def get_kernel_t_obj(self):
@@ -223,13 +237,13 @@ class KernelArg():
                     if(retval):
                         _raise_driver_error("create_dp_kernel_arg", -1)
                 else:
-                    print(type(arg))
+                    logger.warning("Unsupported Type %s", type(arg))
                     _raise_unsupported_kernel_arg_error("KernelArg init")
 
     def __del__(self):
         retval = (lib.destroy_dp_kernel_arg(self.kernel_arg_t))
         if retval == -1:
-            print("Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("destroy_dp_kernel_arg", -1)
 
     def get_kernel_arg_obj(self):
@@ -271,7 +285,7 @@ class DeviceEnv():
                               array.get_buffer_size(),
                               array.get_data_ptr()))
             if retval == -1:
-                print("Error Code  : ", retval)
+                logger.warning("OpenCL Error Code  : %s", retval)
                 _raise_driver_error("write_dp_mem_buffer_to_device", -1)
             return array
         elif (isinstance(array, ndarray) or getattr(array, '__module__', None)
@@ -285,7 +299,7 @@ class DeviceEnv():
                               dArr.get_buffer_size(),
                               dArr.get_data_ptr()))
             if retval == -1:
-                print("Error Code  : ", retval)
+                logger.warning("OpenCL Error Code  : %s", retval)
                 _raise_driver_error("write_dp_mem_buffer_to_device", -1)
             return dArr
         else:
@@ -302,11 +316,12 @@ class DeviceEnv():
                           array.get_buffer_size(),
                           array.get_data_ptr()))
         if retval == -1:
-            print("Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("read_dp_mem_buffer_from_device", -1)
 
     def create_device_array(self, array):
-        if not ((isinstance(array, ndarray) or getattr(array, '__module__', None)
+        if not ((isinstance(array, ndarray) or
+                 getattr(array, '__module__', None)
               == "ctypes")):
             _raise_unsupported_type_error("alloc_array_in_device")
 
@@ -334,6 +349,7 @@ class DeviceEnv():
         retval = self._env_ptr[0].dump_fn(self._env_ptr)
         if retval == -1:
             _raise_driver_error("env dump_fn", -1)
+        return retval
 
 ##########################################################################
 # Runtime class
@@ -362,7 +378,7 @@ class _Runtime():
             ffiobj = ffi.new("runtime_t *")
             retval = (lib.create_dp_runtime(ffiobj))
             if(retval):
-                print("Error Code  : ", retval)
+                logger.warning("OpenCL Error Code  : %s", retval)
                 _raise_driver_error("create_dp_runtime", -1)
 
             cls._runtime = ffiobj
@@ -370,16 +386,12 @@ class _Runtime():
             if cls._runtime[0][0].has_cpu:
                 cls._cpu_device = DeviceEnv(cls._runtime[0][0].first_cpu_env)
             else:
-                # What should we do here? Raise an exception? Provide warning?
-                # Maybe do not do anything here, only when this context is to
-                # be used then first check if the context is populated.
-                print("No CPU device")
+                logger.warning("No CPU device")
 
             if cls._runtime[0][0].has_gpu:
                 cls._gpu_device = DeviceEnv(cls._runtime[0][0].first_gpu_env)
             else:
-                # Same as the cpu case above.
-                print("No GPU device")
+                logger.warning("No GPU device")
 
             cls._curr_device = DeviceEnv(cls._runtime[0][0].curr_env)
 
@@ -389,9 +401,10 @@ class _Runtime():
         pass
 
     def __del__(self):
-        retval = (lib.destroy_dp_runtime(_Runtime._runtime))
-        if(retval):
-            _raise_driver_error("destroy_dp_runtime", -1)
+        if _Runtime._runtime:
+            retval = (lib.destroy_dp_runtime(_Runtime._runtime))
+            if(retval):
+                _raise_driver_error("destroy_dp_runtime", -1)
 
     def has_cpu_device(self):
         return _Runtime._cpu_device is not None
@@ -421,6 +434,7 @@ class _Runtime():
         retval = _Runtime._runtime[0].dump_fn(_Runtime._runtime[0])
         if retval == -1:
             _raise_driver_error("runtime dump_fn", -1)
+        return retval
 
 ##########################################################################
 # Public API
@@ -470,13 +484,18 @@ def dppy_error():
     _raise_driver_error()
 
 
+##########################################################################
+# Context Managers
+##########################################################################
+
+
 @contextmanager
 def igpu_context(*args, **kwds):
     device_id = 0
     # some validation code
     if(args):
         assert(len(args) == 1 and args[0] == 0)
-    #print("Set the current env to igpu device queue", device_id)
+    logger.debug("Set the current env to igpu device queue %s", device_id)
     lib.set_curr_env(runtime.get_runtime_ptr(),
                      runtime.get_gpu_device().get_env_ptr())
     device_env = runtime.get_current_device()
@@ -484,7 +503,7 @@ def igpu_context(*args, **kwds):
 
     # After yield as the exit method
     #TODO : one exit reset the current env to previous value
-    #print("Exit method called")
+    logger.debug("Exit method called")
 
 
 @contextmanager
@@ -493,11 +512,11 @@ def cpu_context(*args, **kwds):
     # some validation code
     if(args):
         assert(len(args) == 1 and args[0] == 0)
-    #print("Set the current env to cpu device queue", device_id)
+    logger.debug("Set the current env to cpu device queue %s", device_id)
     lib.set_curr_env(runtime.get_runtime_ptr(),
                      runtime.get_cpu_device().get_env_ptr())
     device_env = runtime.get_current_device()
     yield device_env
 
     # After yield as the exit method
-    #print("Exit method called")
+    logger.debug("Exit method called")

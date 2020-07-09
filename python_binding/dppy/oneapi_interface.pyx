@@ -104,7 +104,7 @@ cdef class DppyRuntime:
 #            raise e
 
     def dump (self):
-        self.rt.dump()
+        return self.rt.dump()
 
     def dump_queue (self, queue_cap):
         if PyCapsule_IsValid(queue_cap, NULL):
