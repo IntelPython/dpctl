@@ -2,11 +2,8 @@
 
 # We need dpcpp to compile dppl_oneapi_interface
 if [ ! -z "${ONEAPI_ROOT}" ]; then
-    if [ -f "${ONEAPI_ROOT}/compiler/latest/env/vars.no_fpga.sh" ]; then
-        source ${ONEAPI_ROOT}/compiler/latest/env/vars.no_fpga.sh
-    else
-        source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
-    fi
+    # Suppress error b/c it could fail on Ubuntu 18.04
+    source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh || true
     export CC=clang
     export CXX=dpcpp
 else
@@ -14,7 +11,6 @@ else
     exit 1
 fi
 
-rm -rf build
 mkdir build
 cd build
 
