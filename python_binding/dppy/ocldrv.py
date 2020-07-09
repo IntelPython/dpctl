@@ -492,7 +492,7 @@ def igpu_context(*args, **kwds):
 
     # After yield as the exit method
     #TODO : one exit reset the current env to previous value
-    ogger.debug("Exit method called")
+    logger.debug("Exit method called")
 
 
 @contextmanager
