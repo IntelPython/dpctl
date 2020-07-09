@@ -338,6 +338,7 @@ class DeviceEnv():
         retval = self._env_ptr[0].dump_fn(self._env_ptr)
         if retval == -1:
             _raise_driver_error("env dump_fn", -1)
+        return retval
 
 ##########################################################################
 # Runtime class
@@ -394,7 +395,6 @@ class _Runtime():
             if(retval):
                 _raise_driver_error("destroy_dp_runtime", -1)
 
-
     def has_cpu_device(self):
         return _Runtime._cpu_device is not None
 
@@ -423,6 +423,7 @@ class _Runtime():
         retval = _Runtime._runtime[0].dump_fn(_Runtime._runtime[0])
         if retval == -1:
             _raise_driver_error("runtime dump_fn", -1)
+        return retval
 
 ##########################################################################
 # Public API
