@@ -9,6 +9,18 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.WARNING)
+# create formatter
+formatter = logging.Formatter('DPPY-%(levelname)s - %(message)s')
+# add formatter to ch
+ch.setFormatter(formatter)
+# add ch to logger
+logger.addHandler(ch)
+
+
+
 ##########################################################################
 # Exception classes
 ##########################################################################
@@ -38,27 +50,27 @@ class UnsupportedTypeError(Exception):
 
 
 def _raise_driver_error(fname, errcode):
-    e = DPPyDriverError("Could not load DPPy")
+    e = DPPyDriverError("Could not find an OpenCL Driver. Ensure OpenCL driver is installed.")
     e.fname = fname
     e.code = errcode
     raise e
 
 
 def _raise_device_not_found_error(fname):
-    e = DeviceNotFoundError("OpenCL device not available on the system")
+    e = DeviceNotFoundError("OpenCL device not available on the system.")
     e.fname = fname
     raise e
 
 
 def _raise_unsupported_type_error(fname):
-    e = UnsupportedTypeError("Type needs to be DeviceArray or numpy.ndarray")
+    e = UnsupportedTypeError("Type needs to be DeviceArray or numpy.ndarray.")
     e.fname = fname
     raise e
 
 
 def _raise_unsupported_kernel_arg_error(fname):
     e = (UnsupportedTypeError("Type needs to be DeviceArray or a supported "
-                              "ctypes type "))
+                              "ctypes type."))
     e.fname = fname
     raise e
 
