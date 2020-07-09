@@ -98,13 +98,13 @@ class DeviceArray:
                                               self._buffSize,
                                               self._buffObj))
         if retval == -1:
-            logger.warning("OpenCL Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("create_dp_rw_mem_buffer", -1)
 
     def __del__(self):
         retval = (lib.destroy_dp_rw_mem_buffer(self._buffObj))
         if retval == -1:
-            logger.warning("OpenCL Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("destroy_dp_rw_mem_buffer", -1)
 
     def get_buffer_obj(self):
@@ -136,20 +136,20 @@ class Program():
                                                    len(spirv_module),
                                                    self._prog_t_obj))
         if retval == -1:
-            logger.warning("OpenCL Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error(
                 "create_dp_program_from_spirv", -1)
 
         retval = (lib.build_dp_program(device_env.get_env_ptr(),
                                        self._prog_t_obj[0]))
         if retval == -1:
-            logger.warning("OpenCL Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("build_dp_program", -1)
 
     def __del__(self):
         retval = (lib.destroy_dp_program(self._prog_t_obj))
         if retval == -1:
-            logger.warning("OpenCL Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("destroy_dp_program", -1)
 
     def get_prog_t_obj(self):
@@ -170,13 +170,13 @@ class Kernel():
                                        kernel_name.encode(),
                                        self._kernel_t_obj))
         if retval == -1:
-            logger.warning("OpenCL Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("create_dp_kernel", -1)
 
     def __del__(self):
         retval = (lib.destroy_dp_kernel(self._kernel_t_obj))
         if retval == -1:
-            logger.warning("OpenCL Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("destroy_dp_kernel", -1)
 
     def get_kernel_t_obj(self):
@@ -226,13 +226,13 @@ class KernelArg():
                     if(retval):
                         _raise_driver_error("create_dp_kernel_arg", -1)
                 else:
-                    logger.warning("Unsupported Type", type(arg))
+                    logger.warning("Unsupported Type %s", type(arg))
                     _raise_unsupported_kernel_arg_error("KernelArg init")
 
     def __del__(self):
         retval = (lib.destroy_dp_kernel_arg(self.kernel_arg_t))
         if retval == -1:
-            logger.warning("OpenCL Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("destroy_dp_kernel_arg", -1)
 
     def get_kernel_arg_obj(self):
@@ -274,7 +274,7 @@ class DeviceEnv():
                               array.get_buffer_size(),
                               array.get_data_ptr()))
             if retval == -1:
-                logger.warning("OpenCL Error Code  : ", retval)
+                logger.warning("OpenCL Error Code  : %s", retval)
                 _raise_driver_error("write_dp_mem_buffer_to_device", -1)
             return array
         elif (isinstance(array, ndarray) or getattr(array, '__module__', None)
@@ -288,7 +288,7 @@ class DeviceEnv():
                               dArr.get_buffer_size(),
                               dArr.get_data_ptr()))
             if retval == -1:
-                logger.warning("OpenCL Error Code  : ", retval)
+                logger.warning("OpenCL Error Code  : %s", retval)
                 _raise_driver_error("write_dp_mem_buffer_to_device", -1)
             return dArr
         else:
@@ -305,7 +305,7 @@ class DeviceEnv():
                           array.get_buffer_size(),
                           array.get_data_ptr()))
         if retval == -1:
-            logger.warning("OpenCL Error Code  : ", retval)
+            logger.warning("OpenCL Error Code  : %s", retval)
             _raise_driver_error("read_dp_mem_buffer_from_device", -1)
 
     def create_device_array(self, array):
@@ -367,7 +367,7 @@ class _Runtime():
             ffiobj = ffi.new("runtime_t *")
             retval = (lib.create_dp_runtime(ffiobj))
             if(retval):
-                logger.warning("OpenCL Error Code  : ", retval)
+                logger.warning("OpenCL Error Code  : %s", retval)
                 _raise_driver_error("create_dp_runtime", -1)
 
             cls._runtime = ffiobj
@@ -484,7 +484,7 @@ def igpu_context(*args, **kwds):
     # some validation code
     if(args):
         assert(len(args) == 1 and args[0] == 0)
-    logger.debug("Set the current env to igpu device queue", device_id)
+    logger.debug("Set the current env to igpu device queue %s", device_id)
     lib.set_curr_env(runtime.get_runtime_ptr(),
                      runtime.get_gpu_device().get_env_ptr())
     device_env = runtime.get_current_device()
@@ -501,7 +501,7 @@ def cpu_context(*args, **kwds):
     # some validation code
     if(args):
         assert(len(args) == 1 and args[0] == 0)
-    logger.debug("Set the current env to cpu device queue", device_id)
+    logger.debug("Set the current env to cpu device queue %s", device_id)
     lib.set_curr_env(runtime.get_runtime_ptr(),
                      runtime.get_cpu_device().get_env_ptr())
     device_env = runtime.get_current_device()
