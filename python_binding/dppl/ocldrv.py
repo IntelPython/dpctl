@@ -25,7 +25,7 @@ logger.addHandler(ch)
 ##########################################################################
 
 
-class DPPyDriverError(Exception):
+class DpplDriverError(Exception):
     """A problem encountered inside the libdpglue Python driver code
     """
     pass
@@ -49,7 +49,7 @@ class UnsupportedTypeError(Exception):
 
 
 def _raise_driver_error(fname, errcode):
-    e = DPPyDriverError("Could not find an OpenCL Driver. Ensure OpenCL driver is installed.")
+    e = DpplDriverError("Could not find an OpenCL Driver. Ensure OpenCL driver is installed.")
     e.fname = fname
     e.code = errcode
     raise e

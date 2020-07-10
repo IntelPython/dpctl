@@ -4,7 +4,7 @@ using namespace dppl_rt;
 
 int main ()
 {
-    DppyOneAPIRuntime rt;
+    DpplOneAPIRuntime rt;
 
     rt.dump();
 

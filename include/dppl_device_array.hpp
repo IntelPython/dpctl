@@ -30,11 +30,11 @@
 
 namespace dppl
 {
-/*! \class DppyDeviceArray
+/*! \class DpplDeviceArray
  *
  */
 template <typename T>
-class DppyDeviceArray
+class DpplDeviceArray
 {
 public:
     using value_type = T;
@@ -48,14 +48,14 @@ public:
 
     int64_t getBuffer (void **buff) const;
 
-    DppyDeviceArray (T *hostData, int ndims, const std::size_t *shape);
+    DpplDeviceArray (T *hostData, int ndims, const std::size_t *shape);
 
-    DppyDeviceArray (const T* hostData, int ndims, const std::size_t *shape);
+    DpplDeviceArray (const T* hostData, int ndims, const std::size_t *shape);
 
-    DppyDeviceArray (int ndims, const std::size_t *shape);
+    DpplDeviceArray (int ndims, const std::size_t *shape);
 
     // TODO : Copy, Move Ctors, copy assign operators
-    virtual ~DppyDeviceArray ();
+    virtual ~DpplDeviceArray ();
 };
 
 }

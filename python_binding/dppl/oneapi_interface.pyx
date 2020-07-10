@@ -38,8 +38,8 @@ cdef class UnsupportedDeviceTypeError(Exception):
 
 
 cdef extern from "dppl_oneapi_interface.hpp" namespace "dppl":
-    cdef cppclass DppyOneAPIRuntime:
-        DppyOneAPIRuntime () except +
+    cdef cppclass DpplOneAPIRuntime:
+        DpplOneAPIRuntime () except +
         int64_t getNumPlatforms (size_t *num_platform) except -1
         int64_t getCurrentQueue (void **Q) except -1
         int64_t getQueue (void **Q, _device_type DTy,
@@ -63,11 +63,11 @@ cdef void delete_queue (object cap):
     deleteQueue(PyCapsule_GetPointer(cap, NULL))
 
 
-cdef class DppyRuntime:
-    cdef DppyOneAPIRuntime rt
+cdef class DpplRuntime:
+    cdef DpplOneAPIRuntime rt
 
     def __cinit__ (self):
-        self.rt = DppyOneAPIRuntime()
+        self.rt = DpplOneAPIRuntime()
 
     def get_num_platforms (self):
         cdef size_t num_platforms = 0
@@ -113,14 +113,14 @@ cdef class DppyRuntime:
             raise ValueError("Expected a PyCapsule encapsulating a SYCL queue")
 
 # Global runtime object
-runtime = DppyRuntime()
+runtime = DpplRuntime()
 
 from contextlib import contextmanager
 
 @contextmanager
 def device_context (dev=device_type.gpu, device_num=0):
     # Create a new device context and add it to the front of the runtime's
-    # deque of active contexts (DppyOneAPIRuntime.ctive_contexts_).
+    # deque of active contexts (DpplOneAPIRuntime.ctive_contexts_).
     # Also return a reference to the context. The behavior allows consumers
     # of the context manager to either use the new context by indirectly
     # calling get_current_context, or use the returned context object directly.

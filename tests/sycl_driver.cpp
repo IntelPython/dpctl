@@ -6,9 +6,9 @@ using namespace cl::sycl;
 
 int main ()
 {
-    DppyOneAPIRuntime rt;
+    DpplOneAPIRuntime rt;
     size_t nPlats;
-    std::shared_ptr<DppyOneAPIContext> ctx;
+    std::shared_ptr<DpplOneAPIContext> ctx;
 
     rt.dump();
 

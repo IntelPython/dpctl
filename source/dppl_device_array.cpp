@@ -19,7 +19,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file implements the DppyDeviceArray class.
+/// This file implements the DpplDeviceArray class.
 ///
 //===----------------------------------------------------------------------===//
 #include "dppl_device_array.hpp"
@@ -35,7 +35,7 @@ using namespace cl::sycl;
 using namespace dppl;
 
 template <typename T>
-DppyDeviceArray<T>::DppyDeviceArray (T* hostData, int ndims, const size_t *dims)
+DpplDeviceArray<T>::DpplDeviceArray (T* hostData, int ndims, const size_t *dims)
 {
     auto size = 1ul;
 
@@ -52,7 +52,7 @@ DppyDeviceArray<T>::DppyDeviceArray (T* hostData, int ndims, const size_t *dims)
 
 
 template <typename T>
-DppyDeviceArray<T>::DppyDeviceArray (const T* hostData, int ndims,
+DpplDeviceArray<T>::DpplDeviceArray (const T* hostData, int ndims,
                                      const size_t *dims)
     : ndims_(ndims)
 {
@@ -73,7 +73,7 @@ DppyDeviceArray<T>::DppyDeviceArray (const T* hostData, int ndims,
 
 
 template <typename T>
-DppyDeviceArray<T>::DppyDeviceArray (int ndims, const size_t *dims)
+DpplDeviceArray<T>::DpplDeviceArray (int ndims, const size_t *dims)
     : ndims_(ndims)
 {
     auto size = 1ul;
@@ -91,7 +91,7 @@ DppyDeviceArray<T>::DppyDeviceArray (int ndims, const size_t *dims)
 
 
 template <typename T>
-DppyDeviceArray<T>::~DppyDeviceArray()
+DpplDeviceArray<T>::~DpplDeviceArray()
 {
     delete shape_;
     delete static_cast<buffer<T>>(buff_);
@@ -99,7 +99,7 @@ DppyDeviceArray<T>::~DppyDeviceArray()
 
 
 template <typename T>
-int64_t DppyDeviceArray<T>::getBuffer (void **buff) const
+int64_t DpplDeviceArray<T>::getBuffer (void **buff) const
 {
     *buff = new buffer<T>(buff_);
     return DPPL_SUCCESS;
