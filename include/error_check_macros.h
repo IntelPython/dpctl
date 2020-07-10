@@ -1,5 +1,5 @@
-#ifndef DPPY_ERR_CHK_MACROS_H_
-#define DPPY_ERR_CHK_MACROS_H_
+#ifndef DPPL_ERR_CHK_MACROS_H_
+#define DPPL_ERR_CHK_MACROS_H_
 
 #include <stdio.h>
 

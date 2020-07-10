@@ -37,7 +37,7 @@ cdef class UnsupportedDeviceTypeError(Exception):
     pass
 
 
-cdef extern from "dppy_oneapi_interface.hpp" namespace "dppy":
+cdef extern from "dppl_oneapi_interface.hpp" namespace "dppl":
     cdef cppclass DppyOneAPIRuntime:
         DppyOneAPIRuntime () except +
         int64_t getNumPlatforms (size_t *num_platform) except -1
@@ -55,8 +55,8 @@ cdef extern from "dppy_oneapi_interface.hpp" namespace "dppy":
     cdef int64_t deleteQueue (void *Q) except -1
 
     cdef enum _device_type 'sycl_device_type':
-        _GPU 'dppy::sycl_device_type::gpu'
-        _CPU 'dppy::sycl_device_type::cpu'
+        _GPU 'dppl::sycl_device_type::gpu'
+        _CPU 'dppl::sycl_device_type::cpu'
 
 # Destructor for a PyCapsule containing a SYCL queue
 cdef void delete_queue (object cap):

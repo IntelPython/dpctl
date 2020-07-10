@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# We need dpcpp to compile dppy_oneapi_interface
+# We need dpcpp to compile dppl_oneapi_interface
 if [ ! -z "${ONEAPI_ROOT}" ]; then
     if [ -f "${ONEAPI_ROOT}/compiler/latest/env/vars.no_fpga.sh" ]; then
         source ${ONEAPI_ROOT}/compiler/latest/env/vars.no_fpga.sh
@@ -10,7 +10,7 @@ if [ ! -z "${ONEAPI_ROOT}" ]; then
     export CC=clang
     export CXX=dpcpp
 else
-    echo "DPCPP is needed to build DPPY. Abort!"
+    echo "DPCPP is needed to build DPPL. Abort!"
     exit 1
 fi
 
@@ -33,8 +33,8 @@ export DP_GLUE_LIBDIR=${PREFIX}
 export DP_GLUE_INCLDIR=${PREFIX}/include
 export OpenCL_LIBDIR=${ONEAPI_ROOT}/compiler/latest/linux/lib
 # required by oneapi_interface
-export DPPY_ONEAPI_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
-export DPPY_ONEAPI_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
+export DPPL_ONEAPI_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
+export DPPL_ONEAPI_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
 
 # FIXME: How to pass this using setup.py? This flags is needed when
 # dpcpp compiles the generated cpp file.

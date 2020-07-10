@@ -1,4 +1,4 @@
-{% set name = "dppy" %}
+{% set name = "pydppl" %}
 {% set version = "v0.1" %}
 
 package:
@@ -31,7 +31,7 @@ requirements:
         - cffi >=1.0.0
 
 about:
-    home: https://github.intel.com/SAT/dppy.git
+    home: https://github.com/IntelPython/PyDPPL.git
     summary: 'A lightweight Python wrapper for a subset of OpenCL and SYCL API.'
 
 extra:

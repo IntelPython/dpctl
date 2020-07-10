@@ -22,8 +22,8 @@ cd ../python_binding
 export DP_GLUE_LIBDIR=${INSTALL_PREFIX}/lib
 export DP_GLUE_INCLDIR=${INSTALL_PREFIX}/include
 export OpenCL_LIBDIR=/usr/lib/x86_64-linux-gnu/
-export DPPY_ONEAPI_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
-export DPPY_ONEAPI_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
+export DPPL_ONEAPI_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
+export DPPL_ONEAPI_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
 
 export CC=clang
 export CXX=dpcpp

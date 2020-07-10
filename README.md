@@ -19,13 +19,13 @@ How to install?
    1. Add the directory the following directory created by the build script
       to your LD_LIBRARY_PATH. (Temporary step till the build_for_conda is fixed)
 
-      `export LD_LIBRARY_PATH=<dppy-root-dir>/build/install/lib/:${LD_LIBRARY_PATH}`
+      `export LD_LIBRARY_PATH=<dppl-root-dir>/build/install/lib/:${LD_LIBRARY_PATH}`
 
 Examples:
 ===
-   Run dppy_example1.py under examples.
+   Run dppl_example1.py under examples.
 
-   `python examples/dppy_examples1.py`
+   `python examples/dppl_examples1.py`
 
 Development
 ===========
@@ -33,7 +33,7 @@ Development
 Install `conda`.
 Create and activate build environment:
 ```bash
-conda env create -n dppy-env -f environment.yml
-conda activate dppy-env
+conda env create -n dppl-env -f environment.yml
+conda activate dppl-env
 ```
 Run `build_for_conda.sh`.

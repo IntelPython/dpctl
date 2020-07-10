@@ -39,8 +39,8 @@ elif sys.platform in ['win32', 'cygwin']:
 else:
     assert False, sys.platform + ' not supported'
 
-dppy_oneapi_interface_lib     = os.environ['DPPY_ONEAPI_INTERFACE_LIBDIR']
-dppy_oneapi_interface_include = os.environ['DPPY_ONEAPI_INTERFACE_INCLDIR']
+dppl_oneapi_interface_lib     = os.environ['DPPL_ONEAPI_INTERFACE_LIBDIR']
+dppl_oneapi_interface_include = os.environ['DPPL_ONEAPI_INTERFACE_INCLDIR']
 sycl_lib = os.environ['ONEAPI_ROOT']+"\compiler\latest\windows\lib"
 
 def get_sdl_cflags():
@@ -76,24 +76,24 @@ def getpyexts():
     librarys = []
 
     if IS_LIN:
-        libs += ['rt', 'DPPYOneapiInterface']
+        libs += ['rt', 'DPPLOneapiInterface']
     elif IS_MAC:
         pass
     elif IS_WIN:
-        libs += ['DPPYOneapiInterface', 'sycl']
+        libs += ['DPPLOneapiInterface', 'sycl']
 
     if IS_LIN:
-        librarys = [dppy_oneapi_interface_lib]
+        librarys = [dppl_oneapi_interface_lib]
     elif IS_WIN:
-        librarys = [dppy_oneapi_interface_lib, sycl_lib]
+        librarys = [dppl_oneapi_interface_lib, sycl_lib]
     elif IS_MAC:
-        librarys = [dppy_oneapi_interface_lib]
+        librarys = [dppl_oneapi_interface_lib]
 
-    exts = cythonize(Extension('dppy._oneapi_interface',
-                               [os.path.abspath('dppy/oneapi_interface.pyx'),],
-                                depends=[dppy_oneapi_interface_include,],
+    exts = cythonize(Extension('dppl._oneapi_interface',
+                               [os.path.abspath('dppl/oneapi_interface.pyx'),],
+                                depends=[dppl_oneapi_interface_include,],
                                 include_dirs=[np.get_include(),
-                                              dppy_oneapi_interface_include],
+                                              dppl_oneapi_interface_include],
                                 extra_compile_args=eca + get_other_cxxflags(),
                                 extra_link_args=ela,
                                 libraries=libs,
@@ -102,21 +102,21 @@ def getpyexts():
     return exts
 
 setup(
-    name='dppy',
+    name='pydppl',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description="A lightweight Python wrapper for a subset of OpenCL and SYCL API.",
     license="Apache 2.0",
     author="Intel Corporation",
-    url='https://github.intel.com/SAT/dppy',
-    packages=['dppy'],
+    url='https://github.com/IntelPython/PyDPPL',
+    packages=['dppl'],
     ext_modules = getpyexts(),
     setup_requires=requirements,
     cffi_modules=[
-       "./dppy/driverapi.py:ffi"
+       "./dppl/driverapi.py:ffi"
     ],
     install_requires=requirements,
-    keywords='dppy',
+    keywords='dppl',
     classifiers=[
         "Development Status :: 3 - Alpha",
         'Programming Language :: Python :: 3.6',

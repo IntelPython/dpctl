@@ -1,7 +1,7 @@
 from __future__ import print_function
-from dppy import runtime, device_context, device_type
+from dppl import runtime, device_context, device_type
 
-# Global runtime object inside dppy
+# Global runtime object inside dppl
 rt = runtime
 
 # Print metadata about the runtime
@@ -34,9 +34,9 @@ with device_context(device_type.cpu, 0) as cpuctx:
     print("Current context inside with scope")
     print("========================================")
     cpuctx.dump()
-    
-    # Note the current context can be either directly accessed by using 
-    # the "cpuctx" object, or it can be accessed via the runtime's 
+
+    # Note the current context can be either directly accessed by using
+    # the "cpuctx" object, or it can be accessed via the runtime's
     # get_current_context() function.
     print("========================================")
     print("Looking up current context using runtime")

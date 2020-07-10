@@ -1,6 +1,6 @@
-//===------- dppy_error_codes.hpp - DPPY-SYCL interface ---*- C++ -*-------===//
+//===------- dppl_error_codes.hpp - DPPL-SYCL interface ---*- C++ -*-------===//
 //
-//                     Data Parallel Python (DPPY)
+//                     Data Parallel Python (DPPL)
 //
 // Copyright 2020 Intel Corporation
 //
@@ -19,20 +19,20 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file contains the error codes that are returned by DPPY functions.
+/// This file contains the error codes that are returned by DPPL functions.
 ///
 //===----------------------------------------------------------------------===//
 #pragma once
 
 #include <cstdint>
 
-namespace dppy
+namespace dppl
 {
 
 enum : int64_t
 {
-    DPPY_FAILURE = -1,
-    DPPY_SUCCESS
+    DPPL_FAILURE = -1,
+    DPPL_SUCCESS
 };
 
 }

@@ -1,7 +1,7 @@
-#include <dppy_oneapi_interface.hpp>
+#include <dppl_oneapi_interface.hpp>
 #include <CL/sycl.hpp>
 
-using namespace dppy;
+using namespace dppl;
 using namespace cl::sycl;
 
 int main ()
@@ -30,7 +30,7 @@ int main ()
     std::cout << "==========================\n";
     std::cout << "Try to change the current context to non-existent GPU 1 \n";
     auto ret= 0;
-    if((ret = rt.pushGPUContext(&ctx, 1)) == DPPY_SUCCESS) {
+    if((ret = rt.pushGPUContext(&ctx, 1)) == DPPL_SUCCESS) {
         ctx->dump();
         rt.popContext();
     }

@@ -1,6 +1,6 @@
-//===-- dppy_device_array.cpp - DPPY-SYCL interface -------*- C++ -*-------===//
+//===-- dppl_device_array.cpp - DPPL-SYCL interface -------*- C++ -*-------===//
 //
-//                     Data Parallel Python (DPPY)
+//                     Data Parallel Python (DPPL)
 //
 // Copyright 2020 Intel Corporation
 //
@@ -22,8 +22,8 @@
 /// This file implements the DppyDeviceArray class.
 ///
 //===----------------------------------------------------------------------===//
-#include "dppy_device_array.hpp"
-#include "dppy_error_codes.hpp"
+#include "dppl_device_array.hpp"
+#include "dppl_error_codes.hpp"
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
@@ -32,7 +32,7 @@
 
 using namespace std;
 using namespace cl::sycl;
-using namespace dppy;
+using namespace dppl;
 
 template <typename T>
 DppyDeviceArray<T>::DppyDeviceArray (T* hostData, int ndims, const size_t *dims)
@@ -102,5 +102,5 @@ template <typename T>
 int64_t DppyDeviceArray<T>::getBuffer (void **buff) const
 {
     *buff = new buffer<T>(buff_);
-    return DPPY_SUCCESS;
+    return DPPL_SUCCESS;
 }
