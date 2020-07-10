@@ -1,6 +1,6 @@
-//===-- dppy_device_array.hpp - DPPY-SYCL interface -------*- C++ -*-------===//
+//===-- dppl_device_array.hpp - DPPL-SYCL interface -------*- C++ -*-------===//
 //
-//                     Data Parallel Python (DPPY)
+//                     Data Parallel Python (DPPL)
 //
 // Copyright 2020 Intel Corporation
 //
@@ -25,10 +25,10 @@
 //===----------------------------------------------------------------------===//
 #pragma once
 
-#include "dppy_error_codes.hpp"
+#include "dppl_error_codes.hpp"
 #include <cstdint>
 
-namespace dppy
+namespace dppl
 {
 /*! \class DppyDeviceArray
  *

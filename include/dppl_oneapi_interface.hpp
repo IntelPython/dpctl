@@ -1,6 +1,6 @@
-//===-- dppy_oneapi_interface.hpp - DPPY-SYCL interface ---*- C++ -*-------===//
+//===-- dppl_oneapi_interface.hpp - DPPL-SYCL interface ---*- C++ -*-------===//
 //
-//                     Data Parallel Python (DPPY)
+//                     Data Parallel Python (DPPL)
 //
 // Copyright 2020 Intel Corporation
 //
@@ -20,7 +20,7 @@
 ///
 /// \file
 /// This file contains the declaration of a C++ API to expose a lightweight SYCL
-/// interface for the Python dppy package.
+/// interface for the Python dppl package.
 ///
 //===----------------------------------------------------------------------===//
 
@@ -29,7 +29,7 @@
 #include <cstdlib>
 #include <deque>
 
-namespace dppy
+namespace dppl
 {
 
 /*!
@@ -62,16 +62,16 @@ public:
     int64_t getNumPlatforms (size_t *platforms) const;
     int64_t getCurrentQueue (void **Q) const;
     int64_t getQueue (void **Q,
-                      dppy::sycl_device_type DeviceTy,
+                      dppl::sycl_device_type DeviceTy,
                       size_t DNum = 0) const;
-    int64_t resetGlobalQueue (dppy::sycl_device_type DeviceTy,
+    int64_t resetGlobalQueue (dppl::sycl_device_type DeviceTy,
                               size_t DNum = 0);
     /*!
      * Push a new sycl queue to the top of the activate_queues deque. The
      * newly activated queue is returned to caller inside the Q object.
      */
     int64_t activateQueue (void **Q,
-                           dppy::sycl_device_type DeviceTy,
+                           dppl::sycl_device_type DeviceTy,
                            size_t DNum);
     int64_t deactivateCurrentQueue ();
     int64_t dump () const;
@@ -81,4 +81,4 @@ public:
 
 int64_t deleteQueue (void *Q);
 
-} /* end of namespace dppy */
+} /* end of namespace dppl */

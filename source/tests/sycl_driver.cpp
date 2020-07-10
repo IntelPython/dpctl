@@ -1,6 +1,6 @@
-#include <dppy_oneapi_interface.hpp>
+#include <dppl_oneapi_interface.hpp>
 
-using namespace dppy_rt;
+using namespace dppl_rt;
 
 int main ()
 {

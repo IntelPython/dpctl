@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function
 
-from ._dppy_bindings import ffi, lib
+from ._dppl_bindings import ffi, lib
 from numpy import ndarray
 from contextlib import contextmanager
 import ctypes
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 ch = logging.StreamHandler()
 ch.setLevel(logging.WARNING)
 # create formatter
-formatter = logging.Formatter('DPPY-%(levelname)s - %(message)s')
+formatter = logging.Formatter('DPPL-%(levelname)s - %(message)s')
 # add formatter to ch
 ch.setFormatter(formatter)
 # add ch to logger
@@ -475,12 +475,12 @@ def enqueue_kernel(device_env, kernel, kernelargs, global_work_size,
 
 
 def is_available():
-    """Return a boolean to indicate the availability of a DPPY device.
+    """Return a boolean to indicate the availability of a DPPL device.
     """
     return runtime.has_cpu_device() or runtime.has_gpu_device()
 
 
-def dppy_error():
+def dppl_error():
     _raise_driver_error()
 
 

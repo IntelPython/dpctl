@@ -39,7 +39,7 @@ if(${dpcpp_result} MATCHES "0")
         message(STATUS "dpcpp ver[${dpcpp_result}]: ${X}")
     endforeach()
 else()
-    message(FATAL_MESSAGE "DPCPP needed to build DPPY-Oneapi-Interface")
+    message(FATAL_MESSAGE "DPCPP needed to build DPPL-Oneapi-Interface")
 endif()
 
 if(WIN32)
@@ -100,10 +100,10 @@ message(STATUS "OpenCL_LIBRARY: ${OpenCL_LIBRARY}")
 # Todo : Add build rules for doxygen
 
 add_library(
-  DPPYOneapiInterface
+  DPPLOneapiInterface
   SHARED
-  source/dppy_oneapi_interface.cpp
-  source/dppy_device_array.cpp
+  source/dppl_oneapi_interface.cpp
+  source/dppl_device_array.cpp
 )
 
 # Install dpglue as a separate library to be removed later
@@ -114,7 +114,7 @@ add_library(
 )
 
 target_include_directories(
-  DPPYOneapiInterface
+  DPPLOneapiInterface
   PRIVATE
   ${CMAKE_SOURCE_DIR}/include/
 )
@@ -129,12 +129,12 @@ if(WIN32)
         ${ONEAPI_ROOT}/compiler/latest/windows/include/sycl
     )
     target_include_directories(
-        DPPYOneapiInterface
+        DPPLOneapiInterface
         PUBLIC
         ${ONEAPI_ROOT}/compiler/latest/windows/include/sycl
     )
     target_link_libraries(
-        DPPYOneapiInterface
+        DPPLOneapiInterface
         PRIVATE
         ${ONEAPI_ROOT}/compiler/latest/windows/lib/sycl.lib
     )
@@ -150,7 +150,7 @@ elseif(UNIX)
         ${ONEAPI_ROOT}/compiler/latest/linux/include/sycl
     )
     #target_include_directories(
-    #    DPPYOneapiInterface
+    #    DPPLOneapiInterface
     #    SYSTEM PUBLIC
     #    /opt/intel/inteloneapi/compiler/latest/linux/include/sycl
     #)
@@ -158,7 +158,7 @@ endif()
 
 install(
   TARGETS
-  DPPYOneapiInterface
+  DPPLOneapiInterface
   LIBRARY DESTINATION
   "${CMAKE_INSTALL_PREFIX}/lib/"
 )

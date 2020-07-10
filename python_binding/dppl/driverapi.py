@@ -29,7 +29,7 @@ glue_h = ''.join(list(filter(lambda x: len(x) > 0 and x[0] != "#",
 # globals needed to use the shared object. It must be in valid C syntax.
 ffi.cdef(glue_h)
 
-ffi_lib_name = "dppy._dppy_bindings"
+ffi_lib_name = "dppl._dppl_bindings"
 
 ffi.set_source(
     ffi_lib_name,

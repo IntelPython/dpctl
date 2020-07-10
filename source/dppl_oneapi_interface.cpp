@@ -1,6 +1,6 @@
-//===-- dppy_oneapi_interface.cpp - DPPY-SYCL interface ---*- C++ -*-------===//
+//===-- dppl_oneapi_interface.cpp - DPPL-SYCL interface ---*- C++ -*-------===//
 //
-//                     Data Parallel Python (DPPY)
+//                     Data Parallel Python (DPPL)
 //
 // Copyright 2020 Intel Corporation
 //
@@ -20,11 +20,11 @@
 ///
 /// \file
 /// This file implements the data types and functions declared in
-/// dppy_oneapi_interface.hpp
+/// dppl_oneapi_interface.hpp
 ///
 //===----------------------------------------------------------------------===//
-#include "dppy_oneapi_interface.hpp"
-#include "dppy_error_codes.hpp"
+#include "dppl_oneapi_interface.hpp"
+#include "dppl_error_codes.hpp"
 #include <cassert>
 #include <iomanip>
 #include <iostream>
@@ -34,7 +34,7 @@
 #include <CL/sycl.hpp>                /* SYCL headers   */
 
 using namespace cl::sycl;
-using namespace dppy;
+using namespace dppl;
 
 /*------------------------------- Private helpers ----------------------------*/
 
@@ -77,7 +77,7 @@ void dump_platform_info (const platform & Platform)
 int64_t error_reporter (const std::string & msg)
 {
     std::cerr << "Error: " << msg << '\n';
-    return DPPY_FAILURE;
+    return DPPL_FAILURE;
 }
 
 class DppyOneAPIRuntimeHelper
@@ -103,7 +103,7 @@ public:
 
     }
 
-    friend dppy::DppyOneAPIRuntime;
+    friend dppl::DppyOneAPIRuntime;
 };
 
 DppyOneAPIRuntimeHelper gRtHelper;
@@ -116,10 +116,10 @@ DppyOneAPIRuntimeHelper gRtHelper;
 ////////////////////////////////////////////////////////////////////////////////
 
 
-int64_t dppy::deleteQueue (void *Q)
+int64_t dppl::deleteQueue (void *Q)
 {
     delete static_cast<queue*>(Q);
-    return DPPY_SUCCESS;
+    return DPPL_SUCCESS;
 }
 
 
@@ -132,7 +132,7 @@ int64_t DppyOneAPIRuntime::dump_queue (const void *QPtr) const
 {
     auto Q = static_cast<const queue*>(QPtr);
     dump_device_info(Q->get_device());
-    return DPPY_SUCCESS;
+    return DPPL_SUCCESS;
 }
 
 int64_t DppyOneAPIRuntime::dump () const
@@ -167,14 +167,14 @@ int64_t DppyOneAPIRuntime::dump () const
     std::cout << "---Number of active queues : "
               << gRtHelper.active_queues_.size() << '\n';
 
-    return DPPY_SUCCESS;
+    return DPPL_SUCCESS;
 }
 
 
 int64_t DppyOneAPIRuntime::getNumPlatforms (size_t *platforms) const
 {
     *platforms = gRtHelper.num_platforms_;
-    return DPPY_SUCCESS;
+    return DPPL_SUCCESS;
 }
 
 
@@ -184,7 +184,7 @@ int64_t DppyOneAPIRuntime::getCurrentQueue (void **QPtr) const
         return error_reporter("No currently active queues.");
 
     *QPtr = new queue(gRtHelper.active_queues_.front());
-    return DPPY_SUCCESS;
+    return DPPL_SUCCESS;
 }
 
 
@@ -200,7 +200,7 @@ int64_t DppyOneAPIRuntime::getQueue (void **QPtr, sycl_device_type DeviceTy,
             ss << "SYCL CPU device " << DNum << " not found on system.";
             return error_reporter(ss.str());
         }
-        return DPPY_SUCCESS;
+        return DPPL_SUCCESS;
     }
     else if (DeviceTy == sycl_device_type::gpu) {
         try {
@@ -211,7 +211,7 @@ int64_t DppyOneAPIRuntime::getQueue (void **QPtr, sycl_device_type DeviceTy,
             ss << "SYCL GPU device " << DNum << " not found on system.";
             return error_reporter(ss.str());
         }
-        return DPPY_SUCCESS;
+        return DPPL_SUCCESS;
     }
     else {
         return error_reporter("Unsupported device type.");
@@ -261,7 +261,7 @@ int64_t DppyOneAPIRuntime::resetGlobalQueue (sycl_device_type DeviceTy,
     }
     }
 
-    return DPPY_SUCCESS;
+    return DPPL_SUCCESS;
 }
 
 
@@ -310,7 +310,7 @@ DppyOneAPIRuntime::activateQueue (void **QPtr,
     }
 
     *QPtr = new queue(gRtHelper.active_queues_.front());
-    return DPPY_SUCCESS;
+    return DPPL_SUCCESS;
 }
 
 
@@ -319,5 +319,5 @@ int64_t DppyOneAPIRuntime::deactivateCurrentQueue ()
     if(gRtHelper.active_queues_.empty())
         return error_reporter("No active contexts");
     gRtHelper.active_queues_.pop_front();
-    return DPPY_SUCCESS;
+    return DPPL_SUCCESS;
 }

@@ -34,7 +34,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-dppy_conda_pkg
+dppl_conda_pkg
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

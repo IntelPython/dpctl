@@ -1,6 +1,6 @@
 import unittest
-import dppy
-import dppy.ocldrv as drv
+import dppl
+import dppl.ocldrv as drv
 from contextlib import contextmanager
 import ctypes
 import io
@@ -10,7 +10,7 @@ import tempfile
 libc = ctypes.CDLL(None)
 c_stdout = ctypes.c_void_p.in_dll(libc, 'stdout')
 
-# Sourced from 
+# Sourced from
 # https://eli.thegreenplace.net/2015/redirecting-all-kinds-of-stdout-in-python/
 @contextmanager
 def stdout_redirector(stream):
@@ -49,11 +49,11 @@ def stdout_redirector(stream):
 
 class TestDumpMethods(unittest.TestCase):
 
-    def test_dppy_dump_runtime(self):
+    def test_dppl_dump_runtime(self):
         with stdout_redirector(None):
-            self.assertEqual(dppy.runtime.dump(), 0)
+            self.assertEqual(dppl.runtime.dump(), 0)
 
-    def test_dppy_ocldrv_dump_runtime(self):
+    def test_dppl_ocldrv_dump_runtime(self):
         with stdout_redirector(None):
             self.assertEqual(drv.runtime.dump(), 0)
 

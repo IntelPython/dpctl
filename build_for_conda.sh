@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONDA_PKG_DIR=${PWD}/dppy_conda_pkg
+CONDA_PKG_DIR=${PWD}/dppl_conda_pkg
 # Remove any old build directory
 rm -rf ${CONDA_PKG_DIR}
 # Recreate the build directory
@@ -35,7 +35,7 @@ conda build --output-folder ${CONDA_PKG_DIR} ${CHANNELS} conda.recipe
 # You can run the following commands manually if you want to install the package
 # to your current conda environment.
 
-# conda install dppy -c ${CONDA_PKG_DIR} ${CHANNELS}
+# conda install dppl -c ${CONDA_PKG_DIR} ${CHANNELS}
 
 # Indexing is commented because conda-build indexes the output folder.
 # Aslo, the current script clears any old build directories.
