@@ -23,9 +23,9 @@ How to install?
 
 Examples:
 ===
-   Run dppl_example1.py under examples.
+   Run create_sycl_queues.py under examples.
 
-   `python examples/dppl_examples1.py`
+   `python examples/create_sycl_queues.py`
 
 Development
 ===========
