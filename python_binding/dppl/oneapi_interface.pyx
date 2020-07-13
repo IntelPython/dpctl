@@ -32,7 +32,8 @@ class device_type(Enum):
 
 
 cdef class UnsupportedDeviceTypeError(Exception):
-    """When expecting either a DeviceArray or numpy.ndarray object
+    """This exception is raised when a device type other than CPU or GPU is
+       encountered.
     """
     pass
 
@@ -70,6 +71,8 @@ cdef class DpplRuntime:
         self.rt = DpplOneAPIRuntime()
 
     def get_num_platforms (self):
+        ''' Returns the number of available SYCL/OpenCL platforms.
+        '''
         cdef size_t num_platforms = 0
         self.rt.getNumPlatforms(&num_platforms)
         return num_platforms
@@ -90,6 +93,8 @@ cdef class DpplRuntime:
         self.rt.deactivateCurrentQueue()
 
     def get_current_queue (self):
+        ''' Returns the activated SYCL queue as a PyCapsule.
+        '''
         cdef void* queue_ptr = NULL;
         self.rt.getCurrentQueue(&queue_ptr);
         return PyCapsule_New(queue_ptr, NULL, &delete_queue)
@@ -104,9 +109,13 @@ cdef class DpplRuntime:
 #            raise e
 
     def dump (self):
+        ''' Prints information about the Runtime object.
+        '''
         return self.rt.dump()
 
     def dump_queue (self, queue_cap):
+        ''' Prints information about the SYCL queue object.
+        '''
         if PyCapsule_IsValid(queue_cap, NULL):
             self.rt.dump_queue(PyCapsule_GetPointer(queue_cap, NULL))
         else:
@@ -133,7 +142,7 @@ def device_context (dev=device_type.gpu, device_num=0):
     finally:
         # Code to release resource
         if ctxt:
-            print("Debug: Removing the context from the deque of active contexts")
+            print("Removing the context from the deque of active contexts")
             runtime._deactivate_current_queue()
         else:
-            print("Debug: No context was created so nothing to do")
+            print("No context was created so nothing to do")
