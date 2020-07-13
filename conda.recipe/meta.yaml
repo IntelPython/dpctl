@@ -1,5 +1,5 @@
 {% set name = "pydppl" %}
-{% set version = "v0.1" %}
+{% set version = "0.1" %}
 
 package:
     name: {{ name|lower }}
