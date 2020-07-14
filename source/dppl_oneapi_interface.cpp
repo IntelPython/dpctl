@@ -1,6 +1,6 @@
 //===-- dppl_oneapi_interface.cpp - DPPL-SYCL interface ---*- C++ -*-------===//
 //
-//                     Data Parallel Python (DPPL)
+//               Python Data Parallel Processing Python (PyDPPL)
 //
 // Copyright 2020 Intel Corporation
 //
@@ -20,7 +20,7 @@
 ///
 /// \file
 /// This file implements the data types and functions declared in
-/// dppl_oneapi_interface.hpp
+/// dppl_oneapi_interface.hpp.
 ///
 //===----------------------------------------------------------------------===//
 #include "dppl_oneapi_interface.hpp"

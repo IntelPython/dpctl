@@ -1,6 +1,6 @@
 //===------- dppl_error_codes.hpp - DPPL-SYCL interface ---*- C++ -*-------===//
 //
-//                     Data Parallel Python (DPPL)
+//               Python Data Parallel Processing Python (PyDPPL)
 //
 // Copyright 2020 Intel Corporation
 //
