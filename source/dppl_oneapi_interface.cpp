@@ -1,6 +1,6 @@
 //===-- dppl_oneapi_interface.cpp - DPPL-SYCL interface ---*- C++ -*-------===//
 //
-//               Python Data Parallel Processing Python (PyDPPL)
+//               Python Data Parallel Processing Library (PyDPPL)
 //
 // Copyright 2020 Intel Corporation
 //
