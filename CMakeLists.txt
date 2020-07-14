@@ -105,11 +105,11 @@ add_library(
   source/dppl_oneapi_interface.cpp
 )
 
-# Install dpglue as a separate library to be removed later
+# Install DPPLOpenCLInterface as a separate library to be removed later
 add_library(
-  dpglue
+  DPPLOpenCLInterface
   SHARED
-  source/opencllite.c
+  source/dppl_opencl_interface.c
 )
 
 target_include_directories(
@@ -118,8 +118,17 @@ target_include_directories(
   ${CMAKE_SOURCE_DIR}/include/
 )
 
-target_include_directories(dpglue PRIVATE ${CMAKE_SOURCE_DIR}/include/)
-target_include_directories(dpglue PUBLIC ${OpenCL_INCLUDE_DIR})
+target_include_directories(
+    DPPLOpenCLInterface
+    PRIVATE
+    ${CMAKE_SOURCE_DIR}/include/
+)
+
+target_include_directories(
+    DPPLOpenCLInterface
+    PUBLIC
+    ${OpenCL_INCLUDE_DIR}
+)
 
 if(WIN32)
     message(
@@ -138,7 +147,7 @@ if(WIN32)
         ${ONEAPI_ROOT}/compiler/latest/windows/lib/sycl.lib
     )
     target_link_libraries(
-        dpglue
+        DPPLOpenCLInterface
         PRIVATE
         ${OpenCL_INCLUDE_DIR}/../lib/x64/OpenCL.lib
     )
@@ -164,7 +173,7 @@ install(
 
 install(
   TARGETS
-  dpglue
+  DPPLOpenCLInterface
   LIBRARY
   DESTINATION
   "${CMAKE_INSTALL_PREFIX}/lib/"
