@@ -1,6 +1,6 @@
 ##===---------- setup.py - dppl.ocldrv interface -----*- Python -*-----===##
 ##
-##               Python Data Parallel Processing Python (PyDPPL)
+##               Python Data Parallel Processing Library (PyDPPL)
 ##
 ## Copyright 2020 Intel Corporation
 ##
