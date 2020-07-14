@@ -13,7 +13,7 @@ How to install?
     `bash conda env create -n dppl-env -f environment.yml`
     
     `conda activate dppl-env`
-4. run `./build_for_conda.sh`
+4. Run `./build_for_conda.sh`
 
 Examples:
 ===
