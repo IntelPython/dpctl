@@ -103,7 +103,6 @@ add_library(
   DPPLOneapiInterface
   SHARED
   source/dppl_oneapi_interface.cpp
-  source/dppl_device_array.cpp
 )
 
 # Install dpglue as a separate library to be removed later
