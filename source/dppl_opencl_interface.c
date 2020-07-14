@@ -20,7 +20,7 @@
 ///
 /// \file
 /// This file implements the data types and functions declared in
-/// dppl_opencl_interface.h
+/// dppl_opencl_interface.h.
 ///
 //===----------------------------------------------------------------------===//
 #include "dppl_opencl_interface.h"
