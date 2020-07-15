@@ -11,6 +11,7 @@ else
     exit 1
 fi
 
+rm -rf build
 mkdir build
 cd build
 
