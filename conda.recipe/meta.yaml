@@ -1,9 +1,8 @@
 {% set name = "pydppl" %}
-{% set version = "0.1" %}
 
 package:
     name: {{ name|lower }}
-    version: {{ version }}
+    version: {{ GIT_DESCRIBE_TAG }}
 
 source:
     path: ..
