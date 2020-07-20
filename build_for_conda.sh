@@ -17,13 +17,13 @@ if [[ conda_build_ret -ne 0 ]]; then
     read ok
     shopt -s nocasematch
     case "$ok" in
-	"y" )
-	    conda install conda-build ${CHANNELS}
-	    ;;
-	*)
-	    echo "Aborting dp-glue setup"
-	    exit 1
-	    ;;
+    "y" )
+        conda install conda-build ${CHANNELS}
+        ;;
+    *)
+        echo "Aborting PyDPPL setup"
+        exit 1
+        ;;
     esac
 fi
 
@@ -31,14 +31,6 @@ export ONEAPI_ROOT="/opt/intel/inteloneapi"
 
 conda build --output-folder ${CONDA_PKG_DIR} ${CHANNELS} conda.recipe
 
-# Commented because main goal of this script is building the package.
-# You can run the following commands manually if you want to install the package
-# to your current conda environment.
+# To install the package in your current conda environment, execute
 
-# conda install dppl -c ${CONDA_PKG_DIR} ${CHANNELS}
-
-# Indexing is commented because conda-build indexes the output folder.
-# Aslo, the current script clears any old build directories.
-
-# echo "conda index"
-# conda index ${CONDA_PKG_DIR}
+# conda install pydppl -c ${CONDA_PKG_DIR} ${CHANNELS}

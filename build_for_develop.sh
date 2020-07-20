@@ -1,19 +1,25 @@
 #!/bin/bash
+set +xe
 rm -rf build
 mkdir build
-cd build
+pushd build
 
-INSTALL_PREFIX=`pwd`/install
+INSTALL_PREFIX=`pwd`/../install
 export ONEAPI_ROOT=/opt/intel/inteloneapi
-#export OpenCL_LIBDIR="/usr/lib/x86_64-linux-gnu"
-DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest
+DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest/linux
+PYTHON_INC=`python -c "import distutils.sysconfig;                  \
+                        print(distutils.sysconfig.get_python_inc())"`
+NUMPY_INC=`python -c "import numpy; print(numpy.get_include())"`
 
 cmake                                                       \
     -DCMAKE_BUILD_TYPE=Release                              \
     -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}                \
     -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX}                   \
-    -DCMAKE_C_COMPILER:PATH=${DPCPP_ROOT}/linux/bin/clang   \
-    -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/linux/bin/dpcpp \
+    -DDPCPP_ROOT=${DPCPP_ROOT}                              \
+    -DCMAKE_C_COMPILER:PATH=${DPCPP_ROOT}/bin/clang         \
+    -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/bin/dpcpp       \
+    -DPYTHON_INCLUDE_DIR=${PYTHON_INC}                      \
+    -DNUMPY_INCLUDE_DIR=${NUMPY_INC}                        \
     ..
 
 make V=1 -n -j 4 && make install
@@ -33,3 +39,5 @@ export CFLAGS=-fPIC
 python setup.py clean --all
 python setup.py build_ext --inplace
 python setup.py develop
+
+popd
