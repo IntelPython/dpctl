@@ -72,3 +72,6 @@ target/
 
 # pyenv python configuration file
 .python-version
+
+# generated Cython files
+_dppl_bindings*

@@ -11,9 +11,9 @@ else
     exit 1
 fi
 
-rm -rf build
-mkdir build
-cd build
+rm -rf build_cmake
+mkdir build_cmake
+cd build_cmake
 
 PYTHON_INC=`${PYTHON} -c "import distutils.sysconfig;                  \
                         print(distutils.sysconfig.get_python_inc())"`
@@ -29,11 +29,11 @@ cmake                                                       \
     -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/bin/dpcpp       \
     -DPYTHON_INCLUDE_DIR=${PYTHON_INC}                      \
     -DNUMPY_INCLUDE_DIR=${NUMPY_INC}                        \
-    ..
+    ../oneapi_wrapper
 
 make -j 4 && make install
 
-cd ../python_binding
+cd ..
 
 # required by dpglue
 export DP_GLUE_LIBDIR=${PREFIX}

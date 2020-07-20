@@ -1,8 +1,8 @@
 #!/bin/bash
 set +xe
-rm -rf build
-mkdir build
-pushd build
+rm -rf build_cmake
+mkdir build_cmake
+pushd build_cmake
 
 INSTALL_PREFIX=`pwd`/../install
 export ONEAPI_ROOT=/opt/intel/inteloneapi
@@ -20,11 +20,12 @@ cmake                                                       \
     -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/bin/dpcpp       \
     -DPYTHON_INCLUDE_DIR=${PYTHON_INC}                      \
     -DNUMPY_INCLUDE_DIR=${NUMPY_INC}                        \
-    ..
+    ../oneapi_wrapper
 
 make V=1 -n -j 4 && make install
 
-cd ../python_binding
+popd
+
 export DP_GLUE_LIBDIR=${INSTALL_PREFIX}/lib
 export DP_GLUE_INCLDIR=${INSTALL_PREFIX}/include
 export OpenCL_LIBDIR=/usr/lib/x86_64-linux-gnu/
@@ -39,5 +40,3 @@ export CFLAGS=-fPIC
 python setup.py clean --all
 python setup.py build_ext --inplace
 python setup.py develop
-
-popd

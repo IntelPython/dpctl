@@ -29,7 +29,7 @@ fi
 
 export ONEAPI_ROOT="/opt/intel/inteloneapi"
 
-conda build --output-folder ${CONDA_PKG_DIR} ${CHANNELS} conda.recipe
+conda build --output-folder ${CONDA_PKG_DIR} ${CHANNELS} conda-recipe
 
 # To install the package in your current conda environment, execute
 
