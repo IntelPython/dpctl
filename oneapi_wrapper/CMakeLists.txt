@@ -34,7 +34,7 @@ function (check_for_dpcpp)
             message(STATUS "dpcpp ver[${dpcpp_result}]: ${X}")
         endforeach()
     else()
-        message(FATAL_MESSAGE "DPCPP needed to build dppl_oneapi_interface")
+        message(FATAL_ERROR "DPCPP needed to build dppl_oneapi_interface")
     endif()
 endfunction()
 
