@@ -429,6 +429,18 @@ class DeviceEnv():
 
         return DeviceArray(self._env_ptr, array)
 
+    def device_support_int64_atomics(self):
+        ''' Returns True current device supports 64-bit int atomic operations
+        '''
+
+        return self._env_ptr.support_int64_atomics
+
+    def device_support_float64_atomics(self):
+        ''' Returns True if current device supports 64-bit float atomic operations
+        '''
+
+        return self._env_ptr.support_float64_atomics
+
     def get_context_ptr(self):
         ''' Returns a cdata wrapper for the OpenCL cl_context object.
         '''
@@ -540,6 +552,7 @@ class Runtime():
         ''' Returns True is the system has an OpenCL driver for the GPU.'''
 
         return Runtime._gpu_device is not None
+
 
     def get_cpu_device(self):
         ''' Returns a cdata wrapper for the first available OpenCL
