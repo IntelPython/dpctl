@@ -25,6 +25,7 @@ cmake                                                       \
 make V=1 -n -j 4 && make install
 
 popd
+cp install/lib/*.so dppl/
 
 export DP_GLUE_LIBDIR=${INSTALL_PREFIX}/lib
 export DP_GLUE_INCLDIR=${INSTALL_PREFIX}/include

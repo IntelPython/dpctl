@@ -105,6 +105,7 @@ def getpyexts():
                                 extra_link_args=ela,
                                 libraries=libs,
                                 library_dirs=librarys,
+                                runtime_library_dirs=[os.path.abspath('dppl')],
                                 language='c++'))
     return exts
 
