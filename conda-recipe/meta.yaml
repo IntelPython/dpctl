@@ -24,6 +24,7 @@ requirements:
         - python
         - make
         - numpy >=1.17
+        - llvm-spirv
     run:
         - python
         - numpy >=1.17

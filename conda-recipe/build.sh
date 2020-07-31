@@ -41,10 +41,16 @@ export OpenCL_LIBDIR=${DPCPP_ROOT}/lib
 export DPPL_ONEAPI_INTERFACE_LIBDIR=${PREFIX}/lib
 export DPPL_ONEAPI_INTERFACE_INCLDIR=${PREFIX}/include
 
+
 # FIXME: How to pass this using setup.py? This flags is needed when
 # dpcpp compiles the generated cpp file.
 export CFLAGS="-fPIC -O3 ${CFLAGS}"
 export LDFLAGS="-L OpenCL_LIBDIR ${LDFLAGS}"
 ${PYTHON} setup.py clean --all
 ${PYTHON} setup.py build
-${PYTHON} setup.py install
+${PYTHON} setup.py install --old-and-unmanageable
+
+
+$CC -flto -target spir64-unknown-unknown -c -x cl -emit-llvm -cl-std=CL2.0 -Xclang -finclude-default-header oneapi_wrapper/source/atomics/atomic_ops.cl -o oneapi_wrapper/source/atomics/atomic_ops.bc
+llvm-spirv -o dppl/atomic_ops.spir oneapi_wrapper/source/atomics/atomic_ops.bc
+cp dppl/atomic_ops.spir ${SP_DIR}/dppl/
