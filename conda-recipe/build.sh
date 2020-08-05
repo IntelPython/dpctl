@@ -48,9 +48,4 @@ export CFLAGS="-fPIC -O3 ${CFLAGS}"
 export LDFLAGS="-L OpenCL_LIBDIR ${LDFLAGS}"
 ${PYTHON} setup.py clean --all
 ${PYTHON} setup.py build
-${PYTHON} setup.py install --old-and-unmanageable
-
-
-$CC -flto -target spir64-unknown-unknown -c -x cl -emit-llvm -cl-std=CL2.0 -Xclang -finclude-default-header oneapi_wrapper/source/atomics/atomic_ops.cl -o oneapi_wrapper/source/atomics/atomic_ops.bc
-llvm-spirv -o dppl/atomic_ops.spir oneapi_wrapper/source/atomics/atomic_ops.bc
-cp dppl/atomic_ops.spir ${SP_DIR}/dppl/
+${PYTHON} setup.py install

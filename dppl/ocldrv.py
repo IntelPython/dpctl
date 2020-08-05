@@ -63,18 +63,6 @@ _ch.setFormatter(_formatter)
 _logger.addHandler(_ch)
 
 
-import os
-atomic_spirv_path = os.path.join(os.path.dirname(__file__), 'atomic_ops.spir')
-
-def read_atomic_spirv_object():
-    """ This function returns the spirv module containing Atomic operations
-    """
-    with open(atomic_spirv_path, 'rb') as fin:
-        spirv = fin.read()
-
-    return spirv
-
-
 ##########################################################################
 # Exception classes
 ##########################################################################
