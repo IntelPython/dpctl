@@ -5,7 +5,7 @@ mkdir build_cmake
 pushd build_cmake
 
 INSTALL_PREFIX=`pwd`/../install
-export ONEAPI_ROOT=/opt/intel/inteloneapi
+export ONEAPI_ROOT=/opt/intel/oneapi
 DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest/linux
 PYTHON_INC=`python -c "import distutils.sysconfig;                  \
                         print(distutils.sysconfig.get_python_inc())"`
