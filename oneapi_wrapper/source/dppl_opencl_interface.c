@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 #include "dppl_opencl_interface.h"
 #include "error_check_macros.h"
+#include <string.h>
 #include <assert.h>
 #include <CL/cl.h>  /* OpenCL headers */
 
@@ -277,6 +278,49 @@ error:
     return DP_GLUE_FAILURE;
 }
 
+static int support_int64_atomics(cl_device_id *device)
+{
+
+    cl_int err;
+    size_t size;
+    char *value;
+
+    clGetDeviceInfo(*device, CL_DEVICE_EXTENSIONS, 0, NULL, &size);
+    if (err != CL_SUCCESS ) {
+        printf("Unable to obtain device info for param\n");
+        return DP_GLUE_FAILURE;
+    }
+    value = (char*) malloc(size);
+    clGetDeviceInfo(*device, CL_DEVICE_EXTENSIONS, size, value, NULL);
+
+    if(strstr(value, "cl_khr_int64_base_atomics") != NULL) {
+        return DP_GLUE_SUCCESS;
+    } else {
+        return DP_GLUE_FAILURE;
+    }
+}
+
+static int support_float64_atomics(cl_device_id *device)
+{
+
+    cl_int err;
+    size_t size;
+    char *value;
+
+    clGetDeviceInfo(*device, CL_DEVICE_EXTENSIONS, 0, NULL, &size);
+    if (err != CL_SUCCESS ) {
+        printf("Unable to obtain device info for param\n");
+        return DP_GLUE_FAILURE;
+    }
+    value = (char*) malloc(size);
+    clGetDeviceInfo(*device, CL_DEVICE_EXTENSIONS, size, value, NULL);
+
+    if(strstr(value, "cl_khr_fp64") != NULL) {
+        return DP_GLUE_SUCCESS;
+    } else {
+        return DP_GLUE_FAILURE;
+    }
+}
 
 /*!
  *
@@ -332,6 +376,19 @@ static int create_dp_env_t (cl_platform_id* platforms,
 
     env->device = *device;
     env ->dump_fn = dump_device_info;
+
+    if (DP_GLUE_SUCCESS == support_int64_atomics(device)) {
+        env->support_int64_atomics = 1;
+    } else {
+        env->support_int64_atomics = 0;
+    }
+
+    if (DP_GLUE_SUCCESS == support_float64_atomics(device)) {
+        env->support_float64_atomics = 1;
+    } else {
+        env->support_float64_atomics = 0;
+    }
+
     free(device);
     *env_t_ptr = env;
 

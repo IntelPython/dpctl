@@ -41,6 +41,7 @@ export OpenCL_LIBDIR=${DPCPP_ROOT}/lib
 export DPPL_ONEAPI_INTERFACE_LIBDIR=${PREFIX}/lib
 export DPPL_ONEAPI_INTERFACE_INCLDIR=${PREFIX}/include
 
+
 # FIXME: How to pass this using setup.py? This flags is needed when
 # dpcpp compiles the generated cpp file.
 export CFLAGS="-fPIC -O3 ${CFLAGS}"

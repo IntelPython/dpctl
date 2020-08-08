@@ -48,6 +48,8 @@ struct dp_env
     void *queue;
     unsigned int max_work_item_dims;
     size_t max_work_group_size;
+    int support_int64_atomics;
+    int support_float64_atomics;
     int (*dump_fn) (void *);
 };
 
