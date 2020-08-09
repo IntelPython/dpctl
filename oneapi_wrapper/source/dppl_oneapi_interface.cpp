@@ -225,8 +225,9 @@ int64_t DpplOneAPIRuntime::resetGlobalQueue (sycl_device_type DeviceTy,
     if(gRtHelper.active_queues_.empty())
         return error_reporter("Why is there no previous global context?");
 
-    // Remove the previous global queue, which is the first queue added
-    // to the deque when the Runtime is initialized
+    // Remove the previous global queue, which if never previously reset will
+    // be the first queue that was added to the deque when the Runtime was
+    // initialized.
     gRtHelper.active_queues_.pop_back();
 
     switch (DeviceTy)
