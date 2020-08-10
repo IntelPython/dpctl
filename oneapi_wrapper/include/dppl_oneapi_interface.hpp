@@ -29,6 +29,16 @@
 #include <cstdlib>
 #include <deque>
 
+#ifdef _WIN32
+#    ifdef DPPLOneapiInterface_EXPORTS
+#        define DPPL_API __declspec(dllexport)
+#    else
+#        define DPPL_API __declspec(dllimport)
+#    endif
+#elif
+#    define DPPL_API
+#endif
+
 namespace dppl
 {
 
@@ -59,26 +69,35 @@ enum class sycl_device_type : unsigned int
 class DpplOneAPIRuntime
 {
 public:
+    DPPL_API
     int64_t getNumPlatforms (size_t *platforms) const;
+    DPPL_API
     int64_t getCurrentQueue (void **Q) const;
+    DPPL_API
     int64_t getQueue (void **Q,
                       dppl::sycl_device_type DeviceTy,
                       size_t DNum = 0) const;
+    DPPL_API
     int64_t resetGlobalQueue (dppl::sycl_device_type DeviceTy,
                               size_t DNum = 0);
     /*!
      * Push a new sycl queue to the top of the activate_queues deque. The
      * newly activated queue is returned to caller inside the Q object.
      */
+    DPPL_API
     int64_t activateQueue (void **Q,
                            dppl::sycl_device_type DeviceTy,
                            size_t DNum);
+    DPPL_API
     int64_t deactivateCurrentQueue ();
+    DPPL_API
     int64_t dump () const;
+    DPPL_API
     int64_t dump_queue (const void *Q) const;
 };
 
 
+DPPL_API
 int64_t deleteQueue (void *Q);
 
 } /* end of namespace dppl */
