@@ -30,6 +30,7 @@ REM required by oneapi_interface
 set "DPPL_ONEAPI_INTERFACE_LIBDIR=%LIBRARY_PREFIX%/lib"
 set "DPPL_ONEAPI_INTERFACE_INCLDIR=%LIBRARY_PREFIX%/include"
 
+"%PYTHON%" setup.py clean --all
 "%PYTHON%" setup.py build
 "%PYTHON%" setup.py install
 IF %ERRORLEVEL% NEQ 0 exit 1
