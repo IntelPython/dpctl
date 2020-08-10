@@ -1,5 +1,7 @@
 from __future__ import print_function
+
 from dppl import runtime, device_context, device_type
+
 
 # Global runtime object inside dppl
 rt = runtime

@@ -23,10 +23,10 @@
 ### functions.
 ##===----------------------------------------------------------------------===##
 
-from cffi import FFI
 import os
-import sys
-from distutils import sysconfig
+
+from cffi import FFI
+
 
 ffi = FFI()
 

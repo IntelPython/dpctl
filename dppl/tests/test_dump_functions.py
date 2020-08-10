@@ -14,14 +14,16 @@
 # limitations under the License.
 #******************************************************************************/
 
-import unittest
-import dppl
-import dppl.ocldrv as drv
 from contextlib import contextmanager
 import ctypes
+import dppl
 import io
 import os, sys
 import tempfile
+import unittest
+
+import dppl.ocldrv as drv
+
 
 libc = ctypes.CDLL(None)
 c_stdout = ctypes.c_void_p.in_dll(libc, 'stdout')

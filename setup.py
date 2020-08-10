@@ -21,12 +21,15 @@
 ### \file
 ### This file builds the dppl and dppl.ocldrv extension modules.
 ##===----------------------------------------------------------------------===##
-import sys
-import numpy as np
 import os
+import sys
 import versioneer
-from setuptools import setup, Extension
+
 from Cython.Build import cythonize
+from setuptools import setup, Extension
+
+import numpy as np
+
 
 requirements = [
     'cffi>=1.0.0',

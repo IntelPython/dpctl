@@ -27,7 +27,7 @@ if [[ conda_build_ret -ne 0 ]]; then
     esac
 fi
 
-export ONEAPI_ROOT="/opt/intel/inteloneapi"
+export ONEAPI_ROOT="/opt/intel/oneapi"
 
 conda build --output-folder ${CONDA_PKG_DIR} ${CHANNELS} conda-recipe
 

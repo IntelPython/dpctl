@@ -41,12 +41,14 @@
 
 from __future__ import absolute_import, division, print_function
 
-from ._dppl_bindings import ffi, lib
-from numpy import ndarray
 from contextlib import contextmanager
 import ctypes
-
 import logging
+
+from numpy import ndarray
+
+from ._dppl_bindings import ffi, lib
+
 
 __author__ = "Intel Corp."
 

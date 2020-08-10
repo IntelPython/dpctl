@@ -47,7 +47,8 @@
 '''
 __author__ = "Intel Corp."
 
-from ._version import get_versions
 from ._oneapi_interface import *
+from ._version import get_versions
+
 __version__ = get_versions()['version']
 del get_versions
