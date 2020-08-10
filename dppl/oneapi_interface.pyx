@@ -73,18 +73,11 @@ cdef void delete_queue (object cap):
     deleteQueue(PyCapsule_GetPointer(cap, NULL))
 
 
-cdef class DpplRuntime:
+cdef class _DpplRuntime:
     cdef DpplOneAPIRuntime rt
 
     def __cinit__ (self):
         self.rt = DpplOneAPIRuntime()
-
-    def get_num_platforms (self):
-        ''' Returns the number of available SYCL/OpenCL platforms.
-        '''
-        cdef size_t num_platforms = 0
-        self.rt.getNumPlatforms(&num_platforms)
-        return num_platforms
 
     def _activate_queue (self, device_ty, device_id):
         cdef void *queue_ptr
@@ -101,28 +94,12 @@ cdef class DpplRuntime:
     def _deactivate_current_queue (self):
         self.rt.deactivateCurrentQueue()
 
-    def get_current_queue (self):
-        ''' Returns the activated SYCL queue as a PyCapsule.
-        '''
-        cdef void* queue_ptr = NULL;
-        self.rt.getCurrentQueue(&queue_ptr);
-        return PyCapsule_New(queue_ptr, NULL, &delete_queue)
-
-#    def set_global_queue (self, device_ty, device_id):
-#        if device_ty == device_type.gpu:
-#            self.rt.setGlobalContextWithGPU(device_id)
-#        elif device_ty == device_type.cpu:
-#            self.rt.setGlobalContextWithCPU(device_id)
-#        else:
-#            e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
-#            raise e
-
     def dump (self):
         ''' Prints information about the Runtime object.
         '''
         return self.rt.dump()
 
-    def dump_queue (self, queue_cap):
+    def dump_queue_info (self, queue_cap):
         ''' Prints information about the SYCL queue object.
         '''
         if PyCapsule_IsValid(queue_cap, NULL):
@@ -130,8 +107,53 @@ cdef class DpplRuntime:
         else:
             raise ValueError("Expected a PyCapsule encapsulating a SYCL queue")
 
-# Global runtime object
-runtime = DpplRuntime()
+    def get_current_queue (self):
+        ''' Returns the activated SYCL queue as a PyCapsule.
+        '''
+        cdef void* queue_ptr = NULL;
+        self.rt.getCurrentQueue(&queue_ptr);
+        return PyCapsule_New(queue_ptr, NULL, &delete_queue)
+
+    def get_num_platforms (self):
+        ''' Returns the number of available SYCL/OpenCL platforms.
+        '''
+        cdef size_t num_platforms = 0
+        self.rt.getNumPlatforms(&num_platforms)
+        return num_platforms
+
+    def set_default_queue (self, device_ty, device_id):
+        if device_ty == device_type.gpu:
+            self.rt.resetGlobalQueue(_device_type._GPU, device_id)
+        elif device_ty == device_type.cpu:
+            self.rt.resetGlobalQueue(_device_type._CPU, device_id)
+        else:
+            e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
+            raise e
+
+# thread-local storage
+from threading import local as threading_local
+
+# Initialize a thread local instance of _DpplRuntime
+_tls = threading_local()
+_tls._in_dppl_ctxt = False
+_tls._runtime      = _DpplRuntime()
+
+
+################################################################################
+#--------------------------------- Public API ---------------------------------#
+################################################################################
+
+
+def is_in_dppl_ctxt ():
+    return _tls._in_dppl_ctxt
+
+
+dump              = _tls._runtime.dump
+dump_queue_info   = _tls._runtime.dump_queue_info
+get_current_queue = _tls._runtime.get_current_queue
+get_num_platforms = _tls._runtime.get_num_platforms
+set_default_queue = _tls._runtime.set_default_queue
+
 
 from contextlib import contextmanager
 
@@ -146,12 +168,13 @@ def device_context (dev=device_type.gpu, device_num=0):
     # If set_context is unable to create a new context an exception is raised.
     try:
         ctxt = None
-        ctxt = runtime._activate_queue(dev, device_num)
+        _tls._in_dppl_ctxt = True
+        ctxt = _tls._runtime._activate_queue(dev, device_num)
         yield ctxt
     finally:
         # Code to release resource
         if ctxt:
-            print("Removing the context from the deque of active contexts")
-            runtime._deactivate_current_queue()
+            _tls._runtime._deactivate_current_queue()
+            _tls._in_dppl_ctxt = False
         else:
             print("No context was created so nothing to do")
