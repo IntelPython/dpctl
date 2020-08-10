@@ -9,7 +9,6 @@ source:
 
 build:
     number: 0
-    skip: True  # [not linux]
     script_env:
         - ONEAPI_ROOT
 
