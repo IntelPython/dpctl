@@ -106,7 +106,13 @@ public:
     friend dppl::DpplOneAPIRuntime;
 };
 
-DpplOneAPIRuntimeHelper gRtHelper;
+DpplOneAPIRuntimeHelper& get_gRtHelper()
+{
+    static DpplOneAPIRuntimeHelper * helper = new DpplOneAPIRuntimeHelper();
+    return *helper;
+}
+
+#define gRtHelper get_gRtHelper()
 
 } /* end of anonymous namespace */
 
