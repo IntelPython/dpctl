@@ -35,7 +35,7 @@
 #    else
 #        define DPPL_API __declspec(dllimport)
 #    endif
-#elif
+#else
 #    define DPPL_API
 #endif
 
