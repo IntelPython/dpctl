@@ -13,9 +13,14 @@ __pycache__/
 # CMake build and local install directory
 build
 install
+build_cmake
 
 # Emacs temp files
 *~
+
+# Eclipse project files
+.project
+.pydevproject
 
 # Distribution / packaging
 .Python
