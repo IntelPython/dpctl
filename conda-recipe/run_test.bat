@@ -1,4 +1,4 @@
-REM call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
+call "%ONEAPI_ROOT%/compiler/latest/env/vars.bat"
 REM IF %ERRORLEVEL% NEQ 0 exit 1
 
 "%PYTHON%" -c "import dppl"
