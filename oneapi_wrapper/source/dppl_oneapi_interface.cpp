@@ -322,3 +322,12 @@ int64_t DpplOneAPIRuntime::deactivateCurrentQueue ()
     gRtHelper.active_queues_.pop_front();
     return DPPL_SUCCESS;
 }
+
+
+int64_t DpplOneAPIRuntime::number_of_activated_queues (size_t &num)
+{
+    if (gRtHelper.active_queues_.empty())
+        return error_reporter("No default queue present.");
+    num = gRtHelper.active_queues_.size()-1;
+    return DPPL_SUCCESS;
+}

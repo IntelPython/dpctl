@@ -59,6 +59,7 @@ cdef extern from "dppl_oneapi_interface.hpp" namespace "dppl":
         int64_t activateQueue (void **Q, _device_type DTy,
                                size_t device_num) except -1
         int64_t deactivateCurrentQueue () except -1
+        int64_t number_of_activated_queues (size_t &num) except -1
         int64_t dump () except -1
         int64_t dump_queue (const void *Q) except -1
 
@@ -103,7 +104,7 @@ cdef class _DpplRuntime:
         ''' Prints information about the SYCL queue object.
         '''
         if PyCapsule_IsValid(queue_cap, NULL):
-            self.rt.dump_queue(PyCapsule_GetPointer(queue_cap, NULL))
+            return self.rt.dump_queue(PyCapsule_GetPointer(queue_cap, NULL))
         else:
             raise ValueError("Expected a PyCapsule encapsulating a SYCL queue")
 
@@ -130,13 +131,21 @@ cdef class _DpplRuntime:
             e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
             raise e
 
+    def is_in_dppl_ctxt (self):
+        cdef size_t num = 0
+        self.rt.number_of_activated_queues(num)
+        if num:
+            return True
+        else:
+            return False
+
+
 # thread-local storage
 from threading import local as threading_local
 
 # Initialize a thread local instance of _DpplRuntime
 _tls = threading_local()
-_tls._in_dppl_ctxt = False
-_tls._runtime      = _DpplRuntime()
+_tls._runtime = _DpplRuntime()
 
 
 ################################################################################
@@ -144,16 +153,12 @@ _tls._runtime      = _DpplRuntime()
 ################################################################################
 
 
-def is_in_dppl_ctxt ():
-    return _tls._in_dppl_ctxt
-
-
 dump              = _tls._runtime.dump
 dump_queue_info   = _tls._runtime.dump_queue_info
 get_current_queue = _tls._runtime.get_current_queue
 get_num_platforms = _tls._runtime.get_num_platforms
 set_default_queue = _tls._runtime.set_default_queue
-
+is_in_dppl_ctxt   = _tls._runtime.is_in_dppl_ctxt
 
 from contextlib import contextmanager
 
@@ -168,13 +173,11 @@ def device_context (dev=device_type.gpu, device_num=0):
     # If set_context is unable to create a new context an exception is raised.
     try:
         ctxt = None
-        _tls._in_dppl_ctxt = True
         ctxt = _tls._runtime._activate_queue(dev, device_num)
         yield ctxt
     finally:
         # Code to release resource
         if ctxt:
             _tls._runtime._deactivate_current_queue()
-            _tls._in_dppl_ctxt = False
         else:
             print("No context was created so nothing to do")

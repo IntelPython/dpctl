@@ -74,6 +74,11 @@ public:
                            dppl::sycl_device_type DeviceTy,
                            size_t DNum);
     int64_t deactivateCurrentQueue ();
+    /*!
+     * Returns the number of SYCL queues that are currently available. Ignores
+     * the default global queue that is available.
+     */
+    int64_t number_of_activated_queues (size_t &num);
     int64_t dump () const;
     int64_t dump_queue (const void *Q) const;
 };
