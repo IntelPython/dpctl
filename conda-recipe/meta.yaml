@@ -9,7 +9,6 @@ source:
 
 build:
     number: 0
-    skip: True  # [not linux]
     script_env:
         - ONEAPI_ROOT
 
@@ -22,7 +21,8 @@ requirements:
         - cython
         - cmake
         - python
-        - make
+        - make  # [unix]
+        - ninja  # [win]
         - numpy >=1.17
     run:
         - python
@@ -36,3 +36,4 @@ about:
 extra:
     recipe-maintainers:
         - diptorup deb
+        - PokhodenkoSA
