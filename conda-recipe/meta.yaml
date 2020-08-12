@@ -21,7 +21,8 @@ requirements:
         - cython
         - cmake
         - python
-        - make
+        - make  # [unix]
+        - ninja  # [win]
         - numpy >=1.17
     run:
         - python
@@ -35,3 +36,4 @@ about:
 extra:
     recipe-maintainers:
         - diptorup deb
+        - PokhodenkoSA
