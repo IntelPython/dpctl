@@ -32,6 +32,19 @@ conda build --croot=C:/tmp conda-recipe
 conda install pydppl
 ```
 
+Using PyDPPL
+============
+PyDPPL relies on SYCL runtime. With Intel oneAPI installed you should activate it.
+
+On Windows:
+```cmd
+call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
+```
+On Linux:
+```bash
+source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
+```
+
 Examples
 ========
 See examples in folder `examples`.
