@@ -23,6 +23,10 @@ conda activate build-env
 ```bash
 conda build conda-recipe
 ```
+On Windows to cope with long file names:
+```cmd
+conda build --croot=C:/tmp conda-recipe
+```
 3. Install conda package
 ```bash
 conda install pydppl
