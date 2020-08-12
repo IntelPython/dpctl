@@ -11,7 +11,7 @@ set "DPCPP_ROOT=%ONEAPI_ROOT%/compiler/latest/windows"
 cmake -G Ninja ^
     -DCMAKE_BUILD_TYPE=Release ^
     "-DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX%" ^
-    "-DCMAKE_PREFIX_PATH=%INSTALL_PREFIX%" ^
+    "-DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%" ^
     "-DDPCPP_ROOT=%DPCPP_ROOT%" ^
     "%SRC_DIR%/oneapi_wrapper"
 IF %ERRORLEVEL% NEQ 0 exit 1
