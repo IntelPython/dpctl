@@ -3,21 +3,53 @@ What?
 A lightweight Python package exposing a subset of OpenCL and SYCL
 functionalities.
 
+Requirements
+============
+- Install Conda
+- Install Intel oneAPI
+    - Set environment variable `ONEAPI_ROOT`
+        - Windows: `C:\Program Files (x86)\Intel\oneAPI\`
+        - Linux: `/opt/intel/oneapi`
+- Install OpenCL HD graphics drivers
 
-How to install?
-===
-1. Install oneAPI and OpenCL HD graphics drivers.
-2. Install conda or miniconda (you can use the conda that comes with oneAPI).
-3. [Optional] Create and activate a conda environment:
+Build and Install Conda Package
+==================================
+1. Create and activate conda build environment
+```bash
+conda create -n build-env conda-build
+conda activate build-env
+```
+2. Build conda package
+```bash
+conda build conda-recipe
+```
+On Windows to cope with [long file names](https://github.com/IntelPython/pydppl/issues/15):
+```cmd
+conda build --croot=C:/tmp conda-recipe
+```
+3. Install conda package
+```bash
+conda install pydppl
+```
 
-    ```bash
-    conda env create -n dppl-env -f scripts/environment.yml`
-    conda activate dppl-env
-    ```
-4. Run `./scripts/build_for_conda.sh`
+Using PyDPPL
+============
+PyDPPL relies on SYCL runtime. With Intel oneAPI installed you should activate it.
 
-Examples:
-===
-   Run create_sycl_queues.py under examples.
+On Windows:
+```cmd
+call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
+```
+On Linux:
+```bash
+source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
+```
 
-   `python examples/create_sycl_queues.py`
+Examples
+========
+See examples in folder `examples`.
+
+Run examples:
+```bash
+python examples/create_sycl_queues.py
+```

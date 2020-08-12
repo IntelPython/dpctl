@@ -99,6 +99,11 @@ def getpyexts():
     elif IS_MAC:
         librarys = [dppl_oneapi_interface_lib]
 
+    if IS_LIN or IS_MAC:
+        runtime_library_dirs = [os.path.abspath('dppl')]
+    elif IS_WIN:
+        runtime_library_dirs = []
+
     exts = cythonize(Extension('dppl._oneapi_interface',
                                [os.path.abspath('dppl/oneapi_interface.pyx'),],
                                 depends=[dppl_oneapi_interface_include,],
@@ -108,7 +113,7 @@ def getpyexts():
                                 extra_link_args=ela,
                                 libraries=libs,
                                 library_dirs=librarys,
-                                runtime_library_dirs=[os.path.abspath('dppl')],
+                                runtime_library_dirs=runtime_library_dirs,
                                 language='c++'))
     return exts
 
