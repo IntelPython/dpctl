@@ -49,7 +49,7 @@ if dpglue_incldir is None:
 glue_h = ''.join(list(filter(lambda x: len(x) > 0 and x[0] != "#",
                              open(dpglue_incldir +
                              '/dppl_opencl_interface.h', 'r')
-                             .readlines())))
+                             .readlines()))).replace('DPPL_API', '')
 
 # cdef() expects a single string declaring the C types, functions and
 # globals needed to use the shared object. It must be in valid C syntax.

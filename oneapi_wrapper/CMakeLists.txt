@@ -150,7 +150,7 @@ if(WIN32)
     target_link_libraries(
         DPPLOpenCLInterface
         PRIVATE
-        ${OpenCL_INCLUDE_DIR}/../lib/x64/OpenCL.lib
+        ${DPCPP_ROOT}/lib/OpenCL.lib
     )
 endif()
 
