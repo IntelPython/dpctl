@@ -12,7 +12,7 @@ Requirements
         - Linux: `/opt/intel/oneapi`
 - Install OpenCL HD graphics drivers
 
-Building and Install Conda Package
+Build and Install Conda Package
 ==================================
 1. Create and activate conda build environment
 ```bash
