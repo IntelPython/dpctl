@@ -1,4 +1,4 @@
-##===---------- oneapi_interface.pyx - DPPL interface -----*- Cython -*----===##
+##===------ sycl_queue_interface.pyx - DPPL interface -----*- Cython -*----===##
 ##
 ##               Python Data Parallel Processing Library (PyDPPL)
 ##
@@ -19,7 +19,8 @@
 ##===----------------------------------------------------------------------===##
 ###
 ### \file
-### This file implements the Cython interface for the PyDPPL package.
+### This file implements the Cython interface for our sycl::queue wrapper
+### functions.
 ###
 ##===----------------------------------------------------------------------===##
 
