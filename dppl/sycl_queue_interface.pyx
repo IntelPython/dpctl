@@ -34,6 +34,10 @@ from libcpp.memory cimport shared_ptr, make_shared
 from cpython.pycapsule cimport (PyCapsule_New,
                                 PyCapsule_IsValid,
                                 PyCapsule_GetPointer)
+import logging
+
+logger = logging.getLogger(__name__)
+
 from enum import Enum, auto
 
 class device_type(Enum):
@@ -181,4 +185,4 @@ def device_context (dev=device_type.gpu, device_num=0):
         if ctxt:
             _tls._runtime._deactivate_current_queue()
         else:
-            print("No context was created so nothing to do")
+            logger.debug("No context was created so nothing to do")
