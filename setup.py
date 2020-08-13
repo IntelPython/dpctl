@@ -26,7 +26,7 @@ import sys
 import versioneer
 
 from Cython.Build import cythonize
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 
 import numpy as np
 
@@ -125,7 +125,7 @@ setup(
     license="Apache 2.0",
     author="Intel Corporation",
     url='https://github.com/IntelPython/PyDPPL',
-    packages=['dppl'],
+    packages=find_packages(include=["dppl", "dppl.*"]),
     ext_modules = getpyexts(),
     setup_requires=requirements,
     cffi_modules=[
