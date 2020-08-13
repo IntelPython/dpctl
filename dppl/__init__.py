@@ -47,7 +47,7 @@
 '''
 __author__ = "Intel Corp."
 
-from ._oneapi_interface import *
+from ._sycl_queue_interface import *
 from ._version import get_versions
 
 __version__ = get_versions()['version']

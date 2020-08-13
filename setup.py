@@ -104,8 +104,8 @@ def getpyexts():
     elif IS_WIN:
         runtime_library_dirs = []
 
-    exts = cythonize(Extension('dppl._oneapi_interface',
-                               [os.path.abspath('dppl/oneapi_interface.pyx'),],
+    exts = cythonize(Extension('dppl._sycl_queue_interface',
+                               [os.path.abspath('dppl/sycl_queue_interface.pyx'),],
                                 depends=[dppl_oneapi_interface_include,],
                                 include_dirs=[np.get_include(),
                                               dppl_oneapi_interface_include],
