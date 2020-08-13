@@ -47,7 +47,7 @@ cdef class UnsupportedDeviceTypeError(Exception):
     pass
 
 
-cdef extern from "dppl_oneapi_interface.hpp" namespace "dppl":
+cdef extern from "dppl_sycl_queue_interface.hpp" namespace "dppl":
     cdef cppclass DpplOneAPIRuntime:
         DpplOneAPIRuntime () except +
         int64_t getNumPlatforms (size_t *num_platform) except -1

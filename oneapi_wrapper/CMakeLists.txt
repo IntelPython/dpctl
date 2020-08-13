@@ -100,7 +100,7 @@ message(STATUS "OpenCL_LIBRARY: ${OpenCL_LIBRARY}")
 add_library(
   DPPLOneapiInterface
   SHARED
-  source/dppl_oneapi_interface.cpp
+  source/dppl_sycl_queue_interface.cpp
 )
 
 # Install DPPLOpenCLInterface

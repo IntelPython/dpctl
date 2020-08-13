@@ -1,4 +1,4 @@
-//===-- dppl_oneapi_interface.cpp - DPPL-SYCL interface ---*- C++ -*-------===//
+//===-- dppl_sycl_queue_interface.cpp - DPPL-SYCL interface ---*- C++ -*---===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -20,10 +20,10 @@
 ///
 /// \file
 /// This file implements the data types and functions declared in
-/// dppl_oneapi_interface.hpp.
+/// dppl_sycl_queue_interface.hpp.
 ///
 //===----------------------------------------------------------------------===//
-#include "dppl_oneapi_interface.hpp"
+#include "dppl_sycl_queue_interface.hpp"
 #include "dppl_error_codes.hpp"
 #include <cassert>
 #include <iomanip>
