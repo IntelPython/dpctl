@@ -106,8 +106,8 @@ public:
     friend dppl::DpplOneAPIRuntime;
 };
 
-// This singleton function is needed to create the DpplOneAPIRuntimeHelper object 
-//  in a predictable manner without which there is a chance of segfault.
+// This singleton function is needed to create the DpplOneAPIRuntimeHelper
+// object in a predictable manner without which there is a chance of segfault.
 DpplOneAPIRuntimeHelper& get_gRtHelper()
 {
     static DpplOneAPIRuntimeHelper * helper = new DpplOneAPIRuntimeHelper();
