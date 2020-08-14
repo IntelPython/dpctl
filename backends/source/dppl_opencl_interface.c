@@ -1,4 +1,4 @@
-//===------ dppl_oneapi_interface.c - DPPL-OpenCL interface ----*- C -*----===//
+//===------ dppl_opencl_interface.c - DPPL-OpenCL interface ----*- C -*----===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //

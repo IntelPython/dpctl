@@ -1,4 +1,4 @@
-//===-- dppl_oneapi_interface.hpp - DPPL-SYCL interface ---*- C++ -*-------===//
+//===--- dppl_sycl_interface.hpp - DPPL-SYCL interface ----*- C++ -*-------===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -30,7 +30,7 @@
 #include <deque>
 
 #ifdef _WIN32
-#    ifdef DPPLOneapiInterface_EXPORTS
+#    ifdef DPPLSyclInterface_EXPORTS
 #        define DPPL_API __declspec(dllexport)
 #    else
 #        define DPPL_API __declspec(dllimport)
@@ -59,14 +59,14 @@ enum class sycl_device_type : unsigned int
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// DpplOneAPIRuntime /////////////////////////////
+/////////////////////////////// DpplSyclQueueManager ///////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-/*! \class DpplOneAPIRuntime
+/*! \class DpplSyclQueueManager
  *  \brief A runtime and context factory class
  *
  */
-class DpplOneAPIRuntime
+class DpplSyclQueueManager
 {
 public:
     DPPL_API

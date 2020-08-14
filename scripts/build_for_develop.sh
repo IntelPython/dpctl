@@ -20,18 +20,18 @@ cmake                                                       \
     -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/bin/dpcpp       \
     -DPYTHON_INCLUDE_DIR=${PYTHON_INC}                      \
     -DNUMPY_INCLUDE_DIR=${NUMPY_INC}                        \
-    ../oneapi_wrapper
+    ../backends
 
 make V=1 -n -j 4 && make install
 
 popd
 cp install/lib/*.so dppl/
 
-export DP_GLUE_LIBDIR=${INSTALL_PREFIX}/lib
-export DP_GLUE_INCLDIR=${INSTALL_PREFIX}/include
+export DPPL_OPENCL_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
+export DPPL_OPENCL_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
 export OpenCL_LIBDIR=/usr/lib/x86_64-linux-gnu/
-export DPPL_ONEAPI_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
-export DPPL_ONEAPI_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
+export DPPL_SYCL_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
+export DPPL_SYCL_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
 
 export CC=clang
 export CXX=dpcpp

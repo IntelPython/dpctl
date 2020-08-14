@@ -1,4 +1,4 @@
-//===-- dppl_oneapi_interface.cpp - DPPL-SYCL interface ---*- C++ -*-------===//
+//===--- dppl_sycl_interface.cpp - DPPL-SYCL interface -----*- C++ -*------===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -20,10 +20,10 @@
 ///
 /// \file
 /// This file implements the data types and functions declared in
-/// dppl_oneapi_interface.hpp.
+/// dppl_sycl_interface.hpp.
 ///
 //===----------------------------------------------------------------------===//
-#include "dppl_oneapi_interface.hpp"
+#include "dppl_sycl_interface.hpp"
 #include "dppl_error_codes.hpp"
 #include <cassert>
 #include <iomanip>
@@ -80,14 +80,14 @@ int64_t error_reporter (const std::string & msg)
     return DPPL_FAILURE;
 }
 
-class DpplOneAPIRuntimeHelper
+class DpplSyclQueueManagerHelper
 {
     size_t                                  num_platforms_;
     cl::sycl::vector_class<cl::sycl::queue> cpu_queues_;
     cl::sycl::vector_class<cl::sycl::queue> gpu_queues_;
     std::deque<cl::sycl::queue>             active_queues_;
 public:
-    DpplOneAPIRuntimeHelper ()
+    DpplSyclQueueManagerHelper ()
         : num_platforms_(platform::get_platforms().size())
     {
         for(auto d : device::get_devices(info::device_type::cpu))
@@ -98,19 +98,19 @@ public:
         active_queues_.emplace_back(default_selector());
     }
 
-    ~DpplOneAPIRuntimeHelper ()
+    ~DpplSyclQueueManagerHelper ()
     {
 
     }
 
-    friend dppl::DpplOneAPIRuntime;
+    friend dppl::DpplSyclQueueManager;
 };
 
-// This singleton function is needed to create the DpplOneAPIRuntimeHelper object 
-//  in a predictable manner without which there is a chance of segfault.
-DpplOneAPIRuntimeHelper& get_gRtHelper()
+// This singleton function is needed to create the DpplOneAPIRuntimeHelper
+// object in a predictable manner without which there is a chance of segfault.
+DpplSyclQueueManagerHelper& get_gRtHelper()
 {
-    static DpplOneAPIRuntimeHelper * helper = new DpplOneAPIRuntimeHelper();
+    static auto * helper = new DpplSyclQueueManagerHelper();
     return *helper;
 }
 
@@ -132,18 +132,18 @@ int64_t dppl::deleteQueue (void *Q)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////// DpplOneAPIRuntime //////////////////////////////
+////////////////////////////// DpplSyclQueueManager ////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 
-int64_t DpplOneAPIRuntime::dump_queue (const void *QPtr) const
+int64_t DpplSyclQueueManager::dump_queue (const void *QPtr) const
 {
     auto Q = static_cast<const queue*>(QPtr);
     dump_device_info(Q->get_device());
     return DPPL_SUCCESS;
 }
 
-int64_t DpplOneAPIRuntime::dump () const
+int64_t DpplSyclQueueManager::dump () const
 {
     size_t i = 0;
 
@@ -179,14 +179,14 @@ int64_t DpplOneAPIRuntime::dump () const
 }
 
 
-int64_t DpplOneAPIRuntime::getNumPlatforms (size_t *platforms) const
+int64_t DpplSyclQueueManager::getNumPlatforms (size_t *platforms) const
 {
     *platforms = gRtHelper.num_platforms_;
     return DPPL_SUCCESS;
 }
 
 
-int64_t DpplOneAPIRuntime::getCurrentQueue (void **QPtr) const
+int64_t DpplSyclQueueManager::getCurrentQueue (void **QPtr) const
 {
     if (gRtHelper.active_queues_.empty())
         return error_reporter("No currently active queues.");
@@ -196,7 +196,7 @@ int64_t DpplOneAPIRuntime::getCurrentQueue (void **QPtr) const
 }
 
 
-int64_t DpplOneAPIRuntime::getQueue (void **QPtr, sycl_device_type DeviceTy,
+int64_t DpplSyclQueueManager::getQueue (void **QPtr, sycl_device_type DeviceTy,
                                      size_t DNum) const
 {
     if (DeviceTy == sycl_device_type::cpu) {
@@ -227,7 +227,7 @@ int64_t DpplOneAPIRuntime::getQueue (void **QPtr, sycl_device_type DeviceTy,
 }
 
 
-int64_t DpplOneAPIRuntime::resetGlobalQueue (sycl_device_type DeviceTy,
+int64_t DpplSyclQueueManager::resetGlobalQueue (sycl_device_type DeviceTy,
                                              size_t DNum)
 {
     if(gRtHelper.active_queues_.empty())
@@ -274,7 +274,7 @@ int64_t DpplOneAPIRuntime::resetGlobalQueue (sycl_device_type DeviceTy,
 
 
 int64_t
-DpplOneAPIRuntime::activateQueue (void **QPtr,
+DpplSyclQueueManager::activateQueue (void **QPtr,
                                   sycl_device_type DeviceTy,
                                   size_t DNum)
 {
@@ -322,7 +322,7 @@ DpplOneAPIRuntime::activateQueue (void **QPtr,
 }
 
 
-int64_t DpplOneAPIRuntime::deactivateCurrentQueue ()
+int64_t DpplSyclQueueManager::deactivateCurrentQueue ()
 {
     if(gRtHelper.active_queues_.empty())
         return error_reporter("No active contexts");
