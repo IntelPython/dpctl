@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# We need dpcpp to compile dppl_oneapi_interface
+# We need dpcpp to compile dppl_sycl_interface
 if [ ! -z "${ONEAPI_ROOT}" ]; then
     # Suppress error b/c it could fail on Ubuntu 18.04
     source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh || true
@@ -27,19 +27,20 @@ cmake                                                       \
     -DDPCPP_ROOT=${DPCPP_ROOT}                              \
     -DPYTHON_INCLUDE_DIR=${PYTHON_INC}                      \
     -DNUMPY_INCLUDE_DIR=${NUMPY_INC}                        \
-    ../oneapi_wrapper
+    ../backends
 
 make -j 4 && make install
 
 cd ..
 
-# required by dpglue
-export DP_GLUE_LIBDIR=${PREFIX}
-export DP_GLUE_INCLDIR=${PREFIX}/include
+# required by dppl.opencl_core
+export DPPL_OPENCL_INTERFACE_LIBDIR=${PREFIX}
+export DPPL_OPENCL_INTERFACE_INCLDIR=${PREFIX}/include
 export OpenCL_LIBDIR=${DPCPP_ROOT}/lib
-# required by oneapi_interface
-export DPPL_ONEAPI_INTERFACE_LIBDIR=${PREFIX}/lib
-export DPPL_ONEAPI_INTERFACE_INCLDIR=${PREFIX}/include
+
+# required by dppl.sycl_core
+export DPPL_SYCL_INTERFACE_LIBDIR=${PREFIX}/lib
+export DPPL_SYCL_INTERFACE_INCLDIR=${PREFIX}/include
 
 
 # FIXME: How to pass this using setup.py? This flags is needed when

@@ -39,15 +39,14 @@
     Global data members:
         runtime - An instance of the Runtime class.
 
-    Please use `pydoc dppl._oneapi_interface` to look at the current API
-    for dppl.
+    Please use `pydoc dppl._sycl_core` to look at the current API for dppl.
 
     Please use `pydoc dppl.ocldrv` to look at the current API for dppl.ocldrv.
 
 '''
 __author__ = "Intel Corp."
 
-from ._oneapi_interface import *
+from ._sycl_core import *
 from ._version import get_versions
 
 __version__ = get_versions()['version']

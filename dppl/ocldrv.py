@@ -47,7 +47,7 @@ import logging
 
 from numpy import ndarray
 
-from ._dppl_bindings import ffi, lib
+from ._opencl_core import ffi, lib
 
 
 __author__ = "Intel Corp."

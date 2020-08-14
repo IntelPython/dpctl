@@ -49,8 +49,8 @@ elif sys.platform in ['win32', 'cygwin']:
 else:
     assert False, sys.platform + ' not supported'
 
-dppl_oneapi_interface_lib     = os.environ['DPPL_ONEAPI_INTERFACE_LIBDIR']
-dppl_oneapi_interface_include = os.environ['DPPL_ONEAPI_INTERFACE_INCLDIR']
+dppl_sycl_interface_lib     = os.environ['DPPL_SYCL_INTERFACE_LIBDIR']
+dppl_sycl_interface_include = os.environ['DPPL_SYCL_INTERFACE_INCLDIR']
 sycl_lib = os.environ['ONEAPI_ROOT']+"\compiler\latest\windows\lib"
 
 def get_sdl_cflags():
@@ -86,29 +86,29 @@ def getpyexts():
     librarys = []
 
     if IS_LIN:
-        libs += ['rt', 'DPPLOneapiInterface']
+        libs += ['rt', 'DPPLSyclInterface']
     elif IS_MAC:
         pass
     elif IS_WIN:
-        libs += ['DPPLOneapiInterface', 'sycl']
+        libs += ['DPPLSyclInterface', 'sycl']
 
     if IS_LIN:
-        librarys = [dppl_oneapi_interface_lib]
+        librarys = [dppl_sycl_interface_lib]
     elif IS_WIN:
-        librarys = [dppl_oneapi_interface_lib, sycl_lib]
+        librarys = [dppl_sycl_interface_lib, sycl_lib]
     elif IS_MAC:
-        librarys = [dppl_oneapi_interface_lib]
+        librarys = [dppl_sycl_interface_lib]
 
     if IS_LIN or IS_MAC:
         runtime_library_dirs = [os.path.abspath('dppl')]
     elif IS_WIN:
         runtime_library_dirs = []
 
-    exts = cythonize(Extension('dppl._oneapi_interface',
-                               [os.path.abspath('dppl/oneapi_interface.pyx'),],
-                                depends=[dppl_oneapi_interface_include,],
+    exts = cythonize(Extension('dppl._sycl_core',
+                               [os.path.abspath('dppl/sycl_core.pyx'),],
+                                depends=[dppl_sycl_interface_include,],
                                 include_dirs=[np.get_include(),
-                                              dppl_oneapi_interface_include],
+                                              dppl_sycl_interface_include],
                                 extra_compile_args=eca + get_other_cxxflags(),
                                 extra_link_args=ela,
                                 libraries=libs,
@@ -121,7 +121,7 @@ setup(
     name='pydppl',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    description="A lightweight Python wrapper for a subset of OpenCL and SYCL API.",
+    description="A lightweight Python wrapper for a subset of OpenCL and SYCL.",
     license="Apache 2.0",
     author="Intel Corporation",
     url='https://github.com/IntelPython/PyDPPL',
@@ -129,7 +129,7 @@ setup(
     ext_modules = getpyexts(),
     setup_requires=requirements,
     cffi_modules=[
-       "./dppl/driverapi.py:ffi"
+       "./dppl/opencl_core.py:ffi"
     ],
     install_requires=requirements,
     keywords='dppl',

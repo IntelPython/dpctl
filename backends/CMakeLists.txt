@@ -34,7 +34,7 @@ function (check_for_dpcpp)
             message(STATUS "dpcpp ver[${dpcpp_result}]: ${X}")
         endforeach()
     else()
-        message(FATAL_ERROR "DPCPP needed to build dppl_oneapi_interface")
+        message(FATAL_ERROR "DPCPP needed to build dppl_sycl_interface")
     endif()
 endfunction()
 
@@ -73,7 +73,7 @@ if(WIN32)
        -Wall -Wextra -Winit-self -Wuninitialized -Wmissing-declarations        \
        -fdiagnostics-color=auto -O3                                            \
     ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qstd=c++17")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3 -DDEBUG ")
 elseif(UNIX)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}                                        \
@@ -98,9 +98,9 @@ message(STATUS "OpenCL_LIBRARY: ${OpenCL_LIBRARY}")
 # Todo : Add build rules for doxygen
 
 add_library(
-  DPPLOneapiInterface
+  DPPLSyclInterface
   SHARED
-  source/dppl_oneapi_interface.cpp
+  source/dppl_sycl_interface.cpp
 )
 
 # Install DPPLOpenCLInterface
@@ -110,9 +110,9 @@ add_library(
   source/dppl_opencl_interface.c
 )
 
-# Install DPPLOneAPIInterface
+# Install DPPLSyclInterface
 target_include_directories(
-  DPPLOneapiInterface
+  DPPLSyclInterface
   PRIVATE
   ${CMAKE_SOURCE_DIR}/include/
   ${PYTHON_INCLUDE_DIR}
@@ -138,12 +138,12 @@ if(WIN32)
         ${DPCPP_ROOT}/include/sycl
     )
     target_include_directories(
-        DPPLOneapiInterface
+        DPPLSyclInterface
         PUBLIC
         ${DPCPP_ROOT}/include/sycl
     )
     target_link_libraries(
-        DPPLOneapiInterface
+        DPPLSyclInterface
         PRIVATE
         ${DPCPP_ROOT}/lib/sycl.lib
     )
@@ -156,7 +156,7 @@ endif()
 
 install(
   TARGETS
-  DPPLOneapiInterface
+  DPPLSyclInterface
   LIBRARY DESTINATION
   "${CMAKE_INSTALL_PREFIX}/lib/"
 )
