@@ -285,7 +285,7 @@ static int support_int64_atomics(cl_device_id *device)
     size_t size;
     char *value;
 
-    clGetDeviceInfo(*device, CL_DEVICE_EXTENSIONS, 0, NULL, &size);
+    err = clGetDeviceInfo(*device, CL_DEVICE_EXTENSIONS, 0, NULL, &size);
     if (err != CL_SUCCESS ) {
         printf("Unable to obtain device info for param\n");
         return DP_GLUE_FAILURE;
@@ -307,7 +307,7 @@ static int support_float64_atomics(cl_device_id *device)
     size_t size;
     char *value;
 
-    clGetDeviceInfo(*device, CL_DEVICE_EXTENSIONS, 0, NULL, &size);
+    err = clGetDeviceInfo(*device, CL_DEVICE_EXTENSIONS, 0, NULL, &size);
     if (err != CL_SUCCESS ) {
         printf("Unable to obtain device info for param\n");
         return DP_GLUE_FAILURE;

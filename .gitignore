@@ -3,7 +3,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-
 # C extensions and binary files
 *.o
 *.so
@@ -14,6 +13,9 @@ __pycache__/
 build
 build_cmake
 install
+
+# Code project files
+.vscode
 
 # Eclipse project files
 .project
