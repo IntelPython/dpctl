@@ -48,25 +48,26 @@ cdef class UnsupportedDeviceTypeError(Exception):
 
 
 cdef extern from "dppl_sycl_interface.hpp" namespace "dppl":
-    cdef cppclass DpplSyclQueueManager:
-        DpplSyclQueueManager () except +
-        int64_t getNumPlatforms (size_t *num_platform) except -1
-        int64_t getCurrentQueue (void **Q) except -1
-        int64_t getQueue (void **Q, _device_type DTy,
-                          size_t device_num) except -1
-        int64_t resetGlobalQueue (_device_type DTy,
-                                  size_t device_num) except -1
-        int64_t activateQueue (void **Q, _device_type DTy,
-                               size_t device_num) except -1
-        int64_t deactivateCurrentQueue () except -1
-        int64_t dump () except -1
-        int64_t dump_queue (const void *Q) except -1
-
-    cdef int64_t deleteQueue (void *Q) except -1
 
     cdef enum _device_type 'sycl_device_type':
         _GPU 'dppl::sycl_device_type::gpu'
         _CPU 'dppl::sycl_device_type::cpu'
+
+    cdef cppclass DpplSyclQueueManager:
+        DpplSyclQueueManager () except +
+        int64_t getNumPlatforms (size_t &num_platform) except -1
+        int64_t getCurrentQueue (void **Q) except -1
+        int64_t getQueue (void **Q, _device_type DTy,
+                          size_t device_num) except -1
+        int64_t setAsGlobalQueue (_device_type DTy,
+                                  size_t device_num) except -1
+        int64_t setAsCurrentQueue (void **Q, _device_type DTy,
+                                   size_t device_num) except -1
+        int64_t removeCurrentQueue () except -1
+        int64_t dump () except -1
+        int64_t dump_queue (const void *Q) except -1
+
+    cdef int64_t deleteQueue (void *Q) except -1
 
 # Destructor for a PyCapsule containing a SYCL queue
 cdef void delete_queue (object cap):
@@ -83,23 +84,23 @@ cdef class SyclQueueManager:
         ''' Returns the number of available SYCL/OpenCL platforms.
         '''
         cdef size_t num_platforms = 0
-        self.rt.getNumPlatforms(&num_platforms)
+        self.rt.getNumPlatforms(num_platforms)
         return num_platforms
 
-    def _activate_queue (self, device_ty, device_id):
+    def _set_as_current_queue (self, device_ty, device_id):
         cdef void *queue_ptr
         if device_ty == device_type.gpu:
-            self.rt.activateQueue(&queue_ptr, _device_type._GPU, device_id)
+            self.rt.setAsCurrentQueue(&queue_ptr, _device_type._GPU, device_id)
         elif device_ty == device_type.cpu:
-            self.rt.activateQueue(&queue_ptr, _device_type._CPU, device_id)
+            self.rt.setAsCurrentQueue(&queue_ptr, _device_type._CPU, device_id)
         else:
             e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
             raise e
 
         return PyCapsule_New(queue_ptr, NULL, &delete_queue)
 
-    def _deactivate_current_queue (self):
-        self.rt.deactivateCurrentQueue()
+    def _remove_current_queue (self):
+        self.rt.removeCurrentQueue()
 
     def get_current_queue (self):
         ''' Returns the activated SYCL queue as a PyCapsule.
@@ -146,12 +147,12 @@ def device_context (dev=device_type.gpu, device_num=0):
     # If set_context is unable to create a new context an exception is raised.
     try:
         ctxt = None
-        ctxt = runtime._activate_queue(dev, device_num)
+        ctxt = runtime._set_as_current_queue(dev, device_num)
         yield ctxt
     finally:
         # Code to release resource
         if ctxt:
             print("Removing the context from the deque of active contexts")
-            runtime._deactivate_current_queue()
+            runtime._remove_current_queue()
         else:
             print("No context was created so nothing to do")
