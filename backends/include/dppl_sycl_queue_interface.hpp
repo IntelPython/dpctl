@@ -25,18 +25,8 @@
 
 #pragma once
 
+#include "dppl_macros.hpp"
 #include <cstdlib>
-#include <deque>
-
-#ifdef _WIN32
-#    ifdef DPPLSyclInterface_EXPORTS
-#        define DPPL_API __declspec(dllexport)
-#    else
-#        define DPPL_API __declspec(dllimport)
-#    endif
-#else
-#    define DPPL_API
-#endif
 
 namespace dppl
 {
