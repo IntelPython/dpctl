@@ -1,6 +1,6 @@
 #!/bin/bash
 set +xe
-rm -rf install
+rm -rf build_cmake
 mkdir build_cmake
 pushd build_cmake
 

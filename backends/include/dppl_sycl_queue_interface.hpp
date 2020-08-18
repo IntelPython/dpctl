@@ -48,13 +48,13 @@ namespace dppl
  */
 enum class sycl_device_type : unsigned int
 {
-    cpu,
-    gpu,
-    accelerator,
-    custom,
-    automatic,
-    host,
-    all
+    DPPL_CPU,
+    DPPL_GPU,
+    DPPL_ACCELERATOR,
+    DPPL_CUSTOM,
+    DPPL_AUTOMATIC,
+    DPPL_HOST,
+    DPPL_ALL
 };
 
 
@@ -119,6 +119,26 @@ public:
      */
     DPPL_API
     int64_t getNumActivatedQueues (size_t &numQueues) const;
+
+    /*!
+     * @brief Get the number of GPU queues available on the system.
+     *
+     * @param    numQueues      Populated with the number of available GPU
+     *                          queues and returned to caller.
+     * @return   error_code     DPPL_SUCCESS or DPPL_FAILURE
+     */
+    DPPL_API
+    int64_t getNumGPUQueues (size_t &numQueues) const;
+
+    /*!
+     * @brief Get the number of CPU queues available on the system.
+     *
+     * @param    numQueues      Populated with the number of available CPU
+     *                          queues and returned to caller.
+     * @return   error_code     DPPL_SUCCESS or DPPL_FAILURE
+     */
+    DPPL_API
+    int64_t getNumCPUQueues (size_t &numQueues) const;
 
     /*!
     * @brief Set the default DPPL queue to the sycl::queue for the given device.

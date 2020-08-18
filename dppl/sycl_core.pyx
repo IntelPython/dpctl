@@ -44,25 +44,27 @@ class device_type(Enum):
 
 
 cdef class UnsupportedDeviceTypeError(Exception):
-    """This exception is raised when a device type other than CPU or GPU is
+    '''This exception is raised when a device type other than CPU or GPU is
        encountered.
-    """
+    '''
     pass
 
 
 cdef extern from "dppl_sycl_queue_interface.hpp" namespace "dppl":
 
     cdef enum _device_type 'sycl_device_type':
-        _GPU 'dppl::sycl_device_type::gpu'
-        _CPU 'dppl::sycl_device_type::cpu'
+        _GPU 'dppl::sycl_device_type::DPPL_GPU'
+        _CPU 'dppl::sycl_device_type::DPPL_CPU'
 
     cdef cppclass DpplSyclQueueManager:
         DpplSyclQueueManager () except +
         int64_t dump () except -1
         int64_t dumpDeviceInfo (const void *Q) except -1
         int64_t getCurrentQueue (void **Q) except -1
-        int64_t getNumPlatforms (size_t &num_platform) except -1
+        int64_t getNumCPUQueues (size_t &numQueues) except -1
+        int64_t getNumGPUQueues (size_t &numQueues) except -1
         int64_t getNumActivatedQueues (size_t &numQueues) const
+        int64_t getNumPlatforms (size_t &num_platform) except -1
         int64_t getQueue (void **Q, _device_type DTy,
                           size_t device_num) except -1
         int64_t removeCurrentQueue () except -1
@@ -137,6 +139,22 @@ cdef class _SyclQueueManager:
             e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
             raise e
 
+    def has_gpu_queues (self):
+        cdef size_t num = 0
+        self.rt.getNumGPUQueues(num)
+        if num:
+            return True
+        else:
+            return False
+
+    def has_cpu_queues (self):
+        cdef size_t num = 0
+        self.rt.getNumCPUQueues(num)
+        if num:
+            return True
+        else:
+            return False
+
     def dump (self):
         ''' Prints information about the Runtime object.
         '''
@@ -168,6 +186,8 @@ dump_device_info         = _qmgr.dump_device_info
 get_current_queue        = _qmgr.get_current_queue
 get_num_platforms        = _qmgr.get_num_platforms
 get_num_activated_queues = _qmgr.get_num_activated_queues
+has_cpu_queues           = _qmgr.has_cpu_queues
+has_gpu_queues           = _qmgr.has_gpu_queues
 has_sycl_platforms       = _qmgr.has_sycl_platforms
 set_default_queue        = _qmgr.set_default_queue
 is_in_dppl_ctxt          = _qmgr.is_in_dppl_ctxt

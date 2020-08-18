@@ -168,7 +168,7 @@ QMgrHelper::getQueue (void **Ptr2QPtr, sycl_device_type DeviceTy, size_t DNum)
 {
     switch (DeviceTy)
     {
-    case sycl_device_type::cpu:
+    case sycl_device_type::DPPL_CPU:
     {
         try {
             *Ptr2QPtr = new queue(QMgrHelper::cpu_queues.at(DNum));
@@ -179,7 +179,7 @@ QMgrHelper::getQueue (void **Ptr2QPtr, sycl_device_type DeviceTy, size_t DNum)
             return error_reporter(ss.str());
         }
     }
-    case sycl_device_type::gpu:
+    case sycl_device_type::DPPL_GPU:
     {
         try {
             *Ptr2QPtr = new queue(QMgrHelper::gpu_queues.at(DNum));
@@ -209,7 +209,7 @@ QMgrHelper::setAsDefaultQueue (sycl_device_type DeviceTy, size_t DNum)
 
     switch (DeviceTy)
     {
-    case sycl_device_type::cpu:
+    case sycl_device_type::DPPL_CPU:
     {
         try {
             active_queues[0] = cpu_queues.at(DNum);
@@ -221,7 +221,7 @@ QMgrHelper::setAsDefaultQueue (sycl_device_type DeviceTy, size_t DNum)
         }
         break;
     }
-    case sycl_device_type::gpu:
+    case sycl_device_type::DPPL_GPU:
     {
         try {
             active_queues[0] = gpu_queues.at(DNum);
@@ -257,7 +257,7 @@ QMgrHelper::setAsCurrentQueue (void **Ptr2QPtr,
 
     switch (DeviceTy)
     {
-    case sycl_device_type::cpu:
+    case sycl_device_type::DPPL_CPU:
     {
         try {
             active_queues.emplace_back(cpu_queues.at(DNum));
@@ -270,7 +270,7 @@ QMgrHelper::setAsCurrentQueue (void **Ptr2QPtr,
         }
         break;
     }
-    case sycl_device_type::gpu:
+    case sycl_device_type::DPPL_GPU:
     {
         try {
             active_queues.emplace_back(gpu_queues.at(DNum));
@@ -407,6 +407,24 @@ int64_t DpplSyclQueueManager::getNumActivatedQueues (size_t &numQueues) const
     if (QMgrHelper::active_queues.empty())
         return error_reporter("No active contexts");
     numQueues = QMgrHelper::active_queues.size() - 1;
+    return DPPL_SUCCESS;
+}
+
+/*!
+ * Returns the number of CPU queues.
+ */
+int64_t DpplSyclQueueManager::getNumCPUQueues (size_t &numQueues) const
+{
+    numQueues = QMgrHelper::cpu_queues.size();
+    return DPPL_SUCCESS;
+}
+
+/*!
+ * Returns the number of GPU queues.
+ */
+int64_t DpplSyclQueueManager::getNumGPUQueues (size_t &numQueues) const
+{
+    numQueues = QMgrHelper::gpu_queues.size();
     return DPPL_SUCCESS;
 }
 
