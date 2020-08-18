@@ -91,7 +91,10 @@ int64_t error_reporter (const std::string & msg)
 }
 
 /*!
- * @brief
+ * @brief A helper class to support the DPPLSyclQueuemanager.
+ *
+ * The QMgrHelper is needed so that sycl headers are not exposed at the
+ * top-level DPPL API.
  *
  */
 class QMgrHelper
@@ -100,63 +103,24 @@ public:
     static std::vector<cl::sycl::queue>   cpu_queues;
     static std::vector<cl::sycl::queue>   gpu_queues;
     static thread_local std::vector<cl::sycl::queue> active_queues;
-    /*!
-     * @brief Get the Queue object
-     *
-     * @param    QPtr           My Param doc
-     * @param    DeviceTy       My Param doc
-     * @param    DNum           My Param doc
-     * @return   {return}       My Param doc
-     */
+
     static int64_t
     getQueue (void **QPtr, sycl_device_type DeviceTy, size_t DNum);
 
-    /*!
-     * @brief Get the Current Queue object
-     *
-     * @param    q              My Param doc
-     * @return   {return}       My Param doc
-     */
     static int64_t
     getCurrentQueue (void **q);
 
-    /*!
-    * @brief Set the As Global Queue object
-    *
-    * @param    DeviceTy       My Param doc
-    * @param    DNum           My Param doc
-    * @return   {return}       My Param doc
-    */
     static int64_t
-    setAsGlobalQueue (sycl_device_type DeviceTy, size_t DNum);
+    setAsDefaultQueue (sycl_device_type DeviceTy, size_t DNum);
 
-    /*!
-     * @brief Set the As Current Queue object
-     *
-     * @param    QPtr           My Param doc
-     * @param    DeviceTy       My Param doc
-     * @param    DNum           My Param doc
-     * @return   {return}       My Param doc
-     */
     static int64_t
     setAsCurrentQueue (void **QPtr,
                        dppl::sycl_device_type DeviceTy,
                        size_t DNum);
 
-    /*!
-     * @brief
-     *
-     * @return   {return}       My Param doc
-     */
     static int64_t
     removeCurrentQueue ();
 
-    /*!
-     * @brief
-     *
-     * @param    device_ty      My Param doc
-     * @return   {return}       My Param doc
-     */
     static cl::sycl::vector_class<cl::sycl::queue>
     init_queues (info::device_type device_ty)
     {
@@ -178,22 +142,26 @@ std::vector<cl::sycl::queue> QMgrHelper::gpu_queues
     = QMgrHelper::init_queues(info::device_type::gpu);
 
 /*!
- *
+ * Allocates a new copy of the present top of stack queue, which can be the
+ * default queue and returns to caller. The caller owns the pointer and is
+ * responsible for deallocating it. The helper function deleteQueue can be used
+ * is for that purpose.
  */
 int64_t QMgrHelper::getCurrentQueue (void **QPtr)
 {
-    //std::cout << &QMgrHelper::active_queues << '\n';
     if(active_queues.empty())
         return error_reporter("No currently active queues.");
     auto last = QMgrHelper::active_queues.size() - 1;
     *QPtr = new queue(QMgrHelper::active_queues[last]);
-    //std::cout << "(queue*)(*QPtr) :" << ((queue*)(*QPtr)) << '\n';
 
     return DPPL_SUCCESS;
 }
 
 /*!
- *
+ * Allocates a sycl::queue by copying from the cached {cpu|gpu}_queues vector
+ * and returns it to the caller. The caller owns the pointer and is responsible
+ * for deallocating it. The helper function deleteQueue can be used is for that
+ * purpose.
  */
 int64_t
 QMgrHelper::getQueue (void **Ptr2QPtr, sycl_device_type DeviceTy, size_t DNum)
@@ -230,10 +198,11 @@ QMgrHelper::getQueue (void **Ptr2QPtr, sycl_device_type DeviceTy, size_t DNum)
 }
 
 /*!
- *
+ * Changes the first entry into the stack, i.e., the default queue to a new
+ * sycl::queue corresponding to the device type and device number.
  */
 int64_t
-QMgrHelper::setAsGlobalQueue (sycl_device_type DeviceTy, size_t DNum)
+QMgrHelper::setAsDefaultQueue (sycl_device_type DeviceTy, size_t DNum)
 {
     if(active_queues.empty())
         return error_reporter("active queue vector is corrupted.");
@@ -274,7 +243,9 @@ QMgrHelper::setAsGlobalQueue (sycl_device_type DeviceTy, size_t DNum)
 }
 
 /*!
- *
+ * Allocates a new sycl::queue by copying from the cached {cpu|gpu}_queues
+ * vector. The pointer returned is now owned by the caller and must be properly
+ * cleaned up. The helper function deleteQueue can be used is for that purpose.
  */
 int64_t
 QMgrHelper::setAsCurrentQueue (void **Ptr2QPtr,
@@ -322,30 +293,23 @@ QMgrHelper::setAsCurrentQueue (void **Ptr2QPtr,
 }
 
 /*!
- *
+ * If there were any sycl::queues that were activated and added to the stack of
+ * activated queues then the top of the stack entry is popped. Note that since
+ * the same std::vector is used to keep track of the activated queues and the
+ * global queue a removeCurrentQueue call can never make the stack empty. Even
+ * after all activated queues are popped, the global queue is still available as
+ * the first element added to the stack.
  */
 int64_t
 QMgrHelper::removeCurrentQueue ()
 {
-    if(active_queues.empty())
+    // The first queue which is the "default" queue can not be removed.
+    if(active_queues.size() <= 1 )
         return error_reporter("No active contexts");
     active_queues.pop_back();
 
     return DPPL_SUCCESS;
 }
-
-// This singleton function is needed to create the DpplOneAPIRuntimeHelper
-// object in a predictable manner without which there is a chance of segfault.
-// QMgrHelper& get_gRtHelper()
-// {
-//     static auto * helper = new QMgrHelper();
-//     return *helper;
-// }
-
-// #define gRtHelper get_gRtHelper()
-
-// thread_local std::vector<cl::sycl::queue> QMgrHelper::active_queues;
-
 
 } /* end of anonymous namespace */
 
@@ -355,7 +319,7 @@ QMgrHelper::removeCurrentQueue ()
 ////////////////////////////////////////////////////////////////////////////////
 
 /*!
- *
+ * Delete the passed in pointer after verifying it points to a sycl::queue.
  */
 int64_t dppl::deleteQueue (void *Q)
 {
@@ -369,9 +333,11 @@ int64_t dppl::deleteQueue (void *Q)
 ////////////////////////////////////////////////////////////////////////////////
 
 /*!
- *
+ * Prints some of the device info metadata for the specified sycl::queue.
+ * Currently, device name, driver version, device vendor, and device profile
+ * are printed out. More attributed may be added later.
  */
-int64_t DpplSyclQueueManager::dump_queue (const void *QPtr) const
+int64_t DpplSyclQueueManager::dumpDeviceInfo (const void *QPtr) const
 {
     auto Q = static_cast<const queue*>(QPtr);
     dump_device_info(Q->get_device());
@@ -379,6 +345,12 @@ int64_t DpplSyclQueueManager::dump_queue (const void *QPtr) const
 }
 
 /*!
+ * Prints out number of available Sycl platforms, number of CPU queues, number
+ * of GPU queues, metadata about the current global queue, and how many queues
+ * are currently activated. More information can be added in future, and
+ * functions to extract these information using Sycl API (e.g. device_info)
+ * may also be added. For now, this function can be used as a basic canary test
+ * to check if the queue manager was properly initialized.
  *
  */
 int64_t DpplSyclQueueManager::dump () const
@@ -408,7 +380,7 @@ int64_t DpplSyclQueueManager::dump () const
         std::cout << "---No available SYCL GPU device\n";
 
     std::cout << "---Current queue :\n";
-    dump_queue(&QMgrHelper::active_queues[0]);
+    dumpDeviceInfo(&QMgrHelper::active_queues[0]);
 
     std::cout << "---Number of active queues : "
               << QMgrHelper::active_queues.size()
@@ -418,7 +390,7 @@ int64_t DpplSyclQueueManager::dump () const
 }
 
 /*!
- *
+ * Returns inside the platform param the number of Sycl platforms on the system.
  */
 int64_t DpplSyclQueueManager::getNumPlatforms (size_t &platforms) const
 {
@@ -427,7 +399,7 @@ int64_t DpplSyclQueueManager::getNumPlatforms (size_t &platforms) const
 }
 
 /*!
- * Returns inside the passed in parameter the number of activated queues not
+ * Returns inside the numQueues param the number of activated queues not
  * including the global queue that should always be activated.
  */
 int64_t DpplSyclQueueManager::getNumActivatedQueues (size_t &numQueues) const
@@ -439,7 +411,7 @@ int64_t DpplSyclQueueManager::getNumActivatedQueues (size_t &numQueues) const
 }
 
 /*!
- *
+ * Returns a copy of the current queue inside the Ptr2QPtr param.
  */
 int64_t DpplSyclQueueManager::getCurrentQueue (void **Ptr2QPtr) const
 {
@@ -447,7 +419,8 @@ int64_t DpplSyclQueueManager::getCurrentQueue (void **Ptr2QPtr) const
 }
 
 /*!
- *
+ * Returns inside the Ptr2QPtr param a copy of a sycl::queue corresponding to
+ * the specified device type and device number.
  */
 int64_t DpplSyclQueueManager::getQueue (void **Ptr2QPtr,
                                         sycl_device_type DeviceTy,
@@ -462,14 +435,15 @@ int64_t DpplSyclQueueManager::getQueue (void **Ptr2QPtr,
  * of given type and id. If no such device exists and the queue does not
  * exist, then DPPL_FAILURE is returned.
  */
-int64_t DpplSyclQueueManager::setAsGlobalQueue (sycl_device_type DeviceTy,
-                                                size_t DNum)
+int64_t DpplSyclQueueManager::setAsDefaultQueue (sycl_device_type DeviceTy,
+                                                 size_t DNum)
 {
-    return QMgrHelper::setAsGlobalQueue(DeviceTy, DNum);
+    return QMgrHelper::setAsDefaultQueue(DeviceTy, DNum);
 }
 
 /*!
- *
+ * Pushes a new sycl::queue to the stack of activated queues. A copy of the
+ * queue is returned to the caller inside the Ptr2QPtr param.
  */
 int64_t
 DpplSyclQueueManager::setAsCurrentQueue (void **Ptr2QPtr,
@@ -480,7 +454,9 @@ DpplSyclQueueManager::setAsCurrentQueue (void **Ptr2QPtr,
 }
 
 /*!
- *
+ * Pops the top of stack element for the stack of currently activated
+ * sycl::queues. Returns DPPL_ERROR if the stack has no activated queues other
+ * than the default global queue.
  */
 int64_t DpplSyclQueueManager::removeCurrentQueue ()
 {

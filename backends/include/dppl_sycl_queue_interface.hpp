@@ -65,14 +65,14 @@ enum class sycl_device_type : unsigned int
 /*!
  * @brief The class exposes factory methods to get handles to sycl::queues,
  * mainatins a thread local stack of sycl::queue objects, and other
- * functionalitites to manager sycl::queue objects.
+ * functionalities to manager sycl::queue objects.
  *
  */
 class DpplSyclQueueManager
 {
 public:
     /*!
-     * @brief Get the number of sycl::platform avilable on the system.
+     * @brief Get the number of sycl::platform available on the system.
      *
      * @param    platforms      The number of available sycl::platforms is
      *                          stored into this param.
@@ -121,18 +121,18 @@ public:
     int64_t getNumActivatedQueues (size_t &numQueues) const;
 
     /*!
-    * @brief Set the global DPPL queue to the sycl::queue for the given device.
+    * @brief Set the default DPPL queue to the sycl::queue for the given device.
     *
     *
     * @param    DeviceTy       The type of Sycl device (sycl_device_type)
     * @param    DNum           Device id for the device (defaults to 0)
-    * @return   error_code     DPPL_SUCCESS if the global queue was successfully
-    *                          set to the asked for device, otherwise
-    *                          DPPL_FAILURE.
+    * @return   error_code     DPPL_SUCCESS if the default queue was
+    *                          successfully set to the asked for device,
+    *                          otherwise DPPL_FAILURE.
     */
     DPPL_API
-    int64_t setAsGlobalQueue (dppl::sycl_device_type DeviceTy,
-                              size_t DNum = 0);
+    int64_t setAsDefaultQueue (dppl::sycl_device_type DeviceTy,
+                               size_t DNum = 0);
 
     /*!
      * @brief Sets as the sycl queue corresponding to the specified device as
@@ -152,8 +152,9 @@ public:
                                size_t DNum);
 
     /*!
-     * @brief The current DPPL queue is deactivated and any previously activated
-     * queue, including the global queue, becomes the new active DPPL queue.
+     * @brief The current DPPL queue is popped from the stack of activated
+     * queues, except in the scenario where the current queue is the default
+     * queue.
      *
      * @return   error_code     DPPL_SUCCESS if the current queue was
      *                          successfully removed, otherwise DPPL_FAILURE.
@@ -162,28 +163,35 @@ public:
     int64_t removeCurrentQueue ();
 
     /*!
-     * @brief
+     * @brief Prints out information about the Sycl environment, such as
+     * number of available platforms, number of activated queues, etc.
      *
-     * @return   {return}       My Param doc
+     * @return   error_code     DPPL_SUCCESS if the metadata for the queue
+     *                          manager was successfully printed out, otherwise
+     *                          DPPL_FAILURE.
      */
     DPPL_API
     int64_t dump () const;
 
     /*!
-     * @brief
+     * @brief Prints out information about the device corresponding to the
+     * sycl::queue argument.
      *
-     * @param    QPtr           My Param doc
-     * @return   {return}       My Param doc
+     * @param    QPtr           Pointer to a sycl::queue.
+     * @return   error_code     DPPL_SUCCESS if the metadata for the queue
+     *                          was successfully printed out, otherwise
+     *                          DPPL_FAILURE.
      */
     DPPL_API
-    int64_t dump_queue (const void *QPtr) const;
+    int64_t dumpDeviceInfo (const void *QPtr) const;
 };
 
 /*!
- * @brief
+ * @brief Delete the pointer after static casting it to sycl::queue.
  *
- * @param    QPtr           My Param doc
- * @return   {return}       My Param doc
+ * @param    QPtr           Pointer to a sycl::queue.
+ * @return   error_code     DPPL_SUCCESS if the pointer was deleted, otherwise
+ *                          DPPL_FAILURE.
  */
 DPPL_API
 int64_t deleteQueue (void *QPtr);

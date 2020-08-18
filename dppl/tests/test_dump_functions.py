@@ -23,7 +23,7 @@ import dppl.ocldrv as drv
 class TestDumpMethods(unittest.TestCase):
 
     def test_dppl_dump_runtime(self):
-        self.assertEqual(dppl.runtime.dump(), 0)
+        self.assertEqual(dppl.dump(), 0)
 
     def test_dppl_ocldrv_dump_runtime(self):
         self.assertEqual(drv.runtime.dump(), 0)

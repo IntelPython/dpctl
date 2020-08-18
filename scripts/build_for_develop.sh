@@ -1,10 +1,11 @@
 #!/bin/bash
 set +xe
-rm -rf build_cmake
+rm -rf install
 mkdir build_cmake
 pushd build_cmake
 
 INSTALL_PREFIX=`pwd`/../install
+rm -rf ${INSTALL_PREFIX}
 export ONEAPI_ROOT=/opt/intel/oneapi
 DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest/linux
 PYTHON_INC=`python -c "import distutils.sysconfig;                  \
