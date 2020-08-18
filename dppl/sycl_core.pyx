@@ -34,6 +34,9 @@ from cpython.pycapsule cimport (PyCapsule_New,
                                 PyCapsule_IsValid,
                                 PyCapsule_GetPointer)
 from enum import Enum, auto
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class device_type(Enum):
     gpu = auto()
@@ -96,6 +99,14 @@ cdef class _SyclQueueManager:
     def _remove_current_queue (self):
         self.rt.removeCurrentQueue()
 
+    def has_sycl_platforms (self):
+        cdef size_t num_platforms = 0
+        self.rt.getNumPlatforms(num_platforms)
+        if num_platforms:
+            return True
+        else:
+            return False
+
     def get_num_platforms (self):
         ''' Returns the number of available SYCL/OpenCL platforms.
         '''
@@ -135,13 +146,13 @@ cdef class _SyclQueueManager:
         ''' Prints information about the SYCL queue object.
         '''
         if PyCapsule_IsValid(queue_cap, NULL):
-            self.rt.dumpDeviceInfo(PyCapsule_GetPointer(queue_cap, NULL))
+            return self.rt.dumpDeviceInfo(PyCapsule_GetPointer(queue_cap, NULL))
         else:
             raise ValueError("Expected a PyCapsule encapsulating a SYCL queue")
 
     def is_in_dppl_ctxt (self):
         cdef size_t num = 0
-        self.qmgr.getNumActivatedQueues(num)
+        self.rt.getNumActivatedQueues(num)
         if num:
             return True
         else:
@@ -157,6 +168,7 @@ dump_device_info         = _qmgr.dump_device_info
 get_current_queue        = _qmgr.get_current_queue
 get_num_platforms        = _qmgr.get_num_platforms
 get_num_activated_queues = _qmgr.get_num_activated_queues
+has_sycl_platforms       = _qmgr.has_sycl_platforms
 set_default_queue        = _qmgr.set_default_queue
 is_in_dppl_ctxt          = _qmgr.is_in_dppl_ctxt
 
@@ -178,7 +190,8 @@ def device_context (dev=device_type.gpu, device_num=0):
     finally:
         # Code to release resource
         if ctxt:
-            print("Removing the context from the deque of active contexts")
+            _logger.debug(
+                "Removing the context from the stack of active contexts")
             _qmgr._remove_current_queue()
         else:
-            print("No context was created so nothing to do")
+            _logger.debug("No context was created so nothing to do")
