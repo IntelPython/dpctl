@@ -29,4 +29,4 @@
   *
   * @see sycl::queue
   */
- typedef struct DPPLOpaqueSyclQueue *DPPLSyclQueueRef;
+typedef struct DPPLOpaqueSyclQueue *DPPLSyclQueueRef;

@@ -171,6 +171,12 @@ foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION include)
 endforeach()
 
+# Install all headers in include/Support
+file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/Support/*.h*")
+foreach(HEADER ${HEADERS})
+  install(FILES "${HEADER}" DESTINATION include/Support)
+endforeach()
+
 # Enable to build the PyDPPL backend test cases
 add_subdirectory(tests)
 
