@@ -32,7 +32,7 @@ requirements:
 about:
     home: https://github.com/IntelPython/PyDPPL.git
     license: Apache-2.0
-    license_file: LICENSE.md
+    license_file: LICENSE
     summary: 'A lightweight Python wrapper for a subset of OpenCL and SYCL API.'
     description: |
         <strong>LEGAL NOTICE: Use of this software package is subject to the
