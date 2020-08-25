@@ -1,4 +1,4 @@
-//===-------- dppl_macros.hpp - DPPL-SYCL interface ---*--- C++ -----*-----===//
+//===---------- Support/DllExport.h - DPPL-SYCL interface ---*--- C ---*---===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -19,7 +19,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file contains common preprocessor macros used in multiple places.
+/// This file defines a "__declspec(dllexport)" wrapper for windows.
 ///
 //===----------------------------------------------------------------------===//
 

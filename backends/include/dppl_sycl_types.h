@@ -1,4 +1,4 @@
-//===------- dppl_error_codes.hpp - DPPL-SYCL interface ---*- C++ -*-------===//
+//===---------- dppl_sycl_types.h - DPPL-SYCL interface ---*--- C++ ---*---===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -19,20 +19,14 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file contains the error codes that are returned by DPPL functions.
+/// This file defines types used by DPPL's C interface to SYCL.
 ///
 //===----------------------------------------------------------------------===//
-#pragma once
 
-#include <cstdint>
 
-namespace dppl
-{
-
-enum : int64_t
-{
-    DPPL_FAILURE = -1,
-    DPPL_SUCCESS
-};
-
-}
+ /*!
+  * Used to pass a sycl::queue opaquely through DPPL interfaces.
+  *
+  * @see sycl::queue
+  */
+ typedef struct DPPLOpaqueSyclQueue *DPPLSyclQueueRef;
