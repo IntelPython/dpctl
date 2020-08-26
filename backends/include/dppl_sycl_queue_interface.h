@@ -155,14 +155,14 @@ __dppl_give DPPLSyclQueueRef DPPLPushSyclQueue (DPPLSyclDeviceType DeviceTy,
                                                 size_t DNum);
 
 /*!
- * @brief The top of the stack element in DPPL's stack of sycl::queue objects
- * is popped, except in the scenario where the popping the current queue would
- * empty the stack; a runtime_error is thrown for such a scenario.
+ * @brief Pops the top of stack element from DPPL's stack of activated
+ * sycl::queue objects.
  *
  * DPPLPopSyclQueue only removes the reference from the DPPL stack of
  * sycl::queue objects. Any instance of the popped queue that were previously
  * acquired by calling DPPLPushSyclQueue() or DPPLGetCurrentQueue() needs to be
- * freed separately.
+ * freed separately. In addition, a runtime_error is thrown when the stack
+ * contains only one sycl::queue, i.e., the default queue.
  *
  */
 DPPL_API

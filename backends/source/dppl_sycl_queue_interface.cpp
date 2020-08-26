@@ -283,7 +283,7 @@ QMgrHelper::pushSyclQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
 }
 
 /*!
- * If there were any sycl::queues that were activated and added to the stack of
+ * If there were any sycl::queue that were activated and added to the stack of
  * activated queues then the top of the stack entry is popped. Note that since
  * the same std::vector is used to keep track of the activated queues and the
  * global queue a popSyclQueue call can never make the stack empty. Even
@@ -320,9 +320,10 @@ void DPPLDeleteQueue (DPPLSyclQueueRef QRef)
 ////////////////////////////////////////////////////////////////////////////////
 
 /*!
- * Prints some of the device info metadata for the specified sycl::queue.
- * Currently, device name, driver version, device vendor, and device profile
- * are printed out. More attributed may be added later.
+ * Prints some of the device info metadata for the device corresponding to the
+ * specified sycl::queue. Currently, device name, driver version, device
+ * vendor, and device profile are printed out. More attributed may be added
+ * later.
  */
 void DPPLDumpDeviceInfo (const DPPLSyclQueueRef QRef)
 {
@@ -331,10 +332,10 @@ void DPPLDumpDeviceInfo (const DPPLSyclQueueRef QRef)
 }
 
 /*!
- * Prints out number of available Sycl platforms, number of CPU queues, number
+ * Prints out number of available SYCL platforms, number of CPU queues, number
  * of GPU queues, metadata about the current global queue, and how many queues
  * are currently activated. More information can be added in future, and
- * functions to extract these information using Sycl API (e.g. device_info)
+ * functions to extract these information using SYCL API (e.g. device_info)
  * may also be added. For now, this function can be used as a basic canary test
  * to check if the queue manager was properly initialized.
  *
@@ -374,7 +375,7 @@ void DPPLDumpPlatformInfo ()
 }
 
 /*!
- * Returns inside the platform param the number of SYCL platforms on the system.
+ * Returns the number of sycl::platform on the system.
  */
 size_t DPPLGetNumPlatforms ()
 {
@@ -382,8 +383,8 @@ size_t DPPLGetNumPlatforms ()
 }
 
 /*!
- * Returns inside the numQueues param the number of activated queues not
- * including the global queue that should always be activated.
+ * Returns inside the number of activated queues not including the global queue
+ * (QMgrHelper::active_queues[0]).
  */
 size_t DPPLGetNumActivatedQueues ()
 {
@@ -409,7 +410,7 @@ size_t DPPLGetNumGPUQueues ()
 }
 
 /*!
- * Returns a copy of the current queue inside the Ptr2QPtr param.
+ * \see QMgrHelper::getCurrentQueue()
  */
 DPPLSyclQueueRef DPPLGetCurrentQueue ()
 {
@@ -417,8 +418,8 @@ DPPLSyclQueueRef DPPLGetCurrentQueue ()
 }
 
 /*!
- * Returns inside the Ptr2QPtr param a copy of a sycl::queue corresponding to
- * the specified device type and device number.
+ * Returns a copy of a sycl::queue corresponding to the specified device type
+ * and device number. A runtime_error gets thrown if no such device exists.
  */
 DPPLSyclQueueRef DPPLGetQueue (DPPLSyclDeviceType DeviceTy,
                                size_t DNum)
@@ -427,10 +428,10 @@ DPPLSyclQueueRef DPPLGetQueue (DPPLSyclDeviceType DeviceTy,
 }
 
 /*!
- * The function sets the global queue (i.e. the first queue in the
- * activeQueue vector) to the sycl::queue corresponding to the device
- * of given type and id. If no such device exists and the queue does not
- * exist, then DPPL_FAILURE is returned.
+ * The function sets the global queue, i.e., the sycl::queue object at
+ * QMgrHelper::active_queues[0] vector to the sycl::queue corresponding to the
+ * specified device type and id. A runtime_error gets thrown if no such device
+ * exists.
  */
 void DPPLSetAsDefaultQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
 {
@@ -438,8 +439,7 @@ void DPPLSetAsDefaultQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
 }
 
 /*!
- * Pushes a new sycl::queue to the stack of activated queues. A copy of the
- * queue is returned to the caller inside the Ptr2QPtr param.
+ * \see QMgrHelper::pushSyclQueue()
  */
 __dppl_give DPPLSyclQueueRef DPPLPushSyclQueue (DPPLSyclDeviceType DeviceTy,
                                                 size_t DNum)
@@ -448,9 +448,7 @@ __dppl_give DPPLSyclQueueRef DPPLPushSyclQueue (DPPLSyclDeviceType DeviceTy,
 }
 
 /*!
- * Pops the top of stack element for the stack of currently activated
- * sycl::queues. Returns DPPL_ERROR if the stack has no activated queues other
- * than the default global queue.
+ * \see QMgrHelper::popSyclQueue()
  */
 void DPPLPopSyclQueue ()
 {
