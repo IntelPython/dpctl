@@ -67,12 +67,11 @@ cdef extern from "dppl_sycl_queue_interface.h":
     cdef size_t DPPLGetNumPlatforms () except +
     cdef DPPLSyclQueueRef DPPLGetQueue (_device_type DTy,
                                         size_t device_num) except +
-    cdef void DPPLRemoveCurrentQueue () except +
-    cdef DPPLSyclQueueRef DPPLSetAsCurrentQueue (_device_type DTy,
-                                                 size_t device_num) except +
+    cdef void DPPLPopSyclQueue () except +
+    cdef DPPLSyclQueueRef DPPLPushSyclQueue (_device_type DTy,
+                                             size_t device_num) except +
     cdef void DPPLSetAsDefaultQueue (_device_type DTy,
                                      size_t device_num) except +
-
     cdef void DPPLDeleteQueue (DPPLSyclQueueRef Q) except +
 
 # Destructor for a PyCapsule containing a SYCL queue
@@ -85,9 +84,9 @@ cdef class _SyclQueueManager:
     def _set_as_current_queue (self, device_ty, device_id):
         cdef DPPLSyclQueueRef queue_ptr
         if device_ty == device_type.gpu:
-            queue_ptr = DPPLSetAsCurrentQueue(_device_type._GPU, device_id)
+            queue_ptr = DPPLPushSyclQueue(_device_type._GPU, device_id)
         elif device_ty == device_type.cpu:
-            queue_ptr = DPPLSetAsCurrentQueue(_device_type._CPU, device_id)
+            queue_ptr = DPPLPushSyclQueue(_device_type._CPU, device_id)
         else:
             e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
             raise e
@@ -95,7 +94,8 @@ cdef class _SyclQueueManager:
         return PyCapsule_New(queue_ptr, NULL, &delete_queue)
 
     def _remove_current_queue (self):
-        DPPLRemoveCurrentQueue()
+        DPPLPopSyclQueue()
+
 
     def has_sycl_platforms (self):
         cdef size_t num_platforms = DPPLGetNumPlatforms()
@@ -147,7 +147,6 @@ cdef class _SyclQueueManager:
         ''' Prints information about the Runtime object.
         '''
         DPPLDumpPlatformInfo()
-        return 1
 
     def dump_device_info (self, queue_cap):
         ''' Prints information about the SYCL queue object.
@@ -156,7 +155,6 @@ cdef class _SyclQueueManager:
             DPPLDumpDeviceInfo(
                 <DPPLSyclQueueRef>PyCapsule_GetPointer(queue_cap, NULL)
             )
-            return 1
         else:
             raise ValueError("Expected a PyCapsule encapsulating a SYCL queue")
 

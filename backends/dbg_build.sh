@@ -24,6 +24,9 @@ cmake                                                       \
     -DGTEST_LIB_DIR=${CONDA_PREFIX}/lib                     \
     ..
 
-make V=1 -n -j 4 && make install
+make V=1 -n -j 4
+make check
+make install
+
 
 popd

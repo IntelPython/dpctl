@@ -117,10 +117,10 @@ public:
     setAsDefaultQueue (DPPLSyclDeviceType DeviceTy, size_t DNum);
 
     static __dppl_give DPPLSyclQueueRef
-    setAsCurrentQueue (DPPLSyclDeviceType DeviceTy, size_t DNum);
+    pushSyclQueue (DPPLSyclDeviceType DeviceTy, size_t DNum);
 
     static void
-    removeCurrentQueue ();
+    popSyclQueue ();
 
     static cl::sycl::vector_class<cl::sycl::queue>
     init_queues (info::device_type device_ty)
@@ -239,10 +239,11 @@ QMgrHelper::setAsDefaultQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
 /*!
  * Allocates a new sycl::queue by copying from the cached {cpu|gpu}_queues
  * vector. The pointer returned is now owned by the caller and must be properly
- * cleaned up. The helper function deleteQueue can be used is for that purpose.
+ * cleaned up. The helper function DPPLDeleteQueue() can be used is for that
+ * purpose.
  */
 DPPLSyclQueueRef
-QMgrHelper::setAsCurrentQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
+QMgrHelper::pushSyclQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
 {
     queue *QRef = nullptr;
     if(active_queues.empty())
@@ -285,12 +286,12 @@ QMgrHelper::setAsCurrentQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
  * If there were any sycl::queues that were activated and added to the stack of
  * activated queues then the top of the stack entry is popped. Note that since
  * the same std::vector is used to keep track of the activated queues and the
- * global queue a removeCurrentQueue call can never make the stack empty. Even
+ * global queue a popSyclQueue call can never make the stack empty. Even
  * after all activated queues are popped, the global queue is still available as
  * the first element added to the stack.
  */
 void
-QMgrHelper::removeCurrentQueue ()
+QMgrHelper::popSyclQueue ()
 {
     // The first queue which is the "default" queue can not be removed.
     if(active_queues.size() <= 1 )
@@ -440,10 +441,10 @@ void DPPLSetAsDefaultQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
  * Pushes a new sycl::queue to the stack of activated queues. A copy of the
  * queue is returned to the caller inside the Ptr2QPtr param.
  */
-__dppl_give DPPLSyclQueueRef DPPLSetAsCurrentQueue (DPPLSyclDeviceType DeviceTy,
-                                                    size_t DNum)
+__dppl_give DPPLSyclQueueRef DPPLPushSyclQueue (DPPLSyclDeviceType DeviceTy,
+                                                size_t DNum)
 {
-    return QMgrHelper::setAsCurrentQueue(DeviceTy, DNum);
+    return QMgrHelper::pushSyclQueue(DeviceTy, DNum);
 }
 
 /*!
@@ -451,7 +452,7 @@ __dppl_give DPPLSyclQueueRef DPPLSetAsCurrentQueue (DPPLSyclDeviceType DeviceTy,
  * sycl::queues. Returns DPPL_ERROR if the stack has no activated queues other
  * than the default global queue.
  */
-void DPPLRemoveCurrentQueue ()
+void DPPLPopSyclQueue ()
 {
-    QMgrHelper::removeCurrentQueue();
+    QMgrHelper::popSyclQueue();
 }

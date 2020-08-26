@@ -9,22 +9,22 @@ namespace
 {
     void foo (size_t & num)
     {
-        auto q1 = DPPLSetAsCurrentQueue(DPPL_CPU, 0);
-        auto q2 = DPPLSetAsCurrentQueue(DPPL_GPU, 0);
+        auto q1 = DPPLPushSyclQueue(DPPL_CPU, 0);
+        auto q2 = DPPLPushSyclQueue(DPPL_GPU, 0);
         // Capture the number of active queues in first
         num = DPPLGetNumActivatedQueues();
-        DPPLRemoveCurrentQueue();
-        DPPLRemoveCurrentQueue();
+        DPPLPopSyclQueue();
+        DPPLPopSyclQueue();
         DPPLDeleteQueue(q1);
         DPPLDeleteQueue(q2);
     }
 
     void bar (size_t & num)
     {
-        auto q1 = DPPLSetAsCurrentQueue(DPPL_GPU, 0);
+        auto q1 = DPPLPushSyclQueue(DPPL_GPU, 0);
         // Capture the number of active queues in second
         num = DPPLGetNumActivatedQueues();
-        DPPLRemoveCurrentQueue();
+        DPPLPopSyclQueue();
         DPPLDeleteQueue(q1);
     }
 }
@@ -81,7 +81,7 @@ TEST_F (TestDPPLSyclQueuemanager, CheckGetNumActivatedQueues)
     size_t num0, num1, num2, num4;
 
     // Add a queue to main thread
-    auto q = DPPLSetAsCurrentQueue(DPPL_CPU, 0);
+    auto q = DPPLPushSyclQueue(DPPL_CPU, 0);
 
     std::thread first (foo, std::ref(num1));
     std::thread second (bar, std::ref(num2));
@@ -92,7 +92,7 @@ TEST_F (TestDPPLSyclQueuemanager, CheckGetNumActivatedQueues)
 
     // Capture the number of active queues in first
     num0 = DPPLGetNumActivatedQueues();
-    DPPLRemoveCurrentQueue();
+    DPPLPopSyclQueue();
     num4 = DPPLGetNumActivatedQueues();
 
     // Verify what the expected number of activated queues each time a thread
@@ -118,8 +118,6 @@ TEST_F (TestDPPLSyclQueuemanager, CheckDPPLDumpDeviceInfo)
     EXPECT_NO_FATAL_FAILURE(DPPLDumpDeviceInfo(q));
     EXPECT_NO_FATAL_FAILURE(DPPLDeleteQueue(q));
 }
-
-
 
 
 int

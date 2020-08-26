@@ -132,30 +132,41 @@ void DPPLSetAsDefaultQueue (DPPLSyclDeviceType DeviceTy,
                             size_t DNum);
 
 /*!
- * @brief Sets as the sycl queue corresponding to the specified device as
- * the currently active DPPL queue, and returns a copy to the queue to
- * the caller.
+ * @brief Pushes a new sycl::queue object to the top of DPPL's thread-local
+ * stack of a "activated" queues, and returns a copy of the queue to caller.
+ *
+ * DPPL maintains a thread-local stack of sycl::queue objects to facilitate
+ * nested parallelism. The sycl::queue at the top of the stack is termed as the
+ * currently activated queue, and is always the one returned by
+ * DPPLGetCurrentQueue(). DPPLPushSyclQueueToStack creates a new sycl::queue
+ * corresponding to the specified device and pushes it to the top of the stack.
+ * A copy of the sycl::queue is returned to the caller wrapped inside the
+ * opaque DPPLSyclQueueRef pointer. A runtime_error exception is thrown when
+ * a new sycl::queue could not be created for the specified device.
  *
  * @param    DeviceTy       The type of Sycl device (sycl_device_type)
  * @param    DNum           Device id for the device (defaults to 0)
  *
- * @return A copy of the sycl::queue corresponding to the current queue for
- * the thread is returned wrapped inside a DPPLSyclDeviceType pointer. A
- * runtime_error exception is thrown if no current queue was found (can only
- * happen is somehow the stack got corrupted, since a default queue should
- * always exist).
+ * @return A copy of the sycl::queue that was pushed to the top of DPPL's
+ * stack of sycl::queue objects.
  */
 DPPL_API
-__dppl_give DPPLSyclQueueRef DPPLSetAsCurrentQueue (DPPLSyclDeviceType DeviceTy,
-                                                    size_t DNum);
+__dppl_give DPPLSyclQueueRef DPPLPushSyclQueue (DPPLSyclDeviceType DeviceTy,
+                                                size_t DNum);
 
 /*!
- * @brief The current DPPL queue is popped from the stack of activated
- * queues, except in the scenario where the current queue is the default
- * queue.
+ * @brief The top of the stack element in DPPL's stack of sycl::queue objects
+ * is popped, except in the scenario where the popping the current queue would
+ * empty the stack; a runtime_error is thrown for such a scenario.
+ *
+ * DPPLPopSyclQueue only removes the reference from the DPPL stack of
+ * sycl::queue objects. Any instance of the popped queue that were previously
+ * acquired by calling DPPLPushSyclQueue() or DPPLGetCurrentQueue() needs to be
+ * freed separately.
+ *
  */
 DPPL_API
-void DPPLRemoveCurrentQueue ();
+void DPPLPopSyclQueue ();
 
 /*!
  * @brief Prints out information about the Sycl environment, such as

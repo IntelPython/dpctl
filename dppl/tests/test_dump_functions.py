@@ -22,8 +22,15 @@ import dppl.ocldrv as drv
 
 class TestDumpMethods(unittest.TestCase):
 
-    def test_dppl_dump_runtime(self):
-        self.assertEqual(dppl.dump(), 0)
+    def test_dppl_dump (self):
+        try:
+            dppl.dump()
+        except Exception:
+            self.fail("Encountered an exception inside dump().")
 
-    def test_dppl_ocldrv_dump_runtime(self):
-        self.assertEqual(drv.runtime.dump(), 0)
+    def test_dppl_dump_device_info (self):
+        q = dppl.get_current_queue()
+        try:
+            dppl.dump_device_info(q)
+        except Exception:
+            self.fail("Encountered an exception inside dump_device_info().")

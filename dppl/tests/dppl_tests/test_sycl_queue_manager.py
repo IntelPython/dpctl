@@ -35,12 +35,17 @@ class TestGetNumPlatforms (unittest.TestCase):
 @unittest.skipIf(not dppl.has_sycl_platforms, "No SYCL platforms available")
 class TestDumpMethods (unittest.TestCase):
     def test_dppl_dump (self):
-        self.assertEqual(dppl.dump(), 0)
+        try:
+            dppl.dump()
+        except Exception:
+            self.fail("Encountered an exception inside dump().")
 
     def test_dppl_dump_device_info (self):
         q = dppl.get_current_queue()
-        dppl.dump_device_info(q)
-        self.assertEqual(dppl.dump_device_info(q), 0)
+        try:
+            dppl.dump_device_info(q)
+        except Exception:
+            self.fail("Encountered an exception inside dump_device_info().")
 
 @unittest.skipIf(not dppl.has_sycl_platforms, "No SYCL platforms available")
 class TestDPPLIsInDPPLCtxt (unittest.TestCase):
