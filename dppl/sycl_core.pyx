@@ -17,23 +17,23 @@
 ## limitations under the License.
 ##
 ##===----------------------------------------------------------------------===##
-###
-### \file
-### This file implements the Cython interface for the Sycl API of PyDPPL.
-###
+##
+## \file
+## This file implements the Cython interface for the Sycl API of PyDPPL.
+##
 ##===----------------------------------------------------------------------===##
 
 # distutils: language = c++
-# cython: language_level=2
+# cython: language_level=3
 
 from __future__ import print_function
-from libc.stdint cimport int64_t
-from libcpp cimport bool
-from libcpp.memory cimport shared_ptr, make_shared
 from cpython.pycapsule cimport (PyCapsule_New,
                                 PyCapsule_IsValid,
                                 PyCapsule_GetPointer)
 from enum import Enum, auto
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class device_type(Enum):
     gpu = auto()
@@ -41,97 +41,145 @@ class device_type(Enum):
 
 
 cdef class UnsupportedDeviceTypeError(Exception):
-    """This exception is raised when a device type other than CPU or GPU is
+    '''This exception is raised when a device type other than CPU or GPU is
        encountered.
-    """
+    '''
     pass
 
+cdef extern from "dppl_sycl_types.h":
 
-cdef extern from "dppl_sycl_interface.hpp" namespace "dppl":
-    cdef cppclass DpplSyclQueueManager:
-        DpplSyclQueueManager () except +
-        int64_t getNumPlatforms (size_t *num_platform) except -1
-        int64_t getCurrentQueue (void **Q) except -1
-        int64_t getQueue (void **Q, _device_type DTy,
-                          size_t device_num) except -1
-        int64_t resetGlobalQueue (_device_type DTy,
-                                  size_t device_num) except -1
-        int64_t activateQueue (void **Q, _device_type DTy,
-                               size_t device_num) except -1
-        int64_t deactivateCurrentQueue () except -1
-        int64_t dump () except -1
-        int64_t dump_queue (const void *Q) except -1
+    cdef struct DPPLOpaqueSyclQueue:
+        pass
+    ctypedef DPPLOpaqueSyclQueue* DPPLSyclQueueRef
 
-    cdef int64_t deleteQueue (void *Q) except -1
+cdef extern from "dppl_sycl_queue_interface.h":
 
-    cdef enum _device_type 'sycl_device_type':
-        _GPU 'dppl::sycl_device_type::gpu'
-        _CPU 'dppl::sycl_device_type::cpu'
+    cdef enum _device_type 'DPPLSyclDeviceType':
+        _GPU 'DPPL_GPU'
+        _CPU 'DPPL_CPU'
+
+    cdef void DPPLDumpPlatformInfo () except +
+    cdef void DPPLDumpDeviceInfo (const DPPLSyclQueueRef Q) except +
+    cdef DPPLSyclQueueRef DPPLGetCurrentQueue () except +
+    cdef size_t DPPLGetNumCPUQueues () except +
+    cdef size_t DPPLGetNumGPUQueues () except +
+    cdef size_t DPPLGetNumActivatedQueues () except +
+    cdef size_t DPPLGetNumPlatforms () except +
+    cdef DPPLSyclQueueRef DPPLGetQueue (_device_type DTy,
+                                        size_t device_num) except +
+    cdef void DPPLPopSyclQueue () except +
+    cdef DPPLSyclQueueRef DPPLPushSyclQueue (_device_type DTy,
+                                             size_t device_num) except +
+    cdef void DPPLSetAsDefaultQueue (_device_type DTy,
+                                     size_t device_num) except +
+    cdef void DPPLDeleteQueue (DPPLSyclQueueRef Q) except +
 
 # Destructor for a PyCapsule containing a SYCL queue
 cdef void delete_queue (object cap):
-    deleteQueue(PyCapsule_GetPointer(cap, NULL))
+    DPPLDeleteQueue(<DPPLSyclQueueRef>PyCapsule_GetPointer(cap, NULL))
 
 
-cdef class SyclQueueManager:
-    cdef DpplSyclQueueManager rt
+cdef class _SyclQueueManager:
 
-    def __cinit__ (self):
-        self.rt = DpplSyclQueueManager()
-
-    def get_num_platforms (self):
-        ''' Returns the number of available SYCL/OpenCL platforms.
-        '''
-        cdef size_t num_platforms = 0
-        self.rt.getNumPlatforms(&num_platforms)
-        return num_platforms
-
-    def _activate_queue (self, device_ty, device_id):
-        cdef void *queue_ptr
+    def _set_as_current_queue (self, device_ty, device_id):
+        cdef DPPLSyclQueueRef queue_ptr
         if device_ty == device_type.gpu:
-            self.rt.activateQueue(&queue_ptr, _device_type._GPU, device_id)
+            queue_ptr = DPPLPushSyclQueue(_device_type._GPU, device_id)
         elif device_ty == device_type.cpu:
-            self.rt.activateQueue(&queue_ptr, _device_type._CPU, device_id)
+            queue_ptr = DPPLPushSyclQueue(_device_type._CPU, device_id)
         else:
             e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
             raise e
 
         return PyCapsule_New(queue_ptr, NULL, &delete_queue)
 
-    def _deactivate_current_queue (self):
-        self.rt.deactivateCurrentQueue()
+    def _remove_current_queue (self):
+        DPPLPopSyclQueue()
+
+
+    def has_sycl_platforms (self):
+        cdef size_t num_platforms = DPPLGetNumPlatforms()
+        if num_platforms:
+            return True
+        else:
+            return False
+
+    def get_num_platforms (self):
+        ''' Returns the number of available SYCL/OpenCL platforms.
+        '''
+        return DPPLGetNumPlatforms()
+
+    def get_num_activated_queues (self):
+        ''' Return the number of currently activated queues for this thread.
+        '''
+        return DPPLGetNumActivatedQueues()
 
     def get_current_queue (self):
         ''' Returns the activated SYCL queue as a PyCapsule.
         '''
-        cdef void* queue_ptr = NULL;
-        self.rt.getCurrentQueue(&queue_ptr);
+        cdef DPPLSyclQueueRef queue_ptr = DPPLGetCurrentQueue()
         return PyCapsule_New(queue_ptr, NULL, &delete_queue)
 
-#    def set_global_queue (self, device_ty, device_id):
-#        if device_ty == device_type.gpu:
-#            self.rt.setGlobalContextWithGPU(device_id)
-#        elif device_ty == device_type.cpu:
-#            self.rt.setGlobalContextWithCPU(device_id)
-#        else:
-#            e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
-#            raise e
+    def set_default_queue (self, device_ty, device_id):
+        if device_ty == device_type.gpu:
+            DPPLSetAsDefaultQueue(_device_type._GPU, device_id)
+        elif device_ty == device_type.cpu:
+            DPPLSetAsDefaultQueue(_device_type._CPU, device_id)
+        else:
+            e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
+            raise e
+
+    def has_gpu_queues (self):
+        cdef size_t num = DPPLGetNumGPUQueues()
+        if num:
+            return True
+        else:
+            return False
+
+    def has_cpu_queues (self):
+        cdef size_t num = DPPLGetNumCPUQueues()
+        if num:
+            return True
+        else:
+            return False
 
     def dump (self):
         ''' Prints information about the Runtime object.
         '''
-        return self.rt.dump()
+        DPPLDumpPlatformInfo()
 
-    def dump_queue (self, queue_cap):
+    def dump_device_info (self, queue_cap):
         ''' Prints information about the SYCL queue object.
         '''
         if PyCapsule_IsValid(queue_cap, NULL):
-            self.rt.dump_queue(PyCapsule_GetPointer(queue_cap, NULL))
+            DPPLDumpDeviceInfo(
+                <DPPLSyclQueueRef>PyCapsule_GetPointer(queue_cap, NULL)
+            )
         else:
             raise ValueError("Expected a PyCapsule encapsulating a SYCL queue")
 
-# Global runtime object
-runtime = SyclQueueManager()
+    def is_in_dppl_ctxt (self):
+        cdef size_t num = DPPLGetNumActivatedQueues()
+        if num:
+            return True
+        else:
+            return False
+
+# This private instance of the _SyclQueueManager should not be directly
+# accessed outside the module.
+_qmgr = _SyclQueueManager()
+
+# Global bound functions
+dump                     = _qmgr.dump
+dump_device_info         = _qmgr.dump_device_info
+get_current_queue        = _qmgr.get_current_queue
+get_num_platforms        = _qmgr.get_num_platforms
+get_num_activated_queues = _qmgr.get_num_activated_queues
+has_cpu_queues           = _qmgr.has_cpu_queues
+has_gpu_queues           = _qmgr.has_gpu_queues
+has_sycl_platforms       = _qmgr.has_sycl_platforms
+set_default_queue        = _qmgr.set_default_queue
+is_in_dppl_ctxt          = _qmgr.is_in_dppl_ctxt
 
 from contextlib import contextmanager
 
@@ -146,12 +194,13 @@ def device_context (dev=device_type.gpu, device_num=0):
     # If set_context is unable to create a new context an exception is raised.
     try:
         ctxt = None
-        ctxt = runtime._activate_queue(dev, device_num)
+        ctxt = _qmgr._set_as_current_queue(dev, device_num)
         yield ctxt
     finally:
         # Code to release resource
         if ctxt:
-            print("Removing the context from the deque of active contexts")
-            runtime._deactivate_current_queue()
+            _logger.debug(
+                "Removing the context from the stack of active contexts")
+            _qmgr._remove_current_queue()
         else:
-            print("No context was created so nothing to do")
+            _logger.debug("No context was created so nothing to do")

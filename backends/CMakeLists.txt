@@ -93,14 +93,10 @@ set(OpenCL_LIBRARY "${DPCPP_ROOT}/lib/libOpenCL.so")
 message(STATUS "OpenCL_INCLUDE_DIR: ${OpenCL_INCLUDE_DIR}")
 message(STATUS "OpenCL_LIBRARY: ${OpenCL_LIBRARY}")
 
-# Todo : Add build rules for unit tests
-
-# Todo : Add build rules for doxygen
-
 add_library(
   DPPLSyclInterface
   SHARED
-  source/dppl_sycl_interface.cpp
+  source/dppl_sycl_queue_interface.cpp
 )
 
 # Install DPPLOpenCLInterface
@@ -174,3 +170,15 @@ file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/*.h*")
 foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION include)
 endforeach()
+
+# Install all headers in include/Support
+file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/Support/*.h*")
+foreach(HEADER ${HEADERS})
+  install(FILES "${HEADER}" DESTINATION include/Support)
+endforeach()
+
+# Enable to build the PyDPPL backend test cases
+add_subdirectory(tests)
+
+# Todo : Add build rules for doxygen
+# maybe refer https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/

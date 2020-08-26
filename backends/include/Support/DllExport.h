@@ -1,4 +1,4 @@
-//===------- dppl_error_codes.hpp - DPPL-SYCL interface ---*- C++ -*-------===//
+//===---------- Support/DllExport.h - DPPL-SYCL interface ---*--- C ---*---===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -19,20 +19,18 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file contains the error codes that are returned by DPPL functions.
+/// This file defines a "__declspec(dllexport)" wrapper for windows.
 ///
 //===----------------------------------------------------------------------===//
+
 #pragma once
 
-#include <cstdint>
-
-namespace dppl
-{
-
-enum : int64_t
-{
-    DPPL_FAILURE = -1,
-    DPPL_SUCCESS
-};
-
-}
+#ifdef _WIN32
+#    ifdef DPPLSyclInterface_EXPORTS
+#        define DPPL_API __declspec(dllexport)
+#    else
+#        define DPPL_API __declspec(dllimport)
+#    endif
+#else
+#    define DPPL_API
+#endif
