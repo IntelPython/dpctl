@@ -301,23 +301,13 @@ QMgrHelper::popSyclQueue ()
 
 } /* end of anonymous namespace */
 
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////// Free functions //////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
 /*!
  * Delete the passed in pointer after verifying it points to a sycl::queue.
  */
-void DPPLDeleteQueue (DPPLSyclQueueRef QRef)
+void DPPLDeleteQueue (__dppl_take DPPLSyclQueueRef QRef)
 {
     delete unwrap(QRef);
 }
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////// DpplSyclQueueManager ////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
 
 /*!
  * Prints some of the device info metadata for the device corresponding to the
@@ -325,7 +315,7 @@ void DPPLDeleteQueue (DPPLSyclQueueRef QRef)
  * vendor, and device profile are printed out. More attributed may be added
  * later.
  */
-void DPPLDumpDeviceInfo (const DPPLSyclQueueRef QRef)
+void DPPLDumpDeviceInfo (__dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     dump_device_info(Q->get_device());
