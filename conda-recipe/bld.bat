@@ -14,11 +14,11 @@ cmake -G Ninja ^
     "-DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%" ^
     "-DDPCPP_ROOT=%DPCPP_ROOT%" ^
     "%SRC_DIR%/oneapi_wrapper"
-IF %ERRORLEVEL% NEQ 0 exit 1
+IF ERRORLEVEL 1 exit 1
 
 ninja -n
 ninja install
-IF %ERRORLEVEL% NEQ 0 exit 1
+IF ERRORLEVEL 1 exit 1
 
 cd ..
 
@@ -33,4 +33,4 @@ set "DPPL_ONEAPI_INTERFACE_INCLDIR=%LIBRARY_PREFIX%/include"
 "%PYTHON%" setup.py clean --all
 "%PYTHON%" setup.py build
 "%PYTHON%" setup.py install
-IF %ERRORLEVEL% NEQ 0 exit 1
+IF ERRORLEVEL 1 exit 1
