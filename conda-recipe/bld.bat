@@ -1,4 +1,8 @@
 call "%ONEAPI_ROOT%compiler\latest\env\vars.bat"
+IF ERRORLEVEL 1 exit 1
+REM conda uses %ERRORLEVEL% but FPGA scripts can set it. So it should be reseted.
+set ERRORLEVEL=
+
 set "CC=dpcpp-cl.exe"
 set "CXX=dpcpp-cl.exe"
 
