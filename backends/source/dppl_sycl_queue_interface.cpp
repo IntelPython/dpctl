@@ -148,16 +148,6 @@ public:
 #define cpu_queues cpu_queues_()
 #define gpu_queues gpu_queues_()
 
-// Initialize the active_queue with the default queue
-// thread_local std::vector<cl::sycl::queue> QMgrHelper::active_queues
-//     = {default_selector()};
-
-// std::vector<cl::sycl::queue> QMgrHelper::cpu_queues
-//     = QMgrHelper::init_queues(info::device_type::cpu);
-
-// std::vector<cl::sycl::queue> QMgrHelper::gpu_queues
-//     = QMgrHelper::init_queues(info::device_type::gpu);
-
 /*!
  * Allocates a new copy of the present top of stack queue, which can be the
  * default queue and returns to caller. The caller owns the pointer and is
