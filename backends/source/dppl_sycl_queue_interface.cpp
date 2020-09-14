@@ -105,18 +105,18 @@ class QMgrHelper
 public:
     static std::vector<cl::sycl::queue>&   cpu_queues_()
     {
-        static std::vector<cl::sycl::queue> cpu_queues = QMgrHelper::init_queues(info::device_type::cpu);
-        return cpu_queues;
+        static std::vector<cl::sycl::queue>* cpu_queues = QMgrHelper::init_queues(info::device_type::cpu);
+        return *cpu_queues;
     }
     static std::vector<cl::sycl::queue>&   gpu_queues_()
     {
-        static std::vector<cl::sycl::queue> gpu_queues = QMgrHelper::init_queues(info::device_type::gpu);
-        return gpu_queues;
+        static std::vector<cl::sycl::queue>* gpu_queues = QMgrHelper::init_queues(info::device_type::gpu);
+        return *gpu_queues;
     }
     static std::vector<cl::sycl::queue>& active_queues_()
     {
-        thread_local static std::vector<cl::sycl::queue> active_queues = {default_selector()};
-        return active_queues;
+        thread_local static std::vector<cl::sycl::queue>* active_queues = new std::vector<cl::sycl::queue>({default_selector()});
+        return *active_queues;
     }
 
     static __dppl_give DPPLSyclQueueRef
@@ -134,12 +134,12 @@ public:
     static void
     popSyclQueue ();
 
-    static cl::sycl::vector_class<cl::sycl::queue>
+    static cl::sycl::vector_class<cl::sycl::queue>*
     init_queues (info::device_type device_ty)
     {
-        std::vector<cl::sycl::queue> queues;
+        std::vector<cl::sycl::queue>* queues = new std::vector<cl::sycl::queue>();
         for(auto d : device::get_devices(device_ty))
-            queues.emplace_back(d);
+            queues->emplace_back(d);
         return queues;
     }
 };
