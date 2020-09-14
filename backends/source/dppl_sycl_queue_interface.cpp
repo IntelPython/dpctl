@@ -103,9 +103,21 @@ void error_reporter (const std::string & msg)
 class QMgrHelper
 {
 public:
-    static std::vector<cl::sycl::queue>   cpu_queues;
-    static std::vector<cl::sycl::queue>   gpu_queues;
-    static thread_local std::vector<cl::sycl::queue> active_queues;
+    static std::vector<cl::sycl::queue>&   cpu_queues_()
+    {
+        static std::vector<cl::sycl::queue> cpu_queues = QMgrHelper::init_queues(info::device_type::cpu);
+        return cpu_queues;
+    }
+    static std::vector<cl::sycl::queue>&   gpu_queues_()
+    {
+        static std::vector<cl::sycl::queue> gpu_queues = QMgrHelper::init_queues(info::device_type::gpu);
+        return gpu_queues;
+    }
+    static std::vector<cl::sycl::queue>& active_queues_()
+    {
+        thread_local static std::vector<cl::sycl::queue> active_queues = {default_selector()};
+        return active_queues;
+    }
 
     static __dppl_give DPPLSyclQueueRef
     getQueue (DPPLSyclDeviceType DeviceTy, size_t DNum);
@@ -132,15 +144,19 @@ public:
     }
 };
 
+#define active_queues active_queues_()
+#define cpu_queues cpu_queues_()
+#define gpu_queues gpu_queues_()
+
 // Initialize the active_queue with the default queue
-thread_local std::vector<cl::sycl::queue> QMgrHelper::active_queues
-    = {default_selector()};
+// thread_local std::vector<cl::sycl::queue> QMgrHelper::active_queues
+//     = {default_selector()};
 
-std::vector<cl::sycl::queue> QMgrHelper::cpu_queues
-    = QMgrHelper::init_queues(info::device_type::cpu);
+// std::vector<cl::sycl::queue> QMgrHelper::cpu_queues
+//     = QMgrHelper::init_queues(info::device_type::cpu);
 
-std::vector<cl::sycl::queue> QMgrHelper::gpu_queues
-    = QMgrHelper::init_queues(info::device_type::gpu);
+// std::vector<cl::sycl::queue> QMgrHelper::gpu_queues
+//     = QMgrHelper::init_queues(info::device_type::gpu);
 
 /*!
  * Allocates a new copy of the present top of stack queue, which can be the
