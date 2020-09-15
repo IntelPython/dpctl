@@ -103,9 +103,29 @@ void error_reporter (const std::string & msg)
 class QMgrHelper
 {
 public:
-    static std::vector<cl::sycl::queue>   cpu_queues;
-    static std::vector<cl::sycl::queue>   gpu_queues;
-    static thread_local std::vector<cl::sycl::queue> active_queues;
+    static std::vector<cl::sycl::queue>&
+    cpu_queues_ ()
+    {
+        static std::vector<cl::sycl::queue>* cpu_queues =
+            QMgrHelper::init_queues(info::device_type::cpu);
+        return *cpu_queues;
+    }
+
+    static std::vector<cl::sycl::queue>&
+    gpu_queues_ ()
+    {
+        static std::vector<cl::sycl::queue>* gpu_queues =
+            QMgrHelper::init_queues(info::device_type::gpu);
+        return *gpu_queues;
+    }
+
+    static std::vector<cl::sycl::queue>&
+    active_queues_ ()
+    {
+        thread_local static std::vector<cl::sycl::queue>* active_queues =
+            new std::vector<cl::sycl::queue>({default_selector()});
+        return *active_queues;
+    }
 
     static __dppl_give DPPLSyclQueueRef
     getQueue (DPPLSyclDeviceType DeviceTy, size_t DNum);
@@ -122,25 +142,23 @@ public:
     static void
     popSyclQueue ();
 
-    static cl::sycl::vector_class<cl::sycl::queue>
+    static cl::sycl::vector_class<cl::sycl::queue>*
     init_queues (info::device_type device_ty)
     {
-        std::vector<cl::sycl::queue> queues;
+        auto queues = new std::vector<cl::sycl::queue>();
         for(auto d : device::get_devices(device_ty))
-            queues.emplace_back(d);
+            queues->emplace_back(d);
         return queues;
     }
 };
 
-// Initialize the active_queue with the default queue
-thread_local std::vector<cl::sycl::queue> QMgrHelper::active_queues
-    = {default_selector()};
-
-std::vector<cl::sycl::queue> QMgrHelper::cpu_queues
-    = QMgrHelper::init_queues(info::device_type::cpu);
-
-std::vector<cl::sycl::queue> QMgrHelper::gpu_queues
-    = QMgrHelper::init_queues(info::device_type::gpu);
+// make function call like access to variable
+// it is for minimizing code changes during replacing static vars with functions
+// it could be refactored by replacing variable with function call
+// scope of this variables is only this file
+#define cpu_queues    cpu_queues_()
+#define gpu_queues    gpu_queues_()
+#define active_queues active_queues_()
 
 /*!
  * Allocates a new copy of the present top of stack queue, which can be the
