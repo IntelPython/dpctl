@@ -104,17 +104,22 @@ def getpyexts():
     elif IS_WIN:
         runtime_library_dirs = []
 
-    exts = cythonize(Extension('dppl._sycl_core',
-                               [os.path.abspath('dppl/sycl_core.pyx'),],
-                                depends=[dppl_sycl_interface_include,],
-                                include_dirs=[np.get_include(),
-                                              dppl_sycl_interface_include],
-                                extra_compile_args=eca + get_other_cxxflags(),
-                                extra_link_args=ela,
-                                libraries=libs,
-                                library_dirs=librarys,
-                                runtime_library_dirs=runtime_library_dirs,
-                                language='c++'))
+    extension_args = {
+        "depends": [dppl_sycl_interface_include,],
+        "include_dirs": [np.get_include(), dppl_sycl_interface_include],
+        "extra_compile_args": eca + get_other_cxxflags(),
+        "extra_link_args": ela, "libraries": libs, "library_dirs": librarys,
+        "runtime_library_dirs": runtime_library_dirs, "language": 'c++',
+    }
+
+    extensions = [
+        Extension('dppl._sycl_core', [os.path.abspath('dppl/sycl_core.pyx'),],
+            **extension_args),
+        Extension('dppl._memory', [os.path.abspath('dppl/_memory.pyx'),],
+            **extension_args),
+    ]
+
+    exts = cythonize(extensions)
     return exts
 
 setup(
