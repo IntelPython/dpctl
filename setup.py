@@ -78,7 +78,7 @@ def get_other_cxxflags():
         # what compiler we are using.
         return ['/Ox', '/std:c++17']
 
-def getpyexts():
+def extensions():
     # Security flags
     eca = get_sdl_cflags()
     ela = get_sdl_ldflags()
@@ -131,7 +131,7 @@ setup(
     author="Intel Corporation",
     url='https://github.com/IntelPython/PyDPPL',
     packages=find_packages(include=["dppl", "dppl.*"]),
-    ext_modules = getpyexts(),
+    ext_modules = extensions(),
     setup_requires=requirements,
     cffi_modules=[
        "./dppl/opencl_core.py:ffi"
