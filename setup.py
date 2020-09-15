@@ -25,8 +25,8 @@ import os
 import sys
 import versioneer
 
-from Cython.Build import cythonize
 from setuptools import setup, Extension, find_packages
+from Cython.Build import cythonize
 
 import numpy as np
 
