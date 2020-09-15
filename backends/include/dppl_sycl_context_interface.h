@@ -1,4 +1,4 @@
-//===---------- dppl_sycl_types.h - DPPL-SYCL interface ---*--- C++ ---*---===//
+//===--- dppl_sycl_context_interface.h - DPPL-SYCL interface --*--C++ --*--===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -19,39 +19,34 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines types used by DPPL's C interface to SYCL.
+/// This header declares a C API to SYCL's sycl::context interface.
 ///
 //===----------------------------------------------------------------------===//
 
 #pragma once
 
-/*!
- * @brief
- *
- */
-typedef struct DPPLOpaqueSyclContext *DPPLSyclContextRef;
+#include "dppl_data_types.h"
+#include "dppl_sycl_types.h"
+#include "Support/DllExport.h"
+#include "Support/ExternC.h"
+#include "Support/MemOwnershipAttrs.h"
+#include <stdbool.h>
+
+DPPL_C_EXTERN_C_BEGIN
 
 /*!
- * @brief
+ * @brief Returns true if this SYCL context is a host context.
  *
+ * @param    CtxtRef        A opaque pointer to a sycl::context.
+ * @return   True if the SYCL context is a host context, else False.
  */
-typedef struct DPPLOpaqueSyclDevice *DPPLSyclDeviceRef;
+bool DPPLIsHostContext (__dppl_keep const DPPLSyclContextRef CtxtRef);
 
 /*!
- * @brief
+ * @brief Delete the pointer after casting it to sycl::context
  *
+ * @param    CtxtRef        The DPPLSyclContextRef pointer to be deleted.
  */
-typedef struct DPPLOpaqueSyclPlatform *DPPLSyclPlatformRef;
+void DPPLDeleteSyclContext (__dppl_take DPPLSyclContextRef CtxtRef);
 
- /*!
-  * @brief Used to pass a sycl::queue opaquely through DPPL interfaces.
-  *
-  * @see sycl::queue
-  */
-typedef struct DPPLOpaqueSyclQueue *DPPLSyclQueueRef;
-
-/*!
- * @brief Used to pass a sycl::program opaquely through DPPL interfaces.
- *
- */
-typedef struct DPPLOpaqueSyclProgram *DPPLSyclProgramRef;
+DPPL_C_EXTERN_C_END

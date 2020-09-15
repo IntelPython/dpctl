@@ -43,7 +43,7 @@ class TestDumpMethods (unittest.TestCase):
     def test_dppl_dump_device_info (self):
         q = dppl.get_current_queue()
         try:
-            dppl.dump_device_info(q)
+            q.get_sycl_device().dump_device_info()
         except Exception:
             self.fail("Encountered an exception inside dump_device_info().")
 
@@ -92,3 +92,6 @@ class TestGetCurrentQueueInMultipleThreads (unittest.TestCase):
             self.assertEqual(dppl.get_num_activated_queues(), 1)
             Session1.start()
             Session2.start()
+
+if __name__ == '__main__':
+    unittest.main()

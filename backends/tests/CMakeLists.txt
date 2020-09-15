@@ -11,7 +11,7 @@ else()
   # We need thread support for gtest
   find_package(Threads REQUIRED)
 
-  set(CMAKE_CTEST_COMMAND ctest -V) 
+  set(CMAKE_CTEST_COMMAND ctest -V)
 
   # Emulate autotools like make check target to build tests
   add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
