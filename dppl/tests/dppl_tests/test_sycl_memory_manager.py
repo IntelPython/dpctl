@@ -30,14 +30,28 @@ class TestMemory (unittest.TestCase):
         mobj = mem.Memory(nbytes)
         self.assertEqual(mobj.nbytes, nbytes)
 
+    def _create_memory (self):
+        nbytes = 1024
+        mobj = mem.Memory(nbytes)
+        return mobj
+
+    def test_memory_without_context (self):
+        mobj = self._create_memory()
+
         # Without context
         self.assertEqual(mem.SyclQueue().get_pointer_type(mobj.pointer), 'shared')
         self.assertEqual(mobj._usm_type(), 'shared')
+
+    def test_memory_cpu_context (self):
+        mobj = self._create_memory()
 
         # CPU context
         with dppl.device_context(dppl.device_type.cpu):
             self.assertEqual(mem.SyclQueue().get_pointer_type(mobj.pointer), 'unknown')
             self.assertEqual(mobj._usm_type(), 'shared')
+
+    def test_memory_gpu_context (self):
+        mobj = self._create_memory()
 
         # GPU context
         with dppl.device_context(dppl.device_type.gpu):
