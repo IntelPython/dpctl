@@ -40,6 +40,7 @@ DPPL_C_EXTERN_C_BEGIN
  * @param    CtxtRef        A opaque pointer to a sycl::context.
  * @return   True if the SYCL context is a host context, else False.
  */
+DPPL_API
 bool DPPLIsHostContext (__dppl_keep const DPPLSyclContextRef CtxtRef);
 
 /*!
@@ -47,6 +48,7 @@ bool DPPLIsHostContext (__dppl_keep const DPPLSyclContextRef CtxtRef);
  *
  * @param    CtxtRef        The DPPLSyclContextRef pointer to be deleted.
  */
+DPPL_API
 void DPPLDeleteSyclContext (__dppl_take DPPLSyclContextRef CtxtRef);
 
 DPPL_C_EXTERN_C_END
