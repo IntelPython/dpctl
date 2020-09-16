@@ -44,6 +44,8 @@ cdef class UnsupportedDeviceTypeError(Exception):
     '''
     pass
 
+cdef extern from "dppl_utils.h":
+    cdef void DPPLDeleteCString (const char *str)
 
 cdef extern from "dppl_sycl_types.h":
     cdef struct DPPLOpaqueSyclContext:
@@ -75,9 +77,6 @@ cdef extern from "dppl_sycl_device_interface.h":
     except +
     cdef bool DPPLGetDeviceHostUnifiedMemory (const DPPLSyclDeviceRef DRef) \
     except +
-    cdef void DPPLDeleteDeviceName (const char *DeviceName) except +
-    cdef void DPPLDeleteDeviceVendorName (const char *VendorName) except +
-    cdef void DPPLDeleteDeviceDriverInfo (const char *DriverInfo) except +
 
 cdef extern from "dppl_sycl_platform_interface.h":
     cdef size_t DPPLPlatform_GetNumPlatforms ()
@@ -143,9 +142,9 @@ cdef class SyclDevice:
 
     def __dealloc__ (self):
         DPPLDeleteSyclDevice(self.device_ptr)
-        DPPLDeleteDeviceName(self.device_name)
-        DPPLDeleteDeviceVendorName(self.vendor_name)
-        DPPLDeleteDeviceDriverInfo(self.driver_version)
+        DPPLDeleteCString(self.device_name)
+        DPPLDeleteCString(self.vendor_name)
+        DPPLDeleteCString(self.driver_version)
 
     def dump_device_info (self):
         ''' Print information about the SYCL device.

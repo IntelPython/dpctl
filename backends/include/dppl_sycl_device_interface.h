@@ -118,15 +118,6 @@ __dppl_give const char*
 DPPLGetDeviceDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
- * @brief Deletes a C string corresponding to the string returned by
- * DPPLGetDeviceDriverInfo().
- *
- * @param    DriverInfo     C String for the driver number.
- */
-DPPL_API
-void DPPLDeleteDeviceDriverInfo (__dppl_take const char* DriverInfo);
-
-/*!
  * @brief Returns a C string for the device name.
  *
  * @param    DRef           Opaque pointer to a sycl::device
@@ -137,15 +128,6 @@ __dppl_give const char*
 DPPLGetDeviceName (__dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
- * @brief Deletes a C string corresponding to the string returned by
- * DPPLGetDeviceName().
- *
- * @param    DeviceName     C String for the device name.
- */
-DPPL_API
-void DPPLDeleteDeviceName (__dppl_take const char* DeviceName);
-
-/*!
  * @brief Returns a C string corresponding to the vendor name.
  *
  * @param    DRef           Opaque pointer to a sycl::device
@@ -154,15 +136,6 @@ void DPPLDeleteDeviceName (__dppl_take const char* DeviceName);
 DPPL_API
 __dppl_give const char*
 DPPLGetDeviceVendorName (__dppl_keep const DPPLSyclDeviceRef DRef);
-
-/*!
- * @brief Deletes a C string corresponding to the string returned by
- * DPPLGetDeviceVendorName().
- *
- * @param    char           C String for the vendor name.
- */
-DPPL_API
-void DPPLDeleteDeviceVendorName (__dppl_take const char* VendorName);
 
 /*!
  * @brief Returns True if the device and the host share a unified memory

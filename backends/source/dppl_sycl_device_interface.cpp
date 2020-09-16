@@ -38,7 +38,7 @@ namespace
  DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPPLSyclDeviceRef)
 
  /*!
- * @brief
+ * @brief Helper function to print the metadata for a sycl::device.
  *
  * @param    Device         My Param doc
  */
@@ -108,11 +108,6 @@ DPPLGetDeviceName (__dppl_keep const DPPLSyclDeviceRef DRef)
     return cstr_name;
 }
 
-void DPPLDeleteDeviceName (__dppl_take const char *DeviceName)
-{
-    delete DeviceName;
-}
-
 __dppl_give const char*
 DPPLGetDeviceVendorName (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
@@ -122,11 +117,6 @@ DPPLGetDeviceVendorName (__dppl_keep const DPPLSyclDeviceRef DRef)
     return cstr_vendor;
 }
 
-void DPPLDeleteDeviceVendorName (__dppl_take const char *VendorName)
-{
-    delete VendorName;
-}
-
 __dppl_give const char*
 DPPLGetDeviceDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
@@ -134,11 +124,6 @@ DPPLGetDeviceDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef)
     auto cstr_driver = new char [driver.length()+1];
     std::strcpy (cstr_driver, driver.c_str());
     return cstr_driver;
-}
-
-void DPPLDeleteDeviceDriverInfo (__dppl_take const char *DriverInfo)
-{
-    delete DriverInfo;
 }
 
 bool DPPLGetDeviceHostUnifiedMemory (__dppl_keep const DPPLSyclDeviceRef DRef)

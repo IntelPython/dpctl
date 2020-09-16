@@ -101,6 +101,7 @@ add_library(
   source/dppl_sycl_platform_interface.cpp
   source/dppl_sycl_queue_interface.cpp
   source/dppl_sycl_queue_manager.cpp
+  source/dppl_utils.cpp
 )
 
 # Install DPPLOpenCLInterface
