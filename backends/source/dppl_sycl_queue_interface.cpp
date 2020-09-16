@@ -26,9 +26,6 @@
 
 #include "dppl_sycl_queue_interface.h"
 #include "Support/CBindingWrapping.h"
-#include <iomanip>
-#include <iostream>
-#include <sstream>
 
 #include <CL/sycl.hpp>                /* SYCL headers   */
 
@@ -39,50 +36,7 @@ namespace
 // Create wrappers for C Binding types (see CBindingWrapping.h).
  DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
 
-/*!
- * @brief
- *
- * @param    Platform       My Param doc
- */
-void dump_platform_info (const platform & Platform)
-{
-    std::stringstream ss;
-
-    ss << std::setw(4) << " " << std::left << std::setw(12) << "Name"
-       << Platform.get_info<info::platform::name>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(12) << "Version"
-       << Platform.get_info<info::platform::version>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(12) << "Vendor"
-       << Platform.get_info<info::platform::vendor>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(12) << "Profile"
-       << Platform.get_info<info::platform::profile>() << '\n';
-
-    std::cout << ss.str();
-}
-
 } /* end of anonymous namespace */
-
-/*!
- * Prints out number of available SYCL platforms, number of CPU queues, number
- * of GPU queues, metadata about the current global queue, and how many queues
- * are currently activated. More information can be added in future, and
- * functions to extract these information using SYCL API (e.g. device_info)
- * may also be added. For now, this function can be used as a basic canary test
- * to check if the queue manager was properly initialized.
- *
- */
-void DPPLDumpPlatformInfo ()
-{
-    size_t i = 0;
-
-    // Print out the info for each platform
-    auto platforms = platform::get_platforms();
-    for (auto &p : platforms) {
-        std::cout << "---Platform " << i << '\n';
-        dump_platform_info(p);
-        ++i;
-    }
-}
 
 __dppl_give DPPLSyclDeviceRef
 DPPLGetDeviceFromQueue (__dppl_keep const DPPLSyclQueueRef QRef)

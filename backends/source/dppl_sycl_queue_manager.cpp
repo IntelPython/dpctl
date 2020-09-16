@@ -118,14 +118,6 @@ public:
 //----------------------------- Public API -----------------------------------//
 
 /*!
- * Returns the number of sycl::platform on the system.
- */
-size_t DPPLGetNumPlatforms ()
-{
-    return platform::get_platforms().size();
-}
-
-/*!
  * Allocates a new copy of the present top of stack queue, which can be the
  * default queue and returns to caller. The caller owns the pointer and is
  * responsible for deallocating it. The helper function deleteQueue can be used
@@ -283,14 +275,6 @@ QMgrHelper::popSyclQueue ()
 }
 
 } /* end of anonymous namespace */
-
-/*!
- * Returns the number of sycl::platform on the system.
- */
-size_t DPPLGetNumPlatforms ()
-{
-    return platform::get_platforms().size();
-}
 
 /*!
  * Returns inside the number of activated queues not including the global queue

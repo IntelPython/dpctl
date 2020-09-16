@@ -43,14 +43,6 @@
 DPPL_C_EXTERN_C_BEGIN
 
 /*!
- * @brief Get the number of sycl::platform available on the system.
- *
- * @return The number of available sycl::platforms.
- */
-DPPL_API
-size_t DPPLGetNumPlatforms ();
-
-/*!
  * @brief Get the sycl::queue object that is currently activated for this
  * thread.
  *

@@ -20,7 +20,7 @@
 ///
 /// \file
 /// This file has unit test cases for functions defined in
-/// dppl_sycl_queue_interface.h.
+/// dppl_sycl_queue_interface.h and dppl_sycl_queue_manager.h.
 ///
 //===----------------------------------------------------------------------===//
 #include "dppl_sycl_device_interface.h"
@@ -56,15 +56,7 @@ namespace
 }
 
 struct TestDPPLSyclQueuemanager : public ::testing::Test
-{
-
-};
-
-TEST_F (TestDPPLSyclQueuemanager, CheckGetNumPlatforms)
-{
-    auto nplatforms = DPPLGetNumPlatforms();
-    EXPECT_GE(nplatforms, 0);
-}
+{ };
 
 
 TEST_F (TestDPPLSyclQueuemanager, CheckDPPLGetCurrentQueue)
@@ -129,12 +121,6 @@ TEST_F (TestDPPLSyclQueuemanager, CheckGetNumActivatedQueues)
     EXPECT_EQ(num4, 0);
 
     DPPLDeleteSyclQueue(q);
-}
-
-
-TEST_F (TestDPPLSyclQueuemanager, CheckDPPLDumpPlatformInfo)
-{
-    EXPECT_NO_FATAL_FAILURE(DPPLDumpPlatformInfo());
 }
 
 

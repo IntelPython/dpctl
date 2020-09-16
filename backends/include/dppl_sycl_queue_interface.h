@@ -36,13 +36,6 @@
 DPPL_C_EXTERN_C_BEGIN
 
 /*!
- * @brief Prints out information about the Sycl environment, such as
- * number of available platforms, number of activated queues, etc.
- */
-DPPL_API
-void DPPLDumpPlatformInfo ();
-
-/*!
  * @brief Returns the Sycl context for the queue.
  *
  * @param    QRef           An opaque pointer to the sycl queue.

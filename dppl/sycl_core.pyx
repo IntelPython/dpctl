@@ -60,16 +60,6 @@ cdef extern from "dppl_sycl_types.h":
 cdef extern from "dppl_sycl_context_interface.h":
     cdef void DPPLDeleteSyclContext (DPPLSyclContextRef CtxtRef) except +
 
-
-cdef extern from "dppl_sycl_queue_interface.h":
-    cdef void DPPLDeleteSyclQueue (DPPLSyclQueueRef QRef) except +
-    cdef void DPPLDumpPlatformInfo () except +
-    cdef DPPLSyclContextRef DPPLGetContextFromQueue (const DPPLSyclQueueRef Q) \
-         except+
-    cdef DPPLSyclDeviceRef DPPLGetDeviceFromQueue (const DPPLSyclQueueRef Q) \
-         except +
-
-
 cdef extern from "dppl_sycl_device_interface.h":
     cdef void DPPLDumpDeviceInfo (const DPPLSyclDeviceRef DRef) except +
     cdef void DPPLDeleteSyclDevice (DPPLSyclDeviceRef DRef) except +
@@ -89,6 +79,17 @@ cdef extern from "dppl_sycl_device_interface.h":
     cdef void DPPLDeleteDeviceVendorName (const char *VendorName) except +
     cdef void DPPLDeleteDeviceDriverInfo (const char *DriverInfo) except +
 
+cdef extern from "dppl_sycl_platform_interface.h":
+    cdef size_t DPPLPlatform_GetNumPlatforms ()
+    cdef void DPPLPlatform_DumpInfo ()
+
+cdef extern from "dppl_sycl_queue_interface.h":
+    cdef void DPPLDeleteSyclQueue (DPPLSyclQueueRef QRef) except +
+    cdef DPPLSyclContextRef DPPLGetContextFromQueue (const DPPLSyclQueueRef Q) \
+         except+
+    cdef DPPLSyclDeviceRef DPPLGetDeviceFromQueue (const DPPLSyclQueueRef Q) \
+         except +
+
 cdef extern from "dppl_sycl_queue_manager.h":
     cdef enum _device_type 'DPPLSyclDeviceType':
         _GPU 'DPPL_GPU'
@@ -98,7 +99,6 @@ cdef extern from "dppl_sycl_queue_manager.h":
     cdef size_t DPPLGetNumCPUQueues () except +
     cdef size_t DPPLGetNumGPUQueues () except +
     cdef size_t DPPLGetNumActivatedQueues () except +
-    cdef size_t DPPLGetNumPlatforms () except +
     cdef DPPLSyclQueueRef DPPLGetQueue (_device_type DTy,
                                         size_t device_num) except +
     cdef void DPPLPopSyclQueue () except +
@@ -217,7 +217,7 @@ cdef class _SyclQueueManager:
         DPPLPopSyclQueue()
 
     def has_sycl_platforms (self):
-        cdef size_t num_platforms = DPPLGetNumPlatforms()
+        cdef size_t num_platforms = DPPLPlatform_GetNumPlatforms()
         if num_platforms:
             return True
         else:
@@ -226,7 +226,7 @@ cdef class _SyclQueueManager:
     def get_num_platforms (self):
         ''' Returns the number of available SYCL/OpenCL platforms.
         '''
-        return DPPLGetNumPlatforms()
+        return DPPLPlatform_GetNumPlatforms()
 
     def get_num_activated_queues (self):
         ''' Return the number of currently activated queues for this thread.
@@ -264,7 +264,7 @@ cdef class _SyclQueueManager:
     def dump (self):
         ''' Prints information about the Runtime object.
         '''
-        DPPLDumpPlatformInfo()
+        DPPLPlatform_DumpInfo()
 
     def is_in_dppl_ctxt (self):
         cdef size_t num = DPPLGetNumActivatedQueues()
