@@ -97,6 +97,7 @@ add_library(
   DPPLSyclInterface
   SHARED
   source/dppl_sycl_queue_interface.cpp
+  source/dppl_sycl_usm_interface.cpp
 )
 
 # Install DPPLOpenCLInterface
