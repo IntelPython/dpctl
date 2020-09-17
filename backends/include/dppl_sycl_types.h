@@ -19,39 +19,51 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines types used by DPPL's C interface to SYCL.
+/// This file defines opaque pointer types wrapping Sycl object that get used
+/// by DPPL's C API.
 ///
 //===----------------------------------------------------------------------===//
 
 #pragma once
 
 /*!
- * @brief
+ * @brief Opaque pointer used to represent references to sycl::context*
  *
+ * @see sycl::context
  */
 typedef struct DPPLOpaqueSyclContext *DPPLSyclContextRef;
 
 /*!
- * @brief
+ * @brief Opaque pointer used to represent references to sycl::device*
  *
+ * @see sycl::device
  */
 typedef struct DPPLOpaqueSyclDevice *DPPLSyclDeviceRef;
 
 /*!
- * @brief
+ * @brief Opaque pointer used to represent references to sycl::kernel*
  *
+ * @see sycl::kernel
+ */
+typedef struct DPPLOpaqueSyclProgram *DPPLSyclKernelRef;
+
+/*!
+ * @brief Opaque pointer used to represent references to sycl::platform*
+ *
+ * @see sycl::platform
  */
 typedef struct DPPLOpaqueSyclPlatform *DPPLSyclPlatformRef;
 
+/*!
+ * @brief Opaque pointer used to represent references to sycl::program*
+ *
+ * @see sycl::program
+ */
+typedef struct DPPLOpaqueSyclProgram *DPPLSyclProgramRef;
+
  /*!
-  * @brief Used to pass a sycl::queue opaquely through DPPL interfaces.
+  * @brief Opaque pointer used to represent references to sycl::queue*
   *
   * @see sycl::queue
   */
 typedef struct DPPLOpaqueSyclQueue *DPPLSyclQueueRef;
-
-/*!
- * @brief Used to pass a sycl::program opaquely through DPPL interfaces.
- *
- */
-typedef struct DPPLOpaqueSyclProgram *DPPLSyclProgramRef;
