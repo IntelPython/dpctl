@@ -20,19 +20,30 @@ cdef extern from "CL/sycl.hpp" namespace "cl::sycl":
        context get_context() nogil
        pass
 
-    cdef void* malloc_shared(Py_ssize_t, queue&) nogil
-    cdef void free(void *, queue&) nogil
     cdef alloc get_pointer_type(void *, context&) nogil
 
 
+cdef extern from "dppl_sycl_types.h":
+    cdef struct DPPLOpaqueSyclQueue
+    cdef struct DPPLOpaqueMemoryUSMShared
+
+    ctypedef DPPLOpaqueSyclQueue* DPPLSyclQueueRef
+    ctypedef DPPLOpaqueMemoryUSMShared* DPPLMemoryUSMSharedRef
+
+
+cdef extern from "dppl_sycl_usm_interface.h":
+    cdef DPPLMemoryUSMSharedRef DPPLmalloc_shared (size_t size, DPPLSyclQueueRef QRef) except +
+    cdef void DPPLfree (DPPLMemoryUSMSharedRef MRef, DPPLSyclQueueRef QRef) except +
+
+
 cdef class SyclQueue:
-    cdef dppl._sycl_core.SyclQueue queue_cap
+    cdef dppl._sycl_core.SyclQueue queue
     cdef queue q
 
     def __cinit__(self):
         cdef void* q_ptr
-        self.queue_cap = dppl.get_current_queue()
-        q_ptr = self.queue_cap.get_queue_ref()
+        self.queue = dppl.get_current_queue()
+        q_ptr = self.queue.get_queue_ref()
         if (q_ptr):
             self.q = deref(<queue *>q_ptr)
         else:
@@ -54,48 +65,43 @@ cdef class SyclQueue:
 
     property get_capsule:
         def __get__(self):
-            return self.queue_cap
+            return self.queue
 
     cdef queue get_queue(self):
         return self.q
 
 
 cdef class Memory:
-    cdef void* _ptr
+    cdef DPPLMemoryUSMSharedRef _ptr
     cdef Py_ssize_t nbytes
-    cdef dppl._sycl_core.SyclQueue queue_cap
+    cdef dppl._sycl_core.SyclQueue queue
 
     def __cinit__(self, Py_ssize_t nbytes):
-        cdef dppl._sycl_core.SyclQueue q_cap
-        cdef void* queue_ptr
-        cdef void* p
+        cdef dppl._sycl_core.SyclQueue q
+        cdef DPPLMemoryUSMSharedRef p
 
         self._ptr = NULL
-        self.queue_cap = None
+        self.queue = None
         self.nbytes = 0
 
         if (nbytes > 0):
-            q_cap = dppl.get_current_queue()
-            queue_ptr = q_cap.get_queue_ref()
-            p = malloc_shared(nbytes, deref(<queue *>queue_ptr))
+            q = dppl.get_current_queue()
+            p = DPPLmalloc_shared(nbytes, q.get_queue_ref())
             if (p):
                 self._ptr = p
                 self.nbytes = nbytes
-                self.queue_cap = q_cap
+                self.queue = q
             else:
                 raise RuntimeError("Null memory pointer returned")
         else:
             raise ValueError("Non-positive number of bytes found.")
 
     def __dealloc__(self):
-        cdef void* queue_ptr
-
         if (self._ptr):
-            queue_ptr = self.queue_cap.get_queue_ref()
-            free(self._ptr, deref(<queue *>queue_ptr))
+            DPPLfree(self._ptr, self.queue.get_queue_ref())
         self._ptr = NULL
         self.nbytes = 0
-        self.queue_cap = None
+        self.queue = None
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         buffer.buf = <char *>self._ptr
@@ -120,7 +126,7 @@ cdef class Memory:
 
     property _queue:
         def __get__(self):
-            return self.queue_cap
+            return self.queue
 
     def __repr__(self):
         return "<Intel(R) USM allocated memory block of {} bytes at {}>".format(self.nbytes, hex(<object>(<Py_ssize_t>self._ptr)))
@@ -130,7 +136,7 @@ cdef class Memory:
         cdef alloc ptr_type
         cdef dppl._sycl_core.SyclQueue _cap
 
-        _cap = qcaps if (qcaps) else self.queue_cap
+        _cap = qcaps if (qcaps) else self.queue
         q_ptr = _cap.get_queue_ref()
         ptr_type = get_pointer_type(self._ptr, deref(<queue*>q_ptr).get_context())
         if (ptr_type == alloc.shared):
@@ -144,12 +150,12 @@ cdef class Memory:
 
 #    cdef void* _ptr
 #    cdef Py_ssize_t nbytes
-#    cdef object queue_cap
+#    cdef object queue
 
-    @staticmethod
-    cdef Memory create(void *p, Py_ssize_t nbytes, object queue_cap):
-        cdef Memory ret = Memory.__new__()
-        ret._ptr = p
-        ret.nbytes = nbytes
-        ret.q_cap = queue_cap
-        return ret
+    # @staticmethod
+    # cdef Memory create(void *p, Py_ssize_t nbytes, object queue):
+    #     cdef Memory ret = Memory.__new__()
+    #     ret._ptr = <DPPLMemoryUSMSharedRef>p
+    #     ret.nbytes = nbytes
+    #     ret.q_cap = queue
+    #     return ret

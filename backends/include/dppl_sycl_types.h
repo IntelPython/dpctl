@@ -55,3 +55,9 @@ typedef struct DPPLOpaqueSyclQueue *DPPLSyclQueueRef;
  *
  */
 typedef struct DPPLOpaqueSyclProgram *DPPLSyclProgramRef;
+
+/*!
+ * @brief
+ *
+ */
+typedef struct DPPLOpaqueMemoryUSMShared *DPPLMemoryUSMSharedRef;

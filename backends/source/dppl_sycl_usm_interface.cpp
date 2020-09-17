@@ -22,8 +22,34 @@
 /// TODO
 ///
 //===----------------------------------------------------------------------===//
+
 #include "dppl_sycl_usm_interface.h"
+#include "Support/CBindingWrapping.h"
 
 #include <CL/sycl.hpp>                /* SYCL headers   */
 
 using namespace cl::sycl;
+
+// TODO: move it to one header for not duplicate in many cpp files
+namespace
+{
+// Create wrappers for C Binding types (see CBindingWrapping.h).
+ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
+ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPPLMemoryUSMSharedRef)
+
+} /* end of anonymous namespace */
+
+__dppl_give DPPLMemoryUSMSharedRef
+DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
+{
+    auto Q = unwrap(QRef);
+    auto Ptr = malloc_shared(size, *Q);
+    return reinterpret_cast<DPPLMemoryUSMSharedRef>(Ptr);
+}
+
+void DPPLfree (DPPLMemoryUSMSharedRef MRef, __dppl_keep const DPPLSyclQueueRef QRef)
+{
+    auto Ptr = unwrap(MRef);
+    auto Q = unwrap(QRef);
+    free(Ptr, *Q);
+}
