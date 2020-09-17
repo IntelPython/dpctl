@@ -178,7 +178,6 @@ cdef class SyclDevice:
 cdef class SyclQueue:
     ''' Wrapper class for a Sycl queue.
     '''
-    cdef DPPLSyclQueueRef queue_ptr
 
     @staticmethod
     cdef SyclQueue _create (DPPLSyclQueueRef qref):

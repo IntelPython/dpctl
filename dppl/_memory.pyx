@@ -1,4 +1,5 @@
 import dppl
+cimport dppl._sycl_core
 
 from cython.operator cimport dereference as deref
 
@@ -66,7 +67,7 @@ cdef class Memory:
     cdef object queue_cap
 
     def __cinit__(self, Py_ssize_t nbytes):
-        cdef object q_cap
+        cdef dppl._sycl_core.SyclQueue q_cap
         cdef void* queue_ptr
         cdef void* p
 
