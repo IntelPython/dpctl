@@ -14,18 +14,13 @@ cdef extern from "CL/sycl.hpp" namespace "cl::sycl::usm":
        unknown 'cl::sycl::usm::alloc::unknown'
 
 cdef extern from "CL/sycl.hpp" namespace "cl::sycl":
-    cdef cppclass context nogil:
-       pass
-
-    cdef cppclass queue nogil:
-       context get_context() nogil
-       pass
+    cdef cppclass context nogil
 
     cdef alloc get_pointer_type(void *, context&) nogil
 
 
 cdef class Memory:
-    cdef DPPLMemoryUSMSharedRef _ptr
+    cdef DPPLMemoryUSMSharedRef memory_ptr
     cdef Py_ssize_t nbytes
     cdef SyclQueue queue
 
@@ -33,7 +28,7 @@ cdef class Memory:
         cdef SyclQueue q
         cdef DPPLMemoryUSMSharedRef p
 
-        self._ptr = NULL
+        self.memory_ptr = NULL
         self.queue = None
         self.nbytes = 0
 
@@ -41,7 +36,7 @@ cdef class Memory:
             q = dppl.get_current_queue()
             p = DPPLmalloc_shared(nbytes, q.get_queue_ref())
             if (p):
-                self._ptr = p
+                self.memory_ptr = p
                 self.nbytes = nbytes
                 self.queue = q
             else:
@@ -50,14 +45,14 @@ cdef class Memory:
             raise ValueError("Non-positive number of bytes found.")
 
     def __dealloc__(self):
-        if (self._ptr):
-            DPPLfree(self._ptr, self.queue.get_queue_ref())
-        self._ptr = NULL
+        if (self.memory_ptr):
+            DPPLfree(self.memory_ptr, self.queue.get_queue_ref())
+        self.memory_ptr = NULL
         self.nbytes = 0
         self.queue = None
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        buffer.buf = <char *>self._ptr
+        buffer.buf = <char *>self.memory_ptr
         buffer.format = 'B'                     # byte
         buffer.internal = NULL                  # see References
         buffer.itemsize = 1
@@ -71,7 +66,7 @@ cdef class Memory:
 
     property pointer:
         def __get__(self):
-            return <object>(<Py_ssize_t>self._ptr)
+            return <object>(<Py_ssize_t>self.memory_ptr)
 
     property nbytes:
         def __get__(self):
@@ -82,16 +77,14 @@ cdef class Memory:
             return self.queue
 
     def __repr__(self):
-        return "<Intel(R) USM allocated memory block of {} bytes at {}>".format(self.nbytes, hex(<object>(<Py_ssize_t>self._ptr)))
+        return "<Intel(R) USM allocated memory block of {} bytes at {}>".format(self.nbytes, hex(<object>(<Py_ssize_t>self.memory_ptr)))
 
-    def _usm_type(self, qcaps=None):
-        cdef void *q_ptr
+    def _usm_type(self):
+        cdef DPPLSyclContextRef ctx_ptr
         cdef alloc ptr_type
-        cdef SyclQueue _cap
 
-        _cap = qcaps if (qcaps) else self.queue
-        q_ptr = _cap.get_queue_ref()
-        ptr_type = get_pointer_type(self._ptr, deref(<queue*>q_ptr).get_context())
+        ctx_ptr = self.queue.get_sycl_context().get_context_ref()
+        ptr_type = get_pointer_type(self.memory_ptr, deref(<context*>ctx_ptr))
         if (ptr_type == alloc.shared):
             return "shared"
         elif (ptr_type == alloc.host):
@@ -101,14 +94,10 @@ cdef class Memory:
         else:
             return "unknown"
 
-#    cdef void* _ptr
-#    cdef Py_ssize_t nbytes
-#    cdef object queue
-
     # @staticmethod
     # cdef Memory create(void *p, Py_ssize_t nbytes, object queue):
     #     cdef Memory ret = Memory.__new__()
-    #     ret._ptr = <DPPLMemoryUSMSharedRef>p
+    #     ret.memory_ptr = <DPPLMemoryUSMSharedRef>p
     #     ret.nbytes = nbytes
     #     ret.q_cap = queue
     #     return ret
