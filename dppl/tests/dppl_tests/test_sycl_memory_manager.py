@@ -39,7 +39,6 @@ class TestMemory (unittest.TestCase):
         mobj = self._create_memory()
 
         # Without context
-        self.assertEqual(mem.SyclQueue().get_pointer_type(mobj.pointer), 'shared')
         self.assertEqual(mobj._usm_type(), 'shared')
 
     def test_memory_cpu_context (self):
@@ -47,7 +46,6 @@ class TestMemory (unittest.TestCase):
 
         # CPU context
         with dppl.device_context(dppl.device_type.cpu):
-            self.assertEqual(mem.SyclQueue().get_pointer_type(mobj.pointer), 'unknown')
             self.assertEqual(mobj._usm_type(), 'shared')
 
     def test_memory_gpu_context (self):
@@ -55,5 +53,4 @@ class TestMemory (unittest.TestCase):
 
         # GPU context
         with dppl.device_context(dppl.device_type.gpu):
-            self.assertEqual(mem.SyclQueue().get_pointer_type(mobj.pointer), 'unknown')
             self.assertEqual(mobj._usm_type(), 'shared')

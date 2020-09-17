@@ -24,41 +24,6 @@ cdef extern from "CL/sycl.hpp" namespace "cl::sycl":
     cdef alloc get_pointer_type(void *, context&) nogil
 
 
-cdef class SyclQueue:
-    cdef dppl._sycl_core.SyclQueue queue
-    cdef queue q
-
-    def __cinit__(self):
-        cdef void* q_ptr
-        self.queue = dppl.get_current_queue()
-        q_ptr = self.queue.get_queue_ref()
-        if (q_ptr):
-            self.q = deref(<queue *>q_ptr)
-        else:
-            raise ValueError("NULL pointer returned by the Capsule")
-
-    def get_pointer_type(self, Py_ssize_t p):
-        cdef context ctx = self.q.get_context()
-        cdef void * p_ptr = <void *> p
-
-        ptr_type = get_pointer_type(p_ptr, ctx)
-        if (ptr_type == alloc.shared):
-            return "shared"
-        elif (ptr_type == alloc.host):
-            return "host"
-        elif (ptr_type == alloc.device):
-            return "device"
-        else:
-            return "unknown"
-
-    property get_capsule:
-        def __get__(self):
-            return self.queue
-
-    cdef queue get_queue(self):
-        return self.q
-
-
 cdef class Memory:
     cdef DPPLMemoryUSMSharedRef _ptr
     cdef Py_ssize_t nbytes
