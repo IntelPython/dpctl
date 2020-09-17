@@ -93,11 +93,3 @@ cdef class Memory:
             return "device"
         else:
             return "unknown"
-
-    # @staticmethod
-    # cdef Memory create(void *p, Py_ssize_t nbytes, object queue):
-    #     cdef Memory ret = Memory.__new__()
-    #     ret.memory_ptr = <DPPLMemoryUSMSharedRef>p
-    #     ret.nbytes = nbytes
-    #     ret.q_cap = queue
-    #     return ret
