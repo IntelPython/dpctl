@@ -1,6 +1,6 @@
 import dppl
 from dppl.backend cimport *
-from ._sycl_core cimport SyclQueue
+from ._sycl_core cimport SyclContext, SyclQueue
 
 from cython.operator cimport dereference as deref
 
@@ -80,11 +80,11 @@ cdef class Memory:
         return "<Intel(R) USM allocated memory block of {} bytes at {}>".format(self.nbytes, hex(<object>(<Py_ssize_t>self.memory_ptr)))
 
     def _usm_type(self):
-        cdef DPPLSyclContextRef ctx_ptr
+        cdef SyclContext ctxt
         cdef alloc ptr_type
 
-        ctx_ptr = self.queue.get_sycl_context().get_context_ref()
-        ptr_type = get_pointer_type(self.memory_ptr, deref(<context*>ctx_ptr))
+        ctxt = self.queue.get_sycl_context()
+        ptr_type = get_pointer_type(self.memory_ptr, deref(<context*>ctxt.get_context_ref()))
         if (ptr_type == alloc.shared):
             return "shared"
         elif (ptr_type == alloc.host):
