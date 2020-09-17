@@ -47,6 +47,7 @@ DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
  *
  */
 DPPL_API
-void DPPLfree (__dppl_take DPPLMemoryUSMSharedRef MRef, __dppl_keep const DPPLSyclQueueRef QRef);
+void DPPLfree (__dppl_take DPPLMemoryUSMSharedRef MRef,
+               __dppl_keep const DPPLSyclQueueRef QRef);
 
 DPPL_C_EXTERN_C_END
