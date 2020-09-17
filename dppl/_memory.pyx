@@ -1,4 +1,5 @@
 import dppl
+from dppl.backend cimport *
 cimport dppl._sycl_core
 
 from cython.operator cimport dereference as deref
@@ -21,19 +22,6 @@ cdef extern from "CL/sycl.hpp" namespace "cl::sycl":
        pass
 
     cdef alloc get_pointer_type(void *, context&) nogil
-
-
-cdef extern from "dppl_sycl_types.h":
-    cdef struct DPPLOpaqueSyclQueue
-    cdef struct DPPLOpaqueMemoryUSMShared
-
-    ctypedef DPPLOpaqueSyclQueue* DPPLSyclQueueRef
-    ctypedef DPPLOpaqueMemoryUSMShared* DPPLMemoryUSMSharedRef
-
-
-cdef extern from "dppl_sycl_usm_interface.h":
-    cdef DPPLMemoryUSMSharedRef DPPLmalloc_shared (size_t size, DPPLSyclQueueRef QRef) except +
-    cdef void DPPLfree (DPPLMemoryUSMSharedRef MRef, DPPLSyclQueueRef QRef) except +
 
 
 cdef class SyclQueue:

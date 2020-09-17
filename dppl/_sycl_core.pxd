@@ -23,21 +23,39 @@
 ##
 ##===----------------------------------------------------------------------===##
 
-cdef extern from "dppl_sycl_types.h":
-    cdef struct DPPLOpaqueSyclQueue
+from .backend cimport *
 
-    ctypedef DPPLOpaqueSyclQueue* DPPLSyclQueueRef
+
+cdef class SyclContext:
+    ''' Wrapper class for a Sycl Context
+    '''
+    cdef DPPLSyclContextRef ctxt_ptr
+
+    @staticmethod
+    cdef SyclContext _create (DPPLSyclContextRef ctxt)
+    cdef DPPLSyclContextRef get_context_ref (self)
+
+
+cdef class SyclDevice:
+    ''' Wrapper class for a Sycl Device
+    '''
+    cdef DPPLSyclDeviceRef device_ptr
+    cdef const char *vendor_name
+    cdef const char *device_name
+    cdef const char *driver_version
+
+    @staticmethod
+    cdef SyclDevice _create (DPPLSyclDeviceRef dref)
+    cdef DPPLSyclDeviceRef get_device_ptr (self)
 
 
 cdef class SyclQueue:
     ''' Wrapper class for a Sycl queue.
     '''
-
     cdef DPPLSyclQueueRef queue_ptr
 
     @staticmethod
     cdef SyclQueue _create (DPPLSyclQueueRef qref)
-    cpdef get_sycl_context (self)
-    cpdef get_sycl_device (self)
+    cpdef SyclContext get_sycl_context (self)
+    cpdef SyclDevice get_sycl_device (self)
     cdef DPPLSyclQueueRef get_queue_ref (self)
-
