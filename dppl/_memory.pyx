@@ -1,6 +1,6 @@
 import dppl
 from dppl.backend cimport *
-cimport dppl._sycl_core
+from ._sycl_core cimport SyclQueue
 
 from cython.operator cimport dereference as deref
 
@@ -27,10 +27,10 @@ cdef extern from "CL/sycl.hpp" namespace "cl::sycl":
 cdef class Memory:
     cdef DPPLMemoryUSMSharedRef _ptr
     cdef Py_ssize_t nbytes
-    cdef dppl._sycl_core.SyclQueue queue
+    cdef SyclQueue queue
 
     def __cinit__(self, Py_ssize_t nbytes):
-        cdef dppl._sycl_core.SyclQueue q
+        cdef SyclQueue q
         cdef DPPLMemoryUSMSharedRef p
 
         self._ptr = NULL
@@ -87,7 +87,7 @@ cdef class Memory:
     def _usm_type(self, qcaps=None):
         cdef void *q_ptr
         cdef alloc ptr_type
-        cdef dppl._sycl_core.SyclQueue _cap
+        cdef SyclQueue _cap
 
         _cap = qcaps if (qcaps) else self.queue
         q_ptr = _cap.get_queue_ref()
