@@ -1,4 +1,4 @@
-//===--- dppl_sycl_queue_interface.h - DPPL-SYCL interface ---*---C++ -*---===//
+//===--- dppl_sycl_context_interface.h - DPPL-SYCL interface --*--C++ --*--===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -19,9 +19,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This header declares a C interface to sycl::queue member functions. Note
-/// that sycl::queue constructors are not exposed in this interface. Instead,
-/// users should use the functions in dppl_sycl_queue_manager.h.
+/// This header declares a C API to SYCL's sycl::context interface.
 ///
 //===----------------------------------------------------------------------===//
 
@@ -32,35 +30,25 @@
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include <stdbool.h>
 
 DPPL_C_EXTERN_C_BEGIN
 
 /*!
- * @brief Returns the Sycl context for the queue.
+ * @brief Returns true if this SYCL context is a host context.
  *
- * @param    QRef           An opaque pointer to the sycl queue.
- * @return   A DPPLSyclContextRef pointer to the sycl context for the queue.
+ * @param    CtxtRef        A opaque pointer to a sycl::context.
+ * @return   True if the SYCL context is a host context, else False.
  */
 DPPL_API
-__dppl_give DPPLSyclContextRef
-DPPLGetContextFromQueue (__dppl_keep const DPPLSyclQueueRef QRef);
+bool DPPLIsHostContext (__dppl_keep const DPPLSyclContextRef CtxtRef);
 
 /*!
- * @brief returns the Sycl device for the queue.
+ * @brief Delete the pointer after casting it to sycl::context
  *
- * @param    QRef           An opaque pointer to the sycl queue.
- * @return   A DPPLSyclDeviceRef pointer to the sycl device for the queue.
+ * @param    CtxtRef        The DPPLSyclContextRef pointer to be deleted.
  */
 DPPL_API
-__dppl_give DPPLSyclDeviceRef
-DPPLGetDeviceFromQueue (__dppl_keep const DPPLSyclQueueRef QRef);
-
-/*!
- * @brief Delete the pointer after casting it to sycl::queue.
- *
- * @param    QRef           A DPPLSyclQueueRef pointer that gets deleted.
- */
-DPPL_API
-void DPPLDeleteSyclQueue (__dppl_take DPPLSyclQueueRef QRef);
+void DPPLDeleteSyclContext (__dppl_take DPPLSyclContextRef CtxtRef);
 
 DPPL_C_EXTERN_C_END

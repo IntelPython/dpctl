@@ -1,4 +1,4 @@
-//===---------- dppl_sycl_types.h - DPPL-SYCL interface ---*--- C++ ---*---===//
+//===--- test_sycl_platform_interface.cpp - DPPL-SYCL interface -*- C++ -*-===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -19,39 +19,32 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines types used by DPPL's C interface to SYCL.
+/// This file has unit test cases for functions defined in
+/// dppl_sycl_platform_interface.h.
 ///
 //===----------------------------------------------------------------------===//
+#include "dppl_sycl_platform_interface.h"
+#include <gtest/gtest.h>
 
-#pragma once
+struct TestDPPLSyclPlatformInterface : public ::testing::Test
+{ };
 
-/*!
- * @brief
- *
- */
-typedef struct DPPLOpaqueSyclContext *DPPLSyclContextRef;
 
-/*!
- * @brief
- *
- */
-typedef struct DPPLOpaqueSyclDevice *DPPLSyclDeviceRef;
+TEST_F (TestDPPLSyclPlatformInterface, CheckGetNumPlatforms)
+{
+    auto nplatforms = DPPLPlatform_GetNumPlatforms();
+    EXPECT_GE(nplatforms, 0);
+}
 
-/*!
- * @brief
- *
- */
-typedef struct DPPLOpaqueSyclPlatform *DPPLSyclPlatformRef;
+TEST_F (TestDPPLSyclPlatformInterface, CheckDPPLPlatformDumpInfo)
+{
+    EXPECT_NO_FATAL_FAILURE(DPPLPlatform_DumpInfo());
+}
 
- /*!
-  * @brief Used to pass a sycl::queue opaquely through DPPL interfaces.
-  *
-  * @see sycl::queue
-  */
-typedef struct DPPLOpaqueSyclQueue *DPPLSyclQueueRef;
-
-/*!
- * @brief Used to pass a sycl::program opaquely through DPPL interfaces.
- *
- */
-typedef struct DPPLOpaqueSyclProgram *DPPLSyclProgramRef;
+int
+main (int argc, char** argv)
+{
+  ::testing::InitGoogleTest(&argc, argv);
+  int ret = RUN_ALL_TESTS();
+  return ret;
+}

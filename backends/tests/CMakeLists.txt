@@ -11,7 +11,7 @@ else()
   # We need thread support for gtest
   find_package(Threads REQUIRED)
 
-  set(CMAKE_CTEST_COMMAND ctest -V) 
+  set(CMAKE_CTEST_COMMAND ctest -V)
 
   # Emulate autotools like make check target to build tests
   add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
@@ -24,6 +24,7 @@ else()
 
   set(PYDPPL_BACKEND_TEST_CASES
     test_sycl_queue_manager
+    test_sycl_platform_interface
   )
 
   foreach(TEST_CASE ${PYDPPL_BACKEND_TEST_CASES})

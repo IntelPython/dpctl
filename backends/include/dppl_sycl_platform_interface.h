@@ -1,4 +1,4 @@
-//===---------- dppl_sycl_types.h - DPPL-SYCL interface ---*--- C++ ---*---===//
+//===--- dppl_sycl_platform_interface.h - DPPL-SYCL interface ---*--C++ -*-===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -19,39 +19,31 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines types used by DPPL's C interface to SYCL.
+/// This header declares a C interface to sycl::platform interface functions.
 ///
 //===----------------------------------------------------------------------===//
 
 #pragma once
 
-/*!
- * @brief
- *
- */
-typedef struct DPPLOpaqueSyclContext *DPPLSyclContextRef;
+#include "dppl_data_types.h"
+#include "Support/DllExport.h"
+#include "Support/ExternC.h"
+
+DPPL_C_EXTERN_C_BEGIN
 
 /*!
- * @brief
+ * @brief Get the number of sycl::platform available on the system.
  *
+ * @return The number of available sycl::platforms.
  */
-typedef struct DPPLOpaqueSyclDevice *DPPLSyclDeviceRef;
+DPPL_API
+size_t DPPLPlatform_GetNumPlatforms ();
 
 /*!
- * @brief
+ * @brief Prints out some selected info about all sycl::platform on the system.
  *
  */
-typedef struct DPPLOpaqueSyclPlatform *DPPLSyclPlatformRef;
+DPPL_API
+void DPPLPlatform_DumpInfo ();
 
- /*!
-  * @brief Used to pass a sycl::queue opaquely through DPPL interfaces.
-  *
-  * @see sycl::queue
-  */
-typedef struct DPPLOpaqueSyclQueue *DPPLSyclQueueRef;
-
-/*!
- * @brief Used to pass a sycl::program opaquely through DPPL interfaces.
- *
- */
-typedef struct DPPLOpaqueSyclProgram *DPPLSyclProgramRef;
+DPPL_C_EXTERN_C_END

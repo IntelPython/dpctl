@@ -96,8 +96,13 @@ message(STATUS "OpenCL_LIBRARY: ${OpenCL_LIBRARY}")
 add_library(
   DPPLSyclInterface
   SHARED
+  source/dppl_sycl_context_interface.cpp
+  source/dppl_sycl_device_interface.cpp
+  source/dppl_sycl_platform_interface.cpp
   source/dppl_sycl_queue_interface.cpp
+  source/dppl_sycl_queue_manager.cpp
   source/dppl_sycl_usm_interface.cpp
+  source/dppl_utils.cpp
 )
 
 # Install DPPLOpenCLInterface

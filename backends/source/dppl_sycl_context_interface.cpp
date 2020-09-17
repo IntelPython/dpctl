@@ -1,4 +1,4 @@
-//===---------- dppl_sycl_types.h - DPPL-SYCL interface ---*--- C++ ---*---===//
+//===--- dppl_sycl_context_interface.cpp - DPPL-SYCL interface --*- C++ -*-===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -19,39 +19,40 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines types used by DPPL's C interface to SYCL.
+/// This file implements the data types and functions declared in
+/// dppl_sycl_context_interface.h.
 ///
 //===----------------------------------------------------------------------===//
 
-#pragma once
+#include "dppl_sycl_context_interface.h"
+#include "Support/CBindingWrapping.h"
+#include <CL/sycl.hpp>
+
+using namespace cl::sycl;
+
+namespace
+{
+ // Create wrappers for C Binding types (see CBindingWrapping.h).
+ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
+} /* end of anonymous namespace */
 
 /*!
  * @brief
  *
+ * @param    CtxtRef        My Param doc
+ * @return   {return}       My Param doc
  */
-typedef struct DPPLOpaqueSyclContext *DPPLSyclContextRef;
+bool DPPLIsHostContext (__dppl_keep const DPPLSyclContextRef CtxtRef)
+{
+    return unwrap(CtxtRef)->is_host();
+}
 
 /*!
  * @brief
  *
+ * @param    CtxtRef        My Param doc
  */
-typedef struct DPPLOpaqueSyclDevice *DPPLSyclDeviceRef;
-
-/*!
- * @brief
- *
- */
-typedef struct DPPLOpaqueSyclPlatform *DPPLSyclPlatformRef;
-
- /*!
-  * @brief Used to pass a sycl::queue opaquely through DPPL interfaces.
-  *
-  * @see sycl::queue
-  */
-typedef struct DPPLOpaqueSyclQueue *DPPLSyclQueueRef;
-
-/*!
- * @brief Used to pass a sycl::program opaquely through DPPL interfaces.
- *
- */
-typedef struct DPPLOpaqueSyclProgram *DPPLSyclProgramRef;
+void DPPLDeleteSyclContext (__dppl_take DPPLSyclContextRef CtxtRef)
+{
+    delete unwrap(CtxtRef);
+}
