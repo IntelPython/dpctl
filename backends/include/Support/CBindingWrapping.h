@@ -26,11 +26,11 @@
  #pragma once
 
  #define DEFINE_SIMPLE_CONVERSION_FUNCTIONS(ty, ref)     \
-   inline ty *unwrap(ref P) {                            \
+   inline ty *unwrap_##ty(ref P) {                       \
      return reinterpret_cast<ty*>(P);                    \
    }                                                     \
                                                          \
-   inline ref wrap(const ty *P) {                        \
+   inline ref wrap_##ty(const ty *P) {                   \
      return reinterpret_cast<ref>(const_cast<ty*>(P));   \
    }
 

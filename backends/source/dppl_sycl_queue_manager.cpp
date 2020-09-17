@@ -39,8 +39,8 @@ using namespace cl::sycl;
 namespace
 {
 
- // Create wrappers for C Binding types (see CBindingWrapping.h).
- DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
+// Create wrappers for C Binding types (see CBindingWrapping.h).
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
 
 void error_reporter (const std::string & msg)
 {
@@ -128,7 +128,7 @@ DPPLSyclQueueRef QMgrHelper::getCurrentQueue ()
     if(active_queues.empty())
         error_reporter("No currently active queues.");
     auto last = QMgrHelper::active_queues.size() - 1;
-    return wrap(new queue(QMgrHelper::active_queues[last]));
+    return wrap_queue(new queue(QMgrHelper::active_queues[last]));
 }
 
 /*!
@@ -169,7 +169,7 @@ QMgrHelper::getQueue (DPPLSyclDeviceType DeviceTy,
         error_reporter("Unsupported device type.");
     }
 
-    return wrap(QRef);
+    return wrap_queue(QRef);
 }
 
 /*!
@@ -254,7 +254,7 @@ QMgrHelper::pushSyclQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
     }
     }
 
-    return wrap(QRef);
+    return wrap_queue(QRef);
 }
 
 /*!

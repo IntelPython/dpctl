@@ -35,7 +35,7 @@ using namespace cl::sycl;
 namespace
 {
 // Create wrappers for C Binding types (see CBindingWrapping.h).
- DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPPLSyclDeviceRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPPLSyclDeviceRef)
 
  /*!
  * @brief Helper function to print the metadata for a sycl::device.
@@ -68,41 +68,41 @@ void dump_device_info (const device & Device)
  */
 void DPPLDumpDeviceInfo (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    auto Device = unwrap(DRef);
+    auto Device = unwrap_device(DRef);
     dump_device_info(*Device);
 }
 
 
 void DPPLDeleteSyclDevice (__dppl_take DPPLSyclDeviceRef DRef)
 {
-    delete unwrap(DRef);
+    delete unwrap_device(DRef);
 }
 
 bool DPPLDeviceIsAccelerator (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    return unwrap(DRef)->is_accelerator();
+    return unwrap_device(DRef)->is_accelerator();
 }
 
 bool DPPLDeviceIsCPU (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    return unwrap(DRef)->is_cpu();
+    return unwrap_device(DRef)->is_cpu();
 }
 
 bool DPPLDeviceIsGPU (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    return unwrap(DRef)->is_gpu();
+    return unwrap_device(DRef)->is_gpu();
 }
 
 
 bool DPPLDeviceIsHost (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    return unwrap(DRef)->is_host();
+    return unwrap_device(DRef)->is_host();
 }
 
 __dppl_give const char*
 DPPLGetDeviceName (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    auto name = unwrap(DRef)->get_info<info::device::name>();
+    auto name = unwrap_device(DRef)->get_info<info::device::name>();
     auto cstr_name = new char [name.length()+1];
     std::strcpy (cstr_name, name.c_str());
     return cstr_name;
@@ -111,7 +111,7 @@ DPPLGetDeviceName (__dppl_keep const DPPLSyclDeviceRef DRef)
 __dppl_give const char*
 DPPLGetDeviceVendorName (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    auto vendor = unwrap(DRef)->get_info<info::device::name>();
+    auto vendor = unwrap_device(DRef)->get_info<info::device::name>();
     auto cstr_vendor = new char [vendor.length()+1];
     std::strcpy (cstr_vendor, vendor.c_str());
     return cstr_vendor;
@@ -120,7 +120,7 @@ DPPLGetDeviceVendorName (__dppl_keep const DPPLSyclDeviceRef DRef)
 __dppl_give const char*
 DPPLGetDeviceDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    auto driver = unwrap(DRef)->get_info<info::device::driver_version>();
+    auto driver = unwrap_device(DRef)->get_info<info::device::driver_version>();
     auto cstr_driver = new char [driver.length()+1];
     std::strcpy (cstr_driver, driver.c_str());
     return cstr_driver;
@@ -128,5 +128,5 @@ DPPLGetDeviceDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef)
 
 bool DPPLGetDeviceHostUnifiedMemory (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    return unwrap(DRef)->get_info<info::device::host_unified_memory>();
+    return unwrap_device(DRef)->get_info<info::device::host_unified_memory>();
 }
