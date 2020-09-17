@@ -32,8 +32,8 @@ using namespace cl::sycl;
 
 namespace
 {
- // Create wrappers for C Binding types (see CBindingWrapping.h).
- DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
+// Create wrappers for C Binding types (see CBindingWrapping.h).
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
 } /* end of anonymous namespace */
 
 /*!
@@ -44,7 +44,7 @@ namespace
  */
 bool DPPLIsHostContext (__dppl_keep const DPPLSyclContextRef CtxtRef)
 {
-    return unwrap(CtxtRef)->is_host();
+    return unwrap_context(CtxtRef)->is_host();
 }
 
 /*!
@@ -54,5 +54,5 @@ bool DPPLIsHostContext (__dppl_keep const DPPLSyclContextRef CtxtRef)
  */
 void DPPLDeleteSyclContext (__dppl_take DPPLSyclContextRef CtxtRef)
 {
-    delete unwrap(CtxtRef);
+    delete unwrap_context(CtxtRef);
 }
