@@ -73,7 +73,7 @@ cdef class Memory:
         self._ptr = NULL
         self.queue_cap = None
         self.nbytes = 0
-        
+
         if (nbytes > 0):
             q_cap = dppl.get_current_queue()
             queue_ptr = q_cap.get_queue_ref()
@@ -96,7 +96,7 @@ cdef class Memory:
         self._ptr = NULL
         self.nbytes = 0
         self.queue_cap = None
-        
+
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         buffer.buf = <char *>self._ptr
         buffer.format = 'B'                     # byte
