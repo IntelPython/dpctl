@@ -3,7 +3,6 @@ cimport dppl._sycl_core
 
 from cython.operator cimport dereference as deref
 
-from cpython.pycapsule cimport PyCapsule_GetPointer
 from cpython cimport Py_buffer
 
 cdef extern from "CL/sycl.hpp" namespace "cl::sycl::usm":
@@ -27,13 +26,13 @@ cdef extern from "CL/sycl.hpp" namespace "cl::sycl":
 
 
 cdef class SyclQueue:
-    cdef object queue_cap
+    cdef dppl._sycl_core.SyclQueue queue_cap
     cdef queue q
 
     def __cinit__(self):
         cdef void* q_ptr
         self.queue_cap = dppl.get_current_queue()
-        q_ptr = PyCapsule_GetPointer(self.queue_cap, NULL)
+        q_ptr = self.queue_cap.get_queue_ref()
         if (q_ptr):
             self.q = deref(<queue *>q_ptr)
         else:
@@ -64,7 +63,7 @@ cdef class SyclQueue:
 cdef class Memory:
     cdef void* _ptr
     cdef Py_ssize_t nbytes
-    cdef object queue_cap
+    cdef dppl._sycl_core.SyclQueue queue_cap
 
     def __cinit__(self, Py_ssize_t nbytes):
         cdef dppl._sycl_core.SyclQueue q_cap
@@ -77,7 +76,7 @@ cdef class Memory:
         
         if (nbytes > 0):
             q_cap = dppl.get_current_queue()
-            queue_ptr = PyCapsule_GetPointer(q_cap, NULL)
+            queue_ptr = q_cap.get_queue_ref()
             p = malloc_shared(nbytes, deref(<queue *>queue_ptr))
             if (p):
                 self._ptr = p
@@ -92,7 +91,7 @@ cdef class Memory:
         cdef void* queue_ptr
 
         if (self._ptr):
-            queue_ptr = PyCapsule_GetPointer(self.queue_cap, NULL)
+            queue_ptr = self.queue_cap.get_queue_ref()
             free(self._ptr, deref(<queue *>queue_ptr))
         self._ptr = NULL
         self.nbytes = 0
@@ -129,9 +128,10 @@ cdef class Memory:
     def _usm_type(self, qcaps=None):
         cdef void *q_ptr
         cdef alloc ptr_type
+        cdef dppl._sycl_core.SyclQueue _cap
 
         _cap = qcaps if (qcaps) else self.queue_cap
-        q_ptr = PyCapsule_GetPointer(_cap, NULL)
+        q_ptr = _cap.get_queue_ref()
         ptr_type = get_pointer_type(self._ptr, deref(<queue*>q_ptr).get_context())
         if (ptr_type == alloc.shared):
             return "shared"
