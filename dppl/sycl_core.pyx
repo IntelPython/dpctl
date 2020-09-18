@@ -27,11 +27,9 @@
 # cython: language_level=3
 
 from __future__ import print_function
-from cpython.pycapsule cimport (PyCapsule_New,
-                                PyCapsule_IsValid,
-                                PyCapsule_GetPointer)
 from enum import Enum, auto
 import logging
+from libcpp cimport bool
 
 _logger = logging.getLogger(__name__)
 
@@ -46,25 +44,60 @@ cdef class UnsupportedDeviceTypeError(Exception):
     '''
     pass
 
-cdef extern from "dppl_sycl_types.h":
+cdef extern from "dppl_utils.h":
+    cdef void DPPLDeleteCString (const char *str)
 
+cdef extern from "dppl_sycl_types.h":
+    cdef struct DPPLOpaqueSyclContext:
+        pass
     cdef struct DPPLOpaqueSyclQueue:
         pass
+    cdef struct DPPLOpaqueSyclDevice:
+        pass
+
+    ctypedef DPPLOpaqueSyclContext* DPPLSyclContextRef
     ctypedef DPPLOpaqueSyclQueue* DPPLSyclQueueRef
+    ctypedef DPPLOpaqueSyclDevice* DPPLSyclDeviceRef
+
+cdef extern from "dppl_sycl_context_interface.h":
+    cdef void DPPLDeleteSyclContext (DPPLSyclContextRef CtxtRef) except +
+
+cdef extern from "dppl_sycl_device_interface.h":
+    cdef void DPPLDumpDeviceInfo (const DPPLSyclDeviceRef DRef) except +
+    cdef void DPPLDeleteSyclDevice (DPPLSyclDeviceRef DRef) except +
+    cdef void DPPLDumpDeviceInfo (const DPPLSyclDeviceRef DRef) except +
+    cdef bool DPPLDeviceIsAccelerator (const DPPLSyclDeviceRef DRef) except +
+    cdef bool DPPLDeviceIsCPU (const DPPLSyclDeviceRef DRef) except +
+    cdef bool DPPLDeviceIsGPU (const DPPLSyclDeviceRef DRef) except +
+    cdef bool DPPLDeviceIsHost (const DPPLSyclDeviceRef DRef) except +
+    cdef const char* DPPLGetDeviceDriverInfo (const DPPLSyclDeviceRef DRef) \
+    except +
+    cdef const char* DPPLGetDeviceName (const DPPLSyclDeviceRef DRef) except +
+    cdef const char* DPPLGetDeviceVendorName (const DPPLSyclDeviceRef DRef) \
+    except +
+    cdef bool DPPLGetDeviceHostUnifiedMemory (const DPPLSyclDeviceRef DRef) \
+    except +
+
+cdef extern from "dppl_sycl_platform_interface.h":
+    cdef size_t DPPLPlatform_GetNumPlatforms ()
+    cdef void DPPLPlatform_DumpInfo ()
 
 cdef extern from "dppl_sycl_queue_interface.h":
+    cdef void DPPLDeleteSyclQueue (DPPLSyclQueueRef QRef) except +
+    cdef DPPLSyclContextRef DPPLGetContextFromQueue (const DPPLSyclQueueRef Q) \
+         except+
+    cdef DPPLSyclDeviceRef DPPLGetDeviceFromQueue (const DPPLSyclQueueRef Q) \
+         except +
 
+cdef extern from "dppl_sycl_queue_manager.h":
     cdef enum _device_type 'DPPLSyclDeviceType':
         _GPU 'DPPL_GPU'
         _CPU 'DPPL_CPU'
 
-    cdef void DPPLDumpPlatformInfo () except +
-    cdef void DPPLDumpDeviceInfo (const DPPLSyclQueueRef Q) except +
     cdef DPPLSyclQueueRef DPPLGetCurrentQueue () except +
     cdef size_t DPPLGetNumCPUQueues () except +
     cdef size_t DPPLGetNumGPUQueues () except +
     cdef size_t DPPLGetNumActivatedQueues () except +
-    cdef size_t DPPLGetNumPlatforms () except +
     cdef DPPLSyclQueueRef DPPLGetQueue (_device_type DTy,
                                         size_t device_num) except +
     cdef void DPPLPopSyclQueue () except +
@@ -72,15 +105,101 @@ cdef extern from "dppl_sycl_queue_interface.h":
                                              size_t device_num) except +
     cdef void DPPLSetAsDefaultQueue (_device_type DTy,
                                      size_t device_num) except +
-    cdef void DPPLDeleteQueue (DPPLSyclQueueRef Q) except +
 
-# Destructor for a PyCapsule containing a SYCL queue
-cdef void delete_queue (object cap):
-    DPPLDeleteQueue(<DPPLSyclQueueRef>PyCapsule_GetPointer(cap, NULL))
+
+cdef class SyclContext:
+    cdef DPPLSyclContextRef ctxt_ptr
+
+    @staticmethod
+    cdef SyclContext _create (DPPLSyclContextRef ctxt):
+        cdef SyclContext ret = SyclContext.__new__(SyclContext)
+        ret.ctxt_ptr = ctxt
+        return ret
+
+    def __dealloc__ (self):
+        DPPLDeleteSyclContext(self.ctxt_ptr)
+
+    cdef DPPLSyclContextRef get_context_ref (self):
+        return self.ctxt_ptr
+
+
+cdef class SyclDevice:
+    ''' Wrapper class for a Sycl Device
+    '''
+    cdef DPPLSyclDeviceRef device_ptr
+    cdef const char *vendor_name
+    cdef const char *device_name
+    cdef const char *driver_version
+
+    @staticmethod
+    cdef SyclDevice _create (DPPLSyclDeviceRef dref):
+        cdef SyclDevice ret = SyclDevice.__new__(SyclDevice)
+        ret.device_ptr = dref
+        ret.vendor_name = DPPLGetDeviceVendorName(dref)
+        ret.device_name = DPPLGetDeviceName(dref)
+        ret.driver_version = DPPLGetDeviceDriverInfo(dref)
+        return ret
+
+    def __dealloc__ (self):
+        DPPLDeleteSyclDevice(self.device_ptr)
+        DPPLDeleteCString(self.device_name)
+        DPPLDeleteCString(self.vendor_name)
+        DPPLDeleteCString(self.driver_version)
+
+    def dump_device_info (self):
+        ''' Print information about the SYCL device.
+        '''
+        DPPLDumpDeviceInfo(self.device_ptr)
+
+    def get_device_name (self):
+        ''' Returns the name of the device as a string
+        '''
+        return self.device_name
+
+    def get_vendor_name (self):
+        ''' Returns the device vendor name as a string
+        '''
+        return self.vendor_name
+
+    def get_driver_version (self):
+        ''' Returns the OpenCL software driver version as a string
+            in the form: major number.minor number, if this SYCL
+            device is an OpenCL device. Returns a string class
+            with the value "1.2" if this SYCL device is a host device.
+        '''
+        return self.driver_version
+
+    cdef DPPLSyclDeviceRef get_device_ptr (self):
+        ''' Returns the DPPLSyclDeviceRef pointer for this class.
+        '''
+        return self.device_ptr
+
+
+cdef class SyclQueue:
+    ''' Wrapper class for a Sycl queue.
+    '''
+    cdef DPPLSyclQueueRef queue_ptr
+
+    @staticmethod
+    cdef SyclQueue _create (DPPLSyclQueueRef qref):
+        cdef SyclQueue ret = SyclQueue.__new__(SyclQueue)
+        ret.queue_ptr = qref
+        return ret
+
+    def __dealloc__ (self):
+        DPPLDeleteSyclQueue(self.queue_ptr)
+
+    cpdef get_sycl_context (self):
+        return SyclContext._create(DPPLGetContextFromQueue(self.queue_ptr))
+
+    cpdef get_sycl_device (self):
+        return SyclDevice._create(DPPLGetDeviceFromQueue(self.queue_ptr))
+
+    cdef DPPLSyclQueueRef get_queue_ref (self):
+        return self.queue_ptr
 
 
 cdef class _SyclQueueManager:
-
     def _set_as_current_queue (self, device_ty, device_id):
         cdef DPPLSyclQueueRef queue_ptr
         if device_ty == device_type.gpu:
@@ -91,14 +210,13 @@ cdef class _SyclQueueManager:
             e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
             raise e
 
-        return PyCapsule_New(queue_ptr, NULL, &delete_queue)
+        return SyclQueue._create(queue_ptr)
 
     def _remove_current_queue (self):
         DPPLPopSyclQueue()
 
-
     def has_sycl_platforms (self):
-        cdef size_t num_platforms = DPPLGetNumPlatforms()
+        cdef size_t num_platforms = DPPLPlatform_GetNumPlatforms()
         if num_platforms:
             return True
         else:
@@ -107,7 +225,7 @@ cdef class _SyclQueueManager:
     def get_num_platforms (self):
         ''' Returns the number of available SYCL/OpenCL platforms.
         '''
-        return DPPLGetNumPlatforms()
+        return DPPLPlatform_GetNumPlatforms()
 
     def get_num_activated_queues (self):
         ''' Return the number of currently activated queues for this thread.
@@ -117,8 +235,7 @@ cdef class _SyclQueueManager:
     def get_current_queue (self):
         ''' Returns the activated SYCL queue as a PyCapsule.
         '''
-        cdef DPPLSyclQueueRef queue_ptr = DPPLGetCurrentQueue()
-        return PyCapsule_New(queue_ptr, NULL, &delete_queue)
+        return SyclQueue._create(DPPLGetCurrentQueue())
 
     def set_default_queue (self, device_ty, device_id):
         if device_ty == device_type.gpu:
@@ -146,17 +263,7 @@ cdef class _SyclQueueManager:
     def dump (self):
         ''' Prints information about the Runtime object.
         '''
-        DPPLDumpPlatformInfo()
-
-    def dump_device_info (self, queue_cap):
-        ''' Prints information about the SYCL queue object.
-        '''
-        if PyCapsule_IsValid(queue_cap, NULL):
-            DPPLDumpDeviceInfo(
-                <DPPLSyclQueueRef>PyCapsule_GetPointer(queue_cap, NULL)
-            )
-        else:
-            raise ValueError("Expected a PyCapsule encapsulating a SYCL queue")
+        DPPLPlatform_DumpInfo()
 
     def is_in_dppl_ctxt (self):
         cdef size_t num = DPPLGetNumActivatedQueues()
@@ -171,7 +278,6 @@ _qmgr = _SyclQueueManager()
 
 # Global bound functions
 dump                     = _qmgr.dump
-dump_device_info         = _qmgr.dump_device_info
 get_current_queue        = _qmgr.get_current_queue
 get_num_platforms        = _qmgr.get_num_platforms
 get_num_activated_queues = _qmgr.get_num_activated_queues

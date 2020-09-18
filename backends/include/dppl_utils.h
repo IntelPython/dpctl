@@ -1,4 +1,4 @@
-//===---------- dppl_sycl_types.h - DPPL-SYCL interface ---*--- C++ ---*---===//
+//===------------- dppl_utils.h - DPPL-SYCL interface --*-- C++ -----*-----===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -19,39 +19,23 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines types used by DPPL's C interface to SYCL.
-///
+/// This file defines common helper functions used in other places in DPPL.
 //===----------------------------------------------------------------------===//
 
 #pragma once
 
-/*!
- * @brief
- *
- */
-typedef struct DPPLOpaqueSyclContext *DPPLSyclContextRef;
+#include "Support/DllExport.h"
+#include "Support/ExternC.h"
+#include "Support/MemOwnershipAttrs.h"
+
+DPPL_C_EXTERN_C_BEGIN
 
 /*!
- * @brief
+ * @brief Deletes the C String argument
  *
+ * @param    str            C string to be deleted
  */
-typedef struct DPPLOpaqueSyclDevice *DPPLSyclDeviceRef;
+DPPL_API
+void DPPLDeleteCString (__dppl_take const char* str);
 
-/*!
- * @brief
- *
- */
-typedef struct DPPLOpaqueSyclPlatform *DPPLSyclPlatformRef;
-
- /*!
-  * @brief Used to pass a sycl::queue opaquely through DPPL interfaces.
-  *
-  * @see sycl::queue
-  */
-typedef struct DPPLOpaqueSyclQueue *DPPLSyclQueueRef;
-
-/*!
- * @brief Used to pass a sycl::program opaquely through DPPL interfaces.
- *
- */
-typedef struct DPPLOpaqueSyclProgram *DPPLSyclProgramRef;
+DPPL_C_EXTERN_C_END
