@@ -31,7 +31,6 @@
 
 using namespace cl::sycl;
 
-// TODO: move it to one header for not duplicate in many cpp files
 namespace
 {
 // Create wrappers for C Binding types (see CBindingWrapping.h).

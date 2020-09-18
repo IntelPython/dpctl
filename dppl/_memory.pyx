@@ -28,7 +28,8 @@ cdef class Memory:
             elif (ptr_type == "device"):
                 p = DPPLmalloc_device(nbytes, q.get_queue_ref())
             else:
-                raise RuntimeError("Pointer type is unknown: {}".format(ptr_type))
+                raise RuntimeError("Pointer type is unknown: {}" \
+                    .format(ptr_type))
 
             if (p):
                 self.memory_ptr = p
@@ -72,11 +73,13 @@ cdef class Memory:
             return self.queue
 
     def __repr__(self):
-        return "<Intel(R) USM allocated memory block of {} bytes at {}>".format(self.nbytes, hex(<object>(<Py_ssize_t>self.memory_ptr)))
+        return "<Intel(R) USM allocated memory block of {} bytes at {}>" \
+            .format(self.nbytes, hex(<object>(<Py_ssize_t>self.memory_ptr)))
 
     def _usm_type(self):
         cdef const char* kind
-        kind = DPPLUSM_GetPointerType(self.memory_ptr, self.queue.get_queue_ref())
+        kind = DPPLUSM_GetPointerType(self.memory_ptr,
+                                      self.queue.get_queue_ref())
         return kind.decode('UTF-8')
 
 
