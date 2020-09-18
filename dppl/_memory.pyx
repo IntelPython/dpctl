@@ -58,7 +58,7 @@ cdef class Memory:
         self.nbytes = 0
         self.queue = None
 
-    def __getbuffer__(self, Py_buffer *buffer, int flags):
+    cdef _getbuffer(self, Py_buffer *buffer, int flags):
         buffer.buf = <char *>self.memory_ptr
         buffer.format = 'B'                     # byte
         buffer.internal = NULL                  # see References
@@ -107,11 +107,17 @@ cdef class MemoryUSMShared(Memory):
     def __cinit__(self, Py_ssize_t nbytes):
         self._cinit(nbytes, alloc.shared)
 
+    def __getbuffer__(self, Py_buffer *buffer, int flags):
+        self._getbuffer(buffer, flags)
+
 
 cdef class MemoryUSMHost(Memory):
 
     def __cinit__(self, Py_ssize_t nbytes):
         self._cinit(nbytes, alloc.host)
+
+    def __getbuffer__(self, Py_buffer *buffer, int flags):
+        self._getbuffer(buffer, flags)
 
 
 cdef class MemoryUSMDevice(Memory):
