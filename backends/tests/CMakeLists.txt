@@ -3,9 +3,9 @@ string(COMPARE EQUAL "${GTEST_LIB_DIR}" "" no_gtest_lib_dir)
 
 if(${no_gtest_incl_dir} OR ${no_gtest_lib_dir})
     message(WARNING
-            "GTest is needed to test PyDPPL's backend test cases.  Pass in \
-            -DGTEST_INCLUDE_DIR and -DGTEST_LIB_DIR when you configure Cmake if\
-             you wish to run PyDPPL backend tests."
+            "GTest is needed to test PyDPPL's backend test cases.  Pass in     \
+            -DGTEST_INCLUDE_DIR and -DGTEST_LIB_DIR when you configure Cmake   \
+             if you wish to run PyDPPL backend tests."
     )
 else()
   # We need thread support for gtest
@@ -21,6 +21,7 @@ else()
   include_directories(../include)
 
   link_directories(${GTEST_LIB_DIR})
+  link_directories(${CMAKE_BINARY_DIR})
 
   set(PYDPPL_BACKEND_TEST_CASES
     test_sycl_queue_manager
