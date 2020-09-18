@@ -2,8 +2,6 @@ import dppl
 from dppl.backend cimport *
 from ._sycl_core cimport SyclContext, SyclQueue
 
-from cython.operator cimport dereference as deref
-
 from cpython cimport Py_buffer
 
 
