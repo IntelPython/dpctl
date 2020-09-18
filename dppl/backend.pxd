@@ -34,12 +34,12 @@ cdef extern from "dppl_sycl_types.h":
     cdef struct DPPLOpaqueSyclContext
     cdef struct DPPLOpaqueSyclQueue
     cdef struct DPPLOpaqueSyclDevice
-    cdef struct DPPLOpaqueMemoryUSMShared
+    cdef struct DPPLOpaqueSyclUSM
 
     ctypedef DPPLOpaqueSyclContext* DPPLSyclContextRef
     ctypedef DPPLOpaqueSyclQueue* DPPLSyclQueueRef
     ctypedef DPPLOpaqueSyclDevice* DPPLSyclDeviceRef
-    ctypedef DPPLOpaqueMemoryUSMShared* DPPLMemoryUSMSharedRef
+    ctypedef DPPLOpaqueSyclUSM* DPPLSyclUSMRef
 
 
 cdef extern from "dppl_sycl_context_interface.h":
@@ -95,7 +95,7 @@ cdef extern from "dppl_sycl_queue_manager.h":
 
 
 cdef extern from "dppl_sycl_usm_interface.h":
-    cdef DPPLMemoryUSMSharedRef DPPLmalloc_shared (size_t size, DPPLSyclQueueRef QRef) except +
-    cdef DPPLMemoryUSMSharedRef DPPLmalloc_host (size_t size, DPPLSyclQueueRef QRef) except +
-    cdef DPPLMemoryUSMSharedRef DPPLmalloc_device (size_t size, DPPLSyclQueueRef QRef) except +
-    cdef void DPPLfree (DPPLMemoryUSMSharedRef MRef, DPPLSyclQueueRef QRef) except +
+    cdef DPPLSyclUSMRef DPPLmalloc_shared (size_t size, DPPLSyclQueueRef QRef) except +
+    cdef DPPLSyclUSMRef DPPLmalloc_host (size_t size, DPPLSyclQueueRef QRef) except +
+    cdef DPPLSyclUSMRef DPPLmalloc_device (size_t size, DPPLSyclQueueRef QRef) except +
+    cdef void DPPLfree (DPPLSyclUSMRef MRef, DPPLSyclQueueRef QRef) except +

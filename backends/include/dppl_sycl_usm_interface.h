@@ -39,7 +39,7 @@ DPPL_C_EXTERN_C_BEGIN
  * @return The pointer to USM shared memory.
  */
 DPPL_API
-__dppl_give DPPLMemoryUSMSharedRef
+__dppl_give DPPLSyclUSMRef
 DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
@@ -48,7 +48,7 @@ DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
  * @return The pointer to USM host memory.
  */
 DPPL_API
-__dppl_give DPPLMemoryUSMSharedRef
+__dppl_give DPPLSyclUSMRef
 DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
@@ -57,7 +57,7 @@ DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
  * @return The pointer to USM device memory.
  */
 DPPL_API
-__dppl_give DPPLMemoryUSMSharedRef
+__dppl_give DPPLSyclUSMRef
 DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
@@ -65,7 +65,7 @@ DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
  *
  */
 DPPL_API
-void DPPLfree (__dppl_take DPPLMemoryUSMSharedRef MRef,
+void DPPLfree (__dppl_take DPPLSyclUSMRef MRef,
                __dppl_keep const DPPLSyclQueueRef QRef);
 
 DPPL_C_EXTERN_C_END

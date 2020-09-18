@@ -20,13 +20,13 @@ cdef extern from "CL/sycl.hpp" namespace "cl::sycl":
 
 
 cdef class Memory:
-    cdef DPPLMemoryUSMSharedRef memory_ptr
+    cdef DPPLSyclUSMRef memory_ptr
     cdef Py_ssize_t nbytes
     cdef SyclQueue queue
 
     cdef _cinit(self, Py_ssize_t nbytes, alloc ptr_type):
         cdef SyclQueue q
-        cdef DPPLMemoryUSMSharedRef p
+        cdef DPPLSyclUSMRef p
 
         self.memory_ptr = NULL
         self.queue = None

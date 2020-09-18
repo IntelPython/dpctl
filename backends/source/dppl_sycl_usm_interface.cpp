@@ -35,35 +35,35 @@ namespace
 {
 // Create wrappers for C Binding types (see CBindingWrapping.h).
  DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
- DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPPLMemoryUSMSharedRef)
+ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPPLSyclUSMRef)
 
 } /* end of anonymous namespace */
 
-__dppl_give DPPLMemoryUSMSharedRef
+__dppl_give DPPLSyclUSMRef
 DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = malloc_shared(size, *Q);
-    return reinterpret_cast<DPPLMemoryUSMSharedRef>(Ptr);
+    return reinterpret_cast<DPPLSyclUSMRef>(Ptr);
 }
 
-__dppl_give DPPLMemoryUSMSharedRef
+__dppl_give DPPLSyclUSMRef
 DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = malloc_host(size, *Q);
-    return reinterpret_cast<DPPLMemoryUSMSharedRef>(Ptr);
+    return reinterpret_cast<DPPLSyclUSMRef>(Ptr);
 }
 
-__dppl_give DPPLMemoryUSMSharedRef
+__dppl_give DPPLSyclUSMRef
 DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = malloc_device(size, *Q);
-    return reinterpret_cast<DPPLMemoryUSMSharedRef>(Ptr);
+    return reinterpret_cast<DPPLSyclUSMRef>(Ptr);
 }
 
-void DPPLfree (DPPLMemoryUSMSharedRef MRef, __dppl_keep const DPPLSyclQueueRef QRef)
+void DPPLfree (DPPLSyclUSMRef MRef, __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Ptr = unwrap(MRef);
     auto Q = unwrap(QRef);
