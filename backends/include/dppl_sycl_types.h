@@ -41,6 +41,13 @@ typedef struct DPPLOpaqueSyclContext *DPPLSyclContextRef;
 typedef struct DPPLOpaqueSyclDevice *DPPLSyclDeviceRef;
 
 /*!
+ * @brief Opaque pointer used to represent references to sycl::event*
+ *
+ * @see sycl::event
+ */
+typedef struct DPPLOpaqueSyclEvent *DPPLSyclEventRef;
+
+/*!
  * @brief Opaque pointer used to represent references to sycl::kernel*
  *
  * @see sycl::kernel
