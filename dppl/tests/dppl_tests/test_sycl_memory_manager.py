@@ -20,7 +20,6 @@
 
 import unittest
 import dppl
-import dppl._memory as mem
 from dppl._memory import MemoryUSMShared, MemoryUSMHost, MemoryUSMDevice
 
 
