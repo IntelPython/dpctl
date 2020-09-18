@@ -43,6 +43,24 @@ __dppl_give DPPLMemoryUSMSharedRef
 DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
+ * @brief Crete USM host memory.
+ *
+ * @return The pointer to USM host memory.
+ */
+DPPL_API
+__dppl_give DPPLMemoryUSMSharedRef
+DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
+
+/*!
+ * @brief Crete USM device memory.
+ *
+ * @return The pointer to USM device memory.
+ */
+DPPL_API
+__dppl_give DPPLMemoryUSMSharedRef
+DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
+
+/*!
  * @brief Free USM memory.
  *
  */

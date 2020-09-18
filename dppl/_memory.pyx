@@ -24,7 +24,7 @@ cdef class Memory:
     cdef Py_ssize_t nbytes
     cdef SyclQueue queue
 
-    def __cinit__(self, Py_ssize_t nbytes):
+    cdef _cinit(self, Py_ssize_t nbytes, alloc ptr_type):
         cdef SyclQueue q
         cdef DPPLMemoryUSMSharedRef p
 
@@ -34,7 +34,14 @@ cdef class Memory:
 
         if (nbytes > 0):
             q = dppl.get_current_queue()
-            p = DPPLmalloc_shared(nbytes, q.get_queue_ref())
+
+            if (ptr_type == alloc.shared):
+                p = DPPLmalloc_shared(nbytes, q.get_queue_ref())
+            if (ptr_type == alloc.host):
+                p = DPPLmalloc_host(nbytes, q.get_queue_ref())
+            if (ptr_type == alloc.device):
+                p = DPPLmalloc_device(nbytes, q.get_queue_ref())
+
             if (p):
                 self.memory_ptr = p
                 self.nbytes = nbytes
@@ -93,3 +100,21 @@ cdef class Memory:
             return "device"
         else:
             return "unknown"
+
+
+cdef class MemoryUSMShared(Memory):
+
+    def __cinit__(self, Py_ssize_t nbytes):
+        self._cinit(nbytes, alloc.shared)
+
+
+cdef class MemoryUSMHost(Memory):
+
+    def __cinit__(self, Py_ssize_t nbytes):
+        self._cinit(nbytes, alloc.host)
+
+
+cdef class MemoryUSMDevice(Memory):
+
+    def __cinit__(self, Py_ssize_t nbytes):
+        self._cinit(nbytes, alloc.device)

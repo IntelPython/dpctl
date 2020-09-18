@@ -96,4 +96,6 @@ cdef extern from "dppl_sycl_queue_manager.h":
 
 cdef extern from "dppl_sycl_usm_interface.h":
     cdef DPPLMemoryUSMSharedRef DPPLmalloc_shared (size_t size, DPPLSyclQueueRef QRef) except +
+    cdef DPPLMemoryUSMSharedRef DPPLmalloc_host (size_t size, DPPLSyclQueueRef QRef) except +
+    cdef DPPLMemoryUSMSharedRef DPPLmalloc_device (size_t size, DPPLSyclQueueRef QRef) except +
     cdef void DPPLfree (DPPLMemoryUSMSharedRef MRef, DPPLSyclQueueRef QRef) except +

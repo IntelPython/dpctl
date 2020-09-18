@@ -21,18 +21,19 @@
 import unittest
 import dppl
 import dppl._memory as mem
+from dppl._memory import MemoryUSMShared, MemoryUSMHost, MemoryUSMDevice
 
 
 class TestMemory (unittest.TestCase):
     # @unittest.skipIf(not dppl.has_sycl_platforms, "No SYCL platforms available")
     def test_memory_create (self):
         nbytes = 1024
-        mobj = mem.Memory(nbytes)
+        mobj = MemoryUSMShared(nbytes)
         self.assertEqual(mobj.nbytes, nbytes)
 
     def _create_memory (self):
         nbytes = 1024
-        mobj = mem.Memory(nbytes)
+        mobj = MemoryUSMShared(nbytes)
         return mobj
 
     def test_memory_without_context (self):
@@ -54,3 +55,30 @@ class TestMemory (unittest.TestCase):
         # GPU context
         with dppl.device_context(dppl.device_type.gpu):
             self.assertEqual(mobj._usm_type(), 'shared')
+
+
+class TestMemoryUSMShared(unittest.TestCase):
+    """Tests for MemoryUSMShared
+    """
+
+    def test_create (self):
+        m = MemoryUSMShared(1024)
+        self.assertEqual(m._usm_type(), 'shared')
+
+
+class TestMemoryUSMHost(unittest.TestCase):
+    """Tests for MemoryUSMHost
+    """
+
+    def test_create (self):
+        m = MemoryUSMHost(1024)
+        self.assertEqual(m._usm_type(), 'host')
+
+
+class TestMemoryUSMDevice(unittest.TestCase):
+    """Tests for MemoryUSMDevice
+    """
+
+    def test_create (self):
+        m = MemoryUSMDevice(1024)
+        self.assertEqual(m._usm_type(), 'device')
