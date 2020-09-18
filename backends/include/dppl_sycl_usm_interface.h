@@ -68,7 +68,6 @@ DPPL_API
 void DPPLfree (__dppl_take DPPLSyclUSMRef MRef,
                __dppl_keep const DPPLSyclQueueRef QRef);
 
-
 /*!
  * @brief Get pointer type.
  *

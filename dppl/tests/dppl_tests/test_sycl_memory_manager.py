@@ -25,7 +25,7 @@ from dppl._memory import MemoryUSMShared, MemoryUSMHost, MemoryUSMDevice
 
 
 class TestMemory (unittest.TestCase):
-    # @unittest.skipIf(not dppl.has_sycl_platforms, "No SYCL platforms available")
+
     def test_memory_create (self):
         nbytes = 1024
         mobj = MemoryUSMShared(nbytes)
