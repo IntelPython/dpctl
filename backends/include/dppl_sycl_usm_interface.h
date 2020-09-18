@@ -68,4 +68,15 @@ DPPL_API
 void DPPLfree (__dppl_take DPPLSyclUSMRef MRef,
                __dppl_keep const DPPLSyclQueueRef QRef);
 
+
+/*!
+ * @brief Get pointer type.
+ *
+ * @return "host", "device", "shared" or "unknown"
+ */
+DPPL_API
+const char *
+DPPLUSM_GetPointerType (__dppl_keep DPPLSyclUSMRef MRef,
+                        __dppl_keep const DPPLSyclQueueRef QRef);
+
 DPPL_C_EXTERN_C_END

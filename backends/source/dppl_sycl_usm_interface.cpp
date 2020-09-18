@@ -63,9 +63,30 @@ DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
     return reinterpret_cast<DPPLSyclUSMRef>(Ptr);
 }
 
-void DPPLfree (DPPLSyclUSMRef MRef, __dppl_keep const DPPLSyclQueueRef QRef)
+void DPPLfree (__dppl_take DPPLSyclUSMRef MRef,
+               __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Ptr = unwrap(MRef);
     auto Q = unwrap(QRef);
     free(Ptr, *Q);
+}
+
+const char *
+DPPLUSM_GetPointerType (__dppl_keep DPPLSyclUSMRef MRef,
+                        __dppl_keep const DPPLSyclQueueRef QRef)
+{
+    auto Ptr = unwrap(MRef);
+    auto Q = unwrap(QRef);
+
+    auto kind = get_pointer_type(Ptr, Q->get_context());
+    switch(kind) {
+        case usm::alloc::host:
+            return "host";
+        case usm::alloc::device:
+            return "device";
+        case usm::alloc::shared:
+            return "shared";
+        default:
+            return "unknown";
+    }
 }

@@ -6,25 +6,13 @@ from cython.operator cimport dereference as deref
 
 from cpython cimport Py_buffer
 
-cdef extern from "CL/sycl.hpp" namespace "cl::sycl::usm":
-    cdef enum alloc:
-       host 'cl::sycl::usm::alloc::host'
-       device 'cl::sycl::usm::alloc::device'
-       shared 'cl::sycl::usm::alloc::shared'
-       unknown 'cl::sycl::usm::alloc::unknown'
-
-cdef extern from "CL/sycl.hpp" namespace "cl::sycl":
-    cdef cppclass context nogil
-
-    cdef alloc get_pointer_type(void *, context&) nogil
-
 
 cdef class Memory:
     cdef DPPLSyclUSMRef memory_ptr
     cdef Py_ssize_t nbytes
     cdef SyclQueue queue
 
-    cdef _cinit(self, Py_ssize_t nbytes, alloc ptr_type):
+    cdef _cinit(self, Py_ssize_t nbytes, ptr_type):
         cdef SyclQueue q
         cdef DPPLSyclUSMRef p
 
@@ -35,12 +23,14 @@ cdef class Memory:
         if (nbytes > 0):
             q = dppl.get_current_queue()
 
-            if (ptr_type == alloc.shared):
+            if (ptr_type == "shared"):
                 p = DPPLmalloc_shared(nbytes, q.get_queue_ref())
-            if (ptr_type == alloc.host):
+            elif (ptr_type == "host"):
                 p = DPPLmalloc_host(nbytes, q.get_queue_ref())
-            if (ptr_type == alloc.device):
+            elif (ptr_type == "device"):
                 p = DPPLmalloc_device(nbytes, q.get_queue_ref())
+            else:
+                raise RuntimeError("Pointer type is unknown: {}".format(ptr_type))
 
             if (p):
                 self.memory_ptr = p
@@ -87,25 +77,15 @@ cdef class Memory:
         return "<Intel(R) USM allocated memory block of {} bytes at {}>".format(self.nbytes, hex(<object>(<Py_ssize_t>self.memory_ptr)))
 
     def _usm_type(self):
-        cdef SyclContext ctxt
-        cdef alloc ptr_type
-
-        ctxt = self.queue.get_sycl_context()
-        ptr_type = get_pointer_type(self.memory_ptr, deref(<context*>ctxt.get_context_ref()))
-        if (ptr_type == alloc.shared):
-            return "shared"
-        elif (ptr_type == alloc.host):
-            return "host"
-        elif (ptr_type == alloc.device):
-            return "device"
-        else:
-            return "unknown"
+        cdef const char* kind
+        kind = DPPLUSM_GetPointerType(self.memory_ptr, self.queue.get_queue_ref())
+        return kind.decode('UTF-8')
 
 
 cdef class MemoryUSMShared(Memory):
 
     def __cinit__(self, Py_ssize_t nbytes):
-        self._cinit(nbytes, alloc.shared)
+        self._cinit(nbytes, "shared")
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         self._getbuffer(buffer, flags)
@@ -114,7 +94,7 @@ cdef class MemoryUSMShared(Memory):
 cdef class MemoryUSMHost(Memory):
 
     def __cinit__(self, Py_ssize_t nbytes):
-        self._cinit(nbytes, alloc.host)
+        self._cinit(nbytes, "host")
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         self._getbuffer(buffer, flags)
@@ -123,4 +103,4 @@ cdef class MemoryUSMHost(Memory):
 cdef class MemoryUSMDevice(Memory):
 
     def __cinit__(self, Py_ssize_t nbytes):
-        self._cinit(nbytes, alloc.device)
+        self._cinit(nbytes, "device")

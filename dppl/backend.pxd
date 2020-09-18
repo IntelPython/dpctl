@@ -99,3 +99,4 @@ cdef extern from "dppl_sycl_usm_interface.h":
     cdef DPPLSyclUSMRef DPPLmalloc_host (size_t size, DPPLSyclQueueRef QRef) except +
     cdef DPPLSyclUSMRef DPPLmalloc_device (size_t size, DPPLSyclQueueRef QRef) except +
     cdef void DPPLfree (DPPLSyclUSMRef MRef, DPPLSyclQueueRef QRef) except +
+    cdef const char* DPPLUSM_GetPointerType (DPPLSyclUSMRef MRef, DPPLSyclQueueRef QRef) except +
