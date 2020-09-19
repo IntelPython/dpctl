@@ -35,6 +35,7 @@ namespace
 {
 // Create wrappers for C Binding types (see CBindingWrapping.h).
  DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
+ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
  DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPPLSyclUSMRef)
 
 } /* end of anonymous namespace */
@@ -44,7 +45,7 @@ DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = malloc_shared(size, *Q);
-    return reinterpret_cast<DPPLSyclUSMRef>(Ptr);
+    return wrap(Ptr);
 }
 
 __dppl_give DPPLSyclUSMRef
@@ -52,7 +53,7 @@ DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = malloc_host(size, *Q);
-    return reinterpret_cast<DPPLSyclUSMRef>(Ptr);
+    return wrap(Ptr);
 }
 
 __dppl_give DPPLSyclUSMRef
@@ -60,25 +61,33 @@ DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = malloc_device(size, *Q);
-    return reinterpret_cast<DPPLSyclUSMRef>(Ptr);
+    return wrap(Ptr);
 }
 
-void DPPLfree (__dppl_take DPPLSyclUSMRef MRef,
-               __dppl_keep const DPPLSyclQueueRef QRef)
+void DPPLfree_with_queue (__dppl_take DPPLSyclUSMRef MRef,
+                          __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Ptr = unwrap(MRef);
     auto Q = unwrap(QRef);
     free(Ptr, *Q);
 }
 
-const char *
-DPPLUSM_GetPointerType (__dppl_keep DPPLSyclUSMRef MRef,
-                        __dppl_keep const DPPLSyclQueueRef QRef)
+void DPPLfree_with_context (__dppl_take DPPLSyclUSMRef MRef,
+                            __dppl_keep const DPPLSyclContextRef СRef)
 {
     auto Ptr = unwrap(MRef);
-    auto Q = unwrap(QRef);
+    auto C = unwrap(СRef);
+    free(Ptr, *C);
+}
 
-    auto kind = get_pointer_type(Ptr, Q->get_context());
+const char *
+DPPLUSM_GetPointerType (__dppl_keep const DPPLSyclUSMRef MRef,
+                        __dppl_keep const DPPLSyclContextRef CRef)
+{
+    auto Ptr = unwrap(MRef);
+    auto C = unwrap(CRef);
+
+    auto kind = get_pointer_type(Ptr, *C);
     switch(kind) {
         case usm::alloc::host:
             return "host";
