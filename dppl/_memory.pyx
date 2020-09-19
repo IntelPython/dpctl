@@ -49,6 +49,7 @@ cdef class Memory:
         self.context = None
 
     cdef _getbuffer(self, Py_buffer *buffer, int flags):
+        # memory_ptr is Ref which is pointer to SYCL type. For USM it is void*.
         buffer.buf = <char *>self.memory_ptr
         buffer.format = 'B'                     # byte
         buffer.internal = NULL                  # see References
