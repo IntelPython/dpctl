@@ -44,7 +44,7 @@ DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = malloc_shared(size, *Q);
-    return reinterpret_cast<DPPLSyclUSMRef>(Ptr);
+    return wrap(Ptr);
 }
 
 __dppl_give DPPLSyclUSMRef
@@ -52,7 +52,7 @@ DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = malloc_host(size, *Q);
-    return reinterpret_cast<DPPLSyclUSMRef>(Ptr);
+    return wrap(Ptr);
 }
 
 __dppl_give DPPLSyclUSMRef
@@ -60,7 +60,7 @@ DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = malloc_device(size, *Q);
-    return reinterpret_cast<DPPLSyclUSMRef>(Ptr);
+    return wrap(Ptr);
 }
 
 void DPPLfree (__dppl_take DPPLSyclUSMRef MRef,
