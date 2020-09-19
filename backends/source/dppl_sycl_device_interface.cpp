@@ -66,41 +66,41 @@ void dump_device_info (const device & Device)
  * vendor, and device profile are printed out. More attributed may be added
  * later.
  */
-void DPPLDumpDeviceInfo (__dppl_keep const DPPLSyclDeviceRef DRef)
+void DPPLDevice_DumpInfo (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto Device = unwrap(DRef);
     dump_device_info(*Device);
 }
 
 
-void DPPLDeleteSyclDevice (__dppl_take DPPLSyclDeviceRef DRef)
+void DPPLDevice_Delete (__dppl_take DPPLSyclDeviceRef DRef)
 {
     delete unwrap(DRef);
 }
 
-bool DPPLDeviceIsAccelerator (__dppl_keep const DPPLSyclDeviceRef DRef)
+bool DPPLDevice_IsAccelerator (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     return unwrap(DRef)->is_accelerator();
 }
 
-bool DPPLDeviceIsCPU (__dppl_keep const DPPLSyclDeviceRef DRef)
+bool DPPLDevice_IsCPU (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     return unwrap(DRef)->is_cpu();
 }
 
-bool DPPLDeviceIsGPU (__dppl_keep const DPPLSyclDeviceRef DRef)
+bool DPPLDevice_IsGPU (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     return unwrap(DRef)->is_gpu();
 }
 
 
-bool DPPLDeviceIsHost (__dppl_keep const DPPLSyclDeviceRef DRef)
+bool DPPLDevice_IsHost (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     return unwrap(DRef)->is_host();
 }
 
 __dppl_give const char*
-DPPLGetDeviceName (__dppl_keep const DPPLSyclDeviceRef DRef)
+DPPLDevice_GetName (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto name = unwrap(DRef)->get_info<info::device::name>();
     auto cstr_name = new char [name.length()+1];
@@ -109,7 +109,7 @@ DPPLGetDeviceName (__dppl_keep const DPPLSyclDeviceRef DRef)
 }
 
 __dppl_give const char*
-DPPLGetDeviceVendorName (__dppl_keep const DPPLSyclDeviceRef DRef)
+DPPLDevice_GetVendorName (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto vendor = unwrap(DRef)->get_info<info::device::name>();
     auto cstr_vendor = new char [vendor.length()+1];
@@ -118,7 +118,7 @@ DPPLGetDeviceVendorName (__dppl_keep const DPPLSyclDeviceRef DRef)
 }
 
 __dppl_give const char*
-DPPLGetDeviceDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef)
+DPPLDevice_GetDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto driver = unwrap(DRef)->get_info<info::device::driver_version>();
     auto cstr_driver = new char [driver.length()+1];
@@ -126,7 +126,7 @@ DPPLGetDeviceDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef)
     return cstr_driver;
 }
 
-bool DPPLGetDeviceHostUnifiedMemory (__dppl_keep const DPPLSyclDeviceRef DRef)
+bool DPPLDevice_IsHostUnifiedMemory (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     return unwrap(DRef)->get_info<info::device::host_unified_memory>();
 }

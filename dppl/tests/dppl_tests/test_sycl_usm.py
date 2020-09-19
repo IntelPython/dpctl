@@ -27,12 +27,14 @@ class TestMemory (unittest.TestCase):
 
     def test_memory_create (self):
         nbytes = 1024
-        mobj = MemoryUSMShared(nbytes)
+        queue = dppl.get_current_queue()
+        mobj = MemoryUSMShared(nbytes, queue)
         self.assertEqual(mobj.nbytes, nbytes)
 
     def _create_memory (self):
         nbytes = 1024
-        mobj = MemoryUSMShared(nbytes)
+        queue = dppl.get_current_queue()
+        mobj = MemoryUSMShared(nbytes, queue)
         return mobj
 
     def test_memory_without_context (self):
@@ -56,28 +58,40 @@ class TestMemory (unittest.TestCase):
             self.assertEqual(mobj._usm_type(), 'shared')
 
 
-class TestMemoryUSMShared(unittest.TestCase):
-    """Tests for MemoryUSMShared
-    """
+class TestMemoryUSMBase:
+    """ Base tests for MemoryUSM* """
 
-    def test_create (self):
-        m = MemoryUSMShared(1024)
-        self.assertEqual(m._usm_type(), 'shared')
+    MemoryUSMClass = None
+    usm_type = None
+
+    def test_create_with_queue (self):
+        q = dppl.get_current_queue()
+        m = self.MemoryUSMClass(1024, q)
+        self.assertEqual(m.nbytes, 1024)
+        self.assertEqual(m._usm_type(), self.usm_type)
+
+    def test_create_without_queue (self):
+        m = self.MemoryUSMClass(1024)
+        self.assertEqual(m.nbytes, 1024)
+        self.assertEqual(m._usm_type(), self.usm_type)
 
 
-class TestMemoryUSMHost(unittest.TestCase):
-    """Tests for MemoryUSMHost
-    """
+class TestMemoryUSMShared(TestMemoryUSMBase, unittest.TestCase):
+    """ Tests for MemoryUSMShared """
 
-    def test_create (self):
-        m = MemoryUSMHost(1024)
-        self.assertEqual(m._usm_type(), 'host')
+    MemoryUSMClass = MemoryUSMShared
+    usm_type = 'shared'
 
 
-class TestMemoryUSMDevice(unittest.TestCase):
-    """Tests for MemoryUSMDevice
-    """
+class TestMemoryUSMHost(TestMemoryUSMBase, unittest.TestCase):
+    """ Tests for MemoryUSMHost """
 
-    def test_create (self):
-        m = MemoryUSMDevice(1024)
-        self.assertEqual(m._usm_type(), 'device')
+    MemoryUSMClass = MemoryUSMHost
+    usm_type = 'host'
+
+
+class TestMemoryUSMDevice(TestMemoryUSMBase, unittest.TestCase):
+    """ Tests for MemoryUSMDevice """
+
+    MemoryUSMClass = MemoryUSMDevice
+    usm_type = 'device'

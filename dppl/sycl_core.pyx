@@ -56,7 +56,7 @@ cdef class SyclContext:
         return ret
 
     def __dealloc__ (self):
-        DPPLDeleteSyclContext(self.ctxt_ptr)
+        DPPLContext_Delete(self.ctxt_ptr)
 
     cdef DPPLSyclContextRef get_context_ref (self):
         return self.ctxt_ptr
@@ -70,13 +70,13 @@ cdef class SyclDevice:
     cdef SyclDevice _create (DPPLSyclDeviceRef dref):
         cdef SyclDevice ret = SyclDevice.__new__(SyclDevice)
         ret.device_ptr = dref
-        ret.vendor_name = DPPLGetDeviceVendorName(dref)
-        ret.device_name = DPPLGetDeviceName(dref)
-        ret.driver_version = DPPLGetDeviceDriverInfo(dref)
+        ret.vendor_name = DPPLDevice_GetVendorName(dref)
+        ret.device_name = DPPLDevice_GetName(dref)
+        ret.driver_version = DPPLDevice_GetDriverInfo(dref)
         return ret
 
     def __dealloc__ (self):
-        DPPLDeleteSyclDevice(self.device_ptr)
+        DPPLDevice_Delete(self.device_ptr)
         DPPLDeleteCString(self.device_name)
         DPPLDeleteCString(self.vendor_name)
         DPPLDeleteCString(self.driver_version)
@@ -84,7 +84,7 @@ cdef class SyclDevice:
     def dump_device_info (self):
         ''' Print information about the SYCL device.
         '''
-        DPPLDumpDeviceInfo(self.device_ptr)
+        DPPLDevice_DumpInfo(self.device_ptr)
 
     def get_device_name (self):
         ''' Returns the name of the device as a string
@@ -121,13 +121,13 @@ cdef class SyclQueue:
         return ret
 
     def __dealloc__ (self):
-        DPPLDeleteSyclQueue(self.queue_ptr)
+        DPPLQueue_Delete(self.queue_ptr)
 
     cpdef SyclContext get_sycl_context (self):
-        return SyclContext._create(DPPLGetContextFromQueue(self.queue_ptr))
+        return SyclContext._create(DPPLQueue_GetContext(self.queue_ptr))
 
     cpdef SyclDevice get_sycl_device (self):
-        return SyclDevice._create(DPPLGetDeviceFromQueue(self.queue_ptr))
+        return SyclDevice._create(DPPLQueue_GetDevice(self.queue_ptr))
 
     cdef DPPLSyclQueueRef get_queue_ref (self):
         return self.queue_ptr
@@ -137,9 +137,9 @@ cdef class _SyclQueueManager:
     def _set_as_current_queue (self, device_ty, device_id):
         cdef DPPLSyclQueueRef queue_ptr
         if device_ty == device_type.gpu:
-            queue_ptr = DPPLPushSyclQueue(_device_type._GPU, device_id)
+            queue_ptr = DPPLQueueMgr_PushQueue(_device_type._GPU, device_id)
         elif device_ty == device_type.cpu:
-            queue_ptr = DPPLPushSyclQueue(_device_type._CPU, device_id)
+            queue_ptr = DPPLQueueMgr_PushQueue(_device_type._CPU, device_id)
         else:
             e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
             raise e
@@ -147,7 +147,7 @@ cdef class _SyclQueueManager:
         return SyclQueue._create(queue_ptr)
 
     def _remove_current_queue (self):
-        DPPLPopSyclQueue()
+        DPPLQueueMgr_PopQueue()
 
     def has_sycl_platforms (self):
         cdef size_t num_platforms = DPPLPlatform_GetNumPlatforms()
@@ -164,31 +164,31 @@ cdef class _SyclQueueManager:
     def get_num_activated_queues (self):
         ''' Return the number of currently activated queues for this thread.
         '''
-        return DPPLGetNumActivatedQueues()
+        return DPPLQueueMgr_GetNumActivatedQueues()
 
     def get_current_queue (self):
         ''' Returns the activated SYCL queue as a PyCapsule.
         '''
-        return SyclQueue._create(DPPLGetCurrentQueue())
+        return SyclQueue._create(DPPLQueueMgr_GetCurrentQueue())
 
     def set_default_queue (self, device_ty, device_id):
         if device_ty == device_type.gpu:
-            DPPLSetAsDefaultQueue(_device_type._GPU, device_id)
+            DPPLQueueMgr_SetAsDefaultQueue(_device_type._GPU, device_id)
         elif device_ty == device_type.cpu:
-            DPPLSetAsDefaultQueue(_device_type._CPU, device_id)
+            DPPLQueueMgr_SetAsDefaultQueue(_device_type._CPU, device_id)
         else:
             e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
             raise e
 
     def has_gpu_queues (self):
-        cdef size_t num = DPPLGetNumGPUQueues()
+        cdef size_t num = DPPLQueueMgr_GetNumGPUQueues()
         if num:
             return True
         else:
             return False
 
     def has_cpu_queues (self):
-        cdef size_t num = DPPLGetNumCPUQueues()
+        cdef size_t num = DPPLQueueMgr_GetNumCPUQueues()
         if num:
             return True
         else:
@@ -200,7 +200,7 @@ cdef class _SyclQueueManager:
         DPPLPlatform_DumpInfo()
 
     def is_in_dppl_ctxt (self):
-        cdef size_t num = DPPLGetNumActivatedQueues()
+        cdef size_t num = DPPLQueueMgr_GetNumActivatedQueues()
         if num:
             return True
         else:

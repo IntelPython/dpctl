@@ -42,9 +42,9 @@ namespace
  * @param    CtxtRef        My Param doc
  * @return   {return}       My Param doc
  */
-bool DPPLIsHostContext (__dppl_keep const DPPLSyclContextRef CtxtRef)
+bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef)
 {
-    return unwrap(CtxtRef)->is_host();
+    return unwrap(CtxRef)->is_host();
 }
 
 /*!
@@ -52,7 +52,7 @@ bool DPPLIsHostContext (__dppl_keep const DPPLSyclContextRef CtxtRef)
  *
  * @param    CtxtRef        My Param doc
  */
-void DPPLDeleteSyclContext (__dppl_take DPPLSyclContextRef CtxtRef)
+void DPPLContext_Delete (__dppl_take DPPLSyclContextRef CtxRef)
 {
-    delete unwrap(CtxtRef);
+    delete unwrap(CtxRef);
 }
