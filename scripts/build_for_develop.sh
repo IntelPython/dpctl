@@ -21,10 +21,11 @@ cmake                                                       \
     -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/bin/dpcpp       \
     -DPYTHON_INCLUDE_DIR=${PYTHON_INC}                      \
     -DNUMPY_INCLUDE_DIR=${NUMPY_INC}                        \
+    -DGTEST_INCLUDE_DIR=${CONDA_PREFIX}/include/            \
+    -DGTEST_LIB_DIR=${CONDA_PREFIX}/lib                     \
     ../backends
 
-make V=1 -n -j 4 && make install
-#make check
+make V=1 -n -j 4 && make check && make install
 popd
 cp install/lib/*.so dppl/
 
