@@ -43,7 +43,6 @@ cdef extern from "dppl_sycl_types.h":
 
 
 cdef extern from "dppl_sycl_context_interface.h":
-<<<<<<< HEAD
     cdef void DPPLContext_Delete (DPPLSyclContextRef CtxtRef) except +
 
 
@@ -61,25 +60,6 @@ cdef extern from "dppl_sycl_device_interface.h":
     cdef const char* DPPLDevice_GetVendorName (const DPPLSyclDeviceRef DRef) \
     except +
     cdef bool DPPLDevice_IsHostUnifiedMemory (const DPPLSyclDeviceRef DRef) \
-=======
-    cdef void DPPLDeleteSyclContext (DPPLSyclContextRef CtxtRef) except +
-
-
-cdef extern from "dppl_sycl_device_interface.h":
-    cdef void DPPLDumpDeviceInfo (const DPPLSyclDeviceRef DRef) except +
-    cdef void DPPLDeleteSyclDevice (DPPLSyclDeviceRef DRef) except +
-    cdef void DPPLDumpDeviceInfo (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDeviceIsAccelerator (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDeviceIsCPU (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDeviceIsGPU (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDeviceIsHost (const DPPLSyclDeviceRef DRef) except +
-    cdef const char* DPPLGetDeviceDriverInfo (const DPPLSyclDeviceRef DRef) \
-    except +
-    cdef const char* DPPLGetDeviceName (const DPPLSyclDeviceRef DRef) except +
-    cdef const char* DPPLGetDeviceVendorName (const DPPLSyclDeviceRef DRef) \
-    except +
-    cdef bool DPPLGetDeviceHostUnifiedMemory (const DPPLSyclDeviceRef DRef) \
->>>>>>> master
     except +
 
 
@@ -89,17 +69,10 @@ cdef extern from "dppl_sycl_platform_interface.h":
 
 
 cdef extern from "dppl_sycl_queue_interface.h":
-<<<<<<< HEAD
     cdef void DPPLQueue_Delete (DPPLSyclQueueRef QRef) except +
     cdef DPPLSyclContextRef DPPLQueue_GetContext (const DPPLSyclQueueRef Q) \
          except+
     cdef DPPLSyclDeviceRef DPPLQueue_GetDevice (const DPPLSyclQueueRef Q) \
-=======
-    cdef void DPPLDeleteSyclQueue (DPPLSyclQueueRef QRef) except +
-    cdef DPPLSyclContextRef DPPLGetContextFromQueue (const DPPLSyclQueueRef Q) \
-         except+
-    cdef DPPLSyclDeviceRef DPPLGetDeviceFromQueue (const DPPLSyclQueueRef Q) \
->>>>>>> master
          except +
 
 
@@ -108,7 +81,6 @@ cdef extern from "dppl_sycl_queue_manager.h":
         _GPU 'DPPL_GPU'
         _CPU 'DPPL_CPU'
 
-<<<<<<< HEAD
     cdef DPPLSyclQueueRef DPPLQueueMgr_GetCurrentQueue () except +
     cdef size_t DPPLQueueMgr_GetNumCPUQueues () except +
     cdef size_t DPPLQueueMgr_GetNumGPUQueues () except +
@@ -120,19 +92,6 @@ cdef extern from "dppl_sycl_queue_manager.h":
                                                   size_t device_num) except +
     cdef void DPPLQueueMgr_SetAsDefaultQueue (_device_type DTy,
                                               size_t device_num) except +
-=======
-    cdef DPPLSyclQueueRef DPPLGetCurrentQueue () except +
-    cdef size_t DPPLGetNumCPUQueues () except +
-    cdef size_t DPPLGetNumGPUQueues () except +
-    cdef size_t DPPLGetNumActivatedQueues () except +
-    cdef DPPLSyclQueueRef DPPLGetQueue (_device_type DTy,
-                                        size_t device_num) except +
-    cdef void DPPLPopSyclQueue () except +
-    cdef DPPLSyclQueueRef DPPLPushSyclQueue (_device_type DTy,
-                                             size_t device_num) except +
-    cdef void DPPLSetAsDefaultQueue (_device_type DTy,
-                                     size_t device_num) except +
->>>>>>> master
 
 
 cdef extern from "dppl_sycl_usm_interface.h":
