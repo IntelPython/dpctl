@@ -10,8 +10,7 @@ cdef class Memory:
     cdef Py_ssize_t nbytes
     cdef SyclContext context
 
-    cdef _cinit(self, Py_ssize_t nbytes, ptr_type):
-        cdef SyclQueue q
+    cdef _cinit(self, Py_ssize_t nbytes, ptr_type, SyclQueue queue):
         cdef DPPLSyclUSMRef p
 
         self.memory_ptr = NULL
@@ -19,14 +18,15 @@ cdef class Memory:
         self.context = None
 
         if (nbytes > 0):
-            q = dppl.get_current_queue()
+            if queue is None:
+                queue = dppl.get_current_queue()
 
             if (ptr_type == "shared"):
-                p = DPPLmalloc_shared(nbytes, q.get_queue_ref())
+                p = DPPLmalloc_shared(nbytes, queue.get_queue_ref())
             elif (ptr_type == "host"):
-                p = DPPLmalloc_host(nbytes, q.get_queue_ref())
+                p = DPPLmalloc_host(nbytes, queue.get_queue_ref())
             elif (ptr_type == "device"):
-                p = DPPLmalloc_device(nbytes, q.get_queue_ref())
+                p = DPPLmalloc_device(nbytes, queue.get_queue_ref())
             else:
                 raise RuntimeError("Pointer type is unknown: {}" \
                     .format(ptr_type))
@@ -34,7 +34,7 @@ cdef class Memory:
             if (p):
                 self.memory_ptr = p
                 self.nbytes = nbytes
-                self.context = q.get_sycl_context()
+                self.context = queue.get_sycl_context()
             else:
                 raise RuntimeError("Null memory pointer returned")
         else:
@@ -86,8 +86,8 @@ cdef class Memory:
 
 cdef class MemoryUSMShared(Memory):
 
-    def __cinit__(self, Py_ssize_t nbytes):
-        self._cinit(nbytes, "shared")
+    def __cinit__(self, Py_ssize_t nbytes, SyclQueue queue=None):
+        self._cinit(nbytes, "shared", queue)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         self._getbuffer(buffer, flags)
@@ -95,8 +95,8 @@ cdef class MemoryUSMShared(Memory):
 
 cdef class MemoryUSMHost(Memory):
 
-    def __cinit__(self, Py_ssize_t nbytes):
-        self._cinit(nbytes, "host")
+    def __cinit__(self, Py_ssize_t nbytes, SyclQueue queue=None):
+        self._cinit(nbytes, "host", queue)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         self._getbuffer(buffer, flags)
@@ -104,5 +104,5 @@ cdef class MemoryUSMHost(Memory):
 
 cdef class MemoryUSMDevice(Memory):
 
-    def __cinit__(self, Py_ssize_t nbytes):
-        self._cinit(nbytes, "device")
+    def __cinit__(self, Py_ssize_t nbytes, SyclQueue queue=None):
+        self._cinit(nbytes, "device", queue)
