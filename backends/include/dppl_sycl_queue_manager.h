@@ -50,7 +50,7 @@ DPPL_C_EXTERN_C_BEGIN
  * wrapped inside an opaque DPPLSyclQueueRef pointer.
  */
 DPPL_API
-__dppl_give DPPLSyclQueueRef DPPLGetCurrentQueue ();
+__dppl_give DPPLSyclQueueRef DPPLQueueMgr_GetCurrentQueue ();
 
 /*!
  * @brief Get a sycl::queue object of the specified type and device id.
@@ -63,8 +63,8 @@ __dppl_give DPPLSyclQueueRef DPPLGetCurrentQueue ();
  * raised if no such device exists.
  */
 DPPL_API
-__dppl_give DPPLSyclQueueRef DPPLGetQueue (DPPLSyclDeviceType DeviceTy,
-                                           size_t DNum);
+__dppl_give DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclDeviceType DeviceTy,
+                                                    size_t DNum);
 
 /*!
  * @brief Get the number of activated queues not including the global or
@@ -73,7 +73,7 @@ __dppl_give DPPLSyclQueueRef DPPLGetQueue (DPPLSyclDeviceType DeviceTy,
  * @return The number of activated queues.
  */
 DPPL_API
-size_t DPPLGetNumActivatedQueues ();
+size_t DPPLQueueMgr_GetNumActivatedQueues ();
 
 /*!
  * @brief Get the number of GPU queues available on the system.
@@ -81,7 +81,7 @@ size_t DPPLGetNumActivatedQueues ();
  * @return The number of available GPU queues.
  */
 DPPL_API
-size_t DPPLGetNumGPUQueues ();
+size_t DPPLQueueMgr_GetNumGPUQueues ();
 
 /*!
  * @brief Get the number of CPU queues available on the system.
@@ -89,7 +89,7 @@ size_t DPPLGetNumGPUQueues ();
  * @return The number of available CPU queues.
  */
 DPPL_API
-size_t DPPLGetNumCPUQueues ();
+size_t DPPLQueueMgr_GetNumCPUQueues ();
 
 /*!
 * @brief Set the default DPPL queue to the sycl::queue for the given device.
@@ -100,8 +100,8 @@ size_t DPPLGetNumCPUQueues ();
 * @param    DNum           Device id for the device (defaults to 0)
 */
 DPPL_API
-void DPPLSetAsDefaultQueue (DPPLSyclDeviceType DeviceTy,
-                            size_t DNum);
+void DPPLQueueMgr_SetAsDefaultQueue (DPPLSyclDeviceType DeviceTy,
+                                     size_t DNum);
 
 /*!
  * @brief Pushes a new sycl::queue object to the top of DPPL's thread-local
@@ -110,11 +110,11 @@ void DPPLSetAsDefaultQueue (DPPLSyclDeviceType DeviceTy,
  * DPPL maintains a thread-local stack of sycl::queue objects to facilitate
  * nested parallelism. The sycl::queue at the top of the stack is termed as the
  * currently activated queue, and is always the one returned by
- * DPPLGetCurrentQueue(). DPPLPushSyclQueueToStack creates a new sycl::queue
- * corresponding to the specified device and pushes it to the top of the stack.
- * A copy of the sycl::queue is returned to the caller wrapped inside the
- * opaque DPPLSyclQueueRef pointer. A runtime_error exception is thrown when
- * a new sycl::queue could not be created for the specified device.
+ * DPPLQueueMgr_GetCurrentQueue(). DPPLPushSyclQueueToStack creates a new
+ * sycl::queue corresponding to the specified device and pushes it to the top
+ * of the stack. A copy of the sycl::queue is returned to the caller wrapped
+ * inside the opaque DPPLSyclQueueRef pointer. A runtime_error exception is
+ * thrown when a new sycl::queue could not be created for the specified device.
  *
  * @param    DeviceTy       The type of Sycl device (sycl_device_type)
  * @param    DNum           Device id for the device (defaults to 0)
@@ -123,8 +123,8 @@ void DPPLSetAsDefaultQueue (DPPLSyclDeviceType DeviceTy,
  * stack of sycl::queue objects.
  */
 DPPL_API
-__dppl_give DPPLSyclQueueRef DPPLPushSyclQueue (DPPLSyclDeviceType DeviceTy,
-                                                size_t DNum);
+__dppl_give DPPLSyclQueueRef
+DPPLQueueMgr_PushQueue (DPPLSyclDeviceType DeviceTy, size_t DNum);
 
 /*!
  * @brief Pops the top of stack element from DPPL's stack of activated
@@ -132,12 +132,12 @@ __dppl_give DPPLSyclQueueRef DPPLPushSyclQueue (DPPLSyclDeviceType DeviceTy,
  *
  * DPPLPopSyclQueue only removes the reference from the DPPL stack of
  * sycl::queue objects. Any instance of the popped queue that were previously
- * acquired by calling DPPLPushSyclQueue() or DPPLGetCurrentQueue() needs to be
- * freed separately. In addition, a runtime_error is thrown when the stack
- * contains only one sycl::queue, i.e., the default queue.
+ * acquired by calling DPPLPushSyclQueue() or DPPLQueueMgr_GetCurrentQueue()
+ * needs to be freed separately. In addition, a runtime_error is thrown when
+ * the stack contains only one sycl::queue, i.e., the default queue.
  *
  */
 DPPL_API
-void DPPLPopSyclQueue ();
+void DPPLQueueMgr_PopQueue ();
 
 DPPL_C_EXTERN_C_END

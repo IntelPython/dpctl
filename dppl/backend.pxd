@@ -43,23 +43,23 @@ cdef extern from "dppl_sycl_types.h":
 
 
 cdef extern from "dppl_sycl_context_interface.h":
-    cdef void DPPLDeleteSyclContext (DPPLSyclContextRef CtxtRef) except +
+    cdef void DPPLContext_Delete (DPPLSyclContextRef CtxtRef) except +
 
 
 cdef extern from "dppl_sycl_device_interface.h":
-    cdef void DPPLDumpDeviceInfo (const DPPLSyclDeviceRef DRef) except +
-    cdef void DPPLDeleteSyclDevice (DPPLSyclDeviceRef DRef) except +
-    cdef void DPPLDumpDeviceInfo (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDeviceIsAccelerator (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDeviceIsCPU (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDeviceIsGPU (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDeviceIsHost (const DPPLSyclDeviceRef DRef) except +
-    cdef const char* DPPLGetDeviceDriverInfo (const DPPLSyclDeviceRef DRef) \
+    cdef void DPPLDevice_DumpInfo (const DPPLSyclDeviceRef DRef) except +
+    cdef void DPPLDevice_Delete (DPPLSyclDeviceRef DRef) except +
+    cdef void DPPLDevice_DumpInfo (const DPPLSyclDeviceRef DRef) except +
+    cdef bool DPPLDevice_IsAccelerator (const DPPLSyclDeviceRef DRef) except +
+    cdef bool DPPLDevice_IsCPU (const DPPLSyclDeviceRef DRef) except +
+    cdef bool DPPLDevice_IsGPU (const DPPLSyclDeviceRef DRef) except +
+    cdef bool DPPLDevice_IsHost (const DPPLSyclDeviceRef DRef) except +
+    cdef const char* DPPLDevice_GetDriverInfo (const DPPLSyclDeviceRef DRef) \
     except +
-    cdef const char* DPPLGetDeviceName (const DPPLSyclDeviceRef DRef) except +
-    cdef const char* DPPLGetDeviceVendorName (const DPPLSyclDeviceRef DRef) \
+    cdef const char* DPPLDevice_GetName (const DPPLSyclDeviceRef DRef) except +
+    cdef const char* DPPLDevice_GetVendorName (const DPPLSyclDeviceRef DRef) \
     except +
-    cdef bool DPPLGetDeviceHostUnifiedMemory (const DPPLSyclDeviceRef DRef) \
+    cdef bool DPPLDevice_IsHostUnifiedMemory (const DPPLSyclDeviceRef DRef) \
     except +
 
 
@@ -69,10 +69,10 @@ cdef extern from "dppl_sycl_platform_interface.h":
 
 
 cdef extern from "dppl_sycl_queue_interface.h":
-    cdef void DPPLDeleteSyclQueue (DPPLSyclQueueRef QRef) except +
-    cdef DPPLSyclContextRef DPPLGetContextFromQueue (const DPPLSyclQueueRef Q) \
+    cdef void DPPLQueue_Delete (DPPLSyclQueueRef QRef) except +
+    cdef DPPLSyclContextRef DPPLQueue_GetContext (const DPPLSyclQueueRef Q) \
          except+
-    cdef DPPLSyclDeviceRef DPPLGetDeviceFromQueue (const DPPLSyclQueueRef Q) \
+    cdef DPPLSyclDeviceRef DPPLQueue_GetDevice (const DPPLSyclQueueRef Q) \
          except +
 
 
@@ -81,17 +81,17 @@ cdef extern from "dppl_sycl_queue_manager.h":
         _GPU 'DPPL_GPU'
         _CPU 'DPPL_CPU'
 
-    cdef DPPLSyclQueueRef DPPLGetCurrentQueue () except +
-    cdef size_t DPPLGetNumCPUQueues () except +
-    cdef size_t DPPLGetNumGPUQueues () except +
-    cdef size_t DPPLGetNumActivatedQueues () except +
-    cdef DPPLSyclQueueRef DPPLGetQueue (_device_type DTy,
-                                        size_t device_num) except +
-    cdef void DPPLPopSyclQueue () except +
-    cdef DPPLSyclQueueRef DPPLPushSyclQueue (_device_type DTy,
-                                             size_t device_num) except +
-    cdef void DPPLSetAsDefaultQueue (_device_type DTy,
-                                     size_t device_num) except +
+    cdef DPPLSyclQueueRef DPPLQueueMgr_GetCurrentQueue () except +
+    cdef size_t DPPLQueueMgr_GetNumCPUQueues () except +
+    cdef size_t DPPLQueueMgr_GetNumGPUQueues () except +
+    cdef size_t DPPLQueueMgr_GetNumActivatedQueues () except +
+    cdef DPPLSyclQueueRef DPPLQueueMgr_GetQueue (_device_type DTy,
+                                                 size_t device_num) except +
+    cdef void DPPLQueueMgr_PopQueue () except +
+    cdef DPPLSyclQueueRef DPPLQueueMgr_PushQueue (_device_type DTy,
+                                                  size_t device_num) except +
+    cdef void DPPLQueueMgr_SetAsDefaultQueue (_device_type DTy,
+                                              size_t device_num) except +
 
 
 cdef extern from "dppl_sycl_usm_interface.h":

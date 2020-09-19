@@ -39,7 +39,7 @@ namespace
 } /* end of anonymous namespace */
 
 __dppl_give DPPLSyclDeviceRef
-DPPLGetDeviceFromQueue (__dppl_keep const DPPLSyclQueueRef QRef)
+DPPLQueue_GetDevice (__dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Device = new device(Q->get_device());
@@ -47,7 +47,7 @@ DPPLGetDeviceFromQueue (__dppl_keep const DPPLSyclQueueRef QRef)
 }
 
 __dppl_give DPPLSyclContextRef
-DPPLGetContextFromQueue (__dppl_keep const DPPLSyclQueueRef QRef)
+DPPLQueue_GetContext (__dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Context = new context(Q->get_context());
@@ -57,7 +57,7 @@ DPPLGetContextFromQueue (__dppl_keep const DPPLSyclQueueRef QRef)
 /*!
  * Delete the passed in pointer after verifying it points to a sycl::queue.
  */
-void DPPLDeleteSyclQueue (__dppl_take DPPLSyclQueueRef QRef)
+void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef)
 {
     delete unwrap(QRef);
 }
