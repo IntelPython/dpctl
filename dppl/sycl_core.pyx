@@ -124,10 +124,17 @@ cdef class SyclQueue:
         DPPLQueue_Delete(self.queue_ptr)
 
     cpdef SyclContext get_sycl_context (self):
+<<<<<<< HEAD
         return SyclContext._create(DPPLQueue_GetContext(self.queue_ptr))
 
     cpdef SyclDevice get_sycl_device (self):
         return SyclDevice._create(DPPLQueue_GetDevice(self.queue_ptr))
+=======
+        return SyclContext._create(DPPLGetContextFromQueue(self.queue_ptr))
+
+    cpdef SyclDevice get_sycl_device (self):
+        return SyclDevice._create(DPPLGetDeviceFromQueue(self.queue_ptr))
+>>>>>>> master
 
     cdef DPPLSyclQueueRef get_queue_ref (self):
         return self.queue_ptr
