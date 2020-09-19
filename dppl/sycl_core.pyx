@@ -29,9 +29,11 @@
 from __future__ import print_function
 from enum import Enum, auto
 import logging
-from libcpp cimport bool
+from dppl.backend cimport *
+
 
 _logger = logging.getLogger(__name__)
+
 
 class device_type(Enum):
     gpu = auto()
@@ -44,71 +46,8 @@ cdef class UnsupportedDeviceTypeError(Exception):
     '''
     pass
 
-cdef extern from "dppl_utils.h":
-    cdef void DPPLDeleteCString (const char *str)
-
-cdef extern from "dppl_sycl_types.h":
-    cdef struct DPPLOpaqueSyclContext:
-        pass
-    cdef struct DPPLOpaqueSyclQueue:
-        pass
-    cdef struct DPPLOpaqueSyclDevice:
-        pass
-
-    ctypedef DPPLOpaqueSyclContext* DPPLSyclContextRef
-    ctypedef DPPLOpaqueSyclQueue* DPPLSyclQueueRef
-    ctypedef DPPLOpaqueSyclDevice* DPPLSyclDeviceRef
-
-cdef extern from "dppl_sycl_context_interface.h":
-    cdef void DPPLDeleteSyclContext (DPPLSyclContextRef CtxtRef) except +
-
-cdef extern from "dppl_sycl_device_interface.h":
-    cdef void DPPLDumpDeviceInfo (const DPPLSyclDeviceRef DRef) except +
-    cdef void DPPLDeleteSyclDevice (DPPLSyclDeviceRef DRef) except +
-    cdef void DPPLDumpDeviceInfo (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDeviceIsAccelerator (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDeviceIsCPU (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDeviceIsGPU (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDeviceIsHost (const DPPLSyclDeviceRef DRef) except +
-    cdef const char* DPPLGetDeviceDriverInfo (const DPPLSyclDeviceRef DRef) \
-    except +
-    cdef const char* DPPLGetDeviceName (const DPPLSyclDeviceRef DRef) except +
-    cdef const char* DPPLGetDeviceVendorName (const DPPLSyclDeviceRef DRef) \
-    except +
-    cdef bool DPPLGetDeviceHostUnifiedMemory (const DPPLSyclDeviceRef DRef) \
-    except +
-
-cdef extern from "dppl_sycl_platform_interface.h":
-    cdef size_t DPPLPlatform_GetNumPlatforms ()
-    cdef void DPPLPlatform_DumpInfo ()
-
-cdef extern from "dppl_sycl_queue_interface.h":
-    cdef void DPPLDeleteSyclQueue (DPPLSyclQueueRef QRef) except +
-    cdef DPPLSyclContextRef DPPLGetContextFromQueue (const DPPLSyclQueueRef Q) \
-         except+
-    cdef DPPLSyclDeviceRef DPPLGetDeviceFromQueue (const DPPLSyclQueueRef Q) \
-         except +
-
-cdef extern from "dppl_sycl_queue_manager.h":
-    cdef enum _device_type 'DPPLSyclDeviceType':
-        _GPU 'DPPL_GPU'
-        _CPU 'DPPL_CPU'
-
-    cdef DPPLSyclQueueRef DPPLGetCurrentQueue () except +
-    cdef size_t DPPLGetNumCPUQueues () except +
-    cdef size_t DPPLGetNumGPUQueues () except +
-    cdef size_t DPPLGetNumActivatedQueues () except +
-    cdef DPPLSyclQueueRef DPPLGetQueue (_device_type DTy,
-                                        size_t device_num) except +
-    cdef void DPPLPopSyclQueue () except +
-    cdef DPPLSyclQueueRef DPPLPushSyclQueue (_device_type DTy,
-                                             size_t device_num) except +
-    cdef void DPPLSetAsDefaultQueue (_device_type DTy,
-                                     size_t device_num) except +
-
 
 cdef class SyclContext:
-    cdef DPPLSyclContextRef ctxt_ptr
 
     @staticmethod
     cdef SyclContext _create (DPPLSyclContextRef ctxt):
@@ -126,10 +65,6 @@ cdef class SyclContext:
 cdef class SyclDevice:
     ''' Wrapper class for a Sycl Device
     '''
-    cdef DPPLSyclDeviceRef device_ptr
-    cdef const char *vendor_name
-    cdef const char *device_name
-    cdef const char *driver_version
 
     @staticmethod
     cdef SyclDevice _create (DPPLSyclDeviceRef dref):
@@ -178,7 +113,6 @@ cdef class SyclDevice:
 cdef class SyclQueue:
     ''' Wrapper class for a Sycl queue.
     '''
-    cdef DPPLSyclQueueRef queue_ptr
 
     @staticmethod
     cdef SyclQueue _create (DPPLSyclQueueRef qref):
@@ -189,10 +123,10 @@ cdef class SyclQueue:
     def __dealloc__ (self):
         DPPLDeleteSyclQueue(self.queue_ptr)
 
-    cpdef get_sycl_context (self):
+    cpdef SyclContext get_sycl_context (self):
         return SyclContext._create(DPPLGetContextFromQueue(self.queue_ptr))
 
-    cpdef get_sycl_device (self):
+    cpdef SyclDevice get_sycl_device (self):
         return SyclDevice._create(DPPLGetDeviceFromQueue(self.queue_ptr))
 
     cdef DPPLSyclQueueRef get_queue_ref (self):

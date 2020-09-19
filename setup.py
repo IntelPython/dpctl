@@ -25,8 +25,8 @@ import os
 import sys
 import versioneer
 
-from Cython.Build import cythonize
 from setuptools import setup, Extension, find_packages
+from Cython.Build import cythonize
 
 import numpy as np
 
@@ -78,7 +78,7 @@ def get_other_cxxflags():
         # what compiler we are using.
         return ['/Ox', '/std:c++17']
 
-def getpyexts():
+def extensions():
     # Security flags
     eca = get_sdl_cflags()
     ela = get_sdl_ldflags()
@@ -104,17 +104,22 @@ def getpyexts():
     elif IS_WIN:
         runtime_library_dirs = []
 
-    exts = cythonize(Extension('dppl._sycl_core',
-                               [os.path.abspath('dppl/sycl_core.pyx'),],
-                                depends=[dppl_sycl_interface_include,],
-                                include_dirs=[np.get_include(),
-                                              dppl_sycl_interface_include],
-                                extra_compile_args=eca + get_other_cxxflags(),
-                                extra_link_args=ela,
-                                libraries=libs,
-                                library_dirs=librarys,
-                                runtime_library_dirs=runtime_library_dirs,
-                                language='c++'))
+    extension_args = {
+        "depends": [dppl_sycl_interface_include,],
+        "include_dirs": [np.get_include(), dppl_sycl_interface_include],
+        "extra_compile_args": eca + get_other_cxxflags(),
+        "extra_link_args": ela, "libraries": libs, "library_dirs": librarys,
+        "runtime_library_dirs": runtime_library_dirs, "language": 'c++',
+    }
+
+    extensions = [
+        Extension('dppl._sycl_core', [os.path.abspath('dppl/sycl_core.pyx'),],
+            **extension_args),
+        Extension('dppl._memory', [os.path.abspath('dppl/_memory.pyx'),],
+            **extension_args),
+    ]
+
+    exts = cythonize(extensions)
     return exts
 
 setup(
@@ -126,7 +131,7 @@ setup(
     author="Intel Corporation",
     url='https://github.com/IntelPython/PyDPPL',
     packages=find_packages(include=["dppl", "dppl.*"]),
-    ext_modules = getpyexts(),
+    ext_modules = extensions(),
     setup_requires=requirements,
     cffi_modules=[
        "./dppl/opencl_core.py:ffi"

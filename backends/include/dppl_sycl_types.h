@@ -55,3 +55,10 @@ typedef struct DPPLOpaqueSyclQueue *DPPLSyclQueueRef;
  *
  */
 typedef struct DPPLOpaqueSyclProgram *DPPLSyclProgramRef;
+
+/*!
+ * @brief Used to pass a sycl::usm memory opaquely through DPPL interfaces.
+ *
+ * @see sycl::usm
+ */
+typedef struct DPPLOpaqueSyclUSM *DPPLSyclUSMRef;
