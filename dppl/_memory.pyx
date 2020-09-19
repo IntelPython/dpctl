@@ -62,10 +62,6 @@ cdef class Memory:
         buffer.strides = &buffer.itemsize
         buffer.suboffsets = NULL                # for pointer arrays only
 
-    property pointer:
-        def __get__(self):
-            return <object>(<Py_ssize_t>self.memory_ptr)
-
     property nbytes:
         def __get__(self):
             return self.nbytes
