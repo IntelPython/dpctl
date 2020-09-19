@@ -8,15 +8,15 @@ from cpython cimport Py_buffer
 cdef class Memory:
     cdef DPPLSyclUSMRef memory_ptr
     cdef Py_ssize_t nbytes
-    cdef SyclQueue queue
+    cdef SyclContext context
 
     cdef _cinit(self, Py_ssize_t nbytes, ptr_type):
         cdef SyclQueue q
         cdef DPPLSyclUSMRef p
 
         self.memory_ptr = NULL
-        self.queue = None
         self.nbytes = 0
+        self.context = None
 
         if (nbytes > 0):
             q = dppl.get_current_queue()
@@ -34,7 +34,7 @@ cdef class Memory:
             if (p):
                 self.memory_ptr = p
                 self.nbytes = nbytes
-                self.queue = q
+                self.context = q.get_sycl_context()
             else:
                 raise RuntimeError("Null memory pointer returned")
         else:
@@ -42,10 +42,11 @@ cdef class Memory:
 
     def __dealloc__(self):
         if (self.memory_ptr):
-            DPPLfree(self.memory_ptr, self.queue.get_queue_ref())
+            DPPLfree_with_context(self.memory_ptr,
+                                  self.context.get_context_ref())
         self.memory_ptr = NULL
         self.nbytes = 0
-        self.queue = None
+        self.context = None
 
     cdef _getbuffer(self, Py_buffer *buffer, int flags):
         buffer.buf = <char *>self.memory_ptr
@@ -68,9 +69,9 @@ cdef class Memory:
         def __get__(self):
             return self.nbytes
 
-    property _queue:
+    property _context:
         def __get__(self):
-            return self.queue
+            return self.context
 
     def __repr__(self):
         return "<Intel(R) USM allocated memory block of {} bytes at {}>" \
@@ -79,7 +80,7 @@ cdef class Memory:
     def _usm_type(self):
         cdef const char* kind
         kind = DPPLUSM_GetPointerType(self.memory_ptr,
-                                      self.queue.get_queue_ref())
+                                      self.context.get_context_ref())
         return kind.decode('UTF-8')
 
 

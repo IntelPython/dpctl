@@ -65,8 +65,16 @@ DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
  *
  */
 DPPL_API
-void DPPLfree (__dppl_take DPPLSyclUSMRef MRef,
-               __dppl_keep const DPPLSyclQueueRef QRef);
+void DPPLfree_with_queue (__dppl_take DPPLSyclUSMRef MRef,
+                          __dppl_keep const DPPLSyclQueueRef QRef);
+
+/*!
+ * @brief Free USM memory.
+ *
+ */
+DPPL_API
+void DPPLfree_with_context (__dppl_take DPPLSyclUSMRef MRef,
+                            __dppl_keep const DPPLSyclContextRef CRef);
 
 /*!
  * @brief Get pointer type.
@@ -75,7 +83,7 @@ void DPPLfree (__dppl_take DPPLSyclUSMRef MRef,
  */
 DPPL_API
 const char *
-DPPLUSM_GetPointerType (__dppl_keep DPPLSyclUSMRef MRef,
-                        __dppl_keep const DPPLSyclQueueRef QRef);
+DPPLUSM_GetPointerType (__dppl_keep const DPPLSyclUSMRef MRef,
+                        __dppl_keep const DPPLSyclContextRef СRef);
 
 DPPL_C_EXTERN_C_END
