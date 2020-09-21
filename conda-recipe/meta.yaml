@@ -1,4 +1,4 @@
-{% set name = "pydppl" %}
+{% set name = "dpctl" %}
 
 package:
     name: {{ name|lower }}
@@ -39,7 +39,7 @@ about:
         software license agreement (as set forth above, in the license section of
         the installed Conda package and/or the README file) and all notices,
         disclaimers or license terms for third party or open source software
-        included in or with the software.</strong> 
+        included in or with the software.</strong>
         <br/><br/>
         EULA: <a href="https://opensource.org/licenses/Apache-2.0" target="_blank">Apache-2.0</a>
         <br/><br/>

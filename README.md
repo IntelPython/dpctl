@@ -23,13 +23,13 @@ conda activate build-env
 ```bash
 conda build conda-recipe
 ```
-On Windows to cope with [long file names](https://github.com/IntelPython/pydppl/issues/15):
+On Windows to cope with [long file names](https://github.com/IntelPython/dpctl/issues/15):
 ```cmd
 conda build --croot=C:/tmp conda-recipe
 ```
 3. Install conda package
 ```bash
-conda install pydppl
+conda install dpctl
 ```
 
 Using PyDPPL

@@ -123,13 +123,13 @@ def extensions():
     return exts
 
 setup(
-    name='pydppl',
+    name='pyctl',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description="A lightweight Python wrapper for a subset of OpenCL and SYCL.",
     license="Apache 2.0",
     author="Intel Corporation",
-    url='https://github.com/IntelPython/PyDPPL',
+    url='https://github.com/IntelPython/dpCtl',
     packages=find_packages(include=["dppl", "dppl.*"]),
     ext_modules = extensions(),
     setup_requires=requirements,
@@ -137,7 +137,7 @@ setup(
        "./dppl/opencl_core.py:ffi"
     ],
     install_requires=requirements,
-    keywords='dppl',
+    keywords='dpctl',
     classifiers=[
         "Development Status :: 3 - Alpha",
         'Programming Language :: Python :: 3.6',
