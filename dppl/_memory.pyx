@@ -74,10 +74,20 @@ cdef class Memory:
         return "<Intel(R) USM allocated memory block of {} bytes at {}>" \
             .format(self.nbytes, hex(<object>(<Py_ssize_t>self.memory_ptr)))
 
-    def _usm_type(self):
+    def _usm_type(self, sycl_context=None):
         cdef const char* kind
-        kind = DPPLUSM_GetPointerType(self.memory_ptr,
-                                      self.context.get_context_ref())
+        cdef SyclContext ctx
+        if sycl_context is None:
+            ctx = self.context
+            kind = DPPLUSM_GetPointerType(self.memory_ptr,
+                                          ctx.get_context_ref())
+        elif isinstance(sycl_context, SyclContext):
+            ctx = <SyclContext>(sycl_context)
+            kind = DPPLUSM_GetPointerType(self.memory_ptr,
+                                          ctx.get_context_ref())
+        else:
+            raise ValueError("sycl_context keyword can be either None, "
+                             "or an instance of dppl.SyclConext")
         return kind.decode('UTF-8')
 
 
