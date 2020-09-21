@@ -20,7 +20,7 @@
 ///
 /// \file
 /// This file contains the declaration of a C API to expose a lightweight OpenCL
-/// interface for the Python dppl package.
+/// interface for the Python dpctl package.
 ///
 //===----------------------------------------------------------------------===//
 

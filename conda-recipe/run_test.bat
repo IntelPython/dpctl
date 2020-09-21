@@ -5,11 +5,11 @@ set ERRORLEVEL=
 
 @echo on
 
-"%PYTHON%" -c "import dppl"
+"%PYTHON%" -c "import dpctl"
 IF %ERRORLEVEL% NEQ 0 exit 1
 
-"%PYTHON%" -c "import dppl.ocldrv"
+"%PYTHON%" -c "import dpctl.ocldrv"
 IF %ERRORLEVEL% NEQ 0 exit 1
 
-"%PYTHON%" -m unittest -v dppl.tests
+"%PYTHON%" -m unittest -v dpctl.tests
 IF %ERRORLEVEL% NEQ 0 exit 1

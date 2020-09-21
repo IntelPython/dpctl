@@ -33,12 +33,12 @@ make -j 4 && make install
 
 cd ..
 
-# required by dppl.opencl_core
+# required by dpctl.opencl_core
 export DPPL_OPENCL_INTERFACE_LIBDIR=${PREFIX}
 export DPPL_OPENCL_INTERFACE_INCLDIR=${PREFIX}/include
 export OpenCL_LIBDIR=${DPCPP_ROOT}/lib
 
-# required by dppl.sycl_core
+# required by dpctl.sycl_core
 export DPPL_SYCL_INTERFACE_LIBDIR=${PREFIX}/lib
 export DPPL_SYCL_INTERFACE_INCLDIR=${PREFIX}/include
 
