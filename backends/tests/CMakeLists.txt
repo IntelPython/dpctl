@@ -24,7 +24,9 @@ else()
 
   set(PYDPPL_BACKEND_TEST_CASES
     test_sycl_queue_manager
+    test_sycl_kernel_interface
     test_sycl_platform_interface
+    test_sycl_program_interface
   )
 
   foreach(TEST_CASE ${PYDPPL_BACKEND_TEST_CASES})
