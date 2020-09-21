@@ -29,6 +29,14 @@ else()
     test_sycl_program_interface
   )
 
+  # Copy the spir-v input files to test build directory
+  set(spirv-test-files
+    multi_kernel.spv
+  )
+  foreach(tf ${spirv-test-files})
+    file(COPY ${tf} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+  endforeach()
+
   foreach(TEST_CASE ${PYDPPL_BACKEND_TEST_CASES})
     add_executable(${TEST_CASE} EXCLUDE_FROM_ALL ${TEST_CASE}.cpp)
     target_link_libraries(

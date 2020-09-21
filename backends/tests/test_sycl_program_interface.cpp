@@ -31,6 +31,8 @@
 #include "dppl_sycl_queue_manager.h"
 
 #include <array>
+#include <fstream>
+#include <filesystem>
 #include <gtest/gtest.h>
 #include <CL/sycl.hpp>
 
@@ -39,6 +41,71 @@ using namespace cl::sycl;
 namespace
 {
     const size_t SIZE = 1024;
+
+    void add_kernel_checker (queue *syclQueue, DPPLSyclKernelRef AddKernel)
+    {
+        range<1> a_size{SIZE};
+        std::array<int, SIZE> a, b, c;
+
+        for (int i = 0; i<SIZE; ++i) {
+            a[i] = i;
+            b[i] = i;
+            c[i] = 0;
+        }
+
+        {
+            buffer<int, 1> a_device(a.data(), a_size);
+            buffer<int, 1> b_device(b.data(), a_size);
+            buffer<int, 1> c_device(c.data(), a_size);
+            buffer<int, 1> buffs[3] = {a_device, b_device, c_device};
+            syclQueue->submit([&](handler& cgh) {
+                for (auto buff : buffs) {
+                    auto arg = buff.get_access<access::mode::read_write>(cgh);
+                    cgh.set_args(arg);
+                }
+                auto syclKernel = reinterpret_cast<kernel*>(AddKernel);
+                cgh.parallel_for(range<1>{SIZE}, *syclKernel);
+            });
+        }
+
+        // Validate the data
+        for(auto i = 0ul; i < SIZE; ++i) {
+            EXPECT_EQ(c[i], i + i);
+        }
+    }
+
+    void axpy_kernel_checker (queue *syclQueue, DPPLSyclKernelRef AxpyKernel)
+    {
+        range<1> a_size{SIZE};
+        std::array<int, SIZE> a, b, c;
+
+        for (int i = 0; i<SIZE; ++i) {
+            a[i] = i;
+            b[i] = i;
+            c[i] = 0;
+        }
+        int d = 10;
+        {
+            buffer<int, 1> a_device(a.data(), a_size);
+            buffer<int, 1> b_device(b.data(), a_size);
+            buffer<int, 1> c_device(c.data(), a_size);
+            buffer<int, 1> buffs[3] = {a_device, b_device, c_device};
+            syclQueue->submit([&](handler& cgh) {
+                for (auto i = 0ul; i < 3; ++i) {
+                    auto arg = buffs[i].get_access<access::mode::read_write>(cgh);
+                    cgh.set_arg(i, arg);
+                }
+                cgh.set_arg(3, d);
+                auto syclKernel = reinterpret_cast<kernel*>(AxpyKernel);
+                cgh.parallel_for(range<1>{SIZE}, *syclKernel);
+            });
+        }
+
+        // Validate the data
+        for(auto i = 0ul; i < SIZE; ++i) {
+            EXPECT_EQ(c[i], i + d*i);
+        }
+    }
 }
 
 struct TestDPPLSyclProgramInterface : public ::testing::Test
@@ -59,6 +126,7 @@ struct TestDPPLSyclProgramInterface : public ::testing::Test
     DPPLSyclContextRef CurrCtxRef   = nullptr;
     DPPLSyclQueueRef   CurrQueueRef = nullptr;
     DPPLSyclProgramRef PRef         = nullptr;
+    DPPLSyclProgramRef PRef2        = nullptr;
 
     TestDPPLSyclProgramInterface ()
     {
@@ -66,6 +134,16 @@ struct TestDPPLSyclProgramInterface : public ::testing::Test
         CurrCtxRef   = DPPLQueue_GetContext(CurrQueueRef);
         PRef = DPPLProgram_CreateFromOCLSource(CurrCtxRef, CLProgramStr,
                                                CompileOpts);
+
+        // Create a program from a SPIR-V file
+        std::ifstream file{"./multi_kernel.spv",
+                           std::ios::binary | std::ios::ate};
+        auto fileSize = std::filesystem::file_size("./multi_kernel.spv");
+        file.seekg(0, std::ios::beg);
+        std::vector<char> buffer(fileSize);
+        file.read(buffer.data(), fileSize);
+        PRef2 = DPPLProgram_CreateFromOCLSpirv(CurrCtxRef, buffer.data(),
+                                               fileSize);
     }
 
     ~TestDPPLSyclProgramInterface ()
@@ -73,6 +151,7 @@ struct TestDPPLSyclProgramInterface : public ::testing::Test
         DPPLQueue_Delete(CurrQueueRef);
         DPPLContext_Delete(CurrCtxRef);
         DPPLProgram_Delete(PRef);
+        DPPLProgram_Delete(PRef2);
     }
 };
 
@@ -81,69 +160,44 @@ TEST_F (TestDPPLSyclProgramInterface, CheckCreateFromOCLSource)
     ASSERT_TRUE(PRef != nullptr);
 }
 
+TEST_F (TestDPPLSyclProgramInterface, CheckCreateFromOCLSpirv)
+{
+    ASSERT_TRUE(PRef2 != nullptr);
+}
 
-TEST_F (TestDPPLSyclProgramInterface, CheckHasKernel)
+TEST_F (TestDPPLSyclProgramInterface, CheckHasKernelOCLSource)
 {
     ASSERT_TRUE(DPPLProgram_HasKernel(PRef, "add"));
     ASSERT_TRUE(DPPLProgram_HasKernel(PRef, "axpy"));
 }
 
-TEST_F (TestDPPLSyclProgramInterface, CheckGetKernel)
+TEST_F (TestDPPLSyclProgramInterface, CheckHasKernelSpirvSource)
+{
+    ASSERT_TRUE(DPPLProgram_HasKernel(PRef, "add"));
+    ASSERT_TRUE(DPPLProgram_HasKernel(PRef, "axpy"));
+}
+
+TEST_F (TestDPPLSyclProgramInterface, CheckGetKernelOCLSource)
 {
     auto AddKernel = DPPLProgram_GetKernel(PRef, "add");
     auto AxpyKernel = DPPLProgram_GetKernel(PRef, "axpy");
     auto syclQueue = reinterpret_cast<queue*>(CurrQueueRef);
 
-    range<1> a_size{SIZE};
-    std::array<int, SIZE> a, b, c;
+    add_kernel_checker(syclQueue, AddKernel);
+    axpy_kernel_checker(syclQueue, AxpyKernel);
 
-    for (int i = 0; i<SIZE; ++i) {
-        a[i] = i;
-        b[i] = i;
-        c[i] = 0;
-    }
+    DPPLKernel_DeleteKernelRef(AddKernel);
+    DPPLKernel_DeleteKernelRef(AxpyKernel);
+}
 
-    {
-        buffer<int, 1> a_device(a.data(), a_size);
-        buffer<int, 1> b_device(b.data(), a_size);
-        buffer<int, 1> c_device(c.data(), a_size);
-        buffer<int, 1> buffs[3] = {a_device, b_device, c_device};
-        syclQueue->submit([&](handler& cgh) {
-            for (auto buff : buffs) {
-                auto arg = buff.get_access<access::mode::read_write>(cgh);
-                cgh.set_args(arg);
-            }
-            auto syclKernel = reinterpret_cast<kernel*>(AddKernel);
-            cgh.parallel_for(range<1>{SIZE}, *syclKernel);
-        });
-    }
+TEST_F (TestDPPLSyclProgramInterface, CheckGetKernelOCLSpirv)
+{
+    auto AddKernel = DPPLProgram_GetKernel(PRef2, "add");
+    auto AxpyKernel = DPPLProgram_GetKernel(PRef2, "axpy");
+    auto syclQueue = reinterpret_cast<queue*>(CurrQueueRef);
 
-    // Validate the data
-    for(auto i = 0ul; i < SIZE; ++i) {
-        EXPECT_EQ(c[i], i + i);
-    }
-
-    int d = 10;
-    {
-        buffer<int, 1> a_device(a.data(), a_size);
-        buffer<int, 1> b_device(b.data(), a_size);
-        buffer<int, 1> c_device(c.data(), a_size);
-        buffer<int, 1> buffs[3] = {a_device, b_device, c_device};
-        syclQueue->submit([&](handler& cgh) {
-            for (auto i = 0ul; i < 3; ++i) {
-                auto arg = buffs[i].get_access<access::mode::read_write>(cgh);
-                cgh.set_arg(i, arg);
-            }
-            cgh.set_arg(3, d);
-            auto syclKernel = reinterpret_cast<kernel*>(AxpyKernel);
-            cgh.parallel_for(range<1>{SIZE}, *syclKernel);
-        });
-    }
-
-    // Validate the data
-    for(auto i = 0ul; i < SIZE; ++i) {
-        EXPECT_EQ(c[i], i + d*i);
-    }
+    add_kernel_checker(syclQueue, AddKernel);
+    axpy_kernel_checker(syclQueue, AxpyKernel);
 
     DPPLKernel_DeleteKernelRef(AddKernel);
     DPPLKernel_DeleteKernelRef(AxpyKernel);
