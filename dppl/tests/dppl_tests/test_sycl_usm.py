@@ -46,7 +46,7 @@ class TestMemory (unittest.TestCase):
     def test_memory_cpu_context (self):
         mobj = self._create_memory()
 
-        # CPU context 
+        # CPU context
         with dppl.device_context(dppl.device_type.cpu):
             # type respective to the context in which
             # memory was created
