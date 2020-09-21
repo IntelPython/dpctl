@@ -123,7 +123,7 @@ def extensions():
     return exts
 
 setup(
-    name='pyctl',
+    name='dpctl',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description="A lightweight Python wrapper for a subset of OpenCL and SYCL.",
