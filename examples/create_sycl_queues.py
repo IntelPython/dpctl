@@ -1,9 +1,9 @@
 from __future__ import print_function
 
-from dppl import runtime, device_context, device_type
+from dpctl import runtime, device_context, device_type
 
 
-# Global runtime object inside dppl
+# Global runtime object inside dpctl
 rt = runtime
 
 # Print metadata about the runtime
@@ -24,7 +24,7 @@ with device_context(device_type.cpu, 0) as cpu_queue:
     print("Current context inside with scope")
     print("========================================")
     rt.dump_queue(cpu_queue)
-    
+
     # Note the current context can be either directly accessed by using
     # the "cpu_queue" object, or it can be accessed via the runtime's
     # get_current_queue() function.

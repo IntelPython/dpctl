@@ -1,4 +1,4 @@
-##===---------- ocldrv.py - dppl.ocldrv interface -----*- Python -*-----===##
+##===---------- ocldrv.py - dpctl.ocldrv interface -----*- Python -*-----===##
 ##
 ##               Python Data Parallel Processing Library (PyDPPL)
 ##
@@ -22,7 +22,7 @@
 ### This file exposes Python classes for different OpenCL classes that are
 ### exposed by the _dppl_binding CFFI extension module.
 ##===----------------------------------------------------------------------===##
-''' The dppl.ocldrv module contains a set of Python wrapper classes for
+''' The dpctl.ocldrv module contains a set of Python wrapper classes for
     OpenCL objects. The module has wrappers for cl_context, cl_device,
     cl_mem, cl_program, and cl_kernel objects.
 
@@ -71,14 +71,14 @@ _logger.addHandler(_ch)
 
 
 class DpplDriverError(Exception):
-    """ The exception is raised when dppl.ocldrv cannot find an OpenCL Driver.
+    """ The exception is raised when dpctl.ocldrv cannot find an OpenCL Driver.
     """
     pass
 
 
 class DeviceNotFoundError(Exception):
     """ The exception is raised when the requested type of OpenCL device is
-        not available or not supported by dppl.ocldrv.
+        not available or not supported by dpctl.ocldrv.
     """
     pass
 
