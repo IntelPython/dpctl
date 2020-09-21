@@ -1,4 +1,4 @@
-##===---------- setup.py - dppl.ocldrv interface -----*- Python -*-----===##
+##===---------- setup.py - dpctl.ocldrv interface -----*- Python -*-----===##
 ##
 ##               Python Data Parallel Processing Library (PyDPPL)
 ##
@@ -19,7 +19,7 @@
 ##===----------------------------------------------------------------------===##
 ###
 ### \file
-### This file builds the dppl and dppl.ocldrv extension modules.
+### This file builds the dpctl and dpctl.ocldrv extension modules.
 ##===----------------------------------------------------------------------===##
 import os
 import sys
@@ -100,7 +100,7 @@ def extensions():
         librarys = [dppl_sycl_interface_lib]
 
     if IS_LIN or IS_MAC:
-        runtime_library_dirs = [os.path.abspath('dppl')]
+        runtime_library_dirs = [os.path.abspath('dpctl')]
     elif IS_WIN:
         runtime_library_dirs = []
 
@@ -113,9 +113,9 @@ def extensions():
     }
 
     extensions = [
-        Extension('dppl._sycl_core', [os.path.abspath('dppl/sycl_core.pyx'),],
+        Extension('dpctl._sycl_core', [os.path.abspath('dpctl/sycl_core.pyx'),],
             **extension_args),
-        Extension('dppl._memory', [os.path.abspath('dppl/_memory.pyx'),],
+        Extension('dpctl._memory', [os.path.abspath('dpctl/_memory.pyx'),],
             **extension_args),
     ]
 
@@ -130,14 +130,14 @@ setup(
     license="Apache 2.0",
     author="Intel Corporation",
     url='https://github.com/IntelPython/PyDPPL',
-    packages=find_packages(include=["dppl", "dppl.*"]),
+    packages=find_packages(include=["dpctl", "dpctl.*"]),
     ext_modules = extensions(),
     setup_requires=requirements,
     cffi_modules=[
-       "./dppl/opencl_core.py:ffi"
+       "./dpctl/opencl_core.py:ffi"
     ],
     install_requires=requirements,
-    keywords='dppl',
+    keywords='dpctl',
     classifiers=[
         "Development Status :: 3 - Alpha",
         'Programming Language :: Python :: 3.6',
