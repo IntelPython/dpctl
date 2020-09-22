@@ -268,6 +268,63 @@ has_sycl_platforms       = _qmgr.has_sycl_platforms
 set_default_queue        = _qmgr.set_default_queue
 is_in_dppl_ctxt          = _qmgr.is_in_dppl_ctxt
 
+
+def create_program_from_source (SyclQueue q, unicode source, unicode copts=""):
+    ''' Creates a Sycl interoperability program from an OpenCL source string.
+
+        We use the DPPLProgram_CreateFromOCLSource() C API function to create
+        a Sycl progrma from an OpenCL source program that can contain multiple
+        kernels.
+
+        Parameters:
+                q (SyclQueue)   : The SyclQueue object wraps the Sycl device for
+                                  which the program will be built.
+                source (unicode): Source string for an OpenCL program.
+                copts (unicode) : Optional compilation flags that will be used
+                                  when compiling the program.
+
+            Returns:
+                program (SyclProgram): A SyclProgram object wrapping the
+                                       syc::program returned by the C API.
+    '''
+
+    cdef DPPLSyclProgramRef Pref
+
+    cdef bytes bSrc = source.encode('utf8')
+    cdef bytes bCOpts = copts.encode('utf8')
+    cdef const char *Src = <const char*>bSrc
+    cdef const char *COpts = <const char*>bCOpts
+    cdef DPPLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
+    Pref = DPPLProgram_CreateFromOCLSource(CRef, Src, COpts)
+
+    return SyclProgram._create(Pref)
+
+
+def create_program_from_spirv (SyclQueue q, char[:] IL):
+    ''' Creates a Sycl interoperability program from an SPIR-V binary.
+
+        We use the DPPLProgram_CreateFromOCLSpirv() C API function to create
+        a Sycl progrma from an compiled SPIR-V binary file.
+
+        Parameters:
+                q (SyclQueue): The SyclQueue object wraps the Sycl device for
+                               which the program will be built.
+                IL (char[:]) : SPIR-V binary IL file for an OpenCL program.
+
+            Returns:
+                program (SyclProgram): A SyclProgram object wrapping the
+                                       syc::program returned by the C API.
+    '''
+
+    cdef DPPLSyclProgramRef Pref
+    cdef bytes bIL = IL.data
+    cdef const void *spirvIL = <const void*>bIL
+    cdef DPPLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
+    Pref = DPPLProgram_CreateFromOCLSpirv(CRef, spirvIL, len(IL))
+
+    return SyclProgram._create(Pref)
+
+
 from contextlib import contextmanager
 
 @contextmanager
