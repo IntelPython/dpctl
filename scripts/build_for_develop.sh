@@ -27,7 +27,7 @@ cmake                                                       \
 
 make V=1 -n -j 4 && make check && make install
 popd
-cp install/lib/*.so dppl/
+cp install/lib/*.so dpctl/
 
 export DPPL_OPENCL_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
 export DPPL_OPENCL_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include

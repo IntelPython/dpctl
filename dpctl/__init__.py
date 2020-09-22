@@ -3,8 +3,8 @@
 
     PyDPPL provides a lightweight Python abstraction over DPC++/SYCL and
     OpenCL runtime objects. The DPC++ runtime wrapper objects can be
-    accessed by importing dppl. The OpenCL runtime wrapper objects can be
-    accessed by importing dppl.ocldrv. The library is in an early-beta
+    accessed by importing dpctl. The OpenCL runtime wrapper objects can be
+    accessed by importing dpctl.ocldrv. The library is in an early-beta
     stage of development and not yet ready for production usage.
 
     PyDPPL's intended usage is as a common SYCL interoperability layer for
@@ -13,7 +13,7 @@
     of the library.
 
     Currently, only a small subset of DPC++ runtime objects are exposed
-    through the dppl module. The main API classes inside the dppl module are:
+    through the dpctl module. The main API classes inside the dpctl module are:
 
     Runtime:     The class stores a global SYCL queue and a stack of
                  currently activated queues. Runtime provides a special getter
@@ -21,7 +21,7 @@
                  as a Py_capsule.
 
                  A single global thread local instance of the Runtime class
-                 is created on loading the dppl module for the first time.
+                 is created on loading the dpctl module for the first time.
 
     DeviceArray: A DeviceArray object encapsulates a one-dimensional
                  cl::sycl::buffer object. A DeviceArray object can be
@@ -39,9 +39,9 @@
     Global data members:
         runtime - An instance of the Runtime class.
 
-    Please use `pydoc dppl._sycl_core` to look at the current API for dppl.
+    Please use `pydoc dpctl._sycl_core` to look at the current API for dpctl.
 
-    Please use `pydoc dppl.ocldrv` to look at the current API for dppl.ocldrv.
+    Please use `pydoc dpctl.ocldrv` to look at the current API for dpctl.ocldrv.
 
 '''
 __author__ = "Intel Corp."

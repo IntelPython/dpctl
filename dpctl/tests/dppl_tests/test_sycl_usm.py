@@ -1,4 +1,4 @@
-##===---------- test_sycl_queue_manager.py - dppl  -------*- Python -*-----===##
+##===---------- test_sycl_queue_manager.py - dpctl  -------*- Python -*-----===##
 ##
 ##               Python Data Parallel Processing Library (PyDPPL)
 ##
@@ -19,21 +19,21 @@
 ##===----------------------------------------------------------------------===##
 
 import unittest
-import dppl
-from dppl._memory import MemoryUSMShared, MemoryUSMHost, MemoryUSMDevice
+import dpctl
+from dpctl._memory import MemoryUSMShared, MemoryUSMHost, MemoryUSMDevice
 
 
 class TestMemory (unittest.TestCase):
 
     def test_memory_create (self):
         nbytes = 1024
-        queue = dppl.get_current_queue()
+        queue = dpctl.get_current_queue()
         mobj = MemoryUSMShared(nbytes, queue)
         self.assertEqual(mobj.nbytes, nbytes)
 
     def _create_memory (self):
         nbytes = 1024
-        queue = dppl.get_current_queue()
+        queue = dpctl.get_current_queue()
         mobj = MemoryUSMShared(nbytes, queue)
         return mobj
 
@@ -43,33 +43,33 @@ class TestMemory (unittest.TestCase):
         # Without context
         self.assertEqual(mobj._usm_type(), 'shared')
 
-    @unittest.skipIf(not dppl.has_cpu_queues(), "No CPU platforms available")
+    @unittest.skipIf(not dpctl.has_cpu_queues(), "No CPU platforms available")
     def test_memory_cpu_context (self):
         mobj = self._create_memory()
 
         # CPU context
-        with dppl.device_context(dppl.device_type.cpu):
+        with dpctl.device_context(dpctl.device_type.cpu):
             # type respective to the context in which
             # memory was created
             usm_type = mobj._usm_type()
             self.assertEqual(usm_type, 'shared')
 
-            current_queue = dppl.get_current_queue()
+            current_queue = dpctl.get_current_queue()
             # type as view from current queue
             usm_type = mobj._usm_type(current_queue)
             # type can be unknown if current queue is
             # not in the same SYCL context
             self.assertTrue(usm_type in ['unknown', 'shared'])
 
-    @unittest.skipIf(not dppl.has_gpu_queues(), "No GPU platforms available")
+    @unittest.skipIf(not dpctl.has_gpu_queues(), "No GPU platforms available")
     def test_memory_gpu_context (self):
         mobj = self._create_memory()
 
         # GPU context
-        with dppl.device_context(dppl.device_type.gpu):
+        with dpctl.device_context(dpctl.device_type.gpu):
             usm_type = mobj._usm_type()
             self.assertEqual(usm_type, 'shared')
-            current_queue = dppl.get_current_queue()
+            current_queue = dpctl.get_current_queue()
             usm_type = mobj._usm_type(current_queue)
             self.assertTrue(usm_type in ['unknown', 'shared'])
 
@@ -81,7 +81,7 @@ class TestMemoryUSMBase:
     usm_type = None
 
     def test_create_with_queue (self):
-        q = dppl.get_current_queue()
+        q = dpctl.get_current_queue()
         m = self.MemoryUSMClass(1024, q)
         self.assertEqual(m.nbytes, 1024)
         self.assertEqual(m._usm_type(), self.usm_type)

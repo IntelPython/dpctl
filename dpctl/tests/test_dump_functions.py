@@ -16,20 +16,20 @@
 
 import unittest
 
-import dppl
-import dppl.ocldrv as drv
+import dpctl
+import dpctl.ocldrv as drv
 
 
 class TestDumpMethods(unittest.TestCase):
 
     def test_dppl_dump (self):
         try:
-            dppl.dump()
+            dpctl.dump()
         except Exception:
             self.fail("Encountered an exception inside dump().")
 
     def test_dppl_dump_device_info (self):
-        q = dppl.get_current_queue()
+        q = dpctl.get_current_queue()
         try:
             q.get_sycl_device().dump_device_info()
         except Exception:

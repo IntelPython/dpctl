@@ -29,7 +29,7 @@
 from __future__ import print_function
 from enum import Enum, auto
 import logging
-from dppl.backend cimport *
+from dpctl.backend cimport *
 
 
 _logger = logging.getLogger(__name__)
