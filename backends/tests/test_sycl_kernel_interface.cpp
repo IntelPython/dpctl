@@ -86,8 +86,8 @@ TEST_F (TestDPPLSyclKernelInterface, CheckGetFunctionName)
     auto fnName2 = DPPLKernel_GetFunctionName(AxpyKernel);
     ASSERT_STREQ("add", fnName1);
     ASSERT_STREQ("axpy", fnName2);
-    DPPLDeleteCString(fnName1);
-    DPPLDeleteCString(fnName2);
+    DPPLCString_Delete(fnName1);
+    DPPLCString_Delete(fnName2);
 }
 
 TEST_F (TestDPPLSyclKernelInterface, CheckGetNumArgs)
