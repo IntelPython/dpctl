@@ -55,7 +55,7 @@ class TestMemory (unittest.TestCase):
 
             current_queue = dppl.get_current_queue()
             # type as view from current queue
-            usm_type = mobj._usm_type(context=current_queue)
+            usm_type = mobj._usm_type(current_queue)
             # type can be unknown if current queue is
             # not in the same SYCL context
             self.assertTrue(usm_type in ['unknown', 'shared'])
@@ -68,7 +68,7 @@ class TestMemory (unittest.TestCase):
             usm_type = mobj._usm_type()
             self.assertEqual(usm_type, 'shared')
             current_queue = dppl.get_current_queue()
-            usm_type = mobj._usm_type(context=current_queue)
+            usm_type = mobj._usm_type(current_queue)
             self.assertTrue(usm_type in ['unknown', 'shared'])
 
 
