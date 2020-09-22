@@ -122,6 +122,22 @@ cdef class SyclKernel:
 
     def __dealloc__ (self):
         DPPLKernel_Delete(self.kernel_ptr)
+        DPPLCString_Delete(self.function_name)
+
+    def get_function_name (self):
+        ''' Returns the name of the Kernel function.
+        '''
+        return self.function_name
+
+    def get_num_args (self):
+        ''' Returns the number of arguments for this kernel function.
+        '''
+        return DPPLKernel_GetNumArgs(self.kernel_ptr)
+
+    cdef DPPLSyclKernelRef get_kernel_ptr (self):
+        ''' Returns the DPPLSyclKernelRef pointer for this SyclKernel.
+        '''
+        return self.kernel_ptr
 
 
 cdef class SyclProgram:

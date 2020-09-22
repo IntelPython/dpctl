@@ -56,6 +56,7 @@ cdef class SyclKernel:
         kernel.
     '''
     cdef DPPLSyclKernelRef kernel_ptr
+    cdef DPPLSyclKernelRef get_kernel_ptr (self)
 
     @staticmethod
     cdef SyclKernel _create (DPPLSyclKernelRef kref)
