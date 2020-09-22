@@ -8,14 +8,14 @@ from cpython cimport Py_buffer
 cdef class Memory:
     cdef DPPLSyclUSMRef memory_ptr
     cdef Py_ssize_t nbytes
-    cdef SyclContext context
+    cdef SyclQueue queue
 
     cdef _cinit(self, Py_ssize_t nbytes, ptr_type, SyclQueue queue):
         cdef DPPLSyclUSMRef p
 
         self.memory_ptr = NULL
         self.nbytes = 0
-        self.context = None
+        self.queue = None
 
         if (nbytes > 0):
             if queue is None:
@@ -34,7 +34,7 @@ cdef class Memory:
             if (p):
                 self.memory_ptr = p
                 self.nbytes = nbytes
-                self.context = queue.get_sycl_context()
+                self.queue = queue
             else:
                 raise RuntimeError("Null memory pointer returned")
         else:
@@ -42,11 +42,11 @@ cdef class Memory:
 
     def __dealloc__(self):
         if (self.memory_ptr):
-            DPPLfree_with_context(self.memory_ptr,
-                                  self.context.get_context_ref())
+            DPPLfree_with_queue(self.memory_ptr,
+                                self.queue.get_queue_ref())
         self.memory_ptr = NULL
         self.nbytes = 0
-        self.context = None
+        self.queue = None
 
     cdef _getbuffer(self, Py_buffer *buffer, int flags):
         # memory_ptr is Ref which is pointer to SYCL type. For USM it is void*.
@@ -68,16 +68,36 @@ cdef class Memory:
 
     property _context:
         def __get__(self):
-            return self.context
+            return self.queue.get_sycl_context()
+
+    property _queue:
+        def __get__(self):
+            return self.queue
 
     def __repr__(self):
         return "<Intel(R) USM allocated memory block of {} bytes at {}>" \
             .format(self.nbytes, hex(<object>(<Py_ssize_t>self.memory_ptr)))
 
-    def _usm_type(self):
+    def _usm_type(self, context=None):
         cdef const char* kind
-        kind = DPPLUSM_GetPointerType(self.memory_ptr,
-                                      self.context.get_context_ref())
+        cdef SyclContext ctx
+        cdef SyclQueue q
+        if context is None:
+            ctx = self._context
+            kind = DPPLUSM_GetPointerType(self.memory_ptr,
+                                          ctx.get_context_ref())
+        elif isinstance(context, SyclContext):
+            ctx = <SyclContext>(context)
+            kind = DPPLUSM_GetPointerType(self.memory_ptr,
+                                          ctx.get_context_ref())
+        elif isinstance(context, SyclQueue):
+            q = <SyclQueue>(context)
+            ctx = q.get_sycl_context()
+            kind = DPPLUSM_GetPointerType(self.memory_ptr,
+                                          ctx.get_context_ref())
+        else:
+            raise ValueError("sycl_context keyword can be either None, "
+                             "or an instance of dppl.SyclConext")
         return kind.decode('UTF-8')
 
 
