@@ -43,7 +43,7 @@ DPPL_C_EXTERN_C_BEGIN
  */
 DPPL_API
 __dppl_give DPPLSyclContextRef
-DPPLGetContextFromQueue (__dppl_keep const DPPLSyclQueueRef QRef);
+DPPLQueue_GetContext (__dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
  * @brief returns the Sycl device for the queue.
@@ -53,7 +53,7 @@ DPPLGetContextFromQueue (__dppl_keep const DPPLSyclQueueRef QRef);
  */
 DPPL_API
 __dppl_give DPPLSyclDeviceRef
-DPPLGetDeviceFromQueue (__dppl_keep const DPPLSyclQueueRef QRef);
+DPPLQueue_GetDevice (__dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Delete the pointer after casting it to sycl::queue.
@@ -61,6 +61,6 @@ DPPLGetDeviceFromQueue (__dppl_keep const DPPLSyclQueueRef QRef);
  * @param    QRef           A DPPLSyclQueueRef pointer that gets deleted.
  */
 DPPL_API
-void DPPLDeleteSyclQueue (__dppl_take DPPLSyclQueueRef QRef);
+void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef);
 
 DPPL_C_EXTERN_C_END

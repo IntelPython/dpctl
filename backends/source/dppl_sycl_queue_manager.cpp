@@ -138,8 +138,7 @@ DPPLSyclQueueRef QMgrHelper::getCurrentQueue ()
  * purpose.
  */
 DPPLSyclQueueRef
-QMgrHelper::getQueue (DPPLSyclDeviceType DeviceTy,
-                      size_t DNum)
+QMgrHelper::getQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
 {
     queue *QRef = nullptr;
 
@@ -280,7 +279,7 @@ QMgrHelper::popSyclQueue ()
  * Returns inside the number of activated queues not including the global queue
  * (QMgrHelper::active_queues[0]).
  */
-size_t DPPLGetNumActivatedQueues ()
+size_t DPPLQueueMgr_GetNumActivatedQueues ()
 {
     if (QMgrHelper::active_queues.empty())
         error_reporter("No active contexts");
@@ -290,7 +289,7 @@ size_t DPPLGetNumActivatedQueues ()
 /*!
  * Returns the number of CPU queues.
  */
-size_t DPPLGetNumCPUQueues ()
+size_t DPPLQueueMgr_GetNumCPUQueues ()
 {
     return QMgrHelper::cpu_queues.size();
 }
@@ -298,7 +297,7 @@ size_t DPPLGetNumCPUQueues ()
 /*!
  * Returns the number of GPU queues.
  */
-size_t DPPLGetNumGPUQueues ()
+size_t DPPLQueueMgr_GetNumGPUQueues ()
 {
     return QMgrHelper::gpu_queues.size();
 }
@@ -306,7 +305,7 @@ size_t DPPLGetNumGPUQueues ()
 /*!
  * \see QMgrHelper::getCurrentQueue()
  */
-DPPLSyclQueueRef DPPLGetCurrentQueue ()
+DPPLSyclQueueRef DPPLQueueMgr_GetCurrentQueue ()
 {
     return QMgrHelper::getCurrentQueue();
 }
@@ -315,8 +314,8 @@ DPPLSyclQueueRef DPPLGetCurrentQueue ()
  * Returns a copy of a sycl::queue corresponding to the specified device type
  * and device number. A runtime_error gets thrown if no such device exists.
  */
-DPPLSyclQueueRef DPPLGetQueue (DPPLSyclDeviceType DeviceTy,
-                               size_t DNum)
+DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclDeviceType DeviceTy,
+                                        size_t DNum)
 {
     return QMgrHelper::getQueue(DeviceTy, DNum);
 }
@@ -327,7 +326,7 @@ DPPLSyclQueueRef DPPLGetQueue (DPPLSyclDeviceType DeviceTy,
  * specified device type and id. A runtime_error gets thrown if no such device
  * exists.
  */
-void DPPLSetAsDefaultQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
+void DPPLQueueMgr_SetAsDefaultQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
 {
     QMgrHelper::setAsDefaultQueue(DeviceTy, DNum);
 }
@@ -335,8 +334,8 @@ void DPPLSetAsDefaultQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
 /*!
  * \see QMgrHelper::pushSyclQueue()
  */
-__dppl_give DPPLSyclQueueRef DPPLPushSyclQueue (DPPLSyclDeviceType DeviceTy,
-                                                size_t DNum)
+__dppl_give DPPLSyclQueueRef
+DPPLQueueMgr_PushQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
 {
     return QMgrHelper::pushSyclQueue(DeviceTy, DNum);
 }
@@ -344,7 +343,7 @@ __dppl_give DPPLSyclQueueRef DPPLPushSyclQueue (DPPLSyclDeviceType DeviceTy,
 /*!
  * \see QMgrHelper::popSyclQueue()
  */
-void DPPLPopSyclQueue ()
+void DPPLQueueMgr_PopQueue ()
 {
     QMgrHelper::popSyclQueue();
 }
