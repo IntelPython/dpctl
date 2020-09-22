@@ -32,14 +32,18 @@ cdef extern from "dppl_utils.h":
 
 cdef extern from "dppl_sycl_types.h":
     cdef struct DPPLOpaqueSyclContext
-    cdef struct DPPLOpaqueSyclQueue
     cdef struct DPPLOpaqueSyclDevice
+    cdef struct DPPLOpaqueSyclKernel
+    cdef struct DPPLOpaqueSyclProgram
+    cdef struct DPPLOpaqueSyclQueue
     cdef struct DPPLOpaqueSyclUSM
 
     ctypedef DPPLOpaqueSyclContext* DPPLSyclContextRef
-    ctypedef DPPLOpaqueSyclQueue* DPPLSyclQueueRef
-    ctypedef DPPLOpaqueSyclDevice* DPPLSyclDeviceRef
-    ctypedef DPPLOpaqueSyclUSM* DPPLSyclUSMRef
+    ctypedef DPPLOpaqueSyclDevice*  DPPLSyclDeviceRef
+    ctypedef DPPLOpaqueSyclKernel*  DPPLSyclKernelRef
+    ctypedef DPPLOpaqueSyclProgram* DPPLSyclProgramRef
+    ctypedef DPPLOpaqueSyclQueue*   DPPLSyclQueueRef
+    ctypedef DPPLOpaqueSyclUSM*     DPPLSyclUSMRef
 
 
 cdef extern from "dppl_sycl_context_interface.h":
@@ -63,9 +67,31 @@ cdef extern from "dppl_sycl_device_interface.h":
     except +
 
 
+cdef extern from "dppl_sycl_kernel_interface.h":
+    cdef const char* DPPLKernel_GetFunctionName (const DPPLSyclKernelRef KRef)
+    cdef size_t DPPLKernel_GetNumArgs (const DPPLSyclKernelRef KRef)
+    cdef void DPPLKernel_Delete (DPPLSyclKernelRef KRef)
+
+
 cdef extern from "dppl_sycl_platform_interface.h":
     cdef size_t DPPLPlatform_GetNumPlatforms ()
     cdef void DPPLPlatform_DumpInfo ()
+
+
+cdef extern from "dppl_sycl_program_interface.h":
+    cdef DPPLSyclProgramRef DPPLProgram_CreateFromOCLSpirv (                   \
+                                const DPPLSyclContextRef Ctx,                  \
+                                const void *IL,                                \
+                                size_t Length)
+    cdef DPPLSyclProgramRef DPPLProgram_CreateFromOCLSource (                  \
+                                const DPPLSyclContextRef Ctx,                  \
+                                const char* Source,                            \
+                                const char* CompileOpts)
+    cdef DPPLSyclKernelRef DPPLProgram_GetKernel (DPPLSyclProgramRef PRef,     \
+                                                  const char *KernelName)
+    cdef bool DPPLProgram_HasKernel (DPPLSyclProgramRef PRef,                  \
+                                     const char *KernelName)
+    cdef void DPPLProgram_Delete (DPPLSyclProgramRef PRef)
 
 
 cdef extern from "dppl_sycl_queue_interface.h":

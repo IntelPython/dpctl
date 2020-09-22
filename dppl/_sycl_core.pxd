@@ -49,6 +49,32 @@ cdef class SyclDevice:
     cdef DPPLSyclDeviceRef get_device_ptr (self)
 
 
+cdef class SyclKernel:
+    ''' Wraps a sycl::kernel object created from an OpenCL interoperability
+        kernel.
+    '''
+    cdef DPPLSyclKernelRef kernel_ptr
+
+    @staticmethod
+    cdef SyclKernel _create (DPPLSyclKernelRef kref)
+
+
+cdef class SyclProgram:
+    ''' Wraps a sycl::program object created from an OpenCL interoperability
+        program.
+
+        SyclProgram exposes the C API from dppl_sycl_program_interface.h. A
+        SyclProgram can be created from either a source string or a SPIR-V
+        binary file.
+    '''
+    cdef DPPLSyclProgramRef program_ptr
+
+    @staticmethod
+    cdef SyclProgram _create (DPPLSyclProgramRef pref)
+    cdef DPPLSyclProgramRef get_program_ptr (self)
+    cpdef SyclKernel get_sycl_kernel(self, kernel_name)
+
+
 cdef class SyclQueue:
     ''' Wrapper class for a Sycl queue.
     '''

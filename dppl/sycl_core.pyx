@@ -109,6 +109,53 @@ cdef class SyclDevice:
         '''
         return self.device_ptr
 
+cdef class SyclKernel:
+    ''' Wraps a sycl::kernel object created from an OpenCL interoperability
+        kernel.
+    '''
+
+    @staticmethod
+    cdef SyclKernel _create (DPPLSyclKernelRef kref):
+        cdef SyclKernel ret = SyclKernel.__new__(SyclKernel)
+        ret.kernel_ptr = kref
+        return ret
+
+    def __dealloc__ (self):
+        DPPLKernel_Delete(self.kernel_ptr)
+
+
+cdef class SyclProgram:
+    ''' Wraps a sycl::program object created from an OpenCL interoperability
+        program.
+
+        SyclProgram exposes the C API from dppl_sycl_program_interface.h. A
+        SyclProgram can be created from either a source string or a SPIR-V
+        binary file.
+    '''
+
+    @staticmethod
+    cdef SyclProgram _create (DPPLSyclProgramRef pref):
+        cdef SyclProgram ret = SyclProgram.__new__(SyclProgram)
+        ret.program_ptr = pref
+        return ret
+
+    def __dealloc__ (self):
+        DPPLProgram_Delete(self.program_ptr)
+
+    cdef DPPLSyclProgramRef get_program_ptr (self):
+        return self.program_ptr
+
+    cpdef SyclKernel get_sycl_kernel(self, kernel_name):
+        if isinstance(kernel_name, unicode):
+            kernel_name = <unicode>kernel_name
+            return SyclKernel._create(DPPLProgram_GetKernel(self.program_ptr,
+                                                            kernel_name))
+        else:
+            TypeError("Expected kernel_name to be a string")
+
+    def has_sycl_kernel(self, kernel_name):
+        return DPPLProgram_HasKernel(self.program_ptr, kernel_name)
+
 
 cdef class SyclQueue:
     ''' Wrapper class for a Sycl queue.
