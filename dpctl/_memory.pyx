@@ -1,5 +1,5 @@
-import dppl
-from dppl.backend cimport *
+import dpctl
+from dpctl.backend cimport *
 from ._sycl_core cimport SyclContext, SyclQueue
 
 from cpython cimport Py_buffer
@@ -19,7 +19,7 @@ cdef class Memory:
 
         if (nbytes > 0):
             if queue is None:
-                queue = dppl.get_current_queue()
+                queue = dpctl.get_current_queue()
 
             if (ptr_type == "shared"):
                 p = DPPLmalloc_shared(nbytes, queue.get_queue_ref())
