@@ -57,7 +57,7 @@ class TestDPPLIsInDPPLCtxt (unittest.TestCase):
         with dpctl.device_context(dpctl.device_type.gpu):
             self.assertTrue(dpctl.is_in_dppl_ctxt())
 
-    @unittest.skipIf(not dppl.has_cpu_queues(), "No CPU platforms available")
+    @unittest.skipIf(not dpctl.has_cpu_queues(), "No CPU platforms available")
     def test_is_in_dppl_ctxt_inside_nested_device_ctxt (self):
         with dpctl.device_context(dpctl.device_type.cpu):
             with dpctl.device_context(dpctl.device_type.gpu):

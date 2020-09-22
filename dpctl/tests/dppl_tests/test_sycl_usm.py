@@ -43,7 +43,7 @@ class TestMemory (unittest.TestCase):
         # Without context
         self.assertEqual(mobj._usm_type(), 'shared')
 
-    @unittest.skipIf(not dppl.has_cpu_queues(), "No CPU platforms available")
+    @unittest.skipIf(not dpctl.has_cpu_queues(), "No CPU platforms available")
     def test_memory_cpu_context (self):
         mobj = self._create_memory()
 
@@ -54,7 +54,7 @@ class TestMemory (unittest.TestCase):
             usm_type = mobj._usm_type()
             self.assertEqual(usm_type, 'shared')
 
-            current_queue = dppl.get_current_queue()
+            current_queue = dpctl.get_current_queue()
             # type as view from current queue
             usm_type = mobj._usm_type(current_queue)
             # type can be unknown if current queue is
