@@ -69,7 +69,7 @@ DPPLKernel_GetNumArgs (__dppl_keep const DPPLSyclKernelRef Kernel)
 }
 
 void
-DPPLKernel_DeleteKernelRef (__dppl_take DPPLSyclKernelRef Kernel)
+DPPLKernel_Delete (__dppl_take DPPLSyclKernelRef Kernel)
 {
     delete unwrap(Kernel);
 }

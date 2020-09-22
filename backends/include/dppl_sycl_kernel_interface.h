@@ -69,6 +69,6 @@ DPPLKernel_GetNumArgs (__dppl_keep const DPPLSyclKernelRef KRef);
  */
 DPPL_API
 void
-DPPLKernel_DeleteKernelRef (__dppl_take DPPLSyclKernelRef KRef);
+DPPLKernel_Delete (__dppl_take DPPLSyclKernelRef KRef);
 
 DPPL_C_EXTERN_C_END

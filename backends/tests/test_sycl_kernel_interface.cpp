@@ -74,8 +74,8 @@ struct TestDPPLSyclKernelInterface : public ::testing::Test
         DPPLQueue_Delete(CurrQueueRef);
         DPPLContext_Delete(CurrCtxRef);
         DPPLProgram_Delete(PRef);
-        DPPLKernel_DeleteKernelRef(AddKernel);
-        DPPLKernel_DeleteKernelRef(AxpyKernel);
+        DPPLKernel_Delete(AddKernel);
+        DPPLKernel_Delete(AxpyKernel);
     }
 };
 

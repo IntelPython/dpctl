@@ -186,8 +186,8 @@ TEST_F (TestDPPLSyclProgramInterface, CheckGetKernelOCLSource)
     add_kernel_checker(syclQueue, AddKernel);
     axpy_kernel_checker(syclQueue, AxpyKernel);
 
-    DPPLKernel_DeleteKernelRef(AddKernel);
-    DPPLKernel_DeleteKernelRef(AxpyKernel);
+    DPPLKernel_Delete(AddKernel);
+    DPPLKernel_Delete(AxpyKernel);
 }
 
 TEST_F (TestDPPLSyclProgramInterface, CheckGetKernelOCLSpirv)
@@ -199,8 +199,8 @@ TEST_F (TestDPPLSyclProgramInterface, CheckGetKernelOCLSpirv)
     add_kernel_checker(syclQueue, AddKernel);
     axpy_kernel_checker(syclQueue, AxpyKernel);
 
-    DPPLKernel_DeleteKernelRef(AddKernel);
-    DPPLKernel_DeleteKernelRef(AxpyKernel);
+    DPPLKernel_Delete(AddKernel);
+    DPPLKernel_Delete(AxpyKernel);
 }
 
 int
