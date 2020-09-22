@@ -22,12 +22,14 @@
 ## This file defines the Cython interface for the backend API of PyDPPL.
 ##
 ##===----------------------------------------------------------------------===##
+# distutils: language = c++
+# cython: language_level=3
 
 from libcpp cimport bool
 
 
 cdef extern from "dppl_utils.h":
-    cdef void DPPLDeleteCString (const char *str)
+    cdef void DPPLCString_Delete (const char *str)
 
 
 cdef extern from "dppl_sycl_types.h":

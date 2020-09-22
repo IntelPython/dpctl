@@ -77,9 +77,9 @@ cdef class SyclDevice:
 
     def __dealloc__ (self):
         DPPLDevice_Delete(self.device_ptr)
-        DPPLDeleteCString(self.device_name)
-        DPPLDeleteCString(self.vendor_name)
-        DPPLDeleteCString(self.driver_version)
+        DPPLCString_Delete(self.device_name)
+        DPPLCString_Delete(self.vendor_name)
+        DPPLCString_Delete(self.driver_version)
 
     def dump_device_info (self):
         ''' Print information about the SYCL device.

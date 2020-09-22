@@ -22,6 +22,8 @@
 ## This file defines the Cython interface for the Sycl API of PyDPPL.
 ##
 ##===----------------------------------------------------------------------===##
+# distutils: language = c++
+# cython: language_level=3
 
 from .backend cimport *
 
