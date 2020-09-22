@@ -24,8 +24,8 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "dppl_sycl_device_interface.h"
-#include "dppl_sycl_queue_manager.h"
 #include "dppl_sycl_queue_interface.h"
+#include "dppl_sycl_queue_manager.h"
 #include <gtest/gtest.h>
 #include <thread>
 
@@ -35,23 +35,23 @@ namespace
 {
     void foo (size_t & num)
     {
-        auto q1 = DPPLPushSyclQueue(DPPL_CPU, 0);
-        auto q2 = DPPLPushSyclQueue(DPPL_GPU, 0);
+        auto q1 = DPPLQueueMgr_PushQueue(DPPL_CPU, 0);
+        auto q2 = DPPLQueueMgr_PushQueue(DPPL_GPU, 0);
         // Capture the number of active queues in first
-        num = DPPLGetNumActivatedQueues();
-        DPPLPopSyclQueue();
-        DPPLPopSyclQueue();
-        DPPLDeleteSyclQueue(q1);
-        DPPLDeleteSyclQueue(q2);
+        num = DPPLQueueMgr_GetNumActivatedQueues();
+        DPPLQueueMgr_PopQueue();
+        DPPLQueueMgr_PopQueue();
+        DPPLQueue_Delete(q1);
+        DPPLQueue_Delete(q2);
     }
 
     void bar (size_t & num)
     {
-        auto q1 = DPPLPushSyclQueue(DPPL_GPU, 0);
+        auto q1 = DPPLQueueMgr_PushQueue(DPPL_GPU, 0);
         // Capture the number of active queues in second
-        num = DPPLGetNumActivatedQueues();
-        DPPLPopSyclQueue();
-        DPPLDeleteSyclQueue(q1);
+        num = DPPLQueueMgr_GetNumActivatedQueues();
+        DPPLQueueMgr_PopQueue();
+        DPPLQueue_Delete(q1);
     }
 }
 
@@ -62,30 +62,30 @@ struct TestDPPLSyclQueuemanager : public ::testing::Test
 TEST_F (TestDPPLSyclQueuemanager, CheckDPPLGetCurrentQueue)
 {
     DPPLSyclQueueRef q;
-    ASSERT_NO_THROW(q = DPPLGetCurrentQueue());
+    ASSERT_NO_THROW(q = DPPLQueueMgr_GetCurrentQueue());
     ASSERT_TRUE(q != nullptr);
 }
 
 
 TEST_F (TestDPPLSyclQueuemanager, CheckDPPLGetQueue)
 {
-    auto numCpuQueues = DPPLGetNumCPUQueues();
-    auto numGpuQueues = DPPLGetNumGPUQueues();
+    auto numCpuQueues = DPPLQueueMgr_GetNumCPUQueues();
+    auto numGpuQueues = DPPLQueueMgr_GetNumGPUQueues();
     if(numCpuQueues > 0) {
-        EXPECT_TRUE(DPPLGetQueue(DPPL_CPU, 0) != nullptr);
+        EXPECT_TRUE(DPPLQueueMgr_GetQueue(DPPL_CPU, 0) != nullptr);
         auto non_existent_device_num = numCpuQueues+1;
         try {
-            DPPLGetQueue(DPPL_CPU, non_existent_device_num);
+            DPPLQueueMgr_GetQueue(DPPL_CPU, non_existent_device_num);
             FAIL() << "SYCL CPU device " << non_existent_device_num
                    << "not found on system.";
         }
         catch (...) { }
     }
     if(numGpuQueues > 0) {
-        EXPECT_TRUE(DPPLGetQueue(DPPL_GPU, 0) != nullptr);
+        EXPECT_TRUE(DPPLQueueMgr_GetQueue(DPPL_GPU, 0) != nullptr);
         auto non_existent_device_num = numGpuQueues+1;
         try {
-            DPPLGetQueue(DPPL_GPU, non_existent_device_num);
+            DPPLQueueMgr_GetQueue(DPPL_GPU, non_existent_device_num);
             FAIL() << "SYCL GPU device " << non_existent_device_num
                    << "not found on system.";
         }
@@ -99,7 +99,7 @@ TEST_F (TestDPPLSyclQueuemanager, CheckGetNumActivatedQueues)
     size_t num0, num1, num2, num4;
 
     // Add a queue to main thread
-    auto q = DPPLPushSyclQueue(DPPL_CPU, 0);
+    auto q = DPPLQueueMgr_PushQueue(DPPL_CPU, 0);
 
     std::thread first (foo, std::ref(num1));
     std::thread second (bar, std::ref(num2));
@@ -109,9 +109,9 @@ TEST_F (TestDPPLSyclQueuemanager, CheckGetNumActivatedQueues)
     second.join();
 
     // Capture the number of active queues in first
-    num0 = DPPLGetNumActivatedQueues();
-    DPPLPopSyclQueue();
-    num4 = DPPLGetNumActivatedQueues();
+    num0 = DPPLQueueMgr_GetNumActivatedQueues();
+    DPPLQueueMgr_PopQueue();
+    num4 = DPPLQueueMgr_GetNumActivatedQueues();
 
     // Verify what the expected number of activated queues each time a thread
     // called getNumActivatedQueues.
@@ -120,15 +120,15 @@ TEST_F (TestDPPLSyclQueuemanager, CheckGetNumActivatedQueues)
     EXPECT_EQ(num2, 1);
     EXPECT_EQ(num4, 0);
 
-    DPPLDeleteSyclQueue(q);
+    DPPLQueue_Delete(q);
 }
 
 
 TEST_F (TestDPPLSyclQueuemanager, CheckDPPLDumpDeviceInfo)
 {
-    auto q = DPPLGetCurrentQueue();
-    EXPECT_NO_FATAL_FAILURE(DPPLDumpDeviceInfo(DPPLGetDeviceFromQueue(q)));
-    EXPECT_NO_FATAL_FAILURE(DPPLDeleteSyclQueue(q));
+    auto q = DPPLQueueMgr_GetCurrentQueue();
+    EXPECT_NO_FATAL_FAILURE(DPPLDevice_DumpInfo(DPPLQueue_GetDevice(q)));
+    EXPECT_NO_FATAL_FAILURE(DPPLQueue_Delete(q));
 }
 
 

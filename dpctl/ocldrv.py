@@ -532,7 +532,7 @@ class Runtime():
             else:
                 _logger.warning("No GPU device")
 
-            cls._curr_device = DeviceEnv(cls._runtime[0][0].curr_env)
+            cls._curr_device = None
 
         return obj
 
@@ -555,6 +555,10 @@ class Runtime():
 
         return Runtime._gpu_device is not None
 
+    def has_current_device(self):
+        ''' Returns True if GPU or CPU context manager is being used.'''
+
+        return Runtime._curr_device is not None
 
     def get_cpu_device(self):
         ''' Returns a cdata wrapper for the first available OpenCL
@@ -607,6 +611,7 @@ class Runtime():
 runtime = Runtime()
 has_cpu_device = runtime.has_cpu_device()
 has_gpu_device = runtime.has_gpu_device()
+has_current_device = runtime.has_current_device()
 
 #------- Global Functions
 
