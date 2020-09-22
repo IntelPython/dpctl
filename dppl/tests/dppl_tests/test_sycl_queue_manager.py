@@ -57,6 +57,7 @@ class TestDPPLIsInDPPLCtxt (unittest.TestCase):
         with dppl.device_context(dppl.device_type.gpu):
             self.assertTrue(dppl.is_in_dppl_ctxt())
 
+    @unittest.skipIf(not dppl.has_cpu_queues(), "No CPU platforms available")
     def test_is_in_dppl_ctxt_inside_nested_device_ctxt (self):
         with dppl.device_context(dppl.device_type.cpu):
             with dppl.device_context(dppl.device_type.gpu):
@@ -71,6 +72,7 @@ class TestGetCurrentQueueInMultipleThreads (unittest.TestCase):
         self.assertEqual(dppl.get_num_activated_queues(), 0)
 
     @unittest.skipIf(not dppl.has_gpu_queues(), "No GPU platforms available")
+    @unittest.skipIf(not dppl.has_cpu_queues(), "No CPU platforms available")
     def test_num_current_queues_inside_with_clause (self):
         with dppl.device_context(dppl.device_type.cpu):
             self.assertEqual(dppl.get_num_activated_queues(), 1)
@@ -79,6 +81,7 @@ class TestGetCurrentQueueInMultipleThreads (unittest.TestCase):
         self.assertEqual(dppl.get_num_activated_queues(), 0)
 
     @unittest.skipIf(not dppl.has_gpu_queues(), "No GPU platforms available")
+    @unittest.skipIf(not dppl.has_cpu_queues(), "No CPU platforms available")
     def test_num_current_queues_inside_threads (self):
         from threading import Thread, local
         def SessionThread (self):

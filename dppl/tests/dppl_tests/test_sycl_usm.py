@@ -43,6 +43,7 @@ class TestMemory (unittest.TestCase):
         # Without context
         self.assertEqual(mobj._usm_type(), 'shared')
 
+    @unittest.skipIf(not dppl.has_cpu_queues(), "No CPU platforms available")
     def test_memory_cpu_context (self):
         mobj = self._create_memory()
 
@@ -60,6 +61,7 @@ class TestMemory (unittest.TestCase):
             # not in the same SYCL context
             self.assertTrue(usm_type in ['unknown', 'shared'])
 
+    @unittest.skipIf(not dppl.has_gpu_queues(), "No GPU platforms available")
     def test_memory_gpu_context (self):
         mobj = self._create_memory()
 
