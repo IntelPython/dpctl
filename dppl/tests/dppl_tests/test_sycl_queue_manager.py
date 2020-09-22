@@ -27,12 +27,12 @@ import dppl
 import unittest
 
 class TestGetNumPlatforms (unittest.TestCase):
-    @unittest.skipIf(not dppl.has_sycl_platforms, "No SYCL platforms available")
+    @unittest.skipIf(not dppl.has_sycl_platforms(), "No SYCL platforms available")
     def test_dppl_get_num_platforms (self):
         if(dppl.has_sycl_platforms):
             self.assertGreaterEqual(dppl.get_num_platforms(), 1)
 
-@unittest.skipIf(not dppl.has_sycl_platforms, "No SYCL platforms available")
+@unittest.skipIf(not dppl.has_sycl_platforms(), "No SYCL platforms available")
 class TestDumpMethods (unittest.TestCase):
     def test_dppl_dump (self):
         try:
@@ -47,7 +47,7 @@ class TestDumpMethods (unittest.TestCase):
         except Exception:
             self.fail("Encountered an exception inside dump_device_info().")
 
-@unittest.skipIf(not dppl.has_sycl_platforms, "No SYCL platforms available")
+@unittest.skipIf(not dppl.has_sycl_platforms(), "No SYCL platforms available")
 class TestDPPLIsInDPPLCtxt (unittest.TestCase):
 
     def test_is_in_dppl_ctxt_outside_device_ctxt (self):
@@ -64,13 +64,13 @@ class TestDPPLIsInDPPLCtxt (unittest.TestCase):
             self.assertTrue(dppl.is_in_dppl_ctxt())
         self.assertFalse(dppl.is_in_dppl_ctxt())
 
-@unittest.skipIf(not dppl.has_sycl_platforms, "No SYCL platforms available")
+@unittest.skipIf(not dppl.has_sycl_platforms(), "No SYCL platforms available")
 class TestGetCurrentQueueInMultipleThreads (unittest.TestCase):
 
     def test_num_current_queues_outside_with_clause (self):
         self.assertEqual(dppl.get_num_activated_queues(), 0)
 
-    @unittest.skipIf(not dppl.has_gpu_queues, "No GPU platforms available")
+    @unittest.skipIf(not dppl.has_gpu_queues(), "No GPU platforms available")
     def test_num_current_queues_inside_with_clause (self):
         with dppl.device_context(dppl.device_type.cpu):
             self.assertEqual(dppl.get_num_activated_queues(), 1)
@@ -78,7 +78,7 @@ class TestGetCurrentQueueInMultipleThreads (unittest.TestCase):
                 self.assertEqual(dppl.get_num_activated_queues(), 2)
         self.assertEqual(dppl.get_num_activated_queues(), 0)
 
-    @unittest.skipIf(not dppl.has_gpu_queues, "No GPU platforms available")
+    @unittest.skipIf(not dppl.has_gpu_queues(), "No GPU platforms available")
     def test_num_current_queues_inside_threads (self):
         from threading import Thread, local
         def SessionThread (self):
