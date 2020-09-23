@@ -34,8 +34,9 @@ using namespace cl::sycl;
 namespace
 {
 // Create wrappers for C Binding types (see CBindingWrapping.h).
- DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
-
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPPLSyclDeviceRef)
 } /* end of anonymous namespace */
 
 __dppl_give DPPLSyclDeviceRef
@@ -43,7 +44,7 @@ DPPLQueue_GetDevice (__dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Device = new device(Q->get_device());
-    return reinterpret_cast<DPPLSyclDeviceRef>(Device);
+    return wrap(Device);
 }
 
 __dppl_give DPPLSyclContextRef
@@ -51,7 +52,7 @@ DPPLQueue_GetContext (__dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Context = new context(Q->get_context());
-    return reinterpret_cast<DPPLSyclContextRef>(Context);
+    return wrap(Context);
 }
 
 /*!
