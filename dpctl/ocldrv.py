@@ -1,6 +1,6 @@
-##===---------- ocldrv.py - dpctl.ocldrv interface -----*- Python -*-----===##
+##===------------- ocldrv.py - dpctl.ocldrv module ------*- Python -*------===##
 ##
-##               Python Data Parallel Processing Library (PyDPPL)
+##                      Data Parallel Control (dpCtl)
 ##
 ## Copyright 2020 Intel Corporation
 ##
@@ -20,7 +20,7 @@
 ###
 ### \file
 ### This file exposes Python classes for different OpenCL classes that are
-### exposed by the _dppl_binding CFFI extension module.
+### exposed by the _opencl_core CFFI extension module.
 ##===----------------------------------------------------------------------===##
 ''' The dpctl.ocldrv module contains a set of Python wrapper classes for
     OpenCL objects. The module has wrappers for cl_context, cl_device,

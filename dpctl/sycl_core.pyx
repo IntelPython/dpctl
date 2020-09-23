@@ -1,6 +1,6 @@
-##===------------- sycl_core.pyx - DPPL interface ------*- Cython -*-------===##
+##===------------- sycl_core.pyx - dpctl module -------*- Cython -*--------===##
 ##
-##               Python Data Parallel Processing Library (PyDPPL)
+##                      Data Parallel Control (dpCtl)
 ##
 ## Copyright 2020 Intel Corporation
 ##
@@ -19,7 +19,7 @@
 ##===----------------------------------------------------------------------===##
 ##
 ## \file
-## This file implements the Cython interface for the Sycl API of PyDPPL.
+## This file implements a sub-set of Sycl's interface using dpctl's CAPI.
 ##
 ##===----------------------------------------------------------------------===##
 
