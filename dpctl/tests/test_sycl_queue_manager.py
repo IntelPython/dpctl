@@ -26,7 +26,8 @@ import dpctl
 import unittest
 
 class TestGetNumPlatforms (unittest.TestCase):
-    @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
+    @unittest.skipIf(not dpctl.has_sycl_platforms(),
+                        "No SYCL platforms available")
     def test_dpctl_get_num_platforms (self):
         if(dpctl.has_sycl_platforms):
             self.assertGreaterEqual(dpctl.get_num_platforms(), 1)
