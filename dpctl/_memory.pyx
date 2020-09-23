@@ -66,6 +66,10 @@ cdef class Memory:
         def __get__(self):
             return self.nbytes
 
+    property _pointer:
+        def __get__(self):
+            return <size_t>(self.memory_ptr)
+
     property _context:
         def __get__(self):
             return self.queue.get_sycl_context()
