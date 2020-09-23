@@ -1,6 +1,6 @@
-##===--------------- _memory.pyx - dpctl interface ------*- Cython -*------===##
+##===----------------- _memory.pyx - dpctl module -------*- Cython -*------===##
 ##
-##                      Data Parallel Control (dpctl)
+##                      Data Parallel Control (dpCtl)
 ##
 ## Copyright 2020 Intel Corporation
 ##
@@ -23,15 +23,15 @@
 ##
 ##===----------------------------------------------------------------------===##
 '''
-    Data Parallel Control (dpctl)
+    Data Parallel Control (dpCtl)
 
-    Dpctl provides a lightweight Python abstraction over DPC++/SYCL and
+    dpCtl provides a lightweight Python abstraction over DPC++/SYCL and
     OpenCL runtime objects. The DPC++ runtime wrapper objects can be
     accessed by importing dpctl. The OpenCL runtime wrapper objects can be
     accessed by importing dpctl.ocldrv. The library is in an early-beta
     stage of development and not yet ready for production usage.
 
-    Dpctl's intended usage is as a common SYCL interoperability layer for
+    dpCtl's intended usage is as a common SYCL interoperability layer for
     different Python libraries and applications. The OpenCL support inside
     PyDPPL is slated to be deprecated and then removed in future releases
     of the library.
