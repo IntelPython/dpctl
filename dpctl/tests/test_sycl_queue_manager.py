@@ -1,6 +1,6 @@
-##===---------- test_sycl_queue_manager.py - dpctl  -------*- Python -*-----===##
+##===---------- test_sycl_queue_manager.py - dpctl  -------*- Python -*----===##
 ##
-##               Python Data Parallel Processing Library (PyDPPL)
+##                      Data Parallel Control (dpctl)
 ##
 ## Copyright 2020 Intel Corporation
 ##
@@ -19,28 +19,28 @@
 ##===----------------------------------------------------------------------===##
 ###
 ### \file
-### This file has unit test cases to for the SyclQueueManager class
-### in sycl_core.pyx.
+### Defines unit test cases for the SyclQueueManager class in sycl_core.pyx.
 ##===----------------------------------------------------------------------===##
 
 import dpctl
 import unittest
 
 class TestGetNumPlatforms (unittest.TestCase):
-    @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
-    def test_dppl_get_num_platforms (self):
+    @unittest.skipIf(not dpctl.has_sycl_platforms(),
+                        "No SYCL platforms available")
+    def test_dpctl_get_num_platforms (self):
         if(dpctl.has_sycl_platforms):
             self.assertGreaterEqual(dpctl.get_num_platforms(), 1)
 
 @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
 class TestDumpMethods (unittest.TestCase):
-    def test_dppl_dump (self):
+    def test_dpctl_dump (self):
         try:
             dpctl.dump()
         except Exception:
             self.fail("Encountered an exception inside dump().")
 
-    def test_dppl_dump_device_info (self):
+    def test_dpctl_dump_device_info (self):
         q = dpctl.get_current_queue()
         try:
             q.get_sycl_device().dump_device_info()
@@ -48,22 +48,22 @@ class TestDumpMethods (unittest.TestCase):
             self.fail("Encountered an exception inside dump_device_info().")
 
 @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
-class TestDPPLIsInDPPLCtxt (unittest.TestCase):
+class TestDPCTLIsInDPXTLCtxt (unittest.TestCase):
 
-    def test_is_in_dppl_ctxt_outside_device_ctxt (self):
-        self.assertFalse(dpctl.is_in_dppl_ctxt())
+    def test_is_in_dpctl_ctxt_outside_device_ctxt (self):
+        self.assertFalse(dpctl.is_in_dpctl_ctxt())
 
-    def test_is_in_dppl_ctxt_inside_device_ctxt (self):
+    def test_is_in_dpctl_ctxt_inside_device_ctxt (self):
         with dpctl.device_context(dpctl.device_type.gpu):
-            self.assertTrue(dpctl.is_in_dppl_ctxt())
+            self.assertTrue(dpctl.is_in_dpctl_ctxt())
 
     @unittest.skipIf(not dpctl.has_cpu_queues(), "No CPU platforms available")
-    def test_is_in_dppl_ctxt_inside_nested_device_ctxt (self):
+    def test_is_in_dpctl_ctxt_inside_nested_device_ctxt (self):
         with dpctl.device_context(dpctl.device_type.cpu):
             with dpctl.device_context(dpctl.device_type.gpu):
-                self.assertTrue(dpctl.is_in_dppl_ctxt())
-            self.assertTrue(dpctl.is_in_dppl_ctxt())
-        self.assertFalse(dpctl.is_in_dppl_ctxt())
+                self.assertTrue(dpctl.is_in_dpctl_ctxt())
+            self.assertTrue(dpctl.is_in_dpctl_ctxt())
+        self.assertFalse(dpctl.is_in_dpctl_ctxt())
 
 @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
 class TestGetCurrentQueueInMultipleThreads (unittest.TestCase):

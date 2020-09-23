@@ -1,6 +1,6 @@
-##===---------- test_sycl_queue_manager.py - dpctl  -------*- Python -*-----===##
+##===---------- test_sycl_queue_manager.py - dpctl  -------*- Python -*----===##
 ##
-##               Python Data Parallel Processing Library (PyDPPL)
+##                      Data Parallel Control (dpctl)
 ##
 ## Copyright 2020 Intel Corporation
 ##
@@ -16,6 +16,10 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ##
+##===----------------------------------------------------------------------===##
+##
+## \file
+## Defines unit test cases for the Memory classes in _memory.pyx.
 ##===----------------------------------------------------------------------===##
 
 import unittest
@@ -111,3 +115,6 @@ class TestMemoryUSMDevice(TestMemoryUSMBase, unittest.TestCase):
 
     MemoryUSMClass = MemoryUSMDevice
     usm_type = 'device'
+
+if __name__ == '__main__':
+    unittest.main()
