@@ -42,10 +42,19 @@ class TestProgramFromOCSource (unittest.TestCase):
             c[index] = a[index] + d*b[index];                                  \
         }"
         prog = dpctl.create_program_from_source(q,oclSrc)
-        # self.assertIsNotNone(prog)
+        self.assertIsNotNone(prog)
 
-        # self.assertTrue(prog.has_sycl_kernel("add"))
-        # self.assertTrue(prog.has_sycl_kernel("axpy"))
+        self.assertTrue(prog.has_sycl_kernel("add"))
+        self.assertTrue(prog.has_sycl_kernel("axpy"))
+
+        addKernel = prog.get_sycl_kernel('add')
+        axpyKernel = prog.get_sycl_kernel('axpy')
+
+        self.assertEqual(addKernel.get_function_name(),"add")
+        self.assertEqual(axpyKernel.get_function_name(),"axpy")
+        self.assertEqual(addKernel.get_num_args(), 3)
+        self.assertEqual(axpyKernel.get_num_args(), 4)
+
 
 if __name__ == '__main__':
     unittest.main()

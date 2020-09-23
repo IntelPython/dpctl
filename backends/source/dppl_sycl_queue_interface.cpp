@@ -129,9 +129,6 @@ DPPLQueue_GetContext (__dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Context = new context(Q->get_context());
-    std::cout << "Context Addr when created in DPPLQueue_GetContext " << Context << '\n';
-    std::cout << "Ref count when first created : " <<
-    Context->get_info<info::context::reference_count>() << '\n';
     return wrap(Context);
 }
 

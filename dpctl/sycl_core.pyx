@@ -30,11 +30,8 @@ from __future__ import print_function
 from enum import Enum, auto
 import logging
 from dpctl.backend cimport *
-from libc.stdio cimport printf
-
 
 _logger = logging.getLogger(__name__)
-
 
 class device_type(Enum):
     gpu = auto()
@@ -53,15 +50,14 @@ cdef class SyclContext:
     @staticmethod
     cdef SyclContext _create (DPPLSyclContextRef ctxt):
         cdef SyclContext ret = SyclContext.__new__(SyclContext)
-        ret.ctxt_ptr = ctxt
+        ret._ctxt_ptr = ctxt
         return ret
 
     def __dealloc__ (self):
-        DPPLContext_Delete(self.ctxt_ptr)
+        DPPLContext_Delete(self._ctxt_ptr)
 
     cdef DPPLSyclContextRef get_context_ref (self):
-        printf("Address inside SyclContext %p\n",self.ctxt_ptr)
-        return self.ctxt_ptr
+        return self._ctxt_ptr
 
 
 cdef class SyclDevice:
@@ -71,32 +67,32 @@ cdef class SyclDevice:
     @staticmethod
     cdef SyclDevice _create (DPPLSyclDeviceRef dref):
         cdef SyclDevice ret = SyclDevice.__new__(SyclDevice)
-        ret.device_ptr = dref
-        ret.vendor_name = DPPLDevice_GetVendorName(dref)
-        ret.device_name = DPPLDevice_GetName(dref)
-        ret.driver_version = DPPLDevice_GetDriverInfo(dref)
+        ret._device_ptr = dref
+        ret._vendor_name = DPPLDevice_GetVendorName(dref)
+        ret._device_name = DPPLDevice_GetName(dref)
+        ret._driver_version = DPPLDevice_GetDriverInfo(dref)
         return ret
 
     def __dealloc__ (self):
-        DPPLDevice_Delete(self.device_ptr)
-        DPPLCString_Delete(self.device_name)
-        DPPLCString_Delete(self.vendor_name)
-        DPPLCString_Delete(self.driver_version)
+        DPPLDevice_Delete(self._device_ptr)
+        DPPLCString_Delete(self._device_name)
+        DPPLCString_Delete(self._vendor_name)
+        DPPLCString_Delete(self._driver_version)
 
     def dump_device_info (self):
         ''' Print information about the SYCL device.
         '''
-        DPPLDevice_DumpInfo(self.device_ptr)
+        DPPLDevice_DumpInfo(self._device_ptr)
 
     def get_device_name (self):
         ''' Returns the name of the device as a string
         '''
-        return self.device_name
+        return self._device_name.decode()
 
     def get_vendor_name (self):
         ''' Returns the device vendor name as a string
         '''
-        return self.vendor_name
+        return self._vendor_name.decode()
 
     def get_driver_version (self):
         ''' Returns the OpenCL software driver version as a string
@@ -104,12 +100,12 @@ cdef class SyclDevice:
             device is an OpenCL device. Returns a string class
             with the value "1.2" if this SYCL device is a host device.
         '''
-        return self.driver_version
+        return self._driver_version.decode()
 
     cdef DPPLSyclDeviceRef get_device_ptr (self):
         ''' Returns the DPPLSyclDeviceRef pointer for this class.
         '''
-        return self.device_ptr
+        return self._device_ptr
 
 cdef class SyclKernel:
     ''' Wraps a sycl::kernel object created from an OpenCL interoperability
@@ -119,27 +115,28 @@ cdef class SyclKernel:
     @staticmethod
     cdef SyclKernel _create (DPPLSyclKernelRef kref):
         cdef SyclKernel ret = SyclKernel.__new__(SyclKernel)
-        ret.kernel_ptr = kref
+        ret._kernel_ptr = kref
+        ret._function_name = DPPLKernel_GetFunctionName(kref)
         return ret
 
     def __dealloc__ (self):
-        DPPLKernel_Delete(self.kernel_ptr)
-        DPPLCString_Delete(self.function_name)
+        DPPLKernel_Delete(self._kernel_ptr)
+        DPPLCString_Delete(self._function_name)
 
     def get_function_name (self):
         ''' Returns the name of the Kernel function.
         '''
-        return self.function_name
+        return self._function_name.decode()
 
     def get_num_args (self):
         ''' Returns the number of arguments for this kernel function.
         '''
-        return DPPLKernel_GetNumArgs(self.kernel_ptr)
+        return DPPLKernel_GetNumArgs(self._kernel_ptr)
 
     cdef DPPLSyclKernelRef get_kernel_ptr (self):
         ''' Returns the DPPLSyclKernelRef pointer for this SyclKernel.
         '''
-        return self.kernel_ptr
+        return self._kernel_ptr
 
 
 cdef class SyclProgram:
@@ -154,25 +151,23 @@ cdef class SyclProgram:
     @staticmethod
     cdef SyclProgram _create (DPPLSyclProgramRef pref):
         cdef SyclProgram ret = SyclProgram.__new__(SyclProgram)
-        ret.program_ptr = pref
+        ret._program_ptr = pref
         return ret
 
     def __dealloc__ (self):
-        DPPLProgram_Delete(self.program_ptr)
+        DPPLProgram_Delete(self._program_ptr)
 
     cdef DPPLSyclProgramRef get_program_ptr (self):
-        return self.program_ptr
+        return self._program_ptr
 
-    cpdef SyclKernel get_sycl_kernel(self, kernel_name):
-        if isinstance(kernel_name, unicode):
-            kernel_name = <unicode>kernel_name
-            return SyclKernel._create(DPPLProgram_GetKernel(self.program_ptr,
-                                                            kernel_name))
-        else:
-            TypeError("Expected kernel_name to be a string")
+    cpdef SyclKernel get_sycl_kernel(self, str kernel_name):
+        name = kernel_name.encode('utf8')
+        return SyclKernel._create(DPPLProgram_GetKernel(self._program_ptr,
+                                                        name))
 
-    def has_sycl_kernel(self, kernel_name):
-        return DPPLProgram_HasKernel(self.program_ptr, kernel_name)
+    def has_sycl_kernel(self, str kernel_name):
+        name = kernel_name.encode('utf8')
+        return DPPLProgram_HasKernel(self._program_ptr, name)
 
 
 cdef class SyclQueue:
@@ -182,20 +177,22 @@ cdef class SyclQueue:
     @staticmethod
     cdef SyclQueue _create (DPPLSyclQueueRef qref):
         cdef SyclQueue ret = SyclQueue.__new__(SyclQueue)
-        ret.queue_ptr = qref
+        ret._context = SyclContext._create(DPPLQueue_GetContext(qref))
+        ret._device = SyclDevice._create(DPPLQueue_GetDevice(qref))
+        ret._queue_ptr = qref
         return ret
 
     def __dealloc__ (self):
-        DPPLQueue_Delete(self.queue_ptr)
+        DPPLQueue_Delete(self._queue_ptr)
 
     cpdef SyclContext get_sycl_context (self):
-        return SyclContext._create(DPPLQueue_GetContext(self.queue_ptr))
+        return self._context
 
     cpdef SyclDevice get_sycl_device (self):
-        return SyclDevice._create(DPPLQueue_GetDevice(self.queue_ptr))
+        return self._device
 
     cdef DPPLSyclQueueRef get_queue_ref (self):
-        return self.queue_ptr
+        return self._queue_ptr
 
 
 cdef class _SyclQueueManager:

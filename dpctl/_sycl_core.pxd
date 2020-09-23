@@ -33,7 +33,7 @@ from .backend cimport *
 cdef class SyclContext:
     ''' Wrapper class for a Sycl Context
     '''
-    cdef DPPLSyclContextRef ctxt_ptr
+    cdef DPPLSyclContextRef _ctxt_ptr
 
     @staticmethod
     cdef SyclContext _create (DPPLSyclContextRef ctxt)
@@ -43,10 +43,10 @@ cdef class SyclContext:
 cdef class SyclDevice:
     ''' Wrapper class for a Sycl Device
     '''
-    cdef DPPLSyclDeviceRef device_ptr
-    cdef const char *vendor_name
-    cdef const char *device_name
-    cdef const char *driver_version
+    cdef DPPLSyclDeviceRef _device_ptr
+    cdef const char *_vendor_name
+    cdef const char *_device_name
+    cdef const char *_driver_version
 
     @staticmethod
     cdef SyclDevice _create (DPPLSyclDeviceRef dref)
@@ -57,7 +57,8 @@ cdef class SyclKernel:
     ''' Wraps a sycl::kernel object created from an OpenCL interoperability
         kernel.
     '''
-    cdef DPPLSyclKernelRef kernel_ptr
+    cdef DPPLSyclKernelRef _kernel_ptr
+    cdef const char *_function_name
     cdef DPPLSyclKernelRef get_kernel_ptr (self)
 
     @staticmethod
@@ -72,18 +73,20 @@ cdef class SyclProgram:
         SyclProgram can be created from either a source string or a SPIR-V
         binary file.
     '''
-    cdef DPPLSyclProgramRef program_ptr
+    cdef DPPLSyclProgramRef _program_ptr
 
     @staticmethod
     cdef SyclProgram _create (DPPLSyclProgramRef pref)
     cdef DPPLSyclProgramRef get_program_ptr (self)
-    cpdef SyclKernel get_sycl_kernel(self, kernel_name)
+    cpdef SyclKernel get_sycl_kernel(self, str kernel_name)
 
 
 cdef class SyclQueue:
     ''' Wrapper class for a Sycl queue.
     '''
-    cdef DPPLSyclQueueRef queue_ptr
+    cdef DPPLSyclQueueRef _queue_ptr
+    cdef SyclContext _context
+    cdef SyclDevice _device
 
     @staticmethod
     cdef SyclQueue _create (DPPLSyclQueueRef qref)
