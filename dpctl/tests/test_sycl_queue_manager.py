@@ -1,6 +1,6 @@
 ##===---------- test_sycl_queue_manager.py - dpctl  -------*- Python -*----===##
 ##
-##                      Data Parallel Control (dpctl)
+##                      Data Parallel Control (dpCtl)
 ##
 ## Copyright 2020 Intel Corporation
 ##
@@ -27,7 +27,7 @@ import unittest
 
 class TestGetNumPlatforms (unittest.TestCase):
     @unittest.skipIf(not dpctl.has_sycl_platforms(),
-                        "No SYCL platforms available")
+                    "No SYCL platforms available")
     def test_dpctl_get_num_platforms (self):
         if(dpctl.has_sycl_platforms):
             self.assertGreaterEqual(dpctl.get_num_platforms(), 1)
@@ -48,22 +48,22 @@ class TestDumpMethods (unittest.TestCase):
             self.fail("Encountered an exception inside dump_device_info().")
 
 @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
-class TestIsInDPXTLCtxt (unittest.TestCase):
+class TestIsInDeviceContext (unittest.TestCase):
 
     def test_is_in_dpctl_ctxt_outside_device_ctxt (self):
-        self.assertFalse(dpctl.is_in_dpctl_ctxt())
+        self.assertFalse(dpctl.is_in_device_context())
 
     def test_is_in_dpctl_ctxt_inside_device_ctxt (self):
         with dpctl.device_context(dpctl.device_type.gpu):
-            self.assertTrue(dpctl.is_in_dpctl_ctxt())
+            self.assertTrue(dpctl.is_in_device_context())
 
     @unittest.skipIf(not dpctl.has_cpu_queues(), "No CPU platforms available")
     def test_is_in_dpctl_ctxt_inside_nested_device_ctxt (self):
         with dpctl.device_context(dpctl.device_type.cpu):
             with dpctl.device_context(dpctl.device_type.gpu):
-                self.assertTrue(dpctl.is_in_dpctl_ctxt())
-            self.assertTrue(dpctl.is_in_dpctl_ctxt())
-        self.assertFalse(dpctl.is_in_dpctl_ctxt())
+                self.assertTrue(dpctl.is_in_device_context())
+            self.assertTrue(dpctl.is_in_device_context())
+        self.assertFalse(dpctl.is_in_device_context())
 
 @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
 class TestGetCurrentQueueInMultipleThreads (unittest.TestCase):

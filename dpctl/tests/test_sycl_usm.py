@@ -1,6 +1,6 @@
 ##===---------- test_sycl_queue_manager.py - dpctl  -------*- Python -*----===##
 ##
-##                      Data Parallel Control (dpctl)
+##                      Data Parallel Control (dpCtl)
 ##
 ## Copyright 2020 Intel Corporation
 ##
