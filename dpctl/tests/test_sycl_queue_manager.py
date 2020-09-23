@@ -48,7 +48,7 @@ class TestDumpMethods (unittest.TestCase):
             self.fail("Encountered an exception inside dump_device_info().")
 
 @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
-class TestDPCTLIsInDPXTLCtxt (unittest.TestCase):
+class TestIsInDPXTLCtxt (unittest.TestCase):
 
     def test_is_in_dpctl_ctxt_outside_device_ctxt (self):
         self.assertFalse(dpctl.is_in_dpctl_ctxt())
