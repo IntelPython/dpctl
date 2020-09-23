@@ -1,6 +1,6 @@
 ##===---------- test_sycl_queue_manager.py - dpctl  -------*- Python -*----===##
 ##
-##                      Data Parallel Control (dpctl)
+##                      Data Parallel Control (dpCtl)
 ##
 ## Copyright 2020 Intel Corporation
 ##
@@ -19,7 +19,7 @@
 ##===----------------------------------------------------------------------===##
 ###
 ### \file
-### A basic unit test to verify that dpct and dpct.ocldrv exist.
+### A basic unit test to verify that dpctl and dpct.ocldrv exist.
 ##===----------------------------------------------------------------------===##
 
 import unittest

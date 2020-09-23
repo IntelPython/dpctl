@@ -1,6 +1,6 @@
 ##===-------- tests/dpctl_tests/__init__.py - dpctl  ------*- Python -*----===##
 ##
-##                      Data Parallel Control (dpctl)
+##                      Data Parallel Control (dpCtl)
 ##
 ## Copyright 2020 Intel Corporation
 ##

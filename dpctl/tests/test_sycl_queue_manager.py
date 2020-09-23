@@ -1,6 +1,6 @@
 ##===---------- test_sycl_queue_manager.py - dpctl  -------*- Python -*----===##
 ##
-##                      Data Parallel Control (dpctl)
+##                      Data Parallel Control (dpCtl)
 ##
 ## Copyright 2020 Intel Corporation
 ##
@@ -27,7 +27,7 @@ import unittest
 
 class TestGetNumPlatforms (unittest.TestCase):
     @unittest.skipIf(not dpctl.has_sycl_platforms(),
-                        "No SYCL platforms available")
+                    "No SYCL platforms available")
     def test_dpctl_get_num_platforms (self):
         if(dpctl.has_sycl_platforms):
             self.assertGreaterEqual(dpctl.get_num_platforms(), 1)
@@ -48,7 +48,7 @@ class TestDumpMethods (unittest.TestCase):
             self.fail("Encountered an exception inside dump_device_info().")
 
 @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
-class TestIsInDPXTLCtxt (unittest.TestCase):
+class TestIsIndpCtlCtxt (unittest.TestCase):
 
     def test_is_in_dpctl_ctxt_outside_device_ctxt (self):
         self.assertFalse(dpctl.is_in_dpctl_ctxt())
