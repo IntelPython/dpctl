@@ -30,6 +30,7 @@ from __future__ import print_function
 from enum import Enum, auto
 import logging
 from dpctl.backend cimport *
+from libc.stdio cimport printf
 
 
 _logger = logging.getLogger(__name__)
@@ -59,6 +60,7 @@ cdef class SyclContext:
         DPPLContext_Delete(self.ctxt_ptr)
 
     cdef DPPLSyclContextRef get_context_ref (self):
+        printf("Address inside SyclContext %p\n",self.ctxt_ptr)
         return self.ctxt_ptr
 
 

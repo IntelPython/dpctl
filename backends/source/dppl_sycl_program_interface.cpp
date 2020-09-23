@@ -110,9 +110,15 @@ DPPLProgram_CreateFromOCLSource (__dppl_keep const DPPLSyclContextRef Ctx,
         // \todo handle error message
         return nullptr;
     }
+    std::cout << "CTX address when passed to program creator: " << Ctx << std::endl;
 
+    std::cout << "Ref count in program create : " <<
+    unwrap(Ctx)->get_info<info::context::reference_count>() << std::endl;
+
+    queue q{default_selector()};
     SyclCtx = unwrap(Ctx);
-    SyclProgram = new program(*SyclCtx);
+    auto syclContext = q.get_context();
+    SyclProgram = new program(syclContext);
     std::string source = Source;
 
     if(CompileOpts) {
