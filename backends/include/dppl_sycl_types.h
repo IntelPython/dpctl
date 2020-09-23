@@ -74,3 +74,40 @@ typedef struct DPPLOpaqueSyclQueue *DPPLSyclQueueRef;
  * @see sycl::usm
  */
 typedef struct DPPLOpaqueSyclUSM *DPPLSyclUSMRef;
+
+/*!
+ * @brief Enum of currently support types for kernel arguments.
+ *
+ * \todo Add support for sycl::buffer
+ *
+ */
+enum DPPLArgTypes
+{
+    CHAR,
+    SIGNED_CHAR,
+    UNSIGNED_CHAR,
+    SHORT,
+    INT,
+    UNSIGNED_INT,
+    LONG,
+    UNSIGNED_LONG,
+    LONG_LONG,
+    UNSIGNED_LONG_LONG,
+    SIZE_T,
+    FLOAT,
+    DOUBLE,
+    LONG_DOUBLE,
+    VOID_PTR
+};
+
+/*!
+ * @brief Represents an abstract kernel argument that is passed through to an
+ * OpenCL kernel via Sycl.
+ *
+ */
+struct DPPLKernelArg
+{
+    enum DPPLArgTypes argType;
+    void *argVal;
+};
+

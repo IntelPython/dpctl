@@ -36,6 +36,14 @@
 DPPL_C_EXTERN_C_BEGIN
 
 /*!
+ * @brief Delete the pointer after casting it to sycl::queue.
+ *
+ * @param    QRef           A DPPLSyclQueueRef pointer that gets deleted.
+ */
+DPPL_API
+void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef);
+
+/*!
  * @brief Returns the Sycl context for the queue.
  *
  * @param    QRef           An opaque pointer to the sycl queue.
@@ -56,11 +64,46 @@ __dppl_give DPPLSyclDeviceRef
 DPPLQueue_GetDevice (__dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
- * @brief Delete the pointer after casting it to sycl::queue.
+ * @brief Submits the kernel to the specified queue using give arguments.
  *
- * @param    QRef           A DPPLSyclQueueRef pointer that gets deleted.
+ * A wrapper over sycl::queue.submit(). The function takes an OpenCL
+ * interoperability kernel, the kernel arguments, and a sycl queue as input
+ * arguments. The kernel arguments are passed in as an array of the
+ * DPPLKernelArg tagged union.
+ *
+ * \todo sycl::buffer arguments are not supported yet.
+ *
+ * @param    KRef           Opaque pointer to a OpenCL interoperability kernel
+ *                          wrapped inside a sycl::kernel.
+ * @param    QRef           Opaque pointer to the sycl::queue where the kernel
+ *                          will be enqueued.
+ * @param    Args           An array of the DPPLKernelArg tagged union type that
+ *                          represents the kernel arguments for the kernel.
+ * @param    NArgs          The number of kernel arguments (size of Args array).
+ * @param    Range          Array storing the range dimensions that can have a
+ *                          maximum size of three. Note the number of values
+ *                          in the array depends on the number of dimensions.
+ * @param    NDims          Number of dimensions in the range (size of Range).
+ * @return   A opaque pointer to the sycl::event returned by the
+ *           sycl::queue.submit() function.
  */
 DPPL_API
-void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef);
+DPPLSyclEventRef
+DPPLQueue_Submit (__dppl_keep DPPLSyclKernelRef KRef,
+                  __dppl_keep DPPLSyclQueueRef QRef,
+                  __dppl_keep DPPLKernelArg *Args,
+                  size_t NArgs,
+                  size_t Range[3],
+                  size_t NDims);
+
+/*!
+ * @brief Calls the sycl::queue.submit function to do a blocking wait on all
+ * enqueued tasks in the queue.
+ *
+ * @param    QRef           Opaque pointer to a sycl::queue.
+ */
+DPPL_API
+void
+DPPLQueue_Wait (__dppl_keep DPPLSyclQueueRef QRef);
 
 DPPL_C_EXTERN_C_END
