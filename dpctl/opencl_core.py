@@ -1,6 +1,6 @@
-##===--------- opencl_core.py - dpctl.ocldrv interface -----*- Python -*----===##
+##===--------- opencl_core.py - dpctl.ocldrv interface -----*- Python -*---===##
 ##
-##               Python Data Parallel Processing Library (PyDPPL)
+##                      Data paraller Control (dpctl)
 ##
 ## Copyright 2020 Intel Corporation
 ##

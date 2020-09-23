@@ -1,43 +1,43 @@
+##===--------------- _memory.pyx - dpctl interface ------*- Cython -*------===##
+##
+##                      Data Parallel Control (dpctl)
+##
+## Copyright 2020 Intel Corporation
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##    http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+##===----------------------------------------------------------------------===##
+##
+## \file
+## This top-level dpctl module.
+##
+##===----------------------------------------------------------------------===##
 '''
-    Python Data Parallel Processing Library (PyDPPL)
+    Data Parallel Control (dpctl)
 
-    PyDPPL provides a lightweight Python abstraction over DPC++/SYCL and
+    Dpctl provides a lightweight Python abstraction over DPC++/SYCL and
     OpenCL runtime objects. The DPC++ runtime wrapper objects can be
     accessed by importing dpctl. The OpenCL runtime wrapper objects can be
     accessed by importing dpctl.ocldrv. The library is in an early-beta
     stage of development and not yet ready for production usage.
 
-    PyDPPL's intended usage is as a common SYCL interoperability layer for
+    Dpctl's intended usage is as a common SYCL interoperability layer for
     different Python libraries and applications. The OpenCL support inside
     PyDPPL is slated to be deprecated and then removed in future releases
     of the library.
 
     Currently, only a small subset of DPC++ runtime objects are exposed
-    through the dpctl module. The main API classes inside the dpctl module are:
-
-    Runtime:     The class stores a global SYCL queue and a stack of
-                 currently activated queues. Runtime provides a special getter
-                 method to retrieve the currently activated SYCL queue
-                 as a Py_capsule.
-
-                 A single global thread local instance of the Runtime class
-                 is created on loading the dpctl module for the first time.
-
-    DeviceArray: A DeviceArray object encapsulates a one-dimensional
-                 cl::sycl::buffer object. A DeviceArray object can be
-                 created using a NumPy ndarray. The initial implementation
-                 of DeviceArray follows NumPy's recommended design to create
-                 a custom array container. DeviceArray does not implement
-                 the __array_function__ and the __array_ufunc__ interfaces.
-                 Therefore, DeviceArray does not support NumPy Universal
-                 functions (ufuncs). The design decision to not support
-                 ufuncs can be revisited later if we have a need for such
-                 functionality. For the time being, the class is only meant
-                 as a data exchange format between Python libraries that
-                 use SYCL.
-
-    Global data members:
-        runtime - An instance of the Runtime class.
+    through the dpctl module. The main API classes are defined in the _sycl_core.pyx file.
 
     Please use `pydoc dpctl._sycl_core` to look at the current API for dpctl.
 

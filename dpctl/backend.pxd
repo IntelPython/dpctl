@@ -1,6 +1,6 @@
-##===------------- backend.pyx - DPPL interface ------*- Cython -*-------===##
+##===------------- backend.pyx - dpctl interface ------*- Cython -*--------===##
 ##
-##               Python Data Parallel Processing Library (PyDPPL)
+##                      Data Parallel Control (dpctl)
 ##
 ## Copyright 2020 Intel Corporation
 ##
@@ -19,9 +19,11 @@
 ##===----------------------------------------------------------------------===##
 ##
 ## \file
-## This file defines the Cython interface for the backend API of PyDPPL.
+## This file defines the Cython extern types for the functions and opaque data
+## types defined by dpctl's C API.
 ##
 ##===----------------------------------------------------------------------===##
+
 # distutils: language = c++
 # cython: language_level=3
 
