@@ -1,6 +1,6 @@
-##===------------- sycl_core.pxd - dpctl interface ------*- Cython -*------===##
+##===------------- sycl_core.pxd - dpctl module --------*- Cython -*-------===##
 ##
-##                      Data Parallel Control (dpctl)
+##                      Data Parallel Control (dpCtl)
 ##
 ## Copyright 2020 Intel Corporation
 ##
