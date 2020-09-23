@@ -1,6 +1,6 @@
-##===------------- backend.pyx - dpctl interface ------*- Cython -*--------===##
+##===------------- backend.pyx - dpctl module -------*- Cython -*----------===##
 ##
-##                      Data Parallel Control (dpctl)
+##                      Data Parallel Control (dpCtl)
 ##
 ## Copyright 2020 Intel Corporation
 ##
