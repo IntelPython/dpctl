@@ -44,6 +44,11 @@ cdef class UnsupportedDeviceTypeError(Exception):
     '''
     pass
 
+cdef class SyclProgramCompilationError(Exception):
+    '''This exception is raised when a sycl program could not be built from
+       either a spirv binary file or a string source.
+    '''
+    pass
 
 cdef class SyclContext:
 
@@ -106,6 +111,7 @@ cdef class SyclDevice:
         ''' Returns the DPPLSyclDeviceRef pointer for this class.
         '''
         return self._device_ptr
+
 
 cdef class SyclKernel:
     ''' Wraps a sycl::kernel object created from an OpenCL interoperability
@@ -268,6 +274,7 @@ cdef class _SyclQueueManager:
         else:
             return False
 
+
 # This private instance of the _SyclQueueManager should not be directly
 # accessed outside the module.
 _qmgr = _SyclQueueManager()
@@ -312,30 +319,36 @@ def create_program_from_source (SyclQueue q, unicode source, unicode copts=""):
     cdef DPPLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
     Pref = DPPLProgram_CreateFromOCLSource(CRef, Src, COpts)
 
+    if Pref is NULL:
+        raise SyclProgramCompilationError()
+
     return SyclProgram._create(Pref)
 
 
-def create_program_from_spirv (SyclQueue q, char[:] IL):
+def create_program_from_spirv (SyclQueue q, const unsigned char[:] IL):
     ''' Creates a Sycl interoperability program from an SPIR-V binary.
 
         We use the DPPLProgram_CreateFromOCLSpirv() C API function to create
         a Sycl progrma from an compiled SPIR-V binary file.
 
         Parameters:
-                q (SyclQueue): The SyclQueue object wraps the Sycl device for
-                               which the program will be built.
-                IL (char[:]) : SPIR-V binary IL file for an OpenCL program.
+            q (SyclQueue): The SyclQueue object wraps the Sycl device for
+                           which the program will be built.
+            IL (const char[:]) : SPIR-V binary IL file for an OpenCL program.
 
-            Returns:
-                program (SyclProgram): A SyclProgram object wrapping the
-                                       syc::program returned by the C API.
+        Returns:
+            program (SyclProgram): A SyclProgram object wrapping the
+                                   syc::program returned by the C API.
     '''
 
     cdef DPPLSyclProgramRef Pref
-    cdef bytes bIL = IL.data
+    cdef bytes bIL = bytes(IL)
     cdef const void *spirvIL = <const void*>bIL
     cdef DPPLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
-    Pref = DPPLProgram_CreateFromOCLSpirv(CRef, spirvIL, len(IL))
+    cdef size_t length = IL.shape[0]
+    Pref = DPPLProgram_CreateFromOCLSpirv(CRef, spirvIL, length)
+    if Pref is NULL:
+        raise SyclProgramCompilationError()
 
     return SyclProgram._create(Pref)
 
