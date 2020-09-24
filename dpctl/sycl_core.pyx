@@ -199,7 +199,7 @@ cdef class _SyclQueueManager:
         '''
         DPPLPlatform_DumpInfo()
 
-    def is_in_dppl_ctxt (self):
+    def is_in_device_context (self):
         cdef size_t num = DPPLQueueMgr_GetNumActivatedQueues()
         if num:
             return True
@@ -219,7 +219,7 @@ has_cpu_queues           = _qmgr.has_cpu_queues
 has_gpu_queues           = _qmgr.has_gpu_queues
 has_sycl_platforms       = _qmgr.has_sycl_platforms
 set_default_queue        = _qmgr.set_default_queue
-is_in_dppl_ctxt          = _qmgr.is_in_dppl_ctxt
+is_in_device_context     = _qmgr.is_in_device_context
 
 from contextlib import contextmanager
 
