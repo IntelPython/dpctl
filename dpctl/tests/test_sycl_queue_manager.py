@@ -53,7 +53,7 @@ class TestIsInDeviceContext (unittest.TestCase):
     def test_is_in_device_context_outside_device_ctxt (self):
         self.assertFalse(dpctl.is_in_device_context())
 
-    def test_is_in_dpctl_ctxt_inside_device_ctxt (self):
+    def test_is_in_device_context_inside_device_ctxt (self):
         with dpctl.device_context(dpctl.device_type.gpu):
             self.assertTrue(dpctl.is_in_device_context())
 
