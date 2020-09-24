@@ -324,6 +324,7 @@ def create_program_from_source (SyclQueue q, unicode source, unicode copts=""):
 
     return SyclProgram._create(Pref)
 
+cimport cython.array
 
 def create_program_from_spirv (SyclQueue q, const unsigned char[:] IL):
     ''' Creates a Sycl interoperability program from an SPIR-V binary.
@@ -342,11 +343,10 @@ def create_program_from_spirv (SyclQueue q, const unsigned char[:] IL):
     '''
 
     cdef DPPLSyclProgramRef Pref
-    cdef bytes bIL = bytes(IL)
-    cdef const void *spirvIL = <const void*>bIL
+    cdef const unsigned char *dIL = &IL[0]
     cdef DPPLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
     cdef size_t length = IL.shape[0]
-    Pref = DPPLProgram_CreateFromOCLSpirv(CRef, spirvIL, length)
+    Pref = DPPLProgram_CreateFromOCLSpirv(CRef, <const void*>dIL, length)
     if Pref is NULL:
         raise SyclProgramCompilationError()
 
