@@ -26,4 +26,3 @@ from .test_dump_functions import *
 from .test_sycl_program import *
 from .test_sycl_queue_manager import *
 from .test_sycl_usm import *
-
