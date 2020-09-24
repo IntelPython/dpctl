@@ -503,17 +503,18 @@ class Runtime():
     OpenCL devices found on the system.
     '''
 
-    _runtime     = None
-    _cpu_device  = None
-    _gpu_device  = None
-    _curr_device = None
+    _singleton    = None
 
     def __new__(cls):
-        obj = cls._runtime
+        obj = cls._singleton
         if obj is not None:
             return obj
         else:
             obj = object.__new__(cls)
+
+            cls._lib = lib
+            cls._ffi = ffi
+
             ffiobj = ffi.new("runtime_t *")
             retval = (lib.create_dp_runtime(ffiobj))
             if(retval):
@@ -533,6 +534,7 @@ class Runtime():
                 _logger.warning("No GPU device")
 
             cls._curr_device = DeviceEnv(cls._runtime[0][0].curr_env)
+            cls._singleton = obj
 
         return obj
 
@@ -540,20 +542,20 @@ class Runtime():
         pass
 
     def __del__(self):
-        if Runtime._runtime:
-            retval = (lib.destroy_dp_runtime(Runtime._runtime))
+        if self._runtime:
+            retval = (self._lib.destroy_dp_runtime(self._runtime))
             if(retval):
                 _raise_driver_error("destroy_dp_runtime", -1)
 
     def has_cpu_device(self):
         ''' Returns True is the system has an OpenCL driver for the CPU.'''
 
-        return Runtime._cpu_device is not None
+        return self._cpu_device is not None
 
     def has_gpu_device(self):
         ''' Returns True is the system has an OpenCL driver for the GPU.'''
 
-        return Runtime._gpu_device is not None
+        return self._gpu_device is not None
 
 
     def get_cpu_device(self):
@@ -561,39 +563,39 @@ class Runtime():
         CPU context.
         '''
 
-        if(Runtime._cpu_device is None):
+        if(self._cpu_device is None):
             _raise_device_not_found_error("get_cpu_device")
 
-        return Runtime._cpu_device
+        return self._cpu_device
 
     def get_gpu_device(self):
         ''' Returns a cdata wrapper for the first available OpenCL
         GPU context.
         '''
 
-        if(Runtime._gpu_device is None):
+        if(self._gpu_device is None):
             _raise_device_not_found_error("get_gpu_device")
 
-        return Runtime._gpu_device
+        return self._gpu_device
 
     def get_current_device(self):
         ''' Returns a cdata wrapper for the first available OpenCL
         CPU context.
         '''
 
-        return Runtime._curr_device
+        return self._curr_device
 
     def get_runtime_ptr(self):
         ''' Returns a reference to the runtime object.
         '''
 
-        return Runtime._runtime[0]
+        return self._runtime[0]
 
     def dump(self):
         ''' Prints OpenCL metadata about the available devices and contexts.
         '''
 
-        retval = Runtime._runtime[0].dump_fn(Runtime._runtime[0])
+        retval = self._runtime[0].dump_fn(Runtime._runtime[0])
         if retval == -1:
             _raise_driver_error("runtime dump_fn", -1)
         return retval
