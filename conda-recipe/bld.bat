@@ -3,8 +3,8 @@ IF ERRORLEVEL 1 exit 1
 REM conda uses %ERRORLEVEL% but FPGA scripts can set it. So it should be reseted.
 set ERRORLEVEL=
 
-set "CC=dpcpp-cl.exe"
-set "CXX=dpcpp-cl.exe"
+set "CC=dpcpp.exe"
+set "CXX=dpcpp.exe"
 
 rmdir /S /Q build_cmake
 mkdir build_cmake

@@ -53,3 +53,12 @@ Run examples:
 ```bash
 python examples/create_sycl_queues.py
 ```
+
+Tests
+=====
+See tests in folder `dpctl/tests`.
+
+Run tests:
+```bash
+python -m unittest dpctl.tests
+```
