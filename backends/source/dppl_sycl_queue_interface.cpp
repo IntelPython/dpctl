@@ -147,6 +147,8 @@ DPPLQueue_Submit (__dppl_keep const DPPLSyclKernelRef KRef,
     event e;
 
     e = Queue->submit([&](handler& cgh) {
+        // \todo cgh.depends_on
+
         for (auto i = 0ul; i < NArgs; ++i) {
             // \todo add support for Sycl buffers
             // \todo handle errors properly

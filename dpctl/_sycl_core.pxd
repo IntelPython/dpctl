@@ -96,7 +96,6 @@ cdef class SyclQueue:
     cdef DPPLSyclQueueRef _queue_ptr
     cdef SyclContext _context
     cdef SyclDevice _device
-    cdef list _events
 
     @staticmethod
     cdef  SyclQueue _create (DPPLSyclQueueRef qref)
