@@ -32,6 +32,8 @@ cmake                                                       \
 make -j 4 && make install
 
 cd ..
+mkdir -p dpctl/include
+cp -r backends/include/* dpctl/include
 
 # required by dpctl.opencl_core
 export DPPL_OPENCL_INTERFACE_LIBDIR=${PREFIX}
@@ -46,7 +48,6 @@ export DPPL_SYCL_INTERFACE_INCLDIR=${PREFIX}/include
 # FIXME: How to pass this using setup.py? This flags is needed when
 # dpcpp compiles the generated cpp file.
 export CFLAGS="-fPIC -O3 ${CFLAGS}"
-export LDFLAGS="-L OpenCL_LIBDIR ${LDFLAGS}"
+export LDFLAGS="-L ${OpenCL_LIBDIR} ${LDFLAGS}"
 ${PYTHON} setup.py clean --all
-${PYTHON} setup.py build
-${PYTHON} setup.py install
+${PYTHON} setup.py build install

@@ -28,11 +28,14 @@ make V=1 -n -j 4 && make install
 popd
 cp install/lib/*.so dpctl/
 
-export DPPL_OPENCL_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
-export DPPL_OPENCL_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
+mkdir -p dpctl/include
+cp -r backends/include/* dpctl/include
+
+export DPPL_OPENCL_INTERFACE_LIBDIR=dpctl
+export DPPL_OPENCL_INTERFACE_INCLDIR=dpctl/include
 export OpenCL_LIBDIR=/usr/lib/x86_64-linux-gnu/
-export DPPL_SYCL_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
-export DPPL_SYCL_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
+export DPPL_SYCL_INTERFACE_LIBDIR=dpctl
+export DPPL_SYCL_INTERFACE_INCLDIR=dpctl/include
 
 export CC=clang
 export CXX=dpcpp
@@ -40,5 +43,4 @@ export CXX=dpcpp
 # dpcpp compiles the Cython generated cpp file.
 export CFLAGS=-fPIC
 python setup.py clean --all
-python setup.py build_ext --inplace
-python setup.py develop
+python setup.py build develop

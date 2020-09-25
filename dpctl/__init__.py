@@ -49,5 +49,15 @@ __author__ = "Intel Corp."
 from ._sycl_core import *
 from ._version import get_versions
 
+def get_include():
+    """
+    Return the directory that contains the dpCtl *.h header files.
+
+    Extension modules that need to be compiled against dpCtl should use
+    this function to locate the appropriate include directory.
+    """
+    import os.path
+    return os.path.join(__file__, 'include')
+
 __version__ = get_versions()['version']
 del get_versions

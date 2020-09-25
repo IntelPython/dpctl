@@ -25,6 +25,8 @@ ninja install
 IF %ERRORLEVEL% NEQ 0 exit 1
 
 cd ..
+mkdir dpctl\include
+xcopy backends\include dpctl\include /E /Y
 
 REM required by dpglue
 set "DPPL_OPENCL_INTERFACE_LIBDIR=%LIBRARY_PREFIX%/lib"
