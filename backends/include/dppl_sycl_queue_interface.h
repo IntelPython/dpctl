@@ -36,6 +36,31 @@
 DPPL_C_EXTERN_C_BEGIN
 
 /*!
+ * @brief Supported types for kernel arguments to be passed to a Sycl kernel.
+ *
+ * \todo Add support for sycl::buffer
+ *
+ */
+typedef enum
+{
+    CHAR,
+    SIGNED_CHAR,
+    UNSIGNED_CHAR,
+    SHORT,
+    INT,
+    UNSIGNED_INT,
+    LONG,
+    UNSIGNED_LONG,
+    LONG_LONG,
+    UNSIGNED_LONG_LONG,
+    SIZE_T,
+    FLOAT,
+    DOUBLE,
+    LONG_DOUBLE,
+    VOID_PTR
+} DPPLKernelArgType;
+
+/*!
  * @brief Delete the pointer after casting it to sycl::queue.
  *
  * @param    QRef           A DPPLSyclQueueRef pointer that gets deleted.
@@ -91,7 +116,8 @@ DPPL_API
 DPPLSyclEventRef
 DPPLQueue_Submit (__dppl_keep DPPLSyclKernelRef KRef,
                   __dppl_keep DPPLSyclQueueRef QRef,
-                  __dppl_keep DPPLKernelArg *Args,
+                  __dppl_keep void **Args,
+                  __dppl_keep DPPLKernelArgType *ArgTypes,
                   size_t NArgs,
                   size_t Range[3],
                   size_t NDims);
