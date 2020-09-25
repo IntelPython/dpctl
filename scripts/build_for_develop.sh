@@ -7,10 +7,11 @@ pushd build_cmake
 INSTALL_PREFIX=`pwd`/../install
 rm -rf ${INSTALL_PREFIX}
 export ONEAPI_ROOT=/opt/intel/oneapi
-DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest/linux
+
 PYTHON_INC=`python -c "import distutils.sysconfig;                  \
                         print(distutils.sysconfig.get_python_inc())"`
 NUMPY_INC=`python -c "import numpy; print(numpy.get_include())"`
+DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest/linux
 
 cmake                                                       \
     -DCMAKE_BUILD_TYPE=Debug                                \
@@ -33,7 +34,8 @@ cp -r backends/include/* dpctl/include
 
 export DPPL_OPENCL_INTERFACE_LIBDIR=dpctl
 export DPPL_OPENCL_INTERFACE_INCLDIR=dpctl/include
-export OpenCL_LIBDIR=/usr/lib/x86_64-linux-gnu/
+# /usr/lib/x86_64-linux-gnu/
+export OpenCL_LIBDIR=${DPCPP_ROOT}/lib
 export DPPL_SYCL_INTERFACE_LIBDIR=dpctl
 export DPPL_SYCL_INTERFACE_INCLDIR=dpctl/include
 
