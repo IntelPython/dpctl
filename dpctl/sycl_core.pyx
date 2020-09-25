@@ -30,6 +30,7 @@ from __future__ import print_function
 from enum import Enum, auto
 import logging
 from dpctl.backend cimport *
+from libc.stdlib cimport malloc, free
 
 _logger = logging.getLogger(__name__)
 
@@ -111,6 +112,23 @@ cdef class SyclDevice:
         ''' Returns the DPPLSyclDeviceRef pointer for this class.
         '''
         return self._device_ptr
+
+
+cdef class SyclEvent:
+    ''' Wrapper class for a Sycl Event
+    '''
+
+    @staticmethod
+    cdef SyclEvent _create (DPPLSyclEventRef eref):
+        cdef SyclEvent ret = SyclEvent.__new__(SyclEvent)
+        ret._event_ptr = eref
+        return ret
+
+    def __dealloc__ (self):
+        DPPLEvent_Delete(self._event_ptr)
+
+    cpdef void wait (self):
+        DPPLEvent_Wait(self._event_ptr)
 
 
 cdef class SyclKernel:
@@ -200,8 +218,29 @@ cdef class SyclQueue:
     cdef DPPLSyclQueueRef get_queue_ref (self):
         return self._queue_ptr
 
+    cpdef SyclEvent submit (self, SyclKernel kernel, list args,                \
+                            const size_t[:] range, size_t ndims):
+        cdef llist = args
+        cdef void *kargs = malloc(len(args) * sizeof(void*))
+        cdef DPPLKernelArgType *ktypes = <DPPLKernelArgType*>malloc(
+                                           len(args) * sizeof(DPPLKernelArgType)
+                                         )
+        for idx, arg in enumerate(args):
+            if isinstance(arg, int):
+                #kargs = ...
+                ktypes[idx] = _arg_data_type._INT
+        free(kargs)
+        free(ktypes)
+        return None
+
+    cpdef void wait (self):
+        DPPLQueue_Wait(self._queue_ptr)
+
 
 cdef class _SyclQueueManager:
+    ''' Wrapper for the C API's sycl queue manager interface.
+    '''
+
     def _set_as_current_queue (self, device_ty, device_id):
         cdef DPPLSyclQueueRef queue_ptr
         if device_ty == device_type.gpu:

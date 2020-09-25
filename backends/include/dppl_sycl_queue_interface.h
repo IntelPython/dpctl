@@ -43,21 +43,21 @@ DPPL_C_EXTERN_C_BEGIN
  */
 typedef enum
 {
-    CHAR,
-    SIGNED_CHAR,
-    UNSIGNED_CHAR,
-    SHORT,
-    INT,
-    UNSIGNED_INT,
-    LONG,
-    UNSIGNED_LONG,
-    LONG_LONG,
-    UNSIGNED_LONG_LONG,
-    SIZE_T,
-    FLOAT,
-    DOUBLE,
-    LONG_DOUBLE,
-    VOID_PTR
+    DPPL_CHAR,
+    DPPL_SIGNED_CHAR,
+    DPPL_UNSIGNED_CHAR,
+    DPPL_SHORT,
+    DPPL_INT,
+    DPPL_UNSIGNED_INT,
+    DPPL_LONG,
+    DPPL_UNSIGNED_LONG,
+    DPPL_LONG_LONG,
+    DPPL_UNSIGNED_LONG_LONG,
+    DPPL_SIZE_T,
+    DPPL_FLOAT,
+    DPPL_DOUBLE,
+    DPPL_LONG_DOUBLE,
+    DPPL_VOID_PTR
 } DPPLKernelArgType;
 
 /*!
@@ -114,12 +114,12 @@ DPPLQueue_GetDevice (__dppl_keep const DPPLSyclQueueRef QRef);
  */
 DPPL_API
 DPPLSyclEventRef
-DPPLQueue_Submit (__dppl_keep DPPLSyclKernelRef KRef,
-                  __dppl_keep DPPLSyclQueueRef QRef,
+DPPLQueue_Submit (__dppl_keep const DPPLSyclKernelRef KRef,
+                  __dppl_keep const DPPLSyclQueueRef QRef,
                   __dppl_keep void **Args,
-                  __dppl_keep DPPLKernelArgType *ArgTypes,
+                  __dppl_keep const DPPLKernelArgType *ArgTypes,
                   size_t NArgs,
-                  size_t Range[3],
+                  size_t const Range[3],
                   size_t NDims);
 
 /*!
@@ -130,6 +130,6 @@ DPPLQueue_Submit (__dppl_keep DPPLSyclKernelRef KRef,
  */
 DPPL_API
 void
-DPPLQueue_Wait (__dppl_keep DPPLSyclQueueRef QRef);
+DPPLQueue_Wait (__dppl_keep const DPPLSyclQueueRef QRef);
 
 DPPL_C_EXTERN_C_END

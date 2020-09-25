@@ -29,7 +29,6 @@
 
 from .backend cimport *
 
-
 cdef class SyclContext:
     ''' Wrapper class for a Sycl Context
     '''
@@ -51,6 +50,16 @@ cdef class SyclDevice:
     @staticmethod
     cdef SyclDevice _create (DPPLSyclDeviceRef dref)
     cdef DPPLSyclDeviceRef get_device_ptr (self)
+
+
+cdef class SyclEvent:
+    ''' Wrapper class for a Sycl Event
+    '''
+    cdef  DPPLSyclEventRef _event_ptr
+
+    @staticmethod
+    cdef  SyclEvent _create (DPPLSyclEventRef e)
+    cpdef void wait (self)
 
 
 cdef class SyclKernel:
@@ -76,8 +85,8 @@ cdef class SyclProgram:
     cdef DPPLSyclProgramRef _program_ptr
 
     @staticmethod
-    cdef SyclProgram _create (DPPLSyclProgramRef pref)
-    cdef DPPLSyclProgramRef get_program_ptr (self)
+    cdef  SyclProgram _create (DPPLSyclProgramRef pref)
+    cdef  DPPLSyclProgramRef get_program_ptr (self)
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name)
 
 
@@ -87,9 +96,13 @@ cdef class SyclQueue:
     cdef DPPLSyclQueueRef _queue_ptr
     cdef SyclContext _context
     cdef SyclDevice _device
+    cdef list _events
 
     @staticmethod
-    cdef SyclQueue _create (DPPLSyclQueueRef qref)
+    cdef  SyclQueue _create (DPPLSyclQueueRef qref)
     cpdef SyclContext get_sycl_context (self)
     cpdef SyclDevice get_sycl_device (self)
-    cdef DPPLSyclQueueRef get_queue_ref (self)
+    cdef  DPPLSyclQueueRef get_queue_ref (self)
+    cpdef SyclEvent submit (self, SyclKernel kernel, list args,                \
+                            const size_t [:]range, size_t ndims)
+    cpdef void wait (self)

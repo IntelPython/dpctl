@@ -53,49 +53,49 @@ bool set_kernel_arg (handler &cgh, size_t idx, __dppl_keep void *Arg,
 
     switch (ArgTy)
     {
-    case CHAR:
+    case DPPL_CHAR:
         cgh.set_arg(idx, *(char*)Arg);
         break;
-    case SIGNED_CHAR:
+    case DPPL_SIGNED_CHAR:
         cgh.set_arg(idx, *(signed char*)Arg);
         break;
-    case UNSIGNED_CHAR:
+    case DPPL_UNSIGNED_CHAR:
         cgh.set_arg(idx, *(unsigned char*)Arg);
         break;
-    case SHORT:
+    case DPPL_SHORT:
         cgh.set_arg(idx, *(short*)Arg);
         break;
-    case INT:
+    case DPPL_INT:
         cgh.set_arg(idx, *(int*)Arg);
         break;
-    case UNSIGNED_INT:
+    case DPPL_UNSIGNED_INT:
         cgh.set_arg(idx, *(unsigned int*)Arg);
         break;
-    case LONG:
+    case DPPL_LONG:
         cgh.set_arg(idx, *(long*)Arg);
         break;
-    case UNSIGNED_LONG:
+    case DPPL_UNSIGNED_LONG:
         cgh.set_arg(idx, *(unsigned long*)Arg);
         break;
-    case LONG_LONG:
+    case DPPL_LONG_LONG:
         cgh.set_arg(idx, *(long long*)Arg);
         break;
-    case UNSIGNED_LONG_LONG:
+    case DPPL_UNSIGNED_LONG_LONG:
         cgh.set_arg(idx, *(unsigned long long*)Arg);
         break;
-    case SIZE_T:
+    case DPPL_SIZE_T:
         cgh.set_arg(idx, *(size_t*)Arg);
         break;
-    case FLOAT:
+    case DPPL_FLOAT:
         cgh.set_arg(idx, *(float*)Arg);
         break;
-    case DOUBLE:
+    case DPPL_DOUBLE:
         cgh.set_arg(idx, *(double*)Arg);
         break;
-    case LONG_DOUBLE:
+    case DPPL_LONG_DOUBLE:
         cgh.set_arg(idx, *(long double*)Arg);
         break;
-    case VOID_PTR:
+    case DPPL_VOID_PTR:
         cgh.set_arg(idx, Arg);
         break;
     default:
@@ -134,12 +134,12 @@ DPPLQueue_GetContext (__dppl_keep const DPPLSyclQueueRef QRef)
 }
 
 __dppl_give DPPLSyclEventRef
-DPPLQueue_Submit (__dppl_keep DPPLSyclKernelRef KRef,
-                  __dppl_keep DPPLSyclQueueRef QRef,
+DPPLQueue_Submit (__dppl_keep const DPPLSyclKernelRef KRef,
+                  __dppl_keep const DPPLSyclQueueRef QRef,
                   __dppl_keep void **Args,
-                  __dppl_keep DPPLKernelArgType *ArgTypes,
+                  __dppl_keep const DPPLKernelArgType *ArgTypes,
                   size_t NArgs,
-                  size_t Range[3],
+                  size_t const Range[3],
                   size_t NDims)
 {
     auto Kernel = unwrap(KRef);

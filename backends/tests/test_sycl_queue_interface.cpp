@@ -120,7 +120,7 @@ TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
     ASSERT_TRUE(c != nullptr);
 
     // Initialize a,b
-    DPPLKernelArgType argTypes[] = {VOID_PTR};
+    DPPLKernelArgType argTypes[] = {DPPL_VOID_PTR};
     size_t Range[] = {SIZE};
     void *arg1[1] = { unwrap(a) };
     void *arg2[1] = { unwrap(b) };
@@ -136,7 +136,10 @@ TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
 
     // Submit the add kernel
     void *args[3] = { unwrap(a), unwrap(b), unwrap(c) };
-    DPPLKernelArgType addKernelArgTypes[] = {VOID_PTR, VOID_PTR, VOID_PTR};
+    DPPLKernelArgType addKernelArgTypes[] = { DPPL_VOID_PTR,
+                                              DPPL_VOID_PTR,
+                                              DPPL_VOID_PTR
+                                            };
 
     auto E3 = DPPLQueue_Submit(AddKernel, CurrQueue, args, addKernelArgTypes, 3,
                                Range, 1);
@@ -149,10 +152,10 @@ TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
     // Create kernel args for axpy
     float d = 10.0;
     void *args2[4] = { unwrap(a), unwrap(b), unwrap(c) , (void*)&d};
-    DPPLKernelArgType addKernelArgTypes2[] = { VOID_PTR,
-                                               VOID_PTR,
-                                               VOID_PTR,
-                                               FLOAT
+    DPPLKernelArgType addKernelArgTypes2[] = { DPPL_VOID_PTR,
+                                               DPPL_VOID_PTR,
+                                               DPPL_VOID_PTR,
+                                               DPPL_FLOAT
                                              };
     auto E4 = DPPLQueue_Submit(AxpyKernel, CurrQueue, args2,
                                addKernelArgTypes2, 4, Range, 1);
