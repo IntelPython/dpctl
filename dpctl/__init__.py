@@ -57,7 +57,7 @@ def get_include():
     this function to locate the appropriate include directory.
     """
     import os.path
-    return os.path.join(__file__, 'include')
+    return os.path.join(os.path.dirname(__file__), 'include')
 
 __version__ = get_versions()['version']
 del get_versions
