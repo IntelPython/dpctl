@@ -193,6 +193,7 @@ cdef class SyclProgram:
         name = kernel_name.encode('utf8')
         return DPPLProgram_HasKernel(self._program_ptr, name)
 
+#include ctypes
 
 cdef class SyclQueue:
     ''' Wrapper class for a Sycl queue.
@@ -226,8 +227,8 @@ cdef class SyclQueue:
                                            len(args) * sizeof(DPPLKernelArgType)
                                          )
         for idx, arg in enumerate(args):
-            if isinstance(arg, int):
-                #kargs = ...
+            if isinstance(arg, ctypes.c_int):
+                kargs[idx] = <void*>(ctypes.addressof(arg))
                 ktypes[idx] = _arg_data_type._INT
         free(kargs)
         free(ktypes)
