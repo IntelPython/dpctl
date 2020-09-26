@@ -10,7 +10,10 @@ rmdir /S /Q build_cmake
 mkdir build_cmake
 cd build_cmake
 
-set "DPCPP_ROOT=%ONEAPI_ROOT%/compiler/latest/windows"
+set "DPCPP_ROOT=%ONEAPI_ROOT%\compiler\latest\windows"
+set "INSTALL_PREFIX=%cd%\..\install"
+
+rmdir /S /Q "%INSTALL_PREFIX%"
 
 cmake -G Ninja ^
     -DCMAKE_BUILD_TYPE=Release ^
@@ -25,17 +28,23 @@ ninja install
 IF %ERRORLEVEL% NEQ 0 exit 1
 
 cd ..
+xcopy install\lib\*.lib dpctl /E /Y
+xcopy install\lib\*.dll dpctl /E /Y
+
+mkdir dpctl\include
+xcopy backends\include dpctl\include /E /Y
+
+
 
 REM required by dpglue
-set "DPPL_OPENCL_INTERFACE_LIBDIR=%LIBRARY_PREFIX%/lib"
-set "DPPL_OPENCL_INTERFACE_INCLDIR=%LIBRARY_PREFIX%/include"
-set "OpenCL_LIBDIR=%DPCPP_ROOT%/lib"
+set "DPPL_OPENCL_INTERFACE_LIBDIR=dpctl"
+set "DPPL_OPENCL_INTERFACE_INCLDIR=dpctl\include"
+set "OpenCL_LIBDIR=%DPCPP_ROOT%\lib"
 
 REM required by oneapi_interface
-set "DPPL_SYCL_INTERFACE_LIBDIR=%LIBRARY_PREFIX%/lib"
-set "DPPL_SYCL_INTERFACE_INCLDIR=%LIBRARY_PREFIX%/include"
+set "DPPL_SYCL_INTERFACE_LIBDIR=dpctl"
+set "DPPL_SYCL_INTERFACE_INCLDIR=dpctl\include"
 
 "%PYTHON%" setup.py clean --all
-"%PYTHON%" setup.py build
-"%PYTHON%" setup.py install
+"%PYTHON%" setup.py build install
 IF %ERRORLEVEL% NEQ 0 exit 1

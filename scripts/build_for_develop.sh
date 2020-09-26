@@ -7,10 +7,11 @@ pushd build_cmake
 INSTALL_PREFIX=`pwd`/../install
 rm -rf ${INSTALL_PREFIX}
 export ONEAPI_ROOT=/opt/intel/oneapi
-DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest/linux
+
 PYTHON_INC=`python -c "import distutils.sysconfig;                  \
                         print(distutils.sysconfig.get_python_inc())"`
 NUMPY_INC=`python -c "import numpy; print(numpy.get_include())"`
+DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest/linux
 
 cmake                                                       \
     -DCMAKE_BUILD_TYPE=Debug                                \
@@ -29,11 +30,15 @@ make V=1 -n -j 4 && make check && make install
 popd
 cp install/lib/*.so dpctl/
 
-export DPPL_OPENCL_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
-export DPPL_OPENCL_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
-export OpenCL_LIBDIR=/usr/lib/x86_64-linux-gnu/
-export DPPL_SYCL_INTERFACE_LIBDIR=${INSTALL_PREFIX}/lib
-export DPPL_SYCL_INTERFACE_INCLDIR=${INSTALL_PREFIX}/include
+mkdir -p dpctl/include
+cp -r backends/include/* dpctl/include
+
+export DPPL_OPENCL_INTERFACE_LIBDIR=dpctl
+export DPPL_OPENCL_INTERFACE_INCLDIR=dpctl/include
+# /usr/lib/x86_64-linux-gnu/
+export OpenCL_LIBDIR=${DPCPP_ROOT}/lib
+export DPPL_SYCL_INTERFACE_LIBDIR=dpctl
+export DPPL_SYCL_INTERFACE_INCLDIR=dpctl/include
 
 export CC=clang
 export CXX=dpcpp
@@ -41,5 +46,4 @@ export CXX=dpcpp
 # dpcpp compiles the Cython generated cpp file.
 export CFLAGS=-fPIC
 python setup.py clean --all
-python setup.py build_ext --inplace
-python setup.py develop
+python setup.py build develop

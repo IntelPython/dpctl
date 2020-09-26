@@ -13,7 +13,10 @@ fi
 
 rm -rf build_cmake
 mkdir build_cmake
-cd build_cmake
+pushd build_cmake
+
+INSTALL_PREFIX=`pwd`/../install
+rm -rf ${INSTALL_PREFIX}
 
 PYTHON_INC=`${PYTHON} -c "import distutils.sysconfig;                  \
                         print(distutils.sysconfig.get_python_inc())"`
@@ -22,8 +25,8 @@ DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest/linux/
 
 cmake                                                       \
     -DCMAKE_BUILD_TYPE=Release                              \
-    -DCMAKE_INSTALL_PREFIX=${PREFIX}                        \
-    -DCMAKE_PREFIX_PATH=${PREFIX}                           \
+    -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}                \
+    -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX}                   \
     -DDPCPP_ROOT=${DPCPP_ROOT}                              \
     -DPYTHON_INCLUDE_DIR=${PYTHON_INC}                      \
     -DNUMPY_INCLUDE_DIR=${NUMPY_INC}                        \
@@ -31,22 +34,25 @@ cmake                                                       \
 
 make -j 4 && make install
 
-cd ..
+popd
+cp install/lib/*.so dpctl/
+
+mkdir -p dpctl/include
+cp -r backends/include/* dpctl/include
 
 # required by dpctl.opencl_core
-export DPPL_OPENCL_INTERFACE_LIBDIR=${PREFIX}
-export DPPL_OPENCL_INTERFACE_INCLDIR=${PREFIX}/include
-export OpenCL_LIBDIR=${DPCPP_ROOT}/lib
+export DPPL_OPENCL_INTERFACE_LIBDIR=dpctl
+export DPPL_OPENCL_INTERFACE_INCLDIR=dpctl/include
+export OpenCL_LIBDIR=${DPCPP_ROOT}/libw
 
 # required by dpctl.sycl_core
-export DPPL_SYCL_INTERFACE_LIBDIR=${PREFIX}/lib
-export DPPL_SYCL_INTERFACE_INCLDIR=${PREFIX}/include
+export DPPL_SYCL_INTERFACE_LIBDIR=dpctl
+export DPPL_SYCL_INTERFACE_INCLDIR=dpctl/include
 
 
 # FIXME: How to pass this using setup.py? This flags is needed when
 # dpcpp compiles the generated cpp file.
 export CFLAGS="-fPIC -O3 ${CFLAGS}"
-export LDFLAGS="-L OpenCL_LIBDIR ${LDFLAGS}"
+export LDFLAGS="-L ${OpenCL_LIBDIR} ${LDFLAGS}"
 ${PYTHON} setup.py clean --all
-${PYTHON} setup.py build
-${PYTHON} setup.py install
+${PYTHON} setup.py build install
