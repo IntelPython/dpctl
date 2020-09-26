@@ -19,7 +19,7 @@
 ##===----------------------------------------------------------------------===##
 ###
 ### \file
-### Defines unit test cases for the SyclQueueManager class in sycl_core.pyx.
+### Defines unit test cases for the SyclQueue.memcpy in sycl_core.pyx.
 ##===----------------------------------------------------------------------===##
 
 import dpctl
