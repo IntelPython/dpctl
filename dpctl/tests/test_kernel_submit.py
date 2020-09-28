@@ -1,5 +1,6 @@
 import ctypes
 import dpctl
+import dpctl._memory as dpctl_mem
 import array
 import numpy as np
 
@@ -28,23 +29,31 @@ def test_create_program_from_source ():
      print(axpyKernel)
      print(axpyKernel.get_function_name())
      print(axpyKernel.get_num_args())
-     
-     a = np.arange(1024)
-     b = np.arange(1024)
-     c = np.zeros(1024)
+
+     abuf = dpctl_mem.MemoryUSMShared(1024*np.dtype('i').itemsize)
+     bbuf = dpctl_mem.MemoryUSMShared(1024*np.dtype('i').itemsize)
+     cbuf = dpctl_mem.MemoryUSMShared(1024*np.dtype('i').itemsize)
+     a = np.ndarray((1024), buffer=abuf, dtype='i')
+     b = np.ndarray((1024), buffer=bbuf, dtype='i')
+     c = np.ndarray((1024), buffer=cbuf, dtype='i')
+     a[:] = np.arange(1024)
+     b[:] = np.arange(1024, 0, -1)
+     c[:] = 0
      d = 2
-     print(a)
      args = []
      
-     print(type(a.data))
-     args.append(a.data)
-     args.append(b.data)
-     args.append(c.data)
+     args.append(a.base)
+     args.append(b.base)
+     args.append(c.base)
      args.append(ctypes.c_int(d))
      
      r = [ 1024, 1, 1 ]
      
-     q.submit(axpyKernel, args, r, r)
+     e = q.submit(axpyKernel, args, r, r)
+     e.wait()
+
+     print(c)
+     print(a + d * b)
      # self.assertIsNotNone(prog)
      
      # self.assertTrue()
