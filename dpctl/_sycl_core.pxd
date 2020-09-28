@@ -106,7 +106,7 @@ cdef class SyclQueue:
     cpdef SyclContext get_sycl_context (self)
     cpdef SyclDevice get_sycl_device (self)
     cdef  DPPLSyclQueueRef get_queue_ref (self)
-    cpdef SyclEvent submit (self, SyclKernel kernel, list args,                \
-                            list gSize, list lSize)
+    cpdef SyclEvent submit (self, SyclKernel kernel, list args, list gS,       \
+                            list lS=*)
     cpdef void wait (self)
     cpdef memcpy (self, dest, src, int count)
