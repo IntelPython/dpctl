@@ -146,32 +146,38 @@ DPPLQueue_Submit (__dppl_keep const DPPLSyclKernelRef KRef,
     auto Queue  = unwrap(QRef);
     event e;
 
-    e = Queue->submit([&](handler& cgh) {
-        // \todo cgh.depends_on
+    try {
+        e = Queue->submit([&](handler& cgh) {
+            // \todo cgh.depends_on
 
-        for (auto i = 0ul; i < NArgs; ++i) {
-            // \todo add support for Sycl buffers
-            // \todo handle errors properly
-            if(!set_kernel_arg(cgh, i, Args[i], ArgTypes[i]))
+            for (auto i = 0ul; i < NArgs; ++i) {
+                // \todo add support for Sycl buffers
+                // \todo handle errors properly
+                if(!set_kernel_arg(cgh, i, Args[i], ArgTypes[i]))
+                    exit(1);
+            }
+            switch(NDims)
+            {
+            case 1:
+                cgh.parallel_for(range<1>{Range[0]}, *Kernel);
+                break;
+            case 2:
+                cgh.parallel_for(range<2>{Range[0], Range[1]}, *Kernel);
+                break;
+            case 3:
+                cgh.parallel_for(range<3>{Range[0], Range[1], Range[2]}, *Kernel);
+                break;
+            default:
+                // \todo handle the error
+                std::cerr << "Range cannot be greater than three dimensions.\n";
                 exit(1);
-        }
-        switch(NDims)
-        {
-        case 1:
-            cgh.parallel_for(range<1>{Range[0]}, *Kernel);
-            break;
-        case 2:
-            cgh.parallel_for(range<2>{Range[0], Range[1]}, *Kernel);
-            break;
-        case 3:
-            cgh.parallel_for(range<3>{Range[0], Range[1], Range[2]}, *Kernel);
-            break;
-        default:
-            // \todo handle the error
-            std::cerr << "Range cannot be greater than three dimensions.\n";
-            exit(1);
-        }
-    });
+            }
+        });
+    } catch (runtime_error re) {
+        // \todo fix error handling
+        std::cerr << re.what() << '\n';
+        return nullptr;
+    }
 
     return wrap(new event(e));
 }
