@@ -246,6 +246,16 @@ cdef class SyclQueue:
                                            len(args) * sizeof(DPPLKernelArgType)
                                          )
         cdef size_t Range[3]
+        cdef char charval
+        cdef int intval
+        cdef unsigned int uintval
+        cdef long longval
+        cdef long long longlongval
+        cdef unsigned long long ulonglongval
+        cdef short shortval
+        cdef size_t sizetval
+        cdef double doubleval
+        cdef float floatval
         Range[0] = 1024
         Range[1] = 1
         Range[2] = 2
@@ -283,10 +293,10 @@ cdef class SyclQueue:
                 sizetval =  <size_t>(arg.value)
                 kargs[idx]= <void*>(&sizetval)
                 kargty[idx] = _arg_data_type._SIZE_T
-            #elif isinstance(arg, ctypes.c_float):
-            #    floatval =  <float>(arg.value)
-            #    kargs[idx]= <void*>(&floatval)
-            #     kargty[idx] = _arg_data_type._FLOAT
+            elif isinstance(arg, ctypes.c_float):
+                floatval =  <float>(arg.value)
+                kargs[idx]= <void*>(&floatval)
+                kargty[idx] = _arg_data_type._FLOAT
             elif isinstance(arg, ctypes.c_double):
                 doubleval =  <double>(arg.value)
                 kargs[idx]= <void*>(&doubleval)
