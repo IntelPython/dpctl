@@ -66,7 +66,10 @@ void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef);
 /*!
  * @brief C-API wrapper for sycl::queue::memcpy. It waits an event.
  *
- * @param    QRef           A DPPLSyclQueueRef pointer that gets deleted.
+ * @param    QRef           An opaque pointer to the sycl queue.
+ * @param    Dest           An USM pointer to the destination memory.
+ * @param    Src            An USM pointer to the source memory.
+ * @param    Count          A number of bytes to copy.
  */
 DPPL_API
 void DPPLQueue_memcpy (__dppl_keep const DPPLSyclQueueRef QRef,
