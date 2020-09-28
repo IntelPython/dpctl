@@ -59,6 +59,10 @@ ffi.cdef(glue_h)
 
 ffi_lib_name = "dpctl._opencl_core"
 
+import sys
+IS_WIN = sys.platform in ['win32', 'cygwin']
+del sys
+
 ffi.set_source(
     ffi_lib_name,
     """
@@ -66,9 +70,10 @@ ffi.set_source(
     """,
     include_dirs=[dppl_opencl_interface_incldir],
     library_dirs=[dppl_opencl_interface_libdir, opencl_libdir],
+    extra_link_args=[] if IS_WIN else ['-Wl,-rpath=$ORIGIN'],
     libraries=["DPPLOpenCLInterface", "OpenCL"],
 )   # library name, for the linker
-
+del IS_WIN
 
 if __name__ == "__main__":
     ffi.compile(verbose=True)
