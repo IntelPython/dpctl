@@ -43,7 +43,7 @@ cp -r backends/include/* dpctl/include
 # required by dpctl.opencl_core
 export DPPL_OPENCL_INTERFACE_LIBDIR=dpctl
 export DPPL_OPENCL_INTERFACE_INCLDIR=dpctl/include
-export OpenCL_LIBDIR=${DPCPP_ROOT}/libw
+export OpenCL_LIBDIR=${DPCPP_ROOT}/lib
 
 # required by dpctl.sycl_core
 export DPPL_SYCL_INTERFACE_LIBDIR=dpctl
