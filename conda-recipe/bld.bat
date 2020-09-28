@@ -35,13 +35,12 @@ mkdir dpctl\include
 xcopy backends\include dpctl\include /E /Y
 
 
-
-REM required by dpglue
+REM required by _opencl_core (dpctl.ocldrv)
 set "DPPL_OPENCL_INTERFACE_LIBDIR=dpctl"
 set "DPPL_OPENCL_INTERFACE_INCLDIR=dpctl\include"
 set "OpenCL_LIBDIR=%DPCPP_ROOT%\lib"
 
-REM required by oneapi_interface
+REM required by _sycl_core(dpctl)
 set "DPPL_SYCL_INTERFACE_LIBDIR=dpctl"
 set "DPPL_SYCL_INTERFACE_INCLDIR=dpctl\include"
 
