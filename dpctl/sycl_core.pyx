@@ -318,9 +318,8 @@ cdef class SyclQueue:
                 doubleval =  <double>(arg.value)
                 kargs[idx]= <void*>(&doubleval)
                 kargty[idx] = _arg_data_type._DOUBLE
-            elif isinstance(arg, memoryview):
-                print(arg)
-                kargs[idx]= <void*>arg
+            elif isinstance(arg, Memory):
+                kargs[idx]= <void*>(<size_t>arg._pointer)
                 kargty[idx] = _arg_data_type._VOID_PTR
             else:
                 raise TypeError("Unsupported type for a kernel argument")
