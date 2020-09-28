@@ -256,9 +256,26 @@ cdef class SyclQueue:
         cdef size_t sizetval
         cdef double doubleval
         cdef float floatval
-        Range[0] = 1024
-        Range[1] = 1
-        Range[2] = 2
+        cdef int gs_len = len(gSize)
+        cdef int ls_len = len(lSize)
+
+        if (gs_len != ls_len):
+            raise ValueError("")
+
+        if (gs_len == 1):
+            Range[0] = <size_t>gSize[0]
+            Range[1] = 1
+            Range[2] = 1
+        elif (gs_len == 2):
+            Range[0] = <size_t>gSize[0]
+            Range[1] = <size_t>gSize[1]
+            Range[2] = 1
+        elif (gs_len == 3):
+            Range[0] = <size_t>gSize[0]
+            Range[1] = <size_t>gSize[1]
+            Range[2] = <size_t>gSize[2]
+        else:
+            raise ValueError("")
 
         for idx, arg in enumerate(args):
             if isinstance(arg, ctypes.c_char):
