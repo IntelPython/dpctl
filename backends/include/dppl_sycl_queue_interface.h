@@ -132,4 +132,13 @@ DPPL_API
 void
 DPPLQueue_Wait (__dppl_keep const DPPLSyclQueueRef QRef);
 
+/*!
+ * @brief C-API wrapper for sycl::queue::memcpy. It waits an event.
+ *
+ * @param    QRef           A DPPLSyclQueueRef pointer that gets deleted.
+ */
+DPPL_API
+void DPPLQueue_memcpy (__dppl_keep const DPPLSyclQueueRef QRef,
+                       void *Dest, const void *Src, size_t Count);
+
 DPPL_C_EXTERN_C_END

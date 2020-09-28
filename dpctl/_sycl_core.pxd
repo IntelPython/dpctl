@@ -109,3 +109,4 @@ cdef class SyclQueue:
     cpdef SyclEvent submit (self, SyclKernel kernel, list args,                \
                             list gSize, list lSize)
     cpdef void wait (self)
+    cpdef memcpy (self, dest, src, int count)

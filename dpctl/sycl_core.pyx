@@ -29,8 +29,11 @@
 from __future__ import print_function
 from enum import Enum, auto
 import logging
-from dpctl.backend cimport *
+
 from libc.stdlib cimport malloc, free
+from .backend cimport *
+from ._memory cimport Memory
+
 
 _logger = logging.getLogger(__name__)
 
@@ -256,9 +259,26 @@ cdef class SyclQueue:
         cdef size_t sizetval
         cdef double doubleval
         cdef float floatval
-        Range[0] = 1024
-        Range[1] = 1
-        Range[2] = 2
+        cdef int gs_len = len(gSize)
+        cdef int ls_len = len(lSize)
+
+        if (gs_len != ls_len):
+            raise ValueError("")
+
+        if (gs_len == 1):
+            Range[0] = <size_t>gSize[0]
+            Range[1] = 1
+            Range[2] = 1
+        elif (gs_len == 2):
+            Range[0] = <size_t>gSize[0]
+            Range[1] = <size_t>gSize[1]
+            Range[2] = 1
+        elif (gs_len == 3):
+            Range[0] = <size_t>gSize[0]
+            Range[1] = <size_t>gSize[1]
+            Range[2] = <size_t>gSize[2]
+        else:
+            raise ValueError("")
 
         for idx, arg in enumerate(args):
             if isinstance(arg, ctypes.c_char):
@@ -301,9 +321,8 @@ cdef class SyclQueue:
                 doubleval =  <double>(arg.value)
                 kargs[idx]= <void*>(&doubleval)
                 kargty[idx] = _arg_data_type._DOUBLE
-            elif isinstance(arg, memoryview):
-                print(arg)
-                kargs[idx]= <void*>arg
+            elif isinstance(arg, Memory):
+                kargs[idx]= <void*>(<size_t>arg._pointer)
                 kargty[idx] = _arg_data_type._VOID_PTR
             else:
                 raise TypeError("Unsupported type for a kernel argument")
@@ -327,6 +346,22 @@ cdef class SyclQueue:
 
     cpdef void wait (self):
         DPPLQueue_Wait(self._queue_ref)
+
+    cpdef memcpy (self, dest, src, int count):
+        cdef void *c_dest
+        cdef void *c_src
+
+        if isinstance(dest, Memory):
+            c_dest = <void*>(<Memory>dest).memory_ptr
+        else:
+            raise TypeError("Parameter dest should be Memory.")
+
+        if isinstance(src, Memory):
+            c_src = <void*>(<Memory>src).memory_ptr
+        else:
+            raise TypeError("Parameter src should be Memory.")
+
+        DPPLQueue_memcpy(self._queue_ref, c_dest, c_src, count)
 
 
 cdef class _SyclQueueManager:

@@ -78,6 +78,13 @@ class TestMemory (unittest.TestCase):
             self.assertTrue(usm_type in ['unknown', 'shared'])
 
 
+    def test_buffer_protocol (self):
+        mobj = self._create_memory()
+        mv1 = memoryview(mobj)
+        mv2 = memoryview(mobj)
+        self.assertEqual(mv1, mv2)
+
+
 class TestMemoryUSMBase:
     """ Base tests for MemoryUSM* """
 
@@ -115,6 +122,7 @@ class TestMemoryUSMDevice(TestMemoryUSMBase, unittest.TestCase):
 
     MemoryUSMClass = MemoryUSMDevice
     usm_type = 'device'
+
 
 if __name__ == '__main__':
     unittest.main()
