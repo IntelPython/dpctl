@@ -29,8 +29,11 @@
 from __future__ import print_function
 from enum import Enum, auto
 import logging
-from dpctl.backend cimport *
+
 from libc.stdlib cimport malloc, free
+from .backend cimport *
+from ._memory cimport Memory
+
 
 _logger = logging.getLogger(__name__)
 
@@ -343,6 +346,21 @@ cdef class SyclQueue:
 
     cpdef void wait (self):
         DPPLQueue_Wait(self._queue_ref)
+
+    cpdef memcpy (self, dest, src, int count):
+        cdef void *c_dest, *c_src
+
+        if isinstance(dest, Memory):
+            c_dest = <void*>(<Memory>dest).memory_ptr
+        else:
+            raise TypeError("Parameter dest should be Memory.")
+
+        if isinstance(src, Memory):
+            c_src = <void*>(<Memory>src).memory_ptr
+        else:
+            raise TypeError("Parameter src should be Memory.")
+
+        DPPLQueue_memcpy(self.queue_ptr, c_dest, c_src, count)
 
 
 cdef class _SyclQueueManager:
