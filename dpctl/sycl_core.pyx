@@ -348,7 +348,8 @@ cdef class SyclQueue:
         DPPLQueue_Wait(self._queue_ref)
 
     cpdef memcpy (self, dest, src, int count):
-        cdef void *c_dest, *c_src
+        cdef void *c_dest
+        cdef void *c_src
 
         if isinstance(dest, Memory):
             c_dest = <void*>(<Memory>dest).memory_ptr
@@ -360,7 +361,7 @@ cdef class SyclQueue:
         else:
             raise TypeError("Parameter src should be Memory.")
 
-        DPPLQueue_memcpy(self.queue_ptr, c_dest, c_src, count)
+        DPPLQueue_memcpy(self._queue_ref, c_dest, c_src, count)
 
 
 cdef class _SyclQueueManager:
