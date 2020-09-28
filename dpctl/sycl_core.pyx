@@ -39,13 +39,19 @@ class device_type(Enum):
     cpu = auto()
 
 
-cdef class UnsupportedDeviceTypeError(Exception):
+cdef class UnsupportedDeviceTypeError (Exception):
     '''This exception is raised when a device type other than CPU or GPU is
        encountered.
     '''
     pass
 
-cdef class SyclProgramCompilationError(Exception):
+cdef class SyclProgramCompilationError (Exception):
+    '''This exception is raised when a sycl program could not be built from
+       either a spirv binary file or a string source.
+    '''
+    pass
+
+cdef class SyclKernelSubmitError (Exception):
     '''This exception is raised when a sycl program could not be built from
        either a spirv binary file or a string source.
     '''
@@ -56,14 +62,14 @@ cdef class SyclContext:
     @staticmethod
     cdef SyclContext _create (DPPLSyclContextRef ctxt):
         cdef SyclContext ret = SyclContext.__new__(SyclContext)
-        ret._ctxt_ptr = ctxt
+        ret._ctxt_ref = ctxt
         return ret
 
     def __dealloc__ (self):
-        DPPLContext_Delete(self._ctxt_ptr)
+        DPPLContext_Delete(self._ctxt_ref)
 
     cdef DPPLSyclContextRef get_context_ref (self):
-        return self._ctxt_ptr
+        return self._ctxt_ref
 
 
 cdef class SyclDevice:
@@ -73,14 +79,14 @@ cdef class SyclDevice:
     @staticmethod
     cdef SyclDevice _create (DPPLSyclDeviceRef dref):
         cdef SyclDevice ret = SyclDevice.__new__(SyclDevice)
-        ret._device_ptr = dref
+        ret._device_ref = dref
         ret._vendor_name = DPPLDevice_GetVendorName(dref)
         ret._device_name = DPPLDevice_GetName(dref)
         ret._driver_version = DPPLDevice_GetDriverInfo(dref)
         return ret
 
     def __dealloc__ (self):
-        DPPLDevice_Delete(self._device_ptr)
+        DPPLDevice_Delete(self._device_ref)
         DPPLCString_Delete(self._device_name)
         DPPLCString_Delete(self._vendor_name)
         DPPLCString_Delete(self._driver_version)
@@ -88,7 +94,7 @@ cdef class SyclDevice:
     def dump_device_info (self):
         ''' Print information about the SYCL device.
         '''
-        DPPLDevice_DumpInfo(self._device_ptr)
+        DPPLDevice_DumpInfo(self._device_ref)
 
     def get_device_name (self):
         ''' Returns the name of the device as a string
@@ -108,10 +114,10 @@ cdef class SyclDevice:
         '''
         return self._driver_version.decode()
 
-    cdef DPPLSyclDeviceRef get_device_ptr (self):
+    cdef DPPLSyclDeviceRef get_device_ref (self):
         ''' Returns the DPPLSyclDeviceRef pointer for this class.
         '''
-        return self._device_ptr
+        return self._device_ref
 
 
 cdef class SyclEvent:
@@ -119,16 +125,22 @@ cdef class SyclEvent:
     '''
 
     @staticmethod
-    cdef SyclEvent _create (DPPLSyclEventRef eref):
+    cdef SyclEvent _create (DPPLSyclEventRef eref, list args):
         cdef SyclEvent ret = SyclEvent.__new__(SyclEvent)
-        ret._event_ptr = eref
+        ret._event_ref = eref
+        ret._args = args
         return ret
 
     def __dealloc__ (self):
-        DPPLEvent_Delete(self._event_ptr)
+        DPPLEvent_Delete(self._event_ref)
+
+    cdef DPPLSyclEventRef get_event_ref (self):
+        ''' Returns the DPPLSyclEventRef pointer for this class.
+        '''
+        return self._event_ref
 
     cpdef void wait (self):
-        DPPLEvent_Wait(self._event_ptr)
+        DPPLEvent_Wait(self._event_ref)
 
 
 cdef class SyclKernel:
@@ -139,12 +151,12 @@ cdef class SyclKernel:
     @staticmethod
     cdef SyclKernel _create (DPPLSyclKernelRef kref):
         cdef SyclKernel ret = SyclKernel.__new__(SyclKernel)
-        ret._kernel_ptr = kref
+        ret._kernel_ref = kref
         ret._function_name = DPPLKernel_GetFunctionName(kref)
         return ret
 
     def __dealloc__ (self):
-        DPPLKernel_Delete(self._kernel_ptr)
+        DPPLKernel_Delete(self._kernel_ref)
         DPPLCString_Delete(self._function_name)
 
     def get_function_name (self):
@@ -155,12 +167,12 @@ cdef class SyclKernel:
     def get_num_args (self):
         ''' Returns the number of arguments for this kernel function.
         '''
-        return DPPLKernel_GetNumArgs(self._kernel_ptr)
+        return DPPLKernel_GetNumArgs(self._kernel_ref)
 
-    cdef DPPLSyclKernelRef get_kernel_ptr (self):
+    cdef DPPLSyclKernelRef get_kernel_ref (self):
         ''' Returns the DPPLSyclKernelRef pointer for this SyclKernel.
         '''
-        return self._kernel_ptr
+        return self._kernel_ref
 
 
 cdef class SyclProgram:
@@ -175,25 +187,26 @@ cdef class SyclProgram:
     @staticmethod
     cdef SyclProgram _create (DPPLSyclProgramRef pref):
         cdef SyclProgram ret = SyclProgram.__new__(SyclProgram)
-        ret._program_ptr = pref
+        ret._program_ref = pref
         return ret
 
     def __dealloc__ (self):
-        DPPLProgram_Delete(self._program_ptr)
+        DPPLProgram_Delete(self._program_ref)
 
-    cdef DPPLSyclProgramRef get_program_ptr (self):
-        return self._program_ptr
+    cdef DPPLSyclProgramRef get_program_ref (self):
+        return self._program_ref
 
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name):
         name = kernel_name.encode('utf8')
-        return SyclKernel._create(DPPLProgram_GetKernel(self._program_ptr,
+        return SyclKernel._create(DPPLProgram_GetKernel(self._program_ref,
                                                         name))
 
     def has_sycl_kernel(self, str kernel_name):
         name = kernel_name.encode('utf8')
-        return DPPLProgram_HasKernel(self._program_ptr, name)
+        return DPPLProgram_HasKernel(self._program_ref, name)
 
-#include ctypes
+import ctypes
+from libc.stdio cimport printf
 
 cdef class SyclQueue:
     ''' Wrapper class for a Sycl queue.
@@ -204,11 +217,17 @@ cdef class SyclQueue:
         cdef SyclQueue ret = SyclQueue.__new__(SyclQueue)
         ret._context = SyclContext._create(DPPLQueue_GetContext(qref))
         ret._device = SyclDevice._create(DPPLQueue_GetDevice(qref))
-        ret._queue_ptr = qref
+        ret._queue_ref = qref
         return ret
 
     def __dealloc__ (self):
-        DPPLQueue_Delete(self._queue_ptr)
+        DPPLQueue_Delete(self._queue_ref)
+
+    cdef _raise_queue_submit_error (self, fname, errcode):
+        e = SyclKernelSubmitError("Kernel submission to Sycl queue failed.")
+        e.fname = fname
+        e.code = errcode
+        raise e
 
     cpdef SyclContext get_sycl_context (self):
         return self._context
@@ -217,25 +236,87 @@ cdef class SyclQueue:
         return self._device
 
     cdef DPPLSyclQueueRef get_queue_ref (self):
-        return self._queue_ptr
+        return self._queue_ref
 
     cpdef SyclEvent submit (self, SyclKernel kernel, list args,                \
-                            const size_t[:] range, size_t ndims):
-        cdef llist = args
-        cdef void *kargs = malloc(len(args) * sizeof(void*))
-        cdef DPPLKernelArgType *ktypes = <DPPLKernelArgType*>malloc(
+                            list gSize, list lSize):
+
+        cdef void **kargs = <void**>malloc(len(args) * sizeof(void*))
+        cdef DPPLKernelArgType *kargty = <DPPLKernelArgType*>malloc(
                                            len(args) * sizeof(DPPLKernelArgType)
                                          )
+        cdef size_t Range[3]
+        Range[0] = 1024
+        Range[1] = 1
+        Range[2] = 2
+
         for idx, arg in enumerate(args):
-            if isinstance(arg, ctypes.c_int):
-                kargs[idx] = <void*>(ctypes.addressof(arg))
-                ktypes[idx] = _arg_data_type._INT
+            if isinstance(arg, ctypes.c_char):
+                charval =  <char>(arg.value)
+                kargs[idx]= <void*>(&charval)
+                kargty[idx] = _arg_data_type._CHAR
+            elif isinstance(arg, ctypes.c_int):
+                intval =  <int>(arg.value)
+                kargs[idx]= <void*>(&intval)
+                kargty[idx] = _arg_data_type._INT
+            elif isinstance(arg, ctypes.c_uint):
+                unintval =  <unsigned int>(arg.value)
+                kargs[idx]= <void*>(&unintval)
+                kargty[idx] = _arg_data_type._UNSIGNED_INT
+            elif isinstance(arg, ctypes.c_long):
+                longval =  <long>(arg.value)
+                kargs[idx]= <void*>(&longval)
+                kargty[idx] = _arg_data_type._LONG
+            elif isinstance(arg, ctypes.c_longlong):
+                longlongval =  <long long>(arg.value)
+                kargs[idx]= <void*>(&longlongval)
+                kargty[idx] = _arg_data_type._LONG_LONG
+            elif isinstance(arg, ctypes.c_ulonglong):
+                ulonglongval =  <unsigned long long>(arg.value)
+                kargs[idx]= <void*>(&ulonglongval)
+                kargty[idx] = _arg_data_type._UNSIGNED_LONG_LONG
+            elif isinstance(arg, ctypes.c_short):
+                shortval =  <short>(arg.value)
+                kargs[idx]= <void*>(&shortval)
+                kargty[idx] = _arg_data_type._SHORT
+            elif isinstance(arg, ctypes.c_size_t):
+                sizetval =  <size_t>(arg.value)
+                kargs[idx]= <void*>(&sizetval)
+                kargty[idx] = _arg_data_type._SIZE_T
+            #elif isinstance(arg, ctypes.c_float):
+            #    floatval =  <float>(arg.value)
+            #    kargs[idx]= <void*>(&floatval)
+            #     kargty[idx] = _arg_data_type._FLOAT
+            elif isinstance(arg, ctypes.c_double):
+                doubleval =  <double>(arg.value)
+                kargs[idx]= <void*>(&doubleval)
+                kargty[idx] = _arg_data_type._DOUBLE
+            elif isinstance(arg, memoryview):
+                print(arg)
+                kargs[idx]= <void*>arg
+                kargty[idx] = _arg_data_type._VOID_PTR
+            else:
+                raise TypeError("Unsupported type for a kernel argument")
+
+        cdef DPPLSyclEventRef Eref = DPPLQueue_Submit(kernel.get_kernel_ref(),
+                                                      self.get_queue_ref(),
+                                                      kargs,
+                                                      kargty,
+                                                      len(args),
+                                                      Range,
+                                                      1)
+
         free(kargs)
-        free(ktypes)
-        return None
+        free(kargty)
+
+        if Eref is NULL:
+            # \todo get the error number from dpctl-capi
+            self._raise_queue_submit_error("DPPLQueue_Submit", -1)
+
+        return SyclEvent._create(Eref, args)
 
     cpdef void wait (self):
-        DPPLQueue_Wait(self._queue_ptr)
+        DPPLQueue_Wait(self._queue_ref)
 
 
 cdef class _SyclQueueManager:
@@ -243,16 +324,16 @@ cdef class _SyclQueueManager:
     '''
 
     def _set_as_current_queue (self, device_ty, device_id):
-        cdef DPPLSyclQueueRef queue_ptr
+        cdef DPPLSyclQueueRef queue_ref
         if device_ty == device_type.gpu:
-            queue_ptr = DPPLQueueMgr_PushQueue(_device_type._GPU, device_id)
+            queue_ref = DPPLQueueMgr_PushQueue(_device_type._GPU, device_id)
         elif device_ty == device_type.cpu:
-            queue_ptr = DPPLQueueMgr_PushQueue(_device_type._CPU, device_id)
+            queue_ref = DPPLQueueMgr_PushQueue(_device_type._CPU, device_id)
         else:
             e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
             raise e
 
-        return SyclQueue._create(queue_ptr)
+        return SyclQueue._create(queue_ref)
 
     def _remove_current_queue (self):
         DPPLQueueMgr_PopQueue()

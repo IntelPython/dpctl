@@ -342,7 +342,7 @@ class DeviceEnv():
         pass
 
     def retain_context(self):
-        ''' Increment the refrence count of the OpenCL context object.
+        ''' Increment the reference count of the OpenCL context object.
         '''
 
         retval = (lib.retain_dp_context(self._env_ptr.context))

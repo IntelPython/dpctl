@@ -26,7 +26,7 @@ cmake                                                       \
     -DGTEST_LIB_DIR=${CONDA_PREFIX}/lib                     \
     ../backends
 
-make V=1 -n -j 4 && make check && make install
+make V=1 -n -j 4 && make install
 popd
 cp install/lib/*.so dpctl/
 
