@@ -125,10 +125,10 @@ TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
     void *arg1[1] = { unwrap(a) };
     void *arg2[1] = { unwrap(b) };
 
-    auto E1 = DPPLQueue_Submit(InitKernel, CurrQueue, arg1, argTypes, 1,
-                               Range, 1);
-    auto E2 = DPPLQueue_Submit(InitKernel, CurrQueue, arg2, argTypes, 1,
-                               Range, 1);
+    auto E1 = DPPLQueue_SubmitRange(InitKernel, CurrQueue, arg1, argTypes, 1,
+                                    Range, 1, nullptr, 0);
+    auto E2 = DPPLQueue_SubmitRange(InitKernel, CurrQueue, arg2, argTypes, 1,
+                                    Range, 1, nullptr, 0);
     ASSERT_TRUE(E1 != nullptr);
     ASSERT_TRUE(E2 != nullptr);
 
@@ -142,8 +142,8 @@ TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
                                               DPPL_VOID_PTR
                                             };
 
-    auto E3 = DPPLQueue_Submit(AddKernel, CurrQueue, args, addKernelArgTypes, 3,
-                               Range, 1);
+    auto E3 = DPPLQueue_SubmitRange(AddKernel, CurrQueue, args,
+                                    addKernelArgTypes, 3, Range, 1, nullptr, 0);
     ASSERT_TRUE(E3 != nullptr);
     DPPLQueue_Wait(CurrQueue);
 
@@ -159,8 +159,9 @@ TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
                                                DPPL_VOID_PTR,
                                                DPPL_FLOAT
                                              };
-    auto E4 = DPPLQueue_Submit(AxpyKernel, CurrQueue, args2,
-                               addKernelArgTypes2, 4, Range, 1);
+    auto E4 = DPPLQueue_SubmitRange(AxpyKernel, CurrQueue, args2,
+                                    addKernelArgTypes2, 4, Range, 1,
+                                    nullptr, 0);
     ASSERT_TRUE(E4 != nullptr);
     DPPLQueue_Wait(CurrQueue);
 

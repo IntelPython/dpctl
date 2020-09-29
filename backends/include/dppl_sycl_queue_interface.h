@@ -97,6 +97,7 @@ DPPLQueue_GetDevice (__dppl_keep const DPPLSyclQueueRef QRef);
  * DPPLKernelArg tagged union.
  *
  * \todo sycl::buffer arguments are not supported yet.
+ * \todo Add support for id<Dims> WorkItemOffset
  *
  * @param    KRef           Opaque pointer to a OpenCL interoperability kernel
  *                          wrapped inside a sycl::kernel.
@@ -109,18 +110,24 @@ DPPLQueue_GetDevice (__dppl_keep const DPPLSyclQueueRef QRef);
  *                          maximum size of three. Note the number of values
  *                          in the array depends on the number of dimensions.
  * @param    NDims          Number of dimensions in the range (size of Range).
+ * @param    DepEvents      List of dependent DPPLSyclEventRef objects (events)
+ *                          for the kernel. We call sycl::handler.depends_on for
+ *                          each of the provided events.
+ * @param    NDepEvents     Size of the DepEvents list.
  * @return   A opaque pointer to the sycl::event returned by the
  *           sycl::queue.submit() function.
  */
 DPPL_API
 DPPLSyclEventRef
-DPPLQueue_Submit (__dppl_keep const DPPLSyclKernelRef KRef,
-                  __dppl_keep const DPPLSyclQueueRef QRef,
-                  __dppl_keep void **Args,
-                  __dppl_keep const DPPLKernelArgType *ArgTypes,
-                  size_t NArgs,
-                  size_t const Range[3],
-                  size_t NDims);
+DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
+                       __dppl_keep const DPPLSyclQueueRef QRef,
+                       __dppl_keep void **Args,
+                       __dppl_keep const DPPLKernelArgType *ArgTypes,
+                       size_t NArgs,
+                       size_t const Range[3],
+                       size_t NDims,
+                       __dppl_keep const DPPLSyclEventRef *DepEvents,
+                       size_t NDepEvents);
 
 /*!
  * @brief Calls the sycl::queue.submit function to do a blocking wait on all

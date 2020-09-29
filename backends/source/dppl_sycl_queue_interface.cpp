@@ -134,13 +134,15 @@ DPPLQueue_GetContext (__dppl_keep const DPPLSyclQueueRef QRef)
 }
 
 __dppl_give DPPLSyclEventRef
-DPPLQueue_Submit (__dppl_keep const DPPLSyclKernelRef KRef,
-                  __dppl_keep const DPPLSyclQueueRef QRef,
-                  __dppl_keep void **Args,
-                  __dppl_keep const DPPLKernelArgType *ArgTypes,
-                  size_t NArgs,
-                  size_t const Range[3],
-                  size_t NDims)
+DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
+                       __dppl_keep const DPPLSyclQueueRef QRef,
+                       __dppl_keep void **Args,
+                       __dppl_keep const DPPLKernelArgType *ArgTypes,
+                       size_t NArgs,
+                       size_t const Range[3],
+                       size_t NDims,
+                       __dppl_keep const DPPLSyclEventRef *DepEvents,
+                       size_t NDepEvents)
 {
     auto Kernel = unwrap(KRef);
     auto Queue  = unwrap(QRef);
@@ -148,7 +150,10 @@ DPPLQueue_Submit (__dppl_keep const DPPLSyclKernelRef KRef,
 
     try {
         e = Queue->submit([&](handler& cgh) {
-            // \todo cgh.depends_on
+            // Depend on any event that was specified by the caller.
+            if(NDepEvents)
+                for(auto i = 0ul; i < NDepEvents; ++i)
+                    cgh.depends_on(*unwrap(DepEvents[i]));
 
             for (auto i = 0ul; i < NArgs; ++i) {
                 // \todo add support for Sycl buffers
