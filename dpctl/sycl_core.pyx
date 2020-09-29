@@ -209,7 +209,6 @@ cdef class SyclProgram:
         return DPPLProgram_HasKernel(self._program_ref, name)
 
 import ctypes
-from libc.stdio cimport printf
 
 cdef class SyclQueue:
     ''' Wrapper class for a Sycl queue.
