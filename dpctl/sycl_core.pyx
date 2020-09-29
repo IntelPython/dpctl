@@ -232,23 +232,9 @@ cdef class SyclQueue:
         e.code = errcode
         raise e
 
-    cpdef SyclContext get_sycl_context (self):
-        return self._context
+    cdef _populate_args (self, list args, void **kargs,                        \
+                         DPPLKernelArgType *kargty):
 
-    cpdef SyclDevice get_sycl_device (self):
-        return self._device
-
-    cdef DPPLSyclQueueRef get_queue_ref (self):
-        return self._queue_ref
-
-    cpdef SyclEvent submit (self, SyclKernel kernel, list args, list gS,       \
-                            list lS = None):
-
-        cdef void **kargs = <void**>malloc(len(args) * sizeof(void*))
-        cdef DPPLKernelArgType *kargty = <DPPLKernelArgType*>malloc(
-                                           len(args) * sizeof(DPPLKernelArgType)
-                                         )
-        cdef size_t Range[3]
         cdef char charval
         cdef int intval
         cdef unsigned int uintval
@@ -259,26 +245,6 @@ cdef class SyclQueue:
         cdef size_t sizetval
         cdef double doubleval
         cdef float floatval
-        cdef size_t gs_len = len(gS)
-        cdef size_t ls_len = len(lS)
-
-        if (gs_len != ls_len):
-            raise ValueError("")
-
-        if (gs_len == 1):
-            Range[0] = <size_t>gS[0]
-            Range[1] = 1
-            Range[2] = 1
-        elif (gs_len == 2):
-            Range[0] = <size_t>gS[0]
-            Range[1] = <size_t>gS[1]
-            Range[2] = 1
-        elif (gs_len == 3):
-            Range[0] = <size_t>gS[0]
-            Range[1] = <size_t>gS[1]
-            Range[2] = <size_t>gS[2]
-        else:
-            raise ValueError("")
 
         for idx, arg in enumerate(args):
             if isinstance(arg, ctypes.c_char):
@@ -326,6 +292,49 @@ cdef class SyclQueue:
                 kargty[idx] = _arg_data_type._VOID_PTR
             else:
                 raise TypeError("Unsupported type for a kernel argument")
+
+    cpdef SyclContext get_sycl_context (self):
+        return self._context
+
+    cpdef SyclDevice get_sycl_device (self):
+        return self._device
+
+    cdef DPPLSyclQueueRef get_queue_ref (self):
+        return self._queue_ref
+
+    cpdef SyclEvent submit (self, SyclKernel kernel, list args, list gS,       \
+                            list lS = None):
+
+        cdef void **kargs = <void**>malloc(len(args) * sizeof(void*))
+        cdef DPPLKernelArgType *kargty = <DPPLKernelArgType*>malloc(
+                                           len(args) * sizeof(DPPLKernelArgType)
+                                         )
+        cdef size_t Range[3]
+        cdef size_t gs_len = len(gS)
+        cdef size_t ls_len = len(lS)
+
+        # populate the args and argstype
+        self._populate_args(args, kargs, kargty)
+
+        if (gs_len != ls_len):
+            raise ValueError("")
+
+        if (gs_len == 1):
+            Range[0] = <size_t>gS[0]
+            Range[1] = 1
+            Range[2] = 1
+        elif (gs_len == 2):
+            Range[0] = <size_t>gS[0]
+            Range[1] = <size_t>gS[1]
+            Range[2] = 1
+        elif (gs_len == 3):
+            Range[0] = <size_t>gS[0]
+            Range[1] = <size_t>gS[1]
+            Range[2] = <size_t>gS[2]
+        else:
+            raise ValueError("")
+
+
 
         cdef DPPLSyclEventRef Eref = DPPLQueue_SubmitRange(
                                         kernel.get_kernel_ref(),

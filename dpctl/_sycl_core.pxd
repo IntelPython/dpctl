@@ -100,6 +100,8 @@ cdef class SyclQueue:
     cdef SyclDevice _device
 
     cdef _raise_queue_submit_error (self, fname, errcode)
+    cdef _populate_args (self, list args, void **kargs,                        \
+                         DPPLKernelArgType *kargty)
 
     @staticmethod
     cdef  SyclQueue _create (DPPLSyclQueueRef qref)
