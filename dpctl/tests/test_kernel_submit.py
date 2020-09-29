@@ -41,22 +41,22 @@ def test_create_program_from_source ():
      c[:] = 0
      d = 2
      args = []
-     
+
      args.append(a.base)
      args.append(b.base)
      args.append(c.base)
      args.append(ctypes.c_int(d))
-     
-     r = [ 1024, 1, 1 ]
-     
+
+     r = [ 1, 1, 1024 ]
+
      e = q.submit(axpyKernel, args, r, r)
      e.wait()
 
      print(c)
      print(a + d * b)
      # self.assertIsNotNone(prog)
-     
+
      # self.assertTrue()
      # self.assertTrue(prog.has_sycl_kernel("axpy"))
-    
+
 test_create_program_from_source()

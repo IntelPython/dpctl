@@ -235,57 +235,36 @@ cdef class SyclQueue:
     cdef _populate_args (self, list args, void **kargs,                        \
                          DPPLKernelArgType *kargty):
 
-        cdef char charval
-        cdef int intval
-        cdef unsigned int uintval
-        cdef long longval
-        cdef long long longlongval
-        cdef unsigned long long ulonglongval
-        cdef short shortval
-        cdef size_t sizetval
-        cdef double doubleval
-        cdef float floatval
-
         for idx, arg in enumerate(args):
             if isinstance(arg, ctypes.c_char):
-                charval =  <char>(arg.value)
-                kargs[idx]= <void*>(&charval)
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._CHAR
             elif isinstance(arg, ctypes.c_int):
-                intval =  <int>(arg.value)
-                kargs[idx]= <void*>(&intval)
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._INT
             elif isinstance(arg, ctypes.c_uint):
-                unintval =  <unsigned int>(arg.value)
-                kargs[idx]= <void*>(&unintval)
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._UNSIGNED_INT
             elif isinstance(arg, ctypes.c_long):
-                longval =  <long>(arg.value)
-                kargs[idx]= <void*>(&longval)
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._LONG
             elif isinstance(arg, ctypes.c_longlong):
-                longlongval =  <long long>(arg.value)
-                kargs[idx]= <void*>(&longlongval)
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._LONG_LONG
             elif isinstance(arg, ctypes.c_ulonglong):
-                ulonglongval =  <unsigned long long>(arg.value)
-                kargs[idx]= <void*>(&ulonglongval)
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._UNSIGNED_LONG_LONG
             elif isinstance(arg, ctypes.c_short):
-                shortval =  <short>(arg.value)
-                kargs[idx]= <void*>(&shortval)
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._SHORT
             elif isinstance(arg, ctypes.c_size_t):
-                sizetval =  <size_t>(arg.value)
-                kargs[idx]= <void*>(&sizetval)
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._SIZE_T
             elif isinstance(arg, ctypes.c_float):
-                floatval =  <float>(arg.value)
-                kargs[idx]= <void*>(&floatval)
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._FLOAT
             elif isinstance(arg, ctypes.c_double):
-                doubleval =  <double>(arg.value)
-                kargs[idx]= <void*>(&doubleval)
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._DOUBLE
             elif isinstance(arg, Memory):
                 kargs[idx]= <void*>(<size_t>arg._pointer)
@@ -333,8 +312,6 @@ cdef class SyclQueue:
             Range[2] = <size_t>gS[2]
         else:
             raise ValueError("")
-
-
 
         cdef DPPLSyclEventRef Eref = DPPLQueue_SubmitRange(
                                         kernel.get_kernel_ref(),
