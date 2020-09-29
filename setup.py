@@ -22,6 +22,7 @@
 ### This file builds the dpctl and dpctl.ocldrv extension modules.
 ##===----------------------------------------------------------------------===##
 import os
+import os.path
 import sys
 import versioneer
 
@@ -29,7 +30,6 @@ from setuptools import setup, Extension, find_packages
 from Cython.Build import cythonize
 
 import numpy as np
-
 
 requirements = [
     'cffi>=1.0.0',
@@ -100,7 +100,7 @@ def extensions():
         librarys = [dppl_sycl_interface_lib]
 
     if IS_LIN or IS_MAC:
-        runtime_library_dirs = [os.path.abspath('dpctl')]
+        runtime_library_dirs = ["$ORIGIN"]
     elif IS_WIN:
         runtime_library_dirs = []
 
@@ -108,14 +108,17 @@ def extensions():
         "depends": [dppl_sycl_interface_include,],
         "include_dirs": [np.get_include(), dppl_sycl_interface_include],
         "extra_compile_args": eca + get_other_cxxflags(),
-        "extra_link_args": ela, "libraries": libs, "library_dirs": librarys,
-        "runtime_library_dirs": runtime_library_dirs, "language": 'c++',
+        "extra_link_args": ela,
+        "libraries": libs,
+        "library_dirs": librarys,
+        "runtime_library_dirs": runtime_library_dirs,
+        "language": 'c++',
     }
 
     extensions = [
-        Extension('dpctl._sycl_core', [os.path.abspath('dpctl/sycl_core.pyx'),],
+        Extension('dpctl._sycl_core', [os.path.join('dpctl', 'sycl_core.pyx'),],
             **extension_args),
-        Extension('dpctl._memory', [os.path.abspath('dpctl/_memory.pyx'),],
+        Extension('dpctl._memory', [os.path.join('dpctl', '_memory.pyx'),],
             **extension_args),
     ]
 
@@ -130,7 +133,8 @@ setup(
     license="Apache 2.0",
     author="Intel Corporation",
     url='https://github.com/IntelPython/dpCtl',
-    packages=find_packages(include=["dpctl", "dpctl.*"]),
+    packages=find_packages(include=["*"]),
+    include_package_data=True,
     ext_modules = extensions(),
     setup_requires=requirements,
     cffi_modules=[
@@ -142,5 +146,6 @@ setup(
         "Development Status :: 3 - Alpha",
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ]
 )
