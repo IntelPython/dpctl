@@ -135,6 +135,7 @@ cdef class SyclEvent:
         return ret
 
     def __dealloc__ (self):
+        self.wait()
         DPPLEvent_Delete(self._event_ref)
 
     cdef DPPLSyclEventRef get_event_ref (self):
@@ -258,8 +259,8 @@ cdef class SyclQueue:
         cdef size_t sizetval
         cdef double doubleval
         cdef float floatval
-        cdef int gs_len = len(gS)
-        cdef int ls_len = len(lS)
+        cdef size_t gs_len = len(gS)
+        cdef size_t ls_len = len(lS)
 
         if (gs_len != ls_len):
             raise ValueError("")
@@ -326,13 +327,16 @@ cdef class SyclQueue:
             else:
                 raise TypeError("Unsupported type for a kernel argument")
 
-        cdef DPPLSyclEventRef Eref = DPPLQueue_Submit(kernel.get_kernel_ref(),
-                                                      self.get_queue_ref(),
-                                                      kargs,
-                                                      kargty,
-                                                      len(args),
-                                                      Range,
-                                                      1)
+        cdef DPPLSyclEventRef Eref = DPPLQueue_SubmitRange(
+                                        kernel.get_kernel_ref(),
+                                        self.get_queue_ref(),
+                                        kargs,
+                                        kargty,
+                                        len(args),
+                                        Range,
+                                        gs_len,
+                                        NULL,
+                                        0)
 
         free(kargs)
         free(kargty)

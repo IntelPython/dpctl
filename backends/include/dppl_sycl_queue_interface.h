@@ -124,7 +124,7 @@ DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
                        __dppl_keep void **Args,
                        __dppl_keep const DPPLKernelArgType *ArgTypes,
                        size_t NArgs,
-                       size_t const Range[3],
+                       const size_t Range[3],
                        size_t NDims,
                        __dppl_keep const DPPLSyclEventRef *DepEvents,
                        size_t NDepEvents);

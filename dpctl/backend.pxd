@@ -129,13 +129,16 @@ cdef extern from "dppl_sycl_queue_interface.h":
     cdef void DPPLQueue_Delete (DPPLSyclQueueRef QRef)
     cdef DPPLSyclContextRef DPPLQueue_GetContext (const DPPLSyclQueueRef Q)
     cdef DPPLSyclDeviceRef DPPLQueue_GetDevice (const DPPLSyclQueueRef Q)
-    cdef DPPLSyclEventRef  DPPLQueue_Submit (const DPPLSyclKernelRef Ref,      \
-                                             const DPPLSyclQueueRef QRef,      \
-                                             void **Args,                      \
-                                             const DPPLKernelArgType *ArgTypes,\
-                                             size_t NArgs,                     \
-                                             const size_t Range[3],            \
-                                             size_t NDims)
+    cdef DPPLSyclEventRef  DPPLQueue_SubmitRange (                             \
+                                const DPPLSyclKernelRef Ref,                   \
+                                const DPPLSyclQueueRef QRef,                   \
+                                void **Args,                                   \
+                                const DPPLKernelArgType *ArgTypes,             \
+                                size_t NArgs,                                  \
+                                const size_t Range[3],                         \
+                                size_t NDims,                                  \
+                                const DPPLSyclEventRef *DepEvents,             \
+                                size_t NDepEvents)
     cdef void DPPLQueue_Wait (const DPPLSyclQueueRef QRef)
     cdef void DPPLQueue_memcpy (const DPPLSyclQueueRef Q,
                                 void *Dest, const void *Src, size_t Count)
