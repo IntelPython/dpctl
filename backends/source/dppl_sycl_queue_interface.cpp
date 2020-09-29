@@ -170,7 +170,8 @@ DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
                 cgh.parallel_for(range<2>{Range[0], Range[1]}, *Kernel);
                 break;
             case 3:
-                cgh.parallel_for(range<3>{Range[0], Range[1], Range[2]}, *Kernel);
+                cgh.parallel_for(range<3>{Range[0], Range[1], Range[2]},
+                                 *Kernel);
                 break;
             default:
                 // \todo handle the error
