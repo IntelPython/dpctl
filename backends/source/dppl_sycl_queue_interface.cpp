@@ -62,7 +62,7 @@ void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef)
     delete unwrap(QRef);
 }
 
-void DPPLQueue_memcpy (__dppl_take const DPPLSyclQueueRef QRef,
+void DPPLQueue_Memcpy (__dppl_take const DPPLSyclQueueRef QRef,
                        void *Dest, const void *Src, size_t Count)
 {
     auto Q = unwrap(QRef);

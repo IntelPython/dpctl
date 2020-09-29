@@ -146,7 +146,7 @@ cdef class SyclQueue:
         else:
             raise TypeError("Parameter src should be Memory.")
 
-        DPPLQueue_memcpy(self.queue_ptr, c_dest, c_src, count)
+        DPPLQueue_Memcpy(self.queue_ptr, c_dest, c_src, count)
 
 
 cdef class _SyclQueueManager:

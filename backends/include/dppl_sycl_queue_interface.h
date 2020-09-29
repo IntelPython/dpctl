@@ -72,7 +72,7 @@ void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef);
  * @param    Count          A number of bytes to copy.
  */
 DPPL_API
-void DPPLQueue_memcpy (__dppl_keep const DPPLSyclQueueRef QRef,
+void DPPLQueue_Memcpy (__dppl_keep const DPPLSyclQueueRef QRef,
                        void *Dest, const void *Src, size_t Count);
 
 DPPL_C_EXTERN_C_END

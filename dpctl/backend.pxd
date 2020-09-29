@@ -78,7 +78,7 @@ cdef extern from "dppl_sycl_queue_interface.h":
          except+
     cdef DPPLSyclDeviceRef DPPLQueue_GetDevice (const DPPLSyclQueueRef Q) \
          except +
-    cdef void DPPLQueue_memcpy (const DPPLSyclQueueRef Q,
+    cdef void DPPLQueue_Memcpy (const DPPLSyclQueueRef Q,
                                 void *Dest, const void *Src, size_t Count) \
          except +
 
