@@ -526,11 +526,13 @@ class Runtime():
             if cls._runtime[0][0].has_cpu:
                 cls._cpu_device = DeviceEnv(cls._runtime[0][0].first_cpu_env)
             else:
+                cls._cpu_device = None
                 _logger.warning("No CPU device")
 
             if cls._runtime[0][0].has_gpu:
                 cls._gpu_device = DeviceEnv(cls._runtime[0][0].first_gpu_env)
             else:
+                cls._gpu_device = None
                 _logger.warning("No GPU device")
 
             cls._curr_device = DeviceEnv(cls._runtime[0][0].curr_env)
