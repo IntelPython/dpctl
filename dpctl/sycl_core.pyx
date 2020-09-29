@@ -134,7 +134,8 @@ cdef class SyclQueue:
         return self.queue_ptr
 
     cpdef memcpy (self, dest, src, int count):
-        cdef void *c_dest, *c_src
+        cdef void *c_dest
+        cdef void *c_src
 
         if isinstance(dest, Memory):
             c_dest = <void*>(<Memory>dest).memory_ptr
