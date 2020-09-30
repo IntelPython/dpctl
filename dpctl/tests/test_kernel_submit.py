@@ -49,7 +49,7 @@ def test_create_program_from_source ():
 
      r = [ 1, 1, 1024 ]
 
-     e = q.submit(axpyKernel, args, r, r)
+     e = q.submit(axpyKernel, args, r)
      e.wait()
 
      print(c)

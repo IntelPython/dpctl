@@ -60,6 +60,13 @@ cdef class SyclKernelSubmitError (Exception):
     '''
     pass
 
+cdef class SyclKernelInvalidRangeError (Exception):
+    '''This exception is raised when a range that has more than three
+       dimensions or less than one dimension.
+    '''
+    pass
+
+
 cdef class SyclContext:
 
     @staticmethod
@@ -232,9 +239,17 @@ cdef class SyclQueue:
         e.code = errcode
         raise e
 
-    cdef _populate_args (self, list args, void **kargs,                        \
-                         DPPLKernelArgType *kargty):
+    cdef _raise_invalid_range_error (self, fname, ndims, errcode):
+        e = SyclKernelInvalidRangeError("Range with ", ndims, " not allowed. "
+                                        "Range should have between one and "
+                                        "three dimensions.")
+        e.fname = fname
+        e.code = errcode
+        raise e
 
+    cdef int _populate_args (self, list args, void **kargs,                    \
+                             DPPLKernelArgType *kargty):
+        cdef int ret = 0
         for idx, arg in enumerate(args):
             if isinstance(arg, ctypes.c_char):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
@@ -270,7 +285,8 @@ cdef class SyclQueue:
                 kargs[idx]= <void*>(<size_t>arg._pointer)
                 kargty[idx] = _arg_data_type._VOID_PTR
             else:
-                raise TypeError("Unsupported type for a kernel argument")
+                ret = -1
+        return ret
 
     cpdef SyclContext get_sycl_context (self):
         return self._context
@@ -282,47 +298,64 @@ cdef class SyclQueue:
         return self._queue_ref
 
     cpdef SyclEvent submit (self, SyclKernel kernel, list args, list gS,       \
-                            list lS = None):
+                            list lS = None, list dEvents = None):
 
-        cdef void **kargs = <void**>malloc(len(args) * sizeof(void*))
-        cdef DPPLKernelArgType *kargty = <DPPLKernelArgType*>malloc(
-                                           len(args) * sizeof(DPPLKernelArgType)
-                                         )
+        cdef void **kargs = NULL
+        cdef DPPLKernelArgType *kargty = NULL
+        cdef DPPLSyclEventRef Eref = NULL
         cdef size_t Range[3]
-        cdef size_t gs_len = len(gS)
-        cdef size_t ls_len = len(lS)
+        cdef size_t nGS = len(gS)
+        cdef size_t nLS = len(lS) if lS is not None else 0
 
-        # populate the args and argstype
-        self._populate_args(args, kargs, kargty)
+        # Allocate the arrays to be sent to DPPLQueue_Submit
+        kargs = <void**>malloc(len(args) * sizeof(void*))
+        if not kargs:
+            raise MemoryError()
+        kargty = <DPPLKernelArgType*>malloc(len(args)*sizeof(DPPLKernelArgType))
+        if not kargty:
+            free(kargs)
+            raise MemoryError()
 
-        if (gs_len != ls_len):
-            raise ValueError("")
+        # populate the args and argstype arrays
+        cdef int ret = self._populate_args(args, kargs, kargty)
+        if ret == -1:
+            free(kargs)
+            free(kargty)
+            raise TypeError("Unsupported type for a kernel argument")
 
-        if (gs_len == 1):
-            Range[0] = <size_t>gS[0]
-            Range[1] = 1
-            Range[2] = 1
-        elif (gs_len == 2):
-            Range[0] = <size_t>gS[0]
-            Range[1] = <size_t>gS[1]
-            Range[2] = 1
-        elif (gs_len == 3):
-            Range[0] = <size_t>gS[0]
-            Range[1] = <size_t>gS[1]
-            Range[2] = <size_t>gS[2]
+        if nGS == 0 or nGS > 3:
+            raise self._raise_invalid_range_error("SyclEvent.submit", nGS, -1)
+
+        if lS is None:
+            if (nGS == 1):
+                Range[0] = <size_t>gS[0]
+                Range[1] = 1
+                Range[2] = 1
+            elif (nGS == 2):
+                Range[0] = <size_t>gS[0]
+                Range[1] = <size_t>gS[1]
+                Range[2] = 1
+            elif (nGS == 3):
+                Range[0] = <size_t>gS[0]
+                Range[1] = <size_t>gS[1]
+                Range[2] = <size_t>gS[2]
+            else:
+                raise ValueError("")
+
+            Eref = DPPLQueue_SubmitRange(kernel.get_kernel_ref(),
+                                         self.get_queue_ref(),
+                                         kargs,
+                                         kargty,
+                                         len(args),
+                                         Range,
+                                         nGS,
+                                         NULL,
+                                         0)
         else:
-            raise ValueError("")
-
-        cdef DPPLSyclEventRef Eref = DPPLQueue_SubmitRange(
-                                        kernel.get_kernel_ref(),
-                                        self.get_queue_ref(),
-                                        kargs,
-                                        kargty,
-                                        len(args),
-                                        Range,
-                                        gs_len,
-                                        NULL,
-                                        0)
+            if (nGS != nLS):
+                raise ValueError("")
+            if nLS == 0 or nLS > 3:
+                raise self._raise_invalid_range_error("SyclEvent.submit",nLS,-1)
 
         free(kargs)
         free(kargty)
