@@ -325,12 +325,14 @@ cdef class SyclQueue:
 
         cdef void **kargs = NULL
         cdef DPPLKernelArgType *kargty = NULL
+        cdef DPPLSyclEventRef *depEvents = NULL
         cdef DPPLSyclEventRef Eref = NULL
         cdef int ret
         cdef size_t gRange[3]
         cdef size_t lRange[3]
         cdef size_t nGS = len(gS)
         cdef size_t nLS = len(lS) if lS is not None else 0
+        cdef size_t nDE = len(dEvents) if dEvents is not None else 0
 
         # Allocate the arrays to be sent to DPPLQueue_Submit
         kargs = <void**>malloc(len(args) * sizeof(void*))
@@ -340,12 +342,24 @@ cdef class SyclQueue:
         if not kargty:
             free(kargs)
             raise MemoryError()
+        # Create the array of dependent events if any
+        if dEvents is not None and nDE > 0:
+            depEvents = <DPPLSyclEventRef*>malloc(nDE*sizeof(DPPLSyclEventRef))
+        if not depEvents:
+            free(kargs)
+            free(kargty)
+            raise MemoryError()
+        else:
+            for idx, de in enumerate(dEvents):
+
+                depEvents[idx] = (<SyclEvent>de).get_event_ref()
 
         # populate the args and argstype arrays
         ret = self._populate_args(args, kargs, kargty)
         if ret == -1:
             free(kargs)
             free(kargty)
+            free(depEvents)
             raise TypeError("Unsupported type for a kernel argument")
 
         if lS is None:
@@ -353,6 +367,7 @@ cdef class SyclQueue:
             if ret == -1:
                 free(kargs)
                 free(kargty)
+                free(depEvents)
                 self._raise_invalid_range_error("SyclQueue.submit", nGS, -1)
 
             Eref = DPPLQueue_SubmitRange(kernel.get_kernel_ref(),
@@ -362,23 +377,26 @@ cdef class SyclQueue:
                                          len(args),
                                          gRange,
                                          nGS,
-                                         NULL,
-                                         0)
+                                         depEvents,
+                                         nDE)
         else:
             ret = self._populate_range (gRange, gS, nGS)
             if ret == -1:
                 free(kargs)
                 free(kargty)
+                free(depEvents)
                 self._raise_invalid_range_error("SyclQueue.submit", nGS, -1)
             ret = self._populate_range (lRange, lS, nLS)
             if ret == -1:
                 free(kargs)
                 free(kargty)
+                free(depEvents)
                 self._raise_invalid_range_error("SyclQueue.submit", nLS, -1)
 
             if nGS != nLS:
                 free(kargs)
                 free(kargty)
+                free(depEvents)
                 raise ValueError("Local and global ranges need to have same "
                                  "number of dimensions.")
 
@@ -390,10 +408,11 @@ cdef class SyclQueue:
                                            gRange,
                                            lRange,
                                            nGS,
-                                           NULL,
-                                           0)
+                                           depEvents,
+                                           nDE)
         free(kargs)
         free(kargty)
+        free(depEvents)
 
         if Eref is NULL:
             # \todo get the error number from dpctl-capi
