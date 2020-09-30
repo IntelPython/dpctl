@@ -345,14 +345,13 @@ cdef class SyclQueue:
         # Create the array of dependent events if any
         if dEvents is not None and nDE > 0:
             depEvents = <DPPLSyclEventRef*>malloc(nDE*sizeof(DPPLSyclEventRef))
-        if not depEvents:
-            free(kargs)
-            free(kargty)
-            raise MemoryError()
-        else:
-            for idx, de in enumerate(dEvents):
-
-                depEvents[idx] = (<SyclEvent>de).get_event_ref()
+            if not depEvents:
+                free(kargs)
+                free(kargty)
+                raise MemoryError()
+            else:
+                for idx, de in enumerate(dEvents):
+                    depEvents[idx] = (<SyclEvent>de).get_event_ref()
 
         # populate the args and argstype arrays
         ret = self._populate_args(args, kargs, kargty)
