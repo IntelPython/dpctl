@@ -43,26 +43,26 @@ using namespace cl::sycl;
  */
 void DPPLPlatform_DumpInfo ()
 {
-    size_t i = 0;
+   size_t i = 0;
 
-    // Print out the info for each platform
-    auto platforms = platform::get_platforms();
-    for (auto &p : platforms) {
-        std::cout << "---Platform " << i << '\n';
-        std::stringstream ss;
+   // Print out the info for each platform
+   auto platforms = platform::get_platforms();
+   for (auto &p : platforms) {
+      std::cout << "---Platform " << i << '\n';
+      std::stringstream ss;
 
-        ss << std::setw(4) << " " << std::left << std::setw(12) << "Name"
-           << p.get_info<info::platform::name>() << '\n';
-        ss << std::setw(4) << " " << std::left << std::setw(12) << "Version"
-           << p.get_info<info::platform::version>() << '\n';
-        ss << std::setw(4) << " " << std::left << std::setw(12) << "Vendor"
-           << p.get_info<info::platform::vendor>() << '\n';
-        ss << std::setw(4) << " " << std::left << std::setw(12) << "Profile"
-           << p.get_info<info::platform::profile>() << '\n';
+      ss << std::setw(4) << " " << std::left << std::setw(12) << "Name"
+         << p.get_info<info::platform::name>() << '\n';
+      ss << std::setw(4) << " " << std::left << std::setw(12) << "Version"
+         << p.get_info<info::platform::version>() << '\n';
+      ss << std::setw(4) << " " << std::left << std::setw(12) << "Vendor"
+         << p.get_info<info::platform::vendor>() << '\n';
+      ss << std::setw(4) << " " << std::left << std::setw(12) << "Profile"
+         << p.get_info<info::platform::profile>() << '\n';
 
-        std::cout << ss.str();
-        ++i;
-    }
+      std::cout << ss.str();
+      ++i;
+   }
 }
 
 /*!

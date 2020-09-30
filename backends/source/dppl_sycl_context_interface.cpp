@@ -32,26 +32,16 @@ using namespace cl::sycl;
 
 namespace
 {
- // Create wrappers for C Binding types (see CBindingWrapping.h).
- DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
+// Create wrappers for C Binding types (see CBindingWrapping.h).
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
 } /* end of anonymous namespace */
 
-/*!
- * @brief
- *
- * @param    CtxtRef        My Param doc
- * @return   {return}       My Param doc
- */
+
 bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef)
 {
     return unwrap(CtxRef)->is_host();
 }
 
-/*!
- * @brief
- *
- * @param    CtxtRef        My Param doc
- */
 void DPPLContext_Delete (__dppl_take DPPLSyclContextRef CtxRef)
 {
     delete unwrap(CtxRef);

@@ -39,8 +39,8 @@ using namespace cl::sycl;
 namespace
 {
 
- // Create wrappers for C Binding types (see CBindingWrapping.h).
- DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
+// Create wrappers for C Binding types (see CBindingWrapping.h).
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
 
 void error_reporter (const std::string & msg)
 {
@@ -99,6 +99,7 @@ public:
     static cl::sycl::vector_class<cl::sycl::queue>*
     init_queues (info::device_type device_ty)
     {
+
         auto queues = new std::vector<cl::sycl::queue>();
         for(auto d : device::get_devices(device_ty))
             queues->emplace_back(d);

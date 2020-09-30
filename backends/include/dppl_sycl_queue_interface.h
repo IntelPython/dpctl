@@ -99,7 +99,7 @@ DPPLQueue_GetDevice (__dppl_keep const DPPLSyclQueueRef QRef);
  * \todo sycl::buffer arguments are not supported yet.
  * \todo Add support for id<Dims> WorkItemOffset
  *
- * @param    KRef           Opaque pointer to a OpenCL interoperability kernel
+ * @param    KRef           Opaque pointer to an OpenCL interoperability kernel
  *                          wrapped inside a sycl::kernel.
  * @param    QRef           Opaque pointer to the sycl::queue where the kernel
  *                          will be enqueued.
@@ -116,7 +116,7 @@ DPPLQueue_GetDevice (__dppl_keep const DPPLSyclQueueRef QRef);
  *                          for the kernel. We call sycl::handler.depends_on for
  *                          each of the provided events.
  * @param    NDepEvents     Size of the DepEvents list.
- * @return   A opaque pointer to the sycl::event returned by the
+ * @return   An opaque pointer to the sycl::event returned by the
  *           sycl::queue.submit() function.
  */
 DPPL_API
@@ -142,7 +142,7 @@ DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
  * \todo sycl::buffer arguments are not supported yet.
  * \todo Add support for id<Dims> WorkItemOffset
  *
- * @param    KRef           Opaque pointer to a OpenCL interoperability kernel
+ * @param    KRef           Opaque pointer to an OpenCL interoperability kernel
  *                          wrapped inside a sycl::kernel.
  * @param    QRef           Opaque pointer to the sycl::queue where the kernel
  *                          will be enqueued.
@@ -163,7 +163,7 @@ DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
  *                          for the kernel. We call sycl::handler.depends_on for
  *                          each of the provided events.
  * @param    NDepEvents     Size of the DepEvents list.
- * @return   A opaque pointer to the sycl::event returned by the
+ * @return   An opaque pointer to the sycl::event returned by the
  *           sycl::queue.submit() function.
  */
 DPPL_API
