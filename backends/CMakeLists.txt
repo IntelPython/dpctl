@@ -149,13 +149,12 @@ if(WIN32)
     )
     target_link_libraries(
         DPPLSyclInterface
-        PRIVATE
-        ${DPCPP_ROOT}/lib/sycl.lib
+        PRIVATE ${DPCPP_ROOT}/lib/sycl.lib
+        PRIVATE ${DPCPP_ROOT}/lib/OpenCL.lib
     )
     target_link_libraries(
         DPPLOpenCLInterface
-        PRIVATE
-        ${DPCPP_ROOT}/lib/OpenCL.lib
+        PRIVATE ${DPCPP_ROOT}/lib/OpenCL.lib
     )
 endif()
 
