@@ -101,7 +101,7 @@ cdef class SyclQueue:
 
     cdef _raise_queue_submit_error (self, fname, errcode)
     cdef _raise_invalid_range_error (self, fname, ndims, errcode)
-    cdef int _populate_args (self, list args, void **kargs,                    \
+    cdef int _populate_args (self, list args, void **kargs,
                              DPPLKernelArgType *kargty)
     cdef int _populate_range (self, size_t Range[3], list gS, size_t nGS)
 
@@ -110,7 +110,8 @@ cdef class SyclQueue:
     cpdef SyclContext get_sycl_context (self)
     cpdef SyclDevice get_sycl_device (self)
     cdef  DPPLSyclQueueRef get_queue_ref (self)
-    cpdef SyclEvent submit (self, SyclKernel kernel, list args, list gS,       \
+    cpdef SyclEvent submit (self, SyclKernel kernel, list args, list gS,
                             list lS=*, list dEvents=*)
     cpdef void wait (self)
+    cdef DPPLSyclQueueRef get_queue_ref (self)
     cpdef memcpy (self, dest, src, int count)

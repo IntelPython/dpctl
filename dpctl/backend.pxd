@@ -93,17 +93,17 @@ cdef extern from "dppl_sycl_platform_interface.h":
 
 
 cdef extern from "dppl_sycl_program_interface.h":
-    cdef DPPLSyclProgramRef DPPLProgram_CreateFromOCLSpirv (                   \
-                                const DPPLSyclContextRef Ctx,                  \
-                                const void *IL,                                \
+    cdef DPPLSyclProgramRef DPPLProgram_CreateFromOCLSpirv (
+                                const DPPLSyclContextRef Ctx,
+                                const void *IL,
                                 size_t Length)
-    cdef DPPLSyclProgramRef DPPLProgram_CreateFromOCLSource (                  \
-                                const DPPLSyclContextRef Ctx,                  \
-                                const char* Source,                            \
+    cdef DPPLSyclProgramRef DPPLProgram_CreateFromOCLSource (
+                                const DPPLSyclContextRef Ctx,
+                                const char* Source,
                                 const char* CompileOpts)
-    cdef DPPLSyclKernelRef DPPLProgram_GetKernel (DPPLSyclProgramRef PRef,     \
+    cdef DPPLSyclKernelRef DPPLProgram_GetKernel (DPPLSyclProgramRef PRef,
                                                   const char *KernelName)
-    cdef bool DPPLProgram_HasKernel (DPPLSyclProgramRef PRef,                  \
+    cdef bool DPPLProgram_HasKernel (DPPLSyclProgramRef PRef,
                                      const char *KernelName)
     cdef void DPPLProgram_Delete (DPPLSyclProgramRef PRef)
 
@@ -129,29 +129,29 @@ cdef extern from "dppl_sycl_queue_interface.h":
     cdef void DPPLQueue_Delete (DPPLSyclQueueRef QRef)
     cdef DPPLSyclContextRef DPPLQueue_GetContext (const DPPLSyclQueueRef Q)
     cdef DPPLSyclDeviceRef DPPLQueue_GetDevice (const DPPLSyclQueueRef Q)
-    cdef DPPLSyclEventRef  DPPLQueue_SubmitRange (                             \
-                                const DPPLSyclKernelRef Ref,                   \
-                                const DPPLSyclQueueRef QRef,                   \
-                                void **Args,                                   \
-                                const DPPLKernelArgType *ArgTypes,             \
-                                size_t NArgs,                                  \
-                                const size_t Range[3],                         \
-                                size_t NDims,                                  \
-                                const DPPLSyclEventRef *DepEvents,             \
+    cdef DPPLSyclEventRef  DPPLQueue_SubmitRange (
+                                const DPPLSyclKernelRef Ref,
+                                const DPPLSyclQueueRef QRef,
+                                void **Args,
+                                const DPPLKernelArgType *ArgTypes,
+                                size_t NArgs,
+                                const size_t Range[3],
+                                size_t NDims,
+                                const DPPLSyclEventRef *DepEvents,
                                 size_t NDepEvents)
-    cdef DPPLSyclEventRef DPPLQueue_SubmitNDRange(                             \
-                                const DPPLSyclKernelRef Ref,                   \
-                                const DPPLSyclQueueRef QRef,                   \
-                                void **Args,                                   \
-                                const DPPLKernelArgType *ArgTypes,             \
-                                size_t NArgs,                                  \
-                                const size_t gRange[3],                        \
-                                const size_t lRange[3],                        \
-                                size_t NDims,                                  \
-                                const DPPLSyclEventRef *DepEvents,             \
+    cdef DPPLSyclEventRef DPPLQueue_SubmitNDRange(
+                                const DPPLSyclKernelRef Ref,
+                                const DPPLSyclQueueRef QRef,
+                                void **Args,
+                                const DPPLKernelArgType *ArgTypes,
+                                size_t NArgs,
+                                const size_t gRange[3],
+                                const size_t lRange[3],
+                                size_t NDims,
+                                const DPPLSyclEventRef *DepEvents,
                                 size_t NDepEvents)
     cdef void DPPLQueue_Wait (const DPPLSyclQueueRef QRef)
-    cdef void DPPLQueue_memcpy (const DPPLSyclQueueRef Q,
+    cdef void DPPLQueue_Memcpy (const DPPLSyclQueueRef Q,
                                 void *Dest, const void *Src, size_t Count)
 
 

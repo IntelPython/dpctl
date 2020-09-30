@@ -198,4 +198,16 @@ DPPL_API
 void DPPLQueue_memcpy (__dppl_keep const DPPLSyclQueueRef QRef,
                        void *Dest, const void *Src, size_t Count);
 
+/*!
+ * @brief C-API wrapper for sycl::queue::memcpy. It waits an event.
+ *
+ * @param    QRef           An opaque pointer to the sycl queue.
+ * @param    Dest           An USM pointer to the destination memory.
+ * @param    Src            An USM pointer to the source memory.
+ * @param    Count          A number of bytes to copy.
+ */
+DPPL_API
+void DPPLQueue_Memcpy (__dppl_keep const DPPLSyclQueueRef QRef,
+                       void *Dest, const void *Src, size_t Count);
+
 DPPL_C_EXTERN_C_END

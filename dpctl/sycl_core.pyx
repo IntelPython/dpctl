@@ -29,10 +29,9 @@
 from __future__ import print_function
 from enum import Enum, auto
 import logging
-
-from libc.stdlib cimport malloc, free
 from .backend cimport *
 from ._memory cimport Memory
+from libc.stdlib cimport malloc, free
 
 
 _logger = logging.getLogger(__name__)
@@ -436,7 +435,7 @@ cdef class SyclQueue:
         else:
             raise TypeError("Parameter src should be Memory.")
 
-        DPPLQueue_memcpy(self._queue_ref, c_dest, c_src, count)
+        DPPLQueue_Memcpy(self._queue_ref, c_dest, c_src, count)
 
 
 cdef class _SyclQueueManager:
