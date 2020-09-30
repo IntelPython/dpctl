@@ -342,7 +342,7 @@ class DeviceEnv():
         pass
 
     def retain_context(self):
-        ''' Increment the refrence count of the OpenCL context object.
+        ''' Increment the reference count of the OpenCL context object.
         '''
 
         retval = (lib.retain_dp_context(self._env_ptr.context))
@@ -352,7 +352,7 @@ class DeviceEnv():
         return (self._env_ptr.context)
 
     def release_context(self):
-        ''' Increment the refrence count of the OpenCL context object.
+        ''' Increment the reference count of the OpenCL context object.
         '''
 
         retval = (lib.release_dp_context(self._env_ptr.context))
@@ -617,7 +617,7 @@ has_gpu_device = runtime.has_gpu_device()
 def enqueue_kernel (device_env, kernel, kernelargs, global_work_size,
                     local_work_size):
     ''' A single wrapper function over OpenCL clCreateKernelArgs and
-        clEnqueueNDRangeKernel. The function blocks till the enqued kernel
+        clEnqueueNDRangeKernel. The function blocks till the enqueued kernel
         finishes execution.
     '''
 
@@ -670,7 +670,7 @@ def dppl_error():
 def igpu_context(*args, **kwds):
     ''' A context manager sets the current DeviceEnv inside the global
         runtime object to the default GPU DeviceEnv. The GPU DeviceEnv is
-        yeilded by the context manager.
+        yielded by the context manager.
     '''
 
     device_id = 0
@@ -692,7 +692,7 @@ def igpu_context(*args, **kwds):
 def cpu_context(*args, **kwds):
     ''' A context manager sets the current DeviceEnv inside the global
         runtime object to the default CPU DeviceEnv. The CPU DeviceEnv is
-        yeilded by the context manager.
+        yielded by the context manager.
     '''
 
     device_id = 0
