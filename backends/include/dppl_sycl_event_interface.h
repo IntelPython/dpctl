@@ -35,10 +35,9 @@
 DPPL_C_EXTERN_C_BEGIN
 
 /*!
- * @brief
+ * @brief C-API wrapper for sycl::event.wait.
  *
- * @param    ERef           My Param doc
- * @return   {return}       My Param doc
+ * @param    ERef           An opaque DPPLSyclEventRef pointer on which to wait.
  */
 DPPL_API
 void DPPLEvent_Wait (__dppl_keep DPPLSyclEventRef ERef);

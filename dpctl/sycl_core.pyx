@@ -36,6 +36,7 @@ from libc.stdlib cimport malloc, free
 
 _logger = logging.getLogger(__name__)
 
+
 class device_type(Enum):
     gpu = auto()
     cpu = auto()
