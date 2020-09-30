@@ -36,9 +36,6 @@ from cpython cimport Py_buffer
 
 
 cdef class Memory:
-    cdef DPPLSyclUSMRef memory_ptr
-    cdef Py_ssize_t nbytes
-    cdef SyclQueue queue
 
     cdef _cinit(self, Py_ssize_t nbytes, ptr_type, SyclQueue queue):
         cdef DPPLSyclUSMRef p
