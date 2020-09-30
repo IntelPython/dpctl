@@ -26,7 +26,7 @@ cmake                                                       \
     -DGTEST_LIB_DIR=${CONDA_PREFIX}/lib                     \
     ../backends
 
-make V=1 -n -j 4 && make install
+make V=1 -n -j 4 && make check && make install
 popd
 cp install/lib/*.so dpctl/
 
@@ -47,3 +47,4 @@ export CXX=dpcpp
 export CFLAGS=-fPIC
 python setup.py clean --all
 python setup.py build develop
+python -m unittest dpctl.tests

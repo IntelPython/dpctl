@@ -139,6 +139,17 @@ cdef extern from "dppl_sycl_queue_interface.h":
                                 size_t NDims,                                  \
                                 const DPPLSyclEventRef *DepEvents,             \
                                 size_t NDepEvents)
+    cdef DPPLSyclEventRef DPPLQueue_SubmitNDRange(                             \
+                                const DPPLSyclKernelRef Ref,                   \
+                                const DPPLSyclQueueRef QRef,                   \
+                                void **Args,                                   \
+                                const DPPLKernelArgType *ArgTypes,             \
+                                size_t NArgs,                                  \
+                                const size_t gRange[3],                        \
+                                const size_t lRange[3],                        \
+                                size_t NDims,                                  \
+                                const DPPLSyclEventRef *DepEvents,             \
+                                size_t NDepEvents)
     cdef void DPPLQueue_Wait (const DPPLSyclQueueRef QRef)
     cdef void DPPLQueue_memcpy (const DPPLSyclQueueRef Q,
                                 void *Dest, const void *Src, size_t Count)

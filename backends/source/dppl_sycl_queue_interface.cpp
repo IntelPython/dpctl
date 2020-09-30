@@ -139,7 +139,7 @@ DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
                        __dppl_keep void **Args,
                        __dppl_keep const DPPLKernelArgType *ArgTypes,
                        size_t NArgs,
-                       const size_t Range[3],
+                       __dppl_keep const size_t Range[3],
                        size_t NDims,
                        __dppl_keep const DPPLSyclEventRef *DepEvents,
                        size_t NDepEvents)
@@ -175,13 +175,77 @@ DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
                 break;
             default:
                 // \todo handle the error
-                std::cerr << "Range cannot be greater than three dimensions.\n";
-                exit(1);
+                throw std::runtime_error("Range cannot be greater than three "
+                                         "dimensions.");
             }
         });
     } catch (runtime_error re) {
         // \todo fix error handling
         std::cerr << re.what() << '\n';
+        return nullptr;
+    } catch (std::runtime_error sre) {
+        std::cerr << sre.what() << '\n';
+        return nullptr;
+    }
+
+    return wrap(new event(e));
+}
+
+DPPLSyclEventRef
+DPPLQueue_SubmitNDRange(__dppl_keep const DPPLSyclKernelRef KRef,
+                        __dppl_keep const DPPLSyclQueueRef QRef,
+                        __dppl_keep void **Args,
+                        __dppl_keep const DPPLKernelArgType *ArgTypes,
+                        size_t NArgs,
+                        __dppl_keep const size_t gRange[3],
+                        __dppl_keep const size_t lRange[3],
+                        size_t NDims,
+                        __dppl_keep const DPPLSyclEventRef *DepEvents,
+                        size_t NDepEvents)
+{
+    auto Kernel = unwrap(KRef);
+    auto Queue  = unwrap(QRef);
+    event e;
+
+    try {
+        e = Queue->submit([&](handler& cgh) {
+            // Depend on any event that was specified by the caller.
+            if(NDepEvents)
+                for(auto i = 0ul; i < NDepEvents; ++i)
+                    cgh.depends_on(*unwrap(DepEvents[i]));
+
+            for (auto i = 0ul; i < NArgs; ++i) {
+                // \todo add support for Sycl buffers
+                // \todo handle errors properly
+                if(!set_kernel_arg(cgh, i, Args[i], ArgTypes[i]))
+                    exit(1);
+            }
+            switch(NDims)
+            {
+            case 1:
+                cgh.parallel_for(nd_range<1>{{gRange[0]},{lRange[0]}}, *Kernel);
+                break;
+            case 2:
+                cgh.parallel_for(nd_range<2>{{gRange[0], gRange[1]},
+                                             {lRange[0], lRange[1]}}, *Kernel);
+                break;
+            case 3:
+                cgh.parallel_for(nd_range<3>{{gRange[0], gRange[1], gRange[2]},
+                                             {lRange[0], lRange[1], lRange[3]}},
+                                             *Kernel);
+                break;
+            default:
+                // \todo handle the error
+                throw std::runtime_error("Range cannot be greater than three "
+                                         "dimensions.");
+            }
+        });
+    } catch (runtime_error re) {
+        // \todo fix error handling
+        std::cerr << re.what() << '\n';
+        return nullptr;
+    } catch (std::runtime_error sre) {
+        std::cerr << sre.what() << '\n';
         return nullptr;
     }
 

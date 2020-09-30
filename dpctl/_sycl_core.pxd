@@ -103,6 +103,7 @@ cdef class SyclQueue:
     cdef _raise_invalid_range_error (self, fname, ndims, errcode)
     cdef int _populate_args (self, list args, void **kargs,                    \
                              DPPLKernelArgType *kargty)
+    cdef int _populate_range (self, size_t Range[3], list gS, size_t nGS)
 
     @staticmethod
     cdef  SyclQueue _create (DPPLSyclQueueRef qref)

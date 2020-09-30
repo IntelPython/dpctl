@@ -288,6 +288,29 @@ cdef class SyclQueue:
                 ret = -1
         return ret
 
+
+    cdef int _populate_range (self, size_t Range[3], list S, size_t nS):
+
+        cdef int ret = 0
+
+        if nS == 1:
+            Range[0] = <size_t>S[0]
+            Range[1] = 1
+            Range[2] = 1
+        elif nS == 2:
+            Range[0] = <size_t>S[0]
+            Range[1] = <size_t>S[1]
+            Range[2] = 1
+        elif nS == 3:
+            Range[0] = <size_t>S[0]
+            Range[1] = <size_t>S[1]
+            Range[2] = <size_t>S[2]
+        else:
+            ret = -1
+
+        return ret
+
+
     cpdef SyclContext get_sycl_context (self):
         return self._context
 
@@ -303,7 +326,9 @@ cdef class SyclQueue:
         cdef void **kargs = NULL
         cdef DPPLKernelArgType *kargty = NULL
         cdef DPPLSyclEventRef Eref = NULL
-        cdef size_t Range[3]
+        cdef int ret
+        cdef size_t gRange[3]
+        cdef size_t lRange[3]
         cdef size_t nGS = len(gS)
         cdef size_t nLS = len(lS) if lS is not None else 0
 
@@ -317,46 +342,56 @@ cdef class SyclQueue:
             raise MemoryError()
 
         # populate the args and argstype arrays
-        cdef int ret = self._populate_args(args, kargs, kargty)
+        ret = self._populate_args(args, kargs, kargty)
         if ret == -1:
             free(kargs)
             free(kargty)
             raise TypeError("Unsupported type for a kernel argument")
 
-        if nGS == 0 or nGS > 3:
-            raise self._raise_invalid_range_error("SyclEvent.submit", nGS, -1)
-
         if lS is None:
-            if (nGS == 1):
-                Range[0] = <size_t>gS[0]
-                Range[1] = 1
-                Range[2] = 1
-            elif (nGS == 2):
-                Range[0] = <size_t>gS[0]
-                Range[1] = <size_t>gS[1]
-                Range[2] = 1
-            elif (nGS == 3):
-                Range[0] = <size_t>gS[0]
-                Range[1] = <size_t>gS[1]
-                Range[2] = <size_t>gS[2]
-            else:
-                raise ValueError("")
+            ret = self._populate_range (gRange, gS, nGS)
+            if ret == -1:
+                free(kargs)
+                free(kargty)
+                self._raise_invalid_range_error("SyclQueue.submit", nGS, -1)
 
             Eref = DPPLQueue_SubmitRange(kernel.get_kernel_ref(),
                                          self.get_queue_ref(),
                                          kargs,
                                          kargty,
                                          len(args),
-                                         Range,
+                                         gRange,
                                          nGS,
                                          NULL,
                                          0)
         else:
-            if (nGS != nLS):
-                raise ValueError("")
-            if nLS == 0 or nLS > 3:
-                raise self._raise_invalid_range_error("SyclEvent.submit",nLS,-1)
+            ret = self._populate_range (gRange, gS, nGS)
+            if ret == -1:
+                free(kargs)
+                free(kargty)
+                self._raise_invalid_range_error("SyclQueue.submit", nGS, -1)
+            ret = self._populate_range (lRange, lS, nLS)
+            if ret == -1:
+                free(kargs)
+                free(kargty)
+                self._raise_invalid_range_error("SyclQueue.submit", nLS, -1)
 
+            if nGS != nLS:
+                free(kargs)
+                free(kargty)
+                raise ValueError("Local and global ranges need to have same "
+                                 "number of dimensions.")
+
+            Eref = DPPLQueue_SubmitNDRange(kernel.get_kernel_ref(),
+                                           self.get_queue_ref(),
+                                           kargs,
+                                           kargty,
+                                           len(args),
+                                           gRange,
+                                           lRange,
+                                           nGS,
+                                           NULL,
+                                           0)
         free(kargs)
         free(kargty)
 
