@@ -29,6 +29,7 @@
 
 from .backend cimport *
 
+
 cdef class SyclContext:
     ''' Wrapper class for a Sycl Context
     '''
