@@ -34,25 +34,80 @@ using namespace cl::sycl;
 namespace
 {
 // Create wrappers for C Binding types (see CBindingWrapping.h).
- DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPPLSyclDeviceRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(event, DPPLSyclEventRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPPLSyclKernelRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
+
+/*!
+ * @brief Set the kernel arg object
+ *
+ * @param    cgh            My Param doc
+ * @param    Arg            My Param doc
+ */
+bool set_kernel_arg (handler &cgh, size_t idx, __dppl_keep void *Arg,
+                     DPPLKernelArgType ArgTy)
+{
+    bool arg_set = true;
+
+    switch (ArgTy)
+    {
+    case DPPL_CHAR:
+        cgh.set_arg(idx, *(char*)Arg);
+        break;
+    case DPPL_SIGNED_CHAR:
+        cgh.set_arg(idx, *(signed char*)Arg);
+        break;
+    case DPPL_UNSIGNED_CHAR:
+        cgh.set_arg(idx, *(unsigned char*)Arg);
+        break;
+    case DPPL_SHORT:
+        cgh.set_arg(idx, *(short*)Arg);
+        break;
+    case DPPL_INT:
+        cgh.set_arg(idx, *(int*)Arg);
+        break;
+    case DPPL_UNSIGNED_INT:
+        cgh.set_arg(idx, *(unsigned int*)Arg);
+        break;
+    case DPPL_LONG:
+        cgh.set_arg(idx, *(long*)Arg);
+        break;
+    case DPPL_UNSIGNED_LONG:
+        cgh.set_arg(idx, *(unsigned long*)Arg);
+        break;
+    case DPPL_LONG_LONG:
+        cgh.set_arg(idx, *(long long*)Arg);
+        break;
+    case DPPL_UNSIGNED_LONG_LONG:
+        cgh.set_arg(idx, *(unsigned long long*)Arg);
+        break;
+    case DPPL_SIZE_T:
+        cgh.set_arg(idx, *(size_t*)Arg);
+        break;
+    case DPPL_FLOAT:
+        cgh.set_arg(idx, *(float*)Arg);
+        break;
+    case DPPL_DOUBLE:
+        cgh.set_arg(idx, *(double*)Arg);
+        break;
+    case DPPL_LONG_DOUBLE:
+        cgh.set_arg(idx, *(long double*)Arg);
+        break;
+    case DPPL_VOID_PTR:
+        cgh.set_arg(idx, Arg);
+        break;
+    default:
+        // \todo handle errors
+        arg_set = false;
+        std::cerr << "Kernel argument could not be created.\n";
+        break;
+    }
+    return arg_set;
+}
 
 } /* end of anonymous namespace */
-
-__dppl_give DPPLSyclDeviceRef
-DPPLQueue_GetDevice (__dppl_keep const DPPLSyclQueueRef QRef)
-{
-    auto Q = unwrap(QRef);
-    auto Device = new device(Q->get_device());
-    return reinterpret_cast<DPPLSyclDeviceRef>(Device);
-}
-
-__dppl_give DPPLSyclContextRef
-DPPLQueue_GetContext (__dppl_keep const DPPLSyclQueueRef QRef)
-{
-    auto Q = unwrap(QRef);
-    auto Context = new context(Q->get_context());
-    return reinterpret_cast<DPPLSyclContextRef>(Context);
-}
 
 /*!
  * Delete the passed in pointer after verifying it points to a sycl::queue.
@@ -60,6 +115,149 @@ DPPLQueue_GetContext (__dppl_keep const DPPLSyclQueueRef QRef)
 void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef)
 {
     delete unwrap(QRef);
+}
+
+__dppl_give DPPLSyclDeviceRef
+DPPLQueue_GetDevice (__dppl_keep const DPPLSyclQueueRef QRef)
+{
+    auto Q = unwrap(QRef);
+    auto Device = new device(Q->get_device());
+    return wrap(Device);
+}
+
+__dppl_give DPPLSyclContextRef
+DPPLQueue_GetContext (__dppl_keep const DPPLSyclQueueRef QRef)
+{
+    auto Q = unwrap(QRef);
+    auto Context = new context(Q->get_context());
+    return wrap(Context);
+}
+
+__dppl_give DPPLSyclEventRef
+DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
+                       __dppl_keep const DPPLSyclQueueRef QRef,
+                       __dppl_keep void **Args,
+                       __dppl_keep const DPPLKernelArgType *ArgTypes,
+                       size_t NArgs,
+                       __dppl_keep const size_t Range[3],
+                       size_t NDims,
+                       __dppl_keep const DPPLSyclEventRef *DepEvents,
+                       size_t NDepEvents)
+{
+    auto Kernel = unwrap(KRef);
+    auto Queue  = unwrap(QRef);
+    event e;
+
+    try {
+        e = Queue->submit([&](handler& cgh) {
+            // Depend on any event that was specified by the caller.
+            if(NDepEvents)
+                for(auto i = 0ul; i < NDepEvents; ++i)
+                    cgh.depends_on(*unwrap(DepEvents[i]));
+
+            for (auto i = 0ul; i < NArgs; ++i) {
+                // \todo add support for Sycl buffers
+                // \todo handle errors properly
+                if(!set_kernel_arg(cgh, i, Args[i], ArgTypes[i]))
+                    exit(1);
+            }
+            switch(NDims)
+            {
+            case 1:
+                cgh.parallel_for(range<1>{Range[0]}, *Kernel);
+                break;
+            case 2:
+                cgh.parallel_for(range<2>{Range[0], Range[1]}, *Kernel);
+                break;
+            case 3:
+                cgh.parallel_for(range<3>{Range[0], Range[1], Range[2]},
+                                 *Kernel);
+                break;
+            default:
+                // \todo handle the error
+                throw std::runtime_error("Range cannot be greater than three "
+                                         "dimensions.");
+            }
+        });
+    } catch (runtime_error re) {
+        // \todo fix error handling
+        std::cerr << re.what() << '\n';
+        return nullptr;
+    } catch (std::runtime_error sre) {
+        std::cerr << sre.what() << '\n';
+        return nullptr;
+    }
+
+    return wrap(new event(e));
+}
+
+DPPLSyclEventRef
+DPPLQueue_SubmitNDRange(__dppl_keep const DPPLSyclKernelRef KRef,
+                        __dppl_keep const DPPLSyclQueueRef QRef,
+                        __dppl_keep void **Args,
+                        __dppl_keep const DPPLKernelArgType *ArgTypes,
+                        size_t NArgs,
+                        __dppl_keep const size_t gRange[3],
+                        __dppl_keep const size_t lRange[3],
+                        size_t NDims,
+                        __dppl_keep const DPPLSyclEventRef *DepEvents,
+                        size_t NDepEvents)
+{
+    auto Kernel = unwrap(KRef);
+    auto Queue  = unwrap(QRef);
+    event e;
+
+    try {
+        e = Queue->submit([&](handler& cgh) {
+            // Depend on any event that was specified by the caller.
+            if(NDepEvents)
+                for(auto i = 0ul; i < NDepEvents; ++i)
+                    cgh.depends_on(*unwrap(DepEvents[i]));
+
+            for (auto i = 0ul; i < NArgs; ++i) {
+                // \todo add support for Sycl buffers
+                // \todo handle errors properly
+                if(!set_kernel_arg(cgh, i, Args[i], ArgTypes[i]))
+                    exit(1);
+            }
+            switch(NDims)
+            {
+            case 1:
+                cgh.parallel_for(nd_range<1>{{gRange[0]},{lRange[0]}}, *Kernel);
+                break;
+            case 2:
+                cgh.parallel_for(nd_range<2>{{gRange[0], gRange[1]},
+                                             {lRange[0], lRange[1]}}, *Kernel);
+                break;
+            case 3:
+                cgh.parallel_for(nd_range<3>{{gRange[0], gRange[1], gRange[2]},
+                                             {lRange[0], lRange[1], lRange[3]}},
+                                             *Kernel);
+                break;
+            default:
+                // \todo handle the error
+                throw std::runtime_error("Range cannot be greater than three "
+                                         "dimensions.");
+            }
+        });
+    } catch (runtime_error re) {
+        // \todo fix error handling
+        std::cerr << re.what() << '\n';
+        return nullptr;
+    } catch (std::runtime_error sre) {
+        std::cerr << sre.what() << '\n';
+        return nullptr;
+    }
+
+    return wrap(new event(e));
+}
+
+void
+DPPLQueue_Wait (__dppl_keep DPPLSyclQueueRef QRef)
+{
+    // \todo what happens if the QRef is null or a pointer to a valid sycl queue
+    auto SyclQueue = unwrap(QRef);
+    SyclQueue->wait();
 }
 
 void DPPLQueue_Memcpy (__dppl_take const DPPLSyclQueueRef QRef,

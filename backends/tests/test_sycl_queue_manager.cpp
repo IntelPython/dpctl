@@ -55,11 +55,11 @@ namespace
     }
 }
 
-struct TestDPPLSyclQueuemanager : public ::testing::Test
+struct TestDPPLSyclQueueManager : public ::testing::Test
 { };
 
 
-TEST_F (TestDPPLSyclQueuemanager, CheckDPPLGetCurrentQueue)
+TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetCurrentQueue)
 {
     DPPLSyclQueueRef q;
     ASSERT_NO_THROW(q = DPPLQueueMgr_GetCurrentQueue());
@@ -67,7 +67,7 @@ TEST_F (TestDPPLSyclQueuemanager, CheckDPPLGetCurrentQueue)
 }
 
 
-TEST_F (TestDPPLSyclQueuemanager, CheckDPPLGetQueue)
+TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetQueue)
 {
     auto numCpuQueues = DPPLQueueMgr_GetNumCPUQueues();
     auto numGpuQueues = DPPLQueueMgr_GetNumGPUQueues();
@@ -94,7 +94,7 @@ TEST_F (TestDPPLSyclQueuemanager, CheckDPPLGetQueue)
 }
 
 
-TEST_F (TestDPPLSyclQueuemanager, CheckGetNumActivatedQueues)
+TEST_F (TestDPPLSyclQueueManager, CheckGetNumActivatedQueues)
 {
     size_t num0, num1, num2, num4;
 
@@ -124,7 +124,7 @@ TEST_F (TestDPPLSyclQueuemanager, CheckGetNumActivatedQueues)
 }
 
 
-TEST_F (TestDPPLSyclQueuemanager, CheckDPPLDumpDeviceInfo)
+TEST_F (TestDPPLSyclQueueManager, CheckDPPLDumpDeviceInfo)
 {
     auto q = DPPLQueueMgr_GetCurrentQueue();
     EXPECT_NO_FATAL_FAILURE(DPPLDevice_DumpInfo(DPPLQueue_GetDevice(q)));

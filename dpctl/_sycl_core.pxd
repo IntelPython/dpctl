@@ -33,7 +33,7 @@ from .backend cimport *
 cdef class SyclContext:
     ''' Wrapper class for a Sycl Context
     '''
-    cdef DPPLSyclContextRef ctxt_ptr
+    cdef DPPLSyclContextRef _ctxt_ref
 
     @staticmethod
     cdef SyclContext _create (DPPLSyclContextRef ctxt)
@@ -43,24 +43,76 @@ cdef class SyclContext:
 cdef class SyclDevice:
     ''' Wrapper class for a Sycl Device
     '''
-    cdef DPPLSyclDeviceRef device_ptr
-    cdef const char *vendor_name
-    cdef const char *device_name
-    cdef const char *driver_version
+    cdef DPPLSyclDeviceRef _device_ref
+    cdef const char *_vendor_name
+    cdef const char *_device_name
+    cdef const char *_driver_version
 
     @staticmethod
     cdef SyclDevice _create (DPPLSyclDeviceRef dref)
-    cdef DPPLSyclDeviceRef get_device_ptr (self)
+    cdef DPPLSyclDeviceRef get_device_ref (self)
+
+
+cdef class SyclEvent:
+    ''' Wrapper class for a Sycl Event
+    '''
+    cdef  DPPLSyclEventRef _event_ref
+    cdef list _args
+
+    @staticmethod
+    cdef  SyclEvent _create (DPPLSyclEventRef e, list args)
+    cdef  DPPLSyclEventRef get_event_ref (self)
+    cpdef void wait (self)
+
+
+cdef class SyclKernel:
+    ''' Wraps a sycl::kernel object created from an OpenCL interoperability
+        kernel.
+    '''
+    cdef DPPLSyclKernelRef _kernel_ref
+    cdef const char *_function_name
+    cdef DPPLSyclKernelRef get_kernel_ref (self)
+
+    @staticmethod
+    cdef SyclKernel _create (DPPLSyclKernelRef kref)
+
+
+cdef class SyclProgram:
+    ''' Wraps a sycl::program object created from an OpenCL interoperability
+        program.
+
+        SyclProgram exposes the C API from dppl_sycl_program_interface.h. A
+        SyclProgram can be created from either a source string or a SPIR-V
+        binary file.
+    '''
+    cdef DPPLSyclProgramRef _program_ref
+
+    @staticmethod
+    cdef  SyclProgram _create (DPPLSyclProgramRef pref)
+    cdef  DPPLSyclProgramRef get_program_ref (self)
+    cpdef SyclKernel get_sycl_kernel(self, str kernel_name)
 
 
 cdef class SyclQueue:
     ''' Wrapper class for a Sycl queue.
     '''
-    cdef DPPLSyclQueueRef queue_ptr
+    cdef DPPLSyclQueueRef _queue_ref
+    cdef SyclContext _context
+    cdef SyclDevice _device
+
+    cdef _raise_queue_submit_error (self, fname, errcode)
+    cdef _raise_invalid_range_error (self, fname, ndims, errcode)
+    cdef int _populate_args (self, list args, void **kargs,
+                             DPPLKernelArgType *kargty)
+    cdef int _populate_range (self, size_t Range[3], list gS, size_t nGS)
 
     @staticmethod
-    cdef SyclQueue _create (DPPLSyclQueueRef qref)
+    cdef  SyclQueue _create (DPPLSyclQueueRef qref)
     cpdef SyclContext get_sycl_context (self)
     cpdef SyclDevice get_sycl_device (self)
+    cdef  DPPLSyclQueueRef get_queue_ref (self)
+    cpdef SyclEvent submit (self, SyclKernel kernel, list args, list gS,
+                            list lS=*, list dEvents=*)
+    cpdef void wait (self)
     cdef DPPLSyclQueueRef get_queue_ref (self)
     cpdef memcpy (self, dest, src, int count)

@@ -36,6 +36,39 @@
 DPPL_C_EXTERN_C_BEGIN
 
 /*!
+ * @brief Supported types for kernel arguments to be passed to a Sycl kernel.
+ *
+ * \todo Add support for sycl::buffer
+ *
+ */
+typedef enum
+{
+    DPPL_CHAR,
+    DPPL_SIGNED_CHAR,
+    DPPL_UNSIGNED_CHAR,
+    DPPL_SHORT,
+    DPPL_INT,
+    DPPL_UNSIGNED_INT,
+    DPPL_LONG,
+    DPPL_UNSIGNED_LONG,
+    DPPL_LONG_LONG,
+    DPPL_UNSIGNED_LONG_LONG,
+    DPPL_SIZE_T,
+    DPPL_FLOAT,
+    DPPL_DOUBLE,
+    DPPL_LONG_DOUBLE,
+    DPPL_VOID_PTR
+} DPPLKernelArgType;
+
+/*!
+ * @brief Delete the pointer after casting it to sycl::queue.
+ *
+ * @param    QRef           A DPPLSyclQueueRef pointer that gets deleted.
+ */
+DPPL_API
+void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef);
+
+/*!
  * @brief Returns the Sycl context for the queue.
  *
  * @param    QRef           An opaque pointer to the sycl queue.
@@ -56,15 +89,109 @@ __dppl_give DPPLSyclDeviceRef
 DPPLQueue_GetDevice (__dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
- * @brief Delete the pointer after casting it to sycl::queue.
+ * @brief Submits the kernel to the specified queue with the provided range
+ * argument.
  *
- * @param    QRef           A DPPLSyclQueueRef pointer that gets deleted.
+ * A wrapper over sycl::queue.submit(). The function takes an interoperability
+ * kernel, the kernel arguments, and a Sycl queue as input. The kernel is
+ * submitted as parallel_for(range<NRange>, *unwrap(KRef)).
+ *
+ * \todo sycl::buffer arguments are not supported yet.
+ * \todo Add support for id<Dims> WorkItemOffset
+ *
+ * @param    KRef           Opaque pointer to a OpenCL interoperability kernel
+ *                          wrapped inside a sycl::kernel.
+ * @param    QRef           Opaque pointer to the sycl::queue where the kernel
+ *                          will be enqueued.
+ * @param    Args           An array of void* pointers that represent the
+ *                          kernel arguments for the kernel.
+ * @param    ArgTypes       An array of DPPLKernelArgType enum values that
+ *                          represent the type of each kernel argument.
+ * @param    NArgs          Size of Args and ArgTypes.
+ * @param    Range          Defines the overall dimension of the dispatch for
+ *                          the kernel. The array can have up to three
+ *                          dimensions.
+ * @param    NRange         Size of the gRange array.
+ * @param    DepEvents      List of dependent DPPLSyclEventRef objects (events)
+ *                          for the kernel. We call sycl::handler.depends_on for
+ *                          each of the provided events.
+ * @param    NDepEvents     Size of the DepEvents list.
+ * @return   A opaque pointer to the sycl::event returned by the
+ *           sycl::queue.submit() function.
  */
 DPPL_API
-void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef);
+DPPLSyclEventRef
+DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
+                       __dppl_keep const DPPLSyclQueueRef QRef,
+                       __dppl_keep void **Args,
+                       __dppl_keep const DPPLKernelArgType *ArgTypes,
+                       size_t NArgs,
+                       __dppl_keep const size_t Range[3],
+                       size_t NRange,
+                       __dppl_keep const DPPLSyclEventRef *DepEvents,
+                       size_t NDepEvents);
 
 /*!
- * @brief C-API wrapper for sycl::queue::memcpy. It waits an event.
+ * @brief Submits the kernel to the specified queue with the provided nd_range
+ * argument.
+ *
+ * A wrapper over sycl::queue.submit(). The function takes an interoperability
+ * kernel, the kernel arguments, and a Sycl queue as input. The kernel is
+ * submitted as parallel_for(nd_range<NRange>, *unwrap(KRef)).
+ *
+ * \todo sycl::buffer arguments are not supported yet.
+ * \todo Add support for id<Dims> WorkItemOffset
+ *
+ * @param    KRef           Opaque pointer to a OpenCL interoperability kernel
+ *                          wrapped inside a sycl::kernel.
+ * @param    QRef           Opaque pointer to the sycl::queue where the kernel
+ *                          will be enqueued.
+ * @param    Args           An array of void* pointers that represent the
+ *                          kernel arguments for the kernel.
+ * @param    ArgTypes       An array of DPPLKernelArgType enum values that
+ *                          represent the type of each kernel argument.
+ * @param    NArgs          Size of Args.
+ * @param    gRange         Defines the overall dimension of the dispatch for
+ *                          the kernel. The array can have up to three
+ *                          dimensions.
+ * @param    lRange         Defines the iteration domain of a single work-group
+ *                          in a parallel dispatch. The array can have up to
+ *                          three dimensions.
+ * @param    NDims          The number of dimensions for both local and global
+ *                          ranges.
+ * @param    DepEvents      List of dependent DPPLSyclEventRef objects (events)
+ *                          for the kernel. We call sycl::handler.depends_on for
+ *                          each of the provided events.
+ * @param    NDepEvents     Size of the DepEvents list.
+ * @return   A opaque pointer to the sycl::event returned by the
+ *           sycl::queue.submit() function.
+ */
+DPPL_API
+DPPLSyclEventRef
+DPPLQueue_SubmitNDRange(__dppl_keep const DPPLSyclKernelRef KRef,
+                        __dppl_keep const DPPLSyclQueueRef QRef,
+                        __dppl_keep void **Args,
+                        __dppl_keep const DPPLKernelArgType *ArgTypes,
+                        size_t NArgs,
+                        __dppl_keep const size_t gRange[3],
+                        __dppl_keep const size_t lRange[3],
+                        size_t NDims,
+                        __dppl_keep const DPPLSyclEventRef *DepEvents,
+                        size_t NDepEvents);
+
+/*!
+ * @brief Calls the sycl::queue.submit function to do a blocking wait on all
+ * enqueued tasks in the queue.
+ *
+ * @param    QRef           Opaque pointer to a sycl::queue.
+ */
+DPPL_API
+void
+DPPLQueue_Wait (__dppl_keep const DPPLSyclQueueRef QRef);
+
+/*!
+ * @brief C-API wrapper for sycl::queue::memcpy, the function waits on an event
+ * till the memcpy operation completes.
  *
  * @param    QRef           An opaque pointer to the sycl queue.
  * @param    Dest           An USM pointer to the destination memory.

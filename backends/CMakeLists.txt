@@ -98,7 +98,10 @@ add_library(
   SHARED
   source/dppl_sycl_context_interface.cpp
   source/dppl_sycl_device_interface.cpp
+  source/dppl_sycl_event_interface.cpp
+  source/dppl_sycl_kernel_interface.cpp
   source/dppl_sycl_platform_interface.cpp
+  source/dppl_sycl_program_interface.cpp
   source/dppl_sycl_queue_interface.cpp
   source/dppl_sycl_queue_manager.cpp
   source/dppl_sycl_usm_interface.cpp
