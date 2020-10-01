@@ -90,20 +90,26 @@ void DPPLPlatform_DumpInfo ()
          ss << std::setw(8) << " " << std::left << std::setw(20)
             << "Device type";
 
-         try {
-            if (devices[dn].has(aspect::accelerator))
-               ss << "accelerator" << '\n';
-            else if (devices[dn].has(aspect::cpu))
-               ss << "cpu" << '\n';
-            else if (devices[dn].has(aspect::custom))
-               ss << "custom" << '\n';
-            else if (devices[dn].has(aspect::gpu))
-               ss << "gpu" << '\n';
-            else if (devices[dn].has(aspect::host))
-               ss << "host" << '\n';
-         } catch (runtime_error re) {
-            // \todo handle errors
-            ss << "unknown\n";
+         auto devTy = devices[dn].get_info<info::device::device_type>();
+         switch(devTy)
+         {
+         case info::device_type::cpu:
+            ss << "cpu" << '\n';
+            break;
+         case info::device_type::gpu:
+            ss << "gpu" << '\n';
+            break;
+         case info::device_type::accelerator:
+            ss << "accelerator" << '\n';
+            break;
+         case info::device_type::custom:
+            ss << "custom" << '\n';
+            break;
+         case info::device_type::host:
+            ss << "host" << '\n';
+            break;
+         default:
+            ss << "unknown" << '\n';
          }
       }
 
