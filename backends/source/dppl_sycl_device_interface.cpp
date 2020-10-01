@@ -56,20 +56,26 @@ void dump_device_info (const device & Device)
        << Device.get_info<info::device::profile>() << '\n';
     ss << std::setw(4) << " " << std::left << std::setw(16) << "Device type";
 
-    try {
-        if (Device.has(aspect::accelerator))
-            ss << "accelerator" << '\n';
-        else if (Device.has(aspect::cpu))
-            ss << "cpu" << '\n';
-        else if (Device.has(aspect::custom))
-            ss << "custom" << '\n';
-        else if (Device.has(aspect::gpu))
-            ss << "gpu" << '\n';
-        else if (Device.has(aspect::host))
-            ss << "host" << '\n';
-    } catch (runtime_error re) {
-        // \todo handle errors
-        ss << "unknown\n";
+    auto devTy = Device.get_info<info::device::device_type>();
+    switch(devTy)
+    {
+    case info::device_type::cpu:
+    ss << "cpu" << '\n';
+    break;
+    case info::device_type::gpu:
+    ss << "gpu" << '\n';
+    break;
+    case info::device_type::accelerator:
+    ss << "accelerator" << '\n';
+    break;
+    case info::device_type::custom:
+    ss << "custom" << '\n';
+    break;
+    case info::device_type::host:
+    ss << "host" << '\n';
+    break;
+    default:
+    ss << "unknown" << '\n';
     }
 
     std::cout << ss.str();
