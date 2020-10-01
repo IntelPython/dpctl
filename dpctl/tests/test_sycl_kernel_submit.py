@@ -64,5 +64,6 @@ class Test1DKernelSubmit (unittest.TestCase):
             q.submit(axpyKernel, args, r)
             self.assertTrue(np.allclose(c, a*d + b))
 
+
 if __name__ == '__main__':
     unittest.main()
