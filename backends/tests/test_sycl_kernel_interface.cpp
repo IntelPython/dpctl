@@ -53,17 +53,17 @@ struct TestDPPLSyclKernelInterface : public ::testing::Test
     )CLC";
     const char *CompileOpts ="-cl-fast-relaxed-math";
 
-    DPPLSyclContextRef CurrCtxRef   = nullptr;
-    DPPLSyclQueueRef   CurrQueueRef = nullptr;
-    DPPLSyclProgramRef PRef         = nullptr;
-    DPPLSyclKernelRef AddKernel     = nullptr;
-    DPPLSyclKernelRef AxpyKernel     = nullptr;
+    DPPLSyclContextRef CtxRef    = nullptr;
+    DPPLSyclQueueRef   QueueRef  = nullptr;
+    DPPLSyclProgramRef PRef      = nullptr;
+    DPPLSyclKernelRef AddKernel  = nullptr;
+    DPPLSyclKernelRef AxpyKernel = nullptr;
 
     TestDPPLSyclKernelInterface ()
     {
-        CurrQueueRef = DPPLQueueMgr_GetCurrentQueue();
-        CurrCtxRef   = DPPLQueue_GetContext(CurrQueueRef);
-        PRef = DPPLProgram_CreateFromOCLSource(CurrCtxRef, CLProgramStr,
+        QueueRef = DPPLQueueMgr_GetQueue(DPPL_GPU, 0);
+        CtxRef   = DPPLQueue_GetContext(QueueRef);
+        PRef = DPPLProgram_CreateFromOCLSource(CtxRef, CLProgramStr,
                                                CompileOpts);
         AddKernel = DPPLProgram_GetKernel(PRef, "add");
         AxpyKernel = DPPLProgram_GetKernel(PRef, "axpy");
@@ -71,8 +71,8 @@ struct TestDPPLSyclKernelInterface : public ::testing::Test
 
     ~TestDPPLSyclKernelInterface ()
     {
-        DPPLQueue_Delete(CurrQueueRef);
-        DPPLContext_Delete(CurrCtxRef);
+        DPPLQueue_Delete(QueueRef);
+        DPPLContext_Delete(CtxRef);
         DPPLProgram_Delete(PRef);
         DPPLKernel_Delete(AddKernel);
         DPPLKernel_Delete(AxpyKernel);

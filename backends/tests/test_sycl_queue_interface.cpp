@@ -80,22 +80,22 @@ struct TestDPPLSyclQueueInterface : public ::testing::Test
     )CLC";
     const char *CompileOpts ="-cl-fast-relaxed-math";
 
-    DPPLSyclContextRef CurrCtxRef   = nullptr;
-    DPPLSyclQueueRef   CurrQueue    = nullptr;
-    DPPLSyclProgramRef PRef         = nullptr;
-    DPPLSyclProgramRef PRef2        = nullptr;
+    DPPLSyclContextRef CtxRef = nullptr;
+    DPPLSyclQueueRef   Queue  = nullptr;
+    DPPLSyclProgramRef PRef   = nullptr;
+    DPPLSyclProgramRef PRef2  = nullptr;
     TestDPPLSyclQueueInterface ()
     {
-        CurrQueue = DPPLQueueMgr_GetCurrentQueue();
-        CurrCtxRef   = DPPLQueue_GetContext(CurrQueue);
-        PRef = DPPLProgram_CreateFromOCLSource(CurrCtxRef, CLProgramStr,
+        Queue = DPPLQueueMgr_GetQueue(DPPL_GPU, 0);
+        CtxRef = DPPLQueue_GetContext(Queue);
+        PRef = DPPLProgram_CreateFromOCLSource(CtxRef, CLProgramStr,
                                                CompileOpts);
     }
 
     ~TestDPPLSyclQueueInterface ()
     {
-        DPPLQueue_Delete(CurrQueue);
-        DPPLContext_Delete(CurrCtxRef);
+        DPPLQueue_Delete(Queue);
+        DPPLContext_Delete(CtxRef);
         DPPLProgram_Delete(PRef);
     }
 };
@@ -112,11 +112,11 @@ TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
     auto AxpyKernel = DPPLProgram_GetKernel(PRef, "axpy");
 
     // Create the input args
-    auto a = DPPLmalloc_shared(SIZE, CurrQueue);
+    auto a = DPPLmalloc_shared(SIZE, Queue);
     ASSERT_TRUE(a != nullptr);
-    auto b = DPPLmalloc_shared(SIZE, CurrQueue);
+    auto b = DPPLmalloc_shared(SIZE, Queue);
     ASSERT_TRUE(b != nullptr);
-    auto c = DPPLmalloc_shared(SIZE, CurrQueue);
+    auto c = DPPLmalloc_shared(SIZE, Queue);
     ASSERT_TRUE(c != nullptr);
 
     // Initialize a,b
@@ -125,14 +125,14 @@ TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
     void *arg1[1] = { unwrap(a) };
     void *arg2[1] = { unwrap(b) };
 
-    auto E1 = DPPLQueue_SubmitRange(InitKernel, CurrQueue, arg1, argTypes, 1,
+    auto E1 = DPPLQueue_SubmitRange(InitKernel, Queue, arg1, argTypes, 1,
                                     Range, 1, nullptr, 0);
-    auto E2 = DPPLQueue_SubmitRange(InitKernel, CurrQueue, arg2, argTypes, 1,
+    auto E2 = DPPLQueue_SubmitRange(InitKernel, Queue, arg2, argTypes, 1,
                                     Range, 1, nullptr, 0);
     ASSERT_TRUE(E1 != nullptr);
     ASSERT_TRUE(E2 != nullptr);
 
-    DPPLQueue_Wait(CurrQueue);
+    DPPLQueue_Wait(Queue);
 
     // Submit the add kernel
     void *args[3] = { unwrap(a), unwrap(b), unwrap(c) };
@@ -142,10 +142,10 @@ TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
                                               DPPL_VOID_PTR
                                             };
 
-    auto E3 = DPPLQueue_SubmitRange(AddKernel, CurrQueue, args,
+    auto E3 = DPPLQueue_SubmitRange(AddKernel, Queue, args,
                                     addKernelArgTypes, 3, Range, 1, nullptr, 0);
     ASSERT_TRUE(E3 != nullptr);
-    DPPLQueue_Wait(CurrQueue);
+    DPPLQueue_Wait(Queue);
 
     // Verify the result of "add"
     add_kernel_checker((float*)a, (float*)b, (float*)c);
@@ -159,11 +159,11 @@ TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
                                                DPPL_VOID_PTR,
                                                DPPL_FLOAT
                                              };
-    auto E4 = DPPLQueue_SubmitRange(AxpyKernel, CurrQueue, args2,
+    auto E4 = DPPLQueue_SubmitRange(AxpyKernel, Queue, args2,
                                     addKernelArgTypes2, 4, Range, 1,
                                     nullptr, 0);
     ASSERT_TRUE(E4 != nullptr);
-    DPPLQueue_Wait(CurrQueue);
+    DPPLQueue_Wait(Queue);
 
     // Verify the result of "axpy"
     axpy_kernel_checker((float*)a, (float*)b, (float*)c, d);
@@ -178,9 +178,9 @@ TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
     DPPLKernel_Delete(AxpyKernel);
     DPPLKernel_Delete(InitKernel);
 
-    DPPLfree_with_queue((DPPLSyclUSMRef)a, CurrQueue);
-    DPPLfree_with_queue((DPPLSyclUSMRef)b, CurrQueue);
-    DPPLfree_with_queue((DPPLSyclUSMRef)c, CurrQueue);
+    DPPLfree_with_queue((DPPLSyclUSMRef)a, Queue);
+    DPPLfree_with_queue((DPPLSyclUSMRef)b, Queue);
+    DPPLfree_with_queue((DPPLSyclUSMRef)c, Queue);
 }
 
 int

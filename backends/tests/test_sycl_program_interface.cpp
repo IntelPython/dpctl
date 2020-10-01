@@ -123,16 +123,16 @@ struct TestDPPLSyclProgramInterface : public ::testing::Test
     )CLC";
     const char *CompileOpts ="-cl-fast-relaxed-math";
 
-    DPPLSyclContextRef CurrCtxRef   = nullptr;
-    DPPLSyclQueueRef   CurrQueueRef = nullptr;
-    DPPLSyclProgramRef PRef         = nullptr;
-    DPPLSyclProgramRef PRef2        = nullptr;
+    DPPLSyclContextRef CtxRef   = nullptr;
+    DPPLSyclQueueRef   QueueRef = nullptr;
+    DPPLSyclProgramRef PRef     = nullptr;
+    DPPLSyclProgramRef PRef2    = nullptr;
 
     TestDPPLSyclProgramInterface ()
     {
-        CurrQueueRef = DPPLQueueMgr_GetCurrentQueue();
-        CurrCtxRef   = DPPLQueue_GetContext(CurrQueueRef);
-        PRef = DPPLProgram_CreateFromOCLSource(CurrCtxRef, CLProgramStr,
+        QueueRef = DPPLQueueMgr_GetQueue(DPPL_GPU, 0);
+        CtxRef   = DPPLQueue_GetContext(QueueRef);
+        PRef = DPPLProgram_CreateFromOCLSource(CtxRef, CLProgramStr,
                                                CompileOpts);
 
         // Create a program from a SPIR-V file
@@ -142,14 +142,14 @@ struct TestDPPLSyclProgramInterface : public ::testing::Test
         file.seekg(0, std::ios::beg);
         std::vector<char> buffer(fileSize);
         file.read(buffer.data(), fileSize);
-        PRef2 = DPPLProgram_CreateFromOCLSpirv(CurrCtxRef, buffer.data(),
+        PRef2 = DPPLProgram_CreateFromOCLSpirv(CtxRef, buffer.data(),
                                                fileSize);
     }
 
     ~TestDPPLSyclProgramInterface ()
     {
-        DPPLQueue_Delete(CurrQueueRef);
-        DPPLContext_Delete(CurrCtxRef);
+        DPPLQueue_Delete(QueueRef);
+        DPPLContext_Delete(CtxRef);
         DPPLProgram_Delete(PRef);
         DPPLProgram_Delete(PRef2);
     }
@@ -181,7 +181,7 @@ TEST_F (TestDPPLSyclProgramInterface, CheckGetKernelOCLSource)
 {
     auto AddKernel = DPPLProgram_GetKernel(PRef, "add");
     auto AxpyKernel = DPPLProgram_GetKernel(PRef, "axpy");
-    auto syclQueue = reinterpret_cast<queue*>(CurrQueueRef);
+    auto syclQueue = reinterpret_cast<queue*>(QueueRef);
 
     add_kernel_checker(syclQueue, AddKernel);
     axpy_kernel_checker(syclQueue, AxpyKernel);
@@ -194,7 +194,7 @@ TEST_F (TestDPPLSyclProgramInterface, CheckGetKernelOCLSpirv)
 {
     auto AddKernel = DPPLProgram_GetKernel(PRef2, "add");
     auto AxpyKernel = DPPLProgram_GetKernel(PRef2, "axpy");
-    auto syclQueue = reinterpret_cast<queue*>(CurrQueueRef);
+    auto syclQueue = reinterpret_cast<queue*>(QueueRef);
 
     add_kernel_checker(syclQueue, AddKernel);
     axpy_kernel_checker(syclQueue, AxpyKernel);
