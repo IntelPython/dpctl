@@ -42,11 +42,6 @@ namespace
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
 
-void error_reporter (const std::string & msg)
-{
-    throw std::runtime_error("Error: " + msg);
-}
-
 /*!
  * @brief A helper class to support the DPPLSyclQueuemanager.
  *
@@ -57,50 +52,58 @@ void error_reporter (const std::string & msg)
 class QMgrHelper
 {
 public:
-    static std::vector<cl::sycl::queue>&
-    cpu_queues_ ()
+    using QVec = vector_class<queue>;
+
+    static QVec& opencl_cpu_queues_ ()
     {
-        static std::vector<cl::sycl::queue>* cpu_queues =
-            QMgrHelper::init_queues(info::device_type::cpu);
+        static QVec* cpu_queues = init_queues(info::device_type::cpu);
         return *cpu_queues;
     }
 
-    static std::vector<cl::sycl::queue>&
-    gpu_queues_ ()
+    static QVec& opencl_gpu_queues_ ()
     {
-        static std::vector<cl::sycl::queue>* gpu_queues =
-            QMgrHelper::init_queues(info::device_type::gpu);
+        static QVec* gpu_queues = init_queues(info::device_type::gpu);
         return *gpu_queues;
     }
 
-    static std::vector<cl::sycl::queue>&
-    active_queues_ ()
+    static QVec& level0_gpu_queues_ ()
     {
-        thread_local static std::vector<cl::sycl::queue>* active_queues =
-            new std::vector<cl::sycl::queue>({default_selector()});
+        static QVec* gpu_queues = init_queues(info::device_type::gpu);
+        return *gpu_queues;
+    }
+
+    static QVec& active_queues_ ()
+    {
+        thread_local static QVec* active_queues =
+            new QVec({default_selector()});
         return *active_queues;
     }
 
     static __dppl_give DPPLSyclQueueRef
-    getQueue (DPPLSyclDeviceType DeviceTy, size_t DNum);
+    getQueue (DPPLSyclBEType BETy,
+              DPPLSyclDeviceType DeviceTy,
+              size_t DNum);
 
     static __dppl_give DPPLSyclQueueRef
     getCurrentQueue ();
 
     static void
-    setAsDefaultQueue (DPPLSyclDeviceType DeviceTy, size_t DNum);
+    setAsDefaultQueue (DPPLSyclBEType BETy,
+                       DPPLSyclDeviceType DeviceTy,
+                       size_t DNum);
 
     static __dppl_give DPPLSyclQueueRef
-    pushSyclQueue (DPPLSyclDeviceType DeviceTy, size_t DNum);
+    pushSyclQueue (DPPLSyclBEType BETy,
+                   DPPLSyclDeviceType DeviceTy,
+                   size_t DNum);
 
     static void
     popSyclQueue ();
 
-    static cl::sycl::vector_class<cl::sycl::queue>*
-    init_queues (info::device_type device_ty)
+    static QVec* init_queues (info::device_type device_ty)
     {
 
-        auto queues = new std::vector<cl::sycl::queue>();
+        auto queues = new QVec();
         for(auto d : device::get_devices(device_ty))
             queues->emplace_back(d);
         return queues;
@@ -111,12 +114,11 @@ public:
 // it is for minimizing code changes during replacing static vars with functions
 // it could be refactored by replacing variable with function call
 // scope of this variables is only this file
-#define cpu_queues    cpu_queues_()
-#define gpu_queues    gpu_queues_()
-#define active_queues active_queues_()
+#define opencl_cpu_queues opencl_cpu_queues_()
+#define opencl_gpu_queues opencl_gpu_queues_()
+#define level0_gpu_queues level0_gpu_queues_()
+#define active_queues     active_queues_()
 
-
-//----------------------------- Public API -----------------------------------//
 
 /*!
  * Allocates a new copy of the present top of stack queue, which can be the
@@ -126,8 +128,11 @@ public:
  */
 DPPLSyclQueueRef QMgrHelper::getCurrentQueue ()
 {
-    if(active_queues.empty())
-        error_reporter("No currently active queues.");
+    if(active_queues.empty()) {
+        // \todo handle error
+        std::cerr << "No currently active queues.\n";
+        return nullptr;
+    }
     auto last = QMgrHelper::active_queues.size() - 1;
     return wrap(new queue(QMgrHelper::active_queues[last]));
 }
@@ -139,34 +144,50 @@ DPPLSyclQueueRef QMgrHelper::getCurrentQueue ()
  * purpose.
  */
 DPPLSyclQueueRef
-QMgrHelper::getQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
+QMgrHelper::getQueue (DPPLSyclBEType BETy,
+                      DPPLSyclDeviceType DeviceTy,
+                      size_t DNum)
 {
     queue *QRef = nullptr;
 
-    switch (DeviceTy)
+    switch (BETy|DeviceTy)
     {
-    case DPPLSyclDeviceType::DPPL_CPU:
+    case DPPLSyclBEType::DPPL_OPENCL | DPPLSyclDeviceType::DPPL_CPU:
     {
-        if (DNum >= cpu_queues.size()) {
-            std::stringstream ss;
-            ss << "SYCL CPU device " << DNum << " not found on system.";
-            error_reporter(ss.str());
+        if (DNum >= opencl_cpu_queues.size()) {
+            // \todo handle error
+            std::cerr << "OpenCL CPU device " << DNum
+                      << " not found on system.\n";
+            return nullptr;
         }
-        QRef = new queue(QMgrHelper::cpu_queues[DNum]);
+        QRef = new queue(opencl_cpu_queues[DNum]);
         break;
     }
-    case DPPLSyclDeviceType::DPPL_GPU:
+    case DPPLSyclBEType::DPPL_OPENCL | DPPLSyclDeviceType::DPPL_GPU:
     {
-        if (DNum >= gpu_queues.size()) {
-            std::stringstream ss;
-            ss << "SYCL GPU device " << DNum << " not found on system.";
-            error_reporter(ss.str());
+        if (DNum >= opencl_gpu_queues.size()) {
+            // \todo handle error
+            std::cerr << "OpenCL GPU device " << DNum
+                      << " not found on system.\n";
+            return nullptr;
         }
-        QRef = new queue(QMgrHelper::gpu_queues[DNum]);
+        QRef = new queue(opencl_gpu_queues[DNum]);
+        break;
+    }
+    case DPPLSyclBEType::DPPL_LEVEL_ZERO | DPPLSyclDeviceType::DPPL_GPU:
+    {
+        if (DNum >= level0_gpu_queues.size()) {
+            // \todo handle error
+            std::cerr << "Level-0 GPU device " << DNum
+                      << " not found on system.\n";
+            return nullptr;
+        }
+        QRef = new queue(level0_gpu_queues[DNum]);
         break;
     }
     default:
-        error_reporter("Unsupported device type.");
+        std::cerr << "Unsupported device type.\n";
+        return nullptr;
     }
 
     return wrap(QRef);
@@ -177,36 +198,54 @@ QMgrHelper::getQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
  * sycl::queue corresponding to the device type and device number.
  */
 void
-QMgrHelper::setAsDefaultQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
+QMgrHelper::setAsDefaultQueue (DPPLSyclBEType BETy,
+                               DPPLSyclDeviceType DeviceTy,
+                               size_t DNum)
 {
-    if(active_queues.empty())
-        error_reporter("active queue vector is corrupted.");
+    if(active_queues.empty()) {
+        std::cerr << "active queue vector is corrupted.\n";
+        return;
+    }
 
-    switch (DeviceTy)
+    switch (BETy|DeviceTy)
     {
-    case DPPLSyclDeviceType::DPPL_CPU:
+    case DPPLSyclBEType::DPPL_OPENCL | DPPLSyclDeviceType::DPPL_CPU:
     {
-        if (DNum >= cpu_queues.size()) {
-            std::stringstream ss;
-            ss << "SYCL CPU device " << DNum << " not found on system.";
-            error_reporter(ss.str());
+        if (DNum >= opencl_cpu_queues.size()) {
+            // \todo handle error
+            std::cerr << "OpenCL CPU device " << DNum
+                      << " not found on system\n.";
+            break;
         }
-        active_queues[0] = cpu_queues[DNum];
+        active_queues[0] = opencl_cpu_queues[DNum];
         break;
     }
-    case DPPLSyclDeviceType::DPPL_GPU:
+   case DPPLSyclBEType::DPPL_OPENCL | DPPLSyclDeviceType::DPPL_GPU:
     {
-        if (DNum >= gpu_queues.size()) {
-            std::stringstream ss;
-            ss << "SYCL GPU device " << DNum << " not found on system.";
-            error_reporter(ss.str());
+        if (DNum >= opencl_gpu_queues.size()) {
+            // \todo handle error
+            std::cerr << "OpenCL GPU device " << DNum
+                      << " not found on system\n.";
+            break;
         }
-        active_queues[0] = gpu_queues[DNum];
+        active_queues[0] = opencl_gpu_queues[DNum];
+        break;
+    }
+    case DPPLSyclBEType::DPPL_LEVEL_ZERO | DPPLSyclDeviceType::DPPL_GPU:
+    {
+        if (DNum >= level0_gpu_queues.size()) {
+            // \todo handle error
+            std::cerr << "Level-0 GPU device " << DNum
+                      << " not found on system\n.";
+            break;
+        }
+        active_queues[0] = level0_gpu_queues[DNum];
         break;
     }
     default:
     {
-        error_reporter("Unsupported device type.");
+        std::cerr << "Unsupported device type.\n";
+        return;
     }
     }
 }
@@ -218,39 +257,58 @@ QMgrHelper::setAsDefaultQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
  * purpose.
  */
 DPPLSyclQueueRef
-QMgrHelper::pushSyclQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
+QMgrHelper::pushSyclQueue (DPPLSyclBEType BETy,
+                           DPPLSyclDeviceType DeviceTy,
+                           size_t DNum)
 {
     queue *QRef = nullptr;
-    if(active_queues.empty())
-        error_reporter("Why is there no previous global context?");
+    if(active_queues.empty()) {
+        std::cerr << "Why is there no previous global context?\n";
+        return nullptr;
+    }
 
-    switch (DeviceTy)
+    switch (BETy|DeviceTy)
     {
-    case DPPLSyclDeviceType::DPPL_CPU:
+    case DPPLSyclBEType::DPPL_OPENCL | DPPLSyclDeviceType::DPPL_CPU:
     {
-        if (DNum >= cpu_queues.size()) {
-            std::stringstream ss;
-            ss << "SYCL CPU device " << DNum << " not found on system.";
-            error_reporter(ss.str());
+        if (DNum >= opencl_cpu_queues.size()) {
+            // \todo handle error
+            std::cerr << "OpenCL CPU device " << DNum
+                      << " not found on system\n.";
+            return nullptr;
         }
-        active_queues.emplace_back(cpu_queues[DNum]);
+        active_queues.emplace_back(opencl_cpu_queues[DNum]);
         QRef = new queue(active_queues[active_queues.size()-1]);
         break;
     }
-    case DPPLSyclDeviceType::DPPL_GPU:
+    case DPPLSyclBEType::DPPL_OPENCL | DPPLSyclDeviceType::DPPL_GPU:
     {
-        if (DNum >= gpu_queues.size()) {
-            std::stringstream ss;
-            ss << "SYCL GPU device " << DNum << " not found on system.";
-            error_reporter(ss.str());
+        if (DNum >= opencl_gpu_queues.size()) {
+            // \todo handle error
+            std::cerr << "OpenCL GPU device " << DNum
+                      << " not found on system\n.";
+            return nullptr;
         }
-        active_queues.emplace_back(gpu_queues[DNum]);
+        active_queues.emplace_back(opencl_gpu_queues[DNum]);
+        QRef = new queue(active_queues[active_queues.size()-1]);
+        break;
+    }
+    case DPPLSyclBEType::DPPL_LEVEL_ZERO | DPPLSyclDeviceType::DPPL_GPU:
+    {
+        if (DNum >= level0_gpu_queues.size()) {
+            // \todo handle error
+            std::cerr << "Level-0 GPU device " << DNum
+                      << " not found on system\n.";
+            return nullptr;
+        }
+        active_queues.emplace_back(level0_gpu_queues[DNum]);
         QRef = new queue(active_queues[active_queues.size()-1]);
         break;
     }
     default:
     {
-        error_reporter("Unsupported device type.");
+        std::cerr << "Unsupported device type.\n";
+        return nullptr;
     }
     }
 
@@ -269,12 +327,16 @@ void
 QMgrHelper::popSyclQueue ()
 {
     // The first queue which is the "default" queue can not be removed.
-    if(active_queues.size() <= 1 )
-        error_reporter("No active contexts");
+    if(active_queues.size() <= 1 ) {
+        std::cerr << "No active contexts.\n";
+        return;
+    }
     active_queues.pop_back();
 }
 
 } /* end of anonymous namespace */
+
+//----------------------------- Public API -----------------------------------//
 
 /*!
  * Returns inside the number of activated queues not including the global queue
@@ -282,25 +344,42 @@ QMgrHelper::popSyclQueue ()
  */
 size_t DPPLQueueMgr_GetNumActivatedQueues ()
 {
-    if (QMgrHelper::active_queues.empty())
-        error_reporter("No active contexts");
+    if (QMgrHelper::active_queues.empty()) {
+        // \todo handle error
+        std::cerr << "No active contexts.\n";
+        return 0;
+    }
     return QMgrHelper::active_queues.size() - 1;
 }
 
 /*!
- * Returns the number of CPU queues.
+ * Returns the number of available queues for a specific backend and device
+ * type combination.
  */
-size_t DPPLQueueMgr_GetNumCPUQueues ()
+size_t DPPLQueueMgr_GetNumQueues (DPPLSyclBEType BETy,
+                                  DPPLSyclDeviceType DeviceTy)
 {
-    return QMgrHelper::cpu_queues.size();
-}
-
-/*!
- * Returns the number of GPU queues.
- */
-size_t DPPLQueueMgr_GetNumGPUQueues ()
-{
-    return QMgrHelper::gpu_queues.size();
+    switch (BETy|DeviceTy)
+    {
+    case DPPLSyclBEType::DPPL_OPENCL | DPPLSyclDeviceType::DPPL_CPU:
+    {
+        return QMgrHelper::opencl_cpu_queues.size();
+    }
+    case DPPLSyclBEType::DPPL_OPENCL | DPPLSyclDeviceType::DPPL_GPU:
+    {
+        return QMgrHelper::opencl_gpu_queues.size();
+    }
+    case DPPLSyclBEType::DPPL_LEVEL_ZERO | DPPLSyclDeviceType::DPPL_GPU:
+    {
+        return QMgrHelper::level0_gpu_queues.size();
+    }
+    default:
+    {
+        // \todo handle error
+        std::cerr << "Unsupported device type.\n";
+        return 0;
+    }
+    }
 }
 
 /*!
@@ -315,10 +394,11 @@ DPPLSyclQueueRef DPPLQueueMgr_GetCurrentQueue ()
  * Returns a copy of a sycl::queue corresponding to the specified device type
  * and device number. A runtime_error gets thrown if no such device exists.
  */
-DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclDeviceType DeviceTy,
+DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclBEType BETy,
+                                        DPPLSyclDeviceType DeviceTy,
                                         size_t DNum)
 {
-    return QMgrHelper::getQueue(DeviceTy, DNum);
+    return QMgrHelper::getQueue(BETy, DeviceTy, DNum);
 }
 
 /*!
@@ -327,18 +407,22 @@ DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclDeviceType DeviceTy,
  * specified device type and id. A runtime_error gets thrown if no such device
  * exists.
  */
-void DPPLQueueMgr_SetAsDefaultQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
+void DPPLQueueMgr_SetAsDefaultQueue (DPPLSyclBEType BETy,
+                                     DPPLSyclDeviceType DeviceTy,
+                                     size_t DNum)
 {
-    QMgrHelper::setAsDefaultQueue(DeviceTy, DNum);
+    QMgrHelper::setAsDefaultQueue(BETy, DeviceTy, DNum);
 }
 
 /*!
  * \see QMgrHelper::pushSyclQueue()
  */
 __dppl_give DPPLSyclQueueRef
-DPPLQueueMgr_PushQueue (DPPLSyclDeviceType DeviceTy, size_t DNum)
+DPPLQueueMgr_PushQueue (DPPLSyclBEType BETy,
+                        DPPLSyclDeviceType DeviceTy,
+                        size_t DNum)
 {
-    return QMgrHelper::pushSyclQueue(DeviceTy, DNum);
+    return QMgrHelper::pushSyclQueue(BETy, DeviceTy, DNum);
 }
 
 /*!

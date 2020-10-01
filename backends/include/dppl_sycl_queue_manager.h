@@ -35,6 +35,7 @@
 
 #include "dppl_data_types.h"
 #include "dppl_sycl_types.h"
+#include "dppl_sycl_context_interface.h"
 #include "dppl_sycl_device_interface.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
@@ -63,7 +64,8 @@ __dppl_give DPPLSyclQueueRef DPPLQueueMgr_GetCurrentQueue ();
  * raised if no such device exists.
  */
 DPPL_API
-__dppl_give DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclDeviceType DeviceTy,
+__dppl_give DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclBEType BETy,
+                                                    DPPLSyclDeviceType DeviceTy,
                                                     size_t DNum);
 
 /*!
@@ -75,56 +77,59 @@ __dppl_give DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclDeviceType DeviceTy,
 DPPL_API
 size_t DPPLQueueMgr_GetNumActivatedQueues ();
 
-/*!
- * @brief Get the number of GPU queues available on the system.
- *
- * @return The number of available GPU queues.
- */
-DPPL_API
-size_t DPPLQueueMgr_GetNumGPUQueues ();
 
 /*!
- * @brief Get the number of CPU queues available on the system.
+ * @brief Get the number of available queues for given backend and device type
+ * combination.
  *
- * @return The number of available CPU queues.
+ * @param    BETy           Type of Sycl backend.
+ * @param    DeviceTy       Type of Sycl device.
+ * @return   The number of available queues.
  */
 DPPL_API
-size_t DPPLQueueMgr_GetNumCPUQueues ();
+size_t DPPLQueueMgr_GetNumQueues (DPPLSyclBEType BETy,
+                                  DPPLSyclDeviceType DeviceTy);
 
 /*!
-* @brief Set the default DPPL queue to the sycl::queue for the given device.
+* @brief Set the default DPPL queue to the sycl::queue for the given backend
+* and device type combination.
 *
 * If no such device is found the a runtime_error exception is thrown.
 *
+* @param    BETy           Type of Sycl backend.
 * @param    DeviceTy       The type of Sycl device (sycl_device_type)
 * @param    DNum           Device id for the device (defaults to 0)
 */
 DPPL_API
-void DPPLQueueMgr_SetAsDefaultQueue (DPPLSyclDeviceType DeviceTy,
+void DPPLQueueMgr_SetAsDefaultQueue (DPPLSyclBEType BETy,
+                                     DPPLSyclDeviceType DeviceTy,
                                      size_t DNum);
 
 /*!
  * @brief Pushes a new sycl::queue object to the top of DPPL's thread-local
  * stack of a "activated" queues, and returns a copy of the queue to caller.
  *
- * DPPL maintains a thread-local stack of sycl::queue objects to facilitate
- * nested parallelism. The sycl::queue at the top of the stack is termed as the
- * currently activated queue, and is always the one returned by
+ * The DPPL queue manager maintains a thread-local stack of sycl::queue objects
+ * to facilitate nested parallelism. The sycl::queue at the top of the stack is
+ * termed as the currently activated queue, and is always the one returned by
  * DPPLQueueMgr_GetCurrentQueue(). DPPLPushSyclQueueToStack creates a new
  * sycl::queue corresponding to the specified device and pushes it to the top
  * of the stack. A copy of the sycl::queue is returned to the caller wrapped
  * inside the opaque DPPLSyclQueueRef pointer. A runtime_error exception is
  * thrown when a new sycl::queue could not be created for the specified device.
  *
+ * @param    BETy           Type of Sycl backend.
  * @param    DeviceTy       The type of Sycl device (sycl_device_type)
  * @param    DNum           Device id for the device (defaults to 0)
  *
  * @return A copy of the sycl::queue that was pushed to the top of DPPL's
- * stack of sycl::queue objects.
+ * stack of sycl::queue objects. Nullptr is returned if no such device exists.
  */
 DPPL_API
 __dppl_give DPPLSyclQueueRef
-DPPLQueueMgr_PushQueue (DPPLSyclDeviceType DeviceTy, size_t DNum);
+DPPLQueueMgr_PushQueue (DPPLSyclBEType BETy,
+                        DPPLSyclDeviceType DeviceTy,
+                        size_t DNum);
 
 /*!
  * @brief Pops the top of stack element from DPPL's stack of activated
