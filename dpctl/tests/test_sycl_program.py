@@ -27,6 +27,7 @@ import dpctl
 import unittest
 import os
 
+
 @unittest.skipIf(not dpctl.has_gpu_queues(), "No SYCL platforms available")
 class TestProgramFromOCLSource (unittest.TestCase):
 
