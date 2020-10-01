@@ -41,10 +41,11 @@ DPPL_C_EXTERN_C_BEGIN
  */
 typedef enum
 {
-    DPPL_OPENCL     = 1 << 16,
-    DPPL_HOST       = 1 << 15,
-    DPPL_LEVEL_ZERO = 1 << 14,
-    DPPL_CUDA       = 1 << 13
+    DPPL_UNKNOWN_BACKEND = 0x0,
+    DPPL_OPENCL          = 1 << 16,
+    DPPL_HOST            = 1 << 15,
+    DPPL_LEVEL_ZERO      = 1 << 14,
+    DPPL_CUDA            = 1 << 13
 } DPPLSyclBEType;
 
 /*!
@@ -63,7 +64,7 @@ bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef);
  * @return   {return}       My Param doc
  */
 DPPL_API
-DPPLSyclBackendType
+DPPLSyclBEType
 DPPLContext_GetBackend (__dppl_keep const DPPLSyclContextRef CtxRef);
 
 /*!

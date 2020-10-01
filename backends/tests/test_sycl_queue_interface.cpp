@@ -80,28 +80,24 @@ struct TestDPPLSyclQueueInterface : public ::testing::Test
     )CLC";
     const char *CompileOpts ="-cl-fast-relaxed-math";
 
-    DPPLSyclContextRef CtxRef = nullptr;
-    DPPLSyclQueueRef   Queue  = nullptr;
-    DPPLSyclProgramRef PRef   = nullptr;
-    DPPLSyclProgramRef PRef2  = nullptr;
     TestDPPLSyclQueueInterface ()
-    {
-        Queue = DPPLQueueMgr_GetQueue(DPPL_GPU, 0);
-        CtxRef = DPPLQueue_GetContext(Queue);
-        PRef = DPPLProgram_CreateFromOCLSource(CtxRef, CLProgramStr,
-                                               CompileOpts);
-    }
+    {  }
 
     ~TestDPPLSyclQueueInterface ()
-    {
-        DPPLQueue_Delete(Queue);
-        DPPLContext_Delete(CtxRef);
-        DPPLProgram_Delete(PRef);
-    }
+    {  }
 };
 
 TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
 {
+    auto nOpenCLGpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU);
+
+    if(nOpenCLGpuQ)
+        GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
+
+    auto Queue  = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0);
+    auto CtxRef = DPPLQueue_GetContext(Queue);
+    auto PRef   = DPPLProgram_CreateFromOCLSource(CtxRef, CLProgramStr,
+                                                  CompileOpts);
     ASSERT_TRUE(PRef != nullptr);
     ASSERT_TRUE(DPPLProgram_HasKernel(PRef, "init_arr"));
     ASSERT_TRUE(DPPLProgram_HasKernel(PRef, "add"));
@@ -181,6 +177,10 @@ TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
     DPPLfree_with_queue((DPPLSyclUSMRef)a, Queue);
     DPPLfree_with_queue((DPPLSyclUSMRef)b, Queue);
     DPPLfree_with_queue((DPPLSyclUSMRef)c, Queue);
+
+    DPPLQueue_Delete(Queue);
+    DPPLContext_Delete(CtxRef);
+    DPPLProgram_Delete(PRef);
 }
 
 int

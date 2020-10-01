@@ -23,6 +23,7 @@
 /// dppl_sycl_queue_interface.h and dppl_sycl_queue_manager.h.
 ///
 //===----------------------------------------------------------------------===//
+#include "dppl_sycl_context_interface.h"
 #include "dppl_sycl_device_interface.h"
 #include "dppl_sycl_queue_interface.h"
 #include "dppl_sycl_queue_manager.h"
@@ -35,8 +36,8 @@ namespace
 {
     void foo (size_t & num)
     {
-        auto q1 = DPPLQueueMgr_PushQueue(DPPL_CPU, 0);
-        auto q2 = DPPLQueueMgr_PushQueue(DPPL_GPU, 0);
+        auto q1 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_CPU, 0);
+        auto q2 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
         // Capture the number of active queues in first
         num = DPPLQueueMgr_GetNumActivatedQueues();
         DPPLQueueMgr_PopQueue();
@@ -47,7 +48,7 @@ namespace
 
     void bar (size_t & num)
     {
-        auto q1 = DPPLQueueMgr_PushQueue(DPPL_GPU, 0);
+        auto q1 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
         // Capture the number of active queues in second
         num = DPPLQueueMgr_GetNumActivatedQueues();
         DPPLQueueMgr_PopQueue();
@@ -67,29 +68,50 @@ TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetCurrentQueue)
 }
 
 
-TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetQueue)
+TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetOpenCLCpuQ)
 {
-    auto numCpuQueues = DPPLQueueMgr_GetNumCPUQueues();
-    auto numGpuQueues = DPPLQueueMgr_GetNumGPUQueues();
-    if(numCpuQueues > 0) {
-        EXPECT_TRUE(DPPLQueueMgr_GetQueue(DPPL_CPU, 0) != nullptr);
-        auto non_existent_device_num = numCpuQueues+1;
-        try {
-            DPPLQueueMgr_GetQueue(DPPL_CPU, non_existent_device_num);
-            FAIL() << "SYCL CPU device " << non_existent_device_num
-                   << "not found on system.";
-        }
-        catch (...) { }
+    auto nOpenCLCpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_CPU);
+    if(!nOpenCLCpuQ)
+        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
+
+    EXPECT_TRUE(DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_CPU, 0) != nullptr);
+    auto non_existent_device_num = nOpenCLCpuQ+1;
+    // Non-existent device number should return nullptr
+    if (DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_CPU, non_existent_device_num)) {
+        FAIL() << "SYCL OpenCL CPU device " << non_existent_device_num
+               << "should not exist.";
     }
-    if(numGpuQueues > 0) {
-        EXPECT_TRUE(DPPLQueueMgr_GetQueue(DPPL_GPU, 0) != nullptr);
-        auto non_existent_device_num = numGpuQueues+1;
-        try {
-            DPPLQueueMgr_GetQueue(DPPL_GPU, non_existent_device_num);
-            FAIL() << "SYCL GPU device " << non_existent_device_num
-                   << "not found on system.";
-        }
-        catch (...) { }
+}
+
+TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetOpenCLGpuQ)
+{
+    auto nOpenCLGpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU);
+    if(!nOpenCLGpuQ)
+        GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
+
+    EXPECT_TRUE(DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0) != nullptr);
+    auto non_existent_device_num = nOpenCLGpuQ+1;
+    // Non-existent device number should return nullptr
+    if (DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, non_existent_device_num)) {
+        FAIL() << "SYCL OpenCL GPU device " << non_existent_device_num
+               << "should not exist.";
+    }
+}
+
+TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetLevel0GpuQ)
+{
+    auto nL0GpuQ = DPPLQueueMgr_GetNumQueues(DPPL_LEVEL_ZERO, DPPL_GPU);
+    if(!nL0GpuQ)
+        GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
+
+    EXPECT_TRUE(DPPLQueueMgr_GetQueue(DPPL_LEVEL_ZERO, DPPL_GPU, 0) != nullptr);
+    auto non_existent_device_num = nL0GpuQ+1;
+    // Non-existent device number should return nullptr
+    if (DPPLQueueMgr_GetQueue(DPPL_LEVEL_ZERO, DPPL_GPU,
+                              non_existent_device_num))
+    {
+        FAIL() << "SYCL OpenCL GPU device " << non_existent_device_num
+               << "should not exist.";
     }
 }
 
@@ -98,8 +120,15 @@ TEST_F (TestDPPLSyclQueueManager, CheckGetNumActivatedQueues)
 {
     size_t num0, num1, num2, num4;
 
+    auto nOpenCLCpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_CPU);
+    auto nOpenCLGpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU);
+    auto nL0GpuQ     = DPPLQueueMgr_GetNumQueues(DPPL_LEVEL_ZERO, DPPL_GPU);
+
     // Add a queue to main thread
-    auto q = DPPLQueueMgr_PushQueue(DPPL_CPU, 0);
+    if(!nOpenCLCpuQ || !nOpenCLGpuQ)
+        GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
+
+    auto q = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_CPU, 0);
 
     std::thread first (foo, std::ref(num1));
     std::thread second (bar, std::ref(num2));

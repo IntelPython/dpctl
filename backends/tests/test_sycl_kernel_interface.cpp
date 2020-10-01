@@ -61,12 +61,15 @@ struct TestDPPLSyclKernelInterface : public ::testing::Test
 
     TestDPPLSyclKernelInterface ()
     {
-        QueueRef = DPPLQueueMgr_GetQueue(DPPL_GPU, 0);
-        CtxRef   = DPPLQueue_GetContext(QueueRef);
-        PRef = DPPLProgram_CreateFromOCLSource(CtxRef, CLProgramStr,
-                                               CompileOpts);
-        AddKernel = DPPLProgram_GetKernel(PRef, "add");
-        AxpyKernel = DPPLProgram_GetKernel(PRef, "axpy");
+        auto nOpenCLGpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU);
+        if(nOpenCLGpuQ) {
+            QueueRef = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0);
+            CtxRef   = DPPLQueue_GetContext(QueueRef);
+            PRef = DPPLProgram_CreateFromOCLSource(CtxRef, CLProgramStr,
+                                                CompileOpts);
+            AddKernel = DPPLProgram_GetKernel(PRef, "add");
+            AxpyKernel = DPPLProgram_GetKernel(PRef, "axpy");
+        }
     }
 
     ~TestDPPLSyclKernelInterface ()

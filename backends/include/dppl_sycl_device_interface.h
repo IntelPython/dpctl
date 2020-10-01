@@ -47,7 +47,7 @@ typedef enum
     DPPL_ACCELERATOR = 1 << 2,
     DPPL_CUSTOM      = 1 << 3,
     DPPL_AUTOMATIC   = 1 << 4,
-    DPPL_HOST        = 1 << 5,
+    DPPL_HOST_DEVICE = 1 << 5,
     DPPL_ALL         = 1 << 6
     // IMP: before adding new values here look at DPPLSyclBEType enum. The
     // values should not overlap.
