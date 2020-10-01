@@ -52,14 +52,15 @@ cdef extern from "dppl_sycl_types.h":
     ctypedef DPPLOpaqueSyclUSM*     DPPLSyclUSMRef
 
 
-cdef extern from "dppl_sycl_context_interface.h":
-    cdef void DPPLContext_Delete (DPPLSyclContextRef CtxtRef) except +
-
-
 cdef extern from "dppl_sycl_device_interface.h":
     cdef enum _device_type 'DPPLSyclDeviceType':
-        _GPU 'DPPL_GPU'
-        _CPU 'DPPL_CPU'
+        _GPU         'DPPL_GPU'
+        _CPU         'DPPL_CPU'
+        _ACCELERATOR 'DPPL_ACCELERATOR'
+        _HOST_DEVICE 'DPPL_HOST_DEVICE'
+
+    ctypedef _device_type DPPLSyclDeviceType
+
     cdef void DPPLDevice_DumpInfo (const DPPLSyclDeviceRef DRef) except +
     cdef void DPPLDevice_Delete (DPPLSyclDeviceRef DRef) except +
     cdef void DPPLDevice_DumpInfo (const DPPLSyclDeviceRef DRef) except +
@@ -88,8 +89,25 @@ cdef extern from "dppl_sycl_kernel_interface.h":
 
 
 cdef extern from "dppl_sycl_platform_interface.h":
+    cdef enum _backend_type 'DPPLSyclBEType':
+        _OPENCL          'DPPL_OPENCL'
+        _HOST            'DPPL_HOST'
+        _LEVEL_ZERO      'DPPL_LEVEL_ZERO'
+        _CUDA            'DPPL_CUDA'
+        _UNKNOWN_BACKEND 'DPPL_UNKNOWN_BACKEND'
+
+    ctypedef _backend_type DPPLSyclBEType
+
     cdef size_t DPPLPlatform_GetNumPlatforms ()
     cdef void DPPLPlatform_DumpInfo ()
+    cdef size_t DPPLPlatform_GetNumBackends ()
+    cdef DPPLSyclBEType *DPPLPlatform_GetListOfBackends ()
+    cdef void DPPLPlatform_DeleteListOfBackends (DPPLSyclBEType * BEs)
+
+
+cdef extern from "dppl_sycl_context_interface.h":
+    cdef DPPLSyclBEType DPPLContext_GetBackend (const DPPLSyclContextRef CtxRef)
+    cdef void DPPLContext_Delete (DPPLSyclContextRef CtxRef)
 
 
 cdef extern from "dppl_sycl_program_interface.h":
@@ -125,7 +143,9 @@ cdef extern from "dppl_sycl_queue_interface.h":
         _DOUBLE             'DPPL_DOUBLE',
         _LONG_DOUBLE        'DPPL_DOUBLE',
         _VOID_PTR           'DPPL_VOID_PTR'
+
     ctypedef _arg_data_type DPPLKernelArgType
+
     cdef void DPPLQueue_Delete (DPPLSyclQueueRef QRef)
     cdef DPPLSyclContextRef DPPLQueue_GetContext (const DPPLSyclQueueRef Q)
     cdef DPPLSyclDeviceRef DPPLQueue_GetDevice (const DPPLSyclQueueRef Q)
@@ -156,17 +176,20 @@ cdef extern from "dppl_sycl_queue_interface.h":
 
 
 cdef extern from "dppl_sycl_queue_manager.h":
-    cdef DPPLSyclQueueRef DPPLQueueMgr_GetCurrentQueue () except +
-    cdef size_t DPPLQueueMgr_GetNumCPUQueues () except +
-    cdef size_t DPPLQueueMgr_GetNumGPUQueues () except +
-    cdef size_t DPPLQueueMgr_GetNumActivatedQueues () except +
-    cdef DPPLSyclQueueRef DPPLQueueMgr_GetQueue (_device_type DTy,
-                                                 size_t device_num) except +
-    cdef void DPPLQueueMgr_PopQueue () except +
-    cdef DPPLSyclQueueRef DPPLQueueMgr_PushQueue (_device_type DTy,
-                                                  size_t device_num) except +
-    cdef void DPPLQueueMgr_SetAsDefaultQueue (_device_type DTy,
-                                              size_t device_num) except +
+    cdef DPPLSyclQueueRef DPPLQueueMgr_GetCurrentQueue ()
+    cdef size_t DPPLQueueMgr_GetNumQueues (DPPLSyclBEType BETy,
+                                           DPPLSyclDeviceType DeviceTy)
+    cdef size_t DPPLQueueMgr_GetNumActivatedQueues ()
+    cdef DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclBEType BETy,
+                                                 DPPLSyclDeviceType DeviceTy,
+                                                 size_t DNum)
+    cdef void DPPLQueueMgr_PopQueue ()
+    cdef DPPLSyclQueueRef DPPLQueueMgr_PushQueue (DPPLSyclBEType BETy,
+                                                  DPPLSyclDeviceType DeviceTy,
+                                                  size_t DNum)
+    cdef void DPPLQueueMgr_SetAsDefaultQueue (DPPLSyclBEType BETy,
+                                              DPPLSyclDeviceType DeviceTy,
+                                              size_t DNum)
 
 
 cdef extern from "dppl_sycl_usm_interface.h":

@@ -27,7 +27,9 @@ import dpctl
 import unittest
 import os
 
-@unittest.skipIf(not dpctl.has_gpu_queues(), "No SYCL platforms available")
+@unittest.skipUnless(dpctl.get_num_queues(backend_ty="opencl",
+                                          device_ty="gpu") > 0,
+                     "No OpenCL GPU queues available")
 class TestProgramFromOCLSource (unittest.TestCase):
 
     def test_create_program_from_source (self):
@@ -40,7 +42,7 @@ class TestProgramFromOCLSource (unittest.TestCase):
             size_t index = get_global_id(0);                                   \
             c[index] = a[index] + d*b[index];                                  \
         }"
-        with dpctl.device_context(dpctl.device_type.gpu, 0):
+        with dpctl.device_context("opencl:gpu:0"):
             q = dpctl.get_current_queue()
             prog = dpctl.create_program_from_source(q, oclSrc)
             self.assertIsNotNone(prog)
@@ -57,7 +59,9 @@ class TestProgramFromOCLSource (unittest.TestCase):
             self.assertEqual(axpyKernel.get_num_args(), 4)
 
 
-@unittest.skipIf(not dpctl.has_gpu_queues(), "No SYCL platforms available")
+@unittest.skipUnless(dpctl.get_num_queues(backend_ty="opencl",
+                                          device_ty="gpu") > 0,
+                     "No OpenCL GPU queues available")
 class TestProgramFromSPRIV (unittest.TestCase):
 
     def test_create_program_from_spirv(self):
@@ -66,7 +70,7 @@ class TestProgramFromSPRIV (unittest.TestCase):
         spirv_file = os.path.join(CURR_DIR, 'input_files/multi_kernel.spv')
         with open(spirv_file, 'rb') as fin:
             spirv = fin.read()
-            with dpctl.device_context(dpctl.device_type.gpu, 0):
+            with dpctl.device_context("opencl:gpu:0"):
                 q = dpctl.get_current_queue()
                 prog = dpctl.create_program_from_spirv(q,spirv)
                 self.assertIsNotNone(prog)

@@ -27,25 +27,13 @@
 
 #include "dppl_data_types.h"
 #include "dppl_sycl_types.h"
+#include "dppl_sycl_platform_interface.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
 #include <stdbool.h>
 
 DPPL_C_EXTERN_C_BEGIN
-
-/*!
- * @brief Redefinition of DPC++'s backend types. We have this wrapper so that
- * the sycl header is not exposed to Python extensions.
- *
- */
-typedef enum
-{
-    DPPL_OPENCL     = 1 << 16,
-    DPPL_HOST       = 1 << 15,
-    DPPL_LEVEL_ZERO = 1 << 14,
-    DPPL_CUDA       = 1 << 13
-} DPPLSyclBEType;
 
 /*!
  * @brief Returns true if this SYCL context is a host context.
@@ -63,7 +51,7 @@ bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef);
  * @return   {return}       My Param doc
  */
 DPPL_API
-DPPLSyclBackendType
+DPPLSyclBEType
 DPPLContext_GetBackend (__dppl_keep const DPPLSyclContextRef CtxRef);
 
 /*!
