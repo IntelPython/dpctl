@@ -35,7 +35,7 @@ using namespace cl::sycl;
 namespace
 {
 // Create wrappers for C Binding types (see CBindingWrapping.h).
- DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPPLSyclDeviceRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPPLSyclDeviceRef)
 
  /*!
  * @brief Helper function to print the metadata for a sycl::device.
@@ -54,6 +54,23 @@ void dump_device_info (const device & Device)
        << Device.get_info<info::device::vendor>() << '\n';
     ss << std::setw(4) << " " << std::left << std::setw(16) << "Profile"
        << Device.get_info<info::device::profile>() << '\n';
+    ss << std::setw(4) << " " << std::left << std::setw(16) << "Device type";
+
+    try {
+        if (Device.has(aspect::accelerator))
+            ss << "accelerator" << '\n';
+        else if (Device.has(aspect::cpu))
+            ss << "cpu" << '\n';
+        else if (Device.has(aspect::custom))
+            ss << "custom" << '\n';
+        else if (Device.has(aspect::gpu))
+            ss << "gpu" << '\n';
+        else if (Device.has(aspect::host))
+            ss << "host" << '\n';
+    } catch (runtime_error re) {
+        // \todo handle errors
+        ss << "unknown\n";
+    }
 
     std::cout << ss.str();
 }
