@@ -48,7 +48,7 @@ DPPL_C_EXTERN_C_BEGIN
  * OpenCL kernel.
  *
  * The feature to create a Sycl kernel from a SPIR-V IL binary will be available
- * in Sycl 2.0, at which point we may deprecate this function.
+ * in Sycl 2.0 at which point this function may become deprecated.
  *
  * @param    Ctx            An opaque pointer to a sycl::context
  * @param    IL             SPIR-V binary
