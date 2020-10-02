@@ -5,6 +5,7 @@ mkdir build
 pushd build
 
 INSTALL_PREFIX=`pwd`/../install
+rm -rf ${INSTALL_PREFIX}
 export ONEAPI_ROOT=/opt/intel/oneapi
 DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest/linux
 PYTHON_INC=`python -c "import distutils.sysconfig;                  \
@@ -24,9 +25,6 @@ cmake                                                       \
     -DGTEST_LIB_DIR=${CONDA_PREFIX}/lib                     \
     ..
 
-make V=1 -n -j 4
-make check
-make install
-
+make V=1 -n -j 4 && make check && make install
 
 popd

@@ -34,9 +34,9 @@ using namespace cl::sycl;
 namespace
 {
 // Create wrappers for C Binding types (see CBindingWrapping.h).
- DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
- DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
- DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPPLSyclUSMRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPPLSyclUSMRef)
 
 } /* end of anonymous namespace */
 

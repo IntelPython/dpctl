@@ -31,6 +31,7 @@ from enum import Enum, auto
 import logging
 from .backend cimport *
 from ._memory cimport Memory
+from libc.stdlib cimport malloc, free
 
 
 _logger = logging.getLogger(__name__)
@@ -41,9 +42,27 @@ class device_type(Enum):
     cpu = auto()
 
 
-cdef class UnsupportedDeviceTypeError(Exception):
+cdef class UnsupportedDeviceTypeError (Exception):
     '''This exception is raised when a device type other than CPU or GPU is
        encountered.
+    '''
+    pass
+
+cdef class SyclProgramCompilationError (Exception):
+    '''This exception is raised when a sycl program could not be built from
+       either a spirv binary file or a string source.
+    '''
+    pass
+
+cdef class SyclKernelSubmitError (Exception):
+    '''This exception is raised when a sycl program could not be built from
+       either a spirv binary file or a string source.
+    '''
+    pass
+
+cdef class SyclKernelInvalidRangeError (Exception):
+    '''This exception is raised when a range that has more than three
+       dimensions or less than one dimension.
     '''
     pass
 
@@ -53,14 +72,14 @@ cdef class SyclContext:
     @staticmethod
     cdef SyclContext _create (DPPLSyclContextRef ctxt):
         cdef SyclContext ret = SyclContext.__new__(SyclContext)
-        ret.ctxt_ptr = ctxt
+        ret._ctxt_ref = ctxt
         return ret
 
     def __dealloc__ (self):
-        DPPLContext_Delete(self.ctxt_ptr)
+        DPPLContext_Delete(self._ctxt_ref)
 
     cdef DPPLSyclContextRef get_context_ref (self):
-        return self.ctxt_ptr
+        return self._ctxt_ref
 
 
 cdef class SyclDevice:
@@ -70,32 +89,32 @@ cdef class SyclDevice:
     @staticmethod
     cdef SyclDevice _create (DPPLSyclDeviceRef dref):
         cdef SyclDevice ret = SyclDevice.__new__(SyclDevice)
-        ret.device_ptr = dref
-        ret.vendor_name = DPPLDevice_GetVendorName(dref)
-        ret.device_name = DPPLDevice_GetName(dref)
-        ret.driver_version = DPPLDevice_GetDriverInfo(dref)
+        ret._device_ref = dref
+        ret._vendor_name = DPPLDevice_GetVendorName(dref)
+        ret._device_name = DPPLDevice_GetName(dref)
+        ret._driver_version = DPPLDevice_GetDriverInfo(dref)
         return ret
 
     def __dealloc__ (self):
-        DPPLDevice_Delete(self.device_ptr)
-        DPPLCString_Delete(self.device_name)
-        DPPLCString_Delete(self.vendor_name)
-        DPPLCString_Delete(self.driver_version)
+        DPPLDevice_Delete(self._device_ref)
+        DPPLCString_Delete(self._device_name)
+        DPPLCString_Delete(self._vendor_name)
+        DPPLCString_Delete(self._driver_version)
 
     def dump_device_info (self):
         ''' Print information about the SYCL device.
         '''
-        DPPLDevice_DumpInfo(self.device_ptr)
+        DPPLDevice_DumpInfo(self._device_ref)
 
     def get_device_name (self):
         ''' Returns the name of the device as a string
         '''
-        return self.device_name
+        return self._device_name.decode()
 
     def get_vendor_name (self):
         ''' Returns the device vendor name as a string
         '''
-        return self.vendor_name
+        return self._vendor_name.decode()
 
     def get_driver_version (self):
         ''' Returns the OpenCL software driver version as a string
@@ -103,13 +122,101 @@ cdef class SyclDevice:
             device is an OpenCL device. Returns a string class
             with the value "1.2" if this SYCL device is a host device.
         '''
-        return self.driver_version
+        return self._driver_version.decode()
 
-    cdef DPPLSyclDeviceRef get_device_ptr (self):
+    cdef DPPLSyclDeviceRef get_device_ref (self):
         ''' Returns the DPPLSyclDeviceRef pointer for this class.
         '''
-        return self.device_ptr
+        return self._device_ref
 
+
+cdef class SyclEvent:
+    ''' Wrapper class for a Sycl Event
+    '''
+
+    @staticmethod
+    cdef SyclEvent _create (DPPLSyclEventRef eref, list args):
+        cdef SyclEvent ret = SyclEvent.__new__(SyclEvent)
+        ret._event_ref = eref
+        ret._args = args
+        return ret
+
+    def __dealloc__ (self):
+        self.wait()
+        DPPLEvent_Delete(self._event_ref)
+
+    cdef DPPLSyclEventRef get_event_ref (self):
+        ''' Returns the DPPLSyclEventRef pointer for this class.
+        '''
+        return self._event_ref
+
+    cpdef void wait (self):
+        DPPLEvent_Wait(self._event_ref)
+
+
+cdef class SyclKernel:
+    ''' Wraps a sycl::kernel object created from an OpenCL interoperability
+        kernel.
+    '''
+
+    @staticmethod
+    cdef SyclKernel _create (DPPLSyclKernelRef kref):
+        cdef SyclKernel ret = SyclKernel.__new__(SyclKernel)
+        ret._kernel_ref = kref
+        ret._function_name = DPPLKernel_GetFunctionName(kref)
+        return ret
+
+    def __dealloc__ (self):
+        DPPLKernel_Delete(self._kernel_ref)
+        DPPLCString_Delete(self._function_name)
+
+    def get_function_name (self):
+        ''' Returns the name of the Kernel function.
+        '''
+        return self._function_name.decode()
+
+    def get_num_args (self):
+        ''' Returns the number of arguments for this kernel function.
+        '''
+        return DPPLKernel_GetNumArgs(self._kernel_ref)
+
+    cdef DPPLSyclKernelRef get_kernel_ref (self):
+        ''' Returns the DPPLSyclKernelRef pointer for this SyclKernel.
+        '''
+        return self._kernel_ref
+
+
+cdef class SyclProgram:
+    ''' Wraps a sycl::program object created from an OpenCL interoperability
+        program.
+
+        SyclProgram exposes the C API from dppl_sycl_program_interface.h. A
+        SyclProgram can be created from either a source string or a SPIR-V
+        binary file.
+    '''
+
+    @staticmethod
+    cdef SyclProgram _create (DPPLSyclProgramRef pref):
+        cdef SyclProgram ret = SyclProgram.__new__(SyclProgram)
+        ret._program_ref = pref
+        return ret
+
+    def __dealloc__ (self):
+        DPPLProgram_Delete(self._program_ref)
+
+    cdef DPPLSyclProgramRef get_program_ref (self):
+        return self._program_ref
+
+    cpdef SyclKernel get_sycl_kernel(self, str kernel_name):
+        name = kernel_name.encode('utf8')
+        return SyclKernel._create(DPPLProgram_GetKernel(self._program_ref,
+                                                        name))
+
+    def has_sycl_kernel(self, str kernel_name):
+        name = kernel_name.encode('utf8')
+        return DPPLProgram_HasKernel(self._program_ref, name)
+
+import ctypes
 
 cdef class SyclQueue:
     ''' Wrapper class for a Sycl queue.
@@ -118,20 +225,202 @@ cdef class SyclQueue:
     @staticmethod
     cdef SyclQueue _create (DPPLSyclQueueRef qref):
         cdef SyclQueue ret = SyclQueue.__new__(SyclQueue)
-        ret.queue_ptr = qref
+        ret._context = SyclContext._create(DPPLQueue_GetContext(qref))
+        ret._device = SyclDevice._create(DPPLQueue_GetDevice(qref))
+        ret._queue_ref = qref
         return ret
 
     def __dealloc__ (self):
-        DPPLQueue_Delete(self.queue_ptr)
+        DPPLQueue_Delete(self._queue_ref)
+
+    cdef _raise_queue_submit_error (self, fname, errcode):
+        e = SyclKernelSubmitError("Kernel submission to Sycl queue failed.")
+        e.fname = fname
+        e.code = errcode
+        raise e
+
+    cdef _raise_invalid_range_error (self, fname, ndims, errcode):
+        e = SyclKernelInvalidRangeError("Range with ", ndims, " not allowed. "
+                                        "Range should have between one and "
+                                        "three dimensions.")
+        e.fname = fname
+        e.code = errcode
+        raise e
+
+    cdef int _populate_args (self, list args, void **kargs,                    \
+                             DPPLKernelArgType *kargty):
+        cdef int ret = 0
+        for idx, arg in enumerate(args):
+            if isinstance(arg, ctypes.c_char):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._CHAR
+            elif isinstance(arg, ctypes.c_int):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._INT
+            elif isinstance(arg, ctypes.c_uint):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._UNSIGNED_INT
+            elif isinstance(arg, ctypes.c_long):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._LONG
+            elif isinstance(arg, ctypes.c_longlong):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._LONG_LONG
+            elif isinstance(arg, ctypes.c_ulonglong):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._UNSIGNED_LONG_LONG
+            elif isinstance(arg, ctypes.c_short):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._SHORT
+            elif isinstance(arg, ctypes.c_size_t):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._SIZE_T
+            elif isinstance(arg, ctypes.c_float):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._FLOAT
+            elif isinstance(arg, ctypes.c_double):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._DOUBLE
+            elif isinstance(arg, Memory):
+                kargs[idx]= <void*>(<size_t>arg._pointer)
+                kargty[idx] = _arg_data_type._VOID_PTR
+            else:
+                ret = -1
+        return ret
+
+
+    cdef int _populate_range (self, size_t Range[3], list S, size_t nS):
+
+        cdef int ret = 0
+
+        if nS == 1:
+            Range[0] = <size_t>S[0]
+            Range[1] = 1
+            Range[2] = 1
+        elif nS == 2:
+            Range[0] = <size_t>S[0]
+            Range[1] = <size_t>S[1]
+            Range[2] = 1
+        elif nS == 3:
+            Range[0] = <size_t>S[0]
+            Range[1] = <size_t>S[1]
+            Range[2] = <size_t>S[2]
+        else:
+            ret = -1
+
+        return ret
+
 
     cpdef SyclContext get_sycl_context (self):
-        return SyclContext._create(DPPLQueue_GetContext(self.queue_ptr))
+        return self._context
 
     cpdef SyclDevice get_sycl_device (self):
-        return SyclDevice._create(DPPLQueue_GetDevice(self.queue_ptr))
+        return self._device
 
     cdef DPPLSyclQueueRef get_queue_ref (self):
-        return self.queue_ptr
+        return self._queue_ref
+
+    cpdef SyclEvent submit (self, SyclKernel kernel, list args, list gS,       \
+                            list lS = None, list dEvents = None):
+
+        cdef void **kargs = NULL
+        cdef DPPLKernelArgType *kargty = NULL
+        cdef DPPLSyclEventRef *depEvents = NULL
+        cdef DPPLSyclEventRef Eref = NULL
+        cdef int ret
+        cdef size_t gRange[3]
+        cdef size_t lRange[3]
+        cdef size_t nGS = len(gS)
+        cdef size_t nLS = len(lS) if lS is not None else 0
+        cdef size_t nDE = len(dEvents) if dEvents is not None else 0
+
+        # Allocate the arrays to be sent to DPPLQueue_Submit
+        kargs = <void**>malloc(len(args) * sizeof(void*))
+        if not kargs:
+            raise MemoryError()
+        kargty = <DPPLKernelArgType*>malloc(len(args)*sizeof(DPPLKernelArgType))
+        if not kargty:
+            free(kargs)
+            raise MemoryError()
+        # Create the array of dependent events if any
+        if dEvents is not None and nDE > 0:
+            depEvents = <DPPLSyclEventRef*>malloc(nDE*sizeof(DPPLSyclEventRef))
+            if not depEvents:
+                free(kargs)
+                free(kargty)
+                raise MemoryError()
+            else:
+                for idx, de in enumerate(dEvents):
+                    depEvents[idx] = (<SyclEvent>de).get_event_ref()
+
+        # populate the args and argstype arrays
+        ret = self._populate_args(args, kargs, kargty)
+        if ret == -1:
+            free(kargs)
+            free(kargty)
+            free(depEvents)
+            raise TypeError("Unsupported type for a kernel argument")
+
+        if lS is None:
+            ret = self._populate_range (gRange, gS, nGS)
+            if ret == -1:
+                free(kargs)
+                free(kargty)
+                free(depEvents)
+                self._raise_invalid_range_error("SyclQueue.submit", nGS, -1)
+
+            Eref = DPPLQueue_SubmitRange(kernel.get_kernel_ref(),
+                                         self.get_queue_ref(),
+                                         kargs,
+                                         kargty,
+                                         len(args),
+                                         gRange,
+                                         nGS,
+                                         depEvents,
+                                         nDE)
+        else:
+            ret = self._populate_range (gRange, gS, nGS)
+            if ret == -1:
+                free(kargs)
+                free(kargty)
+                free(depEvents)
+                self._raise_invalid_range_error("SyclQueue.submit", nGS, -1)
+            ret = self._populate_range (lRange, lS, nLS)
+            if ret == -1:
+                free(kargs)
+                free(kargty)
+                free(depEvents)
+                self._raise_invalid_range_error("SyclQueue.submit", nLS, -1)
+
+            if nGS != nLS:
+                free(kargs)
+                free(kargty)
+                free(depEvents)
+                raise ValueError("Local and global ranges need to have same "
+                                 "number of dimensions.")
+
+            Eref = DPPLQueue_SubmitNDRange(kernel.get_kernel_ref(),
+                                           self.get_queue_ref(),
+                                           kargs,
+                                           kargty,
+                                           len(args),
+                                           gRange,
+                                           lRange,
+                                           nGS,
+                                           depEvents,
+                                           nDE)
+        free(kargs)
+        free(kargty)
+        free(depEvents)
+
+        if Eref is NULL:
+            # \todo get the error number from dpctl-capi
+            self._raise_queue_submit_error("DPPLQueue_Submit", -1)
+
+        return SyclEvent._create(Eref, args)
+
+    cpdef void wait (self):
+        DPPLQueue_Wait(self._queue_ref)
 
     cpdef memcpy (self, dest, src, int count):
         cdef void *c_dest
@@ -147,21 +436,24 @@ cdef class SyclQueue:
         else:
             raise TypeError("Parameter src should be Memory.")
 
-        DPPLQueue_Memcpy(self.queue_ptr, c_dest, c_src, count)
+        DPPLQueue_Memcpy(self._queue_ref, c_dest, c_src, count)
 
 
 cdef class _SyclQueueManager:
+    ''' Wrapper for the C API's sycl queue manager interface.
+    '''
+
     def _set_as_current_queue (self, device_ty, device_id):
-        cdef DPPLSyclQueueRef queue_ptr
+        cdef DPPLSyclQueueRef queue_ref
         if device_ty == device_type.gpu:
-            queue_ptr = DPPLQueueMgr_PushQueue(_device_type._GPU, device_id)
+            queue_ref = DPPLQueueMgr_PushQueue(_device_type._GPU, device_id)
         elif device_ty == device_type.cpu:
-            queue_ptr = DPPLQueueMgr_PushQueue(_device_type._CPU, device_id)
+            queue_ref = DPPLQueueMgr_PushQueue(_device_type._CPU, device_id)
         else:
             e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
             raise e
 
-        return SyclQueue._create(queue_ptr)
+        return SyclQueue._create(queue_ref)
 
     def _remove_current_queue (self):
         DPPLQueueMgr_PopQueue()
@@ -223,6 +515,7 @@ cdef class _SyclQueueManager:
         else:
             return False
 
+
 # This private instance of the _SyclQueueManager should not be directly
 # accessed outside the module.
 _qmgr = _SyclQueueManager()
@@ -237,6 +530,69 @@ has_gpu_queues           = _qmgr.has_gpu_queues
 has_sycl_platforms       = _qmgr.has_sycl_platforms
 set_default_queue        = _qmgr.set_default_queue
 is_in_device_context     = _qmgr.is_in_device_context
+
+
+def create_program_from_source (SyclQueue q, unicode source, unicode copts=""):
+    ''' Creates a Sycl interoperability program from an OpenCL source string.
+
+        We use the DPPLProgram_CreateFromOCLSource() C API function to create
+        a Sycl progrma from an OpenCL source program that can contain multiple
+        kernels.
+
+        Parameters:
+                q (SyclQueue)   : The SyclQueue object wraps the Sycl device for
+                                  which the program will be built.
+                source (unicode): Source string for an OpenCL program.
+                copts (unicode) : Optional compilation flags that will be used
+                                  when compiling the program.
+
+            Returns:
+                program (SyclProgram): A SyclProgram object wrapping the
+                                       syc::program returned by the C API.
+    '''
+
+    cdef DPPLSyclProgramRef Pref
+
+    cdef bytes bSrc = source.encode('utf8')
+    cdef bytes bCOpts = copts.encode('utf8')
+    cdef const char *Src = <const char*>bSrc
+    cdef const char *COpts = <const char*>bCOpts
+    cdef DPPLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
+    Pref = DPPLProgram_CreateFromOCLSource(CRef, Src, COpts)
+
+    if Pref is NULL:
+        raise SyclProgramCompilationError()
+
+    return SyclProgram._create(Pref)
+
+cimport cython.array
+
+def create_program_from_spirv (SyclQueue q, const unsigned char[:] IL):
+    ''' Creates a Sycl interoperability program from an SPIR-V binary.
+
+        We use the DPPLProgram_CreateFromOCLSpirv() C API function to create
+        a Sycl progrma from an compiled SPIR-V binary file.
+
+        Parameters:
+            q (SyclQueue): The SyclQueue object wraps the Sycl device for
+                           which the program will be built.
+            IL (const char[:]) : SPIR-V binary IL file for an OpenCL program.
+
+        Returns:
+            program (SyclProgram): A SyclProgram object wrapping the
+                                   syc::program returned by the C API.
+    '''
+
+    cdef DPPLSyclProgramRef Pref
+    cdef const unsigned char *dIL = &IL[0]
+    cdef DPPLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
+    cdef size_t length = IL.shape[0]
+    Pref = DPPLProgram_CreateFromOCLSpirv(CRef, <const void*>dIL, length)
+    if Pref is NULL:
+        raise SyclProgramCompilationError()
+
+    return SyclProgram._create(Pref)
+
 
 from contextlib import contextmanager
 

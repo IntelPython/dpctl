@@ -1,4 +1,4 @@
-//===--- dppl_sycl_context_interface.cpp - DPPL-SYCL interface --*- C++ -*-===//
+//===--- dppl_sycl_event_interface.h - DPPL-SYCL interface ---*---C++ -*---===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -19,30 +19,37 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file implements the data types and functions declared in
-/// dppl_sycl_context_interface.h.
+/// This header declares a C API to a sub-set of the sycl::event interface.
 ///
 //===----------------------------------------------------------------------===//
 
-#include "dppl_sycl_context_interface.h"
-#include "Support/CBindingWrapping.h"
-#include <CL/sycl.hpp>
+#pragma once
 
-using namespace cl::sycl;
-
-namespace
-{
-// Create wrappers for C Binding types (see CBindingWrapping.h).
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
-} /* end of anonymous namespace */
+#include "dppl_data_types.h"
+#include "dppl_sycl_types.h"
+#include "Support/DllExport.h"
+#include "Support/ExternC.h"
+#include "Support/MemOwnershipAttrs.h"
 
 
-bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef)
-{
-    return unwrap(CtxRef)->is_host();
-}
+DPPL_C_EXTERN_C_BEGIN
 
-void DPPLContext_Delete (__dppl_take DPPLSyclContextRef CtxRef)
-{
-    delete unwrap(CtxRef);
-}
+/*!
+ * @brief C-API wrapper for sycl::event.wait.
+ *
+ * @param    ERef           An opaque DPPLSyclEventRef pointer on which to wait.
+ */
+DPPL_API
+void DPPLEvent_Wait (__dppl_keep DPPLSyclEventRef ERef);
+
+/*!
+ * @brief Deletes the DPPLSyclEventRef after casting it to a sycl::event.
+ *
+ * @param    ERef           An opaque DPPLSyclEventRef pointer that would be
+ *                          freed.
+ */
+DPPL_API
+void
+DPPLEvent_Delete (__dppl_take DPPLSyclEventRef ERef);
+
+DPPL_C_EXTERN_C_END

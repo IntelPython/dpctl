@@ -26,35 +26,47 @@
 #pragma once
 
 /*!
- * @brief
+ * @brief Opaque pointer to a sycl::context
  *
  */
 typedef struct DPPLOpaqueSyclContext *DPPLSyclContextRef;
 
 /*!
- * @brief
+ * @brief Opaque pointer to a sycl::device
  *
  */
 typedef struct DPPLOpaqueSyclDevice *DPPLSyclDeviceRef;
 
 /*!
- * @brief
+ * @brief Opaque pointer to a sycl::event
+ *
+ */
+typedef struct DPPLOpaqueSyclEvent *DPPLSyclEventRef;
+
+/*!
+ * @brief Opaque pointer to a sycl::kernel
+ *
+ */
+typedef struct DPPLOpaqueSyclKernel *DPPLSyclKernelRef;
+
+/*!
+ * @brief Opaque pointer to a sycl::platform
  *
  */
 typedef struct DPPLOpaqueSyclPlatform *DPPLSyclPlatformRef;
 
+/*!
+ * @brief Opaque pointer to a sycl::program
+ *
+ */
+typedef struct DPPLOpaqueSyclProgram *DPPLSyclProgramRef;
+
  /*!
-  * @brief Used to pass a sycl::queue opaquely through DPPL interfaces.
+  * @brief Opaque pointer to a sycl::queue
   *
   * @see sycl::queue
   */
 typedef struct DPPLOpaqueSyclQueue *DPPLSyclQueueRef;
-
-/*!
- * @brief Used to pass a sycl::program opaquely through DPPL interfaces.
- *
- */
-typedef struct DPPLOpaqueSyclProgram *DPPLSyclProgramRef;
 
 /*!
  * @brief Used to pass a sycl::usm memory opaquely through DPPL interfaces.

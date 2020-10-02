@@ -1,4 +1,4 @@
-//===--- dppl_sycl_context_interface.cpp - DPPL-SYCL interface --*- C++ -*-===//
+//===--- dppl_sycl_event_interface.cpp - DPPL-SYCL interface --*- C++ -*---===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -20,29 +20,33 @@
 ///
 /// \file
 /// This file implements the data types and functions declared in
-/// dppl_sycl_context_interface.h.
+/// dppl_sycl_event_interface.h.
 ///
 //===----------------------------------------------------------------------===//
 
-#include "dppl_sycl_context_interface.h"
+#include "dppl_sycl_event_interface.h"
 #include "Support/CBindingWrapping.h"
-#include <CL/sycl.hpp>
+
+#include <CL/sycl.hpp>                /* SYCL headers   */
 
 using namespace cl::sycl;
 
 namespace
 {
-// Create wrappers for C Binding types (see CBindingWrapping.h).
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
+// Create wrappers for C Binding types (see CBindingWrapping.h)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(event, DPPLSyclEventRef)
 } /* end of anonymous namespace */
 
 
-bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef)
+void DPPLEvent_Wait (__dppl_keep DPPLSyclEventRef ERef)
 {
-    return unwrap(CtxRef)->is_host();
+    // \todo How to handle errors? E.g. when ERef is null or not a valid event.
+    auto SyclEvent = unwrap(ERef);
+    SyclEvent->wait();
 }
 
-void DPPLContext_Delete (__dppl_take DPPLSyclContextRef CtxRef)
+void
+DPPLEvent_Delete (__dppl_take DPPLSyclEventRef ERef)
 {
-    delete unwrap(CtxRef);
+    delete unwrap(ERef);
 }
