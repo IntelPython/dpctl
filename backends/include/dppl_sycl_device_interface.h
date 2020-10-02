@@ -40,7 +40,7 @@ DPPL_C_EXTERN_C_BEGIN
  * sycl.hpp here and in the Python bindings.
  *
  */
-typedef enum
+enum DPPLSyclDeviceType
 {
     DPPL_CPU         = 1 << 0,
     DPPL_GPU         = 1 << 1,
@@ -51,7 +51,7 @@ typedef enum
     DPPL_ALL         = 1 << 6
     // IMP: before adding new values here look at DPPLSyclBEType enum. The
     // values should not overlap.
-} DPPLSyclDeviceType;
+};
 
 /*!
  * @brief Prints out some of the info::deivice attributes for the device.

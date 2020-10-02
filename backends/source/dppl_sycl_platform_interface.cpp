@@ -164,7 +164,7 @@ size_t DPPLPlatform_GetNumBackends ()
     return get_set_of_backends().size();
 }
 
-__dppl_give DPPLSyclBEType *DPPLPlatform_GetListOfBackends ()
+__dppl_give enum DPPLSyclBEType *DPPLPlatform_GetListOfBackends ()
 {
     auto be_set = get_set_of_backends();
 
@@ -182,7 +182,7 @@ __dppl_give DPPLSyclBEType *DPPLPlatform_GetListOfBackends ()
     return BEArr;
 }
 
-void DPPLPlatform_DeleteListOfBackends (__dppl_take DPPLSyclBEType *BEArr)
+void DPPLPlatform_DeleteListOfBackends (__dppl_take enum DPPLSyclBEType *BEArr)
 {
     delete[] BEArr;
 }

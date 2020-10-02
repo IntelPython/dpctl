@@ -37,14 +37,14 @@ DPPL_C_EXTERN_C_BEGIN
  * the sycl header is not exposed to Python extensions.
  *
  */
-typedef enum
+enum DPPLSyclBEType
 {
     DPPL_UNKNOWN_BACKEND = 0x0,
     DPPL_OPENCL          = 1 << 16,
     DPPL_HOST            = 1 << 15,
     DPPL_LEVEL_ZERO      = 1 << 14,
     DPPL_CUDA            = 1 << 13
-} DPPLSyclBEType;
+};
 
 /*!
  * @brief Returns the number of sycl::platform available on the system.
@@ -69,7 +69,7 @@ size_t DPPLPlatform_GetNumBackends ();
  * @return   An array of DPPLSyclBEType enum values.
  */
 DPPL_API
-__dppl_give DPPLSyclBEType* DPPLPlatform_GetListOfBackends ();
+__dppl_give enum DPPLSyclBEType* DPPLPlatform_GetListOfBackends ();
 
 /*!
  * @brief Frees an array of DPPLSyclBEType enum values.
@@ -77,7 +77,7 @@ __dppl_give DPPLSyclBEType* DPPLPlatform_GetListOfBackends ();
  * @param    BEArr          An array of DPPLSyclBEType enum values to be freed.
  */
 DPPL_API
-void DPPLPlatform_DeleteListOfBackends (__dppl_take DPPLSyclBEType* BEArr);
+void DPPLPlatform_DeleteListOfBackends (__dppl_take enum DPPLSyclBEType* BEArr);
 
 /*!
  * @brief Prints out some selected info about all sycl::platform on the system.

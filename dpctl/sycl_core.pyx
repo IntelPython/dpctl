@@ -449,6 +449,8 @@ cdef class SyclQueue:
 cdef class _SyclQueueManager:
     ''' Wrapper for the C API's sycl queue manager interface.
     '''
+    cdef dict _backend_ty_dict
+    cdef dict _device_ty_dict
 
     def __cinit__ (self):
 
@@ -515,7 +517,7 @@ cdef class _SyclQueueManager:
             raise UnsupportedBackendError("Backend can only be opencl or "
                                           "level-0")
 
-    def get_num_queues_of_type (self, backend_ty, device_ty):
+    def get_num_queues (self, backend_ty, device_ty):
         cdef size_t num = 0
         try :
             beTy = self._backend_ty_dict[backend_ty]
@@ -558,8 +560,7 @@ dump                     = _qmgr.dump
 get_current_queue        = _qmgr.get_current_queue
 get_num_platforms        = _qmgr.get_num_platforms
 get_num_activated_queues = _qmgr.get_num_activated_queues
-has_cpu_queues           = _qmgr.has_cpu_queues
-has_gpu_queues           = _qmgr.has_gpu_queues
+get_num_queues           = _qmgr.get_num_queues
 has_sycl_platforms       = _qmgr.has_sycl_platforms
 set_default_queue        = _qmgr.set_default_queue
 is_in_device_context     = _qmgr.is_in_device_context

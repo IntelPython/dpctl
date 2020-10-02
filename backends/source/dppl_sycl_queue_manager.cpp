@@ -123,21 +123,21 @@ public:
     }
 
     static __dppl_give DPPLSyclQueueRef
-    getQueue (DPPLSyclBEType BETy,
-              DPPLSyclDeviceType DeviceTy,
+    getQueue (enum DPPLSyclBEType BETy,
+              enum DPPLSyclDeviceType DeviceTy,
               size_t DNum);
 
     static __dppl_give DPPLSyclQueueRef
     getCurrentQueue ();
 
     static void
-    setAsDefaultQueue (DPPLSyclBEType BETy,
-                       DPPLSyclDeviceType DeviceTy,
+    setAsDefaultQueue (enum DPPLSyclBEType BETy,
+                       enum DPPLSyclDeviceType DeviceTy,
                        size_t DNum);
 
     static __dppl_give DPPLSyclQueueRef
-    pushSyclQueue (DPPLSyclBEType BETy,
-                   DPPLSyclDeviceType DeviceTy,
+    pushSyclQueue (enum DPPLSyclBEType BETy,
+                   enum DPPLSyclDeviceType DeviceTy,
                    size_t DNum);
 
     static void
@@ -169,8 +169,8 @@ DPPLSyclQueueRef QMgrHelper::getCurrentQueue ()
  * be used for that purpose.
  */
 DPPLSyclQueueRef
-QMgrHelper::getQueue (DPPLSyclBEType BETy,
-                      DPPLSyclDeviceType DeviceTy,
+QMgrHelper::getQueue (enum DPPLSyclBEType BETy,
+                      enum DPPLSyclDeviceType DeviceTy,
                       size_t DNum)
 {
     queue *QRef = nullptr;
@@ -223,8 +223,8 @@ QMgrHelper::getQueue (DPPLSyclBEType BETy,
  * sycl::queue corresponding to the device type and device number.
  */
 void
-QMgrHelper::setAsDefaultQueue (DPPLSyclBEType BETy,
-                               DPPLSyclDeviceType DeviceTy,
+QMgrHelper::setAsDefaultQueue (enum DPPLSyclBEType BETy,
+                               enum DPPLSyclDeviceType DeviceTy,
                                size_t DNum)
 {
     if(get_active_queues().empty()) {
@@ -282,8 +282,8 @@ QMgrHelper::setAsDefaultQueue (DPPLSyclBEType BETy,
  * purpose.
  */
 DPPLSyclQueueRef
-QMgrHelper::pushSyclQueue (DPPLSyclBEType BETy,
-                           DPPLSyclDeviceType DeviceTy,
+QMgrHelper::pushSyclQueue (enum DPPLSyclBEType BETy,
+                           enum DPPLSyclDeviceType DeviceTy,
                            size_t DNum)
 {
     queue *QRef = nullptr;
@@ -381,8 +381,8 @@ size_t DPPLQueueMgr_GetNumActivatedQueues ()
  * Returns the number of available queues for a specific backend and device
  * type combination.
  */
-size_t DPPLQueueMgr_GetNumQueues (DPPLSyclBEType BETy,
-                                  DPPLSyclDeviceType DeviceTy)
+size_t DPPLQueueMgr_GetNumQueues (enum DPPLSyclBEType BETy,
+                                  enum DPPLSyclDeviceType DeviceTy)
 {
     switch (BETy|DeviceTy)
     {
@@ -419,8 +419,8 @@ DPPLSyclQueueRef DPPLQueueMgr_GetCurrentQueue ()
  * Returns a copy of a sycl::queue corresponding to the specified device type
  * and device number. A runtime_error gets thrown if no such device exists.
  */
-DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclBEType BETy,
-                                        DPPLSyclDeviceType DeviceTy,
+DPPLSyclQueueRef DPPLQueueMgr_GetQueue (enum DPPLSyclBEType BETy,
+                                        enum DPPLSyclDeviceType DeviceTy,
                                         size_t DNum)
 {
     return QMgrHelper::getQueue(BETy, DeviceTy, DNum);
@@ -432,8 +432,8 @@ DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclBEType BETy,
  * specified device type and id. A runtime_error gets thrown if no such device
  * exists.
  */
-void DPPLQueueMgr_SetAsDefaultQueue (DPPLSyclBEType BETy,
-                                     DPPLSyclDeviceType DeviceTy,
+void DPPLQueueMgr_SetAsDefaultQueue (enum DPPLSyclBEType BETy,
+                                     enum DPPLSyclDeviceType DeviceTy,
                                      size_t DNum)
 {
     QMgrHelper::setAsDefaultQueue(BETy, DeviceTy, DNum);
@@ -443,8 +443,8 @@ void DPPLQueueMgr_SetAsDefaultQueue (DPPLSyclBEType BETy,
  * \see QMgrHelper::pushSyclQueue()
  */
 __dppl_give DPPLSyclQueueRef
-DPPLQueueMgr_PushQueue (DPPLSyclBEType BETy,
-                        DPPLSyclDeviceType DeviceTy,
+DPPLQueueMgr_PushQueue (enum DPPLSyclBEType BETy,
+                        enum DPPLSyclDeviceType DeviceTy,
                         size_t DNum)
 {
     return QMgrHelper::pushSyclQueue(BETy, DeviceTy, DNum);

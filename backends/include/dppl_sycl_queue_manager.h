@@ -64,9 +64,10 @@ __dppl_give DPPLSyclQueueRef DPPLQueueMgr_GetCurrentQueue ();
  * raised if no such device exists.
  */
 DPPL_API
-__dppl_give DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclBEType BETy,
-                                                    DPPLSyclDeviceType DeviceTy,
-                                                    size_t DNum);
+__dppl_give DPPLSyclQueueRef
+DPPLQueueMgr_GetQueue (enum DPPLSyclBEType BETy,
+                       enum DPPLSyclDeviceType DeviceTy,
+                       size_t DNum);
 
 /*!
  * @brief Get the number of activated queues not including the global or
@@ -87,8 +88,8 @@ size_t DPPLQueueMgr_GetNumActivatedQueues ();
  * @return   The number of available queues.
  */
 DPPL_API
-size_t DPPLQueueMgr_GetNumQueues (DPPLSyclBEType BETy,
-                                  DPPLSyclDeviceType DeviceTy);
+size_t DPPLQueueMgr_GetNumQueues (enum DPPLSyclBEType BETy,
+                                  enum DPPLSyclDeviceType DeviceTy);
 
 /*!
 * @brief Set the default DPPL queue to the sycl::queue for the given backend
@@ -101,8 +102,8 @@ size_t DPPLQueueMgr_GetNumQueues (DPPLSyclBEType BETy,
 * @param    DNum           Device id for the device (defaults to 0)
 */
 DPPL_API
-void DPPLQueueMgr_SetAsDefaultQueue (DPPLSyclBEType BETy,
-                                     DPPLSyclDeviceType DeviceTy,
+void DPPLQueueMgr_SetAsDefaultQueue (enum DPPLSyclBEType BETy,
+                                     enum DPPLSyclDeviceType DeviceTy,
                                      size_t DNum);
 
 /*!
@@ -127,8 +128,8 @@ void DPPLQueueMgr_SetAsDefaultQueue (DPPLSyclBEType BETy,
  */
 DPPL_API
 __dppl_give DPPLSyclQueueRef
-DPPLQueueMgr_PushQueue (DPPLSyclBEType BETy,
-                        DPPLSyclDeviceType DeviceTy,
+DPPLQueueMgr_PushQueue (enum DPPLSyclBEType BETy,
+                        enum DPPLSyclDeviceType DeviceTy,
                         size_t DNum);
 
 /*!
