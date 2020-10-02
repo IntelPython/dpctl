@@ -91,7 +91,7 @@ TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
 {
     auto nOpenCLGpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU);
 
-    if(nOpenCLGpuQ)
+    if(!nOpenCLGpuQ)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 
     auto Queue  = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0);
@@ -186,7 +186,7 @@ TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
 int
 main (int argc, char** argv)
 {
-  ::testing::InitGoogleTest(&argc, argv);
-  int ret = RUN_ALL_TESTS();
-  return ret;
+    ::testing::InitGoogleTest(&argc, argv);
+    int ret = RUN_ALL_TESTS();
+    return ret;
 }

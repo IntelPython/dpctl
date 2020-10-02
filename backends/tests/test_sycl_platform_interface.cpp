@@ -29,11 +29,30 @@
 struct TestDPPLSyclPlatformInterface : public ::testing::Test
 { };
 
-
 TEST_F (TestDPPLSyclPlatformInterface, CheckGetNumPlatforms)
 {
     auto nplatforms = DPPLPlatform_GetNumPlatforms();
     EXPECT_GE(nplatforms, 0);
+}
+
+TEST_F (TestDPPLSyclPlatformInterface, GetNumBackends)
+{
+    auto nbackends = DPPLPlatform_GetNumBackends();
+    EXPECT_GE(nbackends, 0);
+}
+
+TEST_F (TestDPPLSyclPlatformInterface, GetListOfBackends)
+{
+    auto nbackends = DPPLPlatform_GetNumBackends();
+    auto backends = DPPLPlatform_GetListOfBackends();
+	EXPECT_TRUE(backends != nullptr);
+    for(auto i = 0ul; i < nbackends; ++i) {
+        EXPECT_TRUE(
+          backends[i] == DPPLSyclBEType::DPPL_CUDA   ||
+          backends[i] == DPPLSyclBEType::DPPL_OPENCL ||
+          backends[i] == DPPLSyclBEType::DPPL_LEVEL_ZERO);
+    }
+	DPPLPlatform_DeleteListOfBackends(backends);
 }
 
 TEST_F (TestDPPLSyclPlatformInterface, CheckDPPLPlatformDumpInfo)
@@ -44,7 +63,7 @@ TEST_F (TestDPPLSyclPlatformInterface, CheckDPPLPlatformDumpInfo)
 int
 main (int argc, char** argv)
 {
-  ::testing::InitGoogleTest(&argc, argv);
-  int ret = RUN_ALL_TESTS();
-  return ret;
+    ::testing::InitGoogleTest(&argc, argv);
+    int ret = RUN_ALL_TESTS();
+    return ret;
 }

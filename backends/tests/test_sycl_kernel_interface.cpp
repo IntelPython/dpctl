@@ -53,51 +53,60 @@ struct TestDPPLSyclKernelInterface : public ::testing::Test
     )CLC";
     const char *CompileOpts ="-cl-fast-relaxed-math";
 
-    DPPLSyclContextRef CtxRef    = nullptr;
-    DPPLSyclQueueRef   QueueRef  = nullptr;
-    DPPLSyclProgramRef PRef      = nullptr;
-    DPPLSyclKernelRef AddKernel  = nullptr;
-    DPPLSyclKernelRef AxpyKernel = nullptr;
-
+    size_t nOpenCLGpuQ = 0;
     TestDPPLSyclKernelInterface ()
-    {
-        auto nOpenCLGpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU);
-        if(nOpenCLGpuQ) {
-            QueueRef = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0);
-            CtxRef   = DPPLQueue_GetContext(QueueRef);
-            PRef = DPPLProgram_CreateFromOCLSource(CtxRef, CLProgramStr,
-                                                CompileOpts);
-            AddKernel = DPPLProgram_GetKernel(PRef, "add");
-            AxpyKernel = DPPLProgram_GetKernel(PRef, "axpy");
-        }
-    }
-
-    ~TestDPPLSyclKernelInterface ()
-    {
-        DPPLQueue_Delete(QueueRef);
-        DPPLContext_Delete(CtxRef);
-        DPPLProgram_Delete(PRef);
-        DPPLKernel_Delete(AddKernel);
-        DPPLKernel_Delete(AxpyKernel);
-    }
+        : nOpenCLGpuQ(DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU))
+    {  }
 };
 
 TEST_F (TestDPPLSyclKernelInterface, CheckGetFunctionName)
 {
+    if(!nOpenCLGpuQ)
+        GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
+
+    auto QueueRef = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0);
+    auto CtxRef   = DPPLQueue_GetContext(QueueRef);
+    auto PRef = DPPLProgram_CreateFromOCLSource(CtxRef, CLProgramStr,
+                                                CompileOpts);
+    auto AddKernel = DPPLProgram_GetKernel(PRef, "add");
+    auto AxpyKernel = DPPLProgram_GetKernel(PRef, "axpy");
 
     auto fnName1 = DPPLKernel_GetFunctionName(AddKernel);
     auto fnName2 = DPPLKernel_GetFunctionName(AxpyKernel);
+
     ASSERT_STREQ("add", fnName1);
     ASSERT_STREQ("axpy", fnName2);
+
     DPPLCString_Delete(fnName1);
     DPPLCString_Delete(fnName2);
+
+    DPPLQueue_Delete(QueueRef);
+    DPPLContext_Delete(CtxRef);
+    DPPLProgram_Delete(PRef);
+    DPPLKernel_Delete(AddKernel);
+    DPPLKernel_Delete(AxpyKernel);
 }
 
 TEST_F (TestDPPLSyclKernelInterface, CheckGetNumArgs)
 {
+    if(!nOpenCLGpuQ)
+        GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
+
+    auto QueueRef = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0);
+    auto CtxRef   = DPPLQueue_GetContext(QueueRef);
+    auto PRef = DPPLProgram_CreateFromOCLSource(CtxRef, CLProgramStr,
+                                                CompileOpts);
+    auto AddKernel = DPPLProgram_GetKernel(PRef, "add");
+    auto AxpyKernel = DPPLProgram_GetKernel(PRef, "axpy");
 
     ASSERT_EQ(DPPLKernel_GetNumArgs(AddKernel), 3);
     ASSERT_EQ(DPPLKernel_GetNumArgs(AxpyKernel), 4);
+
+    DPPLQueue_Delete(QueueRef);
+    DPPLContext_Delete(CtxRef);
+    DPPLProgram_Delete(PRef);
+    DPPLKernel_Delete(AddKernel);
+    DPPLKernel_Delete(AxpyKernel);
 }
 
 int

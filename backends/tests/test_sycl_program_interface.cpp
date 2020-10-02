@@ -145,7 +145,7 @@ struct TestDPPLSyclProgramInterface : public ::testing::Test
 
 TEST_F (TestDPPLSyclProgramInterface, CheckCreateFromOCLSource)
 {
-    if(nOpenCLGpuQ)
+    if(!nOpenCLGpuQ)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 
     auto QueueRef = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0);
@@ -163,7 +163,7 @@ TEST_F (TestDPPLSyclProgramInterface, CheckCreateFromOCLSource)
 
 TEST_F (TestDPPLSyclProgramInterface, CheckCreateFromOCLSpirv)
 {
-    if(nOpenCLGpuQ)
+    if(!nOpenCLGpuQ)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 
     auto QueueRef = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0);
@@ -179,11 +179,9 @@ TEST_F (TestDPPLSyclProgramInterface, CheckCreateFromOCLSpirv)
     DPPLProgram_Delete(PRef);
 }
 
-
-
 TEST_F (TestDPPLSyclProgramInterface, CheckGetKernelOCLSource)
 {
-    if(nOpenCLGpuQ)
+    if(!nOpenCLGpuQ)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 
     auto QueueRef = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0);
@@ -210,7 +208,7 @@ TEST_F (TestDPPLSyclProgramInterface, CheckGetKernelOCLSource)
 
 TEST_F (TestDPPLSyclProgramInterface, CheckGetKernelOCLSpirv)
 {
-    if(nOpenCLGpuQ)
+    if(!nOpenCLGpuQ)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 
     auto QueueRef = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0);
@@ -238,7 +236,7 @@ TEST_F (TestDPPLSyclProgramInterface, CheckGetKernelOCLSpirv)
 int
 main (int argc, char** argv)
 {
-  ::testing::InitGoogleTest(&argc, argv);
-  int ret = RUN_ALL_TESTS();
-  return ret;
+    ::testing::InitGoogleTest(&argc, argv);
+    int ret = RUN_ALL_TESTS();
+    return ret;
 }
