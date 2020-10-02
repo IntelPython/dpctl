@@ -74,7 +74,7 @@ DPPL_API
 __dppl_give DPPLSyclProgramRef
 DPPLProgram_CreateFromOCLSource (__dppl_keep const DPPLSyclContextRef Ctx,
                                  __dppl_keep const char *Source,
-                                 __dppl_keep const char *CompileOpts = nullptr);
+                                 __dppl_keep const char *CompileOpts);
 
 /*!
  * @brief Returns the SyclKernel with given name from the program, if not found

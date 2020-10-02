@@ -54,9 +54,9 @@ class QMgrHelper
 public:
     using QVec = vector_class<queue>;
 
-    static QVec* init_opencl_cpu_queues() {
+    static QVec* init_queues (backend BE, info::device_type DTy) {
         QVec *queues = new QVec();
-        
+
         for (auto &p : platform::get_platforms()) {
             auto Devices = p.get_devices();
             auto Ctx = context(Devices);
@@ -64,59 +64,33 @@ public:
             for(auto &d : Devices) {
                 auto devty = d.get_info<info::device::device_type>();
                 auto be = p.get_backend();
-                if(devty == info::device_type::cpu && be == backend::opencl) {
+                if(devty == DTy && be == BE) {
                     queues->emplace_back(Ctx, d);
                 }
             }
         }
         return queues;
     }
-    
+
     static QVec& get_opencl_cpu_queues ()
     {
-        static QVec* queues = init_opencl_cpu_queues();
+        static QVec* queues = init_queues(backend::opencl,
+                                          info::device_type::cpu);
         return *queues;
     }
 
-    static QVec get_opencl_gpu_queues ()
+    static QVec& get_opencl_gpu_queues ()
     {
-        QVec queues;
-
-        for (auto &p : platform::get_platforms()) {
-            auto Devices = p.get_devices();
-            auto Ctx = context(Devices);
-            if (p.is_host()) continue;
-            for(auto &d : Devices) {
-                auto devty = d.get_info<info::device::device_type>();
-                auto be = p.get_backend();
-                if(devty == info::device_type::gpu && be == backend::opencl) {
-                    queues.emplace_back(Ctx, d);
-                }
-            }
-        }
-
-        return queues;
+        static QVec* queues = init_queues(backend::opencl,
+                                          info::device_type::gpu);
+        return *queues;
     }
 
     static QVec get_level0_gpu_queues ()
     {
-        QVec queues;
-
-        for (auto &p : platform::get_platforms()) {
-            auto Devices = p.get_devices();
-            auto Ctx = context(Devices);
-            if (p.is_host()) continue;
-            for(auto &d : Devices) {
-                auto devty = d.get_info<info::device::device_type>();
-                auto be = p.get_backend();
-                if(devty == info::device_type::gpu &&
-                   be == backend::level_zero) {
-                    queues.emplace_back(Ctx, d);
-                }
-            }
-        }
-
-        return queues;
+        static QVec* queues = init_queues(backend::level_zero,
+                                          info::device_type::gpu);
+        return *queues;
     }
 
     static QVec& get_active_queues ()
