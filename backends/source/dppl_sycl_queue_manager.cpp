@@ -54,22 +54,65 @@ class QMgrHelper
 public:
     using QVec = vector_class<queue>;
 
-    static QVec& get_opencl_cpu_queues ()
+    static QVec get_opencl_cpu_queues ()
     {
-        static QVec* cpu_queues = init_queues(info::device_type::cpu);
-        return *cpu_queues;
+        QVec queues;
+
+        for (auto &p : platform::get_platforms()) {
+            auto Devices = p.get_devices();
+            auto Ctx = context(Devices);
+            if (p.is_host()) continue;
+            for(auto &d : Devices) {
+                auto devty = d.get_info<info::device::device_type>();
+                auto be = p.get_backend();
+                if(devty == info::device_type::cpu && be == backend::opencl) {
+                    queues.emplace_back(Ctx, d);
+                }
+            }
+        }
+
+        return queues;
     }
 
-    static QVec& get_opencl_gpu_queues ()
+    static QVec get_opencl_gpu_queues ()
     {
-        static QVec* gpu_queues = init_queues(info::device_type::gpu);
-        return *gpu_queues;
+        QVec queues;
+
+        for (auto &p : platform::get_platforms()) {
+            auto Devices = p.get_devices();
+            auto Ctx = context(Devices);
+            if (p.is_host()) continue;
+            for(auto &d : Devices) {
+                auto devty = d.get_info<info::device::device_type>();
+                auto be = p.get_backend();
+                if(devty == info::device_type::gpu && be == backend::opencl) {
+                    queues.emplace_back(Ctx, d);
+                }
+            }
+        }
+
+        return queues;
     }
 
-    static QVec& get_level0_gpu_queues ()
+    static QVec get_level0_gpu_queues ()
     {
-        static QVec* gpu_queues = init_queues(info::device_type::gpu);
-        return *gpu_queues;
+        QVec queues;
+
+        for (auto &p : platform::get_platforms()) {
+            auto Devices = p.get_devices();
+            auto Ctx = context(Devices);
+            if (p.is_host()) continue;
+            for(auto &d : Devices) {
+                auto devty = d.get_info<info::device::device_type>();
+                auto be = p.get_backend();
+                if(devty == info::device_type::gpu &&
+                   be == backend::level_zero) {
+                    queues.emplace_back(Ctx, d);
+                }
+            }
+        }
+
+        return queues;
     }
 
     static QVec& get_active_queues ()
@@ -100,21 +143,13 @@ public:
     static void
     popSyclQueue ();
 
-    static QVec* init_queues (info::device_type device_ty)
-    {
-
-        auto queues = new QVec();
-        for(auto d : device::get_devices(device_ty))
-            queues->emplace_back(d);
-        return queues;
-    }
 };
 
 /*!
  * Allocates a new copy of the present top of stack queue, which can be the
  * default queue and returns to caller. The caller owns the pointer and is
- * responsible for deallocating it. The helper function deleteQueue can be used
- * is for that purpose.
+ * responsible for deallocating it. The helper function DPPLQueue_Delete should
+ * be used for that purpose.
  */
 DPPLSyclQueueRef QMgrHelper::getCurrentQueue ()
 {
@@ -130,8 +165,8 @@ DPPLSyclQueueRef QMgrHelper::getCurrentQueue ()
 /*!
  * Allocates a sycl::queue by copying from the cached {cpu|gpu}_queues vector
  * and returns it to the caller. The caller owns the pointer and is responsible
- * for deallocating it. The helper function deleteQueue can be used is for that
- * purpose.
+ * for deallocating it. The helper function DPPLQueue_Delete should
+ * be used for that purpose.
  */
 DPPLSyclQueueRef
 QMgrHelper::getQueue (DPPLSyclBEType BETy,

@@ -30,7 +30,10 @@
 #include <gtest/gtest.h>
 #include <thread>
 
+#include <CL/sycl.hpp>
+
 using namespace std;
+using namespace cl::sycl;
 
 namespace
 {
@@ -74,13 +77,19 @@ TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetOpenCLCpuQ)
     if(!nOpenCLCpuQ)
         GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
 
-    EXPECT_TRUE(DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_CPU, 0) != nullptr);
-    auto non_existent_device_num = nOpenCLCpuQ+1;
+    auto q = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_CPU, 0);
+    EXPECT_TRUE(q != nullptr);
+    auto sycl_q = reinterpret_cast<queue*>(q);
+    auto be = sycl_q->get_context().get_platform().get_backend();
+    EXPECT_EQ(be, backend::opencl);
+    auto devty = sycl_q->get_device().get_info<info::device::device_type>();
+    EXPECT_EQ(devty, info::device_type::cpu);
+
+    auto non_existent_device_num = nOpenCLCpuQ + 1;
     // Non-existent device number should return nullptr
-    if (DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_CPU, non_existent_device_num)) {
-        FAIL() << "SYCL OpenCL CPU device " << non_existent_device_num
-               << "should not exist.";
-    }
+    auto null_q = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_CPU,
+                                        non_existent_device_num);
+    ASSERT_TRUE(null_q == nullptr);
 }
 
 TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetOpenCLGpuQ)
@@ -89,13 +98,19 @@ TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetOpenCLGpuQ)
     if(!nOpenCLGpuQ)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 
-    EXPECT_TRUE(DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0) != nullptr);
-    auto non_existent_device_num = nOpenCLGpuQ+1;
+    auto q = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0);
+    EXPECT_TRUE(q != nullptr);
+    auto sycl_q = reinterpret_cast<queue*>(q);
+    auto be = sycl_q->get_context().get_platform().get_backend();
+    EXPECT_EQ(be, backend::opencl);
+    auto devty = sycl_q->get_device().get_info<info::device::device_type>();
+    EXPECT_EQ(devty, info::device_type::gpu);
+
+    auto non_existent_device_num = nOpenCLGpuQ + 1;
     // Non-existent device number should return nullptr
-    if (DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, non_existent_device_num)) {
-        FAIL() << "SYCL OpenCL GPU device " << non_existent_device_num
-               << "should not exist.";
-    }
+    auto null_q = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU,
+                                        non_existent_device_num);
+    ASSERT_TRUE(null_q == nullptr);
 }
 
 TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetLevel0GpuQ)
@@ -104,15 +119,19 @@ TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetLevel0GpuQ)
     if(!nL0GpuQ)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 
-    EXPECT_TRUE(DPPLQueueMgr_GetQueue(DPPL_LEVEL_ZERO, DPPL_GPU, 0) != nullptr);
-    auto non_existent_device_num = nL0GpuQ+1;
+    auto q = DPPLQueueMgr_GetQueue(DPPL_LEVEL_ZERO, DPPL_GPU, 0);
+    EXPECT_TRUE(q != nullptr);
+    auto sycl_q = reinterpret_cast<queue*>(q);
+    auto be = sycl_q->get_context().get_platform().get_backend();
+    EXPECT_EQ(be, backend::level_zero);
+    auto devty = sycl_q->get_device().get_info<info::device::device_type>();
+    EXPECT_EQ(devty, info::device_type::gpu);
+
+    auto non_existent_device_num = nL0GpuQ + 1;
     // Non-existent device number should return nullptr
-    if (DPPLQueueMgr_GetQueue(DPPL_LEVEL_ZERO, DPPL_GPU,
-                              non_existent_device_num))
-    {
-        FAIL() << "SYCL OpenCL GPU device " << non_existent_device_num
-               << "should not exist.";
-    }
+    auto null_q = DPPLQueueMgr_GetQueue(DPPL_LEVEL_ZERO, DPPL_GPU,
+                                          non_existent_device_num);
+    ASSERT_TRUE(null_q == nullptr);
 }
 
 
