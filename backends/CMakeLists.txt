@@ -93,6 +93,8 @@ set(OpenCL_LIBRARY "${DPCPP_ROOT}/lib/libOpenCL.so")
 message(STATUS "OpenCL_INCLUDE_DIR: ${OpenCL_INCLUDE_DIR}")
 message(STATUS "OpenCL_LIBRARY: ${OpenCL_LIBRARY}")
 
+add_definitions(-DCL_TARGET_OPENCL_VERSION=220)
+
 add_library(
   DPPLSyclInterface
   SHARED
