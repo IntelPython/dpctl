@@ -4,6 +4,7 @@
 if [ ! -z "${ONEAPI_ROOT}" ]; then
     # Suppress error b/c it could fail on Ubuntu 18.04
     source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh || true
+    source ${ONEAPI_ROOT}/tbb/latest/env/vars.sh
     export CC=clang
     export CXX=clang++
 else
