@@ -54,10 +54,9 @@ class QMgrHelper
 public:
     using QVec = vector_class<queue>;
 
-    static QVec get_opencl_cpu_queues ()
-    {
-        QVec queues;
-
+    static QVec* init_opencl_cpu_queues() {
+        QVec *queues = new QVec();
+        
         for (auto &p : platform::get_platforms()) {
             auto Devices = p.get_devices();
             auto Ctx = context(Devices);
@@ -66,12 +65,17 @@ public:
                 auto devty = d.get_info<info::device::device_type>();
                 auto be = p.get_backend();
                 if(devty == info::device_type::cpu && be == backend::opencl) {
-                    queues.emplace_back(Ctx, d);
+                    queues->emplace_back(Ctx, d);
                 }
             }
         }
-
         return queues;
+    }
+    
+    static QVec& get_opencl_cpu_queues ()
+    {
+        static QVec* queues = init_opencl_cpu_queues();
+        return *queues;
     }
 
     static QVec get_opencl_gpu_queues ()
