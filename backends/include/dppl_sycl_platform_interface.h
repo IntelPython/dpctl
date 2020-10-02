@@ -55,16 +55,27 @@ DPPL_API
 size_t DPPLPlatform_GetNumPlatforms ();
 
 /*!
- * @brief Returns the number of available sycl backends on the system.
+ * @brief Returns the number of unique sycl backends on the system not counting
+ * the host backend.
  *
- * @return   {return}       My Param doc
+ * @return   The number of unique sycl backends.
  */
 DPPL_API
 size_t DPPLPlatform_GetNumBackends ();
 
+/*!
+ * @brief Returns an array of the unique DPPLSyclBEType values on the system.
+ *
+ * @return   An array of DPPLSyclBEType enum values.
+ */
 DPPL_API
 __dppl_give DPPLSyclBEType* DPPLPlatform_GetListOfBackends ();
 
+/*!
+ * @brief Frees an array of DPPLSyclBEType enum values.
+ *
+ * @param    BEArr          An array of DPPLSyclBEType enum values to be freed.
+ */
 DPPL_API
 void DPPLPlatform_DeleteListOfBackends (__dppl_take DPPLSyclBEType* BEArr);
 
