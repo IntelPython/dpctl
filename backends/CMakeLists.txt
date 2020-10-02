@@ -42,8 +42,9 @@ endfunction()
 check_for_dpcpp()
 
 find_package(Python REQUIRED COMPONENTS Development NumPy)
-message(STATUS "Python_INCLUDE_DIRS: ${Python_INCLUDE_DIRS}")
-message(STATUS "Python_NumPy_INCLUDE_DIRS: ${Python_NumPy_INCLUDE_DIRS}")
+include(CMakePrintHelpers)
+cmake_print_variables(Python_INCLUDE_DIRS)
+cmake_print_variables(Python_NumPy_INCLUDE_DIRS)
 
 if(WIN32)
     set(CMAKE_CXX_COMPILER:PATH "${DPCPP_ROOT}/bin/dpcpp")
@@ -73,9 +74,8 @@ endif()
 
 set(OpenCL_INCLUDE_DIR "${DPCPP_ROOT}/include/sycl")
 set(OpenCL_LIBRARY "${DPCPP_ROOT}/lib/libOpenCL.so")
-
-message(STATUS "OpenCL_INCLUDE_DIR: ${OpenCL_INCLUDE_DIR}")
-message(STATUS "OpenCL_LIBRARY: ${OpenCL_LIBRARY}")
+cmake_print_variables(OpenCL_INCLUDE_DIR)
+cmake_print_variables(OpenCL_LIBRARY)
 
 add_definitions(-DCL_TARGET_OPENCL_VERSION=220)
 
@@ -123,15 +123,12 @@ target_include_directories(
 )
 
 if(WIN32)
-    message(
-        STATUS
-        "SYCL_INCLUDE_DIR: "
-        ${DPCPP_ROOT}/include/sycl
-    )
+    set(SYCL_INCLUDE_DIR "${DPCPP_ROOT}/include/sycl")
+    cmake_print_variables(SYCL_INCLUDE_DIR)
     target_include_directories(
         DPPLSyclInterface
         PUBLIC
-        ${DPCPP_ROOT}/include/sycl
+        ${SYCL_INCLUDE_DIR}
     )
     target_link_libraries(
         DPPLSyclInterface
