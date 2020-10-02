@@ -33,7 +33,7 @@ cmake                                                       \
     -DNUMPY_INCLUDE_DIR=${NUMPY_INC}                        \
     ../backends
 
-make -j 4 && make install
+make -j 4 && make check & make install
 
 popd
 cp install/lib/*.so dpctl/
