@@ -40,9 +40,16 @@ _logger = logging.getLogger(__name__)
 class device_type(Enum):
     gpu = auto()
     cpu = auto()
+    accelerator = auto()
+    host_device = auto()
 
+cdef class UnsupportedBackendError (Exception):
+    '''This exception is raised when a device type other than CPU or GPU is
+       encountered.
+    '''
+    pass
 
-cdef class UnsupportedDeviceTypeError (Exception):
+cdef class UnsupportedDeviceError (Exception):
     '''This exception is raised when a device type other than CPU or GPU is
        encountered.
     '''
@@ -443,17 +450,32 @@ cdef class _SyclQueueManager:
     ''' Wrapper for the C API's sycl queue manager interface.
     '''
 
-    def _set_as_current_queue (self, device_ty, device_id):
-        cdef DPPLSyclQueueRef queue_ref
-        if device_ty == device_type.gpu:
-            queue_ref = DPPLQueueMgr_PushQueue(_device_type._GPU, device_id)
-        elif device_ty == device_type.cpu:
-            queue_ref = DPPLQueueMgr_PushQueue(_device_type._CPU, device_id)
-        else:
-            e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
-            raise e
+    def __cinit__ (self):
 
-        return SyclQueue._create(queue_ref)
+        self._backend_ty_dict = {
+            "opencl": _backend_type._OPENCL,
+            "level0": _backend_type._LEVEL_ZERO
+        }
+
+        self._device_ty_dict = {
+            "gpu": _device_type._GPU,
+            "cpu": _device_type._CPU,
+        }
+
+    def _set_as_current_queue (self, backend_ty, device_ty, device_id):
+        cdef DPPLSyclQueueRef queue_ref
+
+        try :
+            beTy = self._backend_ty_dict[backend_ty]
+            try :
+                devTy = self._device_ty_dict[device_ty]
+                queue_ref = DPPLQueueMgr_PushQueue(beTy, devTy, device_id)
+                return SyclQueue._create(queue_ref)
+            except KeyError:
+                raise UnsupportedDeviceError("Device can only be gpu or cpu")
+        except KeyError:
+            raise UnsupportedBackendError("Backend can only be opencl or "
+                                          "level-0")
 
     def _remove_current_queue (self):
         DPPLQueueMgr_PopQueue()
@@ -480,28 +502,32 @@ cdef class _SyclQueueManager:
         '''
         return SyclQueue._create(DPPLQueueMgr_GetCurrentQueue())
 
-    def set_default_queue (self, device_ty, device_id):
-        if device_ty == device_type.gpu:
-            DPPLQueueMgr_SetAsDefaultQueue(_device_type._GPU, device_id)
-        elif device_ty == device_type.cpu:
-            DPPLQueueMgr_SetAsDefaultQueue(_device_type._CPU, device_id)
-        else:
-            e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
-            raise e
+    def set_default_queue (self, backend_ty, device_ty, device_id):
 
-    def has_gpu_queues (self):
-        cdef size_t num = DPPLQueueMgr_GetNumGPUQueues()
-        if num:
-            return True
-        else:
-            return False
+        try :
+            beTy = self._backend_ty_dict[backend_ty]
+            try :
+                devTy = self._device_ty_dict[device_ty]
+                DPPLQueueMgr_SetAsDefaultQueue(beTy, devTy, device_id)
+            except KeyError:
+                raise UnsupportedDeviceError("Device can only be gpu or cpu")
+        except KeyError:
+            raise UnsupportedBackendError("Backend can only be opencl or "
+                                          "level-0")
 
-    def has_cpu_queues (self):
-        cdef size_t num = DPPLQueueMgr_GetNumCPUQueues()
-        if num:
-            return True
-        else:
-            return False
+    def get_num_queues_of_type (self, backend_ty, device_ty):
+        cdef size_t num = 0
+        try :
+            beTy = self._backend_ty_dict[backend_ty]
+            try :
+                devTy = self._device_ty_dict[device_ty]
+                num = DPPLQueueMgr_GetNumQueues(beTy, devTy)
+            except KeyError:
+                print("Device can only be gpu or cpu")
+        except KeyError:
+            print("Backend can only be opencl or level-0")
+
+        return num
 
     def dump (self):
         ''' Prints information about the Runtime object.
@@ -514,6 +540,13 @@ cdef class _SyclQueueManager:
             return True
         else:
             return False
+
+    def get_current_backend (self):
+        pass
+
+    def get_current_device_type (self):
+        pass
+
 
 
 # This private instance of the _SyclQueueManager should not be directly
@@ -597,7 +630,7 @@ def create_program_from_spirv (SyclQueue q, const unsigned char[:] IL):
 from contextlib import contextmanager
 
 @contextmanager
-def device_context (dev=device_type.gpu, device_num=0):
+def device_context (str queue_str="opencl:gpu:0"):
     # Create a new device context and add it to the front of the runtime's
     # deque of active contexts (SyclQueueManager.active_contexts_).
     # Also return a reference to the context. The behavior allows consumers
@@ -606,8 +639,12 @@ def device_context (dev=device_type.gpu, device_num=0):
 
     # If set_context is unable to create a new context an exception is raised.
     try:
+        attrs = queue_str.split(':')
+        if len(attrs) != 3:
+            raise ValueError("Invalid device context string. Should be "
+                             " backend:device:device_number")
         ctxt = None
-        ctxt = _qmgr._set_as_current_queue(dev, device_num)
+        ctxt = _qmgr._set_as_current_queue(attrs[0], attrs[1], int(attrs[2]))
         yield ctxt
     finally:
         # Code to release resource

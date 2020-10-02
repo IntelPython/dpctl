@@ -37,7 +37,7 @@ using namespace cl::sycl;
 namespace
 {
 std::set<DPPLSyclBEType>
-get_set_of_backends()
+get_set_of_backends ()
 {
     std::set<DPPLSyclBEType> be_set;
     for (auto p : platform::get_platforms()) {
@@ -82,7 +82,7 @@ get_set_of_backends()
 *      - info::device::driver_version
 *      - type of the device based on the aspects cpu, gpu, accelerator.
 */
-void DPPLPlatform_DumpInfo()
+void DPPLPlatform_DumpInfo ()
 {
     size_t i = 0;
 
@@ -154,17 +154,17 @@ void DPPLPlatform_DumpInfo()
 /*!
 * Returns the number of sycl::platform on the system.
 */
-size_t DPPLPlatform_GetNumPlatforms()
+size_t DPPLPlatform_GetNumPlatforms ()
 {
     return platform::get_platforms().size();
 }
 
-size_t DPPLPlatform_GetNumBackends()
+size_t DPPLPlatform_GetNumBackends ()
 {
     return get_set_of_backends().size();
 }
 
-__dppl_give DPPLSyclBEType *DPPLPlatform_GetListOfBackends()
+__dppl_give DPPLSyclBEType *DPPLPlatform_GetListOfBackends ()
 {
     auto be_set = get_set_of_backends();
 
@@ -182,7 +182,7 @@ __dppl_give DPPLSyclBEType *DPPLPlatform_GetListOfBackends()
     return BEArr;
 }
 
-void DPPLPlatform_DeleteListOfBackends(__dppl_take DPPLSyclBEType *BEArr)
+void DPPLPlatform_DeleteListOfBackends (__dppl_take DPPLSyclBEType *BEArr)
 {
     delete[] BEArr;
 }
