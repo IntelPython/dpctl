@@ -2,4 +2,5 @@ include versioneer.py
 recursive-include dpctl/include *.h *.hpp
 include dpctl/*.pxd
 include dpctl/*DPPL*Interface.*
+include dpctl/tests/input_files/*
 global-exclude *.cpp
