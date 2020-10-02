@@ -81,6 +81,8 @@ cdef class SyclContext:
     cdef DPPLSyclContextRef get_context_ref (self):
         return self._ctxt_ref
 
+    def get_context_ref_address (self):
+        return int(<long>self._ctx_ref)
 
 cdef class SyclDevice:
     ''' Wrapper class for a Sycl Device
@@ -129,6 +131,8 @@ cdef class SyclDevice:
         '''
         return self._device_ref
 
+    def get_device_ref_address (self):
+        return int(<long>self._device_ref)
 
 cdef class SyclEvent:
     ''' Wrapper class for a Sycl Event
@@ -152,6 +156,9 @@ cdef class SyclEvent:
 
     cpdef void wait (self):
         DPPLEvent_Wait(self._event_ref)
+
+    def get_event_ref_address (self):
+        return int(<long>self._event_ref)
 
 
 cdef class SyclKernel:
@@ -185,6 +192,8 @@ cdef class SyclKernel:
         '''
         return self._kernel_ref
 
+    def get_kernel_ref_address (self):
+        return int(<long>self._kernel_ref)
 
 cdef class SyclProgram:
     ''' Wraps a sycl::program object created from an OpenCL interoperability
@@ -215,6 +224,9 @@ cdef class SyclProgram:
     def has_sycl_kernel(self, str kernel_name):
         name = kernel_name.encode('utf8')
         return DPPLProgram_HasKernel(self._program_ref, name)
+
+    def get_program_ref_address (self):
+        return int(<long>self._program_ref)
 
 import ctypes
 
@@ -319,6 +331,9 @@ cdef class SyclQueue:
 
     cdef DPPLSyclQueueRef get_queue_ref (self):
         return self._queue_ref
+
+    def get_queue_ref_address (self):
+        return int(<long>self._queue_ref)
 
     cpdef SyclEvent submit (self, SyclKernel kernel, list args, list gS,       \
                             list lS = None, list dEvents = None):
