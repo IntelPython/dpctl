@@ -25,12 +25,14 @@
 import dpctl
 import unittest
 
+
 class TestGetNumPlatforms (unittest.TestCase):
     @unittest.skipIf(not dpctl.has_sycl_platforms(),
                     "No SYCL platforms available")
     def test_dpctl_get_num_platforms (self):
         if(dpctl.has_sycl_platforms):
             self.assertGreaterEqual(dpctl.get_num_platforms(), 1)
+
 
 @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
 class TestDumpMethods (unittest.TestCase):
@@ -46,6 +48,7 @@ class TestDumpMethods (unittest.TestCase):
             q.get_sycl_device().dump_device_info()
         except Exception:
             self.fail("Encountered an exception inside dump_device_info().")
+
 
 @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
 class TestIsInDeviceContext (unittest.TestCase):
@@ -64,6 +67,35 @@ class TestIsInDeviceContext (unittest.TestCase):
                 self.assertTrue(dpctl.is_in_device_context())
             self.assertTrue(dpctl.is_in_device_context())
         self.assertFalse(dpctl.is_in_device_context())
+
+
+@unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
+class TestIsInDeviceContext (unittest.TestCase):
+
+    def test_get_current_device_type_outside_device_ctxt (self):
+        self.assertEqual(dpctl.get_current_device_type(), None)
+
+    def test_get_current_device_type_inside_device_ctxt (self):
+        self.assertEqual(dpctl.get_current_device_type(), None)
+
+        with dpctl.device_context(dpctl.device_type.gpu):
+            self.assertEqual(dpctl.get_current_device_type(), dpctl.device_type.gpu)
+
+        self.assertEqual(dpctl.get_current_device_type(), None)
+
+    @unittest.skipIf(not dpctl.has_cpu_queues(), "No CPU platforms available")
+    def test_get_current_device_type_inside_nested_device_ctxt (self):
+        self.assertEqual(dpctl.get_current_device_type(), None)
+
+        with dpctl.device_context(dpctl.device_type.cpu):
+            self.assertEqual(dpctl.get_current_device_type(), dpctl.device_type.cpu)
+
+            with dpctl.device_context(dpctl.device_type.gpu):
+                self.assertEqual(dpctl.get_current_device_type(), dpctl.device_type.gpu)
+            self.assertEqual(dpctl.get_current_device_type(), dpctl.device_type.cpu)
+
+        self.assertEqual(dpctl.get_current_device_type(), None)
+
 
 @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
 class TestGetCurrentQueueInMultipleThreads (unittest.TestCase):
@@ -95,6 +127,7 @@ class TestGetCurrentQueueInMultipleThreads (unittest.TestCase):
             self.assertEqual(dpctl.get_num_activated_queues(), 1)
             Session1.start()
             Session2.start()
+
 
 if __name__ == '__main__':
     unittest.main()

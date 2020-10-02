@@ -111,6 +111,16 @@ cdef class SyclDevice:
         '''
         return self._device_name.decode()
 
+    def get_device_type (self):
+        ''' Returns the type of the device as a `device_type` enum
+        '''
+        if DPPLDevice_IsGPU(self._device_ref):
+            return device_type.gpu
+        elif DPPLDevice_IsCPU(self._device_ref):
+            return device_type.cpu
+        else:
+            raise ValueError("Unknown device type.")
+
     def get_vendor_name (self):
         ''' Returns the device vendor name as a string
         '''
@@ -515,6 +525,14 @@ cdef class _SyclQueueManager:
         else:
             return False
 
+    def get_current_device_type (self):
+        ''' Returns current device type as `device_type` enum
+        '''
+        if self.is_in_device_context():
+            return self.get_current_queue().get_sycl_device().get_device_type()
+        else:
+            return None
+
 
 # This private instance of the _SyclQueueManager should not be directly
 # accessed outside the module.
@@ -523,6 +541,7 @@ _qmgr = _SyclQueueManager()
 # Global bound functions
 dump                     = _qmgr.dump
 get_current_queue        = _qmgr.get_current_queue
+get_current_device_type  = _qmgr.get_current_device_type
 get_num_platforms        = _qmgr.get_num_platforms
 get_num_activated_queues = _qmgr.get_num_activated_queues
 has_cpu_queues           = _qmgr.has_cpu_queues
