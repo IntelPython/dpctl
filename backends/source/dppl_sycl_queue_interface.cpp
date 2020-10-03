@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dppl_sycl_queue_interface.h"
+#include "dppl_sycl_context_interface.h"
 #include "Support/CBindingWrapping.h"
 
 #include <CL/sycl.hpp>                /* SYCL headers   */
@@ -115,6 +116,13 @@ bool set_kernel_arg (handler &cgh, size_t idx, __dppl_keep void *Arg,
 void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef)
 {
     delete unwrap(QRef);
+}
+
+enum DPPLSyclBEType DPPLQueue_GetBackend (__dppl_keep DPPLSyclQueueRef QRef)
+{
+    auto Q = unwrap(QRef);
+    auto C = Q->get_context();
+    return DPPLContext_GetBackend(wrap(&C));
 }
 
 __dppl_give DPPLSyclDeviceRef

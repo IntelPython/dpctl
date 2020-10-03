@@ -33,6 +33,42 @@ from libcpp cimport bool
 cdef extern from "dppl_utils.h":
     cdef void DPPLCString_Delete (const char *str)
 
+cdef extern from "dppl_sycl_enum_types.h":
+    cdef enum _backend_type 'DPPLSyclBEType':
+        _OPENCL          'DPPL_OPENCL'
+        _HOST            'DPPL_HOST'
+        _LEVEL_ZERO      'DPPL_LEVEL_ZERO'
+        _CUDA            'DPPL_CUDA'
+        _UNKNOWN_BACKEND 'DPPL_UNKNOWN_BACKEND'
+
+    ctypedef _backend_type DPPLSyclBEType
+
+    cdef enum _device_type 'DPPLSyclDeviceType':
+        _GPU         'DPPL_GPU'
+        _CPU         'DPPL_CPU'
+        _ACCELERATOR 'DPPL_ACCELERATOR'
+        _HOST_DEVICE 'DPPL_HOST_DEVICE'
+
+    ctypedef _device_type DPPLSyclDeviceType
+
+    cdef enum _arg_data_type 'DPPLKernelArgType':
+        _CHAR               'DPPL_CHAR',
+        _SIGNED_CHAR        'DPPL_SIGNED_CHAR',
+        _UNSIGNED_CHAR      'DPPL_UNSIGNED_CHAR',
+        _SHORT              'DPPL_SHORT',
+        _INT                'DPPL_INT',
+        _UNSIGNED_INT       'DPPL_INT',
+        _LONG               'DPPL_LONG',
+        _UNSIGNED_LONG      'DPPL_UNSIGNED_LONG',
+        _LONG_LONG          'DPPL_LONG_LONG',
+        _UNSIGNED_LONG_LONG 'DPPL_UNSIGNED_LONG_LONG',
+        _SIZE_T             'DPPL_SIZE_T',
+        _FLOAT              'DPPL_FLOAT',
+        _DOUBLE             'DPPL_DOUBLE',
+        _LONG_DOUBLE        'DPPL_DOUBLE',
+        _VOID_PTR           'DPPL_VOID_PTR'
+
+    ctypedef _arg_data_type DPPLKernelArgType
 
 cdef extern from "dppl_sycl_types.h":
     cdef struct DPPLOpaqueSyclContext
@@ -53,14 +89,6 @@ cdef extern from "dppl_sycl_types.h":
 
 
 cdef extern from "dppl_sycl_device_interface.h":
-    cdef enum _device_type 'DPPLSyclDeviceType':
-        _GPU         'DPPL_GPU'
-        _CPU         'DPPL_CPU'
-        _ACCELERATOR 'DPPL_ACCELERATOR'
-        _HOST_DEVICE 'DPPL_HOST_DEVICE'
-
-    ctypedef _device_type DPPLSyclDeviceType
-
     cdef void DPPLDevice_DumpInfo (const DPPLSyclDeviceRef DRef) except +
     cdef void DPPLDevice_Delete (DPPLSyclDeviceRef DRef) except +
     cdef void DPPLDevice_DumpInfo (const DPPLSyclDeviceRef DRef) except +
@@ -89,15 +117,6 @@ cdef extern from "dppl_sycl_kernel_interface.h":
 
 
 cdef extern from "dppl_sycl_platform_interface.h":
-    cdef enum _backend_type 'DPPLSyclBEType':
-        _OPENCL          'DPPL_OPENCL'
-        _HOST            'DPPL_HOST'
-        _LEVEL_ZERO      'DPPL_LEVEL_ZERO'
-        _CUDA            'DPPL_CUDA'
-        _UNKNOWN_BACKEND 'DPPL_UNKNOWN_BACKEND'
-
-    ctypedef _backend_type DPPLSyclBEType
-
     cdef size_t DPPLPlatform_GetNumPlatforms ()
     cdef void DPPLPlatform_DumpInfo ()
     cdef size_t DPPLPlatform_GetNumBackends ()
@@ -127,26 +146,8 @@ cdef extern from "dppl_sycl_program_interface.h":
 
 
 cdef extern from "dppl_sycl_queue_interface.h":
-    cdef enum _arg_data_type 'DPPLKernelArgType':
-        _CHAR               'DPPL_CHAR',
-        _SIGNED_CHAR        'DPPL_SIGNED_CHAR',
-        _UNSIGNED_CHAR      'DPPL_UNSIGNED_CHAR',
-        _SHORT              'DPPL_SHORT',
-        _INT                'DPPL_INT',
-        _UNSIGNED_INT       'DPPL_INT',
-        _LONG               'DPPL_LONG',
-        _UNSIGNED_LONG      'DPPL_UNSIGNED_LONG',
-        _LONG_LONG          'DPPL_LONG_LONG',
-        _UNSIGNED_LONG_LONG 'DPPL_UNSIGNED_LONG_LONG',
-        _SIZE_T             'DPPL_SIZE_T',
-        _FLOAT              'DPPL_FLOAT',
-        _DOUBLE             'DPPL_DOUBLE',
-        _LONG_DOUBLE        'DPPL_DOUBLE',
-        _VOID_PTR           'DPPL_VOID_PTR'
-
-    ctypedef _arg_data_type DPPLKernelArgType
-
     cdef void DPPLQueue_Delete (DPPLSyclQueueRef QRef)
+    cdef DPPLSyclBEType DPPLQueue_GetBackend (const DPPLSyclQueueRef Q)
     cdef DPPLSyclContextRef DPPLQueue_GetContext (const DPPLSyclQueueRef Q)
     cdef DPPLSyclDeviceRef DPPLQueue_GetDevice (const DPPLSyclQueueRef Q)
     cdef DPPLSyclEventRef  DPPLQueue_SubmitRange (
@@ -183,6 +184,7 @@ cdef extern from "dppl_sycl_queue_manager.h":
     cdef DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclBEType BETy,
                                                  DPPLSyclDeviceType DeviceTy,
                                                  size_t DNum)
+    cdef bool DPPLQueueMgr_IsCurrentQueue (const DPPLSyclQueueRef QRef)
     cdef void DPPLQueueMgr_PopQueue ()
     cdef DPPLSyclQueueRef DPPLQueueMgr_PushQueue (DPPLSyclBEType BETy,
                                                   DPPLSyclDeviceType DeviceTy,

@@ -134,7 +134,6 @@ TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetLevel0GpuQ)
     ASSERT_TRUE(null_q == nullptr);
 }
 
-
 TEST_F (TestDPPLSyclQueueManager, CheckGetNumActivatedQueues)
 {
     size_t num0, num1, num2, num4;
@@ -171,7 +170,6 @@ TEST_F (TestDPPLSyclQueueManager, CheckGetNumActivatedQueues)
     DPPLQueue_Delete(q);
 }
 
-
 TEST_F (TestDPPLSyclQueueManager, CheckDPPLDumpDeviceInfo)
 {
     auto q = DPPLQueueMgr_GetCurrentQueue();
@@ -179,6 +177,21 @@ TEST_F (TestDPPLSyclQueueManager, CheckDPPLDumpDeviceInfo)
     EXPECT_NO_FATAL_FAILURE(DPPLQueue_Delete(q));
 }
 
+TEST_F (TestDPPLSyclQueueManager, CheckIsCurrentQueue)
+{
+    if(!DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU))
+        GTEST_SKIP_("No OpenCL GPU.\n");
+
+    auto Q0 = DPPLQueueMgr_GetCurrentQueue();
+    EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q0));
+    auto Q = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
+    EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q));
+    EXPECT_FALSE(DPPLQueueMgr_IsCurrentQueue(Q0));
+    DPPLQueue_Delete(Q);
+    DPPLQueueMgr_PopQueue();
+    EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q0));
+    DPPLQueue_Delete(Q0);
+}
 
 int
 main (int argc, char** argv)

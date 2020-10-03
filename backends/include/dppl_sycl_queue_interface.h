@@ -28,6 +28,7 @@
 #pragma once
 
 #include "dppl_data_types.h"
+#include "dppl_sycl_enum_types.h"
 #include "dppl_sycl_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
@@ -36,37 +37,21 @@
 DPPL_C_EXTERN_C_BEGIN
 
 /*!
- * @brief Supported types for kernel arguments to be passed to a Sycl kernel.
- *
- * \todo Add support for sycl::buffer
- *
- */
-typedef enum
-{
-    DPPL_CHAR,
-    DPPL_SIGNED_CHAR,
-    DPPL_UNSIGNED_CHAR,
-    DPPL_SHORT,
-    DPPL_INT,
-    DPPL_UNSIGNED_INT,
-    DPPL_LONG,
-    DPPL_UNSIGNED_LONG,
-    DPPL_LONG_LONG,
-    DPPL_UNSIGNED_LONG_LONG,
-    DPPL_SIZE_T,
-    DPPL_FLOAT,
-    DPPL_DOUBLE,
-    DPPL_LONG_DOUBLE,
-    DPPL_VOID_PTR
-} DPPLKernelArgType;
-
-/*!
  * @brief Delete the pointer after casting it to sycl::queue.
  *
  * @param    QRef           A DPPLSyclQueueRef pointer that gets deleted.
  */
 DPPL_API
 void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef);
+
+/*!
+ * @brief Returns the Sycl backend for the provided sycl::queue.
+ *
+ * @param    QRef           An opaque pointer to the sycl queue.
+ * @return   A enum DPPLSyclBEType corresponding to the backed for the queue.
+ */
+DPPL_API
+enum DPPLSyclBEType DPPLQueue_GetBackend (__dppl_keep DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Returns the Sycl context for the queue.

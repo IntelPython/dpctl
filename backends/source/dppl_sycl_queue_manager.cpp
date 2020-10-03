@@ -121,6 +121,8 @@ public:
     static __dppl_give DPPLSyclQueueRef
     getCurrentQueue ();
 
+    static bool isCurrentQueue (__dppl_keep const DPPLSyclQueueRef QRef);
+
     static void
     setAsDefaultQueue (enum DPPLSyclBEType BETy,
                        enum DPPLSyclDeviceType DeviceTy,
@@ -144,13 +146,14 @@ public:
  */
 DPPLSyclQueueRef QMgrHelper::getCurrentQueue ()
 {
-    if(get_active_queues().empty()) {
+    auto activated_q = get_active_queues();
+    if(activated_q.empty()) {
         // \todo handle error
         std::cerr << "No currently active queues.\n";
         return nullptr;
     }
-    auto last = QMgrHelper::get_active_queues().size() - 1;
-    return wrap(new queue(QMgrHelper::get_active_queues()[last]));
+    auto last = activated_q.size() - 1;
+    return wrap(new queue(activated_q[last]));
 }
 
 /*!
@@ -210,6 +213,28 @@ QMgrHelper::getQueue (enum DPPLSyclBEType BETy,
     }
 
     return wrap(QRef);
+}
+
+/*!
+ * Compares the context and device of the current queue to the context and
+ * device of the queue passed as input. Return true if both queues have the
+ * same context and device.
+ */
+bool QMgrHelper::isCurrentQueue (__dppl_keep const DPPLSyclQueueRef QRef)
+{
+    auto activated_q = get_active_queues();
+    if(activated_q.empty()) {
+        // \todo handle error
+        std::cerr << "No currently active queues.\n";
+        return false;
+    }
+    auto last = activated_q.size() - 1;
+    auto currQ = activated_q[last];
+    auto currCtx = currQ.get_context();
+    auto currD = currQ.get_device();
+    auto InD = unwrap(QRef)->get_device();
+    auto InCtx = unwrap(QRef)->get_context();
+    return (currCtx == InCtx && currD == InD);
 }
 
 /*!
@@ -420,6 +445,13 @@ DPPLSyclQueueRef DPPLQueueMgr_GetQueue (enum DPPLSyclBEType BETy,
     return QMgrHelper::getQueue(BETy, DeviceTy, DNum);
 }
 
+/*!
+
+* */
+bool DPPLQueueMgr_IsCurrentQueue (__dppl_keep const DPPLSyclQueueRef QRef)
+{
+    return QMgrHelper::isCurrentQueue(QRef);
+}
 /*!
  * The function sets the global queue, i.e., the sycl::queue object at
  * QMgrHelper::active_queues[0] vector to the sycl::queue corresponding to the

@@ -92,6 +92,17 @@ size_t DPPLQueueMgr_GetNumQueues (enum DPPLSyclBEType BETy,
                                   enum DPPLSyclDeviceType DeviceTy);
 
 /*!
+ * @brief Returns True if the passed in queue and the current queue are the
+ * same, else returns False.
+ *
+ * @param    QRef           An opaque pointer to a sycl::queue.
+ * @return   True or False depending on whether the QRef argument is the same as
+ * the currently activated queue.
+ */
+DPPL_API
+bool DPPLQueueMgr_IsCurrentQueue (__dppl_keep const DPPLSyclQueueRef QRef);
+
+/*!
 * @brief Set the default DPPL queue to the sycl::queue for the given backend
 * and device type combination.
 *
