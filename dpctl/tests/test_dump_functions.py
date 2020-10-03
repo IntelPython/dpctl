@@ -25,7 +25,6 @@
 import unittest
 
 import dpctl
-import dpctl.ocldrv as drv
 
 
 class TestDumpMethods(unittest.TestCase):

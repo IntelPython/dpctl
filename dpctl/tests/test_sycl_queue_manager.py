@@ -68,7 +68,7 @@ class TestIsInDeviceContext(unittest.TestCase):
 
 
 @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
-class TestIsInDeviceContext(unittest.TestCase):
+class TestGetCurrentDeviceType(unittest.TestCase):
     def test_get_current_device_type_outside_device_ctxt(self):
         self.assertEqual(dpctl.get_current_device_type(), None)
 
@@ -111,7 +111,7 @@ class TestGetCurrentQueueInMultipleThreads(unittest.TestCase):
     @unittest.skipIf(not dpctl.has_gpu_queues(), "No GPU platforms available")
     @unittest.skipIf(not dpctl.has_cpu_queues(), "No CPU platforms available")
     def test_num_current_queues_inside_threads(self):
-        from threading import Thread, local
+        from threading import Thread
 
         def SessionThread(self):
             self.assertEqual(dpctl.get_num_activated_queues(), 0)
