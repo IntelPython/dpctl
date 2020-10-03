@@ -67,7 +67,7 @@ void dump_device_info (const device & Device)
             ss << "gpu" << '\n';
         else if (Device.has(aspect::host))
             ss << "host" << '\n';
-    } catch (runtime_error re) {
+    } catch (runtime_error& re) {
         // \todo handle errors
         ss << "unknown\n";
     }

@@ -84,6 +84,6 @@ void DPPLfree_with_context (__dppl_take DPPLSyclUSMRef MRef,
 DPPL_API
 const char *
 DPPLUSM_GetPointerType (__dppl_keep const DPPLSyclUSMRef MRef,
-                        __dppl_keep const DPPLSyclContextRef СRef);
+                        __dppl_keep const DPPLSyclContextRef CRef);
 
 DPPL_C_EXTERN_C_END

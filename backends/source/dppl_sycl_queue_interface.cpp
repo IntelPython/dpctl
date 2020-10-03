@@ -179,11 +179,11 @@ DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
                                          "dimensions.");
             }
         });
-    } catch (runtime_error re) {
+    } catch (runtime_error& re) {
         // \todo fix error handling
         std::cerr << re.what() << '\n';
         return nullptr;
-    } catch (std::runtime_error sre) {
+    } catch (std::runtime_error& sre) {
         std::cerr << sre.what() << '\n';
         return nullptr;
     }
@@ -240,11 +240,11 @@ DPPLQueue_SubmitNDRange(__dppl_keep const DPPLSyclKernelRef KRef,
                                          "dimensions.");
             }
         });
-    } catch (runtime_error re) {
+    } catch (runtime_error& re) {
         // \todo fix error handling
         std::cerr << re.what() << '\n';
         return nullptr;
-    } catch (std::runtime_error sre) {
+    } catch (std::runtime_error& sre) {
         std::cerr << sre.what() << '\n';
         return nullptr;
     }
