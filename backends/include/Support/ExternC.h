@@ -26,8 +26,8 @@
 #pragma once
 
 #ifdef __cplusplus
-#define DPPL_C_EXTERN_C_BEGIN  extern "C" {
-#define DPPL_C_EXTERN_C_END    }
+#define DPPL_C_EXTERN_C_BEGIN extern "C" {
+#define DPPL_C_EXTERN_C_END }
 #else
 #define DPPL_C_EXTERN_C_BEGIN
 #define DPPL_C_EXTERN_C_END

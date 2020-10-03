@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include "dppl_data_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
+#include "dppl_data_types.h"
 
 DPPL_C_EXTERN_C_BEGIN
 
@@ -37,13 +37,13 @@ DPPL_C_EXTERN_C_BEGIN
  * @return The number of available sycl::platforms.
  */
 DPPL_API
-size_t DPPLPlatform_GetNumPlatforms ();
+size_t DPPLPlatform_GetNumPlatforms();
 
 /*!
  * @brief Prints out some selected info about all sycl::platform on the system.
  *
  */
 DPPL_API
-void DPPLPlatform_DumpInfo ();
+void DPPLPlatform_DumpInfo();
 
 DPPL_C_EXTERN_C_END

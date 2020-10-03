@@ -25,12 +25,11 @@
 
 #pragma once
 
-#include "dppl_data_types.h"
-#include "dppl_sycl_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
-
+#include "dppl_data_types.h"
+#include "dppl_sycl_types.h"
 
 DPPL_C_EXTERN_C_BEGIN
 
@@ -40,7 +39,7 @@ DPPL_C_EXTERN_C_BEGIN
  * @param    ERef           An opaque DPPLSyclEventRef pointer on which to wait.
  */
 DPPL_API
-void DPPLEvent_Wait (__dppl_keep DPPLSyclEventRef ERef);
+void DPPLEvent_Wait(__dppl_keep DPPLSyclEventRef ERef);
 
 /*!
  * @brief Deletes the DPPLSyclEventRef after casting it to a sycl::event.
@@ -49,7 +48,6 @@ void DPPLEvent_Wait (__dppl_keep DPPLSyclEventRef ERef);
  *                          freed.
  */
 DPPL_API
-void
-DPPLEvent_Delete (__dppl_take DPPLSyclEventRef ERef);
+void DPPLEvent_Delete(__dppl_take DPPLSyclEventRef ERef);
 
 DPPL_C_EXTERN_C_END

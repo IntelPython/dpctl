@@ -23,27 +23,22 @@
 /// dppl_sycl_platform_interface.h.
 ///
 //===----------------------------------------------------------------------===//
-#include "dppl_sycl_platform_interface.h"
 #include <gtest/gtest.h>
 
-struct TestDPPLSyclPlatformInterface : public ::testing::Test
-{ };
+#include "dppl_sycl_platform_interface.h"
 
+struct TestDPPLSyclPlatformInterface : public ::testing::Test {};
 
-TEST_F (TestDPPLSyclPlatformInterface, CheckGetNumPlatforms)
-{
-    auto nplatforms = DPPLPlatform_GetNumPlatforms();
-    EXPECT_GE(nplatforms, 0);
+TEST_F(TestDPPLSyclPlatformInterface, CheckGetNumPlatforms) {
+  auto nplatforms = DPPLPlatform_GetNumPlatforms();
+  EXPECT_GE(nplatforms, 0);
 }
 
-TEST_F (TestDPPLSyclPlatformInterface, CheckDPPLPlatformDumpInfo)
-{
-    EXPECT_NO_FATAL_FAILURE(DPPLPlatform_DumpInfo());
+TEST_F(TestDPPLSyclPlatformInterface, CheckDPPLPlatformDumpInfo) {
+  EXPECT_NO_FATAL_FAILURE(DPPLPlatform_DumpInfo());
 }
 
-int
-main (int argc, char** argv)
-{
+int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   int ret = RUN_ALL_TESTS();
   return ret;

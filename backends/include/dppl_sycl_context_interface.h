@@ -25,12 +25,13 @@
 
 #pragma once
 
-#include "dppl_data_types.h"
-#include "dppl_sycl_types.h"
+#include <stdbool.h>
+
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
-#include <stdbool.h>
+#include "dppl_data_types.h"
+#include "dppl_sycl_types.h"
 
 DPPL_C_EXTERN_C_BEGIN
 
@@ -41,7 +42,7 @@ DPPL_C_EXTERN_C_BEGIN
  * @return   True if the SYCL context is a host context, else False.
  */
 DPPL_API
-bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef);
+bool DPPLContext_IsHost(__dppl_keep const DPPLSyclContextRef CtxRef);
 
 /*!
  * @brief Delete the pointer after casting it to sycl::context
@@ -49,6 +50,6 @@ bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef);
  * @param    CtxRef        The DPPLSyclContextRef pointer to be deleted.
  */
 DPPL_API
-void DPPLContext_Delete (__dppl_take DPPLSyclContextRef CtxRef);
+void DPPLContext_Delete(__dppl_take DPPLSyclContextRef CtxRef);
 
 DPPL_C_EXTERN_C_END
