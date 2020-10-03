@@ -101,7 +101,7 @@ void DPPLPlatform_DumpInfo ()
                ss << "gpu" << '\n';
             else if (devices[dn].has(aspect::host))
                ss << "host" << '\n';
-         } catch (runtime_error re) {
+         } catch (runtime_error& re) {
             // \todo handle errors
             ss << "unknown\n";
          }
