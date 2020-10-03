@@ -70,7 +70,7 @@ class TestIsInDeviceContext (unittest.TestCase):
 
 
 @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
-class TestIsInDeviceContext (unittest.TestCase):
+class TestGetCurrentDevice (unittest.TestCase):
 
     def test_get_current_device_type_outside_device_ctxt (self):
         self.assertEqual(dpctl.get_current_device_type(), None)
