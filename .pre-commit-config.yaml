@@ -7,3 +7,9 @@ repos:
     rev: 3.8.3
     hooks:
       - id: flake8
+  - repo: https://gitlab.com/daverona/pre-commit/cpp
+    rev: 0.8.0
+    hooks:
+      - id: clang-format # formatter for C/C++ code based on a style guide
+      - id: cpplint # linter (or style-error checker) for Google C++ Style Guide
+      - id: cppcheck # static analyzer for C/C++ code
