@@ -143,7 +143,7 @@ endif()
 install(
   TARGETS DPPLSyclInterface DPPLOpenCLInterface
   LIBRARY
-  DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/"
+  DESTINATION lib
 )
 
 # Install all headers
