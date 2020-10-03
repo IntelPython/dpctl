@@ -48,4 +48,4 @@ export CXX=dpcpp
 export CFLAGS=-fPIC
 python setup.py clean --all
 python setup.py build develop
-python -m unittest dpctl.tests
+python -m unittest -v dpctl.tests

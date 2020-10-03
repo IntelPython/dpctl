@@ -56,16 +56,29 @@ public:
 
     static QVec* init_queues (backend BE, info::device_type DTy) {
         QVec *queues = new QVec();
-
-        for (auto &p : platform::get_platforms()) {
-            auto Devices = p.get_devices();
-            auto Ctx = context(Devices);
+        auto Platforms = platform::get_platforms();
+        for (auto &p : Platforms) {
             if (p.is_host()) continue;
-            for(auto &d : Devices) {
+            auto be = p.get_backend();
+            auto Devices = p.get_devices();
+
+            if (Devices.size() == 1) {
+                auto d = Devices[0];
                 auto devty = d.get_info<info::device::device_type>();
-                auto be = p.get_backend();
+                auto Ctx = context(d);
                 if(devty == DTy && be == BE) {
-                    queues->emplace_back(Ctx, d);
+                      queues->emplace_back(Ctx, d);
+                    break;
+                }
+            }
+            else {
+                auto Ctx = context(Devices);
+                for(auto &d : Devices) {
+                    auto devty = d.get_info<info::device::device_type>();
+                    if(devty == DTy && be == BE) {
+                        queues->emplace_back(Ctx, d);
+                        break;
+                    }
                 }
             }
         }
@@ -157,35 +170,38 @@ QMgrHelper::getQueue (enum DPPLSyclBEType BETy,
     {
     case DPPLSyclBEType::DPPL_OPENCL | DPPLSyclDeviceType::DPPL_CPU:
     {
-        if (DNum >= get_opencl_cpu_queues().size()) {
+        auto cpuQs = get_opencl_cpu_queues();
+        if (DNum >= cpuQs.size()) {
             // \todo handle error
             std::cerr << "OpenCL CPU device " << DNum
                       << " not found on system.\n";
             return nullptr;
         }
-        QRef = new queue(get_opencl_cpu_queues()[DNum]);
+        QRef = new queue(cpuQs[DNum]);
         break;
     }
     case DPPLSyclBEType::DPPL_OPENCL | DPPLSyclDeviceType::DPPL_GPU:
     {
-        if (DNum >= get_opencl_gpu_queues().size()) {
+        auto gpuQs = get_opencl_gpu_queues();
+        if (DNum >= gpuQs.size()) {
             // \todo handle error
             std::cerr << "OpenCL GPU device " << DNum
                       << " not found on system.\n";
             return nullptr;
         }
-        QRef = new queue(get_opencl_gpu_queues()[DNum]);
+        QRef = new queue(gpuQs[DNum]);
         break;
     }
     case DPPLSyclBEType::DPPL_LEVEL_ZERO | DPPLSyclDeviceType::DPPL_GPU:
     {
-        if (DNum >= get_level0_gpu_queues().size()) {
+        auto l0GpuQs = get_level0_gpu_queues();
+        if (DNum >= l0GpuQs.size()) {
             // \todo handle error
             std::cerr << "Level-0 GPU device " << DNum
                       << " not found on system.\n";
             return nullptr;
         }
-        QRef = new queue(get_level0_gpu_queues()[DNum]);
+        QRef = new queue(l0GpuQs[DNum]);
         break;
     }
     default:
