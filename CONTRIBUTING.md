@@ -18,3 +18,6 @@ Use `licenser` plugin for VSCode.
 pip install pre-commit
 pre-commit install
 ```
+
+See: [.pre-commit-config.yaml]()
+Commit without verification: `git commit --no-verify`
