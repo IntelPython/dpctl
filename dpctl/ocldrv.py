@@ -71,24 +71,23 @@ _logger.addHandler(_ch)
 
 
 class DpplDriverError(Exception):
-    """ The exception is raised when dpctl.ocldrv cannot find an OpenCL Driver.
-    """
+    """The exception is raised when dpctl.ocldrv cannot find an OpenCL Driver."""
 
     pass
 
 
 class DeviceNotFoundError(Exception):
-    """ The exception is raised when the requested type of OpenCL device is
-        not available or not supported by dpctl.ocldrv.
+    """The exception is raised when the requested type of OpenCL device is
+    not available or not supported by dpctl.ocldrv.
     """
 
     pass
 
 
 class UnsupportedTypeError(Exception):
-    """ The exception is raised when an unsupported type is encountered when
-        creating an OpenCL KernelArg. Only DeviceArray or numpy.ndarray types
-        are supported.
+    """The exception is raised when an unsupported type is encountered when
+    creating an OpenCL KernelArg. Only DeviceArray or numpy.ndarray types
+    are supported.
     """
 
     pass
@@ -148,8 +147,8 @@ def _is_supported_ctypes_raw_obj(obj):
 
 
 class DeviceArray:
-    """ A Python wrapper for an OpenCL cl_men buffer with read-write access. A
-        DeviceArray can only be created from a NumPy ndarray.
+    """A Python wrapper for an OpenCL cl_men buffer with read-write access. A
+    DeviceArray can only be created from a NumPy ndarray.
     """
 
     _buffObj = None
@@ -158,12 +157,12 @@ class DeviceArray:
     _dataPtr = None
 
     def __init__(self, env_ptr, arr):
-        """ Creates a new DeviceArray from an ndarray.
+        """Creates a new DeviceArray from an ndarray.
 
-            Note that DeviceArray creation only allocates the cl_mem buffer
-            and does not actually move the data to the device. Data copy from
-            host to device is done when the DeviceArray instance is passed as
-            an argument to DeviceEnv.copy_array_to_device().
+        Note that DeviceArray creation only allocates the cl_mem buffer
+        and does not actually move the data to the device. Data copy from
+        host to device is done when the DeviceArray instance is passed as
+        an argument to DeviceEnv.copy_array_to_device().
         """
 
         # We only support device buffers for ndarray and ctypes (for basic
@@ -190,33 +189,29 @@ class DeviceArray:
             _raise_driver_error("destroy_dp_rw_mem_buffer", -1)
 
     def get_buffer_obj(self):
-        """ Returns a cdata wrapper object encapsulating an OpenCL buffer.
-        """
+        """Returns a cdata wrapper object encapsulating an OpenCL buffer."""
 
         return self._buffObj
 
     def get_buffer_size(self):
-        """ Returns the size of the OpenCL buffer in bytes.
-        """
+        """Returns the size of the OpenCL buffer in bytes."""
 
         return self._buffSize
 
     def get_buffer_ptr(self):
-        """ Returns a cdata wrapper over the actual OpenCL cl_mem pointer.
-        """
+        """Returns a cdata wrapper over the actual OpenCL cl_mem pointer."""
 
         return self.get_buffer_obj()[0].buffer_ptr
 
     def get_data_ptr(self):
-        """ Returns the data pointer for the NumPy ndarray used to create
-            the DeviceArray object.
+        """Returns the data pointer for the NumPy ndarray used to create
+        the DeviceArray object.
         """
 
         return self._dataPtr
 
     def get_ndarray(self):
-        """ Returns the NumPy ndarray used to create the DeviceArray object.
-        """
+        """Returns the NumPy ndarray used to create the DeviceArray object."""
 
         return self._ndarray
 
@@ -341,8 +336,7 @@ class KernelArg:
 
 
 class DeviceEnv:
-    """ A Python wrapper over an OpenCL cl_context object.
-    """
+    """A Python wrapper over an OpenCL cl_context object."""
 
     def __init__(self, env_t_obj):
         self._env_ptr = env_t_obj
@@ -351,8 +345,7 @@ class DeviceEnv:
         pass
 
     def retain_context(self):
-        """ Increment the reference count of the OpenCL context object.
-        """
+        """Increment the reference count of the OpenCL context object."""
 
         retval = lib.retain_dp_context(self._env_ptr.context)
         if retval == -1:
@@ -361,25 +354,24 @@ class DeviceEnv:
         return self._env_ptr.context
 
     def release_context(self):
-        """ Increment the reference count of the OpenCL context object.
-        """
+        """Increment the reference count of the OpenCL context object."""
 
         retval = lib.release_dp_context(self._env_ptr.context)
         if retval == -1:
             _raise_driver_error("release_dp_context", -1)
 
     def copy_array_to_device(self, array):
-        """ Accepts either a DeviceArray or a NumPy ndarray and copies the
-            data from host to an OpenCL device buffer. Returns either the
-            DeviceArray that was passed in as an argument, or for the case of
-            ndarrays returns a new DeviceArray.
+        """Accepts either a DeviceArray or a NumPy ndarray and copies the
+        data from host to an OpenCL device buffer. Returns either the
+        DeviceArray that was passed in as an argument, or for the case of
+        ndarrays returns a new DeviceArray.
 
-            If the function is called with a DeviceArray argument, the
-            function performs a blocking write of the data from the
-            DeviceArray's ndarray member into its OpenCL device buffer member.
-            When the function is called with an ndarray argument is, a new
-            DeviceArray is first created. The data copy operation is then
-            performed on the new DeviceArray.
+        If the function is called with a DeviceArray argument, the
+        function performs a blocking write of the data from the
+        DeviceArray's ndarray member into its OpenCL device buffer member.
+        When the function is called with an ndarray argument is, a new
+        DeviceArray is first created. The data copy operation is then
+        performed on the new DeviceArray.
         """
 
         if isinstance(array, DeviceArray):
@@ -415,8 +407,8 @@ class DeviceEnv:
             _raise_unsupported_type_error("copy_array_to_device")
 
     def copy_array_from_device(self, array):
-        """ Copies data from a cl_mem buffer into a DeviceArray's host memory
-            pointer. The function argument should be a DeviceArray object.
+        """Copies data from a cl_mem buffer into a DeviceArray's host memory
+        pointer. The function argument should be a DeviceArray object.
         """
 
         if not isinstance(array, DeviceArray):
@@ -434,8 +426,7 @@ class DeviceEnv:
             _raise_driver_error("read_dp_mem_buffer_from_device", -1)
 
     def create_device_array(self, array):
-        """ Returns an new DeviceArray instance.
-        """
+        """Returns an new DeviceArray instance."""
 
         if not (
             (
@@ -448,59 +439,52 @@ class DeviceEnv:
         return DeviceArray(self._env_ptr, array)
 
     def device_support_int64_atomics(self):
-        """ Returns True current device supports 64-bit int atomic operations
-        """
+        """Returns True current device supports 64-bit int atomic operations"""
 
         return self._env_ptr.support_int64_atomics
 
     def device_support_float64_atomics(self):
-        """ Returns True if current device supports 64-bit float atomic operations
-        """
+        """Returns True if current device supports 64-bit float atomic operations"""
 
         return self._env_ptr.support_float64_atomics
 
     def get_context_ptr(self):
-        """ Returns a cdata wrapper for the OpenCL cl_context object.
-        """
+        """Returns a cdata wrapper for the OpenCL cl_context object."""
 
         return self._env_ptr.context
 
     def get_device_ptr(self):
-        """ Returns a cdata wrapper for the OpenCL cl_device object.
-        """
+        """Returns a cdata wrapper for the OpenCL cl_device object."""
 
         return self._env_ptr.device
 
     def get_queue_ptr(self):
-        """ Returns a cdata wrapper for the OpenCL cl_command_queue object.
-        """
+        """Returns a cdata wrapper for the OpenCL cl_command_queue object."""
 
         return self._env_ptr.queue
 
     def get_env_ptr(self):
-        """ Returns a cdata wrapper for a C object encapsulating an OpenCL
-            cl_device object, a cl_command_queue object,
-            and a cl_context object.
+        """Returns a cdata wrapper for a C object encapsulating an OpenCL
+        cl_device object, a cl_command_queue object,
+        and a cl_context object.
         """
 
         return self._env_ptr
 
     def get_max_work_item_dims(self):
-        """ Returns the maximum number of work items per work group for
-            the OpenCL device.
+        """Returns the maximum number of work items per work group for
+        the OpenCL device.
         """
 
         return self._env_ptr.max_work_item_dims
 
     def get_max_work_group_size(self):
-        """ Returns the max work group size for the OpenCL device.
-        """
+        """Returns the max work group size for the OpenCL device."""
 
         return self._env_ptr.max_work_group_size
 
     def dump(self):
-        """ Prints metadata for the underlying OpenCL device.
-        """
+        """Prints metadata for the underlying OpenCL device."""
 
         retval = self._env_ptr[0].dump_fn(self._env_ptr)
         if retval == -1:
@@ -577,7 +561,7 @@ class Runtime:
         return self._gpu_device is not None
 
     def get_cpu_device(self):
-        """ Returns a cdata wrapper for the first available OpenCL
+        """Returns a cdata wrapper for the first available OpenCL
         CPU context.
         """
 
@@ -587,7 +571,7 @@ class Runtime:
         return self._cpu_device
 
     def get_gpu_device(self):
-        """ Returns a cdata wrapper for the first available OpenCL
+        """Returns a cdata wrapper for the first available OpenCL
         GPU context.
         """
 
@@ -597,21 +581,19 @@ class Runtime:
         return self._gpu_device
 
     def get_current_device(self):
-        """ Returns a cdata wrapper for the first available OpenCL
+        """Returns a cdata wrapper for the first available OpenCL
         CPU context.
         """
 
         return self._curr_device
 
     def get_runtime_ptr(self):
-        """ Returns a reference to the runtime object.
-        """
+        """Returns a reference to the runtime object."""
 
         return self._runtime[0]
 
     def dump(self):
-        """ Prints OpenCL metadata about the available devices and contexts.
-        """
+        """Prints OpenCL metadata about the available devices and contexts."""
 
         retval = self._runtime[0].dump_fn(Runtime._runtime[0])
         if retval == -1:
@@ -633,9 +615,9 @@ has_gpu_device = runtime.has_gpu_device()
 
 
 def enqueue_kernel(device_env, kernel, kernelargs, global_work_size, local_work_size):
-    """ A single wrapper function over OpenCL clCreateKernelArgs and
-        clEnqueueNDRangeKernel. The function blocks till the enqueued kernel
-        finishes execution.
+    """A single wrapper function over OpenCL clCreateKernelArgs and
+    clEnqueueNDRangeKernel. The function blocks till the enqueued kernel
+    finishes execution.
     """
 
     l_work_size_array = None
@@ -666,15 +648,13 @@ def enqueue_kernel(device_env, kernel, kernelargs, global_work_size, local_work_
 
 
 def is_available():
-    """ Return a Boolean to indicate the availability of a DPPL device.
-    """
+    """Return a Boolean to indicate the availability of a DPPL device."""
 
     return runtime.has_cpu_device() or runtime.has_gpu_device()
 
 
 def dppl_error():
-    """ Raised a DpplDriverError exception.
-    """
+    """Raised a DpplDriverError exception."""
 
     _raise_driver_error()
 
@@ -686,9 +666,9 @@ def dppl_error():
 
 @contextmanager
 def igpu_context(*args, **kwds):
-    """ A context manager sets the current DeviceEnv inside the global
-        runtime object to the default GPU DeviceEnv. The GPU DeviceEnv is
-        yielded by the context manager.
+    """A context manager sets the current DeviceEnv inside the global
+    runtime object to the default GPU DeviceEnv. The GPU DeviceEnv is
+    yielded by the context manager.
     """
 
     device_id = 0
@@ -707,9 +687,9 @@ def igpu_context(*args, **kwds):
 
 @contextmanager
 def cpu_context(*args, **kwds):
-    """ A context manager sets the current DeviceEnv inside the global
-        runtime object to the default CPU DeviceEnv. The CPU DeviceEnv is
-        yielded by the context manager.
+    """A context manager sets the current DeviceEnv inside the global
+    runtime object to the default CPU DeviceEnv. The CPU DeviceEnv is
+    yielded by the context manager.
     """
 
     device_id = 0
