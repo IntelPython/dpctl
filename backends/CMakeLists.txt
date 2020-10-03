@@ -121,13 +121,10 @@ target_include_directories(
 )
 
 if(WIN32)
-    set(SYCL_INCLUDE_DIR "${DPCPP_ROOT}/include/sycl")
-    cmake_print_variables(SYCL_INCLUDE_DIR)
-
     target_include_directories(
         DPPLSyclInterface
         PUBLIC
-        ${SYCL_INCLUDE_DIR}
+        ${DPCPP_ROOT}/include/sycl
     )
     target_link_libraries(
         DPPLSyclInterface
