@@ -1,4 +1,5 @@
-//===---- dppl_sycl_program_interface.h - DPPL-SYCL interface --*--C++ --*--===//
+//===---- dppl_sycl_program_interface.h - DPPL-SYCL interface --*--C++
+//--*--===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -29,11 +30,11 @@
 
 #pragma once
 
-#include "dppl_data_types.h"
-#include "dppl_sycl_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dppl_data_types.h"
+#include "dppl_sycl_types.h"
 
 DPPL_C_EXTERN_C_BEGIN
 
@@ -57,9 +58,8 @@ DPPL_C_EXTERN_C_BEGIN
  */
 DPPL_API
 __dppl_give DPPLSyclProgramRef
-DPPLProgram_CreateFromOCLSpirv (__dppl_keep const DPPLSyclContextRef Ctx,
-                                __dppl_keep const void *IL,
-                                size_t Length);
+DPPLProgram_CreateFromOCLSpirv(__dppl_keep const DPPLSyclContextRef Ctx,
+                               __dppl_keep const void *IL, size_t Length);
 
 /*!
  * @brief Create a Sycl program from an OpenCL kernel source string.
@@ -71,10 +71,9 @@ DPPLProgram_CreateFromOCLSpirv (__dppl_keep const DPPLSyclContextRef Ctx,
  *           else returns NULL.
  */
 DPPL_API
-__dppl_give DPPLSyclProgramRef
-DPPLProgram_CreateFromOCLSource (__dppl_keep const DPPLSyclContextRef Ctx,
-                                 __dppl_keep const char *Source,
-                                 __dppl_keep const char *CompileOpts = nullptr);
+__dppl_give DPPLSyclProgramRef DPPLProgram_CreateFromOCLSource(
+    __dppl_keep const DPPLSyclContextRef Ctx, __dppl_keep const char *Source,
+    __dppl_keep const char *CompileOpts = nullptr);
 
 /*!
  * @brief Returns the SyclKernel with given name from the program, if not found
@@ -85,9 +84,8 @@ DPPLProgram_CreateFromOCLSource (__dppl_keep const DPPLSyclContextRef Ctx,
  * @return   A SyclKernel reference if the kernel exists, else NULL
  */
 DPPL_API
-__dppl_give DPPLSyclKernelRef
-DPPLProgram_GetKernel (__dppl_keep DPPLSyclProgramRef PRef,
-                       __dppl_keep const char *KernelName);
+__dppl_give DPPLSyclKernelRef DPPLProgram_GetKernel(
+    __dppl_keep DPPLSyclProgramRef PRef, __dppl_keep const char *KernelName);
 
 /*!
  * @brief Return True if a SyclKernel with given name exists in the program, if
@@ -98,9 +96,8 @@ DPPLProgram_GetKernel (__dppl_keep DPPLSyclProgramRef PRef,
  * @return   True if the kernel exists, else False
  */
 DPPL_API
-bool
-DPPLProgram_HasKernel (__dppl_keep DPPLSyclProgramRef PRef,
-                       __dppl_keep const char *KernelName);
+bool DPPLProgram_HasKernel(__dppl_keep DPPLSyclProgramRef PRef,
+                           __dppl_keep const char *KernelName);
 
 /*!
  * @brief Frees the DPPLSyclProgramRef pointer.
@@ -108,7 +105,6 @@ DPPLProgram_HasKernel (__dppl_keep DPPLSyclProgramRef PRef,
  * @param    PRef           Opaque pointer to a sycl::program
  */
 DPPL_API
-void
-DPPLProgram_Delete (__dppl_take DPPLSyclProgramRef PRef);
+void DPPLProgram_Delete(__dppl_take DPPLSyclProgramRef PRef);
 
 DPPL_C_EXTERN_C_END

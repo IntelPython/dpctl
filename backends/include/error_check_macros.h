@@ -43,69 +43,73 @@
 // FIXME : memory allocated in a function should be released in the error
 // section
 
-#define CHECK_OPEN_CL_ERROR(x, M) do {                                         \
-    int retval = (x);                                                          \
-    switch(retval) {                                                           \
-    case 0:                                                                    \
-        break;                                                                 \
-    case -36:                                                                  \
-        fprintf(stderr, "Open CL Runtime Error: %d (%s) on Line %d in %s\n",   \
-                retval, "[CL_INVALID_COMMAND_QUEUE]command_queue is not a "    \
-                        "valid command-queue.",                                \
-                __LINE__, __FILE__);                                           \
-        goto error;                                                            \
-    case -38:                                                                  \
-        fprintf(stderr, "Open CL Runtime Error: %d (%s) on Line %d in %s\n"    \
-                        "%s\n",                                                \
-                retval, "[CL_INVALID_MEM_OBJECT] memory object is not a "      \
-                        "valid OpenCL memory object.",                         \
-                __LINE__, __FILE__,M);                                         \
-        goto error;                                                            \
-    case -45:                                                                  \
-        fprintf(stderr, "Open CL Runtime Error: %d (%s) on Line %d in %s\n",   \
-                retval, "[CL_INVALID_PROGRAM_EXECUTABLE] no successfully "     \
-                        "built program executable available for device "       \
-                        "associated with command_queue.",                      \
-                __LINE__, __FILE__);                                           \
-        goto error;                                                            \
-    case -54:                                                                  \
-        fprintf(stderr, "Open CL Runtime Error: %d (%s) on Line %d in %s\n",   \
-                retval, "[CL_INVALID_WORK_GROUP_SIZE]",                        \
-                __LINE__, __FILE__);                                           \
-        goto error;                                                            \
-    default:                                                                   \
-        fprintf(stderr, "Open CL Runtime Error: %d (%s) on Line %d in %s\n",   \
-                retval, M, __LINE__, __FILE__);                                \
-        goto error;                                                            \
-    }                                                                          \
-} while(0)
+#define CHECK_OPEN_CL_ERROR(x, M)                                            \
+  do {                                                                       \
+    int retval = (x);                                                        \
+    switch (retval) {                                                        \
+      case 0:                                                                \
+        break;                                                               \
+      case -36:                                                              \
+        fprintf(stderr, "Open CL Runtime Error: %d (%s) on Line %d in %s\n", \
+                retval,                                                      \
+                "[CL_INVALID_COMMAND_QUEUE]command_queue is not a "          \
+                "valid command-queue.",                                      \
+                __LINE__, __FILE__);                                         \
+        goto error;                                                          \
+      case -38:                                                              \
+        fprintf(stderr,                                                      \
+                "Open CL Runtime Error: %d (%s) on Line %d in %s\n"          \
+                "%s\n",                                                      \
+                retval,                                                      \
+                "[CL_INVALID_MEM_OBJECT] memory object is not a "            \
+                "valid OpenCL memory object.",                               \
+                __LINE__, __FILE__, M);                                      \
+        goto error;                                                          \
+      case -45:                                                              \
+        fprintf(stderr, "Open CL Runtime Error: %d (%s) on Line %d in %s\n", \
+                retval,                                                      \
+                "[CL_INVALID_PROGRAM_EXECUTABLE] no successfully "           \
+                "built program executable available for device "             \
+                "associated with command_queue.",                            \
+                __LINE__, __FILE__);                                         \
+        goto error;                                                          \
+      case -54:                                                              \
+        fprintf(stderr, "Open CL Runtime Error: %d (%s) on Line %d in %s\n", \
+                retval, "[CL_INVALID_WORK_GROUP_SIZE]", __LINE__, __FILE__); \
+        goto error;                                                          \
+      default:                                                               \
+        fprintf(stderr, "Open CL Runtime Error: %d (%s) on Line %d in %s\n", \
+                retval, M, __LINE__, __FILE__);                              \
+        goto error;                                                          \
+    }                                                                        \
+  } while (0)
 
+#define CHECK_MALLOC_ERROR(type, x)                                       \
+  do {                                                                    \
+    type* ptr = (type*)(x);                                               \
+    if (ptr == NULL) {                                                    \
+      fprintf(stderr, "Malloc Error for type %s on Line %d in %s", #type, \
+              __LINE__, __FILE__);                                        \
+      perror(" ");                                                        \
+      free(ptr);                                                          \
+      ptr = NULL;                                                         \
+      goto malloc_error;                                                  \
+    }                                                                     \
+  } while (0)
 
-#define CHECK_MALLOC_ERROR(type, x) do {                                       \
-    type * ptr = (type*)(x);                                                   \
-    if(ptr == NULL) {                                                          \
-        fprintf(stderr, "Malloc Error for type %s on Line %d in %s",           \
-                #type, __LINE__, __FILE__);                                    \
-        perror(" ");                                                           \
-        free(ptr);                                                             \
-        ptr = NULL;                                                            \
-        goto malloc_error;                                                     \
-    }                                                                          \
-} while(0)
-
-
-#define CHECK_DPGLUE_ERROR(x, M) do {                                          \
-    int retval = (x);                                                          \
-    switch(retval) {                                                           \
-    case 0:                                                                    \
-        break;                                                                 \
-    case -1:                                                                   \
-        fprintf(stderr, "DP_Glue Error: %d (%s) on Line %d in %s\n",           \
-                retval, M, __LINE__, __FILE__);                                \
-        goto error;                                                            \
-    default:                                                                   \
-        fprintf(stderr, "DP_Glue Error: %d (%s) on Line %d in %s\n",           \
-                retval, M, __LINE__, __FILE__);                                \
-        goto error;                                                            \
-    }                                                                          \
-} while(0)
+#define CHECK_DPGLUE_ERROR(x, M)                                             \
+  do {                                                                       \
+    int retval = (x);                                                        \
+    switch (retval) {                                                        \
+      case 0:                                                                \
+        break;                                                               \
+      case -1:                                                               \
+        fprintf(stderr, "DP_Glue Error: %d (%s) on Line %d in %s\n", retval, \
+                M, __LINE__, __FILE__);                                      \
+        goto error;                                                          \
+      default:                                                               \
+        fprintf(stderr, "DP_Glue Error: %d (%s) on Line %d in %s\n", retval, \
+                M, __LINE__, __FILE__);                                      \
+        goto error;                                                          \
+    }                                                                        \
+  } while (0)

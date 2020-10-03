@@ -1,4 +1,5 @@
-//===--- dppl_sycl_device_interface.h - DPPL-SYCL interface ---*---C++ -*---===//
+//===--- dppl_sycl_device_interface.h - DPPL-SYCL interface ---*---C++
+//-*---===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -27,11 +28,11 @@
 
 #pragma once
 
-#include "dppl_data_types.h"
-#include "dppl_sycl_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dppl_data_types.h"
+#include "dppl_sycl_types.h"
 
 DPPL_C_EXTERN_C_BEGIN
 
@@ -40,15 +41,14 @@ DPPL_C_EXTERN_C_BEGIN
  * sycl.hpp here and in the Python bindings.
  *
  */
-typedef enum
-{
-    DPPL_CPU,
-    DPPL_GPU,
-    DPPL_ACCELERATOR,
-    DPPL_CUSTOM,
-    DPPL_AUTOMATIC,
-    DPPL_HOST,
-    DPPL_ALL
+typedef enum {
+  DPPL_CPU,
+  DPPL_GPU,
+  DPPL_ACCELERATOR,
+  DPPL_CUSTOM,
+  DPPL_AUTOMATIC,
+  DPPL_HOST,
+  DPPL_ALL
 } DPPLSyclDeviceType;
 
 /*!
@@ -57,7 +57,7 @@ typedef enum
  * @param    DRef           A DPPLSyclDeviceRef pointer.
  */
 DPPL_API
-void DPPLDevice_DumpInfo (__dppl_keep const DPPLSyclDeviceRef DRef);
+void DPPLDevice_DumpInfo(__dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
  * @brief Deletes a DPPLSyclDeviceRef pointer after casting to to sycl::device.
@@ -65,7 +65,7 @@ void DPPLDevice_DumpInfo (__dppl_keep const DPPLSyclDeviceRef DRef);
  * @param    DRef           The DPPLSyclDeviceRef pointer to be freed.
  */
 DPPL_API
-void DPPLDevice_Delete (__dppl_take DPPLSyclDeviceRef DRef);
+void DPPLDevice_Delete(__dppl_take DPPLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns true if this SYCL device is an OpenCL device and the device
@@ -75,7 +75,7 @@ void DPPLDevice_Delete (__dppl_take DPPLSyclDeviceRef DRef);
  * @return   True if the device type is an accelerator, else False.
  */
 DPPL_API
-bool DPPLDevice_IsAccelerator (__dppl_keep const DPPLSyclDeviceRef DRef);
+bool DPPLDevice_IsAccelerator(__dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns true if this SYCL device is an OpenCL device and the device
@@ -85,7 +85,7 @@ bool DPPLDevice_IsAccelerator (__dppl_keep const DPPLSyclDeviceRef DRef);
  * @return   True if the device type is a cpu, else False.
  */
 DPPL_API
-bool DPPLDevice_IsCPU (__dppl_keep const DPPLSyclDeviceRef DRef);
+bool DPPLDevice_IsCPU(__dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns true if this SYCL device is an OpenCL device and the device
@@ -95,7 +95,7 @@ bool DPPLDevice_IsCPU (__dppl_keep const DPPLSyclDeviceRef DRef);
  * @return    True if the device type is a gpu, else False.
  */
 DPPL_API
-bool DPPLDevice_IsGPU (__dppl_keep const DPPLSyclDeviceRef DRef);
+bool DPPLDevice_IsGPU(__dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns true if this SYCL device is a host device.
@@ -104,7 +104,7 @@ bool DPPLDevice_IsGPU (__dppl_keep const DPPLSyclDeviceRef DRef);
  * @return   True if the device is a host device, else False.
  */
 DPPL_API
-bool DPPLDevice_IsHost (__dppl_keep const DPPLSyclDeviceRef DRef);
+bool DPPLDevice_IsHost(__dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns the OpenCL software driver version as a C string.
@@ -114,8 +114,8 @@ bool DPPLDevice_IsHost (__dppl_keep const DPPLSyclDeviceRef DRef);
  *           to the OpenCL driver version if this is a OpenCL device.
  */
 DPPL_API
-__dppl_give const char*
-DPPLDevice_GetDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef);
+__dppl_give const char* DPPLDevice_GetDriverInfo(
+    __dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns a C string for the device name.
@@ -124,8 +124,8 @@ DPPLDevice_GetDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef);
  * @return   A C string containing the OpenCL device name.
  */
 DPPL_API
-__dppl_give const char*
-DPPLDevice_GetName (__dppl_keep const DPPLSyclDeviceRef DRef);
+__dppl_give const char* DPPLDevice_GetName(
+    __dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns a C string corresponding to the vendor name.
@@ -134,8 +134,8 @@ DPPLDevice_GetName (__dppl_keep const DPPLSyclDeviceRef DRef);
  * @return    A C string containing the OpenCL device vendor name.
  */
 DPPL_API
-__dppl_give const char*
-DPPLDevice_GetVendorName (__dppl_keep const DPPLSyclDeviceRef DRef);
+__dppl_give const char* DPPLDevice_GetVendorName(
+    __dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns True if the device and the host share a unified memory
@@ -146,6 +146,6 @@ DPPLDevice_GetVendorName (__dppl_keep const DPPLSyclDeviceRef DRef);
  * with the host.
  */
 DPPL_API
-bool DPPLDevice_IsHostUnifiedMemory (__dppl_keep const DPPLSyclDeviceRef DRef);
+bool DPPLDevice_IsHostUnifiedMemory(__dppl_keep const DPPLSyclDeviceRef DRef);
 
 DPPL_C_EXTERN_C_END

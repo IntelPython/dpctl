@@ -25,28 +25,24 @@
 //===----------------------------------------------------------------------===//
 
 #include "dppl_sycl_event_interface.h"
-#include "Support/CBindingWrapping.h"
 
-#include <CL/sycl.hpp>                /* SYCL headers   */
+#include <CL/sycl.hpp> /* SYCL headers   */
+
+#include "Support/CBindingWrapping.h"
 
 using namespace cl::sycl;
 
-namespace
-{
+namespace {
 // Create wrappers for C Binding types (see CBindingWrapping.h)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(event, DPPLSyclEventRef)
 } /* end of anonymous namespace */
 
-
-void DPPLEvent_Wait (__dppl_keep DPPLSyclEventRef ERef)
-{
-    // \todo How to handle errors? E.g. when ERef is null or not a valid event.
-    auto SyclEvent = unwrap(ERef);
-    SyclEvent->wait();
+void DPPLEvent_Wait(__dppl_keep DPPLSyclEventRef ERef) {
+  // \todo How to handle errors? E.g. when ERef is null or not a valid event.
+  auto SyclEvent = unwrap(ERef);
+  SyclEvent->wait();
 }
 
-void
-DPPLEvent_Delete (__dppl_take DPPLSyclEventRef ERef)
-{
-    delete unwrap(ERef);
+void DPPLEvent_Delete(__dppl_take DPPLSyclEventRef ERef) {
+  delete unwrap(ERef);
 }

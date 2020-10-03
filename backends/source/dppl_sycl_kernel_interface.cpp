@@ -25,51 +25,45 @@
 //===----------------------------------------------------------------------===//
 
 #include "dppl_sycl_kernel_interface.h"
-#include "Support/CBindingWrapping.h"
 
 #include <CL/sycl.hpp> /* Sycl headers */
 
+#include "Support/CBindingWrapping.h"
+
 using namespace cl::sycl;
 
-namespace
-{
+namespace {
 
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPPLSyclKernelRef)
 
 } /* end of anonymous namespace */
 
-__dppl_give const char*
-DPPLKernel_GetFunctionName (__dppl_keep const DPPLSyclKernelRef Kernel)
-{
-    if(!Kernel) {
-        // \todo record error
-        return nullptr;
-    }
+__dppl_give const char* DPPLKernel_GetFunctionName(
+    __dppl_keep const DPPLSyclKernelRef Kernel) {
+  if (!Kernel) {
+    // \todo record error
+    return nullptr;
+  }
 
-    auto SyclKernel = unwrap(Kernel);
-    auto kernel_name = SyclKernel->get_info<info::kernel::function_name>();
-    if(kernel_name.empty())
-        return nullptr;
-    auto cstr_name = new char [kernel_name.length()+1];
-    std::strcpy (cstr_name, kernel_name.c_str());
-    return cstr_name;
+  auto SyclKernel = unwrap(Kernel);
+  auto kernel_name = SyclKernel->get_info<info::kernel::function_name>();
+  if (kernel_name.empty()) return nullptr;
+  auto cstr_name = new char[kernel_name.length() + 1];
+  std::strcpy(cstr_name, kernel_name.c_str());
+  return cstr_name;
 }
 
-size_t
-DPPLKernel_GetNumArgs (__dppl_keep const DPPLSyclKernelRef Kernel)
-{
-    if(!Kernel) {
-        // \todo record error
-        return -1;
-    }
+size_t DPPLKernel_GetNumArgs(__dppl_keep const DPPLSyclKernelRef Kernel) {
+  if (!Kernel) {
+    // \todo record error
+    return -1;
+  }
 
-    auto SyclKernel = unwrap(Kernel);
-    auto num_args = SyclKernel->get_info<info::kernel::num_args>();
-    return (size_t)num_args;
+  auto SyclKernel = unwrap(Kernel);
+  auto num_args = SyclKernel->get_info<info::kernel::num_args>();
+  return (size_t)num_args;
 }
 
-void
-DPPLKernel_Delete (__dppl_take DPPLSyclKernelRef Kernel)
-{
-    delete unwrap(Kernel);
+void DPPLKernel_Delete(__dppl_take DPPLSyclKernelRef Kernel) {
+  delete unwrap(Kernel);
 }

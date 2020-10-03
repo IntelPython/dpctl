@@ -25,7 +25,4 @@
 
 #include "dppl_utils.h"
 
-void DPPLCString_Delete (__dppl_take const char* str)
-{
-    delete str;
-}
+void DPPLCString_Delete(__dppl_take const char* str) { delete str; }

@@ -27,11 +27,11 @@
 
 #pragma once
 
-#include "dppl_data_types.h"
-#include "dppl_sycl_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dppl_data_types.h"
+#include "dppl_sycl_types.h"
 
 DPPL_C_EXTERN_C_BEGIN
 
@@ -41,23 +41,22 @@ DPPL_C_EXTERN_C_BEGIN
  * \todo Add support for sycl::buffer
  *
  */
-typedef enum
-{
-    DPPL_CHAR,
-    DPPL_SIGNED_CHAR,
-    DPPL_UNSIGNED_CHAR,
-    DPPL_SHORT,
-    DPPL_INT,
-    DPPL_UNSIGNED_INT,
-    DPPL_LONG,
-    DPPL_UNSIGNED_LONG,
-    DPPL_LONG_LONG,
-    DPPL_UNSIGNED_LONG_LONG,
-    DPPL_SIZE_T,
-    DPPL_FLOAT,
-    DPPL_DOUBLE,
-    DPPL_LONG_DOUBLE,
-    DPPL_VOID_PTR
+typedef enum {
+  DPPL_CHAR,
+  DPPL_SIGNED_CHAR,
+  DPPL_UNSIGNED_CHAR,
+  DPPL_SHORT,
+  DPPL_INT,
+  DPPL_UNSIGNED_INT,
+  DPPL_LONG,
+  DPPL_UNSIGNED_LONG,
+  DPPL_LONG_LONG,
+  DPPL_UNSIGNED_LONG_LONG,
+  DPPL_SIZE_T,
+  DPPL_FLOAT,
+  DPPL_DOUBLE,
+  DPPL_LONG_DOUBLE,
+  DPPL_VOID_PTR
 } DPPLKernelArgType;
 
 /*!
@@ -66,7 +65,7 @@ typedef enum
  * @param    QRef           A DPPLSyclQueueRef pointer that gets deleted.
  */
 DPPL_API
-void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef);
+void DPPLQueue_Delete(__dppl_take DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Returns the Sycl context for the queue.
@@ -76,7 +75,7 @@ void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef);
  */
 DPPL_API
 __dppl_give DPPLSyclContextRef
-DPPLQueue_GetContext (__dppl_keep const DPPLSyclQueueRef QRef);
+DPPLQueue_GetContext(__dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
  * @brief returns the Sycl device for the queue.
@@ -86,7 +85,7 @@ DPPLQueue_GetContext (__dppl_keep const DPPLSyclQueueRef QRef);
  */
 DPPL_API
 __dppl_give DPPLSyclDeviceRef
-DPPLQueue_GetDevice (__dppl_keep const DPPLSyclQueueRef QRef);
+DPPLQueue_GetDevice(__dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Submits the kernel to the specified queue with the provided range
@@ -120,16 +119,12 @@ DPPLQueue_GetDevice (__dppl_keep const DPPLSyclQueueRef QRef);
  *           sycl::queue.submit() function.
  */
 DPPL_API
-DPPLSyclEventRef
-DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
-                       __dppl_keep const DPPLSyclQueueRef QRef,
-                       __dppl_keep void **Args,
-                       __dppl_keep const DPPLKernelArgType *ArgTypes,
-                       size_t NArgs,
-                       __dppl_keep const size_t Range[3],
-                       size_t NRange,
-                       __dppl_keep const DPPLSyclEventRef *DepEvents,
-                       size_t NDepEvents);
+DPPLSyclEventRef DPPLQueue_SubmitRange(
+    __dppl_keep const DPPLSyclKernelRef KRef,
+    __dppl_keep const DPPLSyclQueueRef QRef, __dppl_keep void **Args,
+    __dppl_keep const DPPLKernelArgType *ArgTypes, size_t NArgs,
+    __dppl_keep const size_t Range[3], size_t NRange,
+    __dppl_keep const DPPLSyclEventRef *DepEvents, size_t NDepEvents);
 
 /*!
  * @brief Submits the kernel to the specified queue with the provided nd_range
@@ -167,17 +162,13 @@ DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
  *           sycl::queue.submit() function.
  */
 DPPL_API
-DPPLSyclEventRef
-DPPLQueue_SubmitNDRange(__dppl_keep const DPPLSyclKernelRef KRef,
-                        __dppl_keep const DPPLSyclQueueRef QRef,
-                        __dppl_keep void **Args,
-                        __dppl_keep const DPPLKernelArgType *ArgTypes,
-                        size_t NArgs,
-                        __dppl_keep const size_t gRange[3],
-                        __dppl_keep const size_t lRange[3],
-                        size_t NDims,
-                        __dppl_keep const DPPLSyclEventRef *DepEvents,
-                        size_t NDepEvents);
+DPPLSyclEventRef DPPLQueue_SubmitNDRange(
+    __dppl_keep const DPPLSyclKernelRef KRef,
+    __dppl_keep const DPPLSyclQueueRef QRef, __dppl_keep void **Args,
+    __dppl_keep const DPPLKernelArgType *ArgTypes, size_t NArgs,
+    __dppl_keep const size_t gRange[3], __dppl_keep const size_t lRange[3],
+    size_t NDims, __dppl_keep const DPPLSyclEventRef *DepEvents,
+    size_t NDepEvents);
 
 /*!
  * @brief Calls the sycl::queue.submit function to do a blocking wait on all
@@ -186,8 +177,7 @@ DPPLQueue_SubmitNDRange(__dppl_keep const DPPLSyclKernelRef KRef,
  * @param    QRef           Opaque pointer to a sycl::queue.
  */
 DPPL_API
-void
-DPPLQueue_Wait (__dppl_keep const DPPLSyclQueueRef QRef);
+void DPPLQueue_Wait(__dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
  * @brief C-API wrapper for sycl::queue::memcpy, the function waits on an event
@@ -199,7 +189,7 @@ DPPLQueue_Wait (__dppl_keep const DPPLSyclQueueRef QRef);
  * @param    Count          A number of bytes to copy.
  */
 DPPL_API
-void DPPLQueue_Memcpy (__dppl_keep const DPPLSyclQueueRef QRef,
-                       void *Dest, const void *Src, size_t Count);
+void DPPLQueue_Memcpy(__dppl_keep const DPPLSyclQueueRef QRef, void *Dest,
+                      const void *Src, size_t Count);
 
 DPPL_C_EXTERN_C_END

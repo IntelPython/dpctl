@@ -25,24 +25,22 @@
 //===----------------------------------------------------------------------===//
 
 #include "dppl_sycl_context_interface.h"
-#include "Support/CBindingWrapping.h"
+
 #include <CL/sycl.hpp>
+
+#include "Support/CBindingWrapping.h"
 
 using namespace cl::sycl;
 
-namespace
-{
+namespace {
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
 } /* end of anonymous namespace */
 
-
-bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef)
-{
-    return unwrap(CtxRef)->is_host();
+bool DPPLContext_IsHost(__dppl_keep const DPPLSyclContextRef CtxRef) {
+  return unwrap(CtxRef)->is_host();
 }
 
-void DPPLContext_Delete (__dppl_take DPPLSyclContextRef CtxRef)
-{
-    delete unwrap(CtxRef);
+void DPPLContext_Delete(__dppl_take DPPLSyclContextRef CtxRef) {
+  delete unwrap(CtxRef);
 }

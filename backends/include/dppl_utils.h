@@ -36,6 +36,6 @@ DPPL_C_EXTERN_C_BEGIN
  * @param    str            C string to be deleted
  */
 DPPL_API
-void DPPLCString_Delete (__dppl_take const char* str);
+void DPPLCString_Delete(__dppl_take const char* str);
 
 DPPL_C_EXTERN_C_END
