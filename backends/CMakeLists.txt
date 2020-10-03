@@ -79,6 +79,9 @@ cmake_print_variables(OpenCL_LIBRARY)
 
 add_definitions(-DCL_TARGET_OPENCL_VERSION=220)
 
+
+# DPPLSyclInterface
+
 add_library(
   DPPLSyclInterface
   SHARED
@@ -94,14 +97,6 @@ add_library(
   source/dppl_utils.cpp
 )
 
-# Install DPPLOpenCLInterface
-add_library(
-  DPPLOpenCLInterface
-  SHARED
-  source/dppl_opencl_interface.c
-)
-
-# Install DPPLSyclInterface
 target_include_directories(
   DPPLSyclInterface
   PRIVATE
@@ -110,21 +105,25 @@ target_include_directories(
   ${Python_NumPy_INCLUDE_DIRS}
 )
 
-target_include_directories(
-    DPPLOpenCLInterface
-    PRIVATE
-    ${CMAKE_SOURCE_DIR}/include/
+
+# DPPLOpenCLInterface
+
+add_library(
+  DPPLOpenCLInterface
+  SHARED
+  source/dppl_opencl_interface.c
 )
 
 target_include_directories(
     DPPLOpenCLInterface
-    PUBLIC
-    ${OpenCL_INCLUDE_DIR}
+    PRIVATE ${CMAKE_SOURCE_DIR}/include/
+    PUBLIC ${OpenCL_INCLUDE_DIR}
 )
 
 if(WIN32)
     set(SYCL_INCLUDE_DIR "${DPCPP_ROOT}/include/sycl")
     cmake_print_variables(SYCL_INCLUDE_DIR)
+
     target_include_directories(
         DPPLSyclInterface
         PUBLIC
@@ -142,18 +141,9 @@ if(WIN32)
 endif()
 
 install(
-  TARGETS
-  DPPLSyclInterface
-  LIBRARY DESTINATION
-  "${CMAKE_INSTALL_PREFIX}/lib/"
-)
-
-install(
-  TARGETS
-  DPPLOpenCLInterface
+  TARGETS DPPLSyclInterface DPPLOpenCLInterface
   LIBRARY
-  DESTINATION
-  "${CMAKE_INSTALL_PREFIX}/lib/"
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/"
 )
 
 # Install all headers
