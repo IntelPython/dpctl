@@ -86,20 +86,23 @@ class TestIsInDeviceContext (unittest.TestCase):
     def test_get_current_device_type_inside_device_ctxt (self):
         self.assertEqual(dpctl.get_current_device_type(), None)
 
-        with dpctl.device_context(dpctl.device_type.gpu):
+        with dpctl.device_context("opencl:gpu:0"):
             self.assertEqual(dpctl.get_current_device_type(), dpctl.device_type.gpu)
 
         self.assertEqual(dpctl.get_current_device_type(), None)
 
-    @unittest.skipIf(not dpctl.has_cpu_queues(), "No CPU platforms available")
+    @unittest.skipUnless(dpctl.get_num_queues(backend_ty="opencl",
+                                              device_ty="cpu") > 0,
+                         "No OpenCL CPU queues available")
     def test_get_current_device_type_inside_nested_device_ctxt (self):
         self.assertEqual(dpctl.get_current_device_type(), None)
 
-        with dpctl.device_context(dpctl.device_type.cpu):
+        with dpctl.device_context("opencl:cpu:0"):
             self.assertEqual(dpctl.get_current_device_type(), dpctl.device_type.cpu)
 
-            with dpctl.device_context(dpctl.device_type.gpu):
-                self.assertEqual(dpctl.get_current_device_type(), dpctl.device_type.gpu)
+            with dpctl.device_context("opencl:gpu:0"):
+                self.assertEqual(dpctl.get_current_device_type(), dpctl.
+                                 device_type.gpu)
             self.assertEqual(dpctl.get_current_device_type(), dpctl.device_type.cpu)
 
         self.assertEqual(dpctl.get_current_device_type(), None)
