@@ -14,10 +14,26 @@ Use `licenser` plugin for VSCode.
 
 ## Automate commit checks
 
+Install:
+
 ```bash
 pip install pre-commit
 pre-commit install
 ```
+
+Manual run:
+
+```bash
+pre-commit run  # diff
+pre-commit run -a  # all
+pre-commit run HOOK_ID -a  # only hook
+```
+
+Update:
+```bash
+pre-commit autoupdate
+```
+
 
 See: [.pre-commit-config.yaml]()
 Commit without verification: `git commit --no-verify`
@@ -29,4 +45,5 @@ Checkers:
 - cpplint
 - cppcheck
 
-Install tools for C++ checkers: `conda install clang-format cpplink cppcheck -c defaults -c conda-forge`
+Install tools via conda: `conda install TOOL -c defaults -c conda-forge`
+Install cppcheck from [installer](http://cppcheck.sourceforge.net) for Windows.
