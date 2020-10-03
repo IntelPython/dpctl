@@ -29,9 +29,8 @@ import os
 
 
 @unittest.skipIf(not dpctl.has_gpu_queues(), "No SYCL platforms available")
-class TestProgramFromOCLSource (unittest.TestCase):
-
-    def test_create_program_from_source (self):
+class TestProgramFromOCLSource(unittest.TestCase):
+    def test_create_program_from_source(self):
         oclSrc = "                                                             \
         kernel void add(global int* a, global int* b, global int* c) {         \
             size_t index = get_global_id(0);                                   \
@@ -49,39 +48,38 @@ class TestProgramFromOCLSource (unittest.TestCase):
             self.assertTrue(prog.has_sycl_kernel("add"))
             self.assertTrue(prog.has_sycl_kernel("axpy"))
 
-            addKernel = prog.get_sycl_kernel('add')
-            axpyKernel = prog.get_sycl_kernel('axpy')
+            addKernel = prog.get_sycl_kernel("add")
+            axpyKernel = prog.get_sycl_kernel("axpy")
 
-            self.assertEqual(addKernel.get_function_name(),"add")
-            self.assertEqual(axpyKernel.get_function_name(),"axpy")
+            self.assertEqual(addKernel.get_function_name(), "add")
+            self.assertEqual(axpyKernel.get_function_name(), "axpy")
             self.assertEqual(addKernel.get_num_args(), 3)
             self.assertEqual(axpyKernel.get_num_args(), 4)
 
 
 @unittest.skipIf(not dpctl.has_gpu_queues(), "No SYCL platforms available")
-class TestProgramFromSPRIV (unittest.TestCase):
-
+class TestProgramFromSPRIV(unittest.TestCase):
     def test_create_program_from_spirv(self):
 
         CURR_DIR = os.path.dirname(os.path.abspath(__file__))
-        spirv_file = os.path.join(CURR_DIR, 'input_files/multi_kernel.spv')
-        with open(spirv_file, 'rb') as fin:
+        spirv_file = os.path.join(CURR_DIR, "input_files/multi_kernel.spv")
+        with open(spirv_file, "rb") as fin:
             spirv = fin.read()
             with dpctl.device_context(dpctl.device_type.gpu, 0):
                 q = dpctl.get_current_queue()
-                prog = dpctl.create_program_from_spirv(q,spirv)
+                prog = dpctl.create_program_from_spirv(q, spirv)
                 self.assertIsNotNone(prog)
                 self.assertTrue(prog.has_sycl_kernel("add"))
                 self.assertTrue(prog.has_sycl_kernel("axpy"))
 
-                addKernel = prog.get_sycl_kernel('add')
-                axpyKernel = prog.get_sycl_kernel('axpy')
+                addKernel = prog.get_sycl_kernel("add")
+                axpyKernel = prog.get_sycl_kernel("axpy")
 
-                self.assertEqual(addKernel.get_function_name(),"add")
-                self.assertEqual(axpyKernel.get_function_name(),"axpy")
+                self.assertEqual(addKernel.get_function_name(), "add")
+                self.assertEqual(axpyKernel.get_function_name(), "axpy")
                 self.assertEqual(addKernel.get_num_args(), 3)
                 self.assertEqual(axpyKernel.get_num_args(), 4)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -29,25 +29,25 @@ import dpctl.ocldrv as drv
 
 
 class TestDumpMethods(unittest.TestCase):
-
-    def test_dpctl_dump (self):
+    def test_dpctl_dump(self):
         try:
             dpctl.dump()
         except Exception:
             self.fail("Encountered an exception inside dump().")
 
-    def test_dpctl_dump_device_info (self):
+    def test_dpctl_dump_device_info(self):
         q = dpctl.get_current_queue()
         try:
             q.get_sycl_device().dump_device_info()
         except Exception:
             self.fail("Encountered an exception inside dump_device_info().")
 
-    def test_dpctl_ocldrv_dump (self):
+    def test_dpctl_ocldrv_dump(self):
         try:
             dpctl.ocldrv.runtime.dump()
         except Exception:
             self.fail("Encountered an exception inside dump_device_info().")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
