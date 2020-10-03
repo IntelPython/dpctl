@@ -42,7 +42,9 @@ else:
 
 dppl_sycl_interface_lib = os.environ["DPPL_SYCL_INTERFACE_LIBDIR"]
 dppl_sycl_interface_include = os.environ["DPPL_SYCL_INTERFACE_INCLDIR"]
-sycl_lib = os.environ["ONEAPI_ROOT"] + "\compiler\latest\windows\lib"
+sycl_lib = os.path.join(
+    os.environ["ONEAPI_ROOT"], "compiler", "latest", "windows", "lib"
+)
 
 
 def get_sdl_cflags():
@@ -107,7 +109,7 @@ def extensions():
         runtime_library_dirs = []
 
     extension_args = {
-        "depends": [dppl_sycl_interface_include,],
+        "depends": [dppl_sycl_interface_include],
         "include_dirs": [np.get_include(), dppl_sycl_interface_include],
         "extra_compile_args": eca + get_other_cxxflags(),
         "extra_link_args": ela,
@@ -120,11 +122,11 @@ def extensions():
     extensions = [
         Extension(
             "dpctl._sycl_core",
-            [os.path.join("dpctl", "sycl_core.pyx"),],
+            [os.path.join("dpctl", "sycl_core.pyx")],
             **extension_args
         ),
         Extension(
-            "dpctl._memory", [os.path.join("dpctl", "_memory.pyx"),], **extension_args
+            "dpctl._memory", [os.path.join("dpctl", "_memory.pyx")], **extension_args
         ),
     ]
 
