@@ -72,6 +72,9 @@ bool set_kernel_arg (handler &cgh, size_t idx, __dppl_keep void *Arg,
     case DPPL_UNSIGNED_INT:
         cgh.set_arg(idx, *(unsigned int*)Arg);
         break;
+    case DPPL_UNSIGNED_INT8:
+        cgh.set_arg(idx, *(uint8_t*)Arg);
+        break;
     case DPPL_LONG:
         cgh.set_arg(idx, *(long*)Arg);
         break;

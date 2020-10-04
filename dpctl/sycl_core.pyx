@@ -294,9 +294,15 @@ cdef class SyclQueue:
             elif isinstance(arg, ctypes.c_uint):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._UNSIGNED_INT
+            elif isinstance(arg, ctypes.c_uint8):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._UNSIGNED_INT8
             elif isinstance(arg, ctypes.c_long):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._LONG
+            elif isinstance(arg, ctypes.c_ulong):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._UNSIGNED_LONG
             elif isinstance(arg, ctypes.c_longlong):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._LONG_LONG
