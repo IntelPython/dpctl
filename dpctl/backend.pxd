@@ -189,9 +189,11 @@ cdef extern from "dppl_sycl_queue_manager.h":
     cdef DPPLSyclQueueRef DPPLQueueMgr_PushQueue (DPPLSyclBEType BETy,
                                                   DPPLSyclDeviceType DeviceTy,
                                                   size_t DNum)
-    cdef void DPPLQueueMgr_SetAsDefaultQueue (DPPLSyclBEType BETy,
-                                              DPPLSyclDeviceType DeviceTy,
-                                              size_t DNum)
+    cdef DPPLSyclQueueRef DPPLQueueMgr_SetAsDefaultQueue (
+                              DPPLSyclBEType BETy,
+                              DPPLSyclDeviceType DeviceTy,
+                              size_t DNum
+                          )
 
 
 cdef extern from "dppl_sycl_usm_interface.h":

@@ -104,18 +104,20 @@ bool DPPLQueueMgr_IsCurrentQueue (__dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
 * @brief Set the default DPPL queue to the sycl::queue for the given backend
-* and device type combination.
-*
-* If no such device is found the a runtime_error exception is thrown.
+* and device type combination and return a DPPLSyclQueueRef for that queue.
+* If no queue was created Null is returned to caller.
 *
 * @param    BETy           Type of Sycl backend.
 * @param    DeviceTy       The type of Sycl device (sycl_device_type)
-* @param    DNum           Device id for the device (defaults to 0)
+* @param    DNum           Device id for the device
+* @return A copy of the sycl::queue that was set as the new default queue. If no
+* queue could be created then returns Null.
 */
 DPPL_API
-void DPPLQueueMgr_SetAsDefaultQueue (enum DPPLSyclBEType BETy,
-                                     enum DPPLSyclDeviceType DeviceTy,
-                                     size_t DNum);
+__dppl_give DPPLSyclQueueRef
+DPPLQueueMgr_SetAsDefaultQueue (enum DPPLSyclBEType BETy,
+                                enum DPPLSyclDeviceType DeviceTy,
+                                size_t DNum);
 
 /*!
  * @brief Pushes a new sycl::queue object to the top of DPPL's thread-local

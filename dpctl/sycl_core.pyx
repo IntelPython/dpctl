@@ -645,12 +645,18 @@ cdef class _SyclRTManager:
             return False
 
     def set_default_queue (self, backend_ty, device_ty, device_id):
-
+        cdef DPPLSyclQueueRef ret
         try :
             beTy = self._backend_ty_dict[backend_ty]
             try :
                 devTy = self._device_ty_dict[device_ty]
-                DPPLQueueMgr_SetAsDefaultQueue(beTy, devTy, device_id)
+                ret = DPPLQueueMgr_SetAsDefaultQueue(beTy, devTy, device_id)
+                if ret is NULL:
+                    self._raise_queue_creation_error(
+                        backend_ty, device_ty, device_id,
+                        "DPPLQueueMgr_PushQueue"
+                    )
+
             except KeyError:
                 raise UnsupportedDeviceError("Device can only be gpu or cpu")
         except KeyError:
