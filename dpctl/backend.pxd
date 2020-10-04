@@ -89,20 +89,17 @@ cdef extern from "dppl_sycl_types.h":
 
 
 cdef extern from "dppl_sycl_device_interface.h":
-    cdef void DPPLDevice_DumpInfo (const DPPLSyclDeviceRef DRef) except +
-    cdef void DPPLDevice_Delete (DPPLSyclDeviceRef DRef) except +
-    cdef void DPPLDevice_DumpInfo (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDevice_IsAccelerator (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDevice_IsCPU (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDevice_IsGPU (const DPPLSyclDeviceRef DRef) except +
-    cdef bool DPPLDevice_IsHost (const DPPLSyclDeviceRef DRef) except +
-    cdef const char* DPPLDevice_GetDriverInfo (const DPPLSyclDeviceRef DRef) \
-    except +
-    cdef const char* DPPLDevice_GetName (const DPPLSyclDeviceRef DRef) except +
-    cdef const char* DPPLDevice_GetVendorName (const DPPLSyclDeviceRef DRef) \
-    except +
-    cdef bool DPPLDevice_IsHostUnifiedMemory (const DPPLSyclDeviceRef DRef) \
-    except +
+    cdef void DPPLDevice_DumpInfo (const DPPLSyclDeviceRef DRef)
+    cdef void DPPLDevice_Delete (DPPLSyclDeviceRef DRef)
+    cdef void DPPLDevice_DumpInfo (const DPPLSyclDeviceRef DRef)
+    cdef bool DPPLDevice_IsAccelerator (const DPPLSyclDeviceRef DRef)
+    cdef bool DPPLDevice_IsCPU (const DPPLSyclDeviceRef DRef)
+    cdef bool DPPLDevice_IsGPU (const DPPLSyclDeviceRef DRef)
+    cdef bool DPPLDevice_IsHost (const DPPLSyclDeviceRef DRef)
+    cdef const char* DPPLDevice_GetDriverInfo (const DPPLSyclDeviceRef DRef)
+    cdef const char* DPPLDevice_GetName (const DPPLSyclDeviceRef DRef)
+    cdef const char* DPPLDevice_GetVendorName (const DPPLSyclDeviceRef DRef)
+    cdef bool DPPLDevice_IsHostUnifiedMemory (const DPPLSyclDeviceRef DRef)
 
 
 cdef extern from "dppl_sycl_event_interface.h":
@@ -201,17 +198,12 @@ cdef extern from "dppl_sycl_queue_manager.h":
 
 
 cdef extern from "dppl_sycl_usm_interface.h":
-    cdef DPPLSyclUSMRef DPPLmalloc_shared (size_t size, DPPLSyclQueueRef QRef) \
-         except +
-    cdef DPPLSyclUSMRef DPPLmalloc_host (size_t size, DPPLSyclQueueRef QRef) \
-         except +
-    cdef DPPLSyclUSMRef DPPLmalloc_device (size_t size, DPPLSyclQueueRef QRef) \
-         except +
-
+    cdef DPPLSyclUSMRef DPPLmalloc_shared (size_t size, DPPLSyclQueueRef QRef)
+    cdef DPPLSyclUSMRef DPPLmalloc_host (size_t size, DPPLSyclQueueRef QRef)
+    cdef DPPLSyclUSMRef DPPLmalloc_device (size_t size, DPPLSyclQueueRef QRef)
     cdef void DPPLfree_with_queue (DPPLSyclUSMRef MRef,
-                                   DPPLSyclQueueRef QRef) except +
+                                   DPPLSyclQueueRef QRef)
     cdef void DPPLfree_with_context (DPPLSyclUSMRef MRef,
-                                     DPPLSyclContextRef CRef) except +
-
+                                     DPPLSyclContextRef CRef)
     cdef const char* DPPLUSM_GetPointerType (DPPLSyclUSMRef MRef,
-                                             DPPLSyclContextRef CRef) except +
+                                             DPPLSyclContextRef CRef)
