@@ -82,7 +82,7 @@ class TestProgramFromSPRIV (unittest.TestCase):
                 self.assertEqual(axpyKernel.get_num_args(), 4)
 
 @unittest.skipUnless(
-    dpctl.has_gpu_queues(backend_ty=dpctl.backend_type.opencl),
+    dpctl.has_gpu_queues(backend_ty=dpctl.backend_type.level_zero),
     "No Level0 GPU queues available"
 )
 class TestProgramForLevel0GPU (unittest.TestCase):
