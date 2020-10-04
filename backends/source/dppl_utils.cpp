@@ -27,5 +27,5 @@
 
 void DPPLCString_Delete (__dppl_take const char* str)
 {
-    delete str;
+    delete[] str;
 }
