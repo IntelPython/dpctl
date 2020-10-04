@@ -249,7 +249,7 @@ DPPLQueue_SubmitNDRange(__dppl_keep const DPPLSyclKernelRef KRef,
                 break;
             case 3:
                 cgh.parallel_for(nd_range<3>{{gRange[0], gRange[1], gRange[2]},
-                                             {lRange[0], lRange[1], lRange[3]}},
+                                             {lRange[0], lRange[1], lRange[2]}},
                                              *Kernel);
                 break;
             default:
