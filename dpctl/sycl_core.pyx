@@ -710,8 +710,14 @@ def create_program_from_source (SyclQueue q, unicode source, unicode copts=""):
                                     syc::program returned by the C API.
     '''
 
-    cdef DPPLSyclProgramRef Pref
+    BE = q.get_sycl_backend()
+    if BE != backend_type.opencl:
+        raise ValueError(
+            "Cannot create program for a ", BE, "type backend. Currently only "
+            "OpenCL devices are supported for program creations."
+        )
 
+    cdef DPPLSyclProgramRef Pref
     cdef bytes bSrc = source.encode('utf8')
     cdef bytes bCOpts = copts.encode('utf8')
     cdef const char *Src = <const char*>bSrc
@@ -741,6 +747,12 @@ def create_program_from_spirv (SyclQueue q, const unsigned char[:] IL):
             program (SyclProgram): A SyclProgram object wrapping the
                                    syc::program returned by the C API.
     '''
+    BE = q.get_sycl_backend()
+    if BE != backend_type.opencl:
+        raise ValueError(
+            "Cannot create program for a ", BE, "type backend. Currently only "
+            "OpenCL devices are supported for program creations."
+        )
 
     cdef DPPLSyclProgramRef Pref
     cdef const unsigned char *dIL = &IL[0]

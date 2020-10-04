@@ -81,6 +81,48 @@ class TestProgramFromSPRIV (unittest.TestCase):
                 self.assertEqual(addKernel.get_num_args(), 3)
                 self.assertEqual(axpyKernel.get_num_args(), 4)
 
+@unittest.skipUnless(
+    dpctl.has_gpu_queues(backend_ty=dpctl.backend_type.level_zero),
+    "No Level0 GPU queues available"
+)
+class TestProgramForLevel0GPU (unittest.TestCase):
+
+    def test_create_program_from_spirv(self):
+
+        CURR_DIR = os.path.dirname(os.path.abspath(__file__))
+        spirv_file = os.path.join(CURR_DIR, 'input_files/multi_kernel.spv')
+        with open(spirv_file, 'rb') as fin:
+            spirv = fin.read()
+            with dpctl.device_context("level0:gpu:0"):
+                q = dpctl.get_current_queue()
+                try:
+                    prog = dpctl.create_program_from_spirv(q,spirv)
+                    self.fail(
+                        "Tried to create program for an unsupported Level0 GPU."
+                    )
+                except ValueError:
+                    pass
+
+    def test_create_program_from_source (self):
+        oclSrc = "                                                             \
+        kernel void add(global int* a, global int* b, global int* c) {         \
+            size_t index = get_global_id(0);                                   \
+            c[index] = a[index] + b[index];                                    \
+        }                                                                      \
+        kernel void axpy(global int* a, global int* b, global int* c, int d) { \
+            size_t index = get_global_id(0);                                   \
+            c[index] = a[index] + d*b[index];                                  \
+        }"
+        with dpctl.device_context("level0:gpu:0"):
+            q = dpctl.get_current_queue()
+            try:
+                prog = dpctl.create_program_from_source(q, oclSrc)
+                self.fail(
+                    "Tried to create program for an unsupported Level0 GPU."
+                )
+            except ValueError:
+                pass
+
 
 if __name__ == '__main__':
     unittest.main()
