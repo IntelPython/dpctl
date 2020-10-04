@@ -481,7 +481,6 @@ cdef class _SyclRTManager:
     '''
     cdef dict _backend_ty_dict
     cdef dict _device_ty_dict
-    cdef SyclQueue current_queue
 
     def __cinit__ (self):
 
@@ -517,6 +516,16 @@ cdef class _SyclRTManager:
         ''' Prints information about the Runtime object.
         '''
         DPPLPlatform_DumpInfo()
+
+    def print_available_backends (self):
+        """ Prints the available backends.
+        """
+        print(self._backend_ty_dict.keys())
+
+    def get_current_backend (self):
+        """ Returns the backend for the current queue as `backend_type` enum
+        """
+        return self.get_current_queue().get_sycl_backend()
 
     def get_current_device_type (self):
         ''' Returns current device type as `device_type` enum
@@ -613,9 +622,9 @@ def create_program_from_source (SyclQueue q, unicode source, unicode copts=""):
                 copts (unicode) : Optional compilation flags that will be used
                                   when compiling the program.
 
-            Returns:
-                program (SyclProgram): A SyclProgram object wrapping the
-                                       syc::program returned by the C API.
+        Returns:
+            program (SyclProgram): A SyclProgram object wrapping the
+                                    syc::program returned by the C API.
     '''
 
     cdef DPPLSyclProgramRef Pref
@@ -674,9 +683,14 @@ def device_context (str queue_str="opencl:gpu:0"):
     # If set_context is unable to create a new context an exception is raised.
     try:
         attrs = queue_str.split(':')
-        if len(attrs) != 3:
+        nattrs = len(attrs)
+        if (nattrs < 2 or nattrs > 3):
             raise ValueError("Invalid device context string. Should be "
-                             " backend:device:device_number")
+                             "backend:device:device_number or "
+                             "backend:device. In the later case the "
+                             "device_number defaults to 0")
+        if nattrs == 2:
+            attrs.append("0")
         ctxt = None
         ctxt = _mgr._set_as_current_queue(attrs[0], attrs[1], int(attrs[2]))
         yield ctxt
