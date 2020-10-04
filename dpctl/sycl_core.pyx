@@ -573,10 +573,7 @@ cdef class _SyclRTManager:
     def get_current_device_type (self):
         ''' Returns current device type as `device_type` enum
         '''
-        if self.is_in_device_context():
-            return self.get_current_queue().get_sycl_device().get_device_type()
-        else:
-            return None
+        return self.get_current_queue().get_sycl_device().get_device_type()
 
     def get_current_queue (self):
         ''' Returns the activated SYCL queue as a PyCapsule.
