@@ -36,6 +36,18 @@
 DPPL_C_EXTERN_C_BEGIN
 
 /*!
+ * @brief Checks if two DPPLSyclContextRef objects point to the same
+ * sycl::context.
+ *
+ * @param    CtxRef1       First opaque pointer to the sycl context.
+ * @param    CtxRef2       Second opaque pointer to the sycl context.
+ * @return   True if the underlying sycl::context are same, false otherwise.
+ */
+DPPL_API
+bool DPPLContext_AreEq (__dppl_keep const DPPLSyclContextRef CtxRef1,
+                        __dppl_keep const DPPLSyclContextRef CtxRef2);
+
+/*!
  * @brief Returns true if this SYCL context is a host context.
  *
  * @param    CtxRef        An opaque pointer to a sycl::context.

@@ -118,6 +118,16 @@ void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef)
     delete unwrap(QRef);
 }
 
+
+bool DPPLQueue_AreEq (__dppl_keep const DPPLSyclQueueRef QRef1,
+                      __dppl_keep const DPPLSyclQueueRef QRef2)
+{
+    if(!(QRef1 && QRef2))
+        // \todo handle error
+        return false;
+    return (*unwrap(QRef1) == *unwrap(QRef2));
+}
+
 enum DPPLSyclBEType DPPLQueue_GetBackend (__dppl_keep DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);

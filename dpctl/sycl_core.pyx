@@ -96,6 +96,12 @@ cdef class SyclContext:
     def __dealloc__ (self):
         DPPLContext_Delete(self._ctxt_ref)
 
+    cpdef bool equals (self, SyclContext ctxt):
+        """ Returns true if the SyclContext argument has the same _context_ref
+            as this SyclContext.
+        """
+        return DPPLContext_AreEq(self._ctxt_ref, ctxt.get_context_ref())
+
     cdef DPPLSyclContextRef get_context_ref (self):
         return self._ctxt_ref
 
@@ -337,6 +343,12 @@ cdef class SyclQueue:
             ret = -1
 
         return ret
+
+    cpdef bool equals (self, SyclQueue q):
+        """ Returns true if the SyclQueue argument has the same _queue_ref
+            as this SycleQueue.
+        """
+        return DPPLQueue_AreEq(self._queue_ref, q.get_queue_ref())
 
     def get_sycl_backend (self):
         """ Returns the Sycl bakend associated with the queue.

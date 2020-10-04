@@ -45,6 +45,17 @@ DPPL_API
 void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef);
 
 /*!
+ * @brief Checks if two DPPLSyclQueueRef objects point to the same sycl::queue.
+ *
+ * @param    QRef1          First opaque pointer to the sycl queue.
+ * @param    QRef2          Second opaque pointer to the sycl queue.
+ * @return   True if the underlying sycl::queue are same, false otherwise.
+ */
+DPPL_API
+bool DPPLQueue_AreEq (__dppl_keep const DPPLSyclQueueRef QRef1,
+                      __dppl_keep const DPPLSyclQueueRef QRef2);
+
+/*!
  * @brief Returns the Sycl backend for the provided sycl::queue.
  *
  * @param    QRef           An opaque pointer to the sycl queue.

@@ -125,6 +125,8 @@ cdef extern from "dppl_sycl_platform_interface.h":
 
 
 cdef extern from "dppl_sycl_context_interface.h":
+    cdef bool DPPLContext_AreEq (const DPPLSyclContextRef CtxRef1,
+                                 const DPPLSyclContextRef CtxRef2)
     cdef DPPLSyclBEType DPPLContext_GetBackend (const DPPLSyclContextRef CtxRef)
     cdef void DPPLContext_Delete (DPPLSyclContextRef CtxRef)
 
@@ -146,6 +148,8 @@ cdef extern from "dppl_sycl_program_interface.h":
 
 
 cdef extern from "dppl_sycl_queue_interface.h":
+    cdef bool DPPLQueue_AreEq (const DPPLSyclQueueRef QRef1,
+                               const DPPLSyclQueueRef QRef2)
     cdef void DPPLQueue_Delete (DPPLSyclQueueRef QRef)
     cdef DPPLSyclBEType DPPLQueue_GetBackend (const DPPLSyclQueueRef Q)
     cdef DPPLSyclContextRef DPPLQueue_GetContext (const DPPLSyclQueueRef Q)

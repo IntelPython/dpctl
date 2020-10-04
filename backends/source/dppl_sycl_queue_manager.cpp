@@ -230,11 +230,7 @@ bool QMgrHelper::isCurrentQueue (__dppl_keep const DPPLSyclQueueRef QRef)
     }
     auto last = activated_q.size() - 1;
     auto currQ = activated_q[last];
-    auto currCtx = currQ.get_context();
-    auto currD = currQ.get_device();
-    auto InD = unwrap(QRef)->get_device();
-    auto InCtx = unwrap(QRef)->get_context();
-    return (currCtx == InCtx && currD == InD);
+    return (*unwrap(QRef) == currQ);
 }
 
 /*!
@@ -472,7 +468,7 @@ DPPLQueueMgr_SetAsDefaultQueue (enum DPPLSyclBEType BETy,
                                 enum DPPLSyclDeviceType DeviceTy,
                                 size_t DNum)
 {
-    QMgrHelper::setAsDefaultQueue(BETy, DeviceTy, DNum);
+    return QMgrHelper::setAsDefaultQueue(BETy, DeviceTy, DNum);
 }
 
 /*!

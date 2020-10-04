@@ -87,6 +87,65 @@ struct TestDPPLSyclQueueInterface : public ::testing::Test
     {  }
 };
 
+TEST_F (TestDPPLSyclQueueInterface, CheckAreEq)
+{
+    auto Q1 = DPPLQueueMgr_GetCurrentQueue();
+    auto Q2 = DPPLQueueMgr_GetCurrentQueue();
+    EXPECT_TRUE(DPPLQueue_AreEq(Q1, Q2));
+
+    auto nOclGPU = DPPLQueueMgr_GetNumQueues(DPPLSyclBEType::DPPL_OPENCL,
+                                             DPPLSyclDeviceType::DPPL_GPU);
+    auto nOclCPU = DPPLQueueMgr_GetNumQueues(DPPLSyclBEType::DPPL_OPENCL,
+                                             DPPLSyclDeviceType::DPPL_CPU);
+    {
+    if(!nOclGPU)
+        GTEST_SKIP_("No OpenCL GPUs available.\n");
+
+    auto Def_Q = DPPLQueueMgr_SetAsDefaultQueue(
+                    DPPLSyclBEType::DPPL_OPENCL,
+                    DPPLSyclDeviceType::DPPL_GPU,
+                    0
+                 );
+    auto OclGPU_Q0 = DPPLQueueMgr_PushQueue(
+                        DPPLSyclBEType::DPPL_OPENCL,
+                        DPPLSyclDeviceType::DPPL_GPU,
+                        0
+                    );
+    auto OclGPU_Q1 = DPPLQueueMgr_PushQueue(
+                        DPPLSyclBEType::DPPL_OPENCL,
+                        DPPLSyclDeviceType::DPPL_GPU,
+                        0
+                    );
+    EXPECT_TRUE(DPPLQueue_AreEq(Def_Q, OclGPU_Q0));
+    EXPECT_TRUE(DPPLQueue_AreEq(Def_Q, OclGPU_Q1));
+    EXPECT_TRUE(DPPLQueue_AreEq(OclGPU_Q0, OclGPU_Q1));
+    DPPLQueue_Delete(Def_Q);
+    DPPLQueue_Delete(OclGPU_Q0);
+    DPPLQueue_Delete(OclGPU_Q1);
+    DPPLQueueMgr_PopQueue();
+    DPPLQueueMgr_PopQueue();
+    }
+
+    {
+    if(!nOclGPU || !nOclCPU)
+        GTEST_SKIP_("OpenCL GPUs and CPU not available.\n");
+    auto GPU_Q = DPPLQueueMgr_PushQueue(
+                    DPPLSyclBEType::DPPL_OPENCL,
+                    DPPLSyclDeviceType::DPPL_GPU,
+                    0
+                );
+    auto CPU_Q = DPPLQueueMgr_PushQueue(
+                    DPPLSyclBEType::DPPL_OPENCL,
+                    DPPLSyclDeviceType::DPPL_CPU,
+                    0
+                );
+    EXPECT_FALSE(DPPLQueue_AreEq(GPU_Q, CPU_Q));
+    DPPLQueueMgr_PopQueue();
+    DPPLQueueMgr_PopQueue();
+    }
+
+}
+
 TEST_F (TestDPPLSyclQueueInterface, CheckGetBackend)
 {
     auto Q1 = DPPLQueueMgr_GetCurrentQueue();
@@ -101,16 +160,19 @@ TEST_F (TestDPPLSyclQueueInterface, CheckGetBackend)
         auto Q = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
         EXPECT_TRUE(DPPLQueue_GetBackend(Q) == DPPL_OPENCL);
         DPPLQueue_Delete(Q);
+        DPPLQueueMgr_PopQueue();
     }
     if(DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_CPU)) {
         auto Q = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_CPU, 0);
         EXPECT_TRUE(DPPLQueue_GetBackend(Q) == DPPL_OPENCL);
         DPPLQueue_Delete(Q);
+        DPPLQueueMgr_PopQueue();
     }
     if(DPPLQueueMgr_GetNumQueues(DPPL_LEVEL_ZERO, DPPL_GPU)) {
         auto Q = DPPLQueueMgr_PushQueue(DPPL_LEVEL_ZERO, DPPL_GPU, 0);
         EXPECT_TRUE(DPPLQueue_GetBackend(Q) == DPPL_LEVEL_ZERO);
         DPPLQueue_Delete(Q);
+        DPPLQueueMgr_PopQueue();
     }
 }
 
@@ -128,6 +190,7 @@ TEST_F (TestDPPLSyclQueueInterface, CheckGetContext)
         ASSERT_TRUE(OclGpuCtx != nullptr);
         DPPLQueue_Delete(Q);
         DPPLContext_Delete(OclGpuCtx);
+        DPPLQueueMgr_PopQueue();
     }
     if(DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_CPU)) {
         auto Q = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_CPU, 0);
@@ -135,6 +198,7 @@ TEST_F (TestDPPLSyclQueueInterface, CheckGetContext)
         ASSERT_TRUE(OclCpuCtx != nullptr);
         DPPLQueue_Delete(Q);
         DPPLContext_Delete(OclCpuCtx);
+        DPPLQueueMgr_PopQueue();
     }
     if(DPPLQueueMgr_GetNumQueues(DPPL_LEVEL_ZERO, DPPL_GPU)) {
         auto Q = DPPLQueueMgr_PushQueue(DPPL_LEVEL_ZERO, DPPL_GPU, 0);
@@ -142,6 +206,7 @@ TEST_F (TestDPPLSyclQueueInterface, CheckGetContext)
         ASSERT_TRUE(Ctx != nullptr);
         DPPLQueue_Delete(Q);
         DPPLContext_Delete(L0Ctx);
+        DPPLQueueMgr_PopQueue();
     }
 }
 
@@ -160,6 +225,7 @@ TEST_F (TestDPPLSyclQueueInterface, CheckGetDevice)
         EXPECT_TRUE(DPPLDevice_IsGPU(OCLGPU_D));
         DPPLQueue_Delete(Q);
         DPPLDevice_Delete(OCLGPU_D);
+        DPPLQueueMgr_PopQueue();
     }
     if(DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_CPU)) {
         auto Q = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_CPU, 0);
@@ -168,6 +234,7 @@ TEST_F (TestDPPLSyclQueueInterface, CheckGetDevice)
         EXPECT_TRUE(DPPLDevice_IsCPU(OCLCPU_D));
         DPPLQueue_Delete(Q);
         DPPLDevice_Delete(OCLCPU_D);
+        DPPLQueueMgr_PopQueue();
     }
     if(DPPLQueueMgr_GetNumQueues(DPPL_LEVEL_ZERO, DPPL_GPU)) {
         auto Q = DPPLQueueMgr_PushQueue(DPPL_LEVEL_ZERO, DPPL_GPU, 0);
@@ -176,6 +243,7 @@ TEST_F (TestDPPLSyclQueueInterface, CheckGetDevice)
         EXPECT_TRUE(DPPLDevice_IsGPU(L0GPU_D));
         DPPLQueue_Delete(Q);
         DPPLDevice_Delete(L0GPU_D);
+        DPPLQueueMgr_PopQueue();
     }
 }
 
