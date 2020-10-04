@@ -27,9 +27,7 @@ import dpctl
 import unittest
 import os
 
-@unittest.skipUnless(dpctl.get_num_queues(backend_ty="opencl",
-                                          device_ty="gpu") > 0,
-                     "No OpenCL GPU queues available")
+@unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
 class TestProgramFromOCLSource (unittest.TestCase):
 
     def test_create_program_from_source (self):
@@ -59,9 +57,7 @@ class TestProgramFromOCLSource (unittest.TestCase):
             self.assertEqual(axpyKernel.get_num_args(), 4)
 
 
-@unittest.skipUnless(dpctl.get_num_queues(backend_ty="opencl",
-                                          device_ty="gpu") > 0,
-                     "No OpenCL GPU queues available")
+@unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
 class TestProgramFromSPRIV (unittest.TestCase):
 
     def test_create_program_from_spirv(self):

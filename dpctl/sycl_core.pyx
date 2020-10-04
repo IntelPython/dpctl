@@ -79,6 +79,11 @@ cdef class SyclKernelInvalidRangeError (Exception):
     '''
     pass
 
+cdef class SyclQueueCreationError (Exception):
+    '''This exception is raised when a range that has more than three
+       dimensions or less than one dimension.
+    '''
+    pass
 
 cdef class SyclContext:
 
@@ -479,29 +484,55 @@ cdef class SyclQueue:
 cdef class _SyclRTManager:
     ''' Wrapper for the C API's sycl queue manager interface.
     '''
-    cdef dict _backend_ty_dict
-    cdef dict _device_ty_dict
+    cdef dict _backend_str_ty_dict
+    cdef dict _device_str_ty_dict
+    cdef dict _backend_enum_ty_dict
+    cdef dict _device_enum_ty_dict
 
     def __cinit__ (self):
 
-        self._backend_ty_dict = {
-            "opencl": _backend_type._OPENCL,
-            "level0": _backend_type._LEVEL_ZERO
+        self._backend_str_ty_dict = {
+            "opencl" : _backend_type._OPENCL,
+            "level0" : _backend_type._LEVEL_ZERO,
         }
 
-        self._device_ty_dict = {
-            "gpu": _device_type._GPU,
-            "cpu": _device_type._CPU,
+        self._device_str_ty_dict = {
+            "gpu" : _device_type._GPU,
+            "cpu" : _device_type._CPU,
         }
+
+        self._backend_enum_ty_dict = {
+            backend_type.opencl : _backend_type._OPENCL,
+            backend_type.level_zero : _backend_type._LEVEL_ZERO,
+        }
+
+        self._device_enum_ty_dict = {
+            device_type.cpu : _device_type._CPU,
+            device_type.gpu : _device_type._GPU,
+        }
+
+    cdef _raise_queue_creation_error (self, str be, str dev, int devid, fname):
+        e = SyclQueueCreationError(
+                "Queue creation failed for :", be, dev, devid
+            )
+        e.fname = fname
+        e.code = -1
+        raise e
+
 
     def _set_as_current_queue (self, backend_ty, device_ty, device_id):
         cdef DPPLSyclQueueRef queue_ref
 
         try :
-            beTy = self._backend_ty_dict[backend_ty]
+            beTy = self._backend_str_ty_dict[backend_ty]
             try :
-                devTy = self._device_ty_dict[device_ty]
+                devTy = self._device_str_ty_dict[device_ty]
                 queue_ref = DPPLQueueMgr_PushQueue(beTy, devTy, device_id)
+                if queue_ref is NULL:
+                    self._raise_queue_creation_error(
+                        backend_ty, device_ty, device_id,
+                        "DPPLQueueMgr_PushQueue"
+                    )
                 return SyclQueue._create(queue_ref)
             except KeyError:
                 raise UnsupportedDeviceError("Device can only be gpu or cpu")
@@ -553,16 +584,51 @@ cdef class _SyclRTManager:
     def get_num_queues (self, backend_ty, device_ty):
         cdef size_t num = 0
         try :
-            beTy = self._backend_ty_dict[backend_ty]
+            beTy = self._backend_enum_ty_dict[backend_ty]
             try :
-                devTy = self._device_ty_dict[device_ty]
+                devTy = self._device_enum_ty_dict[device_ty]
                 num = DPPLQueueMgr_GetNumQueues(beTy, devTy)
             except KeyError:
-                print("Device can only be gpu or cpu")
+                raise UnsupportedDeviceError(
+                        "Device can only be device_type.gpu or device_type.cpu"
+                      )
         except KeyError:
-            print("Backend can only be opencl or level-0")
+            raise UnsupportedBackendError(
+                      "Backend can only be backend_type.opencl or "
+                      "backend_type.level_zero"
+                  )
 
         return num
+
+    def has_gpu_queues (self, backend_ty=backend_type.opencl):
+        cdef size_t num = 0
+        try :
+            beTy = self._backend_enum_ty_dict[backend_ty]
+            num = DPPLQueueMgr_GetNumQueues(beTy, _device_type._GPU)
+        except KeyError:
+            raise UnsupportedBackendError(
+                      "Backend can only be backend_type.opencl or "
+                      "backend_type.level_zero"
+                  )
+        if num:
+            return True
+        else:
+            return False
+
+    def has_cpu_queues (self, backend_ty=backend_type.opencl):
+        cdef size_t num = 0
+        try :
+            beTy = self._backend_enum_ty_dict[backend_ty]
+            num = DPPLQueueMgr_GetNumQueues(beTy, _device_type._CPU)
+        except KeyError:
+            raise UnsupportedBackendError(
+                      "Backend can only be backend_type.opencl or "
+                      "backend_type.level_zero"
+                  )
+        if num:
+            return True
+        else:
+            return False
 
     def has_sycl_platforms (self):
         cdef size_t num_platforms = DPPLPlatform_GetNumPlatforms()
@@ -603,6 +669,8 @@ get_current_device_type  = _mgr.get_current_device_type
 get_num_platforms        = _mgr.get_num_platforms
 get_num_activated_queues = _mgr.get_num_activated_queues
 get_num_queues           = _mgr.get_num_queues
+has_cpu_queues           = _mgr.has_cpu_queues
+has_gpu_queues           = _mgr.has_gpu_queues
 has_sycl_platforms       = _mgr.has_sycl_platforms
 set_default_queue        = _mgr.set_default_queue
 is_in_device_context     = _mgr.is_in_device_context

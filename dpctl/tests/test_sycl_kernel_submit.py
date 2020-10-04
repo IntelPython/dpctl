@@ -28,9 +28,7 @@ import unittest
 import dpctl._memory as dpctl_mem
 import numpy as np
 
-@unittest.skipUnless(dpctl.get_num_queues(backend_ty="opencl",
-                                          device_ty="gpu") > 0,
-                     "No OpenCL GPU queues available")
+@unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
 class Test1DKernelSubmit (unittest.TestCase):
 
     def test_create_program_from_source (self):
