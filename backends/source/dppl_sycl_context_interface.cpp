@@ -55,7 +55,7 @@ void DPPLContext_Delete (__dppl_take DPPLSyclContextRef CtxRef)
     delete unwrap(CtxRef);
 }
 
-DPPLSyclBEType
+DPPLSyclBackendType
 DPPLContext_GetBackend (__dppl_keep const DPPLSyclContextRef CtxRef)
 {
     auto BE = unwrap(CtxRef)->get_platform().get_backend();

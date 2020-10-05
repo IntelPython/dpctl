@@ -93,26 +93,26 @@ TEST_F (TestDPPLSyclQueueInterface, CheckAreEq)
     auto Q2 = DPPLQueueMgr_GetCurrentQueue();
     EXPECT_TRUE(DPPLQueue_AreEq(Q1, Q2));
 
-    auto nOclGPU = DPPLQueueMgr_GetNumQueues(DPPLSyclBEType::DPPL_OPENCL,
+    auto nOclGPU = DPPLQueueMgr_GetNumQueues(DPPLSyclBackendType::DPPL_OPENCL,
                                              DPPLSyclDeviceType::DPPL_GPU);
-    auto nOclCPU = DPPLQueueMgr_GetNumQueues(DPPLSyclBEType::DPPL_OPENCL,
+    auto nOclCPU = DPPLQueueMgr_GetNumQueues(DPPLSyclBackendType::DPPL_OPENCL,
                                              DPPLSyclDeviceType::DPPL_CPU);
     {
     if(!nOclGPU)
         GTEST_SKIP_("No OpenCL GPUs available.\n");
 
     auto Def_Q = DPPLQueueMgr_SetAsDefaultQueue(
-                    DPPLSyclBEType::DPPL_OPENCL,
+                    DPPLSyclBackendType::DPPL_OPENCL,
                     DPPLSyclDeviceType::DPPL_GPU,
                     0
                  );
     auto OclGPU_Q0 = DPPLQueueMgr_PushQueue(
-                        DPPLSyclBEType::DPPL_OPENCL,
+                        DPPLSyclBackendType::DPPL_OPENCL,
                         DPPLSyclDeviceType::DPPL_GPU,
                         0
                     );
     auto OclGPU_Q1 = DPPLQueueMgr_PushQueue(
-                        DPPLSyclBEType::DPPL_OPENCL,
+                        DPPLSyclBackendType::DPPL_OPENCL,
                         DPPLSyclDeviceType::DPPL_GPU,
                         0
                     );
@@ -130,12 +130,12 @@ TEST_F (TestDPPLSyclQueueInterface, CheckAreEq)
     if(!nOclGPU || !nOclCPU)
         GTEST_SKIP_("OpenCL GPUs and CPU not available.\n");
     auto GPU_Q = DPPLQueueMgr_PushQueue(
-                    DPPLSyclBEType::DPPL_OPENCL,
+                    DPPLSyclBackendType::DPPL_OPENCL,
                     DPPLSyclDeviceType::DPPL_GPU,
                     0
                 );
     auto CPU_Q = DPPLQueueMgr_PushQueue(
-                    DPPLSyclBEType::DPPL_OPENCL,
+                    DPPLSyclBackendType::DPPL_OPENCL,
                     DPPLSyclDeviceType::DPPL_CPU,
                     0
                 );

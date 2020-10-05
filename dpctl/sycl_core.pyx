@@ -353,7 +353,7 @@ cdef class SyclQueue:
     def get_sycl_backend (self):
         """ Returns the Sycl bakend associated with the queue.
         """
-        cdef DPPLSyclBEType BE = DPPLQueue_GetBackend(self._queue_ref)
+        cdef DPPLSyclBackendType BE = DPPLQueue_GetBackend(self._queue_ref)
         if BE == _backend_type._OPENCL:
             return backend_type.opencl
         elif BE == _backend_type._LEVEL_ZERO:

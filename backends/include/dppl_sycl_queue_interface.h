@@ -59,10 +59,11 @@ bool DPPLQueue_AreEq (__dppl_keep const DPPLSyclQueueRef QRef1,
  * @brief Returns the Sycl backend for the provided sycl::queue.
  *
  * @param    QRef           An opaque pointer to the sycl queue.
- * @return   A enum DPPLSyclBEType corresponding to the backed for the queue.
+ * @return   A enum DPPLSyclBackendType corresponding to the backed for the
+ * queue.
  */
 DPPL_API
-enum DPPLSyclBEType DPPLQueue_GetBackend (__dppl_keep DPPLSyclQueueRef QRef);
+DPPLSyclBackendType DPPLQueue_GetBackend (__dppl_keep DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Returns the Sycl context for the queue.

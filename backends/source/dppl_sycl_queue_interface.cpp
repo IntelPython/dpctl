@@ -128,7 +128,7 @@ bool DPPLQueue_AreEq (__dppl_keep const DPPLSyclQueueRef QRef1,
     return (*unwrap(QRef1) == *unwrap(QRef2));
 }
 
-enum DPPLSyclBEType DPPLQueue_GetBackend (__dppl_keep DPPLSyclQueueRef QRef)
+DPPLSyclBackendType DPPLQueue_GetBackend (__dppl_keep DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto C = Q->get_context();
@@ -197,11 +197,11 @@ DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
                                          "dimensions.");
             }
         });
-    } catch (runtime_error re) {
+    } catch (runtime_error &re) {
         // \todo fix error handling
         std::cerr << re.what() << '\n';
         return nullptr;
-    } catch (std::runtime_error sre) {
+    } catch (std::runtime_error &sre) {
         std::cerr << sre.what() << '\n';
         return nullptr;
     }
@@ -258,11 +258,11 @@ DPPLQueue_SubmitNDRange(__dppl_keep const DPPLSyclKernelRef KRef,
                                          "dimensions.");
             }
         });
-    } catch (runtime_error re) {
+    } catch (runtime_error &re) {
         // \todo fix error handling
         std::cerr << re.what() << '\n';
         return nullptr;
-    } catch (std::runtime_error sre) {
+    } catch (std::runtime_error &sre) {
         std::cerr << sre.what() << '\n';
         return nullptr;
     }

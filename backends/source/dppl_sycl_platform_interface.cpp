@@ -36,10 +36,10 @@ using namespace cl::sycl;
 
 namespace
 {
-std::set<DPPLSyclBEType>
+std::set<DPPLSyclBackendType>
 get_set_of_backends ()
 {
-    std::set<DPPLSyclBEType> be_set;
+    std::set<DPPLSyclBackendType> be_set;
     for (auto p : platform::get_platforms()) {
 		if(p.is_host())
 			continue;
@@ -47,16 +47,16 @@ get_set_of_backends ()
         switch (be)
         {
         case backend::host:
-            be_set.insert(DPPLSyclBEType::DPPL_HOST);
+            be_set.insert(DPPLSyclBackendType::DPPL_HOST);
             break;
         case backend::cuda:
-            be_set.insert(DPPLSyclBEType::DPPL_CUDA);
+            be_set.insert(DPPLSyclBackendType::DPPL_CUDA);
             break;
         case backend::level_zero:
-            be_set.insert(DPPLSyclBEType::DPPL_LEVEL_ZERO);
+            be_set.insert(DPPLSyclBackendType::DPPL_LEVEL_ZERO);
             break;
         case backend::opencl:
-            be_set.insert(DPPLSyclBEType::DPPL_OPENCL);
+            be_set.insert(DPPLSyclBackendType::DPPL_OPENCL);
             break;
         default:
             break;
@@ -164,14 +164,14 @@ size_t DPPLPlatform_GetNumBackends ()
     return get_set_of_backends().size();
 }
 
-__dppl_give enum DPPLSyclBEType *DPPLPlatform_GetListOfBackends ()
+__dppl_give DPPLSyclBackendType *DPPLPlatform_GetListOfBackends ()
 {
     auto be_set = get_set_of_backends();
 
     if (be_set.empty())
         return nullptr;
 
-    DPPLSyclBEType *BEArr = new DPPLSyclBEType[be_set.size()];
+    DPPLSyclBackendType *BEArr = new DPPLSyclBackendType[be_set.size()];
 
     auto i = 0ul;
     for (auto be : be_set) {
@@ -182,7 +182,7 @@ __dppl_give enum DPPLSyclBEType *DPPLPlatform_GetListOfBackends ()
     return BEArr;
 }
 
-void DPPLPlatform_DeleteListOfBackends (__dppl_take enum DPPLSyclBEType *BEArr)
+void DPPLPlatform_DeleteListOfBackends (__dppl_take DPPLSyclBackendType *BEArr)
 {
     delete[] BEArr;
 }

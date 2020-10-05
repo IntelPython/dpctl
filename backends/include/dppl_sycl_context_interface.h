@@ -57,13 +57,14 @@ DPPL_API
 bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef);
 
 /*!
- * @brief
+ * @brief Returns the sycl backend for the DPPLSyclContextRef pointer.
  *
  * @param    CtxRef         An opaque pointer to a sycl::context.
- * @return   {return}       My Param doc
+ * @return   The sycl backend for the DPPLSyclContextRef returned as 
+ * a DPPLSyclBackendType enum type.
  */
 DPPL_API
-DPPLSyclBEType
+DPPLSyclBackendType
 DPPLContext_GetBackend (__dppl_keep const DPPLSyclContextRef CtxRef);
 
 /*!

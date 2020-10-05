@@ -48,9 +48,9 @@ TEST_F (TestDPPLSyclPlatformInterface, GetListOfBackends)
 	EXPECT_TRUE(backends != nullptr);
     for(auto i = 0ul; i < nbackends; ++i) {
         EXPECT_TRUE(
-          backends[i] == DPPLSyclBEType::DPPL_CUDA   ||
-          backends[i] == DPPLSyclBEType::DPPL_OPENCL ||
-          backends[i] == DPPLSyclBEType::DPPL_LEVEL_ZERO);
+          backends[i] == DPPLSyclBackendType::DPPL_CUDA   ||
+          backends[i] == DPPLSyclBackendType::DPPL_OPENCL ||
+          backends[i] == DPPLSyclBackendType::DPPL_LEVEL_ZERO);
     }
 	DPPLPlatform_DeleteListOfBackends(backends);
 }

@@ -51,20 +51,20 @@ DPPL_API
 size_t DPPLPlatform_GetNumBackends ();
 
 /*!
- * @brief Returns an array of the unique DPPLSyclBEType values on the system.
+ * @brief Returns an array of the unique DPPLSyclBackendType values on the system.
  *
- * @return   An array of DPPLSyclBEType enum values.
+ * @return   An array of DPPLSyclBackendType enum values.
  */
 DPPL_API
-__dppl_give enum DPPLSyclBEType* DPPLPlatform_GetListOfBackends ();
+__dppl_give DPPLSyclBackendType* DPPLPlatform_GetListOfBackends ();
 
 /*!
- * @brief Frees an array of DPPLSyclBEType enum values.
+ * @brief Frees an array of DPPLSyclBackendType enum values.
  *
- * @param    BEArr          An array of DPPLSyclBEType enum values to be freed.
+ * @param    BEArr      An array of DPPLSyclBackendType enum values to be freed.
  */
 DPPL_API
-void DPPLPlatform_DeleteListOfBackends (__dppl_take enum DPPLSyclBEType* BEArr);
+void DPPLPlatform_DeleteListOfBackends (__dppl_take DPPLSyclBackendType* BEArr);
 
 /*!
  * @brief Prints out some selected info about all sycl::platform on the system.

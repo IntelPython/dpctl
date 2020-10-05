@@ -34,14 +34,14 @@ cdef extern from "dppl_utils.h":
     cdef void DPPLCString_Delete (const char *str)
 
 cdef extern from "dppl_sycl_enum_types.h":
-    cdef enum _backend_type 'DPPLSyclBEType':
+    cdef enum _backend_type 'DPPLSyclBackendType':
         _OPENCL          'DPPL_OPENCL'
         _HOST            'DPPL_HOST'
         _LEVEL_ZERO      'DPPL_LEVEL_ZERO'
         _CUDA            'DPPL_CUDA'
         _UNKNOWN_BACKEND 'DPPL_UNKNOWN_BACKEND'
 
-    ctypedef _backend_type DPPLSyclBEType
+    ctypedef _backend_type DPPLSyclBackendType
 
     cdef enum _device_type 'DPPLSyclDeviceType':
         _GPU         'DPPL_GPU'
@@ -117,14 +117,15 @@ cdef extern from "dppl_sycl_platform_interface.h":
     cdef size_t DPPLPlatform_GetNumPlatforms ()
     cdef void DPPLPlatform_DumpInfo ()
     cdef size_t DPPLPlatform_GetNumBackends ()
-    cdef DPPLSyclBEType *DPPLPlatform_GetListOfBackends ()
-    cdef void DPPLPlatform_DeleteListOfBackends (DPPLSyclBEType * BEs)
+    cdef DPPLSyclBackendType *DPPLPlatform_GetListOfBackends ()
+    cdef void DPPLPlatform_DeleteListOfBackends (DPPLSyclBackendType * BEs)
 
 
 cdef extern from "dppl_sycl_context_interface.h":
     cdef bool DPPLContext_AreEq (const DPPLSyclContextRef CtxRef1,
                                  const DPPLSyclContextRef CtxRef2)
-    cdef DPPLSyclBEType DPPLContext_GetBackend (const DPPLSyclContextRef CtxRef)
+    cdef DPPLSyclBackendType DPPLContext_GetBackend (
+            const DPPLSyclContextRef CtxRef)
     cdef void DPPLContext_Delete (DPPLSyclContextRef CtxRef)
 
 
@@ -148,7 +149,7 @@ cdef extern from "dppl_sycl_queue_interface.h":
     cdef bool DPPLQueue_AreEq (const DPPLSyclQueueRef QRef1,
                                const DPPLSyclQueueRef QRef2)
     cdef void DPPLQueue_Delete (DPPLSyclQueueRef QRef)
-    cdef DPPLSyclBEType DPPLQueue_GetBackend (const DPPLSyclQueueRef Q)
+    cdef DPPLSyclBackendType DPPLQueue_GetBackend (const DPPLSyclQueueRef Q)
     cdef DPPLSyclContextRef DPPLQueue_GetContext (const DPPLSyclQueueRef Q)
     cdef DPPLSyclDeviceRef DPPLQueue_GetDevice (const DPPLSyclQueueRef Q)
     cdef DPPLSyclEventRef  DPPLQueue_SubmitRange (
@@ -179,19 +180,19 @@ cdef extern from "dppl_sycl_queue_interface.h":
 
 cdef extern from "dppl_sycl_queue_manager.h":
     cdef DPPLSyclQueueRef DPPLQueueMgr_GetCurrentQueue ()
-    cdef size_t DPPLQueueMgr_GetNumQueues (DPPLSyclBEType BETy,
+    cdef size_t DPPLQueueMgr_GetNumQueues (DPPLSyclBackendType BETy,
                                            DPPLSyclDeviceType DeviceTy)
     cdef size_t DPPLQueueMgr_GetNumActivatedQueues ()
-    cdef DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclBEType BETy,
+    cdef DPPLSyclQueueRef DPPLQueueMgr_GetQueue (DPPLSyclBackendType BETy,
                                                  DPPLSyclDeviceType DeviceTy,
                                                  size_t DNum)
     cdef bool DPPLQueueMgr_IsCurrentQueue (const DPPLSyclQueueRef QRef)
     cdef void DPPLQueueMgr_PopQueue ()
-    cdef DPPLSyclQueueRef DPPLQueueMgr_PushQueue (DPPLSyclBEType BETy,
+    cdef DPPLSyclQueueRef DPPLQueueMgr_PushQueue (DPPLSyclBackendType BETy,
                                                   DPPLSyclDeviceType DeviceTy,
                                                   size_t DNum)
     cdef DPPLSyclQueueRef DPPLQueueMgr_SetAsDefaultQueue (
-                              DPPLSyclBEType BETy,
+                              DPPLSyclBackendType BETy,
                               DPPLSyclDeviceType DeviceTy,
                               size_t DNum
                           )
