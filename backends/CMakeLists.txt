@@ -38,28 +38,13 @@ function (check_for_dpcpp)
     endif()
 endfunction()
 
-function (check_for_numpy_inc)
-    string(COMPARE EQUAL "${NUMPY_INCLUDE_DIR}" "" no_numpy_inc)
-    if(${no_dpcpp_root})
-        message(FATAL_ERROR "Set the NUMPY_INCLUDE_DIR argument providing the \
-                             path to NumPy Headers.")
-    else()
-        message(STATUS "NUMPY_INCLUDE_DIR: ${NUMPY_INCLUDE_DIR}")
-    endif()
-
-    string(COMPARE EQUAL "${PYTHON_INCLUDE_DIR}" "" no_python_inc)
-    if(${no_dpcpp_root})
-        message(FATAL_ERROR "Set the PYTHON_INCLUDE_DIR argument providing the \
-                             path to Python Headers.")
-    else()
-        message(STATUS "PYTHON_INCLUDE_DIR: ${PYTHON_INCLUDE_DIR}")
-    endif()
-endfunction()
-
 # Check for dpcpp in the specified DPCPP_ROOT
 check_for_dpcpp()
-# Check if the locations of Numpy and Python headers were provided
-check_for_numpy_inc()
+
+find_package(Python REQUIRED COMPONENTS Development NumPy)
+include(CMakePrintHelpers)
+cmake_print_variables(Python_INCLUDE_DIRS)
+cmake_print_variables(Python_NumPy_INCLUDE_DIRS)
 
 if(WIN32)
     set(CMAKE_CXX_COMPILER:PATH "${DPCPP_ROOT}/bin/dpcpp")
@@ -89,9 +74,13 @@ endif()
 
 set(OpenCL_INCLUDE_DIR "${DPCPP_ROOT}/include/sycl")
 set(OpenCL_LIBRARY "${DPCPP_ROOT}/lib/libOpenCL.so")
+cmake_print_variables(OpenCL_INCLUDE_DIR)
+cmake_print_variables(OpenCL_LIBRARY)
 
-message(STATUS "OpenCL_INCLUDE_DIR: ${OpenCL_INCLUDE_DIR}")
-message(STATUS "OpenCL_LIBRARY: ${OpenCL_LIBRARY}")
+add_definitions(-DCL_TARGET_OPENCL_VERSION=220)
+
+
+# DPPLSyclInterface
 
 add_library(
   DPPLSyclInterface
@@ -108,40 +97,30 @@ add_library(
   source/dppl_utils.cpp
 )
 
-# Install DPPLOpenCLInterface
+target_include_directories(
+  DPPLSyclInterface
+  PRIVATE
+  ${CMAKE_SOURCE_DIR}/include/
+  ${Python_INCLUDE_DIRS}
+  ${Python_NumPy_INCLUDE_DIRS}
+)
+
+
+# DPPLOpenCLInterface
+
 add_library(
   DPPLOpenCLInterface
   SHARED
   source/dppl_opencl_interface.c
 )
 
-# Install DPPLSyclInterface
-target_include_directories(
-  DPPLSyclInterface
-  PRIVATE
-  ${CMAKE_SOURCE_DIR}/include/
-  ${PYTHON_INCLUDE_DIR}
-  ${NUMPY_INCLUDE_DIR}
-)
-
 target_include_directories(
     DPPLOpenCLInterface
-    PRIVATE
-    ${CMAKE_SOURCE_DIR}/include/
-)
-
-target_include_directories(
-    DPPLOpenCLInterface
-    PUBLIC
-    ${OpenCL_INCLUDE_DIR}
+    PRIVATE ${CMAKE_SOURCE_DIR}/include/
+    PUBLIC ${OpenCL_INCLUDE_DIR}
 )
 
 if(WIN32)
-    message(
-        STATUS
-        "SYCL_INCLUDE_DIR: "
-        ${DPCPP_ROOT}/include/sycl
-    )
     target_include_directories(
         DPPLSyclInterface
         PUBLIC
@@ -159,18 +138,9 @@ if(WIN32)
 endif()
 
 install(
-  TARGETS
-  DPPLSyclInterface
-  LIBRARY DESTINATION
-  "${CMAKE_INSTALL_PREFIX}/lib/"
-)
-
-install(
-  TARGETS
-  DPPLOpenCLInterface
+  TARGETS DPPLSyclInterface DPPLOpenCLInterface
   LIBRARY
-  DESTINATION
-  "${CMAKE_INSTALL_PREFIX}/lib/"
+  DESTINATION lib
 )
 
 # Install all headers
