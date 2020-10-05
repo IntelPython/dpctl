@@ -1,6 +1,6 @@
 //===-- dppl_opencl_interface.h - DPPL-OpenCL interface -------*- C -*-----===//
 //
-//               Python Data Parallel Processing Library (PyDPPL)
+//               Data Parallel Control Library (dpCtl)
 //
 // Copyright 2020 Intel Corporation
 //

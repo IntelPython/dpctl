@@ -1,6 +1,6 @@
 //===--- dppl_sycl_context_interface.cpp - DPPL-SYCL interface --*- C++ -*-===//
 //
-//               Python Data Parallel Processing Library (PyDPPL)
+//               Data Parallel Control Library (dpCtl)
 //
 // Copyright 2020 Intel Corporation
 //
