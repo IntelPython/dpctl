@@ -62,7 +62,7 @@ bool DPPLQueue_AreEq (__dppl_keep const DPPLSyclQueueRef QRef1,
  * @return   A enum DPPLSyclBEType corresponding to the backed for the queue.
  */
 DPPL_API
-enum DPPLSyclBEType DPPLQueue_GetBackend (__dppl_keep DPPLSyclQueueRef QRef);
+DPPLSyclBEType DPPLQueue_GetBackend (__dppl_keep DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Returns the Sycl context for the queue.
