@@ -47,12 +47,14 @@ class TestMemory (unittest.TestCase):
         # Without context
         self.assertEqual(mobj._usm_type(), 'shared')
 
-    @unittest.skipIf(not dpctl.has_cpu_queues(), "No CPU platforms available")
+    @unittest.skipUnless(
+        dpctl.has_cpu_queues(), "No OpenCL CPU queues available"
+    )
     def test_memory_cpu_context (self):
         mobj = self._create_memory()
 
         # CPU context
-        with dpctl.device_context(dpctl.device_type.cpu):
+        with dpctl.device_context("opencl:cpu:0"):
             # type respective to the context in which
             # memory was created
             usm_type = mobj._usm_type()
@@ -65,12 +67,14 @@ class TestMemory (unittest.TestCase):
             # not in the same SYCL context
             self.assertTrue(usm_type in ['unknown', 'shared'])
 
-    @unittest.skipIf(not dpctl.has_gpu_queues(), "No GPU platforms available")
+    @unittest.skipUnless(
+        dpctl.has_gpu_queues(), "No OpenCL GPU queues available"
+    )
     def test_memory_gpu_context (self):
         mobj = self._create_memory()
 
         # GPU context
-        with dpctl.device_context(dpctl.device_type.gpu):
+        with dpctl.device_context("opencl:gpu:0"):
             usm_type = mobj._usm_type()
             self.assertEqual(usm_type, 'shared')
             current_queue = dpctl.get_current_queue()

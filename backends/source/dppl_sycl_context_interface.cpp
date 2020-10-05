@@ -36,6 +36,14 @@ namespace
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
 } /* end of anonymous namespace */
 
+bool DPPLContext_AreEq (__dppl_keep const DPPLSyclContextRef CtxRef1,
+                        __dppl_keep const DPPLSyclContextRef CtxRef2)
+{
+    if(!(CtxRef1 && CtxRef2))
+        // \todo handle error
+        return false;
+    return (*unwrap(CtxRef1) == *unwrap(CtxRef2));
+}
 
 bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef)
 {
@@ -45,4 +53,24 @@ bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef)
 void DPPLContext_Delete (__dppl_take DPPLSyclContextRef CtxRef)
 {
     delete unwrap(CtxRef);
+}
+
+DPPLSyclBackendType
+DPPLContext_GetBackend (__dppl_keep const DPPLSyclContextRef CtxRef)
+{
+    auto BE = unwrap(CtxRef)->get_platform().get_backend();
+
+    switch(BE)
+    {
+        case backend::host:
+            return DPPL_HOST;
+        case backend::opencl:
+            return DPPL_OPENCL;
+        case backend::level_zero:
+            return DPPL_LEVEL_ZERO;
+        case backend::cuda:
+            return DPPL_CUDA;
+        default:
+            return DPPL_UNKNOWN_BACKEND;
+    }
 }

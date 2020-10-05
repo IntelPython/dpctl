@@ -37,6 +37,7 @@ cdef class SyclContext:
 
     @staticmethod
     cdef SyclContext _create (DPPLSyclContextRef ctxt)
+    cpdef bool equals (self, SyclContext ctxt)
     cdef DPPLSyclContextRef get_context_ref (self)
 
 
@@ -108,6 +109,7 @@ cdef class SyclQueue:
 
     @staticmethod
     cdef  SyclQueue _create (DPPLSyclQueueRef qref)
+    cpdef bool equals (self, SyclQueue q)
     cpdef SyclContext get_sycl_context (self)
     cpdef SyclDevice get_sycl_device (self)
     cdef  DPPLSyclQueueRef get_queue_ref (self)

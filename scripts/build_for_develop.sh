@@ -27,6 +27,7 @@ cmake                                                       \
     ../backends
 
 make V=1 -n -j 4 && make check && make install
+#make V=1 -n -j 4 && make install
 popd
 cp install/lib/*.so dpctl/
 
@@ -47,4 +48,4 @@ export CXX=dpcpp
 export CFLAGS=-fPIC
 python setup.py clean --all
 python setup.py build develop
-python -m unittest dpctl.tests
+python -m unittest -v dpctl.tests

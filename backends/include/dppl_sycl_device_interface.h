@@ -28,28 +28,13 @@
 #pragma once
 
 #include "dppl_data_types.h"
+#include "dppl_sycl_enum_types.h"
 #include "dppl_sycl_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
 
 DPPL_C_EXTERN_C_BEGIN
-
-/*!
- * @brief Redefinition of Sycl's device_type so that we do not have to include
- * sycl.hpp here and in the Python bindings.
- *
- */
-typedef enum
-{
-    DPPL_CPU,
-    DPPL_GPU,
-    DPPL_ACCELERATOR,
-    DPPL_CUSTOM,
-    DPPL_AUTOMATIC,
-    DPPL_HOST,
-    DPPL_ALL
-} DPPLSyclDeviceType;
 
 /*!
  * @brief Prints out some of the info::deivice attributes for the device.

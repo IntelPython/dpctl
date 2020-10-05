@@ -40,9 +40,22 @@ _logger = logging.getLogger(__name__)
 class device_type(Enum):
     gpu = auto()
     cpu = auto()
+    accelerator = auto()
+    host_device = auto()
 
+class backend_type(Enum):
+    opencl = auto()
+    level_zero = auto()
+    cuda = auto()
+    host = auto()
 
-cdef class UnsupportedDeviceTypeError (Exception):
+cdef class UnsupportedBackendError (Exception):
+    '''This exception is raised when a device type other than CPU or GPU is
+       encountered.
+    '''
+    pass
+
+cdef class UnsupportedDeviceError (Exception):
     '''This exception is raised when a device type other than CPU or GPU is
        encountered.
     '''
@@ -66,6 +79,11 @@ cdef class SyclKernelInvalidRangeError (Exception):
     '''
     pass
 
+cdef class SyclQueueCreationError (Exception):
+    '''This exception is raised when a range that has more than three
+       dimensions or less than one dimension.
+    '''
+    pass
 
 cdef class SyclContext:
 
@@ -77,6 +95,12 @@ cdef class SyclContext:
 
     def __dealloc__ (self):
         DPPLContext_Delete(self._ctxt_ref)
+
+    cpdef bool equals (self, SyclContext ctxt):
+        """ Returns true if the SyclContext argument has the same _context_ref
+            as this SyclContext.
+        """
+        return DPPLContext_AreEq(self._ctxt_ref, ctxt.get_context_ref())
 
     cdef DPPLSyclContextRef get_context_ref (self):
         return self._ctxt_ref
@@ -320,6 +344,26 @@ cdef class SyclQueue:
 
         return ret
 
+    cpdef bool equals (self, SyclQueue q):
+        """ Returns true if the SyclQueue argument has the same _queue_ref
+            as this SycleQueue.
+        """
+        return DPPLQueue_AreEq(self._queue_ref, q.get_queue_ref())
+
+    def get_sycl_backend (self):
+        """ Returns the Sycl bakend associated with the queue.
+        """
+        cdef DPPLSyclBackendType BE = DPPLQueue_GetBackend(self._queue_ref)
+        if BE == _backend_type._OPENCL:
+            return backend_type.opencl
+        elif BE == _backend_type._LEVEL_ZERO:
+            return backend_type.level_zero
+        elif BE == _backend_type._HOST:
+            return backend_type.host
+        elif BE == _backend_type._CUDA:
+            return backend_type.cuda
+        else:
+            raise ValueError("Unknown backend type.")
 
     cpdef SyclContext get_sycl_context (self):
         return self._context
@@ -449,24 +493,151 @@ cdef class SyclQueue:
         DPPLQueue_Memcpy(self._queue_ref, c_dest, c_src, count)
 
 
-cdef class _SyclQueueManager:
+cdef class _SyclRTManager:
     ''' Wrapper for the C API's sycl queue manager interface.
     '''
+    cdef dict _backend_str_ty_dict
+    cdef dict _device_str_ty_dict
+    cdef dict _backend_enum_ty_dict
+    cdef dict _device_enum_ty_dict
 
-    def _set_as_current_queue (self, device_ty, device_id):
+    def __cinit__ (self):
+
+        self._backend_str_ty_dict = {
+            "opencl" : _backend_type._OPENCL,
+            "level0" : _backend_type._LEVEL_ZERO,
+        }
+
+        self._device_str_ty_dict = {
+            "gpu" : _device_type._GPU,
+            "cpu" : _device_type._CPU,
+        }
+
+        self._backend_enum_ty_dict = {
+            backend_type.opencl : _backend_type._OPENCL,
+            backend_type.level_zero : _backend_type._LEVEL_ZERO,
+        }
+
+        self._device_enum_ty_dict = {
+            device_type.cpu : _device_type._CPU,
+            device_type.gpu : _device_type._GPU,
+        }
+
+    cdef _raise_queue_creation_error (self, str be, str dev, int devid, fname):
+        e = SyclQueueCreationError(
+                "Queue creation failed for :", be, dev, devid
+            )
+        e.fname = fname
+        e.code = -1
+        raise e
+
+
+    def _set_as_current_queue (self, backend_ty, device_ty, device_id):
         cdef DPPLSyclQueueRef queue_ref
-        if device_ty == device_type.gpu:
-            queue_ref = DPPLQueueMgr_PushQueue(_device_type._GPU, device_id)
-        elif device_ty == device_type.cpu:
-            queue_ref = DPPLQueueMgr_PushQueue(_device_type._CPU, device_id)
-        else:
-            e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
-            raise e
 
-        return SyclQueue._create(queue_ref)
+        try :
+            beTy = self._backend_str_ty_dict[backend_ty]
+            try :
+                devTy = self._device_str_ty_dict[device_ty]
+                queue_ref = DPPLQueueMgr_PushQueue(beTy, devTy, device_id)
+                if queue_ref is NULL:
+                    self._raise_queue_creation_error(
+                        backend_ty, device_ty, device_id,
+                        "DPPLQueueMgr_PushQueue"
+                    )
+                return SyclQueue._create(queue_ref)
+            except KeyError:
+                raise UnsupportedDeviceError("Device can only be gpu or cpu")
+        except KeyError:
+            raise UnsupportedBackendError("Backend can only be opencl or "
+                                          "level-0")
 
     def _remove_current_queue (self):
         DPPLQueueMgr_PopQueue()
+
+    def dump (self):
+        ''' Prints information about the Runtime object.
+        '''
+        DPPLPlatform_DumpInfo()
+
+    def print_available_backends (self):
+        """ Prints the available backends.
+        """
+        print(self._backend_ty_dict.keys())
+
+    def get_current_backend (self):
+        """ Returns the backend for the current queue as `backend_type` enum
+        """
+        return self.get_current_queue().get_sycl_backend()
+
+    def get_current_device_type (self):
+        ''' Returns current device type as `device_type` enum
+        '''
+        return self.get_current_queue().get_sycl_device().get_device_type()
+
+    def get_current_queue (self):
+        ''' Returns the activated SYCL queue as a PyCapsule.
+        '''
+        return SyclQueue._create(DPPLQueueMgr_GetCurrentQueue())
+
+    def get_num_activated_queues (self):
+        ''' Return the number of currently activated queues for this thread.
+        '''
+        return DPPLQueueMgr_GetNumActivatedQueues()
+
+    def get_num_platforms (self):
+        ''' Returns the number of available SYCL/OpenCL platforms.
+        '''
+        return DPPLPlatform_GetNumPlatforms()
+
+    def get_num_queues (self, backend_ty, device_ty):
+        cdef size_t num = 0
+        try :
+            beTy = self._backend_enum_ty_dict[backend_ty]
+            try :
+                devTy = self._device_enum_ty_dict[device_ty]
+                num = DPPLQueueMgr_GetNumQueues(beTy, devTy)
+            except KeyError:
+                raise UnsupportedDeviceError(
+                        "Device can only be device_type.gpu or device_type.cpu"
+                      )
+        except KeyError:
+            raise UnsupportedBackendError(
+                      "Backend can only be backend_type.opencl or "
+                      "backend_type.level_zero"
+                  )
+
+        return num
+
+    def has_gpu_queues (self, backend_ty=backend_type.opencl):
+        cdef size_t num = 0
+        try :
+            beTy = self._backend_enum_ty_dict[backend_ty]
+            num = DPPLQueueMgr_GetNumQueues(beTy, _device_type._GPU)
+        except KeyError:
+            raise UnsupportedBackendError(
+                      "Backend can only be backend_type.opencl or "
+                      "backend_type.level_zero"
+                  )
+        if num:
+            return True
+        else:
+            return False
+
+    def has_cpu_queues (self, backend_ty=backend_type.opencl):
+        cdef size_t num = 0
+        try :
+            beTy = self._backend_enum_ty_dict[backend_ty]
+            num = DPPLQueueMgr_GetNumQueues(beTy, _device_type._CPU)
+        except KeyError:
+            raise UnsupportedBackendError(
+                      "Backend can only be backend_type.opencl or "
+                      "backend_type.level_zero"
+                  )
+        if num:
+            return True
+        else:
+            return False
 
     def has_sycl_platforms (self):
         cdef size_t num_platforms = DPPLPlatform_GetNumPlatforms()
@@ -475,49 +646,6 @@ cdef class _SyclQueueManager:
         else:
             return False
 
-    def get_num_platforms (self):
-        ''' Returns the number of available SYCL/OpenCL platforms.
-        '''
-        return DPPLPlatform_GetNumPlatforms()
-
-    def get_num_activated_queues (self):
-        ''' Return the number of currently activated queues for this thread.
-        '''
-        return DPPLQueueMgr_GetNumActivatedQueues()
-
-    def get_current_queue (self):
-        ''' Returns the activated SYCL queue as a PyCapsule.
-        '''
-        return SyclQueue._create(DPPLQueueMgr_GetCurrentQueue())
-
-    def set_default_queue (self, device_ty, device_id):
-        if device_ty == device_type.gpu:
-            DPPLQueueMgr_SetAsDefaultQueue(_device_type._GPU, device_id)
-        elif device_ty == device_type.cpu:
-            DPPLQueueMgr_SetAsDefaultQueue(_device_type._CPU, device_id)
-        else:
-            e = UnsupportedDeviceTypeError("Device can only be cpu or gpu")
-            raise e
-
-    def has_gpu_queues (self):
-        cdef size_t num = DPPLQueueMgr_GetNumGPUQueues()
-        if num:
-            return True
-        else:
-            return False
-
-    def has_cpu_queues (self):
-        cdef size_t num = DPPLQueueMgr_GetNumCPUQueues()
-        if num:
-            return True
-        else:
-            return False
-
-    def dump (self):
-        ''' Prints information about the Runtime object.
-        '''
-        DPPLPlatform_DumpInfo()
-
     def is_in_device_context (self):
         cdef size_t num = DPPLQueueMgr_GetNumActivatedQueues()
         if num:
@@ -525,30 +653,42 @@ cdef class _SyclQueueManager:
         else:
             return False
 
-    def get_current_device_type (self):
-        ''' Returns current device type as `device_type` enum
-        '''
-        if self.is_in_device_context():
-            return self.get_current_queue().get_sycl_device().get_device_type()
-        else:
-            return None
+    def set_default_queue (self, backend_ty, device_ty, device_id):
+        cdef DPPLSyclQueueRef ret
+        try :
+            beTy = self._backend_ty_dict[backend_ty]
+            try :
+                devTy = self._device_ty_dict[device_ty]
+                ret = DPPLQueueMgr_SetAsDefaultQueue(beTy, devTy, device_id)
+                if ret is NULL:
+                    self._raise_queue_creation_error(
+                        backend_ty, device_ty, device_id,
+                        "DPPLQueueMgr_PushQueue"
+                    )
+
+            except KeyError:
+                raise UnsupportedDeviceError("Device can only be gpu or cpu")
+        except KeyError:
+            raise UnsupportedBackendError("Backend can only be opencl or "
+                                          "level-0")
 
 
 # This private instance of the _SyclQueueManager should not be directly
 # accessed outside the module.
-_qmgr = _SyclQueueManager()
+_mgr = _SyclRTManager()
 
 # Global bound functions
-dump                     = _qmgr.dump
-get_current_queue        = _qmgr.get_current_queue
-get_current_device_type  = _qmgr.get_current_device_type
-get_num_platforms        = _qmgr.get_num_platforms
-get_num_activated_queues = _qmgr.get_num_activated_queues
-has_cpu_queues           = _qmgr.has_cpu_queues
-has_gpu_queues           = _qmgr.has_gpu_queues
-has_sycl_platforms       = _qmgr.has_sycl_platforms
-set_default_queue        = _qmgr.set_default_queue
-is_in_device_context     = _qmgr.is_in_device_context
+dump                     = _mgr.dump
+get_current_queue        = _mgr.get_current_queue
+get_current_device_type  = _mgr.get_current_device_type
+get_num_platforms        = _mgr.get_num_platforms
+get_num_activated_queues = _mgr.get_num_activated_queues
+get_num_queues           = _mgr.get_num_queues
+has_cpu_queues           = _mgr.has_cpu_queues
+has_gpu_queues           = _mgr.has_gpu_queues
+has_sycl_platforms       = _mgr.has_sycl_platforms
+set_default_queue        = _mgr.set_default_queue
+is_in_device_context     = _mgr.is_in_device_context
 
 
 def create_program_from_source (SyclQueue q, unicode source, unicode copts=""):
@@ -565,13 +705,19 @@ def create_program_from_source (SyclQueue q, unicode source, unicode copts=""):
                 copts (unicode) : Optional compilation flags that will be used
                                   when compiling the program.
 
-            Returns:
-                program (SyclProgram): A SyclProgram object wrapping the
-                                       syc::program returned by the C API.
+        Returns:
+            program (SyclProgram): A SyclProgram object wrapping the
+                                    syc::program returned by the C API.
     '''
 
-    cdef DPPLSyclProgramRef Pref
+    BE = q.get_sycl_backend()
+    if BE != backend_type.opencl:
+        raise ValueError(
+            "Cannot create program for a ", BE, "type backend. Currently only "
+            "OpenCL devices are supported for program creations."
+        )
 
+    cdef DPPLSyclProgramRef Pref
     cdef bytes bSrc = source.encode('utf8')
     cdef bytes bCOpts = copts.encode('utf8')
     cdef const char *Src = <const char*>bSrc
@@ -601,6 +747,12 @@ def create_program_from_spirv (SyclQueue q, const unsigned char[:] IL):
             program (SyclProgram): A SyclProgram object wrapping the
                                    syc::program returned by the C API.
     '''
+    BE = q.get_sycl_backend()
+    if BE != backend_type.opencl:
+        raise ValueError(
+            "Cannot create program for a ", BE, "type backend. Currently only "
+            "OpenCL devices are supported for program creations."
+        )
 
     cdef DPPLSyclProgramRef Pref
     cdef const unsigned char *dIL = &IL[0]
@@ -616,7 +768,7 @@ def create_program_from_spirv (SyclQueue q, const unsigned char[:] IL):
 from contextlib import contextmanager
 
 @contextmanager
-def device_context (dev=device_type.gpu, device_num=0):
+def device_context (str queue_str="opencl:gpu:0"):
     # Create a new device context and add it to the front of the runtime's
     # deque of active contexts (SyclQueueManager.active_contexts_).
     # Also return a reference to the context. The behavior allows consumers
@@ -625,14 +777,23 @@ def device_context (dev=device_type.gpu, device_num=0):
 
     # If set_context is unable to create a new context an exception is raised.
     try:
+        attrs = queue_str.split(':')
+        nattrs = len(attrs)
+        if (nattrs < 2 or nattrs > 3):
+            raise ValueError("Invalid device context string. Should be "
+                             "backend:device:device_number or "
+                             "backend:device. In the later case the "
+                             "device_number defaults to 0")
+        if nattrs == 2:
+            attrs.append("0")
         ctxt = None
-        ctxt = _qmgr._set_as_current_queue(dev, device_num)
+        ctxt = _mgr._set_as_current_queue(attrs[0], attrs[1], int(attrs[2]))
         yield ctxt
     finally:
         # Code to release resource
         if ctxt:
             _logger.debug(
                 "Removing the context from the stack of active contexts")
-            _qmgr._remove_current_queue()
+            _mgr._remove_current_queue()
         else:
             _logger.debug("No context was created so nothing to do")
