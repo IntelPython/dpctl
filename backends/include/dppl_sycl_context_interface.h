@@ -1,4 +1,4 @@
-//===--- dppl_sycl_context_interface.h - DPPL-SYCL interface --*--C++ --*--===//
+//===----------- dppl_sycl_context_interface.h - dpctl-C_API --*--C++ --*--===//
 //
 //               Data Parallel Control Library (dpCtl)
 //

@@ -1,4 +1,4 @@
-//===--------- dppl_utils.cpp - DPPL-SYCL interface ----*---- C++ ----*----===//
+//===-------------- dppl_utils.cpp - dpctl-C_API  ----*---- C++ -----*-----===//
 //
 //               Data Parallel Control Library (dpCtl)
 //

@@ -34,7 +34,7 @@ conda install dpctl
 
 Using dpCtl
 ===========
-dpCtl relies on SYCL runtime. With Intel oneAPI installed you should activate it.
+dpCtl relies on DPC++ runtime. With Intel oneAPI installed you should activate it.
 
 On Windows:
 ```cmd

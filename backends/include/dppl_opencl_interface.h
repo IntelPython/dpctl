@@ -1,4 +1,4 @@
-//===-- dppl_opencl_interface.h - DPPL-OpenCL interface -------*- C -*-----===//
+//===------------ dppl_opencl_interface.h - dpctl-C_API -------*- C -*-----===//
 //
 //               Data Parallel Control Library (dpCtl)
 //

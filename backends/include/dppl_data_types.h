@@ -1,4 +1,4 @@
-//===---------- dppl_data_types.h - DPPL-SYCL interface ----*---- C ---*---===//
+//===------------------ dppl_data_types.h - dpctl-C_API ----*---- C ---*---===//
 //
 //               Data Parallel Control Library (dpCtl)
 //
