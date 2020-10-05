@@ -65,21 +65,24 @@ public:
             if (Devices.size() == 1) {
                 auto d = Devices[0];
                 auto devty = d.get_info<info::device::device_type>();
-                auto Ctx = context(d);
                 if(devty == DTy && be == BE) {
-                      queues->emplace_back(Ctx, d);
+		    auto Ctx = context(d);
+		    queues->emplace_back(Ctx, d);
                     break;
                 }
             }
             else {
-                auto Ctx = context(Devices);
-                for(auto &d : Devices) {
+		vector_class<device> SelectedDevices;
+		for(auto &d : Devices) {
                     auto devty = d.get_info<info::device::device_type>();
-                    if(devty == DTy && be == BE) {
-                        queues->emplace_back(Ctx, d);
-                        break;
-                    }
-                }
+                    if(devty == DTy && be == BE)
+			SelectedDevices.push_back(d);
+		}
+		if (SelectedDevices.size() > 0) {
+		    auto Ctx = context(SelectedDevices);
+		    auto d = SelectedDevices[0];
+		    queues->emplace_back(Ctx, d);
+		}
             }
         }
         return queues;
