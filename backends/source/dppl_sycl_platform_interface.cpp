@@ -42,7 +42,7 @@ get_set_of_backends ()
     std::set<DPPLSyclBackendType> be_set;
     for (auto p : platform::get_platforms()) {
 		if(p.is_host())
-			continue;
+            continue;
         auto be = p.get_backend();
         switch (be)
         {
@@ -128,22 +128,22 @@ void DPPLPlatform_DumpInfo ()
             switch (devTy)
             {
             case info::device_type::cpu:
-            ss << "cpu" << '\n';
-            break;
+                ss << "cpu" << '\n';
+                break;
             case info::device_type::gpu:
-            ss << "gpu" << '\n';
-            break;
+                ss << "gpu" << '\n';
+                break;
             case info::device_type::accelerator:
-            ss << "accelerator" << '\n';
-            break;
+                ss << "accelerator" << '\n';
+                break;
             case info::device_type::custom:
-            ss << "custom" << '\n';
-            break;
+                ss << "custom" << '\n';
+                break;
             case info::device_type::host:
-            ss << "host" << '\n';
-            break;
+                ss << "host" << '\n';
+                break;
             default:
-            ss << "unknown" << '\n';
+                ss << "unknown" << '\n';
             }
         }
         std::cout << ss.str();
