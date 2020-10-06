@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 - Fix bugs highlighted by tools.
 - Various code clean ups.
 
-## [0.3.4] - 2020-10-06
+## [0.3.4] - 2020-10-05
 ### Added
 - Dump functions were enhanced to print back-end information.
 - dpctl gained support for unint_8 and unsigned long data types.
@@ -26,15 +26,15 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fixed some important bugs found by static analysis.
 
-## [0.3.3] - 2020-10-06
+## [0.3.3] - 2020-10-02
 ### Added
 - Add dpctl.get_curent_device_type().
 
-## [0.3.2] - 2020-10-06
+## [0.3.2] - 2020-09-29
 ### Changed
 - Set _cpu_device and _gpu_device to None by default.
 
-## [0.3.1] - 2020-10-06
+## [0.3.1] - 2020-09-28
 ### Added
 - Add get include and include headers.
 
