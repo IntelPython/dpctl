@@ -27,6 +27,9 @@ On Windows to cope with [long file names](https://github.com/IntelPython/dpctl/i
 ```cmd
 conda build --croot=C:/tmp conda-recipe
 ```
+
+:warning: **You could face issues with conda-build=3.20**: Use conda-build=3.18!
+
 3. Install conda package
 ```bash
 conda install dpctl
