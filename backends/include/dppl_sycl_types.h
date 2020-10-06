@@ -25,6 +25,10 @@
 
 #pragma once
 
+#include "Support/ExternC.h"
+
+DPPL_C_EXTERN_C_BEGIN
+
 /*!
  * @brief Opaque pointer to a sycl::context
  *
@@ -74,3 +78,5 @@ typedef struct DPPLOpaqueSyclQueue *DPPLSyclQueueRef;
  * @see sycl::usm
  */
 typedef struct DPPLOpaqueSyclUSM *DPPLSyclUSMRef;
+
+DPPL_C_EXTERN_C_END

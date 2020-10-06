@@ -28,7 +28,7 @@ import unittest
 import dpctl._memory as dpctl_mem
 import numpy as np
 
-@unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
+@unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
 class Test1DKernelSubmit (unittest.TestCase):
 
     def test_create_program_from_source (self):
@@ -37,7 +37,7 @@ class Test1DKernelSubmit (unittest.TestCase):
             size_t index = get_global_id(0);                                   \
             c[index] = d*a[index] + b[index];                                  \
         }"
-        with dpctl.device_context(dpctl.device_type.gpu, 0):
+        with dpctl.device_context("opencl:gpu:0"):
             q = dpctl.get_current_queue()
             prog = dpctl.create_program_from_source(q, oclSrc)
             axpyKernel = prog.get_sycl_kernel('axpy')

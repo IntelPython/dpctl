@@ -27,6 +27,7 @@
 
 #include "dppl_data_types.h"
 #include "dppl_sycl_types.h"
+#include "dppl_sycl_platform_interface.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
@@ -35,13 +36,36 @@
 DPPL_C_EXTERN_C_BEGIN
 
 /*!
+ * @brief Checks if two DPPLSyclContextRef objects point to the same
+ * sycl::context.
+ *
+ * @param    CtxRef1       First opaque pointer to the sycl context.
+ * @param    CtxRef2       Second opaque pointer to the sycl context.
+ * @return   True if the underlying sycl::context are same, false otherwise.
+ */
+DPPL_API
+bool DPPLContext_AreEq (__dppl_keep const DPPLSyclContextRef CtxRef1,
+                        __dppl_keep const DPPLSyclContextRef CtxRef2);
+
+/*!
  * @brief Returns true if this SYCL context is a host context.
  *
- * @param    CtxRef        A opaque pointer to a sycl::context.
+ * @param    CtxRef        An opaque pointer to a sycl::context.
  * @return   True if the SYCL context is a host context, else False.
  */
 DPPL_API
 bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef);
+
+/*!
+ * @brief Returns the sycl backend for the DPPLSyclContextRef pointer.
+ *
+ * @param    CtxRef         An opaque pointer to a sycl::context.
+ * @return   The sycl backend for the DPPLSyclContextRef returned as 
+ * a DPPLSyclBackendType enum type.
+ */
+DPPL_API
+DPPLSyclBackendType
+DPPLContext_GetBackend (__dppl_keep const DPPLSyclContextRef CtxRef);
 
 /*!
  * @brief Delete the pointer after casting it to sycl::context

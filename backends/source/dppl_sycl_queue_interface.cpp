@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dppl_sycl_queue_interface.h"
+#include "dppl_sycl_context_interface.h"
 #include "Support/CBindingWrapping.h"
 
 #include <CL/sycl.hpp>                /* SYCL headers   */
@@ -71,6 +72,9 @@ bool set_kernel_arg (handler &cgh, size_t idx, __dppl_keep void *Arg,
     case DPPL_UNSIGNED_INT:
         cgh.set_arg(idx, *(unsigned int*)Arg);
         break;
+    case DPPL_UNSIGNED_INT8:
+        cgh.set_arg(idx, *(uint8_t*)Arg);
+        break;
     case DPPL_LONG:
         cgh.set_arg(idx, *(long*)Arg);
         break;
@@ -115,6 +119,23 @@ bool set_kernel_arg (handler &cgh, size_t idx, __dppl_keep void *Arg,
 void DPPLQueue_Delete (__dppl_take DPPLSyclQueueRef QRef)
 {
     delete unwrap(QRef);
+}
+
+
+bool DPPLQueue_AreEq (__dppl_keep const DPPLSyclQueueRef QRef1,
+                      __dppl_keep const DPPLSyclQueueRef QRef2)
+{
+    if(!(QRef1 && QRef2))
+        // \todo handle error
+        return false;
+    return (*unwrap(QRef1) == *unwrap(QRef2));
+}
+
+DPPLSyclBackendType DPPLQueue_GetBackend (__dppl_keep DPPLSyclQueueRef QRef)
+{
+    auto Q = unwrap(QRef);
+    auto C = Q->get_context();
+    return DPPLContext_GetBackend(wrap(&C));
 }
 
 __dppl_give DPPLSyclDeviceRef
@@ -179,11 +200,11 @@ DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
                                          "dimensions.");
             }
         });
-    } catch (runtime_error re) {
+    } catch (runtime_error &re) {
         // \todo fix error handling
         std::cerr << re.what() << '\n';
         return nullptr;
-    } catch (std::runtime_error sre) {
+    } catch (std::runtime_error &sre) {
         std::cerr << sre.what() << '\n';
         return nullptr;
     }
@@ -231,7 +252,7 @@ DPPLQueue_SubmitNDRange(__dppl_keep const DPPLSyclKernelRef KRef,
                 break;
             case 3:
                 cgh.parallel_for(nd_range<3>{{gRange[0], gRange[1], gRange[2]},
-                                             {lRange[0], lRange[1], lRange[3]}},
+                                             {lRange[0], lRange[1], lRange[2]}},
                                              *Kernel);
                 break;
             default:
@@ -240,11 +261,11 @@ DPPLQueue_SubmitNDRange(__dppl_keep const DPPLSyclKernelRef KRef,
                                          "dimensions.");
             }
         });
-    } catch (runtime_error re) {
+    } catch (runtime_error &re) {
         // \todo fix error handling
         std::cerr << re.what() << '\n';
         return nullptr;
-    } catch (std::runtime_error sre) {
+    } catch (std::runtime_error &sre) {
         std::cerr << sre.what() << '\n';
         return nullptr;
     }
