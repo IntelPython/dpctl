@@ -2,11 +2,15 @@
 All notable changes to this project will be documented in this file.
 
 ## [0.3.5] - 2020-10-06
+### Added
+- Add a helper function to all Python SyclXXX classes to get the address of the base C API pointer as a long.
+
 ### Changed
-- Rename PyDPPL to dpCtl in all visible places.
+- Rename PyDPPL to dpCtl in comments (function name renaming to come later)
 
 ### Fixed
 - Fix bugs highlighted by tools.
+- Various code clean ups.
 
 ## [0.3.4] - 2020-10-06
 ### Added
