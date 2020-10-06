@@ -113,7 +113,7 @@ cdef class SyclContext:
             The address of the DPPLSyclContextRef object used to create this
             SyclContext cast to a long.
         """
-        return int(<long>self._ctx_ref)
+        return int(<size_t>self._ctx_ref)
 
 cdef class SyclDevice:
     ''' Wrapper class for a Sycl Device
@@ -180,7 +180,7 @@ cdef class SyclDevice:
             The address of the DPPLSyclDeviceRef object used to create this
             SyclDevice cast to a long.
         """
-        return int(<long>self._device_ref)
+        return int(<size_t>self._device_ref)
 
 cdef class SyclEvent:
     ''' Wrapper class for a Sycl Event
@@ -213,7 +213,7 @@ cdef class SyclEvent:
             The address of the DPPLSyclEventRef object used to create this
             SyclEvent cast to a long.
         """
-        return int(<long>self._event_ref)
+        return int(<size_t>self._event_ref)
 
 
 cdef class SyclKernel:
@@ -255,7 +255,7 @@ cdef class SyclKernel:
             The address of the DPPLSyclKernelRef object used to create this
             SyclKernel cast to a long.
         """
-        return int(<long>self._kernel_ref)
+        return int(<size_t>self._kernel_ref)
 
 cdef class SyclProgram:
     ''' Wraps a sycl::program object created from an OpenCL interoperability
@@ -295,7 +295,7 @@ cdef class SyclProgram:
             The address of the DPPLSyclProgramRef object used to create this
             SyclProgram cast to a long.
         """
-        return int(<long>self._program_ref)
+        return int(<size_t>self._program_ref)
 
 import ctypes
 
@@ -435,7 +435,7 @@ cdef class SyclQueue:
             The address of the DPPLSyclQueueRef object used to create this
             SyclQueue cast to a long.
         """
-        return int(<long>self._queue_ref)
+        return int(<size_t>self._queue_ref)
 
     cpdef SyclEvent submit (self, SyclKernel kernel, list args, list gS,       \
                             list lS = None, list dEvents = None):
