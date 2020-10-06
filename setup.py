@@ -1,6 +1,6 @@
 ##===---------- setup.py - dpctl.ocldrv interface -----*- Python -*-----===##
 ##
-##               Python Data Parallel Processing Library (PyDPPL)
+##               Data Parallel Control Library (dpCtl)
 ##
 ## Copyright 2020 Intel Corporation
 ##

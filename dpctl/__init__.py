@@ -33,7 +33,7 @@
 
     dpCtl's intended usage is as a common SYCL interoperability layer for
     different Python libraries and applications. The OpenCL support inside
-    PyDPPL is slated to be deprecated and then removed in future releases
+    dpCtl is slated to be deprecated and then removed in future releases
     of the library.
 
     Currently, only a small subset of DPC++ runtime objects are exposed

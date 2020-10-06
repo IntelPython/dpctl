@@ -32,9 +32,9 @@ conda build --croot=C:/tmp conda-recipe
 conda install dpctl
 ```
 
-Using PyDPPL
-============
-PyDPPL relies on SYCL runtime. With Intel oneAPI installed you should activate it.
+Using dpCtl
+===========
+dpCtl relies on DPC++ runtime. With Intel oneAPI installed you should activate it.
 
 On Windows:
 ```cmd

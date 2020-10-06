@@ -1,6 +1,6 @@
-//===--- dppl_sycl_queue_interface.h - DPPL-SYCL interface ---*---C++ -*---===//
+//===----------- dppl_sycl_queue_interface.h - dpctl-C_API ---*---C++ -*---===//
 //
-//               Python Data Parallel Processing Library (PyDPPL)
+//               Data Parallel Control Library (dpCtl)
 //
 // Copyright 2020 Intel Corporation
 //
