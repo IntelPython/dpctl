@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.3.6] - 2020-10-06
+### Added
+- Changelog was added for dpctl.
+
+### Fixed
+- Windows build was fixed.
+
 ## [0.3.5] - 2020-10-06
 ### Added
 - Add a helper function to all Python SyclXXX classes to get the address of the base C API pointer as a long.
