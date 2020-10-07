@@ -78,7 +78,6 @@ DPPLQueueMgr_GetQueue (DPPLSyclBackendType BETy,
 DPPL_API
 size_t DPPLQueueMgr_GetNumActivatedQueues ();
 
-
 /*!
  * @brief Get the number of available queues for given backend and device type
  * combination.
