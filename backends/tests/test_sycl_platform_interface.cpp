@@ -45,14 +45,16 @@ TEST_F (TestDPPLSyclPlatformInterface, GetListOfBackends)
 {
     auto nbackends = DPPLPlatform_GetNumBackends();
     auto backends = DPPLPlatform_GetListOfBackends();
-	EXPECT_TRUE(backends != nullptr);
+	  EXPECT_TRUE(backends != nullptr);
     for(auto i = 0ul; i < nbackends; ++i) {
         EXPECT_TRUE(
           backends[i] == DPPLSyclBackendType::DPPL_CUDA   ||
           backends[i] == DPPLSyclBackendType::DPPL_OPENCL ||
-          backends[i] == DPPLSyclBackendType::DPPL_LEVEL_ZERO);
+          backends[i] == DPPLSyclBackendType::DPPL_LEVEL_ZERO ||
+          backends[i] == DPPLSyclBackendType::DPPL_HOST
+          );
     }
-	DPPLPlatform_DeleteListOfBackends(backends);
+	  DPPLPlatform_DeleteListOfBackends(backends);
 }
 
 TEST_F (TestDPPLSyclPlatformInterface, CheckDPPLPlatformDumpInfo)
