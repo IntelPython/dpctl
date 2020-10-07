@@ -44,14 +44,17 @@ TEST_F (TestDPPLSyclPlatformInterface, GetNumBackends)
 TEST_F (TestDPPLSyclPlatformInterface, GetListOfBackends)
 {
     auto nbackends = DPPLPlatform_GetNumBackends();
+
+    if(!nbackends)
+      GTEST_SKIP_("No non host backends available");
+
     auto backends = DPPLPlatform_GetListOfBackends();
 	  EXPECT_TRUE(backends != nullptr);
     for(auto i = 0ul; i < nbackends; ++i) {
         EXPECT_TRUE(
           backends[i] == DPPLSyclBackendType::DPPL_CUDA   ||
           backends[i] == DPPLSyclBackendType::DPPL_OPENCL ||
-          backends[i] == DPPLSyclBackendType::DPPL_LEVEL_ZERO ||
-          backends[i] == DPPLSyclBackendType::DPPL_HOST
+          backends[i] == DPPLSyclBackendType::DPPL_LEVEL_ZERO
           );
     }
 	  DPPLPlatform_DeleteListOfBackends(backends);
