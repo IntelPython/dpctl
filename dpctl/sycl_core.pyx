@@ -626,7 +626,7 @@ cdef class _SyclRTManager:
     def print_available_backends (self):
         """ Prints the available backends.
         """
-        print(self._backend_ty_dict.keys())
+        print(self._backend_str_ty_dict.keys())
 
     def get_current_backend (self):
         """ Returns the backend for the current queue as `backend_type` enum
@@ -719,9 +719,15 @@ cdef class _SyclRTManager:
     def set_default_queue (self, backend_ty, device_ty, device_id):
         cdef DPPLSyclQueueRef ret
         try :
-            beTy = self._backend_ty_dict[backend_ty]
+            if isinstance(backend_ty, str):
+                beTy = self._backend_str_ty_dict[backend_ty]
+            else:
+                beTy = self._backend_enum_ty_dict[backend_ty]
             try :
-                devTy = self._device_ty_dict[device_ty]
+                if isinstance(device_ty, str):
+                    devTy = self._device_str_ty_dict[device_ty]
+                else:
+                    devTyp = self._device_enum_ty_dist[device_ty]
                 ret = DPPLQueueMgr_SetAsDefaultQueue(beTy, devTy, device_id)
                 if ret is NULL:
                     self._raise_queue_creation_error(
