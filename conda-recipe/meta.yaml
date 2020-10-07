@@ -24,7 +24,7 @@ requirements:
         - make  # [unix]
         - ninja  # [win]
         - numpy >=1.17
-        - gtest
+        - gtest >=1.10
     run:
         - python
         - numpy >=1.17
