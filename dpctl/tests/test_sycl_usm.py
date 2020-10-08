@@ -29,6 +29,8 @@ from dpctl._memory import MemoryUSMShared, MemoryUSMHost, MemoryUSMDevice
 
 class TestMemory (unittest.TestCase):
 
+    @unittest.skipUnless(dpctl.has_sycl_platforms(),
+                         "No SYCL devices except the default host device.")
     def test_memory_create (self):
         nbytes = 1024
         queue = dpctl.get_current_queue()
@@ -41,6 +43,8 @@ class TestMemory (unittest.TestCase):
         mobj = MemoryUSMShared(nbytes, queue)
         return mobj
 
+    @unittest.skipUnless(dpctl.has_sycl_platforms(),
+                         "No SYCL devices except the default host device.")
     def test_memory_without_context (self):
         mobj = self._create_memory()
 
@@ -81,7 +85,8 @@ class TestMemory (unittest.TestCase):
             usm_type = mobj._usm_type(current_queue)
             self.assertTrue(usm_type in ['unknown', 'shared'])
 
-
+    @unittest.skipUnless(dpctl.has_sycl_platforms(),
+                         "No SYCL devices except the default host device.")
     def test_buffer_protocol (self):
         mobj = self._create_memory()
         mv1 = memoryview(mobj)
@@ -95,12 +100,16 @@ class TestMemoryUSMBase:
     MemoryUSMClass = None
     usm_type = None
 
+    @unittest.skipUnless(dpctl.has_sycl_platforms(),
+                         "No SYCL devices except the default host device.")
     def test_create_with_queue (self):
         q = dpctl.get_current_queue()
         m = self.MemoryUSMClass(1024, q)
         self.assertEqual(m.nbytes, 1024)
         self.assertEqual(m._usm_type(), self.usm_type)
 
+    @unittest.skipUnless(dpctl.has_sycl_platforms(),
+                         "No SYCL devices except the default host device.")
     def test_create_without_queue (self):
         m = self.MemoryUSMClass(1024)
         self.assertEqual(m.nbytes, 1024)
