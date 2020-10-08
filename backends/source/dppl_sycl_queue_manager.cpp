@@ -109,7 +109,7 @@ public:
             return active_queues;
         }
         else {
-            active_queues =  new QVec();
+            active_queues =  new QVec({default_selector()});
             return active_queues;
         }
     }
@@ -145,7 +145,8 @@ public:
         // the first device is not correct when we will have multiple devices
         // of same type.
         if(def_device.is_host()) {
-            thread_local static QVec* active_queues =  new QVec();
+            thread_local static QVec* active_queues
+                = new QVec({default_selector()});
             return *active_queues;
         }
         else {
