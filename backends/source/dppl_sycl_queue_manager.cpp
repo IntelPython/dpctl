@@ -88,32 +88,40 @@ public:
         return queues;
     }
 
-    static QVec* init_active_queues (backend BE, info::device_type DevTy)
+    static QVec* init_active_queues ()
     {
+        QVec *active_queues;
+        try {
+            auto def_device = std::move(default_selector().select_device());
+            auto BE = def_device.get_platform().get_backend();
+            auto DevTy = def_device.get_info<info::device::device_type>();
 
-        // \todo : We need to have a better way to match the default device
-        // to what SYCL returns based on the same scoring logic. Just storing
-        // the first device is not correct when we will have multiple devices
-        // of same type.
-        if(BE == backend::opencl &&
-            DevTy == info::device_type::cpu) {
-            QVec* active_queues = new QVec({get_opencl_cpu_queues()[0]});
-            return active_queues;
+            // \todo : We need to have a better way to match the default device
+            // to what SYCL returns based on the same scoring logic. Just
+            // storing the first device is not correct when we will have
+            // multiple devices of same type.
+            if(BE == backend::opencl &&
+                DevTy == info::device_type::cpu) {
+                active_queues = new QVec({get_opencl_cpu_queues()[0]});
+            }
+            else if(BE == backend::opencl &&
+                DevTy == info::device_type::gpu) {
+                active_queues = new QVec({get_opencl_gpu_queues()[0]});
+            }
+            else if(BE == backend::level_zero &&
+                DevTy == info::device_type::gpu) {
+                active_queues =  new QVec({get_level0_gpu_queues()[0]});
+            }
+            else {
+                QVec* active_queues =  new QVec();
+            }
         }
-        else if(BE == backend::opencl &&
-            DevTy == info::device_type::gpu) {
-            QVec* active_queues = new QVec({get_opencl_gpu_queues()[0]});
-            return active_queues;
+        catch (runtime_error &re) {
+            // \todo Handle the error
+            active_queues = new QVec();
         }
-        else if(BE == backend::level_zero &&
-            DevTy == info::device_type::gpu) {
-            QVec* active_queues =  new QVec({get_level0_gpu_queues()[0]});
-            return active_queues;
-        }
-        else {
-            QVec* active_queues =  new QVec();
-            return active_queues;
-        }
+
+        return active_queues;
     }
 
     static QVec& get_opencl_cpu_queues ()
@@ -139,19 +147,8 @@ public:
 
     static QVec& get_active_queues ()
     {
-        try {
-            auto def_device = std::move(default_selector().select_device());
-            auto Backend = def_device.get_platform().get_backend();
-            auto Device_ty = def_device.get_info<info::device::device_type>();
-            thread_local static QVec *active_queues =
-                init_active_queues(Backend, Device_ty);
-            return *active_queues;
-        }
-        catch (runtime_error &re) {
-            // \todo Handle the error
-            thread_local static QVec *active_queues = new QVec();
-            return *active_queues;
-        }
+        thread_local static QVec *active_queues = init_active_queues();
+        return *active_queues;
     }
 
     static __dppl_give DPPLSyclQueueRef
