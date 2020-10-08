@@ -113,7 +113,7 @@ public:
                 active_queues =  new QVec({get_level0_gpu_queues()[0]});
             }
             else {
-                QVec* active_queues =  new QVec();
+                active_queues =  new QVec();
             }
         }
         catch (runtime_error &re) {
