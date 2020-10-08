@@ -27,6 +27,8 @@
 #include "dppl_sycl_queue_interface.h"
 #include "dppl_sycl_context_interface.h"
 #include "Support/CBindingWrapping.h"
+#include <exception>
+#include <stdexcept>
 
 #include <CL/sycl.hpp>                /* SYCL headers   */
 
@@ -134,8 +136,15 @@ bool DPPLQueue_AreEq (__dppl_keep const DPPLSyclQueueRef QRef1,
 DPPLSyclBackendType DPPLQueue_GetBackend (__dppl_keep DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
-    auto C = Q->get_context();
-    return DPPLContext_GetBackend(wrap(&C));
+    try {
+        auto C = Q->get_context();
+        return DPPLContext_GetBackend(wrap(&C));
+    }
+    catch (runtime_error &re) {
+        std::cerr << re.what() << '\n';
+        // store error message
+        return DPPL_UNKNOWN_BACKEND;
+    }
 }
 
 __dppl_give DPPLSyclDeviceRef
