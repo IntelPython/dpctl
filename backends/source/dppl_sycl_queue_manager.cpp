@@ -25,7 +25,6 @@
 //===----------------------------------------------------------------------===//
 #include "dppl_sycl_queue_manager.h"
 #include "Support/CBindingWrapping.h"
-#include <exception>
 #include <string>
 #include <vector>
 
@@ -54,7 +53,8 @@ class QMgrHelper
 public:
     using QVec = vector_class<queue>;
 
-    static QVec* init_queues (backend BE, info::device_type DTy) {
+    static QVec* init_queues (backend BE, info::device_type DTy)
+    {
         QVec *queues = new QVec();
         auto Platforms = platform::get_platforms();
         for (auto &p : Platforms) {
@@ -95,6 +95,42 @@ public:
         return queues;
     }
 
+    static QVec* init_active_queues ()
+    {
+        QVec *active_queues;
+        try {
+            auto def_device = std::move(default_selector().select_device());
+            auto BE = def_device.get_platform().get_backend();
+            auto DevTy = def_device.get_info<info::device::device_type>();
+
+            // \todo : We need to have a better way to match the default device
+            // to what SYCL returns based on the same scoring logic. Just
+            // storing the first device is not correct when we will have
+            // multiple devices of same type.
+            if(BE == backend::opencl &&
+                DevTy == info::device_type::cpu) {
+                active_queues = new QVec({get_opencl_cpu_queues()[0]});
+            }
+            else if(BE == backend::opencl &&
+                DevTy == info::device_type::gpu) {
+                active_queues = new QVec({get_opencl_gpu_queues()[0]});
+            }
+            else if(BE == backend::level_zero &&
+                DevTy == info::device_type::gpu) {
+                active_queues =  new QVec({get_level0_gpu_queues()[0]});
+            }
+            else {
+                active_queues =  new QVec();
+            }
+        }
+        catch (runtime_error &re) {
+            // \todo Handle the error
+            active_queues = new QVec();
+        }
+
+        return active_queues;
+    }
+
     static QVec& get_opencl_cpu_queues ()
     {
         static QVec* queues = init_queues(backend::opencl,
@@ -118,8 +154,7 @@ public:
 
     static QVec& get_active_queues ()
     {
-        thread_local static QVec* active_queues =
-            new QVec({default_selector()});
+        thread_local static QVec *active_queues = init_active_queues();
         return *active_queues;
     }
 
@@ -156,7 +191,7 @@ public:
  */
 DPPLSyclQueueRef QMgrHelper::getCurrentQueue ()
 {
-    auto activated_q = get_active_queues();
+    auto &activated_q = get_active_queues();
     if(activated_q.empty()) {
         // \todo handle error
         std::cerr << "No currently active queues.\n";
@@ -232,7 +267,7 @@ QMgrHelper::getQueue (DPPLSyclBackendType BETy,
  */
 bool QMgrHelper::isCurrentQueue (__dppl_keep const DPPLSyclQueueRef QRef)
 {
-    auto activated_q = get_active_queues();
+    auto &activated_q = get_active_queues();
     if(activated_q.empty()) {
         // \todo handle error
         std::cerr << "No currently active queues.\n";

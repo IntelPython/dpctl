@@ -115,10 +115,10 @@ cdef extern from "dppl_sycl_kernel_interface.h":
 
 
 cdef extern from "dppl_sycl_platform_interface.h":
-    cdef size_t DPPLPlatform_GetNumPlatforms ()
+    cdef size_t DPPLPlatform_GetNumNonHostPlatforms ()
     cdef void DPPLPlatform_DumpInfo ()
-    cdef size_t DPPLPlatform_GetNumBackends ()
-    cdef DPPLSyclBackendType *DPPLPlatform_GetListOfBackends ()
+    cdef size_t DPPLPlatform_GetNumNonHostBackends ()
+    cdef DPPLSyclBackendType *DPPLPlatform_GetListOfNonHostBackends ()
     cdef void DPPLPlatform_DeleteListOfBackends (DPPLSyclBackendType * BEs)
 
 

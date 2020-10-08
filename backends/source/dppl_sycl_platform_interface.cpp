@@ -37,7 +37,7 @@ using namespace cl::sycl;
 namespace
 {
 std::set<DPPLSyclBackendType>
-get_set_of_backends ()
+get_set_of_non_hostbackends ()
 {
     std::set<DPPLSyclBackendType> be_set;
     for (auto p : platform::get_platforms()) {
@@ -47,7 +47,6 @@ get_set_of_backends ()
         switch (be)
         {
         case backend::host:
-            be_set.insert(DPPLSyclBackendType::DPPL_HOST);
             break;
         case backend::cuda:
             be_set.insert(DPPLSyclBackendType::DPPL_CUDA);
@@ -154,19 +153,25 @@ void DPPLPlatform_DumpInfo ()
 /*!
 * Returns the number of sycl::platform on the system.
 */
-size_t DPPLPlatform_GetNumPlatforms ()
+size_t DPPLPlatform_GetNumNonHostPlatforms ()
 {
-    return platform::get_platforms().size();
+	auto nNonHostPlatforms = 0ul;
+	for (auto &p : platform::get_platforms()) {
+		if (p.is_host())
+			continue;
+		++nNonHostPlatforms;
+	}
+    return nNonHostPlatforms;
 }
 
-size_t DPPLPlatform_GetNumBackends ()
+size_t DPPLPlatform_GetNumNonHostBackends ()
 {
-    return get_set_of_backends().size();
+    return get_set_of_non_hostbackends().size();
 }
 
-__dppl_give DPPLSyclBackendType *DPPLPlatform_GetListOfBackends ()
+__dppl_give DPPLSyclBackendType *DPPLPlatform_GetListOfNonHostBackends ()
 {
-    auto be_set = get_set_of_backends();
+    auto be_set = get_set_of_non_hostbackends();
 
     if (be_set.empty())
         return nullptr;

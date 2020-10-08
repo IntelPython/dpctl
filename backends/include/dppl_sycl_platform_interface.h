@@ -34,29 +34,30 @@
 DPPL_C_EXTERN_C_BEGIN
 
 /*!
- * @brief Returns the number of sycl::platform available on the system.
+ * @brief Returns the number of non-host type sycl::platform available on the
+ * system.
  *
  * @return The number of available sycl::platforms.
  */
 DPPL_API
-size_t DPPLPlatform_GetNumPlatforms ();
+size_t DPPLPlatform_GetNumNonHostPlatforms ();
 
 /*!
- * @brief Returns the number of unique sycl backends on the system not counting
- * the host backend.
+ * @brief Returns the number of unique non-host sycl backends on the system.
  *
  * @return   The number of unique sycl backends.
  */
 DPPL_API
-size_t DPPLPlatform_GetNumBackends ();
+size_t DPPLPlatform_GetNumNonHostBackends ();
 
 /*!
- * @brief Returns an array of the unique DPPLSyclBackendType values on the system.
+ * @brief Returns an array of the unique non-host DPPLSyclBackendType values on
+ * the system.
  *
  * @return   An array of DPPLSyclBackendType enum values.
  */
 DPPL_API
-__dppl_give DPPLSyclBackendType* DPPLPlatform_GetListOfBackends ();
+__dppl_give DPPLSyclBackendType* DPPLPlatform_GetListOfNonHostBackends ();
 
 /*!
  * @brief Frees an array of DPPLSyclBackendType enum values.
