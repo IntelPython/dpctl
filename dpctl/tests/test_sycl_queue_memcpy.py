@@ -26,7 +26,6 @@ import dpctl
 import unittest
 
 
-
 class TestQueueMemcpy (unittest.TestCase):
 
     def _create_memory (self):
@@ -35,6 +34,8 @@ class TestQueueMemcpy (unittest.TestCase):
         mobj = dpctl._memory.MemoryUSMShared(nbytes, queue)
         return mobj
 
+    @unittest.skipUnless(dpctl.has_sycl_platforms(),
+                         "No SYCL devices except the default host device.")
     def test_memcpy_copy_usm_to_usm (self):
         mobj1 = self._create_memory()
         mobj2 = self._create_memory()
@@ -49,6 +50,8 @@ class TestQueueMemcpy (unittest.TestCase):
 
         self.assertEqual(mv2[:3], b'123')
 
+    @unittest.skipUnless(dpctl.has_sycl_platforms(),
+                         "No SYCL devices except the default host device.")
     def test_memcpy_type_error (self):
         mobj = self._create_memory()
         q = dpctl.get_current_queue()
