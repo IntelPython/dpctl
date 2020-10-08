@@ -32,11 +32,12 @@
 
 #include <array>
 #include <fstream>
-#include <filesystem>
+#include <experimental/filesystem>
 #include <gtest/gtest.h>
 #include <CL/sycl.hpp>
 
 using namespace cl::sycl;
+using fs = std::fs;
 
 namespace
 {
@@ -130,7 +131,7 @@ struct TestDPPLSyclProgramInterface : public ::testing::Test
     TestDPPLSyclProgramInterface () :
         nOpenCLGpuQ(DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU)),
         spirvFile{"./multi_kernel.spv", std::ios::binary | std::ios::ate},
-        spirvFileSize(std::filesystem::file_size("./multi_kernel.spv")),
+        spirvFileSize(fs::file_size("./multi_kernel.spv")),
         spirvBuffer(spirvFileSize)
     {
         spirvFile.seekg(0, std::ios::beg);
