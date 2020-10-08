@@ -649,9 +649,9 @@ cdef class _SyclRTManager:
         return DPPLQueueMgr_GetNumActivatedQueues()
 
     def get_num_platforms (self):
-        ''' Returns the number of available SYCL/OpenCL platforms.
+        ''' Returns the number of available non-host SYCL platforms.
         '''
-        return DPPLPlatform_GetNumPlatforms()
+        return DPPLPlatform_GetNumNonHostPlatforms()
 
     def get_num_queues (self, backend_ty, device_ty):
         cdef size_t num = 0
@@ -703,7 +703,7 @@ cdef class _SyclRTManager:
             return False
 
     def has_sycl_platforms (self):
-        cdef size_t num_platforms = DPPLPlatform_GetNumPlatforms()
+        cdef size_t num_platforms = DPPLPlatform_GetNumNonHostPlatforms()
         if num_platforms:
             return True
         else:
