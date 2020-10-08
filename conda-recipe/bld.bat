@@ -24,6 +24,9 @@ cmake -G Ninja ^
 IF %ERRORLEVEL% NEQ 0 exit 1
 
 ninja -n
+IF %ERRORLEVEL% NEQ 0 exit 1
+ninja check
+IF %ERRORLEVEL% NEQ 0 exit 1
 ninja install
 IF %ERRORLEVEL% NEQ 0 exit 1
 
