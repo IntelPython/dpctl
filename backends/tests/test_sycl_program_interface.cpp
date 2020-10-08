@@ -37,7 +37,7 @@
 #include <CL/sycl.hpp>
 
 using namespace cl::sycl;
-using fs = std::experimental:filesystem;
+using fs = std::experimental::filesystem;
 
 namespace
 {
