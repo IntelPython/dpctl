@@ -31,10 +31,11 @@
 #include "dppl_sycl_queue_interface.h"
 #include "dppl_sycl_queue_manager.h"
 #include "dppl_sycl_usm_interface.h"
-
 #include "Support/CBindingWrapping.h"
-
+#include <CL/sycl.hpp>
 #include <gtest/gtest.h>
+
+using namespace cl::sycl;
 
 namespace
 {
@@ -57,6 +58,21 @@ void axpy_kernel_checker (const float *a, const float *b, const float *c,
         EXPECT_EQ(c[i], a[i] + d*b[i]);
     }
 }
+
+bool has_devices ()
+{
+    bool ret = false;
+    for (auto &p : platform::get_platforms()) {
+        if (p.is_host())
+            continue;
+        if(!p.get_devices().empty()) {
+            ret = true;
+            break;
+        }
+    }
+    return ret;
+}
+
 }
 
 struct TestDPPLSyclQueueInterface : public ::testing::Test
@@ -89,16 +105,17 @@ struct TestDPPLSyclQueueInterface : public ::testing::Test
 
 TEST_F (TestDPPLSyclQueueInterface, CheckAreEq)
 {
-    auto Q1 = DPPLQueueMgr_GetCurrentQueue();
-    auto Q2 = DPPLQueueMgr_GetCurrentQueue();
-    EXPECT_TRUE(DPPLQueue_AreEq(Q1, Q2));
+    if(!has_devices())
+        GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
     auto nOclGPU = DPPLQueueMgr_GetNumQueues(DPPLSyclBackendType::DPPL_OPENCL,
                                              DPPLSyclDeviceType::DPPL_GPU);
-    auto nOclCPU = DPPLQueueMgr_GetNumQueues(DPPLSyclBackendType::DPPL_OPENCL,
-                                             DPPLSyclDeviceType::DPPL_CPU);
     if(!nOclGPU)
-        GTEST_SKIP_("No OpenCL GPUs available.\n");
+        GTEST_SKIP_("Skipping: No OpenCL GPUs available.\n");
+
+    auto Q1 = DPPLQueueMgr_GetCurrentQueue();
+    auto Q2 = DPPLQueueMgr_GetCurrentQueue();
+    EXPECT_TRUE(DPPLQueue_AreEq(Q1, Q2));
 
     auto Def_Q = DPPLQueueMgr_SetAsDefaultQueue(
                     DPPLSyclBackendType::DPPL_OPENCL,
@@ -127,9 +144,8 @@ TEST_F (TestDPPLSyclQueueInterface, CheckAreEq)
 
 TEST_F (TestDPPLSyclQueueInterface, CheckAreEq2)
 {
-    auto Q1 = DPPLQueueMgr_GetCurrentQueue();
-    auto Q2 = DPPLQueueMgr_GetCurrentQueue();
-    EXPECT_TRUE(DPPLQueue_AreEq(Q1, Q2));
+    if(!has_devices())
+        GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
     auto nOclGPU = DPPLQueueMgr_GetNumQueues(DPPLSyclBackendType::DPPL_OPENCL,
                                              DPPLSyclDeviceType::DPPL_GPU);
@@ -154,6 +170,9 @@ TEST_F (TestDPPLSyclQueueInterface, CheckAreEq2)
 
 TEST_F (TestDPPLSyclQueueInterface, CheckGetBackend)
 {
+    if(!has_devices())
+        GTEST_SKIP_("Skipping: No Sycl devices.\n");
+
     auto Q1 = DPPLQueueMgr_GetCurrentQueue();
     auto BE = DPPLQueue_GetBackend(Q1);
     EXPECT_TRUE((BE == DPPL_OPENCL) ||
@@ -184,6 +203,9 @@ TEST_F (TestDPPLSyclQueueInterface, CheckGetBackend)
 
 TEST_F (TestDPPLSyclQueueInterface, CheckGetContext)
 {
+    if(!has_devices())
+        GTEST_SKIP_("Skipping: No Sycl devices.\n");
+
     auto Q1 = DPPLQueueMgr_GetCurrentQueue();
     auto Ctx = DPPLQueue_GetContext(Q1);
     ASSERT_TRUE(Ctx != nullptr);
@@ -218,6 +240,9 @@ TEST_F (TestDPPLSyclQueueInterface, CheckGetContext)
 
 TEST_F (TestDPPLSyclQueueInterface, CheckGetDevice)
 {
+    if(!has_devices())
+        GTEST_SKIP_("Skipping: No Sycl devices.\n");
+
     auto Q1 = DPPLQueueMgr_GetCurrentQueue();
     auto D = DPPLQueue_GetDevice(Q1);
     ASSERT_TRUE(D != nullptr);
@@ -255,10 +280,13 @@ TEST_F (TestDPPLSyclQueueInterface, CheckGetDevice)
 
 TEST_F (TestDPPLSyclQueueInterface, CheckSubmit)
 {
+    if(!has_devices())
+        GTEST_SKIP_("Skipping: No Sycl devices.\n");
+
     auto nOpenCLGpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU);
 
     if(!nOpenCLGpuQ)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
+        GTEST_SKIP_("Skipping: No OpenCL GPU device.\n");
 
     auto Queue  = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0);
     auto CtxRef = DPPLQueue_GetContext(Queue);
