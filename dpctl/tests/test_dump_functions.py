@@ -35,6 +35,8 @@ class TestDumpMethods(unittest.TestCase):
         except Exception:
             self.fail("Encountered an exception inside dump().")
 
+    @unittest.skipUnless(dpctl.has_sycl_platforms(),
+                         "No SYCL devices except the default host device.")
     def test_dpctl_dump_device_info (self):
         q = dpctl.get_current_queue()
         try:
