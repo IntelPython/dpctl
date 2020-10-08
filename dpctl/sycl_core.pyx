@@ -626,7 +626,7 @@ cdef class _SyclRTManager:
     def print_available_backends (self):
         """ Prints the available backends.
         """
-        print(self._backend_ty_dict.keys())
+        print(self._backend_str_ty_dict.keys())
 
     def get_current_backend (self):
         """ Returns the backend for the current queue as `backend_type` enum
@@ -719,9 +719,15 @@ cdef class _SyclRTManager:
     def set_default_queue (self, backend_ty, device_ty, device_id):
         cdef DPPLSyclQueueRef ret
         try :
-            beTy = self._backend_ty_dict[backend_ty]
+            if isinstance(backend_ty, str):
+                beTy = self._backend_str_ty_dict[backend_ty]
+            else:
+                beTy = self._backend_enum_ty_dict[backend_ty]
             try :
-                devTy = self._device_ty_dict[device_ty]
+                if isinstance(device_ty, str):
+                    devTy = self._device_str_ty_dict[device_ty]
+                else:
+                    devTyp = self._device_enum_ty_dist[device_ty]
                 ret = DPPLQueueMgr_SetAsDefaultQueue(beTy, devTy, device_id)
                 if ret is NULL:
                     self._raise_queue_creation_error(
@@ -839,6 +845,7 @@ def device_context (str queue_str="opencl:gpu:0"):
     # calling get_current_context, or use the returned context object directly.
 
     # If set_context is unable to create a new context an exception is raised.
+    ctxt = None
     try:
         attrs = queue_str.split(':')
         nattrs = len(attrs)
@@ -849,7 +856,6 @@ def device_context (str queue_str="opencl:gpu:0"):
                              "device_number defaults to 0")
         if nattrs == 2:
             attrs.append("0")
-        ctxt = None
         ctxt = _mgr._set_as_current_queue(attrs[0], attrs[1], int(attrs[2]))
         yield ctxt
     finally:
