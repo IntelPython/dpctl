@@ -845,6 +845,7 @@ def device_context (str queue_str="opencl:gpu:0"):
     # calling get_current_context, or use the returned context object directly.
 
     # If set_context is unable to create a new context an exception is raised.
+    ctxt = None
     try:
         attrs = queue_str.split(':')
         nattrs = len(attrs)
@@ -855,7 +856,6 @@ def device_context (str queue_str="opencl:gpu:0"):
                              "device_number defaults to 0")
         if nattrs == 2:
             attrs.append("0")
-        ctxt = None
         ctxt = _mgr._set_as_current_queue(attrs[0], attrs[1], int(attrs[2]))
         yield ctxt
     finally:
