@@ -305,6 +305,8 @@ cdef class SyclQueue:
 
     @staticmethod
     cdef SyclQueue _create (DPPLSyclQueueRef qref):
+        if qref is NULL:
+            raise SyclQueueCreationError("Queue creation failed.")
         cdef SyclQueue ret = SyclQueue.__new__(SyclQueue)
         ret._context = SyclContext._create(DPPLQueue_GetContext(qref))
         ret._device = SyclDevice._create(DPPLQueue_GetDevice(qref))
@@ -586,15 +588,6 @@ cdef class _SyclRTManager:
             device_type.gpu : _device_type._GPU,
         }
 
-    cdef _raise_queue_creation_error (self, str be, str dev, int devid, fname):
-        e = SyclQueueCreationError(
-                "Queue creation failed for :", be, dev, devid
-            )
-        e.fname = fname
-        e.code = -1
-        raise e
-
-
     def _set_as_current_queue (self, backend_ty, device_ty, device_id):
         cdef DPPLSyclQueueRef queue_ref
 
@@ -603,11 +596,6 @@ cdef class _SyclRTManager:
             try :
                 devTy = self._device_str_ty_dict[device_ty]
                 queue_ref = DPPLQueueMgr_PushQueue(beTy, devTy, device_id)
-                if queue_ref is NULL:
-                    self._raise_queue_creation_error(
-                        backend_ty, device_ty, device_id,
-                        "DPPLQueueMgr_PushQueue"
-                    )
                 return SyclQueue._create(queue_ref)
             except KeyError:
                 raise UnsupportedDeviceError("Device can only be gpu or cpu")
