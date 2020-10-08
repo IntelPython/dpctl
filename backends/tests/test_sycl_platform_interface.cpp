@@ -57,7 +57,7 @@ TEST_F (TestDPPLSyclPlatformInterface, GetListOfBackends)
           backends[i] == DPPLSyclBackendType::DPPL_LEVEL_ZERO
           );
     }
-	  DPPLPlatform_DeleteListOfBackends(backends);
+	DPPLPlatform_DeleteListOfBackends(backends);
 }
 
 TEST_F (TestDPPLSyclPlatformInterface, CheckDPPLPlatformDumpInfo)

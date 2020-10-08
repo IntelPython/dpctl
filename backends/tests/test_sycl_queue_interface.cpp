@@ -38,25 +38,25 @@
 
 namespace
 {
-    constexpr size_t SIZE = 1024;
+constexpr size_t SIZE = 1024;
 
-    DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPPLSyclUSMRef);
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPPLSyclUSMRef);
 
-    void add_kernel_checker (const float *a, const float *b, const float *c)
-    {
-        // Validate the data
-        for(auto i = 0ul; i < SIZE; ++i) {
-            EXPECT_EQ(c[i], a[i] + b[i]);
-        }
+void add_kernel_checker (const float *a, const float *b, const float *c)
+{
+    // Validate the data
+    for(auto i = 0ul; i < SIZE; ++i) {
+        EXPECT_EQ(c[i], a[i] + b[i]);
     }
+}
 
-    void axpy_kernel_checker (const float *a, const float *b, const float *c,
-                              float d)
-    {
-        for(auto i = 0ul; i < SIZE; ++i) {
-            EXPECT_EQ(c[i], a[i] + d*b[i]);
-        }
+void axpy_kernel_checker (const float *a, const float *b, const float *c,
+                            float d)
+{
+    for(auto i = 0ul; i < SIZE; ++i) {
+        EXPECT_EQ(c[i], a[i] + d*b[i]);
     }
+}
 }
 
 struct TestDPPLSyclQueueInterface : public ::testing::Test
@@ -97,7 +97,6 @@ TEST_F (TestDPPLSyclQueueInterface, CheckAreEq)
                                              DPPLSyclDeviceType::DPPL_GPU);
     auto nOclCPU = DPPLQueueMgr_GetNumQueues(DPPLSyclBackendType::DPPL_OPENCL,
                                              DPPLSyclDeviceType::DPPL_CPU);
-    {
     if(!nOclGPU)
         GTEST_SKIP_("No OpenCL GPUs available.\n");
 
@@ -124,9 +123,18 @@ TEST_F (TestDPPLSyclQueueInterface, CheckAreEq)
     DPPLQueue_Delete(OclGPU_Q1);
     DPPLQueueMgr_PopQueue();
     DPPLQueueMgr_PopQueue();
-    }
+}
 
-    {
+TEST_F (TestDPPLSyclQueueInterface, CheckAreEq2)
+{
+    auto Q1 = DPPLQueueMgr_GetCurrentQueue();
+    auto Q2 = DPPLQueueMgr_GetCurrentQueue();
+    EXPECT_TRUE(DPPLQueue_AreEq(Q1, Q2));
+
+    auto nOclGPU = DPPLQueueMgr_GetNumQueues(DPPLSyclBackendType::DPPL_OPENCL,
+                                             DPPLSyclDeviceType::DPPL_GPU);
+    auto nOclCPU = DPPLQueueMgr_GetNumQueues(DPPLSyclBackendType::DPPL_OPENCL,
+                                             DPPLSyclDeviceType::DPPL_CPU);
     if(!nOclGPU || !nOclCPU)
         GTEST_SKIP_("OpenCL GPUs and CPU not available.\n");
     auto GPU_Q = DPPLQueueMgr_PushQueue(
@@ -142,8 +150,6 @@ TEST_F (TestDPPLSyclQueueInterface, CheckAreEq)
     EXPECT_FALSE(DPPLQueue_AreEq(GPU_Q, CPU_Q));
     DPPLQueueMgr_PopQueue();
     DPPLQueueMgr_PopQueue();
-    }
-
 }
 
 TEST_F (TestDPPLSyclQueueInterface, CheckGetBackend)

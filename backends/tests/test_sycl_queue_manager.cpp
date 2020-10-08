@@ -184,13 +184,30 @@ TEST_F (TestDPPLSyclQueueManager, CheckIsCurrentQueue)
 
     auto Q0 = DPPLQueueMgr_GetCurrentQueue();
     EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q0));
-    auto Q = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
-    EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q));
-    EXPECT_FALSE(DPPLQueueMgr_IsCurrentQueue(Q0));
-    DPPLQueue_Delete(Q);
+    auto Q1 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
+    EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q1));
+    DPPLQueue_Delete(Q1);
     DPPLQueueMgr_PopQueue();
     EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q0));
     DPPLQueue_Delete(Q0);
+}
+
+TEST_F (TestDPPLSyclQueueManager, CheckIsCurrentQueue2)
+{
+    if(!DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_CPU) ||
+       !DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU))
+        GTEST_SKIP_("No OpenCL GPU and OpenCL CPU.\n");
+
+    auto Q1 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
+    EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q1));
+    auto Q2 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_CPU, 0);
+    EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q2));
+    EXPECT_FALSE(DPPLQueueMgr_IsCurrentQueue(Q1));
+    DPPLQueue_Delete(Q2);
+    DPPLQueueMgr_PopQueue();
+    EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q1));
+    DPPLQueue_Delete(Q1);
+    DPPLQueueMgr_PopQueue();
 }
 
 int
