@@ -116,7 +116,8 @@ def extensions():
     }
 
     extensions = [
-        Extension('dpctl._sycl_core', [os.path.join('dpctl', 'sycl_core.pyx'),],
+        Extension('dpctl._sycl_core',
+                  [os.path.join('dpctl', '_sycl_core.pyx'),],
             **extension_args),
         Extension('dpctl._memory', [os.path.join('dpctl', '_memory.pyx'),],
             **extension_args),
