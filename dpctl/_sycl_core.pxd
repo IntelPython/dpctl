@@ -27,7 +27,7 @@
 # distutils: language = c++
 # cython: language_level=3
 
-from .backend cimport *
+from ._backend cimport *
 
 
 cdef class SyclContext:
