@@ -83,21 +83,21 @@ TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetDriverInfo)
     DPPLCString_Delete(DriverInfo);
 }
 
-TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetMaxComputeUnites)
+TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetMaxComputeUnits)
 {
     if(!OpenCL_cpu)
         GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
 
-    auto n = DPPLDevice_GetMaxComputeUnites(OpenCL_cpu);
+    auto n = DPPLDevice_GetMaxComputeUnits(OpenCL_cpu);
     EXPECT_TRUE(n != 0);
 }
 
-TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetMaxComputeUnites)
+TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetMaxComputeUnits)
 {
     if(!OpenCL_gpu)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
 
-    auto n = DPPLDevice_GetMaxComputeUnites(OpenCL_gpu);
+    auto n = DPPLDevice_GetMaxComputeUnits(OpenCL_gpu);
     EXPECT_TRUE(n != 0);
 }
 
@@ -122,9 +122,19 @@ TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetMaxWorkItemDims)
 TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetMaxWorkItemSizes)
 {
     if(!OpenCL_cpu)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
+        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
 
     auto item_sizes = DPPLDevice_GetMaxWorkItemSizes(OpenCL_cpu);
+    EXPECT_TRUE(item_sizes != nullptr);
+    DPPLSize_t_Array_Delete(item_sizes);
+}
+
+TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetMaxWorkItemSizes)
+{
+    if(!OpenCL_gpu)
+        GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
+
+    auto item_sizes = DPPLDevice_GetMaxWorkItemSizes(OpenCL_gpu);
     EXPECT_TRUE(item_sizes != nullptr);
     DPPLSize_t_Array_Delete(item_sizes);
 }

@@ -110,10 +110,10 @@ DPPLDevice_GetDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef);
  */
 DPPL_API
 uint32_t
-DPPLDevice_GetMaxComputeUnites (__dppl_keep const DPPLSyclDeviceRef DRef);
+DPPLDevice_GetMaxComputeUnits (__dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
- * @brief Wrapper for get_info<info::device::max_work_item_dimensions().
+ * @brief Wrapper for get_info<info::device::max_work_item_dimensions>().
  *
  * @param    DRef           Opaque pointer to a sycl::device
  * @return   Returns the valid result if device exists else returns 0.
@@ -123,7 +123,7 @@ uint32_t
 DPPLDevice_GetMaxWorkItemDims (__dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
- * @brief Wrapper for get_info<info::device::max_work_item_sizes().
+ * @brief Wrapper for get_info<info::device::max_work_item_sizes>().
  *
  * @param    DRef           Opaque pointer to a sycl::device
  * @return   Returns the valid result if device exists else returns Null.
@@ -133,7 +133,7 @@ __dppl_keep size_t*
 DPPLDevice_GetMaxWorkItemSizes (__dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
- * @brief Wrapper for get_info<info::device::max_work_group_size().
+ * @brief Wrapper for get_info<info::device::max_work_group_size>().
  *
  * @param    DRef           Opaque pointer to a sycl::device
  * @return   Returns the valid result if device exists else returns 0.

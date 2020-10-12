@@ -141,7 +141,7 @@ bool DPPLDevice_IsHost (__dppl_keep const DPPLSyclDeviceRef DRef)
 
 
 uint32_t
-DPPLDevice_GetMaxComputeUnites (__dppl_keep const DPPLSyclDeviceRef DRef)
+DPPLDevice_GetMaxComputeUnits (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if(D) {
