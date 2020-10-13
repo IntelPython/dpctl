@@ -175,6 +175,42 @@ TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetMaxNumSubGroups)
     EXPECT_TRUE(n != 0);
 }
 
+TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetAspectsBaseAtomics)
+{
+    if(!OpenCL_cpu)
+        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
+
+    auto n = DPPLDevice_GetAspectsBaseAtomics(OpenCL_cpu);
+    EXPECT_TRUE(n != false);
+}
+
+TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetAspectsBaseAtomics)
+{
+    if(!OpenCL_gpu)
+        GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
+
+    auto n = DPPLDevice_GetAspectsBaseAtomics(OpenCL_gpu);
+    EXPECT_TRUE(n != false);
+}
+
+TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetAspectsExtendedAtomics)
+{
+    if(!OpenCL_cpu)
+        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
+
+    auto n = DPPLDevice_GetAspectsExtendedAtomics(OpenCL_cpu);
+    EXPECT_TRUE(n != false);
+}
+
+TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetAspectsExtendedAtomics)
+{
+    if(!OpenCL_gpu)
+        GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
+
+    auto n = DPPLDevice_GetAspectsExtendedAtomics(OpenCL_gpu);
+    EXPECT_TRUE(n != false);
+}
+
 TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetName)
 {
     if(!OpenCL_cpu)

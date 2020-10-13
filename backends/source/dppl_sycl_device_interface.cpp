@@ -196,6 +196,26 @@ DPPLDevice_GetMaxNumSubGroups (__dppl_keep const DPPLSyclDeviceRef DRef)
     return 0;
 }
 
+bool
+DPPLDevice_GetAspectsBaseAtomics (__dppl_keep const DPPLSyclDeviceRef DRef)
+{
+    auto D = unwrap(DRef);
+    if(D) {
+        return D->has(aspect::int64_base_atomics);
+    }
+    return false;
+}
+
+bool
+DPPLDevice_GetAspectsExtendedAtomics (__dppl_keep const DPPLSyclDeviceRef DRef)
+{
+    auto D = unwrap(DRef);
+    if(D) {
+        return D->has(aspect::int64_extended_atomics);
+    }
+    return false;
+}
+
 __dppl_give const char*
 DPPLDevice_GetName (__dppl_keep const DPPLSyclDeviceRef DRef)
 {

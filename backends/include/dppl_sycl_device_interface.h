@@ -153,6 +153,26 @@ uint32_t
 DPPLDevice_GetMaxNumSubGroups (__dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
+ * @brief Wrapper over device.get_info<info::device::aspect::int64_base_atomics>.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns true if device has int64_base_atomics else returns false.
+ */
+DPPL_API
+bool
+DPPLDevice_GetAspectsBaseAtomics (__dppl_keep const DPPLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::aspect::int64_extended_atomics>.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns true if device has int64_extended_atomics else returns false.
+ */
+DPPL_API
+bool
+DPPLDevice_GetAspectsExtendedAtomics (__dppl_keep const DPPLSyclDeviceRef DRef);
+
+/*!
  * @brief Returns a C string for the device name.
  *
  * @param    DRef           Opaque pointer to a sycl::device

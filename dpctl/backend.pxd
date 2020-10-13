@@ -107,6 +107,8 @@ cdef extern from "dppl_sycl_device_interface.h":
     cpdef size_t* DPPLDevice_GetMaxWorkItemSizes (const DPPLSyclDeviceRef DRef)
     cpdef size_t DPPLDevice_GetMaxWorkGroupSize (const DPPLSyclDeviceRef DRef)
     cpdef uint32_t DPPLDevice_GetMaxNumSubGroups (const DPPLSyclDeviceRef DRef)
+    cpdef bool DPPLDevice_GetAspectsBaseAtomics (const DPPLSyclDeviceRef DRef)
+    cpdef bool DPPLDevice_GetAspectsExtendedAtomics (const DPPLSyclDeviceRef DRef)
 
 
 cdef extern from "dppl_sycl_event_interface.h":

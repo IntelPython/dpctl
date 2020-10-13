@@ -54,6 +54,8 @@ cdef class SyclDevice:
     cdef size_t* _max_work_item_sizes
     cdef size_t _max_work_group_size
     cdef uint32_t _max_num_sub_groups
+    cdef bool _aspects_base_atomics
+    cdef bool _aspects_extended_atomics
 
     @staticmethod
     cdef SyclDevice _create (DPPLSyclDeviceRef dref)
@@ -67,6 +69,8 @@ cdef class SyclDevice:
     cpdef get_max_work_item_sizes (self)
     cpdef get_max_work_group_size (self)
     cpdef get_max_num_sub_groups (self)
+    cpdef get_aspects_base_atomics (self)
+    cpdef get_aspects_extended_atomics (self)
 
 
 cdef class SyclEvent:

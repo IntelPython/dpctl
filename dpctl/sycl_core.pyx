@@ -122,6 +122,8 @@ cdef class SyclDevice:
         ret._max_work_item_sizes = DPPLDevice_GetMaxWorkItemSizes(dref)
         ret._max_work_group_size = DPPLDevice_GetMaxWorkGroupSize(dref)
         ret._max_num_sub_groups = DPPLDevice_GetMaxNumSubGroups(dref)
+        ret._aspects_base_atomics = DPPLDevice_GetAspectsBaseAtomics(dref)
+        ret._aspects_extended_atomics = DPPLDevice_GetAspectsExtendedAtomics(dref)
         return ret
 
     def __dealloc__ (self):
@@ -162,6 +164,16 @@ cdef class SyclDevice:
             with the value "1.2" if this SYCL device is a host device.
         '''
         return self._driver_version.decode()
+
+    cpdef get_aspects_base_atomics (self):
+        ''' Returns true if device has int64_base_atomics else returns false.
+        '''
+        return self._aspects_base_atomics
+
+    cpdef get_aspects_extended_atomics (self):
+        ''' Returns true if device has int64_extended_atomics else returns false.
+        '''
+        return self._aspects_extended_atomics
 
     cpdef get_max_compute_units (self):
         ''' Returns the number of parallel compute units
