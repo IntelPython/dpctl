@@ -31,7 +31,6 @@
 
 #include <gtest/gtest.h>
 #include <CL/sycl.hpp>
-#include <algorithm>
 
 using namespace cl::sycl;
 
@@ -90,7 +89,7 @@ TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetMaxComputeUnits)
         GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
 
     auto n = DPPLDevice_GetMaxComputeUnits(OpenCL_cpu);
-    EXPECT_TRUE(n != 0);
+    EXPECT_TRUE(n > 0);
 }
 
 TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetMaxComputeUnits)
@@ -99,7 +98,7 @@ TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetMaxComputeUnits)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
 
     auto n = DPPLDevice_GetMaxComputeUnits(OpenCL_gpu);
-    EXPECT_TRUE(n != 0);
+    EXPECT_TRUE(n > 0);
 }
 
 TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetMaxWorkItemDims)
@@ -108,7 +107,7 @@ TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetMaxWorkItemDims)
         GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
 
     auto n = DPPLDevice_GetMaxWorkItemDims(OpenCL_cpu);
-    EXPECT_TRUE(n != 0);
+    EXPECT_TRUE(n > 0);
 }
 
 TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetMaxWorkItemDims)
@@ -117,7 +116,7 @@ TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetMaxWorkItemDims)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
 
     auto n = DPPLDevice_GetMaxWorkItemDims(OpenCL_gpu);
-    EXPECT_TRUE(n != 0);
+    EXPECT_TRUE(n > 0);
 }
 
 TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetMaxWorkItemSizes)
@@ -146,7 +145,7 @@ TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetMaxWorkGroupSize)
         GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
 
     auto n = DPPLDevice_GetMaxWorkGroupSize(OpenCL_cpu);
-    EXPECT_TRUE(n != 0);
+    EXPECT_TRUE(n > 0);
 }
 
 TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetMaxWorkGroupSize)
@@ -155,7 +154,7 @@ TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetMaxWorkGroupSize)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
 
     auto n = DPPLDevice_GetMaxWorkGroupSize(OpenCL_gpu);
-    EXPECT_TRUE(n != 0);
+    EXPECT_TRUE(n > 0);
 }
 
 TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetMaxNumSubGroups)
@@ -164,7 +163,7 @@ TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetMaxNumSubGroups)
         GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
 
     auto n = DPPLDevice_GetMaxNumSubGroups(OpenCL_cpu);
-    EXPECT_TRUE(n != 0);
+    EXPECT_TRUE(n > 0);
 }
 
 TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetMaxNumSubGroups)
@@ -173,7 +172,7 @@ TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetMaxNumSubGroups)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
 
     auto n = DPPLDevice_GetMaxNumSubGroups(OpenCL_gpu);
-    EXPECT_TRUE(n != 0);
+    EXPECT_TRUE(n > 0);
 }
 
 //TODO: Update when DPC++ properly supports aspects

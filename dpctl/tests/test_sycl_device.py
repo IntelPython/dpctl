@@ -34,7 +34,7 @@ class TestSyclDevice (unittest.TestCase):
             max_compute_units = q.get_sycl_device().get_max_compute_units()
         except Exception:
             self.fail("Encountered an exception inside get_max_compute_units().")
-        self.assertNotEqual(max_compute_units, 0)
+        self.assertTrue(max_compute_units > 0)
 
     def test_get_max_work_item_dims (self):
         q = dpctl.get_current_queue()
@@ -42,7 +42,7 @@ class TestSyclDevice (unittest.TestCase):
             max_work_item_dims = q.get_sycl_device().get_max_work_item_dims()
         except Exception:
             self.fail("Encountered an exception inside get_max_work_item_dims().")
-        self.assertNotEqual(max_work_item_dims, 0)
+        self.assertTrue(max_work_item_dims > 0)
 
     def test_get_max_work_item_sizes (self):
         q = dpctl.get_current_queue()
@@ -58,7 +58,7 @@ class TestSyclDevice (unittest.TestCase):
             max_work_group_size = q.get_sycl_device().get_max_work_group_size()
         except Exception:
             self.fail("Encountered an exception inside get_max_work_group_size().")
-        self.assertNotEqual(max_work_group_size, 0)
+        self.assertTrue(max_work_group_size > 0)
 
     def test_get_max_num_sub_groups (self):
         q = dpctl.get_current_queue()
@@ -66,7 +66,7 @@ class TestSyclDevice (unittest.TestCase):
             max_num_sub_groups = q.get_sycl_device().get_max_num_sub_groups()
         except Exception:
             self.fail("Encountered an exception inside get_max_num_sub_groups().")
-        self.assertNotEqual(max_num_sub_groups, 0)
+        self.assertTrue(max_num_sub_groups > 0)
 
     def test_has_int64_base_atomics (self):
         q = dpctl.get_current_queue()
