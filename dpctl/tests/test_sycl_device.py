@@ -68,20 +68,20 @@ class TestSyclDevice (unittest.TestCase):
             self.fail("Encountered an exception inside get_max_num_sub_groups().")
         self.assertNotEqual(max_num_sub_groups, 0)
 
-    def test_get_aspects_base_atomics (self):
+    def test_has_int64_base_atomics (self):
         q = dpctl.get_current_queue()
         try:
-            aspects_base_atomics = q.get_sycl_device().get_aspects_base_atomics()
+            aspects_base_atomics = q.get_sycl_device().has_int64_base_atomics()
         except Exception:
-            self.fail("Encountered an exception inside get_aspects_base_atomics().")
+            self.fail("Encountered an exception inside has_int64_base_atomics().")
         self.assertNotEqual(aspects_base_atomics, False)
 
-    def test_get_aspects_extended_atomics (self):
+    def test_has_int64_extended_atomics (self):
         q = dpctl.get_current_queue()
         try:
-            aspects_extended_atomics = q.get_sycl_device().get_aspects_extended_atomics()
+            aspects_extended_atomics = q.get_sycl_device().has_int64_extended_atomics()
         except Exception:
-            self.fail("Encountered an exception inside get_aspects_extended_atomics().")
+            self.fail("Encountered an exception inside has_int64_extended_atomics().")
         self.assertNotEqual(aspects_extended_atomics, False)
 
 if __name__ == '__main__':

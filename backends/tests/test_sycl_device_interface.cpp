@@ -1,4 +1,4 @@
-//===----- test_sycl_device_interface.cpp - DPPL-SYCL interface -*- C++ -*-===//
+//===----- test_sycl_device_interface.cpp - dpctl-C_API interface -*- C++ -*-===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -20,7 +20,7 @@
 ///
 /// \file
 /// This file has unit test cases for functions defined in
-/// dppl_sycl_kernel_interface.h.
+/// dppl_sycl_device_interface.h.
 ///
 //===----------------------------------------------------------------------===//
 
@@ -31,6 +31,7 @@
 
 #include <gtest/gtest.h>
 #include <CL/sycl.hpp>
+#include <algorithm>
 
 using namespace cl::sycl;
 
@@ -175,40 +176,52 @@ TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetMaxNumSubGroups)
     EXPECT_TRUE(n != 0);
 }
 
-TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetAspectsBaseAtomics)
+//TODO: Update when DPC++ properly supports aspects
+TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_HasInt64BaseAtomics)
 {
     if(!OpenCL_cpu)
         GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
 
-    auto n = DPPLDevice_GetAspectsBaseAtomics(OpenCL_cpu);
-    EXPECT_TRUE(n != false);
+    auto atomics = DPPLDevice_HasInt64BaseAtomics(OpenCL_cpu);
+    auto D = reinterpret_cast<device*>(OpenCL_cpu);
+    auto has_atomics= D->has(aspect::int64_base_atomics);
+    EXPECT_TRUE(has_atomics == atomics);
 }
 
-TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetAspectsBaseAtomics)
+//TODO: Update when DPC++ properly supports aspects
+TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_HasInt64BaseAtomics)
 {
     if(!OpenCL_gpu)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
 
-    auto n = DPPLDevice_GetAspectsBaseAtomics(OpenCL_gpu);
-    EXPECT_TRUE(n != false);
+    auto atomics = DPPLDevice_HasInt64BaseAtomics(OpenCL_gpu);
+    auto D = reinterpret_cast<device*>(OpenCL_gpu);
+    auto has_atomics= D->has(aspect::int64_base_atomics);
+    EXPECT_TRUE(has_atomics == atomics);
 }
 
-TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetAspectsExtendedAtomics)
+//TODO: Update when DPC++ properly supports aspects
+TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_HasInt64ExtendedAtomics)
 {
     if(!OpenCL_cpu)
         GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
 
-    auto n = DPPLDevice_GetAspectsExtendedAtomics(OpenCL_cpu);
-    EXPECT_TRUE(n != false);
+    auto atomics = DPPLDevice_HasInt64ExtendedAtomics(OpenCL_cpu);
+    auto D = reinterpret_cast<device*>(OpenCL_cpu);
+    auto has_atomics= D->has(aspect::int64_extended_atomics);
+    EXPECT_TRUE(has_atomics == atomics);
 }
 
-TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_GetAspectsExtendedAtomics)
+//TODO: Update when DPC++ properly supports aspects
+TEST_F (TestDPPLSyclDeviceInterface, CheckOCLGPU_HasInt64ExtendedAtomics)
 {
     if(!OpenCL_gpu)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
 
-    auto n = DPPLDevice_GetAspectsExtendedAtomics(OpenCL_gpu);
-    EXPECT_TRUE(n != false);
+    auto atomics = DPPLDevice_HasInt64ExtendedAtomics(OpenCL_gpu);
+    auto D = reinterpret_cast<device*>(OpenCL_gpu);
+    auto has_atomics= D->has(aspect::int64_extended_atomics);
+    EXPECT_TRUE(has_atomics == atomics);
 }
 
 TEST_F (TestDPPLSyclDeviceInterface, CheckOCLCPU_GetName)

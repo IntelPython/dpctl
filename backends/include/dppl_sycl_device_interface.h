@@ -1,4 +1,4 @@
-//===--- dppl_sycl_device_interface.h - DPPL-SYCL interface ---*---C++ -*---===//
+//===--- dppl_sycl_device_interface.h - dpctl-C_API interface ---*---C++ -*---===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -126,7 +126,7 @@ DPPLDevice_GetMaxWorkItemDims (__dppl_keep const DPPLSyclDeviceRef DRef);
  * @brief Wrapper for get_info<info::device::max_work_item_sizes>().
  *
  * @param    DRef           Opaque pointer to a sycl::device
- * @return   Returns the valid result if device exists else returns Null.
+ * @return   Returns the valid result if device exists else returns NULL.
  */
 DPPL_API
 __dppl_keep size_t*
@@ -160,7 +160,7 @@ DPPLDevice_GetMaxNumSubGroups (__dppl_keep const DPPLSyclDeviceRef DRef);
  */
 DPPL_API
 bool
-DPPLDevice_GetAspectsBaseAtomics (__dppl_keep const DPPLSyclDeviceRef DRef);
+DPPLDevice_HasInt64BaseAtomics (__dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
  * @brief Wrapper over device.get_info<info::device::aspect::int64_extended_atomics>.
@@ -170,7 +170,7 @@ DPPLDevice_GetAspectsBaseAtomics (__dppl_keep const DPPLSyclDeviceRef DRef);
  */
 DPPL_API
 bool
-DPPLDevice_GetAspectsExtendedAtomics (__dppl_keep const DPPLSyclDeviceRef DRef);
+DPPLDevice_HasInt64ExtendedAtomics (__dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns a C string for the device name.

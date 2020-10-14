@@ -1,4 +1,4 @@
-//===--- dppl_sycl_device_interface.cpp - DPPL-SYCL interface --*- C++ -*--===//
+//===--- dppl_sycl_device_interface.cpp - dpctl-C_API interface --*- C++ -*--===//
 //
 //               Python Data Parallel Processing Library (PyDPPL)
 //
@@ -104,8 +104,8 @@ void DPPLDevice_Delete (__dppl_take DPPLSyclDeviceRef DRef)
 bool DPPLDevice_IsAccelerator (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
-    if(D) {
-        return unwrap(DRef)->is_accelerator();
+    if (D) {
+        return D->is_accelerator();
     }
     return false;
 }
@@ -113,8 +113,8 @@ bool DPPLDevice_IsAccelerator (__dppl_keep const DPPLSyclDeviceRef DRef)
 bool DPPLDevice_IsCPU (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
-    if(D) {
-        return unwrap(DRef)->is_cpu();
+    if (D) {
+        return D->is_cpu();
     }
     return false;
 
@@ -123,8 +123,8 @@ bool DPPLDevice_IsCPU (__dppl_keep const DPPLSyclDeviceRef DRef)
 bool DPPLDevice_IsGPU (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
-    if(D) {
-        return unwrap(DRef)->is_gpu();
+    if (D) {
+        return D->is_gpu();
     }
     return false;
 }
@@ -133,8 +133,8 @@ bool DPPLDevice_IsGPU (__dppl_keep const DPPLSyclDeviceRef DRef)
 bool DPPLDevice_IsHost (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
-    if(D) {
-        return unwrap(DRef)->is_host();
+    if (D) {
+        return D->is_host();
     }
     return false;
 }
@@ -144,7 +144,7 @@ uint32_t
 DPPLDevice_GetMaxComputeUnits (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
-    if(D) {
+    if (D) {
         return D->get_info<info::device::max_compute_units>();
     }
     return 0;
@@ -155,7 +155,7 @@ uint32_t
 DPPLDevice_GetMaxWorkItemDims (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
-    if(D) {
+    if (D) {
         return D->get_info<info::device::max_work_item_dimensions>();
     }
     return 0;
@@ -166,7 +166,7 @@ DPPLDevice_GetMaxWorkItemSizes (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     size_t *sizes = nullptr;
     auto D = unwrap(DRef);
-    if(D) {
+    if (D) {
         auto id_sizes = D->get_info<info::device::max_work_item_sizes>();
         sizes = new size_t[3];
         for(auto i = 0ul; i < 3; ++i) {
@@ -180,7 +180,7 @@ size_t
 DPPLDevice_GetMaxWorkGroupSize (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
-    if(D) {
+    if (D) {
         return D->get_info<info::device::max_work_group_size>();
     }
     return 0;
@@ -190,27 +190,27 @@ uint32_t
 DPPLDevice_GetMaxNumSubGroups (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
-    if(D) {
+    if (D) {
         return D->get_info<info::device::max_num_sub_groups>();
     }
     return 0;
 }
 
 bool
-DPPLDevice_GetAspectsBaseAtomics (__dppl_keep const DPPLSyclDeviceRef DRef)
+DPPLDevice_HasInt64BaseAtomics (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
-    if(D) {
+    if (D) {
         return D->has(aspect::int64_base_atomics);
     }
     return false;
 }
 
 bool
-DPPLDevice_GetAspectsExtendedAtomics (__dppl_keep const DPPLSyclDeviceRef DRef)
+DPPLDevice_HasInt64ExtendedAtomics (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
-    if(D) {
+    if (D) {
         return D->has(aspect::int64_extended_atomics);
     }
     return false;
@@ -220,8 +220,8 @@ __dppl_give const char*
 DPPLDevice_GetName (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
-    if(D) {
-        auto name = unwrap(DRef)->get_info<info::device::name>();
+    if (D) {
+        auto name = D->get_info<info::device::name>();
         auto cstr_name = new char [name.length()+1];
         std::strcpy (cstr_name, name.c_str());
         return cstr_name;
@@ -233,8 +233,8 @@ __dppl_give const char*
 DPPLDevice_GetVendorName (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
-    if(D) {
-        auto vendor = unwrap(DRef)->get_info<info::device::name>();
+    if (D) {
+        auto vendor = D->get_info<info::device::name>();
         auto cstr_vendor = new char [vendor.length()+1];
         std::strcpy (cstr_vendor, vendor.c_str());
         return cstr_vendor;
@@ -246,8 +246,8 @@ __dppl_give const char*
 DPPLDevice_GetDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
-    if(D) {
-        auto driver = unwrap(DRef)->get_info<info::device::driver_version>();
+    if (D) {
+        auto driver = D->get_info<info::device::driver_version>();
         auto cstr_driver = new char [driver.length()+1];
         std::strcpy (cstr_driver, driver.c_str());
         return cstr_driver;
@@ -258,7 +258,7 @@ DPPLDevice_GetDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef)
 bool DPPLDevice_IsHostUnifiedMemory (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
-    if(D) {
+    if (D) {
         return D->get_info<info::device::host_unified_memory>();
     }
     return false;
