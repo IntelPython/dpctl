@@ -26,17 +26,17 @@ import dpctl
 import unittest
 
 
-class TestQueueMemcpy (unittest.TestCase):
-
-    def _create_memory (self):
+class TestQueueMemcpy(unittest.TestCase):
+    def _create_memory(self):
         nbytes = 1024
         queue = dpctl.get_current_queue()
         mobj = dpctl._memory.MemoryUSMShared(nbytes, queue)
         return mobj
 
-    @unittest.skipUnless(dpctl.has_sycl_platforms(),
-                         "No SYCL devices except the default host device.")
-    def test_memcpy_copy_usm_to_usm (self):
+    @unittest.skipUnless(
+        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+    )
+    def test_memcpy_copy_usm_to_usm(self):
         mobj1 = self._create_memory()
         mobj2 = self._create_memory()
         q = dpctl.get_current_queue()
@@ -44,15 +44,16 @@ class TestQueueMemcpy (unittest.TestCase):
         mv1 = memoryview(mobj1)
         mv2 = memoryview(mobj2)
 
-        mv1[:3] = b'123'
+        mv1[:3] = b"123"
 
         q.memcpy(mobj2, mobj1, 3)
 
-        self.assertEqual(mv2[:3], b'123')
+        self.assertEqual(mv2[:3], b"123")
 
-    @unittest.skipUnless(dpctl.has_sycl_platforms(),
-                         "No SYCL devices except the default host device.")
-    def test_memcpy_type_error (self):
+    @unittest.skipUnless(
+        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+    )
+    def test_memcpy_type_error(self):
         mobj = self._create_memory()
         q = dpctl.get_current_queue()
 
@@ -69,5 +70,5 @@ class TestQueueMemcpy (unittest.TestCase):
         self.assertEqual(str(cm.exception), "Parameter src should be Memory.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
