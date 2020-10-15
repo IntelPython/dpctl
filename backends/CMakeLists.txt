@@ -86,13 +86,6 @@ else()
     message(FATAL_ERROR "Unsupported system.")
 endif()
 
-
-set(OpenCL_INCLUDE_DIR "${DPCPP_ROOT}/include/sycl")
-set(OpenCL_LIBRARY "${DPCPP_ROOT}/lib/libOpenCL.so")
-
-message(STATUS "OpenCL_INCLUDE_DIR: ${OpenCL_INCLUDE_DIR}")
-message(STATUS "OpenCL_LIBRARY: ${OpenCL_LIBRARY}")
-
 add_library(
   DPPLSyclInterface
   SHARED
@@ -108,13 +101,6 @@ add_library(
   source/dppl_utils.cpp
 )
 
-# Install DPPLOpenCLInterface
-add_library(
-  DPPLOpenCLInterface
-  SHARED
-  source/dppl_opencl_interface.c
-)
-
 # Install DPPLSyclInterface
 target_include_directories(
   DPPLSyclInterface
@@ -122,18 +108,6 @@ target_include_directories(
   ${CMAKE_SOURCE_DIR}/include/
   ${PYTHON_INCLUDE_DIR}
   ${NUMPY_INCLUDE_DIR}
-)
-
-target_include_directories(
-    DPPLOpenCLInterface
-    PRIVATE
-    ${CMAKE_SOURCE_DIR}/include/
-)
-
-target_include_directories(
-    DPPLOpenCLInterface
-    PUBLIC
-    ${OpenCL_INCLUDE_DIR}
 )
 
 if(WIN32)
@@ -162,14 +136,6 @@ install(
   TARGETS
   DPPLSyclInterface
   LIBRARY DESTINATION
-  "${CMAKE_INSTALL_PREFIX}/lib/"
-)
-
-install(
-  TARGETS
-  DPPLOpenCLInterface
-  LIBRARY
-  DESTINATION
   "${CMAKE_INSTALL_PREFIX}/lib/"
 )
 
