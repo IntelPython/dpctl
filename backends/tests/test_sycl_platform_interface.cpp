@@ -26,49 +26,40 @@
 #include "dppl_sycl_platform_interface.h"
 #include <gtest/gtest.h>
 
-struct TestDPPLSyclPlatformInterface : public ::testing::Test
-{ };
+struct TestDPPLSyclPlatformInterface : public ::testing::Test {};
 
-TEST_F (TestDPPLSyclPlatformInterface, CheckGetNumPlatforms)
-{
-    auto nplatforms = DPPLPlatform_GetNumNonHostPlatforms();
-    EXPECT_GE(nplatforms, 0);
+TEST_F(TestDPPLSyclPlatformInterface, CheckGetNumPlatforms) {
+  auto nplatforms = DPPLPlatform_GetNumNonHostPlatforms();
+  EXPECT_GE(nplatforms, 0);
 }
 
-TEST_F (TestDPPLSyclPlatformInterface, GetNumBackends)
-{
-    auto nbackends = DPPLPlatform_GetNumNonHostBackends();
-    EXPECT_GE(nbackends, 0);
+TEST_F(TestDPPLSyclPlatformInterface, GetNumBackends) {
+  auto nbackends = DPPLPlatform_GetNumNonHostBackends();
+  EXPECT_GE(nbackends, 0);
 }
 
-TEST_F (TestDPPLSyclPlatformInterface, GetListOfBackends)
-{
-    auto nbackends = DPPLPlatform_GetNumNonHostBackends();
+TEST_F(TestDPPLSyclPlatformInterface, GetListOfBackends) {
+  auto nbackends = DPPLPlatform_GetNumNonHostBackends();
 
-    if(!nbackends)
-      GTEST_SKIP_("No non host backends available");
+  if (!nbackends)
+    GTEST_SKIP_("No non host backends available");
 
-    auto backends = DPPLPlatform_GetListOfNonHostBackends();
-	  EXPECT_TRUE(backends != nullptr);
-    for(auto i = 0ul; i < nbackends; ++i) {
-        EXPECT_TRUE(
-          backends[i] == DPPLSyclBackendType::DPPL_CUDA   ||
-          backends[i] == DPPLSyclBackendType::DPPL_OPENCL ||
-          backends[i] == DPPLSyclBackendType::DPPL_LEVEL_ZERO
-          );
-    }
-	DPPLPlatform_DeleteListOfBackends(backends);
+  auto backends = DPPLPlatform_GetListOfNonHostBackends();
+  EXPECT_TRUE(backends != nullptr);
+  for (auto i = 0ul; i < nbackends; ++i) {
+    EXPECT_TRUE(backends[i] == DPPLSyclBackendType::DPPL_CUDA ||
+                backends[i] == DPPLSyclBackendType::DPPL_OPENCL ||
+                backends[i] == DPPLSyclBackendType::DPPL_LEVEL_ZERO);
+  }
+  DPPLPlatform_DeleteListOfBackends(backends);
 }
 
-TEST_F (TestDPPLSyclPlatformInterface, CheckDPPLPlatformDumpInfo)
-{
-    EXPECT_NO_FATAL_FAILURE(DPPLPlatform_DumpInfo());
+TEST_F(TestDPPLSyclPlatformInterface, CheckDPPLPlatformDumpInfo) {
+  EXPECT_NO_FATAL_FAILURE(DPPLPlatform_DumpInfo());
 }
 
-int
-main (int argc, char** argv)
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    int ret = RUN_ALL_TESTS();
-    return ret;
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  int ret = RUN_ALL_TESTS();
+  return ret;
 }

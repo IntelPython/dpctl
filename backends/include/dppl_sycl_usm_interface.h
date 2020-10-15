@@ -25,11 +25,11 @@
 
 #pragma once
 
-#include "dppl_data_types.h"
-#include "dppl_sycl_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dppl_data_types.h"
+#include "dppl_sycl_types.h"
 
 DPPL_C_EXTERN_C_BEGIN
 
@@ -40,7 +40,7 @@ DPPL_C_EXTERN_C_BEGIN
  */
 DPPL_API
 __dppl_give DPPLSyclUSMRef
-DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
+DPPLmalloc_shared(size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Crete USM host memory.
@@ -49,7 +49,7 @@ DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
  */
 DPPL_API
 __dppl_give DPPLSyclUSMRef
-DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
+DPPLmalloc_host(size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Crete USM device memory.
@@ -58,23 +58,23 @@ DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
  */
 DPPL_API
 __dppl_give DPPLSyclUSMRef
-DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
+DPPLmalloc_device(size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Free USM memory.
  *
  */
 DPPL_API
-void DPPLfree_with_queue (__dppl_take DPPLSyclUSMRef MRef,
-                          __dppl_keep const DPPLSyclQueueRef QRef);
+void DPPLfree_with_queue(__dppl_take DPPLSyclUSMRef MRef,
+                         __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Free USM memory.
  *
  */
 DPPL_API
-void DPPLfree_with_context (__dppl_take DPPLSyclUSMRef MRef,
-                            __dppl_keep const DPPLSyclContextRef CRef);
+void DPPLfree_with_context(__dppl_take DPPLSyclUSMRef MRef,
+                           __dppl_keep const DPPLSyclContextRef CRef);
 
 /*!
  * @brief Get pointer type.
@@ -82,8 +82,7 @@ void DPPLfree_with_context (__dppl_take DPPLSyclUSMRef MRef,
  * @return "host", "device", "shared" or "unknown"
  */
 DPPL_API
-const char *
-DPPLUSM_GetPointerType (__dppl_keep const DPPLSyclUSMRef MRef,
-                        __dppl_keep const DPPLSyclContextRef CRef);
+const char *DPPLUSM_GetPointerType(__dppl_keep const DPPLSyclUSMRef MRef,
+                                   __dppl_keep const DPPLSyclContextRef CRef);
 
 DPPL_C_EXTERN_C_END

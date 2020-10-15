@@ -35,219 +35,202 @@
 using namespace std;
 using namespace cl::sycl;
 
-namespace
-{
-void foo (size_t & num)
-{
-    auto q1 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_CPU, 0);
-    auto q2 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
-    // Capture the number of active queues in first
-    num = DPPLQueueMgr_GetNumActivatedQueues();
-    DPPLQueueMgr_PopQueue();
-    DPPLQueueMgr_PopQueue();
-    DPPLQueue_Delete(q1);
-    DPPLQueue_Delete(q2);
+namespace {
+void foo(size_t &num) {
+  auto q1 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_CPU, 0);
+  auto q2 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
+  // Capture the number of active queues in first
+  num = DPPLQueueMgr_GetNumActivatedQueues();
+  DPPLQueueMgr_PopQueue();
+  DPPLQueueMgr_PopQueue();
+  DPPLQueue_Delete(q1);
+  DPPLQueue_Delete(q2);
 }
 
-void bar (size_t & num)
-{
-    auto q1 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
-    // Capture the number of active queues in second
-    num = DPPLQueueMgr_GetNumActivatedQueues();
-    DPPLQueueMgr_PopQueue();
-    DPPLQueue_Delete(q1);
+void bar(size_t &num) {
+  auto q1 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
+  // Capture the number of active queues in second
+  num = DPPLQueueMgr_GetNumActivatedQueues();
+  DPPLQueueMgr_PopQueue();
+  DPPLQueue_Delete(q1);
 }
 
-bool has_devices ()
-{
-    bool ret = false;
-    for (auto &p : platform::get_platforms()) {
-        if (p.is_host())
-            continue;
-        if(!p.get_devices().empty()) {
-            ret = true;
-            break;
-        }
+bool has_devices() {
+  bool ret = false;
+  for (auto &p : platform::get_platforms()) {
+    if (p.is_host())
+      continue;
+    if (!p.get_devices().empty()) {
+      ret = true;
+      break;
     }
-    return ret;
+  }
+  return ret;
 }
 
+} // namespace
+
+struct TestDPPLSyclQueueManager : public ::testing::Test {};
+
+TEST_F(TestDPPLSyclQueueManager, CheckDPPLGetCurrentQueue) {
+  if (!has_devices())
+    GTEST_SKIP_("Skipping: No Sycl devices.\n");
+
+  DPPLSyclQueueRef q;
+  ASSERT_NO_THROW(q = DPPLQueueMgr_GetCurrentQueue());
+  ASSERT_TRUE(q != nullptr);
 }
 
-struct TestDPPLSyclQueueManager : public ::testing::Test
-{ };
+TEST_F(TestDPPLSyclQueueManager, CheckDPPLGetOpenCLCpuQ) {
+  if (!has_devices())
+    GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
+  auto nOpenCLCpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_CPU);
+  if (!nOpenCLCpuQ)
+    GTEST_SKIP_("Skipping: No OpenCL CPU device found.");
 
-TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetCurrentQueue)
-{
-    if(!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl devices.\n");
+  auto q = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_CPU, 0);
+  EXPECT_TRUE(q != nullptr);
+  auto sycl_q = reinterpret_cast<queue *>(q);
+  auto be = sycl_q->get_context().get_platform().get_backend();
+  EXPECT_EQ(be, backend::opencl);
+  auto devty = sycl_q->get_device().get_info<info::device::device_type>();
+  EXPECT_EQ(devty, info::device_type::cpu);
 
-    DPPLSyclQueueRef q;
-    ASSERT_NO_THROW(q = DPPLQueueMgr_GetCurrentQueue());
-    ASSERT_TRUE(q != nullptr);
+  auto non_existent_device_num = nOpenCLCpuQ + 1;
+  // Non-existent device number should return nullptr
+  auto null_q =
+      DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_CPU, non_existent_device_num);
+  ASSERT_TRUE(null_q == nullptr);
 }
 
+TEST_F(TestDPPLSyclQueueManager, CheckDPPLGetOpenCLGpuQ) {
+  if (!has_devices())
+    GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
-TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetOpenCLCpuQ)
-{
-    if(!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl devices.\n");
+  auto nOpenCLGpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU);
+  if (!nOpenCLGpuQ)
+    GTEST_SKIP_("Skipping: No OpenCL GPU device found.\n");
 
-    auto nOpenCLCpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_CPU);
-    if(!nOpenCLCpuQ)
-        GTEST_SKIP_("Skipping: No OpenCL CPU device found.");
+  auto q = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0);
+  EXPECT_TRUE(q != nullptr);
+  auto sycl_q = reinterpret_cast<queue *>(q);
+  auto be = sycl_q->get_context().get_platform().get_backend();
+  EXPECT_EQ(be, backend::opencl);
+  auto devty = sycl_q->get_device().get_info<info::device::device_type>();
+  EXPECT_EQ(devty, info::device_type::gpu);
 
-    auto q = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_CPU, 0);
-    EXPECT_TRUE(q != nullptr);
-    auto sycl_q = reinterpret_cast<queue*>(q);
-    auto be = sycl_q->get_context().get_platform().get_backend();
-    EXPECT_EQ(be, backend::opencl);
-    auto devty = sycl_q->get_device().get_info<info::device::device_type>();
-    EXPECT_EQ(devty, info::device_type::cpu);
-
-    auto non_existent_device_num = nOpenCLCpuQ + 1;
-    // Non-existent device number should return nullptr
-    auto null_q = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_CPU,
-                                        non_existent_device_num);
-    ASSERT_TRUE(null_q == nullptr);
+  auto non_existent_device_num = nOpenCLGpuQ + 1;
+  // Non-existent device number should return nullptr
+  auto null_q =
+      DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, non_existent_device_num);
+  ASSERT_TRUE(null_q == nullptr);
 }
 
-TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetOpenCLGpuQ)
-{
-    if(!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl devices.\n");
+TEST_F(TestDPPLSyclQueueManager, CheckDPPLGetLevel0GpuQ) {
+  if (!has_devices())
+    GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
-    auto nOpenCLGpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU);
-    if(!nOpenCLGpuQ)
-        GTEST_SKIP_("Skipping: No OpenCL GPU device found.\n");
+  auto nL0GpuQ = DPPLQueueMgr_GetNumQueues(DPPL_LEVEL_ZERO, DPPL_GPU);
+  if (!nL0GpuQ)
+    GTEST_SKIP_("Skipping: No OpenCL GPU device found.\n");
 
-    auto q = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU, 0);
-    EXPECT_TRUE(q != nullptr);
-    auto sycl_q = reinterpret_cast<queue*>(q);
-    auto be = sycl_q->get_context().get_platform().get_backend();
-    EXPECT_EQ(be, backend::opencl);
-    auto devty = sycl_q->get_device().get_info<info::device::device_type>();
-    EXPECT_EQ(devty, info::device_type::gpu);
+  auto q = DPPLQueueMgr_GetQueue(DPPL_LEVEL_ZERO, DPPL_GPU, 0);
+  EXPECT_TRUE(q != nullptr);
+  auto sycl_q = reinterpret_cast<queue *>(q);
+  auto be = sycl_q->get_context().get_platform().get_backend();
+  EXPECT_EQ(be, backend::level_zero);
+  auto devty = sycl_q->get_device().get_info<info::device::device_type>();
+  EXPECT_EQ(devty, info::device_type::gpu);
 
-    auto non_existent_device_num = nOpenCLGpuQ + 1;
-    // Non-existent device number should return nullptr
-    auto null_q = DPPLQueueMgr_GetQueue(DPPL_OPENCL, DPPL_GPU,
-                                        non_existent_device_num);
-    ASSERT_TRUE(null_q == nullptr);
+  auto non_existent_device_num = nL0GpuQ + 1;
+  // Non-existent device number should return nullptr
+  auto null_q =
+      DPPLQueueMgr_GetQueue(DPPL_LEVEL_ZERO, DPPL_GPU, non_existent_device_num);
+  ASSERT_TRUE(null_q == nullptr);
 }
 
-TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetLevel0GpuQ)
-{
-    if(!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl devices.\n");
+TEST_F(TestDPPLSyclQueueManager, CheckGetNumActivatedQueues) {
+  if (!has_devices())
+    GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
-    auto nL0GpuQ = DPPLQueueMgr_GetNumQueues(DPPL_LEVEL_ZERO, DPPL_GPU);
-    if(!nL0GpuQ)
-        GTEST_SKIP_("Skipping: No OpenCL GPU device found.\n");
+  size_t num0, num1, num2, num4;
 
-    auto q = DPPLQueueMgr_GetQueue(DPPL_LEVEL_ZERO, DPPL_GPU, 0);
-    EXPECT_TRUE(q != nullptr);
-    auto sycl_q = reinterpret_cast<queue*>(q);
-    auto be = sycl_q->get_context().get_platform().get_backend();
-    EXPECT_EQ(be, backend::level_zero);
-    auto devty = sycl_q->get_device().get_info<info::device::device_type>();
-    EXPECT_EQ(devty, info::device_type::gpu);
+  auto nOpenCLCpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_CPU);
+  auto nOpenCLGpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU);
+  auto nL0GpuQ = DPPLQueueMgr_GetNumQueues(DPPL_LEVEL_ZERO, DPPL_GPU);
 
-    auto non_existent_device_num = nL0GpuQ + 1;
-    // Non-existent device number should return nullptr
-    auto null_q = DPPLQueueMgr_GetQueue(DPPL_LEVEL_ZERO, DPPL_GPU,
-                                          non_existent_device_num);
-    ASSERT_TRUE(null_q == nullptr);
+  // Add a queue to main thread
+  if (!nOpenCLCpuQ || !nOpenCLGpuQ)
+    GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
+
+  auto q = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_CPU, 0);
+
+  std::thread first(foo, std::ref(num1));
+  std::thread second(bar, std::ref(num2));
+
+  // synchronize threads:
+  first.join();
+  second.join();
+
+  // Capture the number of active queues in first
+  num0 = DPPLQueueMgr_GetNumActivatedQueues();
+  DPPLQueueMgr_PopQueue();
+  num4 = DPPLQueueMgr_GetNumActivatedQueues();
+
+  // Verify what the expected number of activated queues each time a thread
+  // called getNumActivatedQueues.
+  EXPECT_EQ(num0, 1);
+  EXPECT_EQ(num1, 2);
+  EXPECT_EQ(num2, 1);
+  EXPECT_EQ(num4, 0);
+
+  DPPLQueue_Delete(q);
 }
 
-TEST_F (TestDPPLSyclQueueManager, CheckGetNumActivatedQueues)
-{
-    if(!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl devices.\n");
-
-    size_t num0, num1, num2, num4;
-
-    auto nOpenCLCpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_CPU);
-    auto nOpenCLGpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU);
-    auto nL0GpuQ     = DPPLQueueMgr_GetNumQueues(DPPL_LEVEL_ZERO, DPPL_GPU);
-
-    // Add a queue to main thread
-    if(!nOpenCLCpuQ || !nOpenCLGpuQ)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
-
-    auto q = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_CPU, 0);
-
-    std::thread first (foo, std::ref(num1));
-    std::thread second (bar, std::ref(num2));
-
-    // synchronize threads:
-    first.join();
-    second.join();
-
-    // Capture the number of active queues in first
-    num0 = DPPLQueueMgr_GetNumActivatedQueues();
-    DPPLQueueMgr_PopQueue();
-    num4 = DPPLQueueMgr_GetNumActivatedQueues();
-
-    // Verify what the expected number of activated queues each time a thread
-    // called getNumActivatedQueues.
-    EXPECT_EQ(num0, 1);
-    EXPECT_EQ(num1, 2);
-    EXPECT_EQ(num2, 1);
-    EXPECT_EQ(num4, 0);
-
-    DPPLQueue_Delete(q);
+TEST_F(TestDPPLSyclQueueManager, CheckDPPLDumpDeviceInfo) {
+  if (!has_devices())
+    GTEST_SKIP_("Skipping: No Sycl devices.\n");
+  auto q = DPPLQueueMgr_GetCurrentQueue();
+  EXPECT_NO_FATAL_FAILURE(DPPLDevice_DumpInfo(DPPLQueue_GetDevice(q)));
+  EXPECT_NO_FATAL_FAILURE(DPPLQueue_Delete(q));
 }
 
-TEST_F (TestDPPLSyclQueueManager, CheckDPPLDumpDeviceInfo)
-{
-    if(!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl devices.\n");
-    auto q = DPPLQueueMgr_GetCurrentQueue();
-    EXPECT_NO_FATAL_FAILURE(DPPLDevice_DumpInfo(DPPLQueue_GetDevice(q)));
-    EXPECT_NO_FATAL_FAILURE(DPPLQueue_Delete(q));
+TEST_F(TestDPPLSyclQueueManager, CheckIsCurrentQueue) {
+  if (!has_devices())
+    GTEST_SKIP_("Skipping: No Sycl devices.\n");
+  if (!DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU))
+    GTEST_SKIP_("Skipping: No OpenCL GPU.\n");
+
+  auto Q0 = DPPLQueueMgr_GetCurrentQueue();
+  EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q0));
+  auto Q1 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
+  EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q1));
+  DPPLQueue_Delete(Q1);
+  DPPLQueueMgr_PopQueue();
+  EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q0));
+  DPPLQueue_Delete(Q0);
 }
 
-TEST_F (TestDPPLSyclQueueManager, CheckIsCurrentQueue)
-{
-    if(!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl devices.\n");
-    if(!DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU))
-        GTEST_SKIP_("Skipping: No OpenCL GPU.\n");
+TEST_F(TestDPPLSyclQueueManager, CheckIsCurrentQueue2) {
+  if (!DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_CPU) ||
+      !DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU))
+    GTEST_SKIP_("Skipping: No OpenCL GPU and OpenCL CPU.\n");
 
-    auto Q0 = DPPLQueueMgr_GetCurrentQueue();
-    EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q0));
-    auto Q1 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
-    EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q1));
-    DPPLQueue_Delete(Q1);
-    DPPLQueueMgr_PopQueue();
-    EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q0));
-    DPPLQueue_Delete(Q0);
+  auto Q1 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
+  EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q1));
+  auto Q2 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_CPU, 0);
+  EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q2));
+  EXPECT_FALSE(DPPLQueueMgr_IsCurrentQueue(Q1));
+  DPPLQueue_Delete(Q2);
+  DPPLQueueMgr_PopQueue();
+  EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q1));
+  DPPLQueue_Delete(Q1);
+  DPPLQueueMgr_PopQueue();
 }
 
-TEST_F (TestDPPLSyclQueueManager, CheckIsCurrentQueue2)
-{
-    if(!DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_CPU) ||
-       !DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU))
-        GTEST_SKIP_("Skipping: No OpenCL GPU and OpenCL CPU.\n");
-
-    auto Q1 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_GPU, 0);
-    EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q1));
-    auto Q2 = DPPLQueueMgr_PushQueue(DPPL_OPENCL, DPPL_CPU, 0);
-    EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q2));
-    EXPECT_FALSE(DPPLQueueMgr_IsCurrentQueue(Q1));
-    DPPLQueue_Delete(Q2);
-    DPPLQueueMgr_PopQueue();
-    EXPECT_TRUE(DPPLQueueMgr_IsCurrentQueue(Q1));
-    DPPLQueue_Delete(Q1);
-    DPPLQueueMgr_PopQueue();
-}
-
-int
-main (int argc, char** argv)
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    int ret = RUN_ALL_TESTS();
-    return ret;
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  int ret = RUN_ALL_TESTS();
+  return ret;
 }

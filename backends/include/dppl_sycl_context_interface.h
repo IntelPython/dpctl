@@ -25,12 +25,12 @@
 
 #pragma once
 
-#include "dppl_data_types.h"
-#include "dppl_sycl_types.h"
-#include "dppl_sycl_platform_interface.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dppl_data_types.h"
+#include "dppl_sycl_platform_interface.h"
+#include "dppl_sycl_types.h"
 #include <stdbool.h>
 
 DPPL_C_EXTERN_C_BEGIN
@@ -44,8 +44,8 @@ DPPL_C_EXTERN_C_BEGIN
  * @return   True if the underlying sycl::context are same, false otherwise.
  */
 DPPL_API
-bool DPPLContext_AreEq (__dppl_keep const DPPLSyclContextRef CtxRef1,
-                        __dppl_keep const DPPLSyclContextRef CtxRef2);
+bool DPPLContext_AreEq(__dppl_keep const DPPLSyclContextRef CtxRef1,
+                       __dppl_keep const DPPLSyclContextRef CtxRef2);
 
 /*!
  * @brief Returns true if this SYCL context is a host context.
@@ -54,18 +54,18 @@ bool DPPLContext_AreEq (__dppl_keep const DPPLSyclContextRef CtxRef1,
  * @return   True if the SYCL context is a host context, else False.
  */
 DPPL_API
-bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef);
+bool DPPLContext_IsHost(__dppl_keep const DPPLSyclContextRef CtxRef);
 
 /*!
  * @brief Returns the sycl backend for the DPPLSyclContextRef pointer.
  *
  * @param    CtxRef         An opaque pointer to a sycl::context.
- * @return   The sycl backend for the DPPLSyclContextRef returned as 
+ * @return   The sycl backend for the DPPLSyclContextRef returned as
  * a DPPLSyclBackendType enum type.
  */
 DPPL_API
 DPPLSyclBackendType
-DPPLContext_GetBackend (__dppl_keep const DPPLSyclContextRef CtxRef);
+DPPLContext_GetBackend(__dppl_keep const DPPLSyclContextRef CtxRef);
 
 /*!
  * @brief Delete the pointer after casting it to sycl::context
@@ -73,6 +73,6 @@ DPPLContext_GetBackend (__dppl_keep const DPPLSyclContextRef CtxRef);
  * @param    CtxRef        The DPPLSyclContextRef pointer to be deleted.
  */
 DPPL_API
-void DPPLContext_Delete (__dppl_take DPPLSyclContextRef CtxRef);
+void DPPLContext_Delete(__dppl_take DPPLSyclContextRef CtxRef);
 
 DPPL_C_EXTERN_C_END

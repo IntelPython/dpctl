@@ -25,11 +25,11 @@
 
 #pragma once
 
-#include "dppl_data_types.h"
-#include "dppl_sycl_enum_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dppl_data_types.h"
+#include "dppl_sycl_enum_types.h"
 
 DPPL_C_EXTERN_C_BEGIN
 
@@ -40,7 +40,7 @@ DPPL_C_EXTERN_C_BEGIN
  * @return The number of available sycl::platforms.
  */
 DPPL_API
-size_t DPPLPlatform_GetNumNonHostPlatforms ();
+size_t DPPLPlatform_GetNumNonHostPlatforms();
 
 /*!
  * @brief Returns the number of unique non-host sycl backends on the system.
@@ -48,7 +48,7 @@ size_t DPPLPlatform_GetNumNonHostPlatforms ();
  * @return   The number of unique sycl backends.
  */
 DPPL_API
-size_t DPPLPlatform_GetNumNonHostBackends ();
+size_t DPPLPlatform_GetNumNonHostBackends();
 
 /*!
  * @brief Returns an array of the unique non-host DPPLSyclBackendType values on
@@ -57,7 +57,7 @@ size_t DPPLPlatform_GetNumNonHostBackends ();
  * @return   An array of DPPLSyclBackendType enum values.
  */
 DPPL_API
-__dppl_give DPPLSyclBackendType* DPPLPlatform_GetListOfNonHostBackends ();
+__dppl_give DPPLSyclBackendType *DPPLPlatform_GetListOfNonHostBackends();
 
 /*!
  * @brief Frees an array of DPPLSyclBackendType enum values.
@@ -65,13 +65,13 @@ __dppl_give DPPLSyclBackendType* DPPLPlatform_GetListOfNonHostBackends ();
  * @param    BEArr      An array of DPPLSyclBackendType enum values to be freed.
  */
 DPPL_API
-void DPPLPlatform_DeleteListOfBackends (__dppl_take DPPLSyclBackendType* BEArr);
+void DPPLPlatform_DeleteListOfBackends(__dppl_take DPPLSyclBackendType *BEArr);
 
 /*!
  * @brief Prints out some selected info about all sycl::platform on the system.
  *
  */
 DPPL_API
-void DPPLPlatform_DumpInfo ();
+void DPPLPlatform_DumpInfo();
 
 DPPL_C_EXTERN_C_END
