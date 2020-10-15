@@ -25,25 +25,21 @@
 import dpctl
 import unittest
 
-class TestSyclQueue (unittest.TestCase):
-    @unittest.skipUnless(
-        dpctl.has_gpu_queues(), "No OpenCL GPU queues available"
-    )
-    @unittest.skipUnless(
-        dpctl.has_cpu_queues(), "No OpenCL CPU queues available"
-    )
-    def test_queue_not_equals (self):
+
+class TestSyclQueue(unittest.TestCase):
+    @unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
+    @unittest.skipUnless(dpctl.has_cpu_queues(), "No OpenCL CPU queues available")
+    def test_queue_not_equals(self):
         with dpctl.device_context("opencl:gpu") as gpuQ0:
             with dpctl.device_context("opencl:cpu") as cpuQ:
                 self.assertFalse(cpuQ.equals(gpuQ0))
 
-    @unittest.skipUnless(
-        dpctl.has_gpu_queues(), "No OpenCL GPU queues available"
-    )
-    def test_queue_equals (self):
+    @unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
+    def test_queue_equals(self):
         with dpctl.device_context("opencl:gpu") as gpuQ0:
             with dpctl.device_context("opencl:gpu") as gpuQ1:
                 self.assertTrue(gpuQ0.equals(gpuQ1))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
