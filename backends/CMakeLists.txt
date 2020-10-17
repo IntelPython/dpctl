@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3.2 FATAL_ERROR)
-project("dpCtl - A lightweight SYCL wrapper for Python")
+project("Data-parallel Control (dpCtl)")
 
 # The function checks is DPCPP_ROOT is valid and points to a dpcpp installation
 function (check_for_dpcpp)
@@ -110,23 +110,21 @@ add_library(
 
 # Install DPPLOpenCLInterface
 add_library(
-  DPPLOpenCLInterface
-  SHARED
-  source/dppl_opencl_interface.c
+    DPPLOpenCLInterface
+    SHARED
+    source/dppl_opencl_interface.c
 )
 
 # Install DPPLSyclInterface
 target_include_directories(
-  DPPLSyclInterface
-  PRIVATE
-  ${CMAKE_SOURCE_DIR}/include/
-  ${PYTHON_INCLUDE_DIR}
-  ${NUMPY_INCLUDE_DIR}
+    DPPLSyclInterface
+    PUBLIC
+    ${CMAKE_SOURCE_DIR}/include/
 )
 
 target_include_directories(
     DPPLOpenCLInterface
-    PRIVATE
+    PUBLIC
     ${CMAKE_SOURCE_DIR}/include/
 )
 
@@ -190,3 +188,5 @@ add_subdirectory(tests)
 
 # Todo : Add build rules for doxygen
 # maybe refer https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/
+
+add_subdirectory(docs)
