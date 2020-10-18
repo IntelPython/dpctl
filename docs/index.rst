@@ -25,8 +25,3 @@ Indices and tables
     self
     dpCtl Python API <dpCtl_api>
     api/dpCtl-CAPI_root
-    dpCtl C API (Doxygen) <_dpctl_raw_doxygen_api>
-
-.. _dpctl_raw_doxygen_api:
-
-`dpCtl raw Doxygen API <../doxygen/html/index.html>`_
