@@ -1,0 +1,225 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Function set_args_and_enqueue_dp_kernel_auto_blocking &mdash; Data-parallel Control (dpctl) 0.3.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Function set_curr_env" href="function_dppl__opencl__interface_8h_1af65969c48ec4f4c39acbfa713457dcda.html" />
+    <link rel="prev" title="Function set_args_and_enqueue_dp_kernel" href="function_dppl__opencl__interface_8h_1a7856b6ab74fbbe6536fd81d64562e1df.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data-parallel Control (dpctl)</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="dpCtl-CAPI_root.html">dpCtl C API</a> &raquo;</li>
+        
+      <li>Function set_args_and_enqueue_dp_kernel_auto_blocking</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/function_dppl__opencl__interface_8h_1a7522e1967af436d88e8e8fec48dda403.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="function-set-args-and-enqueue-dp-kernel-auto-blocking">
+<span id="exhale-function-dppl-opencl-interface-8h-1a7522e1967af436d88e8e8fec48dda403"></span><h1>Function set_args_and_enqueue_dp_kernel_auto_blocking<a class="headerlink" href="#function-set-args-and-enqueue-dp-kernel-auto-blocking" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_backends_include_dppl_opencl_interface.h.html#file-backends-include-dppl-opencl-interface-h"><span class="std std-ref">File dppl_opencl_interface.h</span></a></p></li>
+</ul>
+<div class="section" id="function-documentation">
+<h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv444set_args_and_enqueue_dp_kernel_auto_blocking5env_t8kernel_t6size_tPK12kernel_arg_tjP6size_tP6size_t">
+<span id="_CPPv344set_args_and_enqueue_dp_kernel_auto_blocking5env_t8kernel_t6size_tPK12kernel_arg_tjP6size_tP6size_t"></span><span id="_CPPv244set_args_and_enqueue_dp_kernel_auto_blocking5env_t8kernel_t6size_tPK12kernel_arg_tjP6size_tP6size_t"></span><span id="set_args_and_enqueue_dp_kernel_auto_blocking__env_t.kernel_t.s.kernel_arg_tCP.unsigned-i.sP.sP"></span><span class="target" id="dppl__opencl__interface_8h_1a7522e1967af436d88e8e8fec48dda403"></span>int <code class="sig-name descname">set_args_and_enqueue_dp_kernel_auto_blocking</code><span class="sig-paren">(</span><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a60a68d6cb63216c6954c6d6f4db3b6a4.html#_CPPv45env_t" title="env_t">env_t</a> <em>env_t_ptr</em>, <a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a4032a461689a915b743ca9d075ad8570.html#_CPPv48kernel_t" title="kernel_t">kernel_t</a> <em>kernel_t_ptr</em>, size_t <em>nargs</em>, <em class="property">const</em> <a class="reference internal" href="typedef_dppl__opencl__interface_8h_1ad6b9cfe3b0fec6fcd179adf2ed2fa12f.html#_CPPv412kernel_arg_t" title="kernel_arg_t">kernel_arg_t</a> *<em>args</em>, unsigned int <em>num_dims</em>, size_t *<em>dim_starts</em>, size_t *<em>dim_stops</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv444set_args_and_enqueue_dp_kernel_auto_blocking5env_t8kernel_t6size_tPK12kernel_arg_tjP6size_tP6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="function_dppl__opencl__interface_8h_1af65969c48ec4f4c39acbfa713457dcda.html" class="btn btn-neutral float-right" title="Function set_curr_env" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="function_dppl__opencl__interface_8h_1a7856b6ab74fbbe6536fd81d64562e1df.html" class="btn btn-neutral float-left" title="Function set_args_and_enqueue_dp_kernel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Intel Corp.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

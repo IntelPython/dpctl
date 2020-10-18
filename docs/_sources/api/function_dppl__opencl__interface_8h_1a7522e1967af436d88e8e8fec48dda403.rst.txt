@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__opencl__interface_8h_1a7522e1967af436d88e8e8fec48dda403:
+
+Function set_args_and_enqueue_dp_kernel_auto_blocking
+=====================================================
+
+- Defined in :ref:`file_backends_include_dppl_opencl_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: set_args_and_enqueue_dp_kernel_auto_blocking(env_t, kernel_t, size_t, const kernel_arg_t *, unsigned int, size_t *, size_t *)

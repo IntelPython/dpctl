@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="d1/df7/structdp__kernel__arg" kind="struct" language="C++" prot="public">
+    <compoundname>dp_kernel_arg</compoundname>
+    <includes refid="d0/da0/dppl__opencl__interface_8h" local="no">dppl_opencl_interface.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="d1/df7/structdp__kernel__arg_1a5c1abe8db03d1d824331fcffeb8b7322" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t dp_kernel_arg::arg_size</definition>
+        <argsstring></argsstring>
+        <name>arg_size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" line="106" column="12" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="d1/df7/structdp__kernel__arg_1aabfbf93d5c3a937f21ee5220bc202057" prot="public" static="no" mutable="no">
+        <type>const void *</type>
+        <definition>const void* dp_kernel_arg::arg_value</definition>
+        <argsstring></argsstring>
+        <name>arg_value</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" line="105" column="16" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="d1/df7/structdp__kernel__arg_1a367c05865e2577a77cbd98712929aab0" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned dp_kernel_arg::id_</definition>
+        <argsstring></argsstring>
+        <name>id_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" line="104" column="14" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="3">
+        <label>size_t</label>
+      </node>
+      <node id="1">
+        <label>dp_kernel_arg</label>
+        <link refid="d1/df7/structdp__kernel__arg"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>arg_value</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>arg_size</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>id_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>const void *</label>
+      </node>
+      <node id="4">
+        <label>unsigned</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" line="103" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" bodystart="102" bodyend="107"/>
+    <listofallmembers>
+      <member refid="d1/df7/structdp__kernel__arg_1a5c1abe8db03d1d824331fcffeb8b7322" prot="public" virt="non-virtual"><scope>dp_kernel_arg</scope><name>arg_size</name></member>
+      <member refid="d1/df7/structdp__kernel__arg_1aabfbf93d5c3a937f21ee5220bc202057" prot="public" virt="non-virtual"><scope>dp_kernel_arg</scope><name>arg_value</name></member>
+      <member refid="d1/df7/structdp__kernel__arg_1a367c05865e2577a77cbd98712929aab0" prot="public" virt="non-virtual"><scope>dp_kernel_arg</scope><name>id_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

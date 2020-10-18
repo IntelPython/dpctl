@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__kernel__interface_8h_1a27d27a763f299192256cc41f784f4510:
+
+Function DPPLKernel_Delete
+==========================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_kernel_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLKernel_Delete(DPPLSyclKernelRef)

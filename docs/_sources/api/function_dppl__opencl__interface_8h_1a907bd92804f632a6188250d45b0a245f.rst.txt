@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__opencl__interface_8h_1a907bd92804f632a6188250d45b0a245f:
+
+Function destroy_dp_kernel_arg
+==============================
+
+- Defined in :ref:`file_backends_include_dppl_opencl_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: destroy_dp_kernel_arg(kernel_arg_t *)

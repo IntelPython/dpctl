@@ -1,0 +1,84 @@
+
+.. _file_backends_include_dppl_sycl_types.h:
+
+File dppl_sycl_types.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_backends_include>` (``backends/include``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``backends/include/dppl_sycl_types.h``)
+---------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_backends_include_dppl_sycl_types.h.rst
+
+
+
+Detailed Description
+--------------------
+
+This file defines types used by DPPL's C interface to SYCL. 
+
+
+
+
+Includes
+--------
+
+
+- ``Support/ExternC.h`` (:ref:`file_backends_include_Support_ExternC.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_backends_include_dppl_sycl_context_interface.h`
+
+- :ref:`file_backends_include_dppl_sycl_device_interface.h`
+
+- :ref:`file_backends_include_dppl_sycl_event_interface.h`
+
+- :ref:`file_backends_include_dppl_sycl_kernel_interface.h`
+
+- :ref:`file_backends_include_dppl_sycl_program_interface.h`
+
+- :ref:`file_backends_include_dppl_sycl_queue_interface.h`
+
+- :ref:`file_backends_include_dppl_sycl_queue_manager.h`
+
+- :ref:`file_backends_include_dppl_sycl_usm_interface.h`
+
+
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_dppl__sycl__types_8h_1a6f7f076797eb7499ab2c6caffed6efcb`
+
+- :ref:`exhale_typedef_dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a`
+
+- :ref:`exhale_typedef_dppl__sycl__types_8h_1a350c1387c650924e6c0e25f9f24a7892`
+
+- :ref:`exhale_typedef_dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f`
+
+- :ref:`exhale_typedef_dppl__sycl__types_8h_1ab8d36d6db024a870fa83e8b4dbed706e`
+
+- :ref:`exhale_typedef_dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed`
+
+- :ref:`exhale_typedef_dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7`
+
+- :ref:`exhale_typedef_dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e`
+

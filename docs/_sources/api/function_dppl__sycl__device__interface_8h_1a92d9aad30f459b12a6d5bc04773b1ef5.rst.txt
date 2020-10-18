@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__device__interface_8h_1a92d9aad30f459b12a6d5bc04773b1ef5:
+
+Function DPPLDevice_IsGPU
+=========================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_device_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLDevice_IsGPU(const DPPLSyclDeviceRef)

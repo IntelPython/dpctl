@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__opencl__interface_8h_1a28ad28083169569271ae8e82f1b3a580:
+
+Function write_dp_mem_buffer_to_device
+======================================
+
+- Defined in :ref:`file_backends_include_dppl_opencl_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: write_dp_mem_buffer_to_device(env_t, buffer_t, bool, size_t, size_t, const void *)

@@ -1,0 +1,273 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Struct dp_runtime &mdash; Data-parallel Control (dpctl) 0.3.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Struct dp_runtime_t" href="structdp__runtime__t.html" />
+    <link rel="prev" title="Struct dp_program" href="structdp__program.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data-parallel Control (dpctl)</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="dpCtl-CAPI_root.html">dpCtl C API</a> &raquo;</li>
+        
+      <li>Struct dp_runtime</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/structdp__runtime.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="struct-dp-runtime">
+<span id="exhale-struct-structdp-runtime"></span><h1>Struct dp_runtime<a class="headerlink" href="#struct-dp-runtime" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_backends_include_dppl_opencl_interface.h.html#file-backends-include-dppl-opencl-interface-h"><span class="std std-ref">File dppl_opencl_interface.h</span></a></p></li>
+</ul>
+<div class="section" id="struct-documentation">
+<h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp struct">
+<dt id="_CPPv410dp_runtime">
+<span id="_CPPv310dp_runtime"></span><span id="_CPPv210dp_runtime"></span><span id="dp_runtime"></span><span class="target" id="structdp__runtime"></span><em class="property">struct </em><code class="sig-name descname">dp_runtime</code><a class="headerlink" href="#_CPPv410dp_runtime" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N10dp_runtime3id_E">
+<span id="_CPPv3N10dp_runtime3id_E"></span><span id="_CPPv2N10dp_runtime3id_E"></span><span id="dp_runtime::id___unsigned"></span><span class="target" id="structdp__runtime_1ad785d329557ebd7b6e307e2811a8d60c"></span>unsigned <code class="sig-name descname">id_</code><a class="headerlink" href="#_CPPv4N10dp_runtime3id_E" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N10dp_runtime13num_platformsE">
+<span id="_CPPv3N10dp_runtime13num_platformsE"></span><span id="_CPPv2N10dp_runtime13num_platformsE"></span><span id="dp_runtime::num_platforms__unsigned"></span><span class="target" id="structdp__runtime_1abd0a6f9fdd977dd64bd0a7ca14dd4147"></span>unsigned <code class="sig-name descname">num_platforms</code><a class="headerlink" href="#_CPPv4N10dp_runtime13num_platformsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N10dp_runtime12platform_idsE">
+<span id="_CPPv3N10dp_runtime12platform_idsE"></span><span id="_CPPv2N10dp_runtime12platform_idsE"></span><span id="dp_runtime::platform_ids__voidP"></span><span class="target" id="structdp__runtime_1a5d5bb42519c837eea086b15bf13d2506"></span>void *<code class="sig-name descname">platform_ids</code><a class="headerlink" href="#_CPPv4N10dp_runtime12platform_idsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N10dp_runtime7has_cpuE">
+<span id="_CPPv3N10dp_runtime7has_cpuE"></span><span id="_CPPv2N10dp_runtime7has_cpuE"></span><span id="dp_runtime::has_cpu__b"></span><span class="target" id="structdp__runtime_1abd4319a31c44e42c4af13bba8e1eff4f"></span>bool <code class="sig-name descname">has_cpu</code><a class="headerlink" href="#_CPPv4N10dp_runtime7has_cpuE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N10dp_runtime7has_gpuE">
+<span id="_CPPv3N10dp_runtime7has_gpuE"></span><span id="_CPPv2N10dp_runtime7has_gpuE"></span><span id="dp_runtime::has_gpu__b"></span><span class="target" id="structdp__runtime_1a4840f2fe8f593e71ee6c3bb44d0ec3ff"></span>bool <code class="sig-name descname">has_gpu</code><a class="headerlink" href="#_CPPv4N10dp_runtime7has_gpuE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N10dp_runtime13first_cpu_envE">
+<span id="_CPPv3N10dp_runtime13first_cpu_envE"></span><span id="_CPPv2N10dp_runtime13first_cpu_envE"></span><span id="dp_runtime::first_cpu_env__env_t"></span><span class="target" id="structdp__runtime_1aeb6b605ee9b414e5f7c259b6ffd66f5c"></span><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a60a68d6cb63216c6954c6d6f4db3b6a4.html#_CPPv45env_t" title="env_t">env_t</a> <code class="sig-name descname">first_cpu_env</code><a class="headerlink" href="#_CPPv4N10dp_runtime13first_cpu_envE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N10dp_runtime13first_gpu_envE">
+<span id="_CPPv3N10dp_runtime13first_gpu_envE"></span><span id="_CPPv2N10dp_runtime13first_gpu_envE"></span><span id="dp_runtime::first_gpu_env__env_t"></span><span class="target" id="structdp__runtime_1a9350509521cb7b03ca792756c2628906"></span><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a60a68d6cb63216c6954c6d6f4db3b6a4.html#_CPPv45env_t" title="env_t">env_t</a> <code class="sig-name descname">first_gpu_env</code><a class="headerlink" href="#_CPPv4N10dp_runtime13first_gpu_envE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N10dp_runtime8curr_envE">
+<span id="_CPPv3N10dp_runtime8curr_envE"></span><span id="_CPPv2N10dp_runtime8curr_envE"></span><span id="dp_runtime::curr_env__env_t"></span><span class="target" id="structdp__runtime_1a838f0560d243cb2bc828c053c1e87f71"></span><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a60a68d6cb63216c6954c6d6f4db3b6a4.html#_CPPv45env_t" title="env_t">env_t</a> <code class="sig-name descname">curr_env</code><a class="headerlink" href="#_CPPv4N10dp_runtime8curr_envE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N10dp_runtime7dump_fnE">
+<span id="_CPPv3N10dp_runtime7dump_fnE"></span><span id="_CPPv2N10dp_runtime7dump_fnE"></span><span class="target" id="structdp__runtime_1a145de3ba28054f9f29bdb8c955ff9f66"></span>int (*<code class="sig-name descname">dump_fn</code>)<span class="sig-paren">(</span>void*<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10dp_runtime7dump_fnE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="structdp__runtime__t.html" class="btn btn-neutral float-right" title="Struct dp_runtime_t" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="structdp__program.html" class="btn btn-neutral float-left" title="Struct dp_program" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Intel Corp.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

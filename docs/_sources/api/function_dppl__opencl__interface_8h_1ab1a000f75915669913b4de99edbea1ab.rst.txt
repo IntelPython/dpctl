@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__opencl__interface_8h_1ab1a000f75915669913b4de99edbea1ab:
+
+Function create_dp_program_from_spirv
+=====================================
+
+- Defined in :ref:`file_backends_include_dppl_opencl_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: create_dp_program_from_spirv(env_t, const void *, size_t, program_t *)

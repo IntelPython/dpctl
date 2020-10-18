@@ -1,0 +1,13 @@
+.. _exhale_enum_dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584:
+
+Enum DPPLKernelArgType
+======================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_enum_types.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: DPPLKernelArgType

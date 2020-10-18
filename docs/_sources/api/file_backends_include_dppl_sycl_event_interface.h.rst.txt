@@ -1,0 +1,60 @@
+
+.. _file_backends_include_dppl_sycl_event_interface.h:
+
+File dppl_sycl_event_interface.h
+================================
+
+|exhale_lsh| :ref:`Parent directory <dir_backends_include>` (``backends/include``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``backends/include/dppl_sycl_event_interface.h``)
+-------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_backends_include_dppl_sycl_event_interface.h.rst
+
+
+
+Detailed Description
+--------------------
+
+This header declares a C API to a sub-set of the sycl::event interface. 
+
+
+
+
+Includes
+--------
+
+
+- ``Support/DllExport.h`` (:ref:`file_backends_include_Support_DllExport.h`)
+
+- ``Support/ExternC.h`` (:ref:`file_backends_include_Support_ExternC.h`)
+
+- ``Support/MemOwnershipAttrs.h`` (:ref:`file_backends_include_Support_MemOwnershipAttrs.h`)
+
+- ``dppl_data_types.h`` (:ref:`file_backends_include_dppl_data_types.h`)
+
+- ``dppl_sycl_types.h`` (:ref:`file_backends_include_dppl_sycl_types.h`)
+
+
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_dppl__sycl__event__interface_8h_1a941ca1246380eda472171284f1b91234`
+
+- :ref:`exhale_function_dppl__sycl__event__interface_8h_1af7f1a4ee75f61b1f1ec82a39cb8d9452`
+

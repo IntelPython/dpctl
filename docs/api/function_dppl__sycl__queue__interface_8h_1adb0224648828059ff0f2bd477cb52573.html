@@ -1,0 +1,246 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Function DPPLQueue_SubmitNDRange &mdash; Data-parallel Control (dpctl) 0.3.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Function DPPLQueue_SubmitRange" href="function_dppl__sycl__queue__interface_8h_1a7b9c13b2948d2f6a630209bf45fbc1b2.html" />
+    <link rel="prev" title="Function DPPLQueue_Memcpy" href="function_dppl__sycl__queue__interface_8h_1a6a61d533ae3e841f6a78010e5f7aa018.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data-parallel Control (dpctl)</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="dpCtl-CAPI_root.html">dpCtl C API</a> &raquo;</li>
+        
+      <li>Function DPPLQueue_SubmitNDRange</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/function_dppl__sycl__queue__interface_8h_1adb0224648828059ff0f2bd477cb52573.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="function-dpplqueue-submitndrange">
+<span id="exhale-function-dppl-sycl-queue-interface-8h-1adb0224648828059ff0f2bd477cb52573"></span><h1>Function DPPLQueue_SubmitNDRange<a class="headerlink" href="#function-dpplqueue-submitndrange" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_backends_include_dppl_sycl_queue_interface.h.html#file-backends-include-dppl-sycl-queue-interface-h"><span class="std std-ref">File dppl_sycl_queue_interface.h</span></a></p></li>
+</ul>
+<div class="section" id="function-documentation">
+<h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv423DPPLQueue_SubmitNDRangeK17DPPLSyclKernelRefK16DPPLSyclQueueRefPPvPK17DPPLKernelArgType6size_tAL3E_K6size_tAL3E_K6size_t6size_tPK16DPPLSyclEventRef6size_t">
+<span id="_CPPv323DPPLQueue_SubmitNDRangeK17DPPLSyclKernelRefK16DPPLSyclQueueRefPPvPK17DPPLKernelArgType6size_tAL3E_K6size_tAL3E_K6size_t6size_tPK16DPPLSyclEventRef6size_t"></span><span id="_CPPv223DPPLQueue_SubmitNDRangeK17DPPLSyclKernelRefK16DPPLSyclQueueRefPPvPK17DPPLKernelArgType6size_tA3_K6size_tA3_K6size_t6size_tPK16DPPLSyclEventRef6size_t"></span><span id="DPPLQueue_SubmitNDRange__DPPLSyclKernelRefC.DPPLSyclQueueRefC.voidPP.DPPLKernelArgTypeCP.s.sCA.sCA.s.DPPLSyclEventRefCP.s"></span><span class="target" id="dppl__sycl__queue__interface_8h_1adb0224648828059ff0f2bd477cb52573"></span><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a350c1387c650924e6c0e25f9f24a7892.html#_CPPv416DPPLSyclEventRef" title="DPPLSyclEventRef">DPPLSyclEventRef</a> <code class="sig-name descname">DPPLQueue_SubmitNDRange</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="typedef_dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f.html#_CPPv417DPPLSyclKernelRef" title="DPPLSyclKernelRef">DPPLSyclKernelRef</a> <em>KRef</em>, <em class="property">const</em> <a class="reference internal" href="typedef_dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7.html#_CPPv416DPPLSyclQueueRef" title="DPPLSyclQueueRef">DPPLSyclQueueRef</a> <em>QRef</em>, void **<em>Args</em>, <em class="property">const</em> <a class="reference internal" href="enum_dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584.html#_CPPv417DPPLKernelArgType" title="DPPLKernelArgType">DPPLKernelArgType</a> *<em>ArgTypes</em>, size_t <em>NArgs</em>, <em class="property">const</em> size_t <em>gRange</em>[3], <em class="property">const</em> size_t <em>lRange</em>[3], size_t <em>NDims</em>, <em class="property">const</em> <a class="reference internal" href="typedef_dppl__sycl__types_8h_1a350c1387c650924e6c0e25f9f24a7892.html#_CPPv416DPPLSyclEventRef" title="DPPLSyclEventRef">DPPLSyclEventRef</a> *<em>DepEvents</em>, size_t <em>NDepEvents</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DPPLQueue_SubmitNDRangeK17DPPLSyclKernelRefK16DPPLSyclQueueRefPPvPK17DPPLKernelArgType6size_tAL3E_K6size_tAL3E_K6size_t6size_tPK16DPPLSyclEventRef6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Submits the kernel to the specified queue with the provided nd_range argument. </p>
+<p>A wrapper over sycl::queue.submit(). The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as parallel_for(nd_range&lt;NRange&gt;, *unwrap(KRef)).</p>
+<p></p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>An opaque pointer to the sycl::event returned by the sycl::queue.submit() function. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">KRef</span></code>: Opaque pointer to an OpenCL interoperability kernel wrapped inside a sycl::kernel. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">QRef</span></code>: Opaque pointer to the sycl::queue where the kernel will be enqueued. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Args</span></code>: An array of void* pointers that represent the kernel arguments for the kernel. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ArgTypes</span></code>: An array of DPPLKernelArgType enum values that represent the type of each kernel argument. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NArgs</span></code>: Size of Args. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gRange</span></code>: Defines the overall dimension of the dispatch for the kernel. The array can have up to three dimensions. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lRange</span></code>: Defines the iteration domain of a single work-group in a parallel dispatch. The array can have up to three dimensions. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NDims</span></code>: The number of dimensions for both local and global ranges. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DepEvents</span></code>: List of dependent DPPLSyclEventRef objects (events) for the kernel. We call sycl::handler.depends_on for each of the provided events. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NDepEvents</span></code>: Size of the DepEvents list. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="function_dppl__sycl__queue__interface_8h_1a7b9c13b2948d2f6a630209bf45fbc1b2.html" class="btn btn-neutral float-right" title="Function DPPLQueue_SubmitRange" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="function_dppl__sycl__queue__interface_8h_1a6a61d533ae3e841f6a78010e5f7aa018.html" class="btn btn-neutral float-left" title="Function DPPLQueue_Memcpy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Intel Corp.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

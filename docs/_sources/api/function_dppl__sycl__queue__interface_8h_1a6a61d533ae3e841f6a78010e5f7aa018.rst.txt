@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__queue__interface_8h_1a6a61d533ae3e841f6a78010e5f7aa018:
+
+Function DPPLQueue_Memcpy
+=========================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_queue_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLQueue_Memcpy(const DPPLSyclQueueRef, void *, const void *, size_t)

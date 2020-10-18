@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__queue__interface_8h_1a30d7a2a6652d0071a16b6dd1734602e2:
+
+Function DPPLQueue_Wait
+=======================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_queue_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLQueue_Wait(const DPPLSyclQueueRef)

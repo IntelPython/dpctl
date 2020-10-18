@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structdp__buffer" kind="struct" language="C++" prot="public">
+    <compoundname>dp_buffer</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structdp__buffer_1a67a8a4d388ab614577e22c233282b867" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned dp_buffer::id_</definition>
+        <argsstring></argsstring>
+        <name>id_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_opencl_interface.h" line="73" column="14" bodyfile="backends/include/dppl_opencl_interface.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structdp__buffer_1a9f8fb7b35695dfb16b06ea5358dd4811" prot="public" static="no" mutable="no">
+        <type>void *</type>
+        <definition>void* dp_buffer::buffer_ptr</definition>
+        <argsstring></argsstring>
+        <name>buffer_ptr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_opencl_interface.h" line="75" column="10" bodyfile="backends/include/dppl_opencl_interface.h" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structdp__buffer_1a55d795a519be758db4697a384ceda73d" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t dp_buffer::sizeof_buffer_ptr</definition>
+        <argsstring></argsstring>
+        <name>sizeof_buffer_ptr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_opencl_interface.h" line="77" column="12" bodyfile="backends/include/dppl_opencl_interface.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="backends/include/dppl_opencl_interface.h" line="72" column="1" bodyfile="backends/include/dppl_opencl_interface.h" bodystart="71" bodyend="78"/>
+    <listofallmembers>
+      <member refid="structdp__buffer_1a9f8fb7b35695dfb16b06ea5358dd4811" prot="public" virt="non-virtual"><scope>dp_buffer</scope><name>buffer_ptr</name></member>
+      <member refid="structdp__buffer_1a67a8a4d388ab614577e22c233282b867" prot="public" virt="non-virtual"><scope>dp_buffer</scope><name>id_</name></member>
+      <member refid="structdp__buffer_1a55d795a519be758db4697a384ceda73d" prot="public" virt="non-virtual"><scope>dp_buffer</scope><name>sizeof_buffer_ptr</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

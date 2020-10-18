@@ -1,0 +1,13 @@
+.. _exhale_define_DllExport_8h_1a81776019eae18623511d676145f7cdef:
+
+Define DPPL_API
+===============
+
+- Defined in :ref:`file_backends_include_Support_DllExport.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: DPPL_API

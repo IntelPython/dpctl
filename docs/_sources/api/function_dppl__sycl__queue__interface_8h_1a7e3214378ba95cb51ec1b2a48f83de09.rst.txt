@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__queue__interface_8h_1a7e3214378ba95cb51ec1b2a48f83de09:
+
+Function DPPLQueue_Delete
+=========================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_queue_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLQueue_Delete(DPPLSyclQueueRef)

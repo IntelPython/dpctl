@@ -1,0 +1,13 @@
+.. _exhale_typedef_dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed:
+
+Typedef DPPLSyclProgramRef
+==========================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_types.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: DPPLSyclProgramRef

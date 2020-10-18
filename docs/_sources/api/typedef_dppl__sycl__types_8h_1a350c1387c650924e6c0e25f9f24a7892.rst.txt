@@ -1,0 +1,13 @@
+.. _exhale_typedef_dppl__sycl__types_8h_1a350c1387c650924e6c0e25f9f24a7892:
+
+Typedef DPPLSyclEventRef
+========================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_types.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: DPPLSyclEventRef

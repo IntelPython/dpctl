@@ -1,0 +1,13 @@
+.. _exhale_define_group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365:
+
+Define __dppl_keep
+==================
+
+- Defined in :ref:`file_backends_include_Support_MemOwnershipAttrs.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: __dppl_keep

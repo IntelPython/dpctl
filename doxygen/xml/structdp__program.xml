@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structdp__program" kind="struct" language="C++" prot="public">
+    <compoundname>dp_program</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structdp__program_1a25795513ea0cde7c0716dede44c65c73" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned dp_program::id_</definition>
+        <argsstring></argsstring>
+        <name>id_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_opencl_interface.h" line="95" column="14" bodyfile="backends/include/dppl_opencl_interface.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structdp__program_1a53c11334b6b4bc028b22febb7780bad2" prot="public" static="no" mutable="no">
+        <type>void *</type>
+        <definition>void* dp_program::program</definition>
+        <argsstring></argsstring>
+        <name>program</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_opencl_interface.h" line="96" column="10" bodyfile="backends/include/dppl_opencl_interface.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="backends/include/dppl_opencl_interface.h" line="94" column="1" bodyfile="backends/include/dppl_opencl_interface.h" bodystart="93" bodyend="97"/>
+    <listofallmembers>
+      <member refid="structdp__program_1a25795513ea0cde7c0716dede44c65c73" prot="public" virt="non-virtual"><scope>dp_program</scope><name>id_</name></member>
+      <member refid="structdp__program_1a53c11334b6b4bc028b22febb7780bad2" prot="public" virt="non-virtual"><scope>dp_program</scope><name>program</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,70 @@
+
+.. _program_listing_file_backends_include_dppl_sycl_program_interface.h:
+
+Program Listing for File dppl_sycl_program_interface.h
+======================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_backends_include_dppl_sycl_program_interface.h>` (``backends/include/dppl_sycl_program_interface.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   //===----------- dppl_sycl_program_interface.h - dpctl-C_API --*--C++ --*--===//
+   //
+   //               Data Parallel Control Library (dpCtl)
+   //
+   // Copyright 2020 Intel Corporation
+   //
+   // Licensed under the Apache License, Version 2.0 (the "License");
+   // you may not use this file except in compliance with the License.
+   // You may obtain a copy of the License at
+   //
+   //    http://www.apache.org/licenses/LICENSE-2.0
+   //
+   // Unless required by applicable law or agreed to in writing, software
+   // distributed under the License is distributed on an "AS IS" BASIS,
+   // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   // See the License for the specific language governing permissions and
+   // limitations under the License.
+   //
+   //===----------------------------------------------------------------------===//
+   //===----------------------------------------------------------------------===//
+   
+   #pragma once
+   
+   #include "dppl_data_types.h"
+   #include "dppl_sycl_types.h"
+   #include "Support/DllExport.h"
+   #include "Support/ExternC.h"
+   #include "Support/MemOwnershipAttrs.h"
+   
+   DPPL_C_EXTERN_C_BEGIN
+   
+   DPPL_API
+   __dppl_give DPPLSyclProgramRef
+   DPPLProgram_CreateFromOCLSpirv (__dppl_keep const DPPLSyclContextRef Ctx,
+                                   __dppl_keep const void *IL,
+                                   size_t Length);
+   
+   DPPL_API
+   __dppl_give DPPLSyclProgramRef
+   DPPLProgram_CreateFromOCLSource (__dppl_keep const DPPLSyclContextRef Ctx,
+                                    __dppl_keep const char *Source,
+                                    __dppl_keep const char *CompileOpts);
+   
+   DPPL_API
+   __dppl_give DPPLSyclKernelRef
+   DPPLProgram_GetKernel (__dppl_keep DPPLSyclProgramRef PRef,
+                          __dppl_keep const char *KernelName);
+   
+   DPPL_API
+   bool
+   DPPLProgram_HasKernel (__dppl_keep DPPLSyclProgramRef PRef,
+                          __dppl_keep const char *KernelName);
+   
+   DPPL_API
+   void
+   DPPLProgram_Delete (__dppl_take DPPLSyclProgramRef PRef);
+   
+   DPPL_C_EXTERN_C_END

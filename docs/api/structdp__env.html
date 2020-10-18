@@ -1,0 +1,273 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Struct dp_env &mdash; Data-parallel Control (dpctl) 0.3.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Struct dp_kernel" href="structdp__kernel.html" />
+    <link rel="prev" title="Struct dp_buffer" href="structdp__buffer.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data-parallel Control (dpctl)</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="dpCtl-CAPI_root.html">dpCtl C API</a> &raquo;</li>
+        
+      <li>Struct dp_env</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/structdp__env.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="struct-dp-env">
+<span id="exhale-struct-structdp-env"></span><h1>Struct dp_env<a class="headerlink" href="#struct-dp-env" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_backends_include_dppl_opencl_interface.h.html#file-backends-include-dppl-opencl-interface-h"><span class="std std-ref">File dppl_opencl_interface.h</span></a></p></li>
+</ul>
+<div class="section" id="struct-documentation">
+<h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp struct">
+<dt id="_CPPv46dp_env">
+<span id="_CPPv36dp_env"></span><span id="_CPPv26dp_env"></span><span id="dp_env"></span><span class="target" id="structdp__env"></span><em class="property">struct </em><code class="sig-name descname">dp_env</code><a class="headerlink" href="#_CPPv46dp_env" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N6dp_env3id_E">
+<span id="_CPPv3N6dp_env3id_E"></span><span id="_CPPv2N6dp_env3id_E"></span><span id="dp_env::id___unsigned"></span><span class="target" id="structdp__env_1a5b118346b049b427d0ad4ebd91d620d6"></span>unsigned <code class="sig-name descname">id_</code><a class="headerlink" href="#_CPPv4N6dp_env3id_E" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6dp_env7contextE">
+<span id="_CPPv3N6dp_env7contextE"></span><span id="_CPPv2N6dp_env7contextE"></span><span id="dp_env::context__voidP"></span><span class="target" id="structdp__env_1a71fcd31fd9bea81c7e617eea47a3ba3c"></span>void *<code class="sig-name descname">context</code><a class="headerlink" href="#_CPPv4N6dp_env7contextE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6dp_env6deviceE">
+<span id="_CPPv3N6dp_env6deviceE"></span><span id="_CPPv2N6dp_env6deviceE"></span><span id="dp_env::device__voidP"></span><span class="target" id="structdp__env_1acaebd487623f5184afaa8cc9e1484298"></span>void *<code class="sig-name descname">device</code><a class="headerlink" href="#_CPPv4N6dp_env6deviceE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6dp_env5queueE">
+<span id="_CPPv3N6dp_env5queueE"></span><span id="_CPPv2N6dp_env5queueE"></span><span id="dp_env::queue__voidP"></span><span class="target" id="structdp__env_1ad5a7563e4b9b8d43286b970e440e0725"></span>void *<code class="sig-name descname">queue</code><a class="headerlink" href="#_CPPv4N6dp_env5queueE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6dp_env18max_work_item_dimsE">
+<span id="_CPPv3N6dp_env18max_work_item_dimsE"></span><span id="_CPPv2N6dp_env18max_work_item_dimsE"></span><span id="dp_env::max_work_item_dims__unsigned-i"></span><span class="target" id="structdp__env_1ac1c747b9c812e986f57bbd2b161762ce"></span>unsigned int <code class="sig-name descname">max_work_item_dims</code><a class="headerlink" href="#_CPPv4N6dp_env18max_work_item_dimsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6dp_env19max_work_group_sizeE">
+<span id="_CPPv3N6dp_env19max_work_group_sizeE"></span><span id="_CPPv2N6dp_env19max_work_group_sizeE"></span><span id="dp_env::max_work_group_size__s"></span><span class="target" id="structdp__env_1af84974f230719cf38988b6d6681058df"></span>size_t <code class="sig-name descname">max_work_group_size</code><a class="headerlink" href="#_CPPv4N6dp_env19max_work_group_sizeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6dp_env21support_int64_atomicsE">
+<span id="_CPPv3N6dp_env21support_int64_atomicsE"></span><span id="_CPPv2N6dp_env21support_int64_atomicsE"></span><span id="dp_env::support_int64_atomics__i"></span><span class="target" id="structdp__env_1a35e7de8a20748ae145861aa568b31f5e"></span>int <code class="sig-name descname">support_int64_atomics</code><a class="headerlink" href="#_CPPv4N6dp_env21support_int64_atomicsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6dp_env23support_float64_atomicsE">
+<span id="_CPPv3N6dp_env23support_float64_atomicsE"></span><span id="_CPPv2N6dp_env23support_float64_atomicsE"></span><span id="dp_env::support_float64_atomics__i"></span><span class="target" id="structdp__env_1ad13ac6ec1f1d52e3787b5e2e4a607096"></span>int <code class="sig-name descname">support_float64_atomics</code><a class="headerlink" href="#_CPPv4N6dp_env23support_float64_atomicsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6dp_env7dump_fnE">
+<span id="_CPPv3N6dp_env7dump_fnE"></span><span id="_CPPv2N6dp_env7dump_fnE"></span><span class="target" id="structdp__env_1ad16df897c31528dfccd1e06df349634d"></span>int (*<code class="sig-name descname">dump_fn</code>)<span class="sig-paren">(</span>void*<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6dp_env7dump_fnE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="structdp__kernel.html" class="btn btn-neutral float-right" title="Struct dp_kernel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="structdp__buffer.html" class="btn btn-neutral float-left" title="Struct dp_buffer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Intel Corp.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

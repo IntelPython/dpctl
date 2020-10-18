@@ -1,0 +1,13 @@
+.. _exhale_define_group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753:
+
+Define __dppl_give
+==================
+
+- Defined in :ref:`file_backends_include_Support_MemOwnershipAttrs.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: __dppl_give

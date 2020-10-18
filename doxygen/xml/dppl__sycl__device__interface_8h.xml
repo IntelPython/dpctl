@@ -1,0 +1,458 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dppl__sycl__device__interface_8h" kind="file" language="C++">
+    <compoundname>dppl_sycl_device_interface.h</compoundname>
+    <includes refid="dppl__data__types_8h" local="yes">dppl_data_types.h</includes>
+    <includes refid="dppl__sycl__enum__types_8h" local="yes">dppl_sycl_enum_types.h</includes>
+    <includes refid="dppl__sycl__types_8h" local="yes">dppl_sycl_types.h</includes>
+    <includes refid="DllExport_8h" local="yes">Support/DllExport.h</includes>
+    <includes refid="ExternC_8h" local="yes">Support/ExternC.h</includes>
+    <includes refid="MemOwnershipAttrs_8h" local="yes">Support/MemOwnershipAttrs.h</includes>
+    <includedby refid="dppl__sycl__queue__manager_8h" local="yes">backends/include/dppl_sycl_queue_manager.h</includedby>
+    <incdepgraph>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+      <node id="1">
+        <label>backends/include/dppl_sycl_device_interface.h</label>
+        <link refid="dppl__sycl__device__interface_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>Support/DllExport.h</label>
+        <link refid="DllExport_8h"/>
+      </node>
+      <node id="6">
+        <label>dppl_sycl_enum_types.h</label>
+        <link refid="dppl__sycl__enum__types_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>sys/types.h</label>
+      </node>
+      <node id="2">
+        <label>dppl_data_types.h</label>
+        <link refid="dppl__data__types_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>dppl_sycl_types.h</label>
+        <link refid="dppl__sycl__types_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Support/ExternC.h</label>
+        <link refid="ExternC_8h"/>
+      </node>
+      <node id="10">
+        <label>Support/MemOwnershipAttrs.h</label>
+        <link refid="MemOwnershipAttrs_8h"/>
+      </node>
+      <node id="3">
+        <label>inttypes.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>backends/include/dppl_sycl_queue_manager.h</label>
+        <link refid="dppl__sycl__queue__manager_8h"/>
+      </node>
+      <node id="1">
+        <label>backends/include/dppl_sycl_device_interface.h</label>
+        <link refid="dppl__sycl__device__interface_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a318fef3810b70fb5046c5902c0882e3a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void DPPLDevice_DumpInfo</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_DumpInfo</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Prints out some of the info::deivice attributes for the device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A DPPLSyclDeviceRef pointer. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="45" column="6" declfile="backends/include/dppl_sycl_device_interface.h" declline="45" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a4de0363a31b711c9c9480cabdeaafe35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void DPPLDevice_Delete</definition>
+        <argsstring>(DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_Delete</name>
+        <param>
+          <type><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Deletes a DPPLSyclDeviceRef pointer after casting to to sycl::device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The DPPLSyclDeviceRef pointer to be freed. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="53" column="6" declfile="backends/include/dppl_sycl_device_interface.h" declline="53" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a482d2f4edbf67e090cde03856bf99f63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool DPPLDevice_IsAccelerator</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_IsAccelerator</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns true if this SYCL device is an OpenCL device and the device type is sycl::info::device_type::accelerator. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the device type is an accelerator, else False. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="63" column="6" declfile="backends/include/dppl_sycl_device_interface.h" declline="63" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a0ff1d7f7fb0310ecc042edff1b1e85a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool DPPLDevice_IsCPU</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_IsCPU</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns true if this SYCL device is an OpenCL device and the device type is sycl::info::device_type::cpu. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the device type is a cpu, else False. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="73" column="6" declfile="backends/include/dppl_sycl_device_interface.h" declline="73" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a92d9aad30f459b12a6d5bc04773b1ef5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool DPPLDevice_IsGPU</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_IsGPU</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns true if this SYCL device is an OpenCL device and the device type is sycl::info::device_type::gpu. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the device type is a gpu, else False. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="83" column="6" declfile="backends/include/dppl_sycl_device_interface.h" declline="83" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1ac98ce3a56af6cb12d09e4815e6b013b2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool DPPLDevice_IsHost</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_IsHost</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns true if this SYCL device is a host device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the device is a host device, else False. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="92" column="6" declfile="backends/include/dppl_sycl_device_interface.h" declline="92" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a1247248c3b3e54f97f032c482c4a4471" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char* DPPLDevice_GetDriverInfo</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_GetDriverInfo</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns the OpenCL software driver version as a C string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A C string in the form major_number.minor.number that corresponds to the OpenCL driver version if this is a OpenCL device. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="103" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="103" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a245243b4bd19e67f3d878781b0340877" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char* DPPLDevice_GetName</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_GetName</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a C string for the device name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A C string containing the OpenCL device name. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="113" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="113" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a05024b72193cb2808d1ffbfd2ac94427" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char* DPPLDevice_GetVendorName</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_GetVendorName</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a C string corresponding to the vendor name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A C string containing the OpenCL device vendor name. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="123" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="123" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a2a7ac5edf7b421a482c50f28db3739ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool DPPLDevice_IsHostUnifiedMemory</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_IsHostUnifiedMemory</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns True if the device and the host share a unified memory subsystem, else returns False. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Boolean indicating if the device shares a unified memory subsystem with the host. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="134" column="6" declfile="backends/include/dppl_sycl_device_interface.h" declline="134" declcolumn="6"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>This header declares a C interface to sycl::device. Not all of the device API is exposed, only the bits needed in other places like context and queue interfaces. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//===----------<sp/>dppl_sycl_device_interface.h<sp/>-<sp/>dpctl-C_API<sp/>---*---C++<sp/>-*---===//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Data<sp/>Parallel<sp/>Control<sp/>Library<sp/>(dpCtl)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Copyright<sp/>2020<sp/>Intel<sp/>Corporation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Licensed<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the<sp/>&quot;License&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">//<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance<sp/>with<sp/>the<sp/>License.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">//<sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,<sp/>software</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>See<sp/>the<sp/>License<sp/>for<sp/>the<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//<sp/>limitations<sp/>under<sp/>the<sp/>License.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//===----------------------------------------------------------------------===//</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"></highlight><highlight class="comment">//===----------------------------------------------------------------------===//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="dppl__data__types_8h" kindref="compound">dppl_data_types.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="dppl__sycl__enum__types_8h" kindref="compound">dppl_sycl_enum_types.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="dppl__sycl__types_8h" kindref="compound">dppl_sycl_types.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="DllExport_8h" kindref="compound">Support/DllExport.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="ExternC_8h" kindref="compound">Support/ExternC.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="MemOwnershipAttrs_8h" kindref="compound">Support/MemOwnershipAttrs.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal">DPPL_C_EXTERN_C_BEGIN</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1a318fef3810b70fb5046c5902c0882e3a" kindref="member">DPPLDevice_DumpInfo</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1a4de0363a31b711c9c9480cabdeaafe35" kindref="member">DPPLDevice_Delete</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1a482d2f4edbf67e090cde03856bf99f63" kindref="member">DPPLDevice_IsAccelerator</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1a0ff1d7f7fb0310ecc042edff1b1e85a2" kindref="member">DPPLDevice_IsCPU</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1a92d9aad30f459b12a6d5bc04773b1ef5" kindref="member">DPPLDevice_IsGPU</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1ac98ce3a56af6cb12d09e4815e6b013b2" kindref="member">DPPLDevice_IsHost</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><ref refid="group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1a1247248c3b3e54f97f032c482c4a4471" kindref="member">DPPLDevice_GetDriverInfo</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><ref refid="group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1a245243b4bd19e67f3d878781b0340877" kindref="member">DPPLDevice_GetName</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><ref refid="group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1a05024b72193cb2808d1ffbfd2ac94427" kindref="member">DPPLDevice_GetVendorName</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1a2a7ac5edf7b421a482c50f28db3739ff" kindref="member">DPPLDevice_IsHostUnifiedMemory</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal">DPPL_C_EXTERN_C_END</highlight></codeline>
+    </programlisting>
+    <location file="backends/include/dppl_sycl_device_interface.h"/>
+  </compounddef>
+</doxygen>
