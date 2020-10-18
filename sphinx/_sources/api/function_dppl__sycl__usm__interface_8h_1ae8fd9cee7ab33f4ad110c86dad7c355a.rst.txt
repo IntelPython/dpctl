@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__usm__interface_8h_1ae8fd9cee7ab33f4ad110c86dad7c355a:
+
+Function DPPLfree_with_context
+==============================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_usm_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLfree_with_context(DPPLSyclUSMRef, const DPPLSyclContextRef)

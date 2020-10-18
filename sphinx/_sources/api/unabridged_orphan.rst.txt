@@ -1,0 +1,123 @@
+:orphan:
+
+
+Full API
+========
+
+Directories
+***********
+
+
+.. toctree::
+   :maxdepth: 5
+
+   dir_backends.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir_backends_include.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir_backends_include_Support.rst
+
+Files
+*****
+
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_Support_CBindingWrapping.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_Support_DllExport.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_dppl_data_types.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_dppl_opencl_interface.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_dppl_sycl_context_interface.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_dppl_sycl_device_interface.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_dppl_sycl_enum_types.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_dppl_sycl_event_interface.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_dppl_sycl_kernel_interface.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_dppl_sycl_platform_interface.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_dppl_sycl_program_interface.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_dppl_sycl_queue_interface.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_dppl_sycl_queue_manager.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_dppl_sycl_types.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_dppl_sycl_usm_interface.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_dppl_utils.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_error_check_macros.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_Support_ExternC.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_backends_include_Support_MemOwnershipAttrs.h.rst

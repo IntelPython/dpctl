@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__queue__manager_8h_1af1b678a0e5406d481bf316f18454e719:
+
+Function DPPLQueueMgr_PopQueue
+==============================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_queue_manager.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLQueueMgr_PopQueue()

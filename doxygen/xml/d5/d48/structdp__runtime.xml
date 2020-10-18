@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="d5/d48/structdp__runtime" kind="struct" language="C++" prot="public">
+    <compoundname>dp_runtime</compoundname>
+    <includes refid="d0/da0/dppl__opencl__interface_8h" local="no">dppl_opencl_interface.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="d5/d48/structdp__runtime_1a838f0560d243cb2bc828c053c1e87f71" prot="public" static="no" mutable="no">
+        <type><ref refid="d0/da0/dppl__opencl__interface_8h_1a60a68d6cb63216c6954c6d6f4db3b6a4" kindref="member">env_t</ref></type>
+        <definition>env_t dp_runtime::curr_env</definition>
+        <argsstring></argsstring>
+        <name>curr_env</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" line="131" column="11" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" bodystart="131" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="d5/d48/structdp__runtime_1a145de3ba28054f9f29bdb8c955ff9f66" prot="public" static="no" mutable="no">
+        <type>int(*</type>
+        <definition>int(* dp_runtime::dump_fn) (void *)</definition>
+        <argsstring>)(void *)</argsstring>
+        <name>dump_fn</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" line="132" column="5" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" bodystart="132" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="d5/d48/structdp__runtime_1aeb6b605ee9b414e5f7c259b6ffd66f5c" prot="public" static="no" mutable="no">
+        <type><ref refid="d0/da0/dppl__opencl__interface_8h_1a60a68d6cb63216c6954c6d6f4db3b6a4" kindref="member">env_t</ref></type>
+        <definition>env_t dp_runtime::first_cpu_env</definition>
+        <argsstring></argsstring>
+        <name>first_cpu_env</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" line="129" column="11" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" bodystart="129" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="d5/d48/structdp__runtime_1a9350509521cb7b03ca792756c2628906" prot="public" static="no" mutable="no">
+        <type><ref refid="d0/da0/dppl__opencl__interface_8h_1a60a68d6cb63216c6954c6d6f4db3b6a4" kindref="member">env_t</ref></type>
+        <definition>env_t dp_runtime::first_gpu_env</definition>
+        <argsstring></argsstring>
+        <name>first_gpu_env</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" line="130" column="11" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="d5/d48/structdp__runtime_1abd4319a31c44e42c4af13bba8e1eff4f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool dp_runtime::has_cpu</definition>
+        <argsstring></argsstring>
+        <name>has_cpu</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" line="127" column="10" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" bodystart="127" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="d5/d48/structdp__runtime_1a4840f2fe8f593e71ee6c3bb44d0ec3ff" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool dp_runtime::has_gpu</definition>
+        <argsstring></argsstring>
+        <name>has_gpu</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" line="128" column="10" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" bodystart="128" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="d5/d48/structdp__runtime_1ad785d329557ebd7b6e307e2811a8d60c" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned dp_runtime::id_</definition>
+        <argsstring></argsstring>
+        <name>id_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" line="124" column="14" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" bodystart="124" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="d5/d48/structdp__runtime_1abd0a6f9fdd977dd64bd0a7ca14dd4147" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned dp_runtime::num_platforms</definition>
+        <argsstring></argsstring>
+        <name>num_platforms</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" line="125" column="14" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" bodystart="125" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="d5/d48/structdp__runtime_1a5d5bb42519c837eea086b15bf13d2506" prot="public" static="no" mutable="no">
+        <type>void *</type>
+        <definition>void* dp_runtime::platform_ids</definition>
+        <argsstring></argsstring>
+        <name>platform_ids</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" line="126" column="10" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" bodystart="126" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="4">
+        <label>size_t</label>
+      </node>
+      <node id="7">
+        <label>void *</label>
+      </node>
+      <node id="2">
+        <label>int(*)(void *)</label>
+      </node>
+      <node id="1">
+        <label>dp_runtime</label>
+        <link refid="d5/d48/structdp__runtime"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>dump_fn</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>first_gpu_env</edgelabel>
+          <edgelabel>first_cpu_env</edgelabel>
+          <edgelabel>curr_env</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>has_cpu</edgelabel>
+          <edgelabel>has_gpu</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>num_platforms</edgelabel>
+          <edgelabel>id_</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>platform_ids</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>int</label>
+      </node>
+      <node id="6">
+        <label>unsigned</label>
+      </node>
+      <node id="8">
+        <label>bool</label>
+      </node>
+      <node id="3">
+        <label>dp_env</label>
+        <link refid="dd/d9f/structdp__env"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>max_work_group_size</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>support_float64_atomics</edgelabel>
+          <edgelabel>dump_fn</edgelabel>
+          <edgelabel>support_int64_atomics</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>max_work_item_dims</edgelabel>
+          <edgelabel>id_</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>context</edgelabel>
+          <edgelabel>device</edgelabel>
+          <edgelabel>queue</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" line="123" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_opencl_interface.h" bodystart="122" bodyend="133"/>
+    <listofallmembers>
+      <member refid="d5/d48/structdp__runtime_1a838f0560d243cb2bc828c053c1e87f71" prot="public" virt="non-virtual"><scope>dp_runtime</scope><name>curr_env</name></member>
+      <member refid="d5/d48/structdp__runtime_1a145de3ba28054f9f29bdb8c955ff9f66" prot="public" virt="non-virtual"><scope>dp_runtime</scope><name>dump_fn</name></member>
+      <member refid="d5/d48/structdp__runtime_1aeb6b605ee9b414e5f7c259b6ffd66f5c" prot="public" virt="non-virtual"><scope>dp_runtime</scope><name>first_cpu_env</name></member>
+      <member refid="d5/d48/structdp__runtime_1a9350509521cb7b03ca792756c2628906" prot="public" virt="non-virtual"><scope>dp_runtime</scope><name>first_gpu_env</name></member>
+      <member refid="d5/d48/structdp__runtime_1abd4319a31c44e42c4af13bba8e1eff4f" prot="public" virt="non-virtual"><scope>dp_runtime</scope><name>has_cpu</name></member>
+      <member refid="d5/d48/structdp__runtime_1a4840f2fe8f593e71ee6c3bb44d0ec3ff" prot="public" virt="non-virtual"><scope>dp_runtime</scope><name>has_gpu</name></member>
+      <member refid="d5/d48/structdp__runtime_1ad785d329557ebd7b6e307e2811a8d60c" prot="public" virt="non-virtual"><scope>dp_runtime</scope><name>id_</name></member>
+      <member refid="d5/d48/structdp__runtime_1abd0a6f9fdd977dd64bd0a7ca14dd4147" prot="public" virt="non-virtual"><scope>dp_runtime</scope><name>num_platforms</name></member>
+      <member refid="d5/d48/structdp__runtime_1a5d5bb42519c837eea086b15bf13d2506" prot="public" virt="non-virtual"><scope>dp_runtime</scope><name>platform_ids</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

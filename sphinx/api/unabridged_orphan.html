@@ -1,0 +1,507 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Full API &mdash; Data-parallel Control (dpctl) 0.3.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data-parallel Control (dpctl)</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Full API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/unabridged_orphan.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="full-api">
+<h1>Full API<a class="headerlink" href="#full-api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="directories">
+<h2>Directories<a class="headerlink" href="#directories" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dir_backends.html">Directory backends</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dir_backends.html#subdirectories">Subdirectories</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dir_backends_include.html">Directory include</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dir_backends_include.html#subdirectories">Subdirectories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dir_backends_include.html#files">Files</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dir_backends_include_Support.html">Directory Support</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dir_backends_include_Support.html#files">Files</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="files">
+<h2>Files<a class="headerlink" href="#files" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_Support_CBindingWrapping.h.html">File CBindingWrapping.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_CBindingWrapping.h.html#definition-backends-include-support-cbindingwrapping-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/Support/CBindingWrapping.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_Support_CBindingWrapping.h.html">Program Listing for File CBindingWrapping.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_CBindingWrapping.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_CBindingWrapping.h.html#defines">Defines</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_Support_DllExport.h.html">File DllExport.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_DllExport.h.html#definition-backends-include-support-dllexport-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/Support/DllExport.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_Support_DllExport.h.html">Program Listing for File DllExport.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_DllExport.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_DllExport.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_DllExport.h.html#defines">Defines</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_dppl_data_types.h.html">File dppl_data_types.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_data_types.h.html#definition-backends-include-dppl-data-types-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_data_types.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_dppl_data_types.h.html">Program Listing for File dppl_data_types.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_data_types.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_data_types.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_data_types.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_data_types.h.html#defines">Defines</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_dppl_opencl_interface.h.html">File dppl_opencl_interface.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_opencl_interface.h.html#definition-backends-include-dppl-opencl-interface-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_opencl_interface.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_dppl_opencl_interface.h.html">Program Listing for File dppl_opencl_interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_opencl_interface.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_opencl_interface.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_opencl_interface.h.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_opencl_interface.h.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_opencl_interface.h.html#functions">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_opencl_interface.h.html#defines">Defines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_opencl_interface.h.html#typedefs">Typedefs</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_dppl_sycl_context_interface.h.html">File dppl_sycl_context_interface.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_context_interface.h.html#definition-backends-include-dppl-sycl-context-interface-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_sycl_context_interface.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_dppl_sycl_context_interface.h.html">Program Listing for File dppl_sycl_context_interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_context_interface.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_context_interface.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_context_interface.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_context_interface.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_dppl_sycl_device_interface.h.html">File dppl_sycl_device_interface.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_device_interface.h.html#definition-backends-include-dppl-sycl-device-interface-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_sycl_device_interface.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_dppl_sycl_device_interface.h.html">Program Listing for File dppl_sycl_device_interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_device_interface.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_device_interface.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_device_interface.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_device_interface.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_dppl_sycl_enum_types.h.html">File dppl_sycl_enum_types.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_enum_types.h.html#definition-backends-include-dppl-sycl-enum-types-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_sycl_enum_types.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_dppl_sycl_enum_types.h.html">Program Listing for File dppl_sycl_enum_types.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_enum_types.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_enum_types.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_enum_types.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_enum_types.h.html#enums">Enums</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_dppl_sycl_event_interface.h.html">File dppl_sycl_event_interface.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_event_interface.h.html#definition-backends-include-dppl-sycl-event-interface-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_sycl_event_interface.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_dppl_sycl_event_interface.h.html">Program Listing for File dppl_sycl_event_interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_event_interface.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_event_interface.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_event_interface.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_dppl_sycl_kernel_interface.h.html">File dppl_sycl_kernel_interface.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_kernel_interface.h.html#definition-backends-include-dppl-sycl-kernel-interface-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_sycl_kernel_interface.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_dppl_sycl_kernel_interface.h.html">Program Listing for File dppl_sycl_kernel_interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_kernel_interface.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_kernel_interface.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_kernel_interface.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_dppl_sycl_platform_interface.h.html">File dppl_sycl_platform_interface.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_platform_interface.h.html#definition-backends-include-dppl-sycl-platform-interface-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_sycl_platform_interface.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_dppl_sycl_platform_interface.h.html">Program Listing for File dppl_sycl_platform_interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_platform_interface.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_platform_interface.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_platform_interface.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_platform_interface.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_dppl_sycl_program_interface.h.html">File dppl_sycl_program_interface.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_program_interface.h.html#definition-backends-include-dppl-sycl-program-interface-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_sycl_program_interface.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_dppl_sycl_program_interface.h.html">Program Listing for File dppl_sycl_program_interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_program_interface.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_program_interface.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_program_interface.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_dppl_sycl_queue_interface.h.html">File dppl_sycl_queue_interface.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_queue_interface.h.html#definition-backends-include-dppl-sycl-queue-interface-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_sycl_queue_interface.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_dppl_sycl_queue_interface.h.html">Program Listing for File dppl_sycl_queue_interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_queue_interface.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_queue_interface.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_queue_interface.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_dppl_sycl_queue_manager.h.html">File dppl_sycl_queue_manager.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_queue_manager.h.html#definition-backends-include-dppl-sycl-queue-manager-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_sycl_queue_manager.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_dppl_sycl_queue_manager.h.html">Program Listing for File dppl_sycl_queue_manager.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_queue_manager.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_queue_manager.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_queue_manager.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_dppl_sycl_types.h.html">File dppl_sycl_types.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_types.h.html#definition-backends-include-dppl-sycl-types-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_sycl_types.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_dppl_sycl_types.h.html">Program Listing for File dppl_sycl_types.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_types.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_types.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_types.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_types.h.html#typedefs">Typedefs</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_dppl_sycl_usm_interface.h.html">File dppl_sycl_usm_interface.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_usm_interface.h.html#definition-backends-include-dppl-sycl-usm-interface-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_sycl_usm_interface.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_dppl_sycl_usm_interface.h.html">Program Listing for File dppl_sycl_usm_interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_usm_interface.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_usm_interface.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_sycl_usm_interface.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_dppl_utils.h.html">File dppl_utils.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_utils.h.html#definition-backends-include-dppl-utils-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_utils.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_dppl_utils.h.html">Program Listing for File dppl_utils.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_utils.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_utils.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_dppl_utils.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_error_check_macros.h.html">File error_check_macros.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_error_check_macros.h.html#definition-backends-include-error-check-macros-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/error_check_macros.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_error_check_macros.h.html">Program Listing for File error_check_macros.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_error_check_macros.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_error_check_macros.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_error_check_macros.h.html#defines">Defines</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_Support_ExternC.h.html">File ExternC.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_ExternC.h.html#definition-backends-include-support-externc-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/Support/ExternC.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_Support_ExternC.h.html">Program Listing for File ExternC.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_ExternC.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_ExternC.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_ExternC.h.html#defines">Defines</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_backends_include_Support_MemOwnershipAttrs.h.html">File MemOwnershipAttrs.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_MemOwnershipAttrs.h.html#definition-backends-include-support-memownershipattrs-h">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/Support/MemOwnershipAttrs.h</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_backends_include_Support_MemOwnershipAttrs.h.html">Program Listing for File MemOwnershipAttrs.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_MemOwnershipAttrs.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_MemOwnershipAttrs.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_backends_include_Support_MemOwnershipAttrs.h.html#defines">Defines</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Intel Corp.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

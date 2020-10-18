@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__opencl__interface_8h_1ae35d77471215c8e2ab7dd09f07e21eea:
+
+Function destroy_dp_runtime
+===========================
+
+- Defined in :ref:`file_backends_include_dppl_opencl_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: destroy_dp_runtime(runtime_t *)

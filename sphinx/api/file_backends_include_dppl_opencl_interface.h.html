@@ -1,0 +1,294 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>File dppl_opencl_interface.h &mdash; Data-parallel Control (dpctl) 0.3.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data-parallel Control (dpctl)</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>File dppl_opencl_interface.h</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/file_backends_include_dppl_opencl_interface.h.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="file-dppl-opencl-interface-h">
+<span id="file-backends-include-dppl-opencl-interface-h"></span><h1>File dppl_opencl_interface.h<a class="headerlink" href="#file-dppl-opencl-interface-h" title="Permalink to this headline">¶</a></h1>
+<p>↰ <a class="reference internal" href="dir_backends_include.html#dir-backends-include"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">backends/include</span></code>)</p>
+<div class="contents local topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#definition-backends-include-dppl-opencl-interface-h" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_opencl_interface.h</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#detailed-description" id="id2">Detailed Description</a></p></li>
+<li><p><a class="reference internal" href="#includes" id="id3">Includes</a></p></li>
+<li><p><a class="reference internal" href="#classes" id="id4">Classes</a></p></li>
+<li><p><a class="reference internal" href="#enums" id="id5">Enums</a></p></li>
+<li><p><a class="reference internal" href="#functions" id="id6">Functions</a></p></li>
+<li><p><a class="reference internal" href="#defines" id="id7">Defines</a></p></li>
+<li><p><a class="reference internal" href="#typedefs" id="id8">Typedefs</a></p></li>
+</ul>
+</div>
+<div class="section" id="definition-backends-include-dppl-opencl-interface-h">
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_opencl_interface.h</span></code>)<a class="headerlink" href="#definition-backends-include-dppl-opencl-interface-h" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="program_listing_file_backends_include_dppl_opencl_interface.h.html">Program Listing for File dppl_opencl_interface.h</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="detailed-description">
+<h2>Detailed Description<a class="headerlink" href="#detailed-description" title="Permalink to this headline">¶</a></h2>
+<p>This file contains the declaration of a C API to expose a lightweight OpenCL interface for the Python dpctl package.</p>
+</div>
+<div class="section" id="includes">
+<h2>Includes<a class="headerlink" href="#includes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">stdbool.h</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stdlib.h</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="structdp__buffer.html#exhale-struct-structdp-buffer"><span class="std std-ref">Struct dp_buffer</span></a></p></li>
+<li><p><a class="reference internal" href="structdp__env.html#exhale-struct-structdp-env"><span class="std std-ref">Struct dp_env</span></a></p></li>
+<li><p><a class="reference internal" href="structdp__kernel.html#exhale-struct-structdp-kernel"><span class="std std-ref">Struct dp_kernel</span></a></p></li>
+<li><p><a class="reference internal" href="structdp__kernel__arg.html#exhale-struct-structdp-kernel-arg"><span class="std std-ref">Struct dp_kernel_arg</span></a></p></li>
+<li><p><a class="reference internal" href="structdp__program.html#exhale-struct-structdp-program"><span class="std std-ref">Struct dp_program</span></a></p></li>
+<li><p><a class="reference internal" href="structdp__runtime.html#exhale-struct-structdp-runtime"><span class="std std-ref">Struct dp_runtime</span></a></p></li>
+<li><p><a class="reference internal" href="structdp__runtime__t.html#exhale-struct-structdp-runtime-t"><span class="std std-ref">Struct dp_runtime_t</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="enums">
+<h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="enum_dppl__opencl__interface_8h_1a414d5545eb64717cf76cdfd716b67b29.html#exhale-enum-dppl-opencl-interface-8h-1a414d5545eb64717cf76cdfd716b67b29"><span class="std std-ref">Enum DP_GLUE_ERROR_CODES</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1a4128360b3dff32134797e6ca01cc5c7c.html#exhale-function-dppl-opencl-interface-8h-1a4128360b3dff32134797e6ca01cc5c7c"><span class="std std-ref">Function build_dp_program</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1a24bbaf66864ceccc643643978d453383.html#exhale-function-dppl-opencl-interface-8h-1a24bbaf66864ceccc643643978d453383"><span class="std std-ref">Function create_dp_kernel</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1a7659b305f3780aa0858c919b6baf4fa8.html#exhale-function-dppl-opencl-interface-8h-1a7659b305f3780aa0858c919b6baf4fa8"><span class="std std-ref">Function create_dp_kernel_arg</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1ac57c05f82c1675fd6cc62c397d33fc77.html#exhale-function-dppl-opencl-interface-8h-1ac57c05f82c1675fd6cc62c397d33fc77"><span class="std std-ref">Function create_dp_kernel_arg_from_buffer</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1a43b3debedd923d396376be492fbc02d1.html#exhale-function-dppl-opencl-interface-8h-1a43b3debedd923d396376be492fbc02d1"><span class="std std-ref">Function create_dp_program_from_source</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1ab1a000f75915669913b4de99edbea1ab.html#exhale-function-dppl-opencl-interface-8h-1ab1a000f75915669913b4de99edbea1ab"><span class="std std-ref">Function create_dp_program_from_spirv</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1aa8cc64501aa87250c4a49fcaec2fb0b2.html#exhale-function-dppl-opencl-interface-8h-1aa8cc64501aa87250c4a49fcaec2fb0b2"><span class="std std-ref">Function create_dp_runtime</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1a566b3a99735a0d46ba7c295519e7443e.html#exhale-function-dppl-opencl-interface-8h-1a566b3a99735a0d46ba7c295519e7443e"><span class="std std-ref">Function create_dp_rw_mem_buffer</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1ad208cdc7cf60e150f128ae54e3073216.html#exhale-function-dppl-opencl-interface-8h-1ad208cdc7cf60e150f128ae54e3073216"><span class="std std-ref">Function destroy_dp_kernel</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1a907bd92804f632a6188250d45b0a245f.html#exhale-function-dppl-opencl-interface-8h-1a907bd92804f632a6188250d45b0a245f"><span class="std std-ref">Function destroy_dp_kernel_arg</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1a609e92357cff6d2becc4300fa47fb30c.html#exhale-function-dppl-opencl-interface-8h-1a609e92357cff6d2becc4300fa47fb30c"><span class="std std-ref">Function destroy_dp_program</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1ae35d77471215c8e2ab7dd09f07e21eea.html#exhale-function-dppl-opencl-interface-8h-1ae35d77471215c8e2ab7dd09f07e21eea"><span class="std std-ref">Function destroy_dp_runtime</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1af3c68c97b5f2334f97635c71edb0e586.html#exhale-function-dppl-opencl-interface-8h-1af3c68c97b5f2334f97635c71edb0e586"><span class="std std-ref">Function destroy_dp_rw_mem_buffer</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1a57d1dd48b06dbc01af0ca5be40b0a142.html#exhale-function-dppl-opencl-interface-8h-1a57d1dd48b06dbc01af0ca5be40b0a142"><span class="std std-ref">Function read_dp_mem_buffer_from_device</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1a1dff6cc96c6c5c712d2ed9a221919fa6.html#exhale-function-dppl-opencl-interface-8h-1a1dff6cc96c6c5c712d2ed9a221919fa6"><span class="std std-ref">Function release_dp_context</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1a042f0d172f36953491338b4049dc740f.html#exhale-function-dppl-opencl-interface-8h-1a042f0d172f36953491338b4049dc740f"><span class="std std-ref">Function retain_dp_context</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1a7856b6ab74fbbe6536fd81d64562e1df.html#exhale-function-dppl-opencl-interface-8h-1a7856b6ab74fbbe6536fd81d64562e1df"><span class="std std-ref">Function set_args_and_enqueue_dp_kernel</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1a7522e1967af436d88e8e8fec48dda403.html#exhale-function-dppl-opencl-interface-8h-1a7522e1967af436d88e8e8fec48dda403"><span class="std std-ref">Function set_args_and_enqueue_dp_kernel_auto_blocking</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1af65969c48ec4f4c39acbfa713457dcda.html#exhale-function-dppl-opencl-interface-8h-1af65969c48ec4f4c39acbfa713457dcda"><span class="std std-ref">Function set_curr_env</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__opencl__interface_8h_1a28ad28083169569271ae8e82f1b3a580.html#exhale-function-dppl-opencl-interface-8h-1a28ad28083169569271ae8e82f1b3a580"><span class="std std-ref">Function write_dp_mem_buffer_to_device</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="defines">
+<h2>Defines<a class="headerlink" href="#defines" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="define_dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef.html#exhale-define-dppl-opencl-interface-8h-1a81776019eae18623511d676145f7cdef"><span class="std std-ref">Define DPPL_API</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="typedefs">
+<h2>Typedefs<a class="headerlink" href="#typedefs" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a162ccb3cf5ba5fd158c0526cb59412c5.html#exhale-typedef-dppl-opencl-interface-8h-1a162ccb3cf5ba5fd158c0526cb59412c5"><span class="std std-ref">Typedef buffer_t</span></a></p></li>
+<li><p><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a60a68d6cb63216c6954c6d6f4db3b6a4.html#exhale-typedef-dppl-opencl-interface-8h-1a60a68d6cb63216c6954c6d6f4db3b6a4"><span class="std std-ref">Typedef env_t</span></a></p></li>
+<li><p><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1ad6b9cfe3b0fec6fcd179adf2ed2fa12f.html#exhale-typedef-dppl-opencl-interface-8h-1ad6b9cfe3b0fec6fcd179adf2ed2fa12f"><span class="std std-ref">Typedef kernel_arg_t</span></a></p></li>
+<li><p><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a4032a461689a915b743ca9d075ad8570.html#exhale-typedef-dppl-opencl-interface-8h-1a4032a461689a915b743ca9d075ad8570"><span class="std std-ref">Typedef kernel_t</span></a></p></li>
+<li><p><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1afad71e6b9f69f779865c7b36fdab8695.html#exhale-typedef-dppl-opencl-interface-8h-1afad71e6b9f69f779865c7b36fdab8695"><span class="std std-ref">Typedef program_t</span></a></p></li>
+<li><p><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a02fe9218ba15ed9a5addc7b692d4b8f5.html#exhale-typedef-dppl-opencl-interface-8h-1a02fe9218ba15ed9a5addc7b692d4b8f5"><span class="std std-ref">Typedef runtime_t</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Intel Corp.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

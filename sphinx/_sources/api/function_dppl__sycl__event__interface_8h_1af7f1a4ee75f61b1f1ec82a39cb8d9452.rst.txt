@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__event__interface_8h_1af7f1a4ee75f61b1f1ec82a39cb8d9452:
+
+Function DPPLEvent_Wait
+=======================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_event_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLEvent_Wait(DPPLSyclEventRef)

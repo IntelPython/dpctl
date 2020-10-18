@@ -1,0 +1,244 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>File dppl_sycl_usm_interface.h &mdash; Data-parallel Control (dpctl) 0.3.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data-parallel Control (dpctl)</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>File dppl_sycl_usm_interface.h</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/file_backends_include_dppl_sycl_usm_interface.h.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="file-dppl-sycl-usm-interface-h">
+<span id="file-backends-include-dppl-sycl-usm-interface-h"></span><h1>File dppl_sycl_usm_interface.h<a class="headerlink" href="#file-dppl-sycl-usm-interface-h" title="Permalink to this headline">¶</a></h1>
+<p>↰ <a class="reference internal" href="dir_backends_include.html#dir-backends-include"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">backends/include</span></code>)</p>
+<div class="contents local topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#definition-backends-include-dppl-sycl-usm-interface-h" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_sycl_usm_interface.h</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#detailed-description" id="id2">Detailed Description</a></p></li>
+<li><p><a class="reference internal" href="#includes" id="id3">Includes</a></p></li>
+<li><p><a class="reference internal" href="#functions" id="id4">Functions</a></p></li>
+</ul>
+</div>
+<div class="section" id="definition-backends-include-dppl-sycl-usm-interface-h">
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">backends/include/dppl_sycl_usm_interface.h</span></code>)<a class="headerlink" href="#definition-backends-include-dppl-sycl-usm-interface-h" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="program_listing_file_backends_include_dppl_sycl_usm_interface.h.html">Program Listing for File dppl_sycl_usm_interface.h</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="detailed-description">
+<h2>Detailed Description<a class="headerlink" href="#detailed-description" title="Permalink to this headline">¶</a></h2>
+<p>This header declares a C interface to sycl::usm interface functions.</p>
+</div>
+<div class="section" id="includes">
+<h2>Includes<a class="headerlink" href="#includes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Support/DllExport.h</span></code> (<a class="reference internal" href="file_backends_include_Support_DllExport.h.html#file-backends-include-support-dllexport-h"><span class="std std-ref">File DllExport.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Support/ExternC.h</span></code> (<a class="reference internal" href="file_backends_include_Support_ExternC.h.html#file-backends-include-support-externc-h"><span class="std std-ref">File ExternC.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Support/MemOwnershipAttrs.h</span></code> (<a class="reference internal" href="file_backends_include_Support_MemOwnershipAttrs.h.html#file-backends-include-support-memownershipattrs-h"><span class="std std-ref">File MemOwnershipAttrs.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dppl_data_types.h</span></code> (<a class="reference internal" href="file_backends_include_dppl_data_types.h.html#file-backends-include-dppl-data-types-h"><span class="std std-ref">File dppl_data_types.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dppl_sycl_types.h</span></code> (<a class="reference internal" href="file_backends_include_dppl_sycl_types.h.html#file-backends-include-dppl-sycl-types-h"><span class="std std-ref">File dppl_sycl_types.h</span></a>)</p></li>
+</ul>
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1ae8fd9cee7ab33f4ad110c86dad7c355a.html#exhale-function-dppl-sycl-usm-interface-8h-1ae8fd9cee7ab33f4ad110c86dad7c355a"><span class="std std-ref">Function DPPLfree_with_context</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1ac9b6524feefd6d4e7eddae11ee76c4ec.html#exhale-function-dppl-sycl-usm-interface-8h-1ac9b6524feefd6d4e7eddae11ee76c4ec"><span class="std std-ref">Function DPPLfree_with_queue</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1acfd3023a41c800e78e892d7d02a449af.html#exhale-function-dppl-sycl-usm-interface-8h-1acfd3023a41c800e78e892d7d02a449af"><span class="std std-ref">Function DPPLmalloc_device</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a4c1dac9306eca0cb79386e9c86aecaad.html#exhale-function-dppl-sycl-usm-interface-8h-1a4c1dac9306eca0cb79386e9c86aecaad"><span class="std std-ref">Function DPPLmalloc_host</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a6059d326a204127c8123cb5721ae8f20.html#exhale-function-dppl-sycl-usm-interface-8h-1a6059d326a204127c8123cb5721ae8f20"><span class="std std-ref">Function DPPLmalloc_shared</span></a></p></li>
+<li><p><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1ab9f61396ce0d347bfd0dad4ff8f22787.html#exhale-function-dppl-sycl-usm-interface-8h-1ab9f61396ce0d347bfd0dad4ff8f22787"><span class="std std-ref">Function DPPLUSM_GetPointerType</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Intel Corp.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

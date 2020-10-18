@@ -1,0 +1,558 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="d8/d57/test__sycl__program__interface_8cpp" kind="file" language="C++">
+    <compoundname>test_sycl_program_interface.cpp</compoundname>
+    <includes refid="d8/d8e/dppl__sycl__context__interface_8h" local="yes">dppl_sycl_context_interface.h</includes>
+    <includes refid="dc/d31/dppl__sycl__kernel__interface_8h" local="yes">dppl_sycl_kernel_interface.h</includes>
+    <includes refid="d1/d3d/dppl__sycl__program__interface_8h" local="yes">dppl_sycl_program_interface.h</includes>
+    <includes refid="d4/d7b/dppl__sycl__queue__interface_8h" local="yes">dppl_sycl_queue_interface.h</includes>
+    <includes refid="d0/de9/dppl__sycl__queue__manager_8h" local="yes">dppl_sycl_queue_manager.h</includes>
+    <includes local="no">array</includes>
+    <includes local="no">fstream</includes>
+    <includes local="no">filesystem</includes>
+    <includes local="no">gtest/gtest.h</includes>
+    <includes local="no">CL/sycl.hpp</includes>
+    <incdepgraph>
+      <node id="13">
+        <label>stdbool.h</label>
+      </node>
+      <node id="23">
+        <label>CL/sycl.hpp</label>
+      </node>
+      <node id="21">
+        <label>filesystem</label>
+      </node>
+      <node id="17">
+        <label>dppl_sycl_queue_manager.h</label>
+        <link refid="d0/de9/dppl__sycl__queue__manager_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>dppl_sycl_queue_interface.h</label>
+        <link refid="d4/d7b/dppl__sycl__queue__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>stdint.h</label>
+      </node>
+      <node id="14">
+        <label>dppl_sycl_kernel_interface.h</label>
+        <link refid="dc/d31/dppl__sycl__kernel__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>fstream</label>
+      </node>
+      <node id="18">
+        <label>dppl_sycl_device_interface.h</label>
+        <link refid="d8/d8f/dppl__sycl__device__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>Support/DllExport.h</label>
+        <link refid="d6/d26/DllExport_8h"/>
+      </node>
+      <node id="10">
+        <label>dppl_sycl_enum_types.h</label>
+        <link refid="d9/d4f/dppl__sycl__enum__types_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>dppl_sycl_program_interface.h</label>
+        <link refid="d1/d3d/dppl__sycl__program__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>sys/types.h</label>
+      </node>
+      <node id="22">
+        <label>gtest/gtest.h</label>
+      </node>
+      <node id="3">
+        <label>dppl_data_types.h</label>
+        <link refid="d4/dcc/dppl__data__types_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>array</label>
+      </node>
+      <node id="7">
+        <label>dppl_sycl_types.h</label>
+        <link refid="d4/d8f/dppl__sycl__types_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Support/ExternC.h</label>
+        <link refid="d2/d0a/ExternC_8h"/>
+      </node>
+      <node id="9">
+        <label>dppl_sycl_platform_interface.h</label>
+        <link refid="dd/d6a/dppl__sycl__platform__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>Support/MemOwnershipAttrs.h</label>
+        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
+      </node>
+      <node id="2">
+        <label>dppl_sycl_context_interface.h</label>
+        <link refid="d8/d8e/dppl__sycl__context__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>test_sycl_program_interface.cpp</label>
+        <link refid="d8/d57/test__sycl__program__interface_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>inttypes.h</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="de/de9/structTestDPPLSyclProgramInterface" prot="public">TestDPPLSyclProgramInterface</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="d8/d57/test__sycl__program__interface_8cpp_1a3c04138a5bfe5d72780bb7e82a18e627" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int main</definition>
+        <argsstring>(int argc, char **argv)</argsstring>
+        <name>main</name>
+        <param>
+          <type>int</type>
+          <declname>argc</declname>
+        </param>
+        <param>
+          <type>char **</type>
+          <declname>argv</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_program_interface.cpp" line="237" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_program_interface.cpp" bodystart="237" bodyend="242"/>
+      </memberdef>
+      <memberdef kind="function" id="d8/d57/test__sycl__program__interface_8cpp_1aaed75558a609f241e04a9102dabd4ce9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>TEST_F</definition>
+        <argsstring>(TestDPPLSyclProgramInterface, CheckCreateFromOCLSource)</argsstring>
+        <name>TEST_F</name>
+        <param>
+          <type><ref refid="de/de9/structTestDPPLSyclProgramInterface" kindref="compound">TestDPPLSyclProgramInterface</ref></type>
+        </param>
+        <param>
+          <type>CheckCreateFromOCLSource</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_program_interface.cpp" line="146" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_program_interface.cpp" bodystart="146" bodyend="162"/>
+      </memberdef>
+      <memberdef kind="function" id="d8/d57/test__sycl__program__interface_8cpp_1af34b7b6cf7e20f6cad2122bcfbb08db8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>TEST_F</definition>
+        <argsstring>(TestDPPLSyclProgramInterface, CheckCreateFromOCLSpirv)</argsstring>
+        <name>TEST_F</name>
+        <param>
+          <type><ref refid="de/de9/structTestDPPLSyclProgramInterface" kindref="compound">TestDPPLSyclProgramInterface</ref></type>
+        </param>
+        <param>
+          <type>CheckCreateFromOCLSpirv</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_program_interface.cpp" line="164" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_program_interface.cpp" bodystart="164" bodyend="180"/>
+      </memberdef>
+      <memberdef kind="function" id="d8/d57/test__sycl__program__interface_8cpp_1a0bf1b84f8cffd5e03ae130b6a54aef91" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>TEST_F</definition>
+        <argsstring>(TestDPPLSyclProgramInterface, CheckGetKernelOCLSource)</argsstring>
+        <name>TEST_F</name>
+        <param>
+          <type><ref refid="de/de9/structTestDPPLSyclProgramInterface" kindref="compound">TestDPPLSyclProgramInterface</ref></type>
+        </param>
+        <param>
+          <type>CheckGetKernelOCLSource</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_program_interface.cpp" line="182" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_program_interface.cpp" bodystart="182" bodyend="207"/>
+      </memberdef>
+      <memberdef kind="function" id="d8/d57/test__sycl__program__interface_8cpp_1a53c0c6d55bce309cab76708837152d14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>TEST_F</definition>
+        <argsstring>(TestDPPLSyclProgramInterface, CheckGetKernelOCLSpirv)</argsstring>
+        <name>TEST_F</name>
+        <param>
+          <type><ref refid="de/de9/structTestDPPLSyclProgramInterface" kindref="compound">TestDPPLSyclProgramInterface</ref></type>
+        </param>
+        <param>
+          <type>CheckGetKernelOCLSpirv</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_program_interface.cpp" line="209" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_program_interface.cpp" bodystart="209" bodyend="234"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>This file has unit test cases for functions defined in <ref refid="d1/d3d/dppl__sycl__program__interface_8h" kindref="compound">dppl_sycl_program_interface.h</ref>. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//===----------<sp/>test_sycl_program_interface.cpp<sp/>-<sp/>dpctl-C_API<sp/>--*--<sp/>C++<sp/>-*-===//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Data<sp/>Parallel<sp/>Control<sp/>Library<sp/>(dpCtl)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Copyright<sp/>2020<sp/>Intel<sp/>Corporation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Licensed<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the<sp/>&quot;License&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">//<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance<sp/>with<sp/>the<sp/>License.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">//<sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,<sp/>software</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>See<sp/>the<sp/>License<sp/>for<sp/>the<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//<sp/>limitations<sp/>under<sp/>the<sp/>License.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//===----------------------------------------------------------------------===//</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"></highlight><highlight class="comment">//===----------------------------------------------------------------------===//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d8/d8e/dppl__sycl__context__interface_8h" kindref="compound">dppl_sycl_context_interface.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="dc/d31/dppl__sycl__kernel__interface_8h" kindref="compound">dppl_sycl_kernel_interface.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d1/d3d/dppl__sycl__program__interface_8h" kindref="compound">dppl_sycl_program_interface.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d4/d7b/dppl__sycl__queue__interface_8h" kindref="compound">dppl_sycl_queue_interface.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d0/de9/dppl__sycl__queue__manager_8h" kindref="compound">dppl_sycl_queue_manager.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;array&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;fstream&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;filesystem&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gtest/gtest.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;CL/sycl.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">cl::sycl;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="keyword">namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>SIZE<sp/>=<sp/>1024;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>add_kernel_checker<sp/>(queue<sp/>*syclQueue,<sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f" kindref="member">DPPLSyclKernelRef</ref><sp/>AddKernel)</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>range&lt;1&gt;<sp/>a_size{SIZE};</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::array&lt;int,<sp/>SIZE&gt;<sp/>a,<sp/>b,<sp/>c;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i&lt;SIZE;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a[i]<sp/>=<sp/>i;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>b[i]<sp/>=<sp/>i;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>c[i]<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>buffer&lt;int,<sp/>1&gt;<sp/>a_device(a.data(),<sp/>a_size);</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>buffer&lt;int,<sp/>1&gt;<sp/>b_device(b.data(),<sp/>a_size);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>buffer&lt;int,<sp/>1&gt;<sp/>c_device(c.data(),<sp/>a_size);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>buffer&lt;int,<sp/>1&gt;<sp/>buffs[3]<sp/>=<sp/>{a_device,<sp/>b_device,<sp/>c_device};</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>syclQueue-&gt;submit([&amp;](handler&amp;<sp/>cgh)<sp/>{</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>buff<sp/>:<sp/>buffs)<sp/>{</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>arg<sp/>=<sp/>buff.get_access&lt;access::mode::read_write&gt;(cgh);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cgh.set_args(arg);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>syclKernel<sp/>=<sp/></highlight><highlight class="keyword">reinterpret_cast&lt;</highlight><highlight class="normal">kernel*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(AddKernel);</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cgh.parallel_for(range&lt;1&gt;{SIZE},<sp/>*syclKernel);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Validate<sp/>the<sp/>data</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0ul;<sp/>i<sp/>&lt;<sp/>SIZE;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(c[i],<sp/>i<sp/>+<sp/>i);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>axpy_kernel_checker<sp/>(queue<sp/>*syclQueue,<sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f" kindref="member">DPPLSyclKernelRef</ref><sp/>AxpyKernel)</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>range&lt;1&gt;<sp/>a_size{SIZE};</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::array&lt;int,<sp/>SIZE&gt;<sp/>a,<sp/>b,<sp/>c;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i&lt;SIZE;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a[i]<sp/>=<sp/>i;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>b[i]<sp/>=<sp/>i;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>c[i]<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d<sp/>=<sp/>10;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>buffer&lt;int,<sp/>1&gt;<sp/>a_device(a.data(),<sp/>a_size);</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>buffer&lt;int,<sp/>1&gt;<sp/>b_device(b.data(),<sp/>a_size);</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>buffer&lt;int,<sp/>1&gt;<sp/>c_device(c.data(),<sp/>a_size);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>buffer&lt;int,<sp/>1&gt;<sp/>buffs[3]<sp/>=<sp/>{a_device,<sp/>b_device,<sp/>c_device};</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>syclQueue-&gt;submit([&amp;](handler&amp;<sp/>cgh)<sp/>{</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0ul;<sp/>i<sp/>&lt;<sp/>3;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>arg<sp/>=<sp/>buffs[i].get_access&lt;access::mode::read_write&gt;(cgh);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cgh.set_arg(i,<sp/>arg);</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cgh.set_arg(3,<sp/>d);</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>syclKernel<sp/>=<sp/></highlight><highlight class="keyword">reinterpret_cast&lt;</highlight><highlight class="normal">kernel*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(AxpyKernel);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cgh.parallel_for(range&lt;1&gt;{SIZE},<sp/>*syclKernel);</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Validate<sp/>the<sp/>data</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0ul;<sp/>i<sp/>&lt;<sp/>SIZE;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(c[i],<sp/>i<sp/>+<sp/>d*i);</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="109"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111" refid="de/de9/structTestDPPLSyclProgramInterface" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="de/de9/structTestDPPLSyclProgramInterface" kindref="compound">TestDPPLSyclProgramInterface</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>::testing::Test</highlight></codeline>
+<codeline lineno="112"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="113" refid="de/de9/structTestDPPLSyclProgramInterface_1a9eac0be47af76c8421a9a9146a2868ea" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*CLProgramStr<sp/>=<sp/>R</highlight><highlight class="stringliteral">&quot;CLC(</highlight></codeline>
+<codeline lineno="114"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kernel<sp/>void<sp/>add(global<sp/>int*<sp/>a,<sp/>global<sp/>int*<sp/>b,<sp/>global<sp/>int*<sp/>c)<sp/>{</highlight></codeline>
+<codeline lineno="115"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>index<sp/>=<sp/>get_global_id(0);</highlight></codeline>
+<codeline lineno="116"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>c[index]<sp/>=<sp/>a[index]<sp/>+<sp/>b[index];</highlight></codeline>
+<codeline lineno="117"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="118"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="119"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kernel<sp/>void<sp/>axpy(global<sp/>int*<sp/>a,<sp/>global<sp/>int*<sp/>b,<sp/>global<sp/>int*<sp/>c,<sp/>int<sp/>d)<sp/>{</highlight></codeline>
+<codeline lineno="120"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>index<sp/>=<sp/>get_global_id(0);</highlight></codeline>
+<codeline lineno="121"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>c[index]<sp/>=<sp/>a[index]<sp/>+<sp/>d*b[index];</highlight></codeline>
+<codeline lineno="122"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="123"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>)CLC&quot;;</highlight></codeline>
+<codeline lineno="124" refid="de/de9/structTestDPPLSyclProgramInterface_1acafd2c26dff4042303ba07abe72dfb38" refkind="member"><highlight class="stringliteral"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*CompileOpts<sp/>=</highlight><highlight class="stringliteral">&quot;-cl-fast-relaxed-math&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="125" refid="de/de9/structTestDPPLSyclProgramInterface_1aae2042aaac780a6404c96319ceb16f04" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::ifstream<sp/><ref refid="de/de9/structTestDPPLSyclProgramInterface_1aae2042aaac780a6404c96319ceb16f04" kindref="member">spirvFile</ref>;</highlight></codeline>
+<codeline lineno="126" refid="de/de9/structTestDPPLSyclProgramInterface_1a7b2f039d3b2a5fc1cc7cba3e16a53a1c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>spirvFileSize<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="127" refid="de/de9/structTestDPPLSyclProgramInterface_1a2876046f7ff6c2e91474b1ed234730d6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;char&gt;<sp/><ref refid="de/de9/structTestDPPLSyclProgramInterface_1a2876046f7ff6c2e91474b1ed234730d6" kindref="member">spirvBuffer</ref>;</highlight></codeline>
+<codeline lineno="128" refid="de/de9/structTestDPPLSyclProgramInterface_1adf3c4965ff441d5601911d47a9e79614" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nOpenCLGpuQ<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130" refid="de/de9/structTestDPPLSyclProgramInterface_1adadea5b237adf2b94a43eef40a40cc59" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="de/de9/structTestDPPLSyclProgramInterface_1adadea5b237adf2b94a43eef40a40cc59" kindref="member">TestDPPLSyclProgramInterface</ref><sp/>()<sp/>:</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nOpenCLGpuQ(<ref refid="d0/de9/dppl__sycl__queue__manager_8h_1abdccdcdaa08980d3a21850d5b3424276" kindref="member">DPPLQueueMgr_GetNumQueues</ref>(<ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932ab853d01482e628f7e60c58dcbdec0fed" kindref="member">DPPL_OPENCL</ref>,<sp/><ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302ab95e7557f3a390783f7b1b8809e04253" kindref="member">DPPL_GPU</ref>)),</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spirvFile{</highlight><highlight class="stringliteral">&quot;./multi_kernel.spv&quot;</highlight><highlight class="normal">,<sp/>std::ios::binary<sp/>|<sp/>std::ios::ate},</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spirvFileSize(std::filesystem::file_size(</highlight><highlight class="stringliteral">&quot;./multi_kernel.spv&quot;</highlight><highlight class="normal">)),</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spirvBuffer(spirvFileSize)</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spirvFile.seekg(0,<sp/>std::ios::beg);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spirvFile.read(spirvBuffer.data(),<sp/>spirvFileSize);</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="140" refid="de/de9/structTestDPPLSyclProgramInterface_1a96b9331d28f321e603c24f507e77fedb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="de/de9/structTestDPPLSyclProgramInterface_1a96b9331d28f321e603c24f507e77fedb" kindref="member">~TestDPPLSyclProgramInterface</ref><sp/>()</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spirvFile.close();</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="144"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight></codeline>
+<codeline lineno="146" refid="d8/d57/test__sycl__program__interface_8cpp_1aaed75558a609f241e04a9102dabd4ce9" refkind="member"><highlight class="normal"><ref refid="d8/d57/test__sycl__program__interface_8cpp_1aaed75558a609f241e04a9102dabd4ce9" kindref="member">TEST_F</ref><sp/>(<ref refid="de/de9/structTestDPPLSyclProgramInterface" kindref="compound">TestDPPLSyclProgramInterface</ref>,<sp/>CheckCreateFromOCLSource)</highlight></codeline>
+<codeline lineno="147"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!nOpenCLGpuQ)</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GTEST_SKIP_(</highlight><highlight class="stringliteral">&quot;Skipping<sp/>as<sp/>no<sp/>OpenCL<sp/>GPU<sp/>device<sp/>found.\n&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>QueueRef<sp/>=<sp/><ref refid="d0/de9/dppl__sycl__queue__manager_8h_1a25030bcff6aa416374d49377f4501d1f" kindref="member">DPPLQueueMgr_GetQueue</ref>(<ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932ab853d01482e628f7e60c58dcbdec0fed" kindref="member">DPPL_OPENCL</ref>,<sp/><ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302ab95e7557f3a390783f7b1b8809e04253" kindref="member">DPPL_GPU</ref>,<sp/>0);</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>CtxRef<sp/>=<sp/><ref refid="d4/d7b/dppl__sycl__queue__interface_8h_1a5364a29559d40d5edc1cd758bf620993" kindref="member">DPPLQueue_GetContext</ref>(QueueRef);</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>PRef<sp/>=<sp/><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1af9f51f93daa64bedcd3790a416a4869a" kindref="member">DPPLProgram_CreateFromOCLSource</ref>(CtxRef,<sp/>CLProgramStr,</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CompileOpts);</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_TRUE(PRef<sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_TRUE(<ref refid="d1/d3d/dppl__sycl__program__interface_8h_1ad204c641de13b034ef2bff5cb6e18b29" kindref="member">DPPLProgram_HasKernel</ref>(PRef,<sp/></highlight><highlight class="stringliteral">&quot;add&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_TRUE(<ref refid="d1/d3d/dppl__sycl__program__interface_8h_1ad204c641de13b034ef2bff5cb6e18b29" kindref="member">DPPLProgram_HasKernel</ref>(PRef,<sp/></highlight><highlight class="stringliteral">&quot;axpy&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d4/d7b/dppl__sycl__queue__interface_8h_1a7c0ea006c1c53a359714a3f4fb50446c" kindref="member">DPPLQueue_Delete</ref>(QueueRef);</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d8/d8e/dppl__sycl__context__interface_8h_1a0fd0388d7bce93267070c48883371d72" kindref="member">DPPLContext_Delete</ref>(CtxRef);</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1a5852fc8ab7525ea20fcbbced4bda4b58" kindref="member">DPPLProgram_Delete</ref>(PRef);</highlight></codeline>
+<codeline lineno="162"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight></codeline>
+<codeline lineno="164" refid="d8/d57/test__sycl__program__interface_8cpp_1af34b7b6cf7e20f6cad2122bcfbb08db8" refkind="member"><highlight class="normal"><ref refid="d8/d57/test__sycl__program__interface_8cpp_1aaed75558a609f241e04a9102dabd4ce9" kindref="member">TEST_F</ref><sp/>(<ref refid="de/de9/structTestDPPLSyclProgramInterface" kindref="compound">TestDPPLSyclProgramInterface</ref>,<sp/>CheckCreateFromOCLSpirv)</highlight></codeline>
+<codeline lineno="165"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!nOpenCLGpuQ)</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GTEST_SKIP_(</highlight><highlight class="stringliteral">&quot;Skipping<sp/>as<sp/>no<sp/>OpenCL<sp/>GPU<sp/>device<sp/>found.\n&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>QueueRef<sp/>=<sp/><ref refid="d0/de9/dppl__sycl__queue__manager_8h_1a25030bcff6aa416374d49377f4501d1f" kindref="member">DPPLQueueMgr_GetQueue</ref>(<ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932ab853d01482e628f7e60c58dcbdec0fed" kindref="member">DPPL_OPENCL</ref>,<sp/><ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302ab95e7557f3a390783f7b1b8809e04253" kindref="member">DPPL_GPU</ref>,<sp/>0);</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>CtxRef<sp/>=<sp/><ref refid="d4/d7b/dppl__sycl__queue__interface_8h_1a5364a29559d40d5edc1cd758bf620993" kindref="member">DPPLQueue_GetContext</ref>(QueueRef);</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>PRef<sp/>=<sp/><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1af4e571c77ac5590fc81639229153e94d" kindref="member">DPPLProgram_CreateFromOCLSpirv</ref>(CtxRef,<sp/>spirvBuffer.data(),</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spirvFileSize);</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_TRUE(PRef<sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_TRUE(<ref refid="d1/d3d/dppl__sycl__program__interface_8h_1ad204c641de13b034ef2bff5cb6e18b29" kindref="member">DPPLProgram_HasKernel</ref>(PRef,<sp/></highlight><highlight class="stringliteral">&quot;add&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_TRUE(<ref refid="d1/d3d/dppl__sycl__program__interface_8h_1ad204c641de13b034ef2bff5cb6e18b29" kindref="member">DPPLProgram_HasKernel</ref>(PRef,<sp/></highlight><highlight class="stringliteral">&quot;axpy&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d4/d7b/dppl__sycl__queue__interface_8h_1a7c0ea006c1c53a359714a3f4fb50446c" kindref="member">DPPLQueue_Delete</ref>(QueueRef);</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d8/d8e/dppl__sycl__context__interface_8h_1a0fd0388d7bce93267070c48883371d72" kindref="member">DPPLContext_Delete</ref>(CtxRef);</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1a5852fc8ab7525ea20fcbbced4bda4b58" kindref="member">DPPLProgram_Delete</ref>(PRef);</highlight></codeline>
+<codeline lineno="180"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"></highlight></codeline>
+<codeline lineno="182" refid="d8/d57/test__sycl__program__interface_8cpp_1a0bf1b84f8cffd5e03ae130b6a54aef91" refkind="member"><highlight class="normal"><ref refid="d8/d57/test__sycl__program__interface_8cpp_1aaed75558a609f241e04a9102dabd4ce9" kindref="member">TEST_F</ref><sp/>(<ref refid="de/de9/structTestDPPLSyclProgramInterface" kindref="compound">TestDPPLSyclProgramInterface</ref>,<sp/>CheckGetKernelOCLSource)</highlight></codeline>
+<codeline lineno="183"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!nOpenCLGpuQ)</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GTEST_SKIP_(</highlight><highlight class="stringliteral">&quot;Skipping<sp/>as<sp/>no<sp/>OpenCL<sp/>GPU<sp/>device<sp/>found.\n&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>QueueRef<sp/>=<sp/><ref refid="d0/de9/dppl__sycl__queue__manager_8h_1a25030bcff6aa416374d49377f4501d1f" kindref="member">DPPLQueueMgr_GetQueue</ref>(<ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932ab853d01482e628f7e60c58dcbdec0fed" kindref="member">DPPL_OPENCL</ref>,<sp/><ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302ab95e7557f3a390783f7b1b8809e04253" kindref="member">DPPL_GPU</ref>,<sp/>0);</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>CtxRef<sp/>=<sp/><ref refid="d4/d7b/dppl__sycl__queue__interface_8h_1a5364a29559d40d5edc1cd758bf620993" kindref="member">DPPLQueue_GetContext</ref>(QueueRef);</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>PRef<sp/>=<sp/><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1af9f51f93daa64bedcd3790a416a4869a" kindref="member">DPPLProgram_CreateFromOCLSource</ref>(CtxRef,<sp/>CLProgramStr,</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CompileOpts);</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>AddKernel<sp/>=<sp/><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1afdda6116401b8769a3b28edae7a85258" kindref="member">DPPLProgram_GetKernel</ref>(PRef,<sp/></highlight><highlight class="stringliteral">&quot;add&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>AxpyKernel<sp/>=<sp/><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1afdda6116401b8769a3b28edae7a85258" kindref="member">DPPLProgram_GetKernel</ref>(PRef,<sp/></highlight><highlight class="stringliteral">&quot;axpy&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"></highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_TRUE(AddKernel<sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_TRUE(AxpyKernel<sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>syclQueue<sp/>=<sp/></highlight><highlight class="keyword">reinterpret_cast&lt;</highlight><highlight class="normal">queue*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(QueueRef);</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"></highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/>add_kernel_checker(syclQueue,<sp/>AddKernel);</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/>axpy_kernel_checker(syclQueue,<sp/>AxpyKernel);</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="dc/d31/dppl__sycl__kernel__interface_8h_1a47bcfc3a382e18570bbc437e0e53961f" kindref="member">DPPLKernel_Delete</ref>(AddKernel);</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="dc/d31/dppl__sycl__kernel__interface_8h_1a47bcfc3a382e18570bbc437e0e53961f" kindref="member">DPPLKernel_Delete</ref>(AxpyKernel);</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d4/d7b/dppl__sycl__queue__interface_8h_1a7c0ea006c1c53a359714a3f4fb50446c" kindref="member">DPPLQueue_Delete</ref>(QueueRef);</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d8/d8e/dppl__sycl__context__interface_8h_1a0fd0388d7bce93267070c48883371d72" kindref="member">DPPLContext_Delete</ref>(CtxRef);</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1a5852fc8ab7525ea20fcbbced4bda4b58" kindref="member">DPPLProgram_Delete</ref>(PRef);</highlight></codeline>
+<codeline lineno="207"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"></highlight></codeline>
+<codeline lineno="209" refid="d8/d57/test__sycl__program__interface_8cpp_1a53c0c6d55bce309cab76708837152d14" refkind="member"><highlight class="normal"><ref refid="d8/d57/test__sycl__program__interface_8cpp_1aaed75558a609f241e04a9102dabd4ce9" kindref="member">TEST_F</ref><sp/>(<ref refid="de/de9/structTestDPPLSyclProgramInterface" kindref="compound">TestDPPLSyclProgramInterface</ref>,<sp/>CheckGetKernelOCLSpirv)</highlight></codeline>
+<codeline lineno="210"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!nOpenCLGpuQ)</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GTEST_SKIP_(</highlight><highlight class="stringliteral">&quot;Skipping<sp/>as<sp/>no<sp/>OpenCL<sp/>GPU<sp/>device<sp/>found.\n&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>QueueRef<sp/>=<sp/><ref refid="d0/de9/dppl__sycl__queue__manager_8h_1a25030bcff6aa416374d49377f4501d1f" kindref="member">DPPLQueueMgr_GetQueue</ref>(<ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932ab853d01482e628f7e60c58dcbdec0fed" kindref="member">DPPL_OPENCL</ref>,<sp/><ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302ab95e7557f3a390783f7b1b8809e04253" kindref="member">DPPL_GPU</ref>,<sp/>0);</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>CtxRef<sp/>=<sp/><ref refid="d4/d7b/dppl__sycl__queue__interface_8h_1a5364a29559d40d5edc1cd758bf620993" kindref="member">DPPLQueue_GetContext</ref>(QueueRef);</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>PRef<sp/>=<sp/><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1af4e571c77ac5590fc81639229153e94d" kindref="member">DPPLProgram_CreateFromOCLSpirv</ref>(CtxRef,<sp/>spirvBuffer.data(),</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spirvFileSize);</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>AddKernel<sp/>=<sp/><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1afdda6116401b8769a3b28edae7a85258" kindref="member">DPPLProgram_GetKernel</ref>(PRef,<sp/></highlight><highlight class="stringliteral">&quot;add&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>AxpyKernel<sp/>=<sp/><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1afdda6116401b8769a3b28edae7a85258" kindref="member">DPPLProgram_GetKernel</ref>(PRef,<sp/></highlight><highlight class="stringliteral">&quot;axpy&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"></highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_TRUE(AddKernel<sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_TRUE(AxpyKernel<sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"></highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>syclQueue<sp/>=<sp/></highlight><highlight class="keyword">reinterpret_cast&lt;</highlight><highlight class="normal">queue*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(QueueRef);</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"></highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/>add_kernel_checker(syclQueue,<sp/>AddKernel);</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/>axpy_kernel_checker(syclQueue,<sp/>AxpyKernel);</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="dc/d31/dppl__sycl__kernel__interface_8h_1a47bcfc3a382e18570bbc437e0e53961f" kindref="member">DPPLKernel_Delete</ref>(AddKernel);</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="dc/d31/dppl__sycl__kernel__interface_8h_1a47bcfc3a382e18570bbc437e0e53961f" kindref="member">DPPLKernel_Delete</ref>(AxpyKernel);</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d4/d7b/dppl__sycl__queue__interface_8h_1a7c0ea006c1c53a359714a3f4fb50446c" kindref="member">DPPLQueue_Delete</ref>(QueueRef);</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d8/d8e/dppl__sycl__context__interface_8h_1a0fd0388d7bce93267070c48883371d72" kindref="member">DPPLContext_Delete</ref>(CtxRef);</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1a5852fc8ab7525ea20fcbbced4bda4b58" kindref="member">DPPLProgram_Delete</ref>(PRef);</highlight></codeline>
+<codeline lineno="234"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight></codeline>
+<codeline lineno="236"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="237" refid="d8/d57/test__sycl__program__interface_8cpp_1a3c04138a5bfe5d72780bb7e82a18e627" refkind="member"><highlight class="normal"><ref refid="d8/d57/test__sycl__program__interface_8cpp_1a3c04138a5bfe5d72780bb7e82a18e627" kindref="member">main</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>argc,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>argv)</highlight></codeline>
+<codeline lineno="238"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/>::testing::InitGoogleTest(&amp;argc,<sp/>argv);</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ret<sp/>=<sp/>RUN_ALL_TESTS();</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ret;</highlight></codeline>
+<codeline lineno="242"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_program_interface.cpp"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__context__interface_8h_1a3469c7efd47e9a522e61837d48426cb4:
+
+Function DPPLContext_GetBackend
+===============================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_context_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLContext_GetBackend(const DPPLSyclContextRef)

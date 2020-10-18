@@ -1,0 +1,74 @@
+
+.. _file_backends_include_Support_ExternC.h:
+
+File ExternC.h
+==============
+
+|exhale_lsh| :ref:`Parent directory <dir_backends_include_Support>` (``backends/include/Support``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``backends/include/Support/ExternC.h``)
+---------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_backends_include_Support_ExternC.h.rst
+
+
+
+Detailed Description
+--------------------
+
+This file defines an extern "C" wrapper. 
+
+
+
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_backends_include_dppl_sycl_types.h`
+
+- :ref:`file_backends_include_dppl_sycl_enum_types.h`
+
+- :ref:`file_backends_include_dppl_sycl_platform_interface.h`
+
+- :ref:`file_backends_include_dppl_sycl_context_interface.h`
+
+- :ref:`file_backends_include_dppl_sycl_device_interface.h`
+
+- :ref:`file_backends_include_dppl_sycl_event_interface.h`
+
+- :ref:`file_backends_include_dppl_sycl_kernel_interface.h`
+
+- :ref:`file_backends_include_dppl_sycl_program_interface.h`
+
+- :ref:`file_backends_include_dppl_sycl_queue_interface.h`
+
+- :ref:`file_backends_include_dppl_sycl_queue_manager.h`
+
+- :ref:`file_backends_include_dppl_sycl_usm_interface.h`
+
+- :ref:`file_backends_include_dppl_utils.h`
+
+
+
+
+Defines
+-------
+
+
+- :ref:`exhale_define_ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0`
+
+- :ref:`exhale_define_ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb`
+

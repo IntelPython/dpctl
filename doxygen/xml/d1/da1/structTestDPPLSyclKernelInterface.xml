@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="d1/da1/structTestDPPLSyclKernelInterface" kind="struct" language="C++" prot="public">
+    <compoundname>TestDPPLSyclKernelInterface</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">Test</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="d1/da1/structTestDPPLSyclKernelInterface_1a3e4c45952b9b572513b0191516e7555d" prot="public" static="no" mutable="no">
+        <type>const char *</type>
+        <definition>const char* TestDPPLSyclKernelInterface::CLProgramStr</definition>
+        <argsstring></argsstring>
+        <name>CLProgramStr</name>
+        <initializer>= R&quot;CLC(
+        kernel void add(global int* a, global int* b, global int* c) {
+            size_t index = get_global_id(0);
+            c[index] = a[index] + b[index];
+        }
+
+        kernel void axpy(global int* a, global int* b, global int* c, int d) {
+            size_t index = get_global_id(0);
+            c[index] = a[index] + d*b[index];
+        }
+    )CLC&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_kernel_interface.cpp" line="43" column="16" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_kernel_interface.cpp" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="d1/da1/structTestDPPLSyclKernelInterface_1a3b5c367ed569ea290ebfc85b2de52395" prot="public" static="no" mutable="no">
+        <type>const char *</type>
+        <definition>const char* TestDPPLSyclKernelInterface::CompileOpts</definition>
+        <argsstring></argsstring>
+        <name>CompileOpts</name>
+        <initializer>=&quot;-cl-fast-relaxed-math&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_kernel_interface.cpp" line="54" column="16" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_kernel_interface.cpp" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="d1/da1/structTestDPPLSyclKernelInterface_1a6b10bbc778538937f105bf3827187284" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t TestDPPLSyclKernelInterface::nOpenCLGpuQ</definition>
+        <argsstring></argsstring>
+        <name>nOpenCLGpuQ</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_kernel_interface.cpp" line="56" column="12" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_kernel_interface.cpp" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="d1/da1/structTestDPPLSyclKernelInterface_1ab33384f0ad5f7c1c38392941b91f5dd3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>TestDPPLSyclKernelInterface::TestDPPLSyclKernelInterface</definition>
+        <argsstring>()</argsstring>
+        <name>TestDPPLSyclKernelInterface</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_kernel_interface.cpp" line="57" column="5" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_kernel_interface.cpp" bodystart="57" bodyend="59"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>TestDPPLSyclKernelInterface</label>
+        <link refid="d1/da1/structTestDPPLSyclKernelInterface"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>size_t</label>
+      </node>
+      <node id="1">
+        <label>TestDPPLSyclKernelInterface</label>
+        <link refid="d1/da1/structTestDPPLSyclKernelInterface"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>nOpenCLGpuQ</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>CLProgramStr</edgelabel>
+          <edgelabel>CompileOpts</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Test</label>
+      </node>
+      <node id="4">
+        <label>const char *</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_kernel_interface.cpp" line="42" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_kernel_interface.cpp" bodystart="41" bodyend="60"/>
+    <listofallmembers>
+      <member refid="d1/da1/structTestDPPLSyclKernelInterface_1a3e4c45952b9b572513b0191516e7555d" prot="public" virt="non-virtual"><scope>TestDPPLSyclKernelInterface</scope><name>CLProgramStr</name></member>
+      <member refid="d1/da1/structTestDPPLSyclKernelInterface_1a3b5c367ed569ea290ebfc85b2de52395" prot="public" virt="non-virtual"><scope>TestDPPLSyclKernelInterface</scope><name>CompileOpts</name></member>
+      <member refid="d1/da1/structTestDPPLSyclKernelInterface_1a6b10bbc778538937f105bf3827187284" prot="public" virt="non-virtual"><scope>TestDPPLSyclKernelInterface</scope><name>nOpenCLGpuQ</name></member>
+      <member refid="d1/da1/structTestDPPLSyclKernelInterface_1ab33384f0ad5f7c1c38392941b91f5dd3" prot="public" virt="non-virtual"><scope>TestDPPLSyclKernelInterface</scope><name>TestDPPLSyclKernelInterface</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

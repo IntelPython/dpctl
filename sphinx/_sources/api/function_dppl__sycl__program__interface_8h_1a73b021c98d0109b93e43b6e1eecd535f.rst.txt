@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__program__interface_8h_1a73b021c98d0109b93e43b6e1eecd535f:
+
+Function DPPLProgram_CreateFromOCLSpirv
+=======================================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_program_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLProgram_CreateFromOCLSpirv(const DPPLSyclContextRef, const void *, size_t)

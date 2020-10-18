@@ -1,0 +1,69 @@
+
+.. _file_backends_include_dppl_sycl_program_interface.h:
+
+File dppl_sycl_program_interface.h
+==================================
+
+|exhale_lsh| :ref:`Parent directory <dir_backends_include>` (``backends/include``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``backends/include/dppl_sycl_program_interface.h``)
+---------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_backends_include_dppl_sycl_program_interface.h.rst
+
+
+
+Detailed Description
+--------------------
+
+This header declares a C API to create Sycl program an interoperability program defined in OpenCL. In future, API to create interoperability kernels from other languages such as Level-0 driver API may be added here.
+
+TodoInvestigate what we should do when we add support for Level-0 API. 
+
+
+
+
+
+Includes
+--------
+
+
+- ``Support/DllExport.h`` (:ref:`file_backends_include_Support_DllExport.h`)
+
+- ``Support/ExternC.h`` (:ref:`file_backends_include_Support_ExternC.h`)
+
+- ``Support/MemOwnershipAttrs.h`` (:ref:`file_backends_include_Support_MemOwnershipAttrs.h`)
+
+- ``dppl_data_types.h`` (:ref:`file_backends_include_dppl_data_types.h`)
+
+- ``dppl_sycl_types.h`` (:ref:`file_backends_include_dppl_sycl_types.h`)
+
+
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_dppl__sycl__program__interface_8h_1a1a4750b24487335ecaa1481d8cded60f`
+
+- :ref:`exhale_function_dppl__sycl__program__interface_8h_1a73b021c98d0109b93e43b6e1eecd535f`
+
+- :ref:`exhale_function_dppl__sycl__program__interface_8h_1a54639690d0fc41e58a5e30d9a0824b7a`
+
+- :ref:`exhale_function_dppl__sycl__program__interface_8h_1af6204db8d350c05dd38ea72df53f3276`
+
+- :ref:`exhale_function_dppl__sycl__program__interface_8h_1a8d431de6777cac25c3b58e1921945984`
+

@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="da/dfb/test__sycl__platform__interface_8cpp" kind="file" language="C++">
+    <compoundname>test_sycl_platform_interface.cpp</compoundname>
+    <includes refid="dd/d6a/dppl__sycl__platform__interface_8h" local="yes">dppl_sycl_platform_interface.h</includes>
+    <includes local="no">gtest/gtest.h</includes>
+    <incdepgraph>
+      <node id="5">
+        <label>stdint.h</label>
+      </node>
+      <node id="9">
+        <label>Support/DllExport.h</label>
+        <link refid="d6/d26/DllExport_8h"/>
+      </node>
+      <node id="7">
+        <label>dppl_sycl_enum_types.h</label>
+        <link refid="d9/d4f/dppl__sycl__enum__types_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>sys/types.h</label>
+      </node>
+      <node id="11">
+        <label>gtest/gtest.h</label>
+      </node>
+      <node id="3">
+        <label>dppl_data_types.h</label>
+        <link refid="d4/dcc/dppl__data__types_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Support/ExternC.h</label>
+        <link refid="d2/d0a/ExternC_8h"/>
+      </node>
+      <node id="2">
+        <label>dppl_sycl_platform_interface.h</label>
+        <link refid="dd/d6a/dppl__sycl__platform__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>test_sycl_platform_interface.cpp</label>
+        <link refid="da/dfb/test__sycl__platform__interface_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>Support/MemOwnershipAttrs.h</label>
+        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
+      </node>
+      <node id="4">
+        <label>inttypes.h</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="d5/d11/structTestDPPLSyclPlatformInterface" prot="public">TestDPPLSyclPlatformInterface</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="da/dfb/test__sycl__platform__interface_8cpp_1a3c04138a5bfe5d72780bb7e82a18e627" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int main</definition>
+        <argsstring>(int argc, char **argv)</argsstring>
+        <name>main</name>
+        <param>
+          <type>int</type>
+          <declname>argc</declname>
+        </param>
+        <param>
+          <type>char **</type>
+          <declname>argv</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_platform_interface.cpp" line="69" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_platform_interface.cpp" bodystart="69" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="da/dfb/test__sycl__platform__interface_8cpp_1a6e4dd5f657e873b895e5db01db1e3595" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>TEST_F</definition>
+        <argsstring>(TestDPPLSyclPlatformInterface, CheckDPPLPlatformDumpInfo)</argsstring>
+        <name>TEST_F</name>
+        <param>
+          <type><ref refid="d5/d11/structTestDPPLSyclPlatformInterface" kindref="compound">TestDPPLSyclPlatformInterface</ref></type>
+        </param>
+        <param>
+          <type>CheckDPPLPlatformDumpInfo</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_platform_interface.cpp" line="63" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_platform_interface.cpp" bodystart="63" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="da/dfb/test__sycl__platform__interface_8cpp_1a41675ccd503974ab6af9aff949f34585" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>TEST_F</definition>
+        <argsstring>(TestDPPLSyclPlatformInterface, CheckGetNumPlatforms)</argsstring>
+        <name>TEST_F</name>
+        <param>
+          <type><ref refid="d5/d11/structTestDPPLSyclPlatformInterface" kindref="compound">TestDPPLSyclPlatformInterface</ref></type>
+        </param>
+        <param>
+          <type>CheckGetNumPlatforms</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_platform_interface.cpp" line="32" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_platform_interface.cpp" bodystart="32" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="da/dfb/test__sycl__platform__interface_8cpp_1a9ad4ba33605089e87f63c2ca28a7b9dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>TEST_F</definition>
+        <argsstring>(TestDPPLSyclPlatformInterface, GetListOfBackends)</argsstring>
+        <name>TEST_F</name>
+        <param>
+          <type><ref refid="d5/d11/structTestDPPLSyclPlatformInterface" kindref="compound">TestDPPLSyclPlatformInterface</ref></type>
+        </param>
+        <param>
+          <type>GetListOfBackends</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_platform_interface.cpp" line="44" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_platform_interface.cpp" bodystart="44" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="function" id="da/dfb/test__sycl__platform__interface_8cpp_1a5227d9512713a24fa2c4c6acefd214fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>TEST_F</definition>
+        <argsstring>(TestDPPLSyclPlatformInterface, GetNumBackends)</argsstring>
+        <name>TEST_F</name>
+        <param>
+          <type><ref refid="d5/d11/structTestDPPLSyclPlatformInterface" kindref="compound">TestDPPLSyclPlatformInterface</ref></type>
+        </param>
+        <param>
+          <type>GetNumBackends</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_platform_interface.cpp" line="38" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_platform_interface.cpp" bodystart="38" bodyend="42"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>This file has unit test cases for functions defined in <ref refid="dd/d6a/dppl__sycl__platform__interface_8h" kindref="compound">dppl_sycl_platform_interface.h</ref>. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//===-------<sp/>test_sycl_platform_interface.cpp<sp/>-<sp/>dpctl-C_API<sp/>--*--<sp/>C++<sp/>--*--===//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Data<sp/>Parallel<sp/>Control<sp/>Library<sp/>(dpCtl)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Copyright<sp/>2020<sp/>Intel<sp/>Corporation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Licensed<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the<sp/>&quot;License&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">//<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance<sp/>with<sp/>the<sp/>License.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">//<sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,<sp/>software</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>See<sp/>the<sp/>License<sp/>for<sp/>the<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//<sp/>limitations<sp/>under<sp/>the<sp/>License.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//===----------------------------------------------------------------------===//</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"></highlight><highlight class="comment">//===----------------------------------------------------------------------===//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="dd/d6a/dppl__sycl__platform__interface_8h" kindref="compound">dppl_sycl_platform_interface.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gtest/gtest.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29" refid="d5/d11/structTestDPPLSyclPlatformInterface" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="d5/d11/structTestDPPLSyclPlatformInterface" kindref="compound">TestDPPLSyclPlatformInterface</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>::testing::Test</highlight></codeline>
+<codeline lineno="30"><highlight class="normal">{<sp/>};</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32" refid="da/dfb/test__sycl__platform__interface_8cpp_1a41675ccd503974ab6af9aff949f34585" refkind="member"><highlight class="normal"><ref refid="da/dfb/test__sycl__platform__interface_8cpp_1a41675ccd503974ab6af9aff949f34585" kindref="member">TEST_F</ref><sp/>(<ref refid="d5/d11/structTestDPPLSyclPlatformInterface" kindref="compound">TestDPPLSyclPlatformInterface</ref>,<sp/>CheckGetNumPlatforms)</highlight></codeline>
+<codeline lineno="33"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nplatforms<sp/>=<sp/><ref refid="dd/d6a/dppl__sycl__platform__interface_8h_1aff1cc89b9d5484e28139ae996188dcc9" kindref="member">DPPLPlatform_GetNumNonHostPlatforms</ref>();</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>EXPECT_GE(nplatforms,<sp/>0);</highlight></codeline>
+<codeline lineno="36"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="da/dfb/test__sycl__platform__interface_8cpp_1a5227d9512713a24fa2c4c6acefd214fb" refkind="member"><highlight class="normal"><ref refid="da/dfb/test__sycl__platform__interface_8cpp_1a41675ccd503974ab6af9aff949f34585" kindref="member">TEST_F</ref><sp/>(<ref refid="d5/d11/structTestDPPLSyclPlatformInterface" kindref="compound">TestDPPLSyclPlatformInterface</ref>,<sp/>GetNumBackends)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nbackends<sp/>=<sp/><ref refid="dd/d6a/dppl__sycl__platform__interface_8h_1aeb7264671028eda6e0722e6adadf0145" kindref="member">DPPLPlatform_GetNumNonHostBackends</ref>();</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>EXPECT_GE(nbackends,<sp/>0);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="da/dfb/test__sycl__platform__interface_8cpp_1a9ad4ba33605089e87f63c2ca28a7b9dc" refkind="member"><highlight class="normal"><ref refid="da/dfb/test__sycl__platform__interface_8cpp_1a41675ccd503974ab6af9aff949f34585" kindref="member">TEST_F</ref><sp/>(<ref refid="d5/d11/structTestDPPLSyclPlatformInterface" kindref="compound">TestDPPLSyclPlatformInterface</ref>,<sp/>GetListOfBackends)</highlight></codeline>
+<codeline lineno="45"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nbackends<sp/>=<sp/><ref refid="dd/d6a/dppl__sycl__platform__interface_8h_1aeb7264671028eda6e0722e6adadf0145" kindref="member">DPPLPlatform_GetNumNonHostBackends</ref>();</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!nbackends)</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>GTEST_SKIP_(</highlight><highlight class="stringliteral">&quot;No<sp/>non<sp/>host<sp/>backends<sp/>available&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>backends<sp/>=<sp/><ref refid="dd/d6a/dppl__sycl__platform__interface_8h_1a1dc65ec779607209825b5d163eb7d573" kindref="member">DPPLPlatform_GetListOfNonHostBackends</ref>();</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_TRUE(backends<sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0ul;<sp/>i<sp/>&lt;<sp/>nbackends;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_TRUE(</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>backends[i]<sp/>==<sp/><ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932ade87f53b911041833db021defc12a412" kindref="member">DPPLSyclBackendType::DPPL_CUDA</ref><sp/><sp/><sp/>||</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>backends[i]<sp/>==<sp/><ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932ab853d01482e628f7e60c58dcbdec0fed" kindref="member">DPPLSyclBackendType::DPPL_OPENCL</ref><sp/>||</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>backends[i]<sp/>==<sp/><ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932a9cf919f672faa098e1472bef6bb9766a" kindref="member">DPPLSyclBackendType::DPPL_LEVEL_ZERO</ref></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="dd/d6a/dppl__sycl__platform__interface_8h_1adb344f0150adf1b648bc3de73a7826b2" kindref="member">DPPLPlatform_DeleteListOfBackends</ref>(backends);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63" refid="da/dfb/test__sycl__platform__interface_8cpp_1a6e4dd5f657e873b895e5db01db1e3595" refkind="member"><highlight class="normal"><ref refid="da/dfb/test__sycl__platform__interface_8cpp_1a41675ccd503974ab6af9aff949f34585" kindref="member">TEST_F</ref><sp/>(<ref refid="d5/d11/structTestDPPLSyclPlatformInterface" kindref="compound">TestDPPLSyclPlatformInterface</ref>,<sp/>CheckDPPLPlatformDumpInfo)</highlight></codeline>
+<codeline lineno="64"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>EXPECT_NO_FATAL_FAILURE(<ref refid="dd/d6a/dppl__sycl__platform__interface_8h_1aa44daafa8958a2b643074cc1e25bead4" kindref="member">DPPLPlatform_DumpInfo</ref>());</highlight></codeline>
+<codeline lineno="66"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69" refid="da/dfb/test__sycl__platform__interface_8cpp_1a3c04138a5bfe5d72780bb7e82a18e627" refkind="member"><highlight class="normal"><ref refid="da/dfb/test__sycl__platform__interface_8cpp_1a3c04138a5bfe5d72780bb7e82a18e627" kindref="member">main</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>argc,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>argv)</highlight></codeline>
+<codeline lineno="70"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>::testing::InitGoogleTest(&amp;argc,<sp/>argv);</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ret<sp/>=<sp/>RUN_ALL_TESTS();</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ret;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_platform_interface.cpp"/>
+  </compounddef>
+</doxygen>

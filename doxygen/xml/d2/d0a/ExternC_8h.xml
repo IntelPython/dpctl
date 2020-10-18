@@ -1,0 +1,246 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="d2/d0a/ExternC_8h" kind="file" language="C++">
+    <compoundname>ExternC.h</compoundname>
+    <includedby refid="d4/d8f/dppl__sycl__types_8h" local="yes">dppl_sycl_types.h</includedby>
+    <includedby refid="d9/d4f/dppl__sycl__enum__types_8h" local="yes">dppl_sycl_enum_types.h</includedby>
+    <includedby refid="dd/d6a/dppl__sycl__platform__interface_8h" local="yes">dppl_sycl_platform_interface.h</includedby>
+    <includedby refid="d8/d8e/dppl__sycl__context__interface_8h" local="yes">dppl_sycl_context_interface.h</includedby>
+    <includedby refid="d8/d8f/dppl__sycl__device__interface_8h" local="yes">dppl_sycl_device_interface.h</includedby>
+    <includedby refid="da/d2c/dppl__sycl__event__interface_8h" local="yes">dppl_sycl_event_interface.h</includedby>
+    <includedby refid="dc/d31/dppl__sycl__kernel__interface_8h" local="yes">dppl_sycl_kernel_interface.h</includedby>
+    <includedby refid="d1/d3d/dppl__sycl__program__interface_8h" local="yes">dppl_sycl_program_interface.h</includedby>
+    <includedby refid="d4/d7b/dppl__sycl__queue__interface_8h" local="yes">dppl_sycl_queue_interface.h</includedby>
+    <includedby refid="d0/de9/dppl__sycl__queue__manager_8h" local="yes">dppl_sycl_queue_manager.h</includedby>
+    <includedby refid="dc/d46/dppl__sycl__usm__interface_8h" local="yes">dppl_sycl_usm_interface.h</includedby>
+    <includedby refid="dc/d8e/dppl__utils_8h" local="yes">dppl_utils.h</includedby>
+    <invincdepgraph>
+      <node id="23">
+        <label>dppl_utils.cpp</label>
+        <link refid="d4/dfa/dppl__utils_8cpp"/>
+      </node>
+      <node id="6">
+        <label>dppl_sycl_context_interface.cpp</label>
+        <link refid="dd/d48/dppl__sycl__context__interface_8cpp"/>
+      </node>
+      <node id="4">
+        <label>dppl_sycl_queue_manager.h</label>
+        <link refid="d0/de9/dppl__sycl__queue__manager_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>dppl_sycl_queue_interface.h</label>
+        <link refid="d4/d7b/dppl__sycl__queue__interface_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>dppl_sycl_usm_interface.h</label>
+        <link refid="dc/d46/dppl__sycl__usm__interface_8h"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>dppl_sycl_event_interface.h</label>
+        <link refid="da/d2c/dppl__sycl__event__interface_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>dppl_sycl_device_interface.cpp</label>
+        <link refid="d9/dba/dppl__sycl__device__interface_8cpp"/>
+      </node>
+      <node id="21">
+        <label>dppl_sycl_platform_interface.cpp</label>
+        <link refid="d7/d8a/dppl__sycl__platform__interface_8cpp"/>
+      </node>
+      <node id="13">
+        <label>dppl_sycl_kernel_interface.cpp</label>
+        <link refid="df/dde/dppl__sycl__kernel__interface_8cpp"/>
+      </node>
+      <node id="12">
+        <label>dppl_sycl_kernel_interface.h</label>
+        <link refid="dc/d31/dppl__sycl__kernel__interface_8h"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>dppl_sycl_device_interface.h</label>
+        <link refid="d8/d8f/dppl__sycl__device__interface_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>dppl_sycl_enum_types.h</label>
+        <link refid="d9/d4f/dppl__sycl__enum__types_8h"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>dppl_sycl_event_interface.cpp</label>
+        <link refid="df/deb/dppl__sycl__event__interface_8cpp"/>
+      </node>
+      <node id="14">
+        <label>dppl_sycl_program_interface.h</label>
+        <link refid="d1/d3d/dppl__sycl__program__interface_8h"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>dppl_sycl_usm_interface.cpp</label>
+        <link refid="d8/d88/dppl__sycl__usm__interface_8cpp"/>
+      </node>
+      <node id="7">
+        <label>dppl_sycl_queue_interface.cpp</label>
+        <link refid="d7/dc5/dppl__sycl__queue__interface_8cpp"/>
+      </node>
+      <node id="15">
+        <label>dppl_sycl_program_interface.cpp</label>
+        <link refid="d0/d52/dppl__sycl__program__interface_8cpp"/>
+      </node>
+      <node id="2">
+        <label>dppl_sycl_types.h</label>
+        <link refid="d4/d8f/dppl__sycl__types_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>dppl_utils.h</label>
+        <link refid="dc/d8e/dppl__utils_8h"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ExternC.h</label>
+        <link refid="d2/d0a/ExternC_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>dppl_sycl_platform_interface.h</label>
+        <link refid="dd/d6a/dppl__sycl__platform__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>dppl_sycl_context_interface.h</label>
+        <link refid="d8/d8e/dppl__sycl__context__interface_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>dppl_sycl_queue_manager.cpp</label>
+        <link refid="de/d84/dppl__sycl__queue__manager_8cpp"/>
+      </node>
+    </invincdepgraph>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="d2/d0a/ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" prot="public" static="no">
+        <name>DPPL_C_EXTERN_C_BEGIN</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/Support/ExternC.h" line="32" column="10" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/Support/ExternC.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="d2/d0a/ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" prot="public" static="no">
+        <name>DPPL_C_EXTERN_C_END</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/Support/ExternC.h" line="33" column="9" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/Support/ExternC.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>This file defines an extern &quot;C&quot; wrapper. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//===------------<sp/>Support/ExternC.h<sp/>-<sp/>DPPL-SYCL<sp/>interface<sp/>---*---<sp/>C<sp/>---*---===//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Data<sp/>Parallel<sp/>Control<sp/>Library<sp/>(dpCtl)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Copyright<sp/>2020<sp/>Intel<sp/>Corporation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Licensed<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the<sp/>&quot;License&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">//<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance<sp/>with<sp/>the<sp/>License.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">//<sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,<sp/>software</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>See<sp/>the<sp/>License<sp/>for<sp/>the<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//<sp/>limitations<sp/>under<sp/>the<sp/>License.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//===----------------------------------------------------------------------===//</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"></highlight><highlight class="comment">//===----------------------------------------------------------------------===//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPPL_C_EXTERN_C_BEGIN<sp/><sp/>extern<sp/>&quot;C&quot;<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPPL_C_EXTERN_C_END<sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32" refid="d2/d0a/ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPPL_C_EXTERN_C_BEGIN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="d2/d0a/ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPPL_C_EXTERN_C_END</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/Support/ExternC.h"/>
+  </compounddef>
+</doxygen>

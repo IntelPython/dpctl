@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__program__interface_8h_1af6204db8d350c05dd38ea72df53f3276:
+
+Function DPPLProgram_GetKernel
+==============================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_program_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLProgram_GetKernel(DPPLSyclProgramRef, const char *)

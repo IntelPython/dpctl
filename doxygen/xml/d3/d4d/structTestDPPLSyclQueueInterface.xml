@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="d3/d4d/structTestDPPLSyclQueueInterface" kind="struct" language="C++" prot="public">
+    <compoundname>TestDPPLSyclQueueInterface</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">Test</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="d3/d4d/structTestDPPLSyclQueueInterface_1a76f54fdd0cedcfcac1f09a94caed2a81" prot="public" static="no" mutable="no">
+        <type>const char *</type>
+        <definition>const char* TestDPPLSyclQueueInterface::CLProgramStr</definition>
+        <argsstring></argsstring>
+        <name>CLProgramStr</name>
+        <initializer>= R&quot;CLC(
+        kernel void init_arr (global float *a) {
+            size_t index = get_global_id(0);
+            a[index] = (float)index;
+        }
+
+        kernel void add (global float* a, global float* b, global float* c) {
+            size_t index = get_global_id(0);
+            c[index] = a[index] + b[index];
+        }
+
+        kernel void axpy (global float* a, global float* b,
+                          global float* c, float d) {
+            size_t index = get_global_id(0);
+            c[index] = a[index] + d*b[index];
+        }
+    )CLC&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_queue_interface.cpp" line="80" column="16" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_queue_interface.cpp" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="d3/d4d/structTestDPPLSyclQueueInterface_1ad846a19ba77bc79ed087ac701eda1404" prot="public" static="no" mutable="no">
+        <type>const char *</type>
+        <definition>const char* TestDPPLSyclQueueInterface::CompileOpts</definition>
+        <argsstring></argsstring>
+        <name>CompileOpts</name>
+        <initializer>=&quot;-cl-fast-relaxed-math&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_queue_interface.cpp" line="97" column="16" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_queue_interface.cpp" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="d3/d4d/structTestDPPLSyclQueueInterface_1a24c6eb590e33102910ca89c30547f404" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>TestDPPLSyclQueueInterface::TestDPPLSyclQueueInterface</definition>
+        <argsstring>()</argsstring>
+        <name>TestDPPLSyclQueueInterface</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_queue_interface.cpp" line="99" column="5" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_queue_interface.cpp" bodystart="99" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="function" id="d3/d4d/structTestDPPLSyclQueueInterface_1aff33a7b30db1584be5f4e46275720a32" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>TestDPPLSyclQueueInterface::~TestDPPLSyclQueueInterface</definition>
+        <argsstring>()</argsstring>
+        <name>~TestDPPLSyclQueueInterface</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_queue_interface.cpp" line="102" column="5" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_queue_interface.cpp" bodystart="102" bodyend="103"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>TestDPPLSyclQueueInterface</label>
+        <link refid="d3/d4d/structTestDPPLSyclQueueInterface"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>TestDPPLSyclQueueInterface</label>
+        <link refid="d3/d4d/structTestDPPLSyclQueueInterface"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>CLProgramStr</edgelabel>
+          <edgelabel>CompileOpts</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="3">
+        <label>const char *</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_queue_interface.cpp" line="79" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_queue_interface.cpp" bodystart="78" bodyend="104"/>
+    <listofallmembers>
+      <member refid="d3/d4d/structTestDPPLSyclQueueInterface_1a76f54fdd0cedcfcac1f09a94caed2a81" prot="public" virt="non-virtual"><scope>TestDPPLSyclQueueInterface</scope><name>CLProgramStr</name></member>
+      <member refid="d3/d4d/structTestDPPLSyclQueueInterface_1ad846a19ba77bc79ed087ac701eda1404" prot="public" virt="non-virtual"><scope>TestDPPLSyclQueueInterface</scope><name>CompileOpts</name></member>
+      <member refid="d3/d4d/structTestDPPLSyclQueueInterface_1a24c6eb590e33102910ca89c30547f404" prot="public" virt="non-virtual"><scope>TestDPPLSyclQueueInterface</scope><name>TestDPPLSyclQueueInterface</name></member>
+      <member refid="d3/d4d/structTestDPPLSyclQueueInterface_1aff33a7b30db1584be5f4e46275720a32" prot="public" virt="non-virtual"><scope>TestDPPLSyclQueueInterface</scope><name>~TestDPPLSyclQueueInterface</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

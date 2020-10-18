@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__queue__manager_8h_1a51d05c26d22ff2f4467c36420514c9f2:
+
+Function DPPLQueueMgr_GetNumQueues
+==================================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_queue_manager.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLQueueMgr_GetNumQueues(DPPLSyclBackendType, DPPLSyclDeviceType)

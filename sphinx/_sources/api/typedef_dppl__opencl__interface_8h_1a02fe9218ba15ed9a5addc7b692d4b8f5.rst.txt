@@ -1,0 +1,13 @@
+.. _exhale_typedef_dppl__opencl__interface_8h_1a02fe9218ba15ed9a5addc7b692d4b8f5:
+
+Typedef runtime_t
+=================
+
+- Defined in :ref:`file_backends_include_dppl_opencl_interface.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: runtime_t

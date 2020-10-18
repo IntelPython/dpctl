@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dd/dc9/namespace_0d35" kind="namespace" language="C++">
+    <compoundname>@35</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_queue_interface.cpp" line="41" column="1"/>
+  </compounddef>
+</doxygen>

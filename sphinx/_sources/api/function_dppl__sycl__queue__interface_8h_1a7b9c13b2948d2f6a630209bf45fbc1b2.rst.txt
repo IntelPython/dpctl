@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__queue__interface_8h_1a7b9c13b2948d2f6a630209bf45fbc1b2:
+
+Function DPPLQueue_SubmitRange
+==============================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_queue_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLQueue_SubmitRange(const DPPLSyclKernelRef, const DPPLSyclQueueRef, void **, const DPPLKernelArgType *, size_t, const size_t, size_t, const DPPLSyclEventRef *, size_t)

@@ -1,0 +1,13 @@
+.. _exhale_define_ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0:
+
+Define DPPL_C_EXTERN_C_BEGIN
+============================
+
+- Defined in :ref:`file_backends_include_Support_ExternC.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: DPPL_C_EXTERN_C_BEGIN

@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="d5/d11/structTestDPPLSyclPlatformInterface" kind="struct" language="C++" prot="public">
+    <compoundname>TestDPPLSyclPlatformInterface</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">Test</basecompoundref>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>TestDPPLSyclPlatformInterface</label>
+        <link refid="d5/d11/structTestDPPLSyclPlatformInterface"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>TestDPPLSyclPlatformInterface</label>
+        <link refid="d5/d11/structTestDPPLSyclPlatformInterface"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Test</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_platform_interface.cpp" line="30" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/tests/test_sycl_platform_interface.cpp" bodystart="29" bodyend="30"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
