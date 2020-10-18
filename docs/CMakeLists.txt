@@ -21,6 +21,7 @@ if (GIT_FOUND)
         COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0
         RESULT_VARIABLE result
         OUTPUT_VARIABLE CURRENT_RELEASE
+        OUTPUT_STRIP_TRAILING_WHITESPACE
     )
 endif (GIT_FOUND)
 
@@ -50,6 +51,9 @@ set(SPHINX_OUTPUT_DIR ${DOC_OUTPUT_DIR}/sphinx)
 set(SPHINX_INDEX_FILE ${SPHINX_OUTPUT_DIR}/index.html)
 set(SPHINX_CONF_IN ${SPHINX_SOURCE}/conf.in)
 set(SPHINX_CONF_OUT ${SPHINX_SOURCE}/conf.py)
+
+# Create a conf.py by replacing variables inside @@ with the current values
+configure_file(${SPHINX_CONF_IN} ${SPHINX_CONF_OUT} @ONLY)
 
 # Only regenerate Sphinx when:
 # - Doxygen has rerun

@@ -21,9 +21,9 @@ project = 'Data-parallel Control (dpctl)'
 copyright = '2020, Intel Corp.'
 author = 'Intel Corp.'
 
-version = '@CURRENT_RELEASE@'
+version = "@CURRENT_RELEASE@"
 # The full version, including alpha/beta/rc tags
-release = '@CURRENT_RELEASE@'
+release = "@CURRENT_RELEASE@"
 
 
 # -- General configuration ---------------------------------------------------
