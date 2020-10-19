@@ -626,7 +626,7 @@ cdef class _SyclRTManager:
         '''
         return self.get_current_queue().get_sycl_device().get_device_type()
 
-    def get_current_queue (self):
+    cpdef SyclQueue get_current_queue (self):
         ''' Returns the activated SYCL queue as a PyCapsule.
         '''
         return SyclQueue._create(DPPLQueueMgr_GetCurrentQueue())
@@ -736,7 +736,6 @@ _mgr = _SyclRTManager()
 
 # Global bound functions
 dump                     = _mgr.dump
-get_current_queue        = _mgr.get_current_queue
 get_current_device_type  = _mgr.get_current_device_type
 get_num_platforms        = _mgr.get_num_platforms
 get_num_activated_queues = _mgr.get_num_activated_queues
@@ -746,6 +745,10 @@ has_gpu_queues           = _mgr.has_gpu_queues
 has_sycl_platforms       = _mgr.has_sycl_platforms
 set_default_queue        = _mgr.set_default_queue
 is_in_device_context     = _mgr.is_in_device_context
+
+cpdef SyclQueue get_current_queue():
+    ''' Obtain current Sycl Queue from Data Parallel Control package '''
+    return _mgr.get_current_queue()
 
 
 def create_program_from_source (SyclQueue q, unicode source, unicode copts=""):
