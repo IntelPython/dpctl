@@ -150,6 +150,68 @@ void DPPLPlatform_DumpInfo ()
     }
 }
 
+enum DeviceType
+{
+    cpu, // 0
+    gpu,
+    accelerator,
+    custom,
+    host,
+    unknown
+};
+
+__dppl_give DeviceType *ConvertDeviceTypeToEnum (info::device::device_type devTy)
+{
+    switch (devTy)
+    {
+    case info::device_type::cpu:
+        DeviceType enumDevTy = new DeviceType(0);
+        break;
+    case info::device_type::gpu:
+        DeviceType enumDevTy = new DeviceType(1);
+        break;
+    case info::device_type::accelerator:
+        DeviceType enumDevTy = new DeviceType(2);
+        break;
+    case info::device_type::custom:
+        DeviceType enumDevTy = new DeviceType(3);
+        break;
+    case info::device_type::host:
+        DeviceType enumDevTy = new DeviceType(4);
+        break;
+    default:
+        DeviceType enumDevTy = new DeviceType(5);
+    }
+    return enumDevTy;
+}
+
+size_t ConvertEnumToStr (info::device::device_type devTy)
+{
+    std::stringstream ss;
+    auto enumDevTy = ConvertDeviceTypeToEnum(devTy)
+    switch (enumDevTy)
+    {
+    case 0:
+        ss << "cpu" << '\n';
+        break;
+    case 1:
+        ss << "gpu" << '\n';
+        break;
+    case 2:
+        ss << "accelerator" << '\n';
+        break;
+    case 3:
+        ss << "custom" << '\n';
+        break;
+    case 4:
+        ss << "host" << '\n';
+        break;
+    default:
+        ss << "unknown" << '\n';
+    }
+    return ss.str();
+}
+
 /*!
 * Returns the number of sycl::platform on the system.
 */
