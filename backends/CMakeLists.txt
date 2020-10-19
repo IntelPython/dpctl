@@ -126,10 +126,6 @@ if(WIN32)
         PRIVATE ${DPCPP_ROOT}/lib/sycl.lib
         PRIVATE ${DPCPP_ROOT}/lib/OpenCL.lib
     )
-    target_link_libraries(
-        DPPLOpenCLInterface
-        PRIVATE ${DPCPP_ROOT}/lib/OpenCL.lib
-    )
 endif()
 
 install(
