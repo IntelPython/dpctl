@@ -1,6 +1,6 @@
-//===--- dppl_sycl_queue_interface.cpp - DPPL-SYCL interface --*- C++ -*---===//
+//===------ dppl_sycl_queue_interface.cpp - dpctl-C_API  ---*--- C++ --*---===//
 //
-//               Python Data Parallel Processing Library (PyDPPL)
+//               Data Parallel Control Library (dpCtl)
 //
 // Copyright 2020 Intel Corporation
 //
@@ -27,6 +27,8 @@
 #include "dppl_sycl_queue_interface.h"
 #include "dppl_sycl_context_interface.h"
 #include "Support/CBindingWrapping.h"
+#include <exception>
+#include <stdexcept>
 
 #include <CL/sycl.hpp>                /* SYCL headers   */
 
@@ -71,6 +73,9 @@ bool set_kernel_arg (handler &cgh, size_t idx, __dppl_keep void *Arg,
         break;
     case DPPL_UNSIGNED_INT:
         cgh.set_arg(idx, *(unsigned int*)Arg);
+        break;
+    case DPPL_UNSIGNED_INT8:
+        cgh.set_arg(idx, *(uint8_t*)Arg);
         break;
     case DPPL_LONG:
         cgh.set_arg(idx, *(long*)Arg);
@@ -128,11 +133,18 @@ bool DPPLQueue_AreEq (__dppl_keep const DPPLSyclQueueRef QRef1,
     return (*unwrap(QRef1) == *unwrap(QRef2));
 }
 
-enum DPPLSyclBEType DPPLQueue_GetBackend (__dppl_keep DPPLSyclQueueRef QRef)
+DPPLSyclBackendType DPPLQueue_GetBackend (__dppl_keep DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
-    auto C = Q->get_context();
-    return DPPLContext_GetBackend(wrap(&C));
+    try {
+        auto C = Q->get_context();
+        return DPPLContext_GetBackend(wrap(&C));
+    }
+    catch (runtime_error &re) {
+        std::cerr << re.what() << '\n';
+        // store error message
+        return DPPL_UNKNOWN_BACKEND;
+    }
 }
 
 __dppl_give DPPLSyclDeviceRef
@@ -197,11 +209,11 @@ DPPLQueue_SubmitRange (__dppl_keep const DPPLSyclKernelRef KRef,
                                          "dimensions.");
             }
         });
-    } catch (runtime_error re) {
+    } catch (runtime_error &re) {
         // \todo fix error handling
         std::cerr << re.what() << '\n';
         return nullptr;
-    } catch (std::runtime_error sre) {
+    } catch (std::runtime_error &sre) {
         std::cerr << sre.what() << '\n';
         return nullptr;
     }
@@ -258,11 +270,11 @@ DPPLQueue_SubmitNDRange(__dppl_keep const DPPLSyclKernelRef KRef,
                                          "dimensions.");
             }
         });
-    } catch (runtime_error re) {
+    } catch (runtime_error &re) {
         // \todo fix error handling
         std::cerr << re.what() << '\n';
         return nullptr;
-    } catch (std::runtime_error sre) {
+    } catch (std::runtime_error &sre) {
         std::cerr << sre.what() << '\n';
         return nullptr;
     }

@@ -1,6 +1,6 @@
-//===--- test_sycl_platform_interface.cpp - DPPL-SYCL interface -*- C++ -*-===//
+//===------- test_sycl_platform_interface.cpp - dpctl-C_API --*-- C++ --*--===//
 //
-//               Python Data Parallel Processing Library (PyDPPL)
+//               Data Parallel Control Library (dpCtl)
 //
 // Copyright 2020 Intel Corporation
 //
@@ -31,26 +31,31 @@ struct TestDPPLSyclPlatformInterface : public ::testing::Test
 
 TEST_F (TestDPPLSyclPlatformInterface, CheckGetNumPlatforms)
 {
-    auto nplatforms = DPPLPlatform_GetNumPlatforms();
+    auto nplatforms = DPPLPlatform_GetNumNonHostPlatforms();
     EXPECT_GE(nplatforms, 0);
 }
 
 TEST_F (TestDPPLSyclPlatformInterface, GetNumBackends)
 {
-    auto nbackends = DPPLPlatform_GetNumBackends();
+    auto nbackends = DPPLPlatform_GetNumNonHostBackends();
     EXPECT_GE(nbackends, 0);
 }
 
 TEST_F (TestDPPLSyclPlatformInterface, GetListOfBackends)
 {
-    auto nbackends = DPPLPlatform_GetNumBackends();
-    auto backends = DPPLPlatform_GetListOfBackends();
-	EXPECT_TRUE(backends != nullptr);
+    auto nbackends = DPPLPlatform_GetNumNonHostBackends();
+
+    if(!nbackends)
+      GTEST_SKIP_("No non host backends available");
+
+    auto backends = DPPLPlatform_GetListOfNonHostBackends();
+	  EXPECT_TRUE(backends != nullptr);
     for(auto i = 0ul; i < nbackends; ++i) {
         EXPECT_TRUE(
-          backends[i] == DPPLSyclBEType::DPPL_CUDA   ||
-          backends[i] == DPPLSyclBEType::DPPL_OPENCL ||
-          backends[i] == DPPLSyclBEType::DPPL_LEVEL_ZERO);
+          backends[i] == DPPLSyclBackendType::DPPL_CUDA   ||
+          backends[i] == DPPLSyclBackendType::DPPL_OPENCL ||
+          backends[i] == DPPLSyclBackendType::DPPL_LEVEL_ZERO
+          );
     }
 	DPPLPlatform_DeleteListOfBackends(backends);
 }

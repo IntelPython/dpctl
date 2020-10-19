@@ -1,6 +1,6 @@
-//===--- dppl_sycl_queue_manager.h - DPPL-SYCL interface ---*---C++ ---*---===//
+//===----------- dppl_sycl_queue_manager.h - dpctl-C_API ---*---C++ ---*---===//
 //
-//               Python Data Parallel Processing Library (PyDPPL)
+//               Data Parallel Control Library (dpCtl)
 //
 // Copyright 2020 Intel Corporation
 //
@@ -65,8 +65,8 @@ __dppl_give DPPLSyclQueueRef DPPLQueueMgr_GetCurrentQueue ();
  */
 DPPL_API
 __dppl_give DPPLSyclQueueRef
-DPPLQueueMgr_GetQueue (enum DPPLSyclBEType BETy,
-                       enum DPPLSyclDeviceType DeviceTy,
+DPPLQueueMgr_GetQueue (DPPLSyclBackendType BETy,
+                       DPPLSyclDeviceType DeviceTy,
                        size_t DNum);
 
 /*!
@@ -78,7 +78,6 @@ DPPLQueueMgr_GetQueue (enum DPPLSyclBEType BETy,
 DPPL_API
 size_t DPPLQueueMgr_GetNumActivatedQueues ();
 
-
 /*!
  * @brief Get the number of available queues for given backend and device type
  * combination.
@@ -88,8 +87,8 @@ size_t DPPLQueueMgr_GetNumActivatedQueues ();
  * @return   The number of available queues.
  */
 DPPL_API
-size_t DPPLQueueMgr_GetNumQueues (enum DPPLSyclBEType BETy,
-                                  enum DPPLSyclDeviceType DeviceTy);
+size_t DPPLQueueMgr_GetNumQueues (DPPLSyclBackendType BETy,
+                                  DPPLSyclDeviceType DeviceTy);
 
 /*!
  * @brief Returns True if the passed in queue and the current queue are the
@@ -115,8 +114,8 @@ bool DPPLQueueMgr_IsCurrentQueue (__dppl_keep const DPPLSyclQueueRef QRef);
 */
 DPPL_API
 __dppl_give DPPLSyclQueueRef
-DPPLQueueMgr_SetAsDefaultQueue (enum DPPLSyclBEType BETy,
-                                enum DPPLSyclDeviceType DeviceTy,
+DPPLQueueMgr_SetAsDefaultQueue (DPPLSyclBackendType BETy,
+                                DPPLSyclDeviceType DeviceTy,
                                 size_t DNum);
 
 /*!
@@ -141,8 +140,8 @@ DPPLQueueMgr_SetAsDefaultQueue (enum DPPLSyclBEType BETy,
  */
 DPPL_API
 __dppl_give DPPLSyclQueueRef
-DPPLQueueMgr_PushQueue (enum DPPLSyclBEType BETy,
-                        enum DPPLSyclDeviceType DeviceTy,
+DPPLQueueMgr_PushQueue (DPPLSyclBackendType BETy,
+                        DPPLSyclDeviceType DeviceTy,
                         size_t DNum);
 
 /*!

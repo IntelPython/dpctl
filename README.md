@@ -1,3 +1,5 @@
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 What?
 ====
 A lightweight Python package exposing a subset of OpenCL and SYCL
@@ -27,14 +29,17 @@ On Windows to cope with [long file names](https://github.com/IntelPython/dpctl/i
 ```cmd
 conda build --croot=C:/tmp conda-recipe
 ```
+
+:warning: **You could face issues with conda-build=3.20**: Use conda-build=3.18!
+
 3. Install conda package
 ```bash
 conda install dpctl
 ```
 
-Using PyDPPL
-============
-PyDPPL relies on SYCL runtime. With Intel oneAPI installed you should activate it.
+Using dpCtl
+===========
+dpCtl relies on DPC++ runtime. With Intel oneAPI installed you should activate it.
 
 On Windows:
 ```cmd

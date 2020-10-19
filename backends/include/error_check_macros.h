@@ -1,6 +1,6 @@
-//===----- error_check_macros.h - DPPL-OpenCL interface -------*- C -*-----===//
+//===----------- error_check_macros.h - dpctl-C_API-------*- C ------*-----===//
 //
-//               Python Data Parallel Processing Python (PyDPPL)
+//               Data Parallel Control Library (dpCtl)
 //
 // Copyright 2020 Intel Corporation
 //

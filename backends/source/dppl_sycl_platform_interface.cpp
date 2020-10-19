@@ -1,6 +1,6 @@
-//===--- dppl_sycl_platform_interface.cpp - DPPL-SYCL interface --*- C++ -*-===//
+//===------ dppl_sycl_platform_interface.cpp - dpctl-C_API  --*-- C++ --*--===//
 //
-//               Python Data Parallel Processing Library (PyDPPL)
+//               Data Parallel Control Library (dpCtl)
 //
 // Copyright 2020 Intel Corporation
 //
@@ -36,27 +36,26 @@ using namespace cl::sycl;
 
 namespace
 {
-std::set<DPPLSyclBEType>
-get_set_of_backends ()
+std::set<DPPLSyclBackendType>
+get_set_of_non_hostbackends ()
 {
-    std::set<DPPLSyclBEType> be_set;
+    std::set<DPPLSyclBackendType> be_set;
     for (auto p : platform::get_platforms()) {
 		if(p.is_host())
-			continue;
+            continue;
         auto be = p.get_backend();
         switch (be)
         {
         case backend::host:
-            be_set.insert(DPPLSyclBEType::DPPL_HOST);
             break;
         case backend::cuda:
-            be_set.insert(DPPLSyclBEType::DPPL_CUDA);
+            be_set.insert(DPPLSyclBackendType::DPPL_CUDA);
             break;
         case backend::level_zero:
-            be_set.insert(DPPLSyclBEType::DPPL_LEVEL_ZERO);
+            be_set.insert(DPPLSyclBackendType::DPPL_LEVEL_ZERO);
             break;
         case backend::opencl:
-            be_set.insert(DPPLSyclBEType::DPPL_OPENCL);
+            be_set.insert(DPPLSyclBackendType::DPPL_OPENCL);
             break;
         default:
             break;
@@ -128,22 +127,22 @@ void DPPLPlatform_DumpInfo ()
             switch (devTy)
             {
             case info::device_type::cpu:
-            ss << "cpu" << '\n';
-            break;
+                ss << "cpu" << '\n';
+                break;
             case info::device_type::gpu:
-            ss << "gpu" << '\n';
-            break;
+                ss << "gpu" << '\n';
+                break;
             case info::device_type::accelerator:
-            ss << "accelerator" << '\n';
-            break;
+                ss << "accelerator" << '\n';
+                break;
             case info::device_type::custom:
-            ss << "custom" << '\n';
-            break;
+                ss << "custom" << '\n';
+                break;
             case info::device_type::host:
-            ss << "host" << '\n';
-            break;
+                ss << "host" << '\n';
+                break;
             default:
-            ss << "unknown" << '\n';
+                ss << "unknown" << '\n';
             }
         }
         std::cout << ss.str();
@@ -154,24 +153,30 @@ void DPPLPlatform_DumpInfo ()
 /*!
 * Returns the number of sycl::platform on the system.
 */
-size_t DPPLPlatform_GetNumPlatforms ()
+size_t DPPLPlatform_GetNumNonHostPlatforms ()
 {
-    return platform::get_platforms().size();
+	auto nNonHostPlatforms = 0ul;
+	for (auto &p : platform::get_platforms()) {
+		if (p.is_host())
+			continue;
+		++nNonHostPlatforms;
+	}
+    return nNonHostPlatforms;
 }
 
-size_t DPPLPlatform_GetNumBackends ()
+size_t DPPLPlatform_GetNumNonHostBackends ()
 {
-    return get_set_of_backends().size();
+    return get_set_of_non_hostbackends().size();
 }
 
-__dppl_give enum DPPLSyclBEType *DPPLPlatform_GetListOfBackends ()
+__dppl_give DPPLSyclBackendType *DPPLPlatform_GetListOfNonHostBackends ()
 {
-    auto be_set = get_set_of_backends();
+    auto be_set = get_set_of_non_hostbackends();
 
     if (be_set.empty())
         return nullptr;
 
-    DPPLSyclBEType *BEArr = new DPPLSyclBEType[be_set.size()];
+    DPPLSyclBackendType *BEArr = new DPPLSyclBackendType[be_set.size()];
 
     auto i = 0ul;
     for (auto be : be_set) {
@@ -182,7 +187,7 @@ __dppl_give enum DPPLSyclBEType *DPPLPlatform_GetListOfBackends ()
     return BEArr;
 }
 
-void DPPLPlatform_DeleteListOfBackends (__dppl_take enum DPPLSyclBEType *BEArr)
+void DPPLPlatform_DeleteListOfBackends (__dppl_take DPPLSyclBackendType *BEArr)
 {
     delete[] BEArr;
 }

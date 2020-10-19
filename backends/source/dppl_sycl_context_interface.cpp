@@ -1,6 +1,6 @@
-//===--- dppl_sycl_context_interface.cpp - DPPL-SYCL interface --*- C++ -*-===//
+//===------- dppl_sycl_context_interface.cpp - dpctl-C_API  ---*--- C++ -*-===//
 //
-//               Python Data Parallel Processing Library (PyDPPL)
+//               Data Parallel Control Library (dpCtl)
 //
 // Copyright 2020 Intel Corporation
 //
@@ -55,7 +55,7 @@ void DPPLContext_Delete (__dppl_take DPPLSyclContextRef CtxRef)
     delete unwrap(CtxRef);
 }
 
-DPPLSyclBEType
+DPPLSyclBackendType
 DPPLContext_GetBackend (__dppl_keep const DPPLSyclContextRef CtxRef)
 {
     auto BE = unwrap(CtxRef)->get_platform().get_backend();

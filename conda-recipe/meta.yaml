@@ -30,7 +30,7 @@ requirements:
         - cffi >=1.0.0
 
 about:
-    home: https://github.com/IntelPython/PyDPPL.git
+    home: https://github.com/IntelPython/dpCtl.git
     license: Apache-2.0
     license_file: LICENSE
     summary: 'A lightweight Python wrapper for a subset of OpenCL and SYCL API.'

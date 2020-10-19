@@ -1,6 +1,6 @@
-//===--------- dppl_utils.cpp - dpctl-C_API interface ----*---- C++ ----*----===//
+//===-------------- dppl_utils.cpp - dpctl-C_API  ----*---- C++ -----*-----===//
 //
-//               Python Data Parallel Processing Library (PyDPPL)
+//               Data Parallel Control Library (dpCtl)
 //
 // Copyright 2020 Intel Corporation
 //

@@ -1,6 +1,6 @@
-//===--- dppl_sycl_platform_interface.h - DPPL-SYCL interface ---*--C++ -*-===//
+//===----------- dppl_sycl_platform_interface.h - dpctl-C_API ---*--C++ -*-===//
 //
-//               Python Data Parallel Processing Library (PyDPPL)
+//               Data Parallel Control Library (dpCtl)
 //
 // Copyright 2020 Intel Corporation
 //
@@ -34,37 +34,38 @@
 DPPL_C_EXTERN_C_BEGIN
 
 /*!
- * @brief Returns the number of sycl::platform available on the system.
+ * @brief Returns the number of non-host type sycl::platform available on the
+ * system.
  *
  * @return The number of available sycl::platforms.
  */
 DPPL_API
-size_t DPPLPlatform_GetNumPlatforms ();
+size_t DPPLPlatform_GetNumNonHostPlatforms ();
 
 /*!
- * @brief Returns the number of unique sycl backends on the system not counting
- * the host backend.
+ * @brief Returns the number of unique non-host sycl backends on the system.
  *
  * @return   The number of unique sycl backends.
  */
 DPPL_API
-size_t DPPLPlatform_GetNumBackends ();
+size_t DPPLPlatform_GetNumNonHostBackends ();
 
 /*!
- * @brief Returns an array of the unique DPPLSyclBEType values on the system.
+ * @brief Returns an array of the unique non-host DPPLSyclBackendType values on
+ * the system.
  *
- * @return   An array of DPPLSyclBEType enum values.
+ * @return   An array of DPPLSyclBackendType enum values.
  */
 DPPL_API
-__dppl_give enum DPPLSyclBEType* DPPLPlatform_GetListOfBackends ();
+__dppl_give DPPLSyclBackendType* DPPLPlatform_GetListOfNonHostBackends ();
 
 /*!
- * @brief Frees an array of DPPLSyclBEType enum values.
+ * @brief Frees an array of DPPLSyclBackendType enum values.
  *
- * @param    BEArr          An array of DPPLSyclBEType enum values to be freed.
+ * @param    BEArr      An array of DPPLSyclBackendType enum values to be freed.
  */
 DPPL_API
-void DPPLPlatform_DeleteListOfBackends (__dppl_take enum DPPLSyclBEType* BEArr);
+void DPPLPlatform_DeleteListOfBackends (__dppl_take DPPLSyclBackendType* BEArr);
 
 /*!
  * @brief Prints out some selected info about all sycl::platform on the system.

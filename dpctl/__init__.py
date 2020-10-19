@@ -22,7 +22,7 @@
 ## This top-level dpctl module.
 ##
 ##===----------------------------------------------------------------------===##
-'''
+"""
     Data Parallel Control (dpCtl)
 
     dpCtl provides a lightweight Python abstraction over DPC++/SYCL and
@@ -33,7 +33,7 @@
 
     dpCtl's intended usage is as a common SYCL interoperability layer for
     different Python libraries and applications. The OpenCL support inside
-    PyDPPL is slated to be deprecated and then removed in future releases
+    dpCtl is slated to be deprecated and then removed in future releases
     of the library.
 
     Currently, only a small subset of DPC++ runtime objects are exposed
@@ -43,11 +43,12 @@
 
     Please use `pydoc dpctl.ocldrv` to look at the current API for dpctl.ocldrv.
 
-'''
+"""
 __author__ = "Intel Corp."
 
 from ._sycl_core import *
 from ._version import get_versions
+
 
 def get_include():
     """
@@ -57,7 +58,9 @@ def get_include():
     this function to locate the appropriate include directory.
     """
     import os.path
-    return os.path.join(os.path.dirname(__file__), 'include')
 
-__version__ = get_versions()['version']
+    return os.path.join(os.path.dirname(__file__), "include")
+
+
+__version__ = get_versions()["version"]
 del get_versions

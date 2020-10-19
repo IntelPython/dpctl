@@ -35,7 +35,7 @@ DPPL_C_EXTERN_C_BEGIN
  * @brief Redefinition of DPC++-specific Sycl backend types.
  *
  */
-enum DPPLSyclBEType
+enum DPPLSyclBackendType
 {
     DPPL_UNKNOWN_BACKEND = 0x0,
     DPPL_OPENCL          = 1 << 16,
@@ -57,7 +57,7 @@ enum DPPLSyclDeviceType
     DPPL_AUTOMATIC   = 1 << 4,
     DPPL_HOST_DEVICE = 1 << 5,
     DPPL_ALL         = 1 << 6
-    // IMP: before adding new values here look at DPPLSyclBEType enum. The
+    // IMP: before adding new values here look at DPPLSyclBackendType enum. The
     // values should not overlap.
 };
 
@@ -76,6 +76,7 @@ typedef enum
     DPPL_SHORT,
     DPPL_INT,
     DPPL_UNSIGNED_INT,
+    DPPL_UNSIGNED_INT8,
     DPPL_LONG,
     DPPL_UNSIGNED_LONG,
     DPPL_LONG_LONG,

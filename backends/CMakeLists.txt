@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3.2 FATAL_ERROR)
-project("PyDPPL - A lightweight SYCL wrapper for Python")
+project("dpCtl - A lightweight SYCL wrapper for Python")
 
 # The function checks is DPCPP_ROOT is valid and points to a dpcpp installation
 function (check_for_dpcpp)
@@ -185,7 +185,7 @@ foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION include/Support)
 endforeach()
 
-# Enable to build the PyDPPL backend test cases
+# Enable to build the dpCtl backend test cases
 add_subdirectory(tests)
 
 # Todo : Add build rules for doxygen

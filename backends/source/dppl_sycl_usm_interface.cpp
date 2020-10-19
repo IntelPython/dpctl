@@ -1,6 +1,6 @@
-//===--- dppl_sycl_usm_interface.cpp - DPPL-SYCL interface --*- C++ -*---===//
+//===------- dppl_sycl_usm_interface.cpp - dpctl-C_API  ---*--- C++ ---*---===//
 //
-//               Python Data Parallel Processing Library (PyDPPL)
+//               Data Parallel Control Library (dpCtl)
 //
 // Copyright 2020 Intel Corporation
 //
@@ -73,10 +73,10 @@ void DPPLfree_with_queue (__dppl_take DPPLSyclUSMRef MRef,
 }
 
 void DPPLfree_with_context (__dppl_take DPPLSyclUSMRef MRef,
-                            __dppl_keep const DPPLSyclContextRef СRef)
+                            __dppl_keep const DPPLSyclContextRef CRef)
 {
     auto Ptr = unwrap(MRef);
-    auto C = unwrap(СRef);
+    auto C = unwrap(CRef);
     free(Ptr, *C);
 }
 
