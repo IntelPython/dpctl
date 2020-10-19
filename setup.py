@@ -32,7 +32,6 @@ from Cython.Build import cythonize
 import numpy as np
 
 requirements = [
-    "cffi>=1.0.0",
     "cython",
 ]
 
