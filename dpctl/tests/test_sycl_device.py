@@ -25,9 +25,9 @@
 import dpctl
 import unittest
 
+
 @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
 class TestSyclDevice(unittest.TestCase):
-
     def test_get_max_compute_units(self):
         q = dpctl.get_current_queue()
         try:
@@ -83,6 +83,7 @@ class TestSyclDevice(unittest.TestCase):
         except Exception:
             self.fail("Encountered an exception inside has_int64_extended_atomics().")
         self.assertNotEqual(aspects_extended_atomics, False)
+
 
 if __name__ == "__main__":
     unittest.main()
