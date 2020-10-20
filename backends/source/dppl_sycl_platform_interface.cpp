@@ -29,6 +29,7 @@
 #include <iostream>
 #include <set>
 #include <sstream>
+#include "../details/include/dppl_utils_details.h"
 
 #include <CL/sycl.hpp>
 
@@ -124,93 +125,14 @@ void DPPLPlatform_DumpInfo ()
                << "Device type";
 
             auto devTy = devices[dn].get_info<info::device::device_type>();
-            switch (devTy)
-            {
-            case info::device_type::cpu:
-                ss << "cpu" << '\n';
-                break;
-            case info::device_type::gpu:
-                ss << "gpu" << '\n';
-                break;
-            case info::device_type::accelerator:
-                ss << "accelerator" << '\n';
-                break;
-            case info::device_type::custom:
-                ss << "custom" << '\n';
-                break;
-            case info::device_type::host:
-                ss << "host" << '\n';
-                break;
-            default:
-                ss << "unknown" << '\n';
-            }
+            auto s = ConvertEnumToStr(devTy);
+            ss << s;
         }
         std::cout << ss.str();
         ++i;
     }
 }
 
-enum DeviceType
-{
-    cpu, // 0
-    gpu,
-    accelerator,
-    custom,
-    host,
-    unknown
-};
-
-__dppl_give DeviceType *ConvertDeviceTypeToEnum (info::device::device_type devTy)
-{
-    switch (devTy)
-    {
-    case info::device_type::cpu:
-        DeviceType enumDevTy = new DeviceType(0);
-        break;
-    case info::device_type::gpu:
-        DeviceType enumDevTy = new DeviceType(1);
-        break;
-    case info::device_type::accelerator:
-        DeviceType enumDevTy = new DeviceType(2);
-        break;
-    case info::device_type::custom:
-        DeviceType enumDevTy = new DeviceType(3);
-        break;
-    case info::device_type::host:
-        DeviceType enumDevTy = new DeviceType(4);
-        break;
-    default:
-        DeviceType enumDevTy = new DeviceType(5);
-    }
-    return enumDevTy;
-}
-
-size_t ConvertEnumToStr (info::device::device_type devTy)
-{
-    std::stringstream ss;
-    auto enumDevTy = ConvertDeviceTypeToEnum(devTy)
-    switch (enumDevTy)
-    {
-    case 0:
-        ss << "cpu" << '\n';
-        break;
-    case 1:
-        ss << "gpu" << '\n';
-        break;
-    case 2:
-        ss << "accelerator" << '\n';
-        break;
-    case 3:
-        ss << "custom" << '\n';
-        break;
-    case 4:
-        ss << "host" << '\n';
-        break;
-    default:
-        ss << "unknown" << '\n';
-    }
-    return ss.str();
-}
 
 /*!
 * Returns the number of sycl::platform on the system.

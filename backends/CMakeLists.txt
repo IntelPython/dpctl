@@ -106,6 +106,7 @@ add_library(
   source/dppl_sycl_queue_manager.cpp
   source/dppl_sycl_usm_interface.cpp
   source/dppl_utils.cpp
+  details/source/dppl_utils_details.cpp
 )
 
 # Install DPPLOpenCLInterface
@@ -120,6 +121,7 @@ target_include_directories(
   DPPLSyclInterface
   PRIVATE
   ${CMAKE_SOURCE_DIR}/include/
+  ${CMAKE_SOURCE_DIR}/details/include/
   ${PYTHON_INCLUDE_DIR}
   ${NUMPY_INCLUDE_DIR}
 )
@@ -183,6 +185,12 @@ endforeach()
 file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/Support/*.h*")
 foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION include/Support)
+endforeach()
+
+# Install all headers in details/include
+file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/details/include/*.h*")
+foreach(HEADER ${HEADERS})
+  install(FILES "${HEADER}" DESTINATION details/include)
 endforeach()
 
 # Enable to build the dpCtl backend test cases
