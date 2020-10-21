@@ -30,28 +30,34 @@ from cffi import FFI
 
 ffi = FFI()
 
-dppl_opencl_interface_incldir = os.environ.get(
-                                    'DPPL_OPENCL_INTERFACE_INCLDIR', None)
-dppl_opencl_interface_libdir  = os.environ.get(
-                                    'DPPL_OPENCL_INTERFACE_LIBDIR', None)
-opencl_libdir  = os.environ.get('OpenCL_LIBDIR', None)
+dppl_opencl_interface_incldir = os.environ.get("DPPL_OPENCL_INTERFACE_INCLDIR", None)
+dppl_opencl_interface_libdir = os.environ.get("DPPL_OPENCL_INTERFACE_LIBDIR", None)
+opencl_libdir = os.environ.get("OpenCL_LIBDIR", None)
 
 if opencl_libdir is None:
-    raise ValueError("Abort! Set the OpenCL_LIBDIR envar to point to "
-                     "an OpenCL ICD")
+    raise ValueError("Abort! Set the OpenCL_LIBDIR envar to point to " "an OpenCL ICD")
 
 if dppl_opencl_interface_libdir is None:
-    raise ValueError("Abort! Set the DPPL_OPENCL_INTERFACE_LIBDIR envar to "
-                     "point to ibdplibdpglueglue.so")
+    raise ValueError(
+        "Abort! Set the DPPL_OPENCL_INTERFACE_LIBDIR envar to "
+        "point to ibdplibdpglueglue.so"
+    )
 
 if dppl_opencl_interface_incldir is None:
-    raise ValueError("Abort! Set the DP_GLUE_INCLDIR envar to point to "
-                     "dppl_opencl_interface.h")
+    raise ValueError(
+        "Abort! Set the DP_GLUE_INCLDIR envar to point to " "dppl_opencl_interface.h"
+    )
 
-glue_h = ''.join(list(filter(lambda x: len(x) > 0 and x[0] != "#",
-                             open(dppl_opencl_interface_incldir +
-                             '/dppl_opencl_interface.h', 'r')
-                             .readlines()))).replace('DPPL_API', '')
+glue_h = "".join(
+    list(
+        filter(
+            lambda x: len(x) > 0 and x[0] != "#",
+            open(
+                dppl_opencl_interface_incldir + "/dppl_opencl_interface.h", "r"
+            ).readlines(),
+        )
+    )
+).replace("DPPL_API", "")
 
 # cdef() expects a single string declaring the C types, functions and
 # globals needed to use the shared object. It must be in valid C syntax.
@@ -60,7 +66,8 @@ ffi.cdef(glue_h)
 ffi_lib_name = "dpctl._opencl_core"
 
 import sys
-IS_WIN = sys.platform in ['win32', 'cygwin']
+
+IS_WIN = sys.platform in ["win32", "cygwin"]
 del sys
 
 ffi.set_source(
@@ -70,9 +77,9 @@ ffi.set_source(
     """,
     include_dirs=[dppl_opencl_interface_incldir],
     library_dirs=[dppl_opencl_interface_libdir, opencl_libdir],
-    extra_link_args=[] if IS_WIN else ['-Wl,-rpath=$ORIGIN'],
+    extra_link_args=[] if IS_WIN else ["-Wl,-rpath=$ORIGIN"],
     libraries=["DPPLOpenCLInterface", "OpenCL"],
-)   # library name, for the linker
+)  # library name, for the linker
 del IS_WIN
 
 if __name__ == "__main__":
