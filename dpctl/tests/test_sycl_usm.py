@@ -36,13 +36,19 @@ class TestMemory(unittest.TestCase):
         queue = dpctl.get_current_queue()
         mobj = MemoryUSMShared(nbytes, queue)
         self.assertEqual(mobj.nbytes, nbytes)
-        self.assertTrue(hasattr(mobj, '__sycl_usm_array_interface__'))
+        self.assertTrue(hasattr(mobj, "__sycl_usm_array_interface__"))
 
     def _create_memory(self):
         nbytes = 1024
         queue = dpctl.get_current_queue()
         mobj = MemoryUSMShared(nbytes, queue)
         return mobj
+
+    def _create_host_buf(self, nbytes):
+        ba = bytearray(nbytes)
+        for i in range(nbytes):
+            ba[i] = (i % 32) + ord("a")
+        return ba
 
     @unittest.skipUnless(
         dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
@@ -97,9 +103,7 @@ class TestMemory(unittest.TestCase):
     )
     def test_copy_host_roundtrip(self):
         mobj = self._create_memory()
-        host_src_obj = bytearray(mobj.nbytes)
-        for i in range(mobj.nbytes):
-            host_src_obj[i] = (i % 32) + ord('a')
+        host_src_obj = self._create_host_buf(mobj.nbytes)
         mobj.copy_from_host(host_src_obj)
         host_dest_obj = mobj.copy_to_host()
         del mobj
@@ -113,22 +117,24 @@ class TestMemory(unittest.TestCase):
         mobj2 = type(mobj)(mobj)
 
         self.assertTrue(mobj2.reference_obj is mobj)
-        self.assertTrue(mobj2.__sycl_usm_array_interface__['data'] == mobj.__sycl_usm_array_interface__['data'])
+        mobj_data = mobj.__sycl_usm_array_interface__["data"]
+        mobj2_data = mobj2.__sycl_usm_array_interface__["data"]
+        self.assertEqual(mobj_data, mobj2_data)
 
     @unittest.skipUnless(
         dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_pickling(self):
         import pickle
+
         mobj = self._create_memory()
-        host_src_obj = bytearray(mobj.nbytes)
-        for i in range(mobj.nbytes):
-            host_src_obj[i] = (i % 32) + ord('a')
+        host_src_obj = self._create_host_buf(mobj.nbytes)
         mobj.copy_from_host(host_src_obj)
 
-        mobj2 = pickle.loads(pickle.dumps(mobj))
-        self.assertEqual(mobj.tobytes(), mobj2.tobytes())
-        self.assertNotEqual(mobj._pointer, mobj2._pointer)        
+        mobj_reconstructed = pickle.loads(pickle.dumps(mobj))
+        self.assertEqual(mobj.tobytes(), mobj_reconstructed.tobytes())
+        self.assertNotEqual(mobj._pointer, mobj_reconstructed._pointer)
+
 
 class TestMemoryUSMBase:
     """ Base tests for MemoryUSM* """
@@ -174,8 +180,6 @@ class TestMemoryUSMDevice(TestMemoryUSMBase, unittest.TestCase):
     MemoryUSMClass = MemoryUSMDevice
     usm_type = "device"
 
-
-    
 
 if __name__ == "__main__":
     unittest.main()
