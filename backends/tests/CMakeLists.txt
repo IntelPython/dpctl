@@ -22,7 +22,7 @@ else()
 
   link_directories(${GTEST_LIB_DIR})
 
-  set(PYDPPL_BACKEND_TEST_CASES
+  set(DPCTL_C_API_TEST_CASES
     test_sycl_device_interface
     test_sycl_kernel_interface
     test_sycl_platform_interface

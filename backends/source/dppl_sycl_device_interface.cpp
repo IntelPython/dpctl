@@ -117,7 +117,6 @@ bool DPPLDevice_IsCPU (__dppl_keep const DPPLSyclDeviceRef DRef)
         return D->is_cpu();
     }
     return false;
-
 }
 
 bool DPPLDevice_IsGPU (__dppl_keep const DPPLSyclDeviceRef DRef)
@@ -148,7 +147,6 @@ DPPLDevice_GetMaxComputeUnits (__dppl_keep const DPPLSyclDeviceRef DRef)
         return D->get_info<info::device::max_compute_units>();
     }
     return 0;
-
 }
 
 uint32_t
@@ -234,7 +232,7 @@ DPPLDevice_GetVendorName (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
-        auto vendor = D->get_info<info::device::name>();
+        auto vendor = D->get_info<info::device::vendor>();
         auto cstr_vendor = new char [vendor.length()+1];
         std::strcpy (cstr_vendor, vendor.c_str());
         return cstr_vendor;

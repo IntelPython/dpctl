@@ -51,7 +51,7 @@ cdef class SyclDevice:
     cdef const char *_driver_version
     cdef uint32_t _max_compute_units
     cdef uint32_t _max_work_item_dims
-    cdef size_t* _max_work_item_sizes
+    cdef size_t *_max_work_item_sizes
     cdef size_t _max_work_group_size
     cdef uint32_t _max_num_sub_groups
     cdef bool _int64_base_atomics
