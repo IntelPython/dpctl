@@ -36,6 +36,7 @@ class TestMemory(unittest.TestCase):
         queue = dpctl.get_current_queue()
         mobj = MemoryUSMShared(nbytes, queue)
         self.assertEqual(mobj.nbytes, nbytes)
+        self.assertTrue(hasattr(mobj, '__sycl_usm_array_interface__'))
 
     def _create_memory(self):
         nbytes = 1024
@@ -50,7 +51,7 @@ class TestMemory(unittest.TestCase):
         mobj = self._create_memory()
 
         # Without context
-        self.assertEqual(mobj._usm_type(), "shared")
+        self.assertEqual(mobj.get_usm_type(), "shared")
 
     @unittest.skipUnless(dpctl.has_cpu_queues(), "No OpenCL CPU queues available")
     def test_memory_cpu_context(self):
@@ -60,12 +61,12 @@ class TestMemory(unittest.TestCase):
         with dpctl.device_context("opencl:cpu:0"):
             # type respective to the context in which
             # memory was created
-            usm_type = mobj._usm_type()
+            usm_type = mobj.get_usm_type()
             self.assertEqual(usm_type, "shared")
 
             current_queue = dpctl.get_current_queue()
             # type as view from current queue
-            usm_type = mobj._usm_type(current_queue)
+            usm_type = mobj.get_usm_type(current_queue)
             # type can be unknown if current queue is
             # not in the same SYCL context
             self.assertTrue(usm_type in ["unknown", "shared"])
@@ -76,10 +77,10 @@ class TestMemory(unittest.TestCase):
 
         # GPU context
         with dpctl.device_context("opencl:gpu:0"):
-            usm_type = mobj._usm_type()
+            usm_type = mobj.get_usm_type()
             self.assertEqual(usm_type, "shared")
             current_queue = dpctl.get_current_queue()
-            usm_type = mobj._usm_type(current_queue)
+            usm_type = mobj.get_usm_type(current_queue)
             self.assertTrue(usm_type in ["unknown", "shared"])
 
     @unittest.skipUnless(
@@ -91,6 +92,43 @@ class TestMemory(unittest.TestCase):
         mv2 = memoryview(mobj)
         self.assertEqual(mv1, mv2)
 
+    @unittest.skipUnless(
+        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+    )
+    def test_copy_host_roundtrip(self):
+        mobj = self._create_memory()
+        host_src_obj = bytearray(mobj.nbytes)
+        for i in range(mobj.nbytes):
+            host_src_obj[i] = (i % 32) + ord('a')
+        mobj.copy_from_host(host_src_obj)
+        host_dest_obj = mobj.copy_to_host()
+        del mobj
+        self.assertEqual(host_src_obj, host_dest_obj)
+
+    @unittest.skipUnless(
+        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+    )
+    def test_zero_copy(self):
+        mobj = self._create_memory()
+        mobj2 = type(mobj)(mobj)
+
+        self.assertTrue(mobj2.reference_obj is mobj)
+        self.assertTrue(mobj2.__sycl_usm_array_interface__['data'] == mobj.__sycl_usm_array_interface__['data'])
+
+    @unittest.skipUnless(
+        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+    )
+    def test_pickling(self):
+        import pickle
+        mobj = self._create_memory()
+        host_src_obj = bytearray(mobj.nbytes)
+        for i in range(mobj.nbytes):
+            host_src_obj[i] = (i % 32) + ord('a')
+        mobj.copy_from_host(host_src_obj)
+
+        mobj2 = pickle.loads(pickle.dumps(mobj))
+        self.assertEqual(mobj.tobytes(), mobj2.tobytes())
+        self.assertNotEqual(mobj._pointer, mobj2._pointer)        
 
 class TestMemoryUSMBase:
     """ Base tests for MemoryUSM* """
@@ -105,7 +143,7 @@ class TestMemoryUSMBase:
         q = dpctl.get_current_queue()
         m = self.MemoryUSMClass(1024, q)
         self.assertEqual(m.nbytes, 1024)
-        self.assertEqual(m._usm_type(), self.usm_type)
+        self.assertEqual(m.get_usm_type(), self.usm_type)
 
     @unittest.skipUnless(
         dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
@@ -113,7 +151,7 @@ class TestMemoryUSMBase:
     def test_create_without_queue(self):
         m = self.MemoryUSMClass(1024)
         self.assertEqual(m.nbytes, 1024)
-        self.assertEqual(m._usm_type(), self.usm_type)
+        self.assertEqual(m.get_usm_type(), self.usm_type)
 
 
 class TestMemoryUSMShared(TestMemoryUSMBase, unittest.TestCase):
@@ -136,6 +174,8 @@ class TestMemoryUSMDevice(TestMemoryUSMBase, unittest.TestCase):
     MemoryUSMClass = MemoryUSMDevice
     usm_type = "device"
 
+
+    
 
 if __name__ == "__main__":
     unittest.main()
