@@ -29,6 +29,7 @@
 #include <iomanip>
 #include <iostream>
 #include <CL/sycl.hpp>                /* SYCL headers   */
+#include "../details/include/dppl_utils_details.h"
 
 using namespace cl::sycl;
 
@@ -57,26 +58,8 @@ void dump_device_info (const device & Device)
     ss << std::setw(4) << " " << std::left << std::setw(16) << "Device type";
 
     auto devTy = Device.get_info<info::device::device_type>();
-    switch(devTy)
-    {
-    case info::device_type::cpu:
-        ss << "cpu" << '\n';
-        break;
-    case info::device_type::gpu:
-        ss << "gpu" << '\n';
-        break;
-    case info::device_type::accelerator:
-        ss << "accelerator" << '\n';
-        break;
-    case info::device_type::custom:
-        ss << "custom" << '\n';
-        break;
-    case info::device_type::host:
-        ss << "host" << '\n';
-        break;
-    default:
-        ss << "unknown" << '\n';
-    }
+    auto s = ConvertEnumToStr(devTy);
+    ss << s;
 
     std::cout << ss.str();
 }

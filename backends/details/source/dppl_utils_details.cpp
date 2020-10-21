@@ -53,3 +53,20 @@ std::string ConvertEnumToStr(info::device_type devTy)
     }
     return ss.str();
 }
+
+info::device_type ConvertStrToEnum(std::string devTyStr)
+{
+    info::device_type devTy;
+    if (devTyStr == "cpu") {
+        devTy = info::device_type::cpu;
+    } else if (devTyStr == "gpu") {
+        devTy = info::device_type::gpu;
+    } else if (devTyStr == "accelerator") {
+        devTy = info::device_type::accelerator;
+    } else if(devTyStr == "custom") {
+        devTy = info::device_type::custom;
+    } else if(devTyStr == "host") {
+        devTy = info::device_type::host;
+    }
+    return devTy;
+}
