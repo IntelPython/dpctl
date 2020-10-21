@@ -121,3 +121,5 @@ cdef class SyclQueue:
 
 
 cpdef SyclQueue get_current_queue()
+cpdef get_current_device_type ()
+cpdef get_current_backend()
