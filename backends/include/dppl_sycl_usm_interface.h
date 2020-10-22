@@ -43,6 +43,16 @@ __dppl_give DPPLSyclUSMRef
 DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
+ * @brief Crete USM shared memory.
+ *
+ * @return The pointer to USM shared memory with requested alignment.
+ */
+DPPL_API
+__dppl_give DPPLSyclUSMRef
+DPPLaligned_alloc_shared (size_t alignment, size_t size,
+			  __dppl_keep const DPPLSyclQueueRef QRef);
+
+/*!
  * @brief Crete USM host memory.
  *
  * @return The pointer to USM host memory.
@@ -52,6 +62,16 @@ __dppl_give DPPLSyclUSMRef
 DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
+ * @brief Crete USM host memory.
+ *
+ * @return The pointer to USM host memory with requested alignment.
+ */
+DPPL_API
+__dppl_give DPPLSyclUSMRef
+DPPLaligned_alloc_host (size_t alignment, size_t size,
+			__dppl_keep const DPPLSyclQueueRef QRef);
+
+/*!
  * @brief Crete USM device memory.
  *
  * @return The pointer to USM device memory.
@@ -59,6 +79,16 @@ DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 DPPL_API
 __dppl_give DPPLSyclUSMRef
 DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
+
+/*!
+ * @brief Crete USM device memory.
+ *
+ * @return The pointer to USM device memory with requested alignment.
+ */
+DPPL_API
+__dppl_give DPPLSyclUSMRef
+DPPLaligned_alloc_device (size_t alignment, size_t size,
+			  __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Free USM memory.

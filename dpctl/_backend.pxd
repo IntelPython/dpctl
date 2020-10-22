@@ -203,6 +203,12 @@ cdef extern from "dppl_sycl_usm_interface.h":
     cdef DPPLSyclUSMRef DPPLmalloc_shared (size_t size, DPPLSyclQueueRef QRef)
     cdef DPPLSyclUSMRef DPPLmalloc_host (size_t size, DPPLSyclQueueRef QRef)
     cdef DPPLSyclUSMRef DPPLmalloc_device (size_t size, DPPLSyclQueueRef QRef)
+    cdef DPPLSyclUSMRef DPPLaligned_alloc_shared (size_t alignment,
+                                                  size_t size, DPPLSyclQueueRef QRef)
+    cdef DPPLSyclUSMRef DPPLaligned_alloc_host (size_t alignment,
+                                                size_t size, DPPLSyclQueueRef QRef)
+    cdef DPPLSyclUSMRef DPPLaligned_alloc_device (size_t alignment,
+                                                  size_t size, DPPLSyclQueueRef QRef)
     cdef void DPPLfree_with_queue (DPPLSyclUSMRef MRef,
                                    DPPLSyclQueueRef QRef)
     cdef void DPPLfree_with_context (DPPLSyclUSMRef MRef,

@@ -49,6 +49,15 @@ DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 }
 
 __dppl_give DPPLSyclUSMRef
+DPPLaligned_alloc_shared (size_t alignment, size_t size,
+			  __dppl_keep const DPPLSyclQueueRef QRef)
+{
+    auto Q = unwrap(QRef);
+    auto Ptr = aligned_alloc_shared(alignment, size, *Q);
+    return wrap(Ptr);
+}
+
+__dppl_give DPPLSyclUSMRef
 DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
@@ -57,10 +66,28 @@ DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 }
 
 __dppl_give DPPLSyclUSMRef
+DPPLaligned_alloc_host (size_t alignment, size_t size,
+			__dppl_keep const DPPLSyclQueueRef QRef)
+{
+    auto Q = unwrap(QRef);
+    auto Ptr = aligned_alloc_host(alignment, size, *Q);
+    return wrap(Ptr);
+}
+
+__dppl_give DPPLSyclUSMRef
 DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = malloc_device(size, *Q);
+    return wrap(Ptr);
+}
+
+__dppl_give DPPLSyclUSMRef
+DPPLaligned_alloc_device (size_t alignment, size_t size,
+			  __dppl_keep const DPPLSyclQueueRef QRef)
+{
+    auto Q = unwrap(QRef);
+    auto Ptr = aligned_alloc_device(alignment, size, *Q);
     return wrap(Ptr);
 }
 
