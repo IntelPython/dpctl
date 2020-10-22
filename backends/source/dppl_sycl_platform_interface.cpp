@@ -125,8 +125,7 @@ void DPPLPlatform_DumpInfo ()
                << "Device type";
 
             auto devTy = devices[dn].get_info<info::device::device_type>();
-            auto s = ConvertEnumToStr(devTy);
-            ss << s;
+            ss << ConvertEnumToStr(devTy);
         }
         std::cout << ss.str();
         ++i;
