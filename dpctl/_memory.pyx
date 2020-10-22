@@ -51,6 +51,7 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
    This is useful when `src_ptr` and `dest_ptr` are bound to incompatible
    SYCL contexts.
    """
+   # could also use numpy.empty((nbytes,), dtype="|u1")
    cdef unsigned char[::1] host_buf = bytearray(nbytes)
    
    DPPLQueue_Memcpy(
@@ -69,6 +70,10 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
 
 
 cdef class _BufferData:
+    """
+    Internal data struct populated from parsing 
+    `__sycl_usm_array_interface__` dictionary
+    """
     cdef DPPLSyclUSMRef p
     cdef int writeable
     cdef object dt
@@ -122,12 +127,24 @@ cdef class _BufferData:
         return buf
 
 
-def _to_memory(unsigned char [::1] b):
-    """Constructs Memory of the same size as the argument and 
-    copies data into it"""
-    cdef Memory res = MemoryUSMShared(len(b))
-    res.copy_from_host(b)
+def _to_memory(unsigned char [::1] b, str usm_kind):
+    """
+    Constructs Memory of the same size as the argument 
+    and copies data into it"""
+    cdef Memory res
 
+    if (usm_kind == "shared"):
+        res = MemoryUSMShared(len(b))
+    elif (usm_kind == "device"):
+        res = MemoryUSMDevice(len(b))
+    elif (usm_kind == "host"):
+        res = MemoryUSMHost(len(b))
+    else:
+        raise ValueError(
+            "Unrecognized usm_kind={} stored in the "
+            "pickle".format(usm_kind))
+    res.copy_from_host(b)
+    
     return res
 
 
@@ -245,7 +262,7 @@ cdef class Memory:
         return self.tobytes()
 
     def __reduce__(self):
-        return _to_memory, (self.copy_to_host(), )
+        return _to_memory, (self.copy_to_host(), self.get_usm_type())
     
     property __sycl_usm_array_interface__:
         def __get__ (self):

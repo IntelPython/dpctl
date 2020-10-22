@@ -132,8 +132,19 @@ class TestMemory(unittest.TestCase):
         mobj.copy_from_host(host_src_obj)
 
         mobj_reconstructed = pickle.loads(pickle.dumps(mobj))
-        self.assertEqual(mobj.tobytes(), mobj_reconstructed.tobytes())
-        self.assertNotEqual(mobj._pointer, mobj_reconstructed._pointer)
+        self.assertEqual(
+            type(mobj), type(mobj_reconstructed), "Pickling should preserve type"
+        )
+        self.assertEqual(
+            mobj.tobytes(),
+            mobj_reconstructed.tobytes(),
+            "Pickling should preserve buffer content"
+        )
+        self.assertNotEqual(
+            mobj._pointer,
+            mobj_reconstructed._pointer,
+            "Pickling/unpickling changes pointer"
+        )
 
 
 class TestMemoryUSMBase:
