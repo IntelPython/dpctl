@@ -138,12 +138,12 @@ class TestMemory(unittest.TestCase):
         self.assertEqual(
             mobj.tobytes(),
             mobj_reconstructed.tobytes(),
-            "Pickling should preserve buffer content"
+            "Pickling should preserve buffer content",
         )
         self.assertNotEqual(
             mobj._pointer,
             mobj_reconstructed._pointer,
-            "Pickling/unpickling changes pointer"
+            "Pickling/unpickling changes pointer",
         )
 
 

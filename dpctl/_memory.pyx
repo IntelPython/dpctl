@@ -121,7 +121,12 @@ cdef class _BufferData:
         if isinstance(ary_syclobj, dpctl.SyclQueue):
             buf.queue = <SyclQueue>ary_syclobj
         else:
-            # FIXME: need a way to construct a queue from 
+            # FIXME: need a way to construct a queue from
+            # context and device, which can be obtaine from the
+            # pointer and the context.
+            # cdef SyclDevice dev = DPPLget_pointer_device(arr_data_ptr, <SyclContext> ary_syclobj)
+            # cdef SyclQueue new_queue = SyclQueue._create_from_dev_context(dev, <SyclContext> ary_syclobj)
+            # buf.queue = new_queue
             buf.queue = get_current_queue()
 
         return buf
