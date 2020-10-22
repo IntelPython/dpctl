@@ -76,12 +76,10 @@ if(WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qstd=c++17")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3 -DDEBUG ")
 elseif(UNIX)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}                                        \
-       -Wall -Wextra -Winit-self -Wuninitialized -Wmissing-declarations        \
-       -fdiagnostics-color=auto -O3                                            \
-    ")
+    set(SDL_FLAGS "-fstack-protector -fstack-protector-all -fpic -fPIC -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -fno-strict-overflow -fno-delete-null-pointer-checks")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SDL_FLAGS} -Wall -Wextra -Winit-self -Wuninitialized -Wmissing-declarations -fdiagnostics-color=auto")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3 -DDEBUG ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fsycl")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SDL_FLAGS} -std=c++17 -fsycl")
 else()
     message(FATAL_ERROR "Unsupported system.")
 endif()
