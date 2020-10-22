@@ -32,7 +32,8 @@ cdef class Memory:
     cdef object refobj
 
     cdef _cinit_empty(self)
-    cdef _cinit_alloc(self, Py_ssize_t nbytes, bytes ptr_type, SyclQueue queue)
+    cdef _cinit_alloc(self, Py_ssize_t alignment, Py_ssize_t nbytes,
+                      bytes ptr_type, SyclQueue queue)
     cdef _cinit_other(self, object other)
     cdef _getbuffer(self, Py_buffer *buffer, int flags)
 

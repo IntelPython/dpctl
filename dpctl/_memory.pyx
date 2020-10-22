@@ -160,7 +160,8 @@ cdef class Memory:
         self.queue = None
         self.refobj = None        
 
-    cdef _cinit_alloc(self, Py_ssize_t nbytes, bytes ptr_type, SyclQueue queue):
+    cdef _cinit_alloc(self, Py_ssize_t alignment, Py_ssize_t nbytes,
+                      bytes ptr_type, SyclQueue queue):
         cdef DPPLSyclUSMRef p
 
         self._cinit_empty()
@@ -170,11 +171,23 @@ cdef class Memory:
                 queue = get_current_queue()
 
             if (ptr_type == b"shared"):
-                p = DPPLmalloc_shared(nbytes, queue.get_queue_ref())
+                if alignment > 0:
+                    p = DPPLaligned_alloc_shared(alignment, nbytes,
+                                                 queue.get_queue_ref())
+                else:
+                    p = DPPLmalloc_shared(nbytes, queue.get_queue_ref())
             elif (ptr_type == b"host"):
-                p = DPPLmalloc_host(nbytes, queue.get_queue_ref())
+                if alignment > 0:
+                    p = DPPLaligned_alloc_host(alignment, nbytes,
+                                               queue.get_queue_ref())
+                else:
+                    p = DPPLmalloc_host(nbytes, queue.get_queue_ref())
             elif (ptr_type == b"device"):
-                p = DPPLmalloc_device(nbytes, queue.get_queue_ref())
+                if (alignment > 0):
+                    p = DPPLaligned_alloc_device(alignment, nbytes,
+                                                  queue.get_queue_ref())
+                else:
+                    p = DPPLmalloc_device(nbytes, queue.get_queue_ref())
             else:
                 raise RuntimeError("Pointer type is unknown: {}" \
                     .format(ptr_type.decode("UTF-8")))
@@ -391,10 +404,19 @@ cdef class Memory:
 
 
 cdef class MemoryUSMShared(Memory):
+    """
+    MemoryUSMShared(nbytes, alignment=0, queue=None) allocates nbytes of USM shared memory.
 
-    def __cinit__(self, other,  SyclQueue queue=None):
-        if isinstance(other, int):
-            self._cinit_alloc(<Py_ssize_t>other, b"shared", queue)
+    Non-positive alignments are not used (malloc_shared is used instead).
+    The queue=None the current `dpctl.get_current_queue()` is used to allocate memory.
+
+    MemoryUSMShared(usm_obj) constructor create instance from `usm_obj` expected to 
+    implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of 
+    USM memory.
+    """
+    def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None):
+        if (isinstance(other, int)):
+            self._cinit_alloc(alignment, <Py_ssize_t>other, b"shared", queue)
         else:
             self._cinit_other(other)
 
@@ -404,9 +426,9 @@ cdef class MemoryUSMShared(Memory):
 
 cdef class MemoryUSMHost(Memory):
 
-    def __cinit__(self, other, SyclQueue queue=None):
-        if isinstance(other, int):
-            self._cinit_alloc(<Py_ssize_t>other, b"host", queue)
+    def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None):
+        if (isinstance(other, int)):
+            self._cinit_alloc(alignment, <Py_ssize_t>other, b"host", queue)
         else:
             self._cinit_other(other)
 
@@ -416,8 +438,8 @@ cdef class MemoryUSMHost(Memory):
 
 cdef class MemoryUSMDevice(Memory):
 
-    def __cinit__(self, other, SyclQueue queue=None):
-        if isinstance(other, int):
-            self._cinit_alloc(<Py_ssize_t>other, b"device", queue)
+    def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None):
+        if (isinstance(other, int)):
+            self._cinit_alloc(alignment, <Py_ssize_t>other, b"device", queue)
         else:
             self._cinit_other(other)

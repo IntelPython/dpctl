@@ -34,14 +34,14 @@ class TestMemory(unittest.TestCase):
     def test_memory_create(self):
         nbytes = 1024
         queue = dpctl.get_current_queue()
-        mobj = MemoryUSMShared(nbytes, queue)
+        mobj = MemoryUSMShared(nbytes, alignment=64, queue=queue)
         self.assertEqual(mobj.nbytes, nbytes)
         self.assertTrue(hasattr(mobj, "__sycl_usm_array_interface__"))
 
     def _create_memory(self):
         nbytes = 1024
         queue = dpctl.get_current_queue()
-        mobj = MemoryUSMShared(nbytes, queue)
+        mobj = MemoryUSMShared(nbytes, alignment=64, queue=queue)
         return mobj
 
     def _create_host_buf(self, nbytes):
@@ -156,16 +156,33 @@ class TestMemoryUSMBase:
     @unittest.skipUnless(
         dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
     )
-    def test_create_with_queue(self):
+    def test_create_with_size_and_alignment_and_queue(self):
         q = dpctl.get_current_queue()
-        m = self.MemoryUSMClass(1024, q)
+        m = self.MemoryUSMClass(1024, alignment=64, queue=q)
         self.assertEqual(m.nbytes, 1024)
         self.assertEqual(m.get_usm_type(), self.usm_type)
 
     @unittest.skipUnless(
         dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
     )
-    def test_create_without_queue(self):
+    def test_create_with_size_and_queue(self):
+        q = dpctl.get_current_queue()
+        m = self.MemoryUSMClass(1024, queue=q)
+        self.assertEqual(m.nbytes, 1024)
+        self.assertEqual(m.get_usm_type(), self.usm_type)
+
+    @unittest.skipUnless(
+        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+    )
+    def test_create_with_size_and_alignment(self):
+        m = self.MemoryUSMClass(1024, alignment=64)
+        self.assertEqual(m.nbytes, 1024)
+        self.assertEqual(m.get_usm_type(), self.usm_type)
+
+    @unittest.skipUnless(
+        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+    )
+    def test_create_with_only_size(self):
         m = self.MemoryUSMClass(1024)
         self.assertEqual(m.nbytes, 1024)
         self.assertEqual(m.get_usm_type(), self.usm_type)
