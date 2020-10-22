@@ -541,21 +541,47 @@ cdef class SyclQueue:
     cpdef void wait (self):
         DPPLQueue_Wait(self._queue_ref)
 
-    cpdef memcpy (self, dest, src, int count):
+    cpdef memcpy (self, dest, src, size_t count):
         cdef void *c_dest
         cdef void *c_src
 
         if isinstance(dest, Memory):
             c_dest = <void*>(<Memory>dest).memory_ptr
         else:
-            raise TypeError("Parameter dest should be Memory.")
+            raise TypeError("Parameter dest should have type Memory.")
 
         if isinstance(src, Memory):
             c_src = <void*>(<Memory>src).memory_ptr
         else:
-            raise TypeError("Parameter src should be Memory.")
+            raise TypeError("Parameter src should have type Memory.")
 
         DPPLQueue_Memcpy(self._queue_ref, c_dest, c_src, count)
+
+    cpdef prefetch (self, mem, size_t count=0):
+       cdef void *ptr
+
+       if isinstance(mem, Memory):
+           ptr = <void*>(<Memory>mem).memory_ptr
+       else:
+           raise TypeError("Parameter mem should have type Memory")
+
+       if (count <=0 or count > self.nbytes):
+           count = self.nbytes
+
+       DPPLQueue_Prefetch(self._queue_ref, ptr, count)
+
+    cpdef mem_advise (self, mem, size_t count, int advice):
+       cdef void *ptr
+
+       if isinstance(mem, Memory):
+           ptr = <void*>(<Memory>mem).memory_ptr
+       else:
+           raise TypeError("Parameter mem should have type Memory")
+
+       if (count <=0 or count > self.nbytes):
+           count = self.nbytes
+
+       DPPLQueue_MemAdvise(self._queue_ref, ptr, count, advice)
 
 
 cdef class _SyclRTManager:

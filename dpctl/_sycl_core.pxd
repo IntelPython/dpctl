@@ -117,7 +117,9 @@ cdef class SyclQueue:
                             list lS=*, list dEvents=*)
     cpdef void wait (self)
     cdef DPPLSyclQueueRef get_queue_ref (self)
-    cpdef memcpy (self, dest, src, int count)
+    cpdef memcpy (self, dest, src, size_t count)
+    cpdef prefetch (self, ptr, size_t count=*)
+    cpdef mem_advise (self, ptr, size_t count, int mem)
 
 
 cpdef SyclQueue get_current_queue()
