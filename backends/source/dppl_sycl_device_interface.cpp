@@ -103,55 +103,163 @@ void DPPLDevice_Delete (__dppl_take DPPLSyclDeviceRef DRef)
 
 bool DPPLDevice_IsAccelerator (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    return unwrap(DRef)->is_accelerator();
+    auto D = unwrap(DRef);
+    if (D) {
+        return D->is_accelerator();
+    }
+    return false;
 }
 
 bool DPPLDevice_IsCPU (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    return unwrap(DRef)->is_cpu();
+    auto D = unwrap(DRef);
+    if (D) {
+        return D->is_cpu();
+    }
+    return false;
 }
 
 bool DPPLDevice_IsGPU (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    return unwrap(DRef)->is_gpu();
+    auto D = unwrap(DRef);
+    if (D) {
+        return D->is_gpu();
+    }
+    return false;
 }
 
 
 bool DPPLDevice_IsHost (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    return unwrap(DRef)->is_host();
+    auto D = unwrap(DRef);
+    if (D) {
+        return D->is_host();
+    }
+    return false;
+}
+
+
+uint32_t
+DPPLDevice_GetMaxComputeUnits (__dppl_keep const DPPLSyclDeviceRef DRef)
+{
+    auto D = unwrap(DRef);
+    if (D) {
+        return D->get_info<info::device::max_compute_units>();
+    }
+    return 0;
+}
+
+uint32_t
+DPPLDevice_GetMaxWorkItemDims (__dppl_keep const DPPLSyclDeviceRef DRef)
+{
+    auto D = unwrap(DRef);
+    if (D) {
+        return D->get_info<info::device::max_work_item_dimensions>();
+    }
+    return 0;
+}
+
+__dppl_keep size_t*
+DPPLDevice_GetMaxWorkItemSizes (__dppl_keep const DPPLSyclDeviceRef DRef)
+{
+    size_t *sizes = nullptr;
+    auto D = unwrap(DRef);
+    if (D) {
+        auto id_sizes = D->get_info<info::device::max_work_item_sizes>();
+        sizes = new size_t[3];
+        for(auto i = 0ul; i < 3; ++i) {
+            sizes[i] = id_sizes[i];
+        }
+    }
+    return sizes;
+}
+
+size_t
+DPPLDevice_GetMaxWorkGroupSize (__dppl_keep const DPPLSyclDeviceRef DRef)
+{
+    auto D = unwrap(DRef);
+    if (D) {
+        return D->get_info<info::device::max_work_group_size>();
+    }
+    return 0;
+}
+
+uint32_t
+DPPLDevice_GetMaxNumSubGroups (__dppl_keep const DPPLSyclDeviceRef DRef)
+{
+    auto D = unwrap(DRef);
+    if (D) {
+        return D->get_info<info::device::max_num_sub_groups>();
+    }
+    return 0;
+}
+
+bool
+DPPLDevice_HasInt64BaseAtomics (__dppl_keep const DPPLSyclDeviceRef DRef)
+{
+    auto D = unwrap(DRef);
+    if (D) {
+        return D->has(aspect::int64_base_atomics);
+    }
+    return false;
+}
+
+bool
+DPPLDevice_HasInt64ExtendedAtomics (__dppl_keep const DPPLSyclDeviceRef DRef)
+{
+    auto D = unwrap(DRef);
+    if (D) {
+        return D->has(aspect::int64_extended_atomics);
+    }
+    return false;
 }
 
 __dppl_give const char*
 DPPLDevice_GetName (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    auto name = unwrap(DRef)->get_info<info::device::name>();
-    auto cstr_name = new char [name.length()+1];
-    std::strcpy (cstr_name, name.c_str());
-    return cstr_name;
+    auto D = unwrap(DRef);
+    if (D) {
+        auto name = D->get_info<info::device::name>();
+        auto cstr_name = new char [name.length()+1];
+        std::strcpy (cstr_name, name.c_str());
+        return cstr_name;
+    }
+    return nullptr;
 }
 
 __dppl_give const char*
 DPPLDevice_GetVendorName (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    auto vendor = unwrap(DRef)->get_info<info::device::name>();
-    auto cstr_vendor = new char [vendor.length()+1];
-    std::strcpy (cstr_vendor, vendor.c_str());
-    return cstr_vendor;
+    auto D = unwrap(DRef);
+    if (D) {
+        auto vendor = D->get_info<info::device::vendor>();
+        auto cstr_vendor = new char [vendor.length()+1];
+        std::strcpy (cstr_vendor, vendor.c_str());
+        return cstr_vendor;
+    }
+    return nullptr;
 }
 
 __dppl_give const char*
 DPPLDevice_GetDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    auto driver = unwrap(DRef)->get_info<info::device::driver_version>();
-    auto cstr_driver = new char [driver.length()+1];
-    std::strcpy (cstr_driver, driver.c_str());
-    return cstr_driver;
+    auto D = unwrap(DRef);
+    if (D) {
+        auto driver = D->get_info<info::device::driver_version>();
+        auto cstr_driver = new char [driver.length()+1];
+        std::strcpy (cstr_driver, driver.c_str());
+        return cstr_driver;
+    }
+    return nullptr;
 }
 
 bool DPPLDevice_IsHostUnifiedMemory (__dppl_keep const DPPLSyclDeviceRef DRef)
 {
-    return unwrap(DRef)->get_info<info::device::host_unified_memory>();
+    auto D = unwrap(DRef);
+    if (D) {
+        return D->get_info<info::device::host_unified_memory>();
+    }
+    return false;
 }
 
 bool DPPLDevice_AreEq(__dppl_keep const DPPLSyclDeviceRef DevRef1,
