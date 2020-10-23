@@ -34,10 +34,6 @@ cp install/lib/*.so dpctl/
 mkdir -p dpctl/include
 cp -r backends/include/* dpctl/include
 
-export DPPL_OPENCL_INTERFACE_LIBDIR=dpctl
-export DPPL_OPENCL_INTERFACE_INCLDIR=dpctl/include
-# /usr/lib/x86_64-linux-gnu/
-export OpenCL_LIBDIR=${DPCPP_ROOT}/lib
 export DPPL_SYCL_INTERFACE_LIBDIR=dpctl
 export DPPL_SYCL_INTERFACE_INCLDIR=dpctl/include
 
