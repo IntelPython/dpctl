@@ -676,12 +676,12 @@ cdef class _SyclRTManager:
         """
         print(self._backend_str_ty_dict.keys())
 
-    def get_current_backend (self):
+    cpdef get_current_backend (self):
         """ Returns the backend for the current queue as `backend_type` enum
         """
         return self.get_current_queue().get_sycl_backend()
 
-    def get_current_device_type (self):
+    cpdef get_current_device_type (self):
         ''' Returns current device type as `device_type` enum
         '''
         return self.get_current_queue().get_sycl_device().get_device_type()
@@ -796,7 +796,6 @@ _mgr = _SyclRTManager()
 
 # Global bound functions
 dump                     = _mgr.dump
-get_current_device_type  = _mgr.get_current_device_type
 get_num_platforms        = _mgr.get_num_platforms
 get_num_activated_queues = _mgr.get_num_activated_queues
 get_num_queues           = _mgr.get_num_queues
@@ -810,6 +809,13 @@ cpdef SyclQueue get_current_queue():
     ''' Obtain current Sycl Queue from Data Parallel Control package '''
     return _mgr.get_current_queue()
 
+cpdef get_current_device_type():
+    ''' Obtain current device type from Data Parallel Control package '''
+    return _mgr.get_current_device_type()
+
+cpdef get_current_backend():
+    ''' Obtain current backend type from Data Parallel Control package '''
+    return _mgr.get_current_backend()
 
 def create_program_from_source (SyclQueue q, unicode source, unicode copts=""):
     ''' Creates a Sycl interoperability program from an OpenCL source string.
