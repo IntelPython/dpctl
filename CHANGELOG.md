@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Removed
+- The Legacy OpenCL interface.
+
 ## [0.3.6] - 2020-10-06
 ### Added
 - Changelog was added for dpctl.

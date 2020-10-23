@@ -76,22 +76,13 @@ if(WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qstd=c++17")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3 -DDEBUG ")
 elseif(UNIX)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}                                        \
-       -Wall -Wextra -Winit-self -Wuninitialized -Wmissing-declarations        \
-       -fdiagnostics-color=auto -O3                                            \
-    ")
+    set(SDL_FLAGS "-fstack-protector -fstack-protector-all -fpic -fPIC -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -fno-strict-overflow -fno-delete-null-pointer-checks")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SDL_FLAGS} -Wall -Wextra -Winit-self -Wuninitialized -Wmissing-declarations -fdiagnostics-color=auto")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3 -DDEBUG ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fsycl")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SDL_FLAGS} -std=c++17 -fsycl")
 else()
     message(FATAL_ERROR "Unsupported system.")
 endif()
-
-
-set(OpenCL_INCLUDE_DIR "${DPCPP_ROOT}/include/sycl")
-set(OpenCL_LIBRARY "${DPCPP_ROOT}/lib/libOpenCL.so")
-
-message(STATUS "OpenCL_INCLUDE_DIR: ${OpenCL_INCLUDE_DIR}")
-message(STATUS "OpenCL_LIBRARY: ${OpenCL_LIBRARY}")
 
 add_library(
   DPPLSyclInterface
@@ -108,13 +99,6 @@ add_library(
   source/dppl_utils.cpp
 )
 
-# Install DPPLOpenCLInterface
-add_library(
-  DPPLOpenCLInterface
-  SHARED
-  source/dppl_opencl_interface.c
-)
-
 # Install DPPLSyclInterface
 target_include_directories(
   DPPLSyclInterface
@@ -122,18 +106,6 @@ target_include_directories(
   ${CMAKE_SOURCE_DIR}/include/
   ${PYTHON_INCLUDE_DIR}
   ${NUMPY_INCLUDE_DIR}
-)
-
-target_include_directories(
-    DPPLOpenCLInterface
-    PRIVATE
-    ${CMAKE_SOURCE_DIR}/include/
-)
-
-target_include_directories(
-    DPPLOpenCLInterface
-    PUBLIC
-    ${OpenCL_INCLUDE_DIR}
 )
 
 if(WIN32)
@@ -152,24 +124,12 @@ if(WIN32)
         PRIVATE ${DPCPP_ROOT}/lib/sycl.lib
         PRIVATE ${DPCPP_ROOT}/lib/OpenCL.lib
     )
-    target_link_libraries(
-        DPPLOpenCLInterface
-        PRIVATE ${DPCPP_ROOT}/lib/OpenCL.lib
-    )
 endif()
 
 install(
   TARGETS
   DPPLSyclInterface
   LIBRARY DESTINATION
-  "${CMAKE_INSTALL_PREFIX}/lib/"
-)
-
-install(
-  TARGETS
-  DPPLOpenCLInterface
-  LIBRARY
-  DESTINATION
   "${CMAKE_INSTALL_PREFIX}/lib/"
 )
 
