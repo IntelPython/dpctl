@@ -8,8 +8,5 @@ set ERRORLEVEL=
 "%PYTHON%" -c "import dpctl"
 IF %ERRORLEVEL% NEQ 0 exit 1
 
-"%PYTHON%" -c "import dpctl.ocldrv"
-IF %ERRORLEVEL% NEQ 0 exit 1
-
 "%PYTHON%" -m unittest -v dpctl.tests
 IF %ERRORLEVEL% NEQ 0 exit 1
