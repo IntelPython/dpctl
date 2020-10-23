@@ -21,7 +21,7 @@
 # distutils: language = c++
 # cython: language_level=3
 
-from .backend cimport DPPLSyclUSMRef
+from ._backend cimport DPPLSyclUSMRef
 from ._sycl_core cimport SyclQueue
 
 

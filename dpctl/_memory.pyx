@@ -29,7 +29,7 @@
 # cython: language_level=3
 
 import dpctl
-from dpctl.backend cimport *
+from dpctl._backend cimport *
 from ._sycl_core cimport SyclContext, SyclQueue
 
 from cpython cimport Py_buffer

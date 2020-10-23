@@ -32,7 +32,6 @@ from Cython.Build import cythonize
 import numpy as np
 
 requirements = [
-    "cffi>=1.0.0",
     "cython",
 ]
 
@@ -161,7 +160,6 @@ setup(
     include_package_data=True,
     ext_modules=extensions(),
     setup_requires=requirements,
-    cffi_modules=["./dpctl/opencl_core.py:ffi"],
     install_requires=requirements,
     keywords="dpctl",
     classifiers=[
