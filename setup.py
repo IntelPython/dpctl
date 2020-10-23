@@ -131,7 +131,7 @@ def extensions():
         Extension(
             "dpctl._sycl_core",
             [
-                os.path.join("dpctl", "sycl_core.pyx"),
+                os.path.join("dpctl", "_sycl_core.pyx"),
             ],
             **extension_args
         ),
