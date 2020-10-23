@@ -51,8 +51,8 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
    This is useful when `src_ptr` and `dest_ptr` are bound to incompatible
    SYCL contexts.
    """
-   # could also use numpy.empty((nbytes,), dtype="|u1")
-   cdef unsigned char[::1] host_buf = bytearray(nbytes)
+   # could also have used bytearray(nbytes)
+   cdef unsigned char[::1] host_buf = np.empty((nbytes,), dtype="|u1")
    
    DPPLQueue_Memcpy(
        src_queue.get_queue_ref(),
