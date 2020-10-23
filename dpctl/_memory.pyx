@@ -30,7 +30,7 @@
 
 import dpctl
 from dpctl._backend cimport *
-from ._sycl_core cimport SyclContext, SyclQueue
+from ._sycl_core cimport SyclContext, SyclQueue, SyclDevice
 from ._sycl_core cimport get_current_queue
 
 from cpython cimport Py_buffer
@@ -93,6 +93,7 @@ cdef class _BufferData:
         cdef object dt
         cdef _BufferData buf
         cdef Py_ssize_t arr_data_ptr
+        cdef SyclDevice dev
 
         if ary_version != 1:
             _throw_sycl_usm_ary_iface()
@@ -124,9 +125,10 @@ cdef class _BufferData:
             # FIXME: need a way to construct a queue from
             # context and device, which can be obtaine from the
             # pointer and the context.
-            # cdef SyclDevice dev = DPPLget_pointer_device(arr_data_ptr, <SyclContext> ary_syclobj)
+            # 
             # cdef SyclQueue new_queue = SyclQueue._create_from_dev_context(dev, <SyclContext> ary_syclobj)
             # buf.queue = new_queue
+            dev = Memory.get_pointer_device(buf.p, <SyclContext> ary_syclobj)
             buf.queue = get_current_queue()
 
         return buf
@@ -314,7 +316,7 @@ cdef class Memory:
                                           ctx.get_context_ref())
         else:
             raise ValueError("syclobj keyword can be either None, "
-                             "or an instance of SyclConext or SyclQueue")
+                             "or an instance of SyclContext or SyclQueue")
         return kind.decode('UTF-8')
 
     cpdef copy_to_host (self, obj=None):
@@ -401,6 +403,12 @@ cdef class Memory:
         cdef unsigned char[::1] mv = (<unsigned char[:(nb + 1):1]>ptr)[:nb]
         self.copy_to_host(mv) # output is discarded
         return b
+
+    @staticmethod
+    cdef SyclDevice get_pointer_device(DPPLSyclUSMRef p, SyclContext ctx):
+        cdef DPPLSyclDeviceRef dref = DPPLUSM_GetPointerDevice(p, ctx.get_context_ref())
+
+        return SyclDevice._create(dref)
 
 
 cdef class MemoryUSMShared(Memory):

@@ -22,7 +22,7 @@
 # cython: language_level=3
 
 from ._backend cimport DPPLSyclUSMRef
-from ._sycl_core cimport SyclQueue
+from ._sycl_core cimport SyclQueue, SyclDevice, SyclContext
 
 
 cdef class Memory:
@@ -42,6 +42,9 @@ cdef class Memory:
     cpdef copy_from_device(self, object obj)
 
     cpdef bytes tobytes(self)
+
+    @staticmethod
+    cdef SyclDevice get_pointer_device(DPPLSyclUSMRef p, SyclContext ctx)
 
 
 cdef class MemoryUSMShared(Memory):
