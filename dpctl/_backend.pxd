@@ -28,10 +28,12 @@
 # cython: language_level=3
 
 from libcpp cimport bool
+from libc.stdint cimport uint32_t
 
 
 cdef extern from "dppl_utils.h":
     cdef void DPPLCString_Delete (const char *str)
+    cdef void DPPLSize_t_Array_Delete (size_t *arr)
 
 cdef extern from "dppl_sycl_enum_types.h":
     cdef enum _backend_type 'DPPLSyclBackendType':
@@ -97,10 +99,17 @@ cdef extern from "dppl_sycl_device_interface.h":
     cdef bool DPPLDevice_IsCPU (const DPPLSyclDeviceRef DRef)
     cdef bool DPPLDevice_IsGPU (const DPPLSyclDeviceRef DRef)
     cdef bool DPPLDevice_IsHost (const DPPLSyclDeviceRef DRef)
-    cdef const char* DPPLDevice_GetDriverInfo (const DPPLSyclDeviceRef DRef)
-    cdef const char* DPPLDevice_GetName (const DPPLSyclDeviceRef DRef)
-    cdef const char* DPPLDevice_GetVendorName (const DPPLSyclDeviceRef DRef)
+    cpdef const char *DPPLDevice_GetDriverInfo (const DPPLSyclDeviceRef DRef)
+    cpdef const char *DPPLDevice_GetName (const DPPLSyclDeviceRef DRef)
+    cpdef const char *DPPLDevice_GetVendorName (const DPPLSyclDeviceRef DRef)
     cdef bool DPPLDevice_IsHostUnifiedMemory (const DPPLSyclDeviceRef DRef)
+    cpdef uint32_t DPPLDevice_GetMaxComputeUnits (const DPPLSyclDeviceRef DRef)
+    cpdef uint32_t DPPLDevice_GetMaxWorkItemDims (const DPPLSyclDeviceRef DRef)
+    cpdef size_t *DPPLDevice_GetMaxWorkItemSizes (const DPPLSyclDeviceRef DRef)
+    cpdef size_t DPPLDevice_GetMaxWorkGroupSize (const DPPLSyclDeviceRef DRef)
+    cpdef uint32_t DPPLDevice_GetMaxNumSubGroups (const DPPLSyclDeviceRef DRef)
+    cpdef bool DPPLDevice_HasInt64BaseAtomics (const DPPLSyclDeviceRef DRef)
+    cpdef bool DPPLDevice_HasInt64ExtendedAtomics (const DPPLSyclDeviceRef DRef)
 
 
 cdef extern from "dppl_sycl_event_interface.h":

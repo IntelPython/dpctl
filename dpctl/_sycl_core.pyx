@@ -126,6 +126,13 @@ cdef class SyclDevice:
         ret._vendor_name = DPPLDevice_GetVendorName(dref)
         ret._device_name = DPPLDevice_GetName(dref)
         ret._driver_version = DPPLDevice_GetDriverInfo(dref)
+        ret._max_compute_units = DPPLDevice_GetMaxComputeUnits(dref)
+        ret._max_work_item_dims = DPPLDevice_GetMaxWorkItemDims(dref)
+        ret._max_work_item_sizes = DPPLDevice_GetMaxWorkItemSizes(dref)
+        ret._max_work_group_size = DPPLDevice_GetMaxWorkGroupSize(dref)
+        ret._max_num_sub_groups = DPPLDevice_GetMaxNumSubGroups(dref)
+        ret._int64_base_atomics = DPPLDevice_HasInt64BaseAtomics(dref)
+        ret._int64_extended_atomics = DPPLDevice_HasInt64ExtendedAtomics(dref)
         return ret
 
     def __dealloc__ (self):
@@ -133,18 +140,19 @@ cdef class SyclDevice:
         DPPLCString_Delete(self._device_name)
         DPPLCString_Delete(self._vendor_name)
         DPPLCString_Delete(self._driver_version)
+        DPPLSize_t_Array_Delete(self._max_work_item_sizes)
 
     def dump_device_info (self):
         ''' Print information about the SYCL device.
         '''
         DPPLDevice_DumpInfo(self._device_ref)
 
-    def get_device_name (self):
+    cpdef get_device_name (self):
         ''' Returns the name of the device as a string
         '''
         return self._device_name.decode()
 
-    def get_device_type (self):
+    cpdef get_device_type (self):
         ''' Returns the type of the device as a `device_type` enum
         '''
         if DPPLDevice_IsGPU(self._device_ref):
@@ -154,18 +162,70 @@ cdef class SyclDevice:
         else:
             raise ValueError("Unknown device type.")
 
-    def get_vendor_name (self):
+    cpdef get_vendor_name (self):
         ''' Returns the device vendor name as a string
         '''
         return self._vendor_name.decode()
 
-    def get_driver_version (self):
+    cpdef get_driver_version (self):
         ''' Returns the OpenCL software driver version as a string
             in the form: major number.minor number, if this SYCL
             device is an OpenCL device. Returns a string class
             with the value "1.2" if this SYCL device is a host device.
         '''
         return self._driver_version.decode()
+
+    cpdef has_int64_base_atomics (self):
+        ''' Returns true if device has int64_base_atomics else returns false.
+        '''
+        return self._int64_base_atomics
+
+    cpdef has_int64_extended_atomics (self):
+        ''' Returns true if device has int64_extended_atomics else returns false.
+        '''
+        return self._int64_extended_atomics
+
+    cpdef get_max_compute_units (self):
+        ''' Returns the number of parallel compute units
+            available to the device. The minimum value is 1.
+        '''
+        return self._max_compute_units
+
+    cpdef get_max_work_item_dims (self):
+        ''' Returns the maximum dimensions that specify
+            the global and local work-item IDs used by the
+            data parallel execution model. The minimum
+            value is 3 if this SYCL device is not of device
+            type info::device_type::custom.
+        '''
+        return self._max_work_item_dims
+
+    cpdef get_max_work_item_sizes (self):
+        ''' Returns the maximum number of work-items
+            that are permitted in each dimension of the
+            work-group of the nd_range. The minimum
+            value is (1; 1; 1) for devices that are not of
+            device type info::device_type::custom.
+        '''
+        max_work_item_sizes = []
+        for n in range(3):
+            max_work_item_sizes.append(self._max_work_item_sizes[n])
+        return tuple(max_work_item_sizes)
+
+    cpdef get_max_work_group_size (self):
+        ''' Returns the maximum number of work-items
+            that are permitted in a work-group executing a
+            kernel on a single compute unit. The minimum
+            value is 1.
+        '''
+        return self._max_work_group_size
+
+    cpdef get_max_num_sub_groups (self):
+        ''' Returns the maximum number of sub-groups
+            in a work-group for any kernel executed on the
+            device. The minimum value is 1.
+        '''
+        return self._max_num_sub_groups
 
     cdef DPPLSyclDeviceRef get_device_ref (self):
         ''' Returns the DPPLSyclDeviceRef pointer for this class.

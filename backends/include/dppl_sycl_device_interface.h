@@ -103,6 +103,76 @@ __dppl_give const char*
 DPPLDevice_GetDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef);
 
 /*!
+ * @brief Wrapper over device.get_info<info::device::max_compute_units>().
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the valid result if device exists else returns 0.
+ */
+DPPL_API
+uint32_t
+DPPLDevice_GetMaxComputeUnits (__dppl_keep const DPPLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper for get_info<info::device::max_work_item_dimensions>().
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the valid result if device exists else returns 0.
+ */
+DPPL_API
+uint32_t
+DPPLDevice_GetMaxWorkItemDims (__dppl_keep const DPPLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper for get_info<info::device::max_work_item_sizes>().
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the valid result if device exists else returns NULL.
+ */
+DPPL_API
+__dppl_keep size_t*
+DPPLDevice_GetMaxWorkItemSizes (__dppl_keep const DPPLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper for get_info<info::device::max_work_group_size>().
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the valid result if device exists else returns 0.
+ */
+DPPL_API
+size_t
+DPPLDevice_GetMaxWorkGroupSize (__dppl_keep const DPPLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::max_num_sub_groups>.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the valid result if device exists else returns 0.
+ */
+DPPL_API
+uint32_t
+DPPLDevice_GetMaxNumSubGroups (__dppl_keep const DPPLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::aspect::int64_base_atomics>.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns true if device has int64_base_atomics else returns false.
+ */
+DPPL_API
+bool
+DPPLDevice_HasInt64BaseAtomics (__dppl_keep const DPPLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::aspect::int64_extended_atomics>.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns true if device has int64_extended_atomics else returns false.
+ */
+DPPL_API
+bool
+DPPLDevice_HasInt64ExtendedAtomics (__dppl_keep const DPPLSyclDeviceRef DRef);
+
+/*!
  * @brief Returns a C string for the device name.
  *
  * @param    DRef           Opaque pointer to a sycl::device
