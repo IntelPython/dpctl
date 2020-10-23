@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include "dppl_data_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
@@ -31,11 +32,19 @@
 DPPL_C_EXTERN_C_BEGIN
 
 /*!
- * @brief Deletes the C String argument
+ * @brief Deletes the C String argument.
  *
  * @param    str            C string to be deleted
  */
 DPPL_API
 void DPPLCString_Delete (__dppl_take const char* str);
+
+/*!
+ * @brief Deletes an array of size_t elements.
+ *
+ * @param    arr            Array to be deleted.
+ */
+DPPL_API
+void DPPLSize_t_Array_Delete (__dppl_take size_t* arr);
 
 DPPL_C_EXTERN_C_END
