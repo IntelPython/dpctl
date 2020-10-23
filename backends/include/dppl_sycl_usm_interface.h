@@ -116,4 +116,13 @@ const char *
 DPPLUSM_GetPointerType (__dppl_keep const DPPLSyclUSMRef MRef,
                         __dppl_keep const DPPLSyclContextRef CRef);
 
+/*!
+ * @brief Get the device associated with USM pointer.
+ *
+ * @return A DPPLSyclDeviceRef pointer to the sycl device.
+ */
+DPPL_API
+DPPLSyclDeviceRef
+DPPLUSM_GetPointerDevice (__dppl_keep const DPPLSyclUSMRef MRef,
+			  __dppl_keep const DPPLSyclContextRef CRef);
 DPPL_C_EXTERN_C_END

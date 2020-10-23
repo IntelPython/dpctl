@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dppl_sycl_usm_interface.h"
+#include "dppl_sycl_device_interface.h"
 #include "Support/CBindingWrapping.h"
 
 #include <CL/sycl.hpp>                /* SYCL headers   */
@@ -35,6 +36,7 @@ namespace
 {
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPPLSyclDeviceRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPPLSyclUSMRef)
 
@@ -125,4 +127,16 @@ DPPLUSM_GetPointerType (__dppl_keep const DPPLSyclUSMRef MRef,
         default:
             return "unknown";
     }
+}
+
+DPPLSyclDeviceRef
+DPPLUSM_GetPointerDevice(__dppl_keep const DPPLSyclUSMRef MRef,
+			 __dppl_keep const DPPLSyclContextRef CRef)
+{
+    auto Ptr = unwrap(MRef);
+    auto C = unwrap(CRef);
+
+    auto Dev = get_pointer_device(Ptr, *C);
+
+    return wrap(new device(Dev));
 }

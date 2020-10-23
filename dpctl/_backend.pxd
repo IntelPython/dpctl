@@ -219,3 +219,5 @@ cdef extern from "dppl_sycl_usm_interface.h":
                                      DPPLSyclContextRef CRef)
     cdef const char* DPPLUSM_GetPointerType (DPPLSyclUSMRef MRef,
                                              DPPLSyclContextRef CRef)
+    cdef DPPLSyclDeviceRef DPPLUSM_GetPointerDevice (DPPLSyclUSMRef MRef,
+                                                     DPPLSyclContextRef CRef)
