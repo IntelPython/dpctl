@@ -40,6 +40,8 @@ namespace
 
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPPLSyclDeviceRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
 
 /*!
  * @brief A helper class to support the DPPLSyclQueuemanager.
@@ -533,4 +535,19 @@ DPPLQueueMgr_PushQueue (DPPLSyclBackendType BETy,
 void DPPLQueueMgr_PopQueue ()
 {
     QMgrHelper::popSyclQueue();
+}
+
+/*!
+ * The function constructs a new SYCL queue instance from SYCL conext and
+ * SYCL device.
+ */
+DPPLSyclQueueRef
+DPPLQueueMgr_GetQueueFromContextAndDevice(__dppl_keep DPPLSyclContextRef CRef,
+					  __dppl_keep DPPLSyclDeviceRef DRef)
+{
+    auto dev = unwrap(DRef);
+    auto ctx = unwrap(CRef);
+    auto q = queue(*ctx, *dev);
+
+    return wrap(new queue(q));
 }
