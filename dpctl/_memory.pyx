@@ -204,7 +204,17 @@ cdef class Memory:
             raise ValueError("Non-positive number of bytes found.")
 
     cdef _cinit_other(self, object other):
-        if hasattr(other, '__sycl_usm_array_interface__'):
+        cdef Memory other_mem
+        if isinstance(other, Memory):
+            other_mem = <Memory> other
+            self.memory_ptr = other_mem.memory_ptr
+            self.nbytes = other_mem.nbytes
+            self.queue = other_mem.queue
+            if other_mem.refobj is None:
+                self.refobj = other
+            else:
+                self.refobj = other_mem.refobj
+        elif hasattr(other, '__sycl_usm_array_interface__'):
             other_iface = other.__sycl_usm_array_interface__
             if isinstance(other_iface, dict):
                 other_buf = _BufferData.from_sycl_usm_ary_iface(other_iface)
