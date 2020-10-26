@@ -47,6 +47,7 @@
 __author__ = "Intel Corp."
 
 from ._sycl_core import *
+from ._memory import MemoryUSMShared, MemoryUSMDevice, MemoryUSMHost
 from ._version import get_versions
 
 

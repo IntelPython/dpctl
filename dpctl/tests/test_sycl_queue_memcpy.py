@@ -23,14 +23,13 @@
 ##===----------------------------------------------------------------------===##
 
 import dpctl
-import dpctl.memory
 import unittest
 
 
 class TestQueueMemcpy(unittest.TestCase):
     def _create_memory(self):
         nbytes = 1024
-        mobj = dpctl.memory.MemoryUSMShared(nbytes)
+        mobj = dpctl.MemoryUSMShared(nbytes)
         return mobj
 
     @unittest.skipUnless(
