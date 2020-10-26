@@ -70,6 +70,8 @@ common_test_body(size_t nbytes, const DPPLSyclUSMRef Ptr,
     EXPECT_TRUE(DPPLDevice_AreEq(Dev, QueueDev));
 
     DPPLQueue_Prefetch(Q, Ptr, nbytes);
+    DPPLQueue_Delete(QueueDev);
+    DPPLDevice_Delete(Dev);
 }
     
 } // end of namespace
@@ -97,6 +99,7 @@ TEST_F(TestDPPLSyclUSMInterface, MallocShared)
 
     common_test_body(nbytes, Ptr, Q, "shared");
     DPPLfree_with_queue(Ptr, Q);
+    DPPLQueue_Delete(Q);
 }
 
 TEST_F(TestDPPLSyclUSMInterface, MallocDevice)
@@ -112,6 +115,7 @@ TEST_F(TestDPPLSyclUSMInterface, MallocDevice)
 
     common_test_body(nbytes, Ptr, Q, "device");	
     DPPLfree_with_queue(Ptr, Q);
+    DPPLQueue_Delete(Q);
 }
 
 TEST_F(TestDPPLSyclUSMInterface, MallocHost)
@@ -127,6 +131,7 @@ TEST_F(TestDPPLSyclUSMInterface, MallocHost)
 
     common_test_body(nbytes, Ptr, Q, "host");
     DPPLfree_with_queue(Ptr, Q);
+    DPPLQueue_Delete(Q);
 }
 
 TEST_F(TestDPPLSyclUSMInterface, AlignedAllocShared)
@@ -142,6 +147,7 @@ TEST_F(TestDPPLSyclUSMInterface, AlignedAllocShared)
 
     common_test_body(nbytes, Ptr, Q, "shared");
     DPPLfree_with_queue(Ptr, Q);
+    DPPLQueue_Delete(Q);
 }
 
 TEST_F(TestDPPLSyclUSMInterface, AlignedAllocDevice)
@@ -157,6 +163,7 @@ TEST_F(TestDPPLSyclUSMInterface, AlignedAllocDevice)
 
     common_test_body(nbytes, Ptr, Q, "device");
     DPPLfree_with_queue(Ptr, Q);
+    DPPLQueue_Delete(Q);
 }
 
 TEST_F(TestDPPLSyclUSMInterface, AlignedAllocHost)

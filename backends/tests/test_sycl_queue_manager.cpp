@@ -258,6 +258,7 @@ TEST_F (TestDPPLSyclQueueManager, CreateQueueFromDeviceAndContext)
     EXPECT_TRUE(DPPLContext_AreEq(C, C2));
 
     DPPLQueue_Delete(Q2);
+    DPPLQueue_Delete(Q);
 }
 
 int
