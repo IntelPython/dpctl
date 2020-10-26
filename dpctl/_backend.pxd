@@ -187,7 +187,7 @@ cdef extern from "dppl_sycl_queue_interface.h":
     cdef void DPPLQueue_Memcpy (const DPPLSyclQueueRef Q,
                                 void *Dest, const void *Src, size_t Count)
     cdef void DPPLQueue_Prefetch (const DPPLSyclQueueRef Q,
-                                const void *Src, size_t Count)
+                                  const void *Src, size_t Count)
     cdef void DPPLQueue_MemAdvise (const DPPLSyclQueueRef Q,
                                    const void *Src, size_t Count, int Advice)
 
