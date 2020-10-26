@@ -209,7 +209,7 @@ void DPPLQueue_Memcpy (__dppl_keep const DPPLSyclQueueRef QRef,
  */
 DPPL_API
 void DPPLQueue_Prefetch (__dppl_keep DPPLSyclQueueRef QRef,
-			 const void *Ptr, size_t Count);
+                         const void *Ptr, size_t Count);
 
 /*!
  * @brief C-API wrapper for sycl::queue::mem_advise, the function waits on an event
@@ -223,6 +223,6 @@ void DPPLQueue_Prefetch (__dppl_keep DPPLSyclQueueRef QRef,
  */
 DPPL_API
 void DPPLQueue_MemAdvise (__dppl_keep DPPLSyclQueueRef QRef,
-			  const void *Ptr, size_t Count, int Advice);
+                          const void *Ptr, size_t Count, int Advice);
 
 DPPL_C_EXTERN_C_END

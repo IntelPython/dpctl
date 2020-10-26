@@ -171,7 +171,7 @@ void DPPLQueueMgr_PopQueue ();
 DPPL_API
 __dppl_give DPPLSyclQueueRef
 DPPLQueueMgr_GetQueueFromContextAndDevice(__dppl_keep DPPLSyclContextRef CRef,
-					  __dppl_keep DPPLSyclDeviceRef DRef);
+                                          __dppl_keep DPPLSyclDeviceRef DRef);
 
 
 DPPL_C_EXTERN_C_END

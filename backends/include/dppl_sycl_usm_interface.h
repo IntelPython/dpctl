@@ -50,7 +50,7 @@ DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 DPPL_API
 __dppl_give DPPLSyclUSMRef
 DPPLaligned_alloc_shared (size_t alignment, size_t size,
-			  __dppl_keep const DPPLSyclQueueRef QRef);
+                          __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Crete USM host memory.
@@ -69,7 +69,7 @@ DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 DPPL_API
 __dppl_give DPPLSyclUSMRef
 DPPLaligned_alloc_host (size_t alignment, size_t size,
-			__dppl_keep const DPPLSyclQueueRef QRef);
+                        __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Crete USM device memory.
@@ -88,7 +88,7 @@ DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 DPPL_API
 __dppl_give DPPLSyclUSMRef
 DPPLaligned_alloc_device (size_t alignment, size_t size,
-			  __dppl_keep const DPPLSyclQueueRef QRef);
+                          __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Free USM memory.
@@ -124,5 +124,5 @@ DPPLUSM_GetPointerType (__dppl_keep const DPPLSyclUSMRef MRef,
 DPPL_API
 DPPLSyclDeviceRef
 DPPLUSM_GetPointerDevice (__dppl_keep const DPPLSyclUSMRef MRef,
-			  __dppl_keep const DPPLSyclContextRef CRef);
+                          __dppl_keep const DPPLSyclContextRef CRef);
 DPPL_C_EXTERN_C_END
