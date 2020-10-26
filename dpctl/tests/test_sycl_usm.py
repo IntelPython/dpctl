@@ -31,7 +31,7 @@ import numpy as np
 
 class Dummy(MemoryUSMShared):
     """
-    Class that exposes `__sycl_usm_array_interface__` with 
+    Class that exposes `__sycl_usm_array_interface__` with
     SYCL context for sycl object, instead of Sycl queue.
     """
 
