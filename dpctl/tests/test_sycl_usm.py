@@ -28,17 +28,19 @@ from dpctl import MemoryUSMShared, MemoryUSMHost, MemoryUSMDevice
 import dpctl._memory
 import numpy as np
 
+
 class Dummy(MemoryUSMShared):
     """
     Class that exposes `__sycl_usm_array_interface__` with 
     SYCL context for sycl object, instead of Sycl queue.
     """
+
     @property
     def __sycl_usm_array_interface(self):
         iface = super().__sycl_usm_array_interface__
-        iface['syclob'] = iface['syclobj'].get_sycl_context()
+        iface["syclob"] = iface["syclobj"].get_sycl_context()
         return iface
-               
+
 
 class TestMemory(unittest.TestCase):
     @unittest.skipUnless(
