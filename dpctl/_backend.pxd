@@ -210,6 +210,9 @@ cdef extern from "dppl_sycl_queue_manager.h":
                               DPPLSyclDeviceType DeviceTy,
                               size_t DNum
                           )
+    cdef DPPLSyclQueueRef DPPLQueueMgr_GetQueueFromContextAndDevice(
+        DPPLSyclContextRef CRef,
+        DPPLSyclDeviceRef DRef)
 
 
 cdef extern from "dppl_sycl_usm_interface.h":

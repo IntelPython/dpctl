@@ -24,8 +24,21 @@
 
 import unittest
 import dpctl
-from dpctl._memory import MemoryUSMShared, MemoryUSMHost, MemoryUSMDevice
+from dpctl import MemoryUSMShared, MemoryUSMHost, MemoryUSMDevice
+import dpctl._memory
+import numpy as np
 
+class Dummy(MemoryUSMShared):
+    """
+    Class that exposes `__sycl_usm_array_interface__` with 
+    SYCL context for sycl object, instead of Sycl queue.
+    """
+    @property
+    def __sycl_usm_array_interface(self):
+        iface = super().__sycl_usm_array_interface__
+        iface['syclob'] = iface['syclobj'].get_sycl_context()
+        return iface
+               
 
 class TestMemory(unittest.TestCase):
     @unittest.skipUnless(
@@ -186,6 +199,18 @@ class TestMemoryUSMBase:
         m = self.MemoryUSMClass(1024)
         self.assertEqual(m.nbytes, 1024)
         self.assertEqual(m.get_usm_type(), self.usm_type)
+
+    @unittest.skipUnless(
+        dpctl.has_sycl_platforms(), "No SYCL Devices except the default host device."
+    )
+    def test_sycl_usm_array_interface(self):
+        m = self.MemoryUSMClass(256)
+        m2 = Dummy(m.nbytes)
+        hb = np.random.randint(0, 256, size=256, dtype="|u1")
+        m2.copy_from_host(hb)
+        # test that USM array interface works with SyclContext as 'syclobj'
+        m.copy_from_device(m2)
+        self.assertTrue(np.array_equal(m.copy_to_host(), hb))
 
 
 class TestMemoryUSMShared(TestMemoryUSMBase, unittest.TestCase):

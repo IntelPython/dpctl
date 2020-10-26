@@ -373,6 +373,21 @@ cdef class SyclQueue:
         ret._queue_ref = qref
         return ret
 
+    @staticmethod
+    cdef SyclQueue _create_from_context_and_device(SyclContext ctx, SyclDevice dev):
+        cdef SyclQueue ret = SyclQueue.__new__(SyclQueue)
+        cdef DPPLSyclContextRef cref = ctx.get_context_ref()
+        cdef DPPLSyclDeviceRef dref = dev.get_device_ref()
+        cdef DPPLSyclQueueRef qref = DPPLQueueMgr_GetQueueFromContextAndDevice(
+            cref, dref)
+
+        if qref is NULL:
+            raise SyclQueueCreationError("Queue creation failed.")
+        ret._queue_ref = qref
+        ret._context = ctx
+        ret._device = dev
+        return ret
+    
     def __dealloc__ (self):
         DPPLQueue_Delete(self._queue_ref)
 

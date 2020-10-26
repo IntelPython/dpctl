@@ -94,6 +94,7 @@ cdef class _BufferData:
         cdef _BufferData buf
         cdef Py_ssize_t arr_data_ptr
         cdef SyclDevice dev
+        cdef SyclContext ctx
 
         if ary_version != 1:
             _throw_sycl_usm_ary_iface()
@@ -128,8 +129,9 @@ cdef class _BufferData:
             # 
             # cdef SyclQueue new_queue = SyclQueue._create_from_dev_context(dev, <SyclContext> ary_syclobj)
             # buf.queue = new_queue
-            dev = Memory.get_pointer_device(buf.p, <SyclContext> ary_syclobj)
-            buf.queue = get_current_queue()
+            ctx = <SyclContext> ary_syclobj
+            dev = Memory.get_pointer_device(buf.p, ctx)
+            buf.queue = SyclQueue._create_from_context_and_device(ctx, dev)
 
         return buf
 

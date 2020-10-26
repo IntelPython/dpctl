@@ -128,6 +128,8 @@ cdef class SyclQueue:
 
     @staticmethod
     cdef  SyclQueue _create (DPPLSyclQueueRef qref)
+    @staticmethod
+    cdef  SyclQueue _create_from_context_and_device (SyclContext ctx, SyclDevice dev)
     cpdef bool equals (self, SyclQueue q)
     cpdef SyclContext get_sycl_context (self)
     cpdef SyclDevice get_sycl_device (self)
