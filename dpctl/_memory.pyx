@@ -431,41 +431,92 @@ cdef class Memory:
 
 cdef class MemoryUSMShared(Memory):
     """
-    MemoryUSMShared(nbytes, alignment=0, queue=None) allocates nbytes of USM shared memory.
+    MemoryUSMShared(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of 
+    USM shared memory.
 
     Non-positive alignments are not used (malloc_shared is used instead).
     The queue=None the current `dpctl.get_current_queue()` is used to allocate memory.
 
     MemoryUSMShared(usm_obj) constructor create instance from `usm_obj` expected to 
     implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of 
-    USM memory.
+    USM memory of USM shared type. Using copy=True to perform a copy if USM type is other
+    than 'shared'.
     """
-    def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None):
+    def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None, int copy=False):
         if (isinstance(other, int)):
             self._cinit_alloc(alignment, <Py_ssize_t>other, b"shared", queue)
         else:
             self._cinit_other(other)
+            if (self.get_usm_type() != "shared"):
+                if copy:
+                    self._cinit_alloc(0, <Py_ssize_t>self.nbytes, b"shared", queue)
+                    self.copy_from_device(other)
+                else:
+                    raise ValueError("USM pointer in the argument {} is not a USM shared pointer. "
+                                     "Zero-copy operation is not possible with copy=False. "
+                                     "Either use copy=True, or use a constructor appropriate for "
+                                     "type '{}'".format(other, self.get_usm_type()))
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         self._getbuffer(buffer, flags)
 
 
 cdef class MemoryUSMHost(Memory):
+    """
+    MemoryUSMHost(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of 
+    USM host memory.
 
-    def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None):
+    Non-positive alignments are not used (malloc_host is used instead).
+    The queue=None the current `dpctl.get_current_queue()` is used to allocate memory.
+
+    MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj` expected to 
+    implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of 
+    USM memory of USM host type. Using copy=True to perform a copy if USM type is other
+    than 'host'.
+    """
+    def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None, int copy=False):
         if (isinstance(other, int)):
             self._cinit_alloc(alignment, <Py_ssize_t>other, b"host", queue)
         else:
             self._cinit_other(other)
+            if (self.get_usm_type() != "host"):
+                if copy:
+                    self._cinit_alloc(0, <Py_ssize_t>self.nbytes, b"host", queue)
+                    self.copy_from_device(other)
+                else:
+                    raise ValueError("USM pointer in the argument {} is not a USM host pointer. "
+                                     "Zero-copy operation is not possible with copy=False. "
+                                     "Either use copy=True, or use a constructor appropriate for "
+                                     "type '{}'".format(other, self.get_usm_type()))
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         self._getbuffer(buffer, flags)
 
 
 cdef class MemoryUSMDevice(Memory):
+    """
+    MemoryUSMDevice(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of 
+    USM device memory.
 
-    def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None):
+    Non-positive alignments are not used (malloc_device is used instead).
+    The queue=None the current `dpctl.get_current_queue()` is used to allocate memory.
+
+    MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj` expected to 
+    implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of 
+    USM memory of USM device type. Using copy=True to perform a copy if USM type is other
+    than 'device'.
+    """
+    def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None, int copy=False):
         if (isinstance(other, int)):
             self._cinit_alloc(alignment, <Py_ssize_t>other, b"device", queue)
         else:
             self._cinit_other(other)
+            if (self.get_usm_type() != "device"):
+                if copy:
+                    self._cinit_alloc(0, <Py_ssize_t>self.nbytes, b"device", queue)
+                    self.copy_from_device(other)
+                else:
+                    raise ValueError("USM pointer in the argument {} is not a USM device pointer. "
+                                     "Zero-copy operation is not possible with copy=False. "
+                                     "Either use copy=True, or use a constructor appropriate for "
+                                     "type '{}'".format(other, self.get_usm_type()))
