@@ -34,25 +34,26 @@
 DPPL_C_EXTERN_C_BEGIN
 
 /*!
- * @brief Crete USM shared memory.
+ * @brief Create USM shared memory.
  *
  * @param    size     Number of bytes to allocate
  * @param    QRef     Sycl queue reference to use in allocation
  *
- * @return The pointer to USM shared memory.
+ * @return The pointer to USM shared memory. On failure, returns nullptr.
  */
 DPPL_API
 __dppl_give DPPLSyclUSMRef
 DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
- * @brief Crete USM shared memory.
+ * @brief Create USM shared memory.
  *
  * @param  alignment   Allocation's byte alignment
  * @param  size        Number of bytes to allocate
  * @param  QRef        Sycl queue reference to use in allocation
  *
  * @return The pointer to USM shared memory with the requested alignment.
+ * On failure, returns nullptr.
  */
 DPPL_API
 __dppl_give DPPLSyclUSMRef
@@ -60,25 +61,26 @@ DPPLaligned_alloc_shared (size_t alignment, size_t size,
                           __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
- * @brief Crete USM host memory.
+ * @brief Create USM host memory.
  *
  * @param    size     Number of bytes to allocate
  * @param    QRef     Sycl queue reference to use in allocation
  *
- * @return The pointer to USM host memory.
+ * @return The pointer to USM host memory. On failure, returns nullptr.
  */
 DPPL_API
 __dppl_give DPPLSyclUSMRef
 DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
- * @brief Crete USM host memory.
+ * @brief Create USM host memory.
  *
  * @param  alignment   Allocation's byte alignment
  * @param  size        Number of bytes to allocate
  * @param  QRef        Sycl queue reference to use in allocation
  *
  * @return The pointer to USM host memory with the requested alignment.
+ * On failure, returns nullptr.
  */
 DPPL_API
 __dppl_give DPPLSyclUSMRef
@@ -86,25 +88,26 @@ DPPLaligned_alloc_host (size_t alignment, size_t size,
                         __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
- * @brief Crete USM device memory.
+ * @brief Create USM device memory.
  *
  * @param    size     Number of bytes to allocate
  * @param    QRef     Sycl queue reference to use in allocation
  *
- * @return The pointer to USM device memory.
+ * @return The pointer to USM device memory. On failure, returns nullptr.
  */
 DPPL_API
 __dppl_give DPPLSyclUSMRef
 DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
- * @brief Crete USM device memory.
+ * @brief Create USM device memory.
  *
  * @param    alignment   Allocation's byte alignment
  * @param    size        Number of bytes to allocate
  * @param    QRef        Sycl queue reference to use in allocation
  *
  * @return The pointer to USM device memory with requested alignment.
+ * On failure, returns nullptr.
  */
 DPPL_API
 __dppl_give DPPLSyclUSMRef
