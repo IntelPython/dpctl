@@ -290,7 +290,7 @@ DPPLQueue_Wait (__dppl_keep DPPLSyclQueueRef QRef)
     SyclQueue->wait();
 }
 
-void DPPLQueue_Memcpy (__dppl_take const DPPLSyclQueueRef QRef,
+void DPPLQueue_Memcpy (__dppl_keep const DPPLSyclQueueRef QRef,
                        void *Dest, const void *Src, size_t Count)
 {
     auto Q = unwrap(QRef);
