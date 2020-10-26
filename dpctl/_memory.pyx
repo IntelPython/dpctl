@@ -431,14 +431,14 @@ cdef class Memory:
 
 cdef class MemoryUSMShared(Memory):
     """
-    MemoryUSMShared(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of 
+    MemoryUSMShared(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
     USM shared memory.
 
     Non-positive alignments are not used (malloc_shared is used instead).
     The queue=None the current `dpctl.get_current_queue()` is used to allocate memory.
 
-    MemoryUSMShared(usm_obj) constructor create instance from `usm_obj` expected to 
-    implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of 
+    MemoryUSMShared(usm_obj) constructor create instance from `usm_obj` expected to
+    implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of
     USM memory of USM shared type. Using copy=True to perform a copy if USM type is other
     than 'shared'.
     """
@@ -463,14 +463,14 @@ cdef class MemoryUSMShared(Memory):
 
 cdef class MemoryUSMHost(Memory):
     """
-    MemoryUSMHost(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of 
+    MemoryUSMHost(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
     USM host memory.
 
     Non-positive alignments are not used (malloc_host is used instead).
     The queue=None the current `dpctl.get_current_queue()` is used to allocate memory.
 
-    MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj` expected to 
-    implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of 
+    MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj` expected to
+    implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of
     USM memory of USM host type. Using copy=True to perform a copy if USM type is other
     than 'host'.
     """
@@ -495,14 +495,14 @@ cdef class MemoryUSMHost(Memory):
 
 cdef class MemoryUSMDevice(Memory):
     """
-    MemoryUSMDevice(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of 
+    MemoryUSMDevice(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
     USM device memory.
 
     Non-positive alignments are not used (malloc_device is used instead).
     The queue=None the current `dpctl.get_current_queue()` is used to allocate memory.
 
-    MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj` expected to 
-    implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of 
+    MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj` expected to
+    implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of
     USM memory of USM device type. Using copy=True to perform a copy if USM type is other
     than 'device'.
     """
