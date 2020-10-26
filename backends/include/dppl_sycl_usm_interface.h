@@ -36,6 +36,9 @@ DPPL_C_EXTERN_C_BEGIN
 /*!
  * @brief Crete USM shared memory.
  *
+ * @param    size     Number of bytes to allocate
+ * @param    QRef     Sycl queue reference to use in allocation
+ *
  * @return The pointer to USM shared memory.
  */
 DPPL_API
@@ -45,7 +48,11 @@ DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 /*!
  * @brief Crete USM shared memory.
  *
- * @return The pointer to USM shared memory with requested alignment.
+ * @param  alignment   Allocation's byte alignment
+ * @param  size        Number of bytes to allocate
+ * @param  QRef        Sycl queue reference to use in allocation
+ *
+ * @return The pointer to USM shared memory with the requested alignment.
  */
 DPPL_API
 __dppl_give DPPLSyclUSMRef
@@ -54,6 +61,9 @@ DPPLaligned_alloc_shared (size_t alignment, size_t size,
 
 /*!
  * @brief Crete USM host memory.
+ *
+ * @param    size     Number of bytes to allocate
+ * @param    QRef     Sycl queue reference to use in allocation
  *
  * @return The pointer to USM host memory.
  */
@@ -64,7 +74,11 @@ DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 /*!
  * @brief Crete USM host memory.
  *
- * @return The pointer to USM host memory with requested alignment.
+ * @param  alignment   Allocation's byte alignment
+ * @param  size        Number of bytes to allocate
+ * @param  QRef        Sycl queue reference to use in allocation
+ *
+ * @return The pointer to USM host memory with the requested alignment.
  */
 DPPL_API
 __dppl_give DPPLSyclUSMRef
@@ -74,6 +88,9 @@ DPPLaligned_alloc_host (size_t alignment, size_t size,
 /*!
  * @brief Crete USM device memory.
  *
+ * @param    size     Number of bytes to allocate
+ * @param    QRef     Sycl queue reference to use in allocation
+ *
  * @return The pointer to USM device memory.
  */
 DPPL_API
@@ -82,6 +99,10 @@ DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef);
 
 /*!
  * @brief Crete USM device memory.
+ *
+ * @param    alignment   Allocation's byte alignment
+ * @param    size        Number of bytes to allocate
+ * @param    QRef        Sycl queue reference to use in allocation
  *
  * @return The pointer to USM device memory with requested alignment.
  */
@@ -93,6 +114,11 @@ DPPLaligned_alloc_device (size_t alignment, size_t size,
 /*!
  * @brief Free USM memory.
  *
+ * @param   MRef      USM pointer to free
+ * @param   QRef      Sycl queue reference to use.
+ *
+ * USM pointer must have been allocated using the same context as the one
+ * used to construct the queue.
  */
 DPPL_API
 void DPPLfree_with_queue (__dppl_take DPPLSyclUSMRef MRef,
@@ -109,6 +135,9 @@ void DPPLfree_with_context (__dppl_take DPPLSyclUSMRef MRef,
 /*!
  * @brief Get pointer type.
  *
+ * @param    MRef      USM Memory 
+ * @param    CRef 
+ *
  * @return "host", "device", "shared" or "unknown"
  */
 DPPL_API
@@ -118,6 +147,9 @@ DPPLUSM_GetPointerType (__dppl_keep const DPPLSyclUSMRef MRef,
 
 /*!
  * @brief Get the device associated with USM pointer.
+ *
+ * @param  MRef    USM pointer
+ * @param  CRef    Sycl context reference associated with the pointer
  *
  * @return A DPPLSyclDeviceRef pointer to the sycl device.
  */
