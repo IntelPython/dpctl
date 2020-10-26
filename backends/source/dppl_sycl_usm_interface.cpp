@@ -52,7 +52,7 @@ DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 
 __dppl_give DPPLSyclUSMRef
 DPPLaligned_alloc_shared (size_t alignment, size_t size,
-			  __dppl_keep const DPPLSyclQueueRef QRef)
+                          __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = aligned_alloc_shared(alignment, size, *Q);
@@ -69,7 +69,7 @@ DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 
 __dppl_give DPPLSyclUSMRef
 DPPLaligned_alloc_host (size_t alignment, size_t size,
-			__dppl_keep const DPPLSyclQueueRef QRef)
+                        __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = aligned_alloc_host(alignment, size, *Q);
@@ -86,7 +86,7 @@ DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 
 __dppl_give DPPLSyclUSMRef
 DPPLaligned_alloc_device (size_t alignment, size_t size,
-			  __dppl_keep const DPPLSyclQueueRef QRef)
+                          __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = aligned_alloc_device(alignment, size, *Q);
@@ -131,7 +131,7 @@ DPPLUSM_GetPointerType (__dppl_keep const DPPLSyclUSMRef MRef,
 
 DPPLSyclDeviceRef
 DPPLUSM_GetPointerDevice(__dppl_keep const DPPLSyclUSMRef MRef,
-			 __dppl_keep const DPPLSyclContextRef CRef)
+                         __dppl_keep const DPPLSyclContextRef CRef)
 {
     auto Ptr = unwrap(MRef);
     auto C = unwrap(CRef);

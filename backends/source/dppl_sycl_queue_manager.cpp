@@ -543,7 +543,7 @@ void DPPLQueueMgr_PopQueue ()
  */
 DPPLSyclQueueRef
 DPPLQueueMgr_GetQueueFromContextAndDevice(__dppl_keep DPPLSyclContextRef CRef,
-					  __dppl_keep DPPLSyclDeviceRef DRef)
+                                          __dppl_keep DPPLSyclDeviceRef DRef)
 {
     auto dev = unwrap(DRef);
     auto ctx = unwrap(CRef);
