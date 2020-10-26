@@ -213,5 +213,5 @@ bool DPPLDevice_IsHostUnifiedMemory (__dppl_keep const DPPLSyclDeviceRef DRef);
  */
 DPPL_API
 bool DPPLDevice_AreEq (__dppl_keep const DPPLSyclDeviceRef DevRef1,
-                        __dppl_keep const DPPLSyclDeviceRef DevRef2);
+                       __dppl_keep const DPPLSyclDeviceRef DevRef2);
 DPPL_C_EXTERN_C_END
