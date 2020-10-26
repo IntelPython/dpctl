@@ -56,8 +56,10 @@ bool has_devices ()
     return ret;
 }
 
-void common_test_body(size_t nbytes, const DPPLSyclUSMRef Ptr, const DPPLSyclQueueRef Q, const char *expected) {
-
+void
+common_test_body(size_t nbytes, const DPPLSyclUSMRef Ptr,
+		 const DPPLSyclQueueRef Q, const char *expected)
+{
     auto Ctx = DPPLQueue_GetContext(Q);
 
     auto kind = DPPLUSM_GetPointerType(Ptr, Ctx);
@@ -70,7 +72,7 @@ void common_test_body(size_t nbytes, const DPPLSyclUSMRef Ptr, const DPPLSyclQue
     DPPLQueue_Prefetch(Q, Ptr, nbytes);
 }
     
-}
+} // end of namespace
 
 struct TestDPPLSyclUSMInterface : public ::testing::Test
 {
