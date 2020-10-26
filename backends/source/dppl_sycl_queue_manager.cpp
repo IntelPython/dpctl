@@ -547,7 +547,6 @@ DPPLQueueMgr_GetQueueFromContextAndDevice(__dppl_keep DPPLSyclContextRef CRef,
 {
     auto dev = unwrap(DRef);
     auto ctx = unwrap(CRef);
-    auto q = queue(*ctx, *dev);
 
-    return wrap(new queue(q));
+    return wrap(new queue(*ctx, *dev));
 }

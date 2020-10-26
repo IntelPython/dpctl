@@ -70,7 +70,7 @@ common_test_body(size_t nbytes, const DPPLSyclUSMRef Ptr,
     EXPECT_TRUE(DPPLDevice_AreEq(Dev, QueueDev));
 
     DPPLQueue_Prefetch(Q, Ptr, nbytes);
-    DPPLQueue_Delete(QueueDev);
+    DPPLDevice_Delete(QueueDev);
     DPPLDevice_Delete(Dev);
 }
     
