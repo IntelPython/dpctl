@@ -244,6 +244,12 @@ cdef class Memory:
 
     cdef _getbuffer(self, Py_buffer *buffer, int flags):
         # memory_ptr is Ref which is pointer to SYCL type. For USM it is void*.
+        cdef SyclContext ctx = self._context
+        cdef const char * kind = DPPLUSM_GetPointerType(
+            self.memory_ptr,
+            ctx.get_context_ref())
+        if kind == b'device':
+            raise ValueError('USM Device memory is not host accessible')
         buffer.buf = <char *>self.memory_ptr
         buffer.format = 'B'                     # byte
         buffer.internal = NULL                  # see References
