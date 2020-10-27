@@ -206,8 +206,8 @@ class TestMemoryUSMBase:
     )
     def test_sycl_usm_array_interface(self):
         import sys
-        if (self.MemoryUSMClass is MemoryUSMHost and
-            sys.platform in ["win32", "cygwin"]):
+
+        if self.MemoryUSMClass is MemoryUSMHost and sys.platform in ["win32", "cygwin"]:
             # MemoryUSMHost.copy_to_host() hangs on Windows. TODO: investigate
             raise unittest.SkipTest
         m = self.MemoryUSMClass(256)
