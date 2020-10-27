@@ -130,8 +130,8 @@ DPPLUSM_GetPointerType (__dppl_keep const DPPLSyclUSMRef MRef,
 }
 
 DPPLSyclDeviceRef
-DPPLUSM_GetPointerDevice(__dppl_keep const DPPLSyclUSMRef MRef,
-                         __dppl_keep const DPPLSyclContextRef CRef)
+DPPLUSM_GetPointerDevice (__dppl_keep const DPPLSyclUSMRef MRef,
+                          __dppl_keep const DPPLSyclContextRef CRef)
 {
     auto Ptr = unwrap(MRef);
     auto C = unwrap(CRef);
