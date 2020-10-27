@@ -21,8 +21,8 @@
 # distutils: language = c++
 # cython: language_level=3
 
-from ._backend cimport DPPLSyclUSMRef
-from ._sycl_core cimport SyclQueue, SyclDevice, SyclContext
+from .._backend cimport DPPLSyclUSMRef
+from .._sycl_core cimport SyclQueue, SyclDevice, SyclContext
 
 
 cdef class _Memory:

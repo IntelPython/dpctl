@@ -24,8 +24,7 @@
 
 import unittest
 import dpctl
-from dpctl import MemoryUSMShared, MemoryUSMHost, MemoryUSMDevice
-import dpctl._memory
+from dpctl.memory import MemoryUSMShared, MemoryUSMHost, MemoryUSMDevice
 import numpy as np
 
 

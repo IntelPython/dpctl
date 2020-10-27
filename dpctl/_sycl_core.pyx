@@ -30,7 +30,7 @@ from __future__ import print_function
 from enum import Enum, auto
 import logging
 from ._backend cimport *
-from ._memory cimport _Memory
+from .memory._memory cimport _Memory
 from libc.stdlib cimport malloc, free
 
 
