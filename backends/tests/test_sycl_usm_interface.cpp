@@ -57,8 +57,8 @@ bool has_devices ()
 }
 
 void
-common_test_body(size_t nbytes, const DPPLSyclUSMRef Ptr,
-		 const DPPLSyclQueueRef Q, const char *expected)
+common_test_body (size_t nbytes, const DPPLSyclUSMRef Ptr,
+		  const DPPLSyclQueueRef Q, const char *expected)
 {
     auto Ctx = DPPLQueue_GetContext(Q);
 
@@ -69,9 +69,11 @@ common_test_body(size_t nbytes, const DPPLSyclUSMRef Ptr,
     auto QueueDev = DPPLQueue_GetDevice(Q);
     EXPECT_TRUE(DPPLDevice_AreEq(Dev, QueueDev));
 
-    DPPLQueue_Prefetch(Q, Ptr, nbytes);
+    EXPECT_NO_FATAL_FAILURE(DPPLQueue_Prefetch(Q, Ptr, nbytes));
+
     DPPLDevice_Delete(QueueDev);
     DPPLDevice_Delete(Dev);
+    DPPLContext_Delete(Ctx);
 }
     
 } // end of namespace
@@ -86,7 +88,7 @@ struct TestDPPLSyclUSMInterface : public ::testing::Test
     {  }
 };
 
-TEST_F(TestDPPLSyclUSMInterface, MallocShared)
+TEST_F (TestDPPLSyclUSMInterface, MallocShared)
 {
     if (!has_devices())
 	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
@@ -102,7 +104,7 @@ TEST_F(TestDPPLSyclUSMInterface, MallocShared)
     DPPLQueue_Delete(Q);
 }
 
-TEST_F(TestDPPLSyclUSMInterface, MallocDevice)
+TEST_F (TestDPPLSyclUSMInterface, MallocDevice)
 {
     if (!has_devices())
 	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
@@ -118,7 +120,7 @@ TEST_F(TestDPPLSyclUSMInterface, MallocDevice)
     DPPLQueue_Delete(Q);
 }
 
-TEST_F(TestDPPLSyclUSMInterface, MallocHost)
+TEST_F (TestDPPLSyclUSMInterface, MallocHost)
 {
     if (!has_devices())
 	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
@@ -134,7 +136,7 @@ TEST_F(TestDPPLSyclUSMInterface, MallocHost)
     DPPLQueue_Delete(Q);
 }
 
-TEST_F(TestDPPLSyclUSMInterface, AlignedAllocShared)
+TEST_F (TestDPPLSyclUSMInterface, AlignedAllocShared)
 {
     if (!has_devices())
 	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
@@ -150,7 +152,7 @@ TEST_F(TestDPPLSyclUSMInterface, AlignedAllocShared)
     DPPLQueue_Delete(Q);
 }
 
-TEST_F(TestDPPLSyclUSMInterface, AlignedAllocDevice)
+TEST_F (TestDPPLSyclUSMInterface, AlignedAllocDevice)
 {
     if (!has_devices())
 	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
@@ -166,7 +168,7 @@ TEST_F(TestDPPLSyclUSMInterface, AlignedAllocDevice)
     DPPLQueue_Delete(Q);
 }
 
-TEST_F(TestDPPLSyclUSMInterface, AlignedAllocHost)
+TEST_F (TestDPPLSyclUSMInterface, AlignedAllocHost)
 {
     if (!has_devices())
 	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
