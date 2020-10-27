@@ -106,11 +106,13 @@ cdef class _BufferData:
             dt = np.dtype(ary_typestr)
         except TypeError:
             _throw_sycl_usm_ary_iface()
-        if ary_strides and len(ary_strides) != dt.itemsize:
+        if (ary_strides and len(ary_strides) != 1
+            and ary_strides[0] != dt.itemsize):
             raise ValueError("Must be contiguous")
 
-        if not ary_syclobj or not isinstance(ary_syclobj,
-                                             (dpctl.SyclQueue, dpctl.SyclContext)):
+        if (not ary_syclobj or
+            not isinstance(ary_syclobj,
+                           (dpctl.SyclQueue, dpctl.SyclContext))):
             _throw_sycl_usm_ary_iface()
 
         buf = _BufferData.__new__(_BufferData)
