@@ -302,7 +302,7 @@ cdef class _Memory:
         return _to_memory, (self.copy_to_host(), self.get_usm_type())
     
     property __sycl_usm_array_interface__:
-        def __get__ (self):
+        def __get__(self):
             cdef dict iface = {
                 "data": (<Py_ssize_t>(<void *>self.memory_ptr),
                          True), # bool(self.writeable)),
@@ -336,7 +336,7 @@ cdef class _Memory:
                              "or an instance of SyclContext or SyclQueue")
         return kind.decode('UTF-8')
 
-    cpdef copy_to_host (self, obj=None):
+    cpdef copy_to_host(self, obj=None):
         """Copy content of instance's memory into memory of 
         `obj`, or allocate NumPy array of obj is None"""
         # Cython does the right thing here
@@ -360,8 +360,8 @@ cdef class _Memory:
 
         return obj
 
-    cpdef copy_from_host (self, object obj):
-        """Copy contant of Python buffer provided by `obj` to instance memory."""
+    cpdef copy_from_host(self, object obj):
+        """Copy content of Python buffer provided by `obj` to instance memory."""
         cdef const unsigned char[::1] host_buf = obj
         cdef Py_ssize_t buf_len = len(host_buf)
 
@@ -376,7 +376,7 @@ cdef class _Memory:
             <size_t>buf_len
         )
 
-    cpdef copy_from_device (self, object sycl_usm_ary):
+    cpdef copy_from_device(self, object sycl_usm_ary):
         """Copy SYCL memory underlying the argument object into 
         the memory of the instance"""
         cdef _BufferData src_buf
@@ -410,8 +410,8 @@ cdef class _Memory:
         else:
             raise TypeError
     
-    cpdef bytes tobytes (self):
-        """"""
+    cpdef bytes tobytes(self):
+        """Constructs bytes object populated with copy of USM memory"""
         cdef Py_ssize_t nb = self.nbytes
         cdef bytes b = PyBytes_FromStringAndSize(NULL, nb)
         # convert bytes to memory view
