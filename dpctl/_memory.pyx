@@ -127,7 +127,7 @@ cdef class _BufferData:
         else:
             # Obtain device from pointer and context
             ctx = <SyclContext> ary_syclobj
-            dev = Memory.get_pointer_device(buf.p, ctx)
+            dev = _Memory.get_pointer_device(buf.p, ctx)
             # Use context and device to create a queue to
             # be able to copy memory
             buf.queue = SyclQueue._create_from_context_and_device(ctx, dev)
@@ -139,7 +139,7 @@ def _to_memory(unsigned char [::1] b, str usm_kind):
     """
     Constructs Memory of the same size as the argument 
     and copies data into it"""
-    cdef Memory res
+    cdef _Memory res
 
     if (usm_kind == "shared"):
         res = MemoryUSMShared(len(b))
@@ -156,7 +156,7 @@ def _to_memory(unsigned char [::1] b, str usm_kind):
     return res
 
 
-cdef class Memory:
+cdef class _Memory:
     cdef _cinit_empty(self):
         self.memory_ptr = NULL
         self.nbytes = 0
@@ -205,9 +205,9 @@ cdef class Memory:
             raise ValueError("Non-positive number of bytes found.")
 
     cdef _cinit_other(self, object other):
-        cdef Memory other_mem
-        if isinstance(other, Memory):
-            other_mem = <Memory> other
+        cdef _Memory other_mem
+        if isinstance(other, _Memory):
+            other_mem = <_Memory> other
             self.memory_ptr = other_mem.memory_ptr
             self.nbytes = other_mem.nbytes
             self.queue = other_mem.queue
@@ -428,7 +428,7 @@ cdef class Memory:
         return SyclDevice._create(dref)
 
 
-cdef class MemoryUSMShared(Memory):
+cdef class MemoryUSMShared(_Memory):
     """
     MemoryUSMShared(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
     USM shared memory.
@@ -460,7 +460,7 @@ cdef class MemoryUSMShared(Memory):
         self._getbuffer(buffer, flags)
 
 
-cdef class MemoryUSMHost(Memory):
+cdef class MemoryUSMHost(_Memory):
     """
     MemoryUSMHost(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
     USM host memory.
@@ -492,7 +492,7 @@ cdef class MemoryUSMHost(Memory):
         self._getbuffer(buffer, flags)
 
 
-cdef class MemoryUSMDevice(Memory):
+cdef class MemoryUSMDevice(_Memory):
     """
     MemoryUSMDevice(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
     USM device memory.

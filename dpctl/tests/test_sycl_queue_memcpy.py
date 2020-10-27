@@ -60,13 +60,13 @@ class TestQueueMemcpy(unittest.TestCase):
             q.memcpy(None, mobj, 3)
 
         self.assertEqual(type(cm.exception), TypeError)
-        self.assertEqual(str(cm.exception), "Parameter dest should have type Memory.")
+        self.assertEqual(str(cm.exception), "Parameter `dest` should have type _Memory.")
 
         with self.assertRaises(TypeError) as cm:
             q.memcpy(mobj, None, 3)
 
         self.assertEqual(type(cm.exception), TypeError)
-        self.assertEqual(str(cm.exception), "Parameter src should have type Memory.")
+        self.assertEqual(str(cm.exception), "Parameter `src` should have type _Memory.")
 
 
 if __name__ == "__main__":

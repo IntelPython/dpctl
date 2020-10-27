@@ -25,7 +25,7 @@ from ._backend cimport DPPLSyclUSMRef
 from ._sycl_core cimport SyclQueue, SyclDevice, SyclContext
 
 
-cdef class Memory:
+cdef class _Memory:
     cdef DPPLSyclUSMRef memory_ptr
     cdef Py_ssize_t nbytes
     cdef SyclQueue queue
@@ -47,13 +47,13 @@ cdef class Memory:
     cdef SyclDevice get_pointer_device(DPPLSyclUSMRef p, SyclContext ctx)
 
 
-cdef class MemoryUSMShared(Memory):
+cdef class MemoryUSMShared(_Memory):
     pass
 
 
-cdef class MemoryUSMHost(Memory):
+cdef class MemoryUSMHost(_Memory):
     pass
 
 
-cdef class MemoryUSMDevice(Memory):
+cdef class MemoryUSMDevice(_Memory):
     pass

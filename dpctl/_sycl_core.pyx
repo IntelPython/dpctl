@@ -30,7 +30,7 @@ from __future__ import print_function
 from enum import Enum, auto
 import logging
 from ._backend cimport *
-from ._memory cimport Memory
+from ._memory cimport _Memory
 from libc.stdlib cimport malloc, free
 
 
@@ -445,7 +445,7 @@ cdef class SyclQueue:
             elif isinstance(arg, ctypes.c_double):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._DOUBLE
-            elif isinstance(arg, Memory):
+            elif isinstance(arg, _Memory):
                 kargs[idx]= <void*>(<size_t>arg._pointer)
                 kargty[idx] = _arg_data_type._VOID_PTR
             else:
@@ -620,25 +620,25 @@ cdef class SyclQueue:
         cdef void *c_dest
         cdef void *c_src
 
-        if isinstance(dest, Memory):
-            c_dest = <void*>(<Memory>dest).memory_ptr
+        if isinstance(dest, _Memory):
+            c_dest = <void*>(<_Memory>dest).memory_ptr
         else:
-            raise TypeError("Parameter dest should have type Memory.")
+            raise TypeError("Parameter `dest` should have type _Memory.")
 
-        if isinstance(src, Memory):
-            c_src = <void*>(<Memory>src).memory_ptr
+        if isinstance(src, _Memory):
+            c_src = <void*>(<_Memory>src).memory_ptr
         else:
-            raise TypeError("Parameter src should have type Memory.")
+            raise TypeError("Parameter `src` should have type _Memory.")
 
         DPPLQueue_Memcpy(self._queue_ref, c_dest, c_src, count)
 
     cpdef prefetch (self, mem, size_t count=0):
        cdef void *ptr
 
-       if isinstance(mem, Memory):
-           ptr = <void*>(<Memory>mem).memory_ptr
+       if isinstance(mem, _Memory):
+           ptr = <void*>(<_Memory>mem).memory_ptr
        else:
-           raise TypeError("Parameter mem should have type Memory")
+           raise TypeError("Parameter `mem` should have type _Memory")
 
        if (count <=0 or count > self.nbytes):
            count = self.nbytes
@@ -648,10 +648,10 @@ cdef class SyclQueue:
     cpdef mem_advise (self, mem, size_t count, int advice):
        cdef void *ptr
 
-       if isinstance(mem, Memory):
-           ptr = <void*>(<Memory>mem).memory_ptr
+       if isinstance(mem, _Memory):
+           ptr = <void*>(<_Memory>mem).memory_ptr
        else:
-           raise TypeError("Parameter mem should have type Memory")
+           raise TypeError("Parameter `mem` should have type _Memory")
 
        if (count <=0 or count > self.nbytes):
            count = self.nbytes
