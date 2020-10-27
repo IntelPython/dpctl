@@ -1,4 +1,4 @@
-##===------------- sycl_core.pxd - dpctl module --------*- Cython -*-------===##
+##===------------- __init__.pxd - dpctl module --------*- Cython -*-------===##
 ##
 ##                      Data Parallel Control (dpCtl)
 ##
