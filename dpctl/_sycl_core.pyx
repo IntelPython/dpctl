@@ -30,7 +30,7 @@ from __future__ import print_function
 from enum import Enum, auto
 import logging
 from ._backend cimport *
-from ._memory cimport Memory
+from .memory._memory cimport _Memory
 from libc.stdlib cimport malloc, free
 
 
@@ -373,6 +373,21 @@ cdef class SyclQueue:
         ret._queue_ref = qref
         return ret
 
+    @staticmethod
+    cdef SyclQueue _create_from_context_and_device(SyclContext ctx, SyclDevice dev):
+        cdef SyclQueue ret = SyclQueue.__new__(SyclQueue)
+        cdef DPPLSyclContextRef cref = ctx.get_context_ref()
+        cdef DPPLSyclDeviceRef dref = dev.get_device_ref()
+        cdef DPPLSyclQueueRef qref = DPPLQueueMgr_GetQueueFromContextAndDevice(
+            cref, dref)
+
+        if qref is NULL:
+            raise SyclQueueCreationError("Queue creation failed.")
+        ret._queue_ref = qref
+        ret._context = ctx
+        ret._device = dev
+        return ret
+    
     def __dealloc__ (self):
         DPPLQueue_Delete(self._queue_ref)
 
@@ -430,7 +445,7 @@ cdef class SyclQueue:
             elif isinstance(arg, ctypes.c_double):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._DOUBLE
-            elif isinstance(arg, Memory):
+            elif isinstance(arg, _Memory):
                 kargs[idx]= <void*>(<size_t>arg._pointer)
                 kargty[idx] = _arg_data_type._VOID_PTR
             else:
@@ -601,21 +616,47 @@ cdef class SyclQueue:
     cpdef void wait (self):
         DPPLQueue_Wait(self._queue_ref)
 
-    cpdef memcpy (self, dest, src, int count):
+    cpdef memcpy (self, dest, src, size_t count):
         cdef void *c_dest
         cdef void *c_src
 
-        if isinstance(dest, Memory):
-            c_dest = <void*>(<Memory>dest).memory_ptr
+        if isinstance(dest, _Memory):
+            c_dest = <void*>(<_Memory>dest).memory_ptr
         else:
-            raise TypeError("Parameter dest should be Memory.")
+            raise TypeError("Parameter `dest` should have type _Memory.")
 
-        if isinstance(src, Memory):
-            c_src = <void*>(<Memory>src).memory_ptr
+        if isinstance(src, _Memory):
+            c_src = <void*>(<_Memory>src).memory_ptr
         else:
-            raise TypeError("Parameter src should be Memory.")
+            raise TypeError("Parameter `src` should have type _Memory.")
 
         DPPLQueue_Memcpy(self._queue_ref, c_dest, c_src, count)
+
+    cpdef prefetch (self, mem, size_t count=0):
+       cdef void *ptr
+
+       if isinstance(mem, _Memory):
+           ptr = <void*>(<_Memory>mem).memory_ptr
+       else:
+           raise TypeError("Parameter `mem` should have type _Memory")
+
+       if (count <=0 or count > self.nbytes):
+           count = self.nbytes
+
+       DPPLQueue_Prefetch(self._queue_ref, ptr, count)
+
+    cpdef mem_advise (self, mem, size_t count, int advice):
+       cdef void *ptr
+
+       if isinstance(mem, _Memory):
+           ptr = <void*>(<_Memory>mem).memory_ptr
+       else:
+           raise TypeError("Parameter `mem` should have type _Memory")
+
+       if (count <=0 or count > self.nbytes):
+           count = self.nbytes
+
+       DPPLQueue_MemAdvise(self._queue_ref, ptr, count, advice)
 
 
 cdef class _SyclRTManager:

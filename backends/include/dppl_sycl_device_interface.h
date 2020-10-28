@@ -203,4 +203,15 @@ DPPLDevice_GetVendorName (__dppl_keep const DPPLSyclDeviceRef DRef);
 DPPL_API
 bool DPPLDevice_IsHostUnifiedMemory (__dppl_keep const DPPLSyclDeviceRef DRef);
 
+/*!
+ * @brief Checks if two DPPLSyclDeviceRef objects point to the same
+ * sycl::device.
+ *
+ * @param    DevRef1       First opaque pointer to the sycl device.
+ * @param    DevRef2       Second opaque pointer to the sycl device.
+ * @return   True if the underlying sycl::device are same, false otherwise.
+ */
+DPPL_API
+bool DPPLDevice_AreEq (__dppl_keep const DPPLSyclDeviceRef DevRef1,
+                       __dppl_keep const DPPLSyclDeviceRef DevRef2);
 DPPL_C_EXTERN_C_END

@@ -186,6 +186,10 @@ cdef extern from "dppl_sycl_queue_interface.h":
     cdef void DPPLQueue_Wait (const DPPLSyclQueueRef QRef)
     cdef void DPPLQueue_Memcpy (const DPPLSyclQueueRef Q,
                                 void *Dest, const void *Src, size_t Count)
+    cdef void DPPLQueue_Prefetch (const DPPLSyclQueueRef Q,
+                                  const void *Src, size_t Count)
+    cdef void DPPLQueue_MemAdvise (const DPPLSyclQueueRef Q,
+                                   const void *Src, size_t Count, int Advice)
 
 
 cdef extern from "dppl_sycl_queue_manager.h":
@@ -206,15 +210,26 @@ cdef extern from "dppl_sycl_queue_manager.h":
                               DPPLSyclDeviceType DeviceTy,
                               size_t DNum
                           )
+    cdef DPPLSyclQueueRef DPPLQueueMgr_GetQueueFromContextAndDevice(
+        DPPLSyclContextRef CRef,
+        DPPLSyclDeviceRef DRef)
 
 
 cdef extern from "dppl_sycl_usm_interface.h":
     cdef DPPLSyclUSMRef DPPLmalloc_shared (size_t size, DPPLSyclQueueRef QRef)
     cdef DPPLSyclUSMRef DPPLmalloc_host (size_t size, DPPLSyclQueueRef QRef)
     cdef DPPLSyclUSMRef DPPLmalloc_device (size_t size, DPPLSyclQueueRef QRef)
+    cdef DPPLSyclUSMRef DPPLaligned_alloc_shared (size_t alignment,
+                                                  size_t size, DPPLSyclQueueRef QRef)
+    cdef DPPLSyclUSMRef DPPLaligned_alloc_host (size_t alignment,
+                                                size_t size, DPPLSyclQueueRef QRef)
+    cdef DPPLSyclUSMRef DPPLaligned_alloc_device (size_t alignment,
+                                                  size_t size, DPPLSyclQueueRef QRef)
     cdef void DPPLfree_with_queue (DPPLSyclUSMRef MRef,
                                    DPPLSyclQueueRef QRef)
     cdef void DPPLfree_with_context (DPPLSyclUSMRef MRef,
                                      DPPLSyclContextRef CRef)
     cdef const char* DPPLUSM_GetPointerType (DPPLSyclUSMRef MRef,
                                              DPPLSyclContextRef CRef)
+    cdef DPPLSyclDeviceRef DPPLUSM_GetPointerDevice (DPPLSyclUSMRef MRef,
+                                                     DPPLSyclContextRef CRef)
