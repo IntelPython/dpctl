@@ -170,7 +170,6 @@ TEST_F (TestDPPLSyclQueueManager, CheckGetNumActivatedQueues)
 
     auto nOpenCLCpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_CPU);
     auto nOpenCLGpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU);
-    auto nL0GpuQ     = DPPLQueueMgr_GetNumQueues(DPPL_LEVEL_ZERO, DPPL_GPU);
 
     // Add a queue to main thread
     if(!nOpenCLCpuQ || !nOpenCLGpuQ)
@@ -192,10 +191,10 @@ TEST_F (TestDPPLSyclQueueManager, CheckGetNumActivatedQueues)
 
     // Verify what the expected number of activated queues each time a thread
     // called getNumActivatedQueues.
-    EXPECT_EQ(num0, 1);
-    EXPECT_EQ(num1, 2);
-    EXPECT_EQ(num2, 1);
-    EXPECT_EQ(num4, 0);
+    EXPECT_EQ(num0, 1ul);
+    EXPECT_EQ(num1, 2ul);
+    EXPECT_EQ(num2, 1ul);
+    EXPECT_EQ(num4, 0ul);
 
     DPPLQueue_Delete(q);
 }

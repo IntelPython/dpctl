@@ -99,8 +99,8 @@ TEST_F (TestDPPLSyclKernelInterface, CheckGetNumArgs)
     auto AddKernel = DPPLProgram_GetKernel(PRef, "add");
     auto AxpyKernel = DPPLProgram_GetKernel(PRef, "axpy");
 
-    ASSERT_EQ(DPPLKernel_GetNumArgs(AddKernel), 3);
-    ASSERT_EQ(DPPLKernel_GetNumArgs(AxpyKernel), 4);
+    ASSERT_EQ(DPPLKernel_GetNumArgs(AddKernel), 3ul);
+    ASSERT_EQ(DPPLKernel_GetNumArgs(AxpyKernel), 4ul);
 
     DPPLQueue_Delete(QueueRef);
     DPPLContext_Delete(CtxRef);
