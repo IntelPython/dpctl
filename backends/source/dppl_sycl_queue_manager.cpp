@@ -101,7 +101,7 @@ public:
     {
         QVec *active_queues;
         try {
-            auto def_device = std::move(default_selector().select_device());
+            auto def_device { default_selector().select_device() };
             auto BE = def_device.get_platform().get_backend();
             auto DevTy = def_device.get_info<info::device::device_type>();
 
