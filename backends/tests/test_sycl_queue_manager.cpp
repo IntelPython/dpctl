@@ -83,7 +83,7 @@ TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetCurrentQueue)
     if(!has_devices())
         GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
-    DPPLSyclQueueRef q;
+    DPPLSyclQueueRef q = nullptr;
     ASSERT_NO_THROW(q = DPPLQueueMgr_GetCurrentQueue());
     ASSERT_TRUE(q != nullptr);
 }
