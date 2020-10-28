@@ -29,6 +29,7 @@ else()
     test_sycl_program_interface
     test_sycl_queue_interface
     test_sycl_queue_manager
+    test_sycl_usm_interface
   )
 
   # Copy the spir-v input files to test build directory

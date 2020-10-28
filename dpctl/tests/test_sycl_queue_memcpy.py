@@ -23,14 +23,14 @@
 ##===----------------------------------------------------------------------===##
 
 import dpctl
+import dpctl.memory
 import unittest
 
 
 class TestQueueMemcpy(unittest.TestCase):
     def _create_memory(self):
         nbytes = 1024
-        queue = dpctl.get_current_queue()
-        mobj = dpctl._memory.MemoryUSMShared(nbytes, queue)
+        mobj = dpctl.memory.MemoryUSMShared(nbytes)
         return mobj
 
     @unittest.skipUnless(
@@ -61,13 +61,15 @@ class TestQueueMemcpy(unittest.TestCase):
             q.memcpy(None, mobj, 3)
 
         self.assertEqual(type(cm.exception), TypeError)
-        self.assertEqual(str(cm.exception), "Parameter dest should be Memory.")
+        self.assertEqual(
+            str(cm.exception), "Parameter `dest` should have type _Memory."
+        )
 
         with self.assertRaises(TypeError) as cm:
             q.memcpy(mobj, None, 3)
 
         self.assertEqual(type(cm.exception), TypeError)
-        self.assertEqual(str(cm.exception), "Parameter src should be Memory.")
+        self.assertEqual(str(cm.exception), "Parameter `src` should have type _Memory.")
 
 
 if __name__ == "__main__":

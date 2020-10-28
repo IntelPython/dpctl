@@ -1,4 +1,4 @@
-##===------------- __init__.pxd - dpctl module --------*- Cython -*-------===##
+##===---------- memory/__init__.py - dpctl module -------*- Python -*------===##
 ##
 ##                      Data Parallel Control (dpCtl)
 ##
@@ -19,14 +19,23 @@
 ##===----------------------------------------------------------------------===##
 ##
 ## \file
-## This file declares the extension types and functions for the Cython API
-## implemented in sycl_core.pyx.
+## This top-level dpctl module.
 ##
 ##===----------------------------------------------------------------------===##
+"""
+    Data Parallel Control Memory
 
-# distutils: language = c++
-# cython: language_level=3
+    `dpctl.memory` provides Python objects for untyped USM memory 
+    container of bytes for each kind of USM pointers: shared pointers,
+    device pointers and host pointers.
 
-from dpctl._sycl_core cimport *
-from dpctl._memory import *
+    Shared and host pointers are accessible from both host and a device,
+    while device pointers are only accessible from device.
 
+    Python objects corresponding to shared and host pointers implement 
+    Python simple buffer protocol. It is therefore possible to use these
+    objects to maniputalate USM memory using NumPy or `bytearray`, 
+    `memoryview`, or `array.array` classes.
+    
+"""
+from ._memory import MemoryUSMShared, MemoryUSMDevice, MemoryUSMHost

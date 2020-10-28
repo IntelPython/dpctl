@@ -1,4 +1,4 @@
-##===--------------- _memory.pxd - dpctl module --------*- Cython -*-------===##
+##===------------- __init__.pxd - dpctl module --------*- Cython -*-------===##
 ##
 ##                      Data Parallel Control (dpCtl)
 ##
@@ -17,30 +17,14 @@
 ## limitations under the License.
 ##
 ##===----------------------------------------------------------------------===##
+##
+## \file
+## This file declares the extension types and functions for the Cython API
+## implemented in sycl_core.pyx.
+##
+##===----------------------------------------------------------------------===##
 
 # distutils: language = c++
 # cython: language_level=3
 
-from ._backend cimport DPPLSyclUSMRef
-from ._sycl_core cimport SyclQueue
-
-
-cdef class Memory:
-    cdef DPPLSyclUSMRef memory_ptr
-    cdef Py_ssize_t nbytes
-    cdef SyclQueue queue
-
-    cdef _cinit(self, Py_ssize_t nbytes, ptr_type, SyclQueue queue)
-    cdef _getbuffer(self, Py_buffer *buffer, int flags)
-
-
-cdef class MemoryUSMShared(Memory):
-    pass
-
-
-cdef class MemoryUSMHost(Memory):
-    pass
-
-
-cdef class MemoryUSMDevice(Memory):
-    pass
+from ._memory cimport *

@@ -244,6 +244,23 @@ TEST_F (TestDPPLSyclQueueManager, CheckIsCurrentQueue2)
     DPPLQueueMgr_PopQueue();
 }
 
+TEST_F (TestDPPLSyclQueueManager, CreateQueueFromDeviceAndContext)
+{
+    auto Q = DPPLQueueMgr_GetCurrentQueue();
+    auto D = DPPLQueue_GetDevice(Q);
+    auto C = DPPLQueue_GetContext(Q);
+
+    auto Q2 = DPPLQueueMgr_GetQueueFromContextAndDevice(C, D);
+    auto D2 = DPPLQueue_GetDevice(Q2);
+    auto C2 = DPPLQueue_GetContext(Q2);
+
+    EXPECT_TRUE(DPPLDevice_AreEq(D, D2));
+    EXPECT_TRUE(DPPLContext_AreEq(C, C2));
+
+    DPPLQueue_Delete(Q2);
+    DPPLQueue_Delete(Q);
+}
+
 int
 main (int argc, char** argv)
 {

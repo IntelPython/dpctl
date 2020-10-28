@@ -136,9 +136,9 @@ def extensions():
             **extension_args
         ),
         Extension(
-            "dpctl._memory",
+            "dpctl.memory._memory",
             [
-                os.path.join("dpctl", "_memory.pyx"),
+                os.path.join("dpctl", "memory", "_memory.pyx"),
             ],
             **extension_args
         ),

@@ -261,3 +261,12 @@ bool DPPLDevice_IsHostUnifiedMemory (__dppl_keep const DPPLSyclDeviceRef DRef)
     }
     return false;
 }
+
+bool DPPLDevice_AreEq(__dppl_keep const DPPLSyclDeviceRef DevRef1,
+                      __dppl_keep const DPPLSyclDeviceRef DevRef2)
+{
+    if(!(DevRef1 && DevRef2))
+        // \todo handle error
+        return false;
+    return (*unwrap(DevRef1) == *unwrap(DevRef2));
+}

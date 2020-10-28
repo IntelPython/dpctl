@@ -25,7 +25,7 @@
 import ctypes
 import dpctl
 import unittest
-import dpctl._memory as dpctl_mem
+import dpctl.memory as dpctl_mem
 import numpy as np
 
 
