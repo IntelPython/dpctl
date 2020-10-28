@@ -139,7 +139,7 @@ void DPPLfree_with_context (__dppl_take DPPLSyclUSMRef MRef,
  * @brief Get pointer type.
  *
  * @param    MRef      USM Memory 
- * @param    CRef 
+ * @param    CRef      Sycl context reference associated with the pointer
  *
  * @return "host", "device", "shared" or "unknown"
  */
