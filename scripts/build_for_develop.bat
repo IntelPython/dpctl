@@ -24,17 +24,21 @@ for /f "delims=" %%a in ('%CONDA_PREFIX%\python.exe -c "import distutils.sysconf
 
 cmake -G Ninja ^
     -DCMAKE_BUILD_TYPE=Debug ^
+    "-DCMAKE_CXX_FLAGS=-Wno-unused-function" ^
     "-DCMAKE_INSTALL_PREFIX=%INSTALL_PREFIX%" ^
     "-DCMAKE_PREFIX_PATH=%INSTALL_PREFIX%" ^
     "-DDPCPP_ROOT=%DPCPP_ROOT%" ^
     "-DPYTHON_INCLUDE_DIR=%PYTHON_INC%" ^
-    "-DGTEST_INCLUDE_DIR=%CONDA_PREFIX\Library\include" ^
+    "-DGTEST_INCLUDE_DIR=%CONDA_PREFIX%\Library\include" ^
     "-DGTEST_LIB_DIR=%CONDA_PREFIX%\Library\lib" ^
     "-DNUMPY_INCLUDE_DIR=%NUMPY_DIR%" ^
     "%cd%\..\backends"
 IF %ERRORLEVEL% NEQ 0 exit /b 1
 
-ninja -n
+ninja -n 
+IF %ERRORLEVEL% NEQ 0 exit /b 1
+ninja check
+IF %ERRORLEVEL% NEQ 0 exit /b 1
 ninja install
 IF %ERRORLEVEL% NEQ 0 exit /b 1
 
