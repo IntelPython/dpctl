@@ -75,7 +75,7 @@ common_test_body (size_t nbytes, const DPPLSyclUSMRef Ptr,
     DPPLDevice_Delete(Dev);
     DPPLContext_Delete(Ctx);
 }
-    
+
 } // end of namespace
 
 struct TestDPPLSyclUSMInterface : public ::testing::Test
@@ -94,7 +94,7 @@ TEST_F (TestDPPLSyclUSMInterface, MallocShared)
 	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
 
     auto Q = DPPLQueueMgr_GetCurrentQueue();
-    const size_t nbytes = 1024;
+    const size_t nbytes = SIZE;
 
     auto Ptr = DPPLmalloc_shared(nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
@@ -110,12 +110,12 @@ TEST_F (TestDPPLSyclUSMInterface, MallocDevice)
 	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
 
     auto Q = DPPLQueueMgr_GetCurrentQueue();
-    const size_t nbytes = 1024;
+    const size_t nbytes = SIZE;
 
     auto Ptr = DPPLmalloc_device(nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
 
-    common_test_body(nbytes, Ptr, Q, "device");	
+    common_test_body(nbytes, Ptr, Q, "device");
     DPPLfree_with_queue(Ptr, Q);
     DPPLQueue_Delete(Q);
 }
@@ -126,7 +126,7 @@ TEST_F (TestDPPLSyclUSMInterface, MallocHost)
 	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
 
     auto Q = DPPLQueueMgr_GetCurrentQueue();
-    const size_t nbytes = 1024;
+    const size_t nbytes = SIZE;
 
     auto Ptr = DPPLmalloc_host(nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
@@ -142,7 +142,7 @@ TEST_F (TestDPPLSyclUSMInterface, AlignedAllocShared)
 	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
 
     auto Q = DPPLQueueMgr_GetCurrentQueue();
-    const size_t nbytes = 1024;
+    const size_t nbytes = SIZE;
 
     auto Ptr = DPPLaligned_alloc_shared(64, nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
@@ -158,7 +158,7 @@ TEST_F (TestDPPLSyclUSMInterface, AlignedAllocDevice)
 	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
 
     auto Q = DPPLQueueMgr_GetCurrentQueue();
-    const size_t nbytes = 1024;
+    const size_t nbytes = SIZE;
 
     auto Ptr = DPPLaligned_alloc_device(64, nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
@@ -174,7 +174,7 @@ TEST_F (TestDPPLSyclUSMInterface, AlignedAllocHost)
 	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
 
     auto Q = DPPLQueueMgr_GetCurrentQueue();
-    const size_t nbytes = 1024;
+    const size_t nbytes = SIZE;
 
     auto Ptr = DPPLaligned_alloc_host(64, nbytes, Q);
     EXPECT_TRUE(bool(Ptr));

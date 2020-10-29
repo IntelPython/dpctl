@@ -88,6 +88,17 @@ def get_other_cxxflags():
         return ["/Ox", "/std:c++17"]
 
 
+def get_suppressed_warning_flags():
+    if IS_LIN:
+        # PEP 590 renamed "tp_print" to "tp_vectorcall" and this causes a flood
+        # of deprecation warnings in the Cython generated module. This flag
+        # temporarily suppresses the warnings. The flag should not be needed
+        # once we move to Python 3.9 and/or Cython 0.30.
+        return ["-Wno-deprecated-declarations"]
+    elif IS_WIN:
+        return []
+
+
 def extensions():
     # Security flags
     eca = get_sdl_cflags()
@@ -119,7 +130,9 @@ def extensions():
             dppl_sycl_interface_include,
         ],
         "include_dirs": [np.get_include(), dppl_sycl_interface_include],
-        "extra_compile_args": eca + get_other_cxxflags(),
+        "extra_compile_args": eca
+        + get_other_cxxflags()
+        + get_suppressed_warning_flags(),
         "extra_link_args": ela,
         "libraries": libs,
         "library_dirs": librarys,
