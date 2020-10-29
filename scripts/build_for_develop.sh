@@ -37,8 +37,8 @@ cp -r backends/include/* dpctl/include
 export DPPL_SYCL_INTERFACE_LIBDIR=dpctl
 export DPPL_SYCL_INTERFACE_INCLDIR=dpctl/include
 
-export CC=clang
-export CXX=dpcpp
+export CC=${DPCPP_ROOT}/bin/clang
+export CXX=${DPCPP_ROOT}/bin/dpcpp
 # FIXME: How to pass this using setup.py? The fPIC flag is needed when
 # dpcpp compiles the Cython generated cpp file.
 export CFLAGS=-fPIC
