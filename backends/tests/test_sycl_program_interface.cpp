@@ -40,7 +40,7 @@ using namespace cl::sycl;
 
 namespace
 {
-const size_t SIZE = 1024;
+const int SIZE = 1024;
 
 void add_kernel_checker (queue *syclQueue, DPPLSyclKernelRef AddKernel)
 {
@@ -69,7 +69,7 @@ void add_kernel_checker (queue *syclQueue, DPPLSyclKernelRef AddKernel)
     }
 
     // Validate the data
-    for(auto i = 0ul; i < SIZE; ++i) {
+    for(int i = 0; i < SIZE; ++i) {
         EXPECT_EQ(c[i], i + i);
     }
 }
@@ -102,7 +102,7 @@ void axpy_kernel_checker (queue *syclQueue, DPPLSyclKernelRef AxpyKernel)
     }
 
     // Validate the data
-    for(auto i = 0ul; i < SIZE; ++i) {
+    for(int i = 0; i < SIZE; ++i) {
         EXPECT_EQ(c[i], i + d*i);
     }
 }
@@ -129,10 +129,10 @@ struct TestDPPLSyclProgramInterface : public ::testing::Test
     size_t nOpenCLGpuQ = 0;
 
     TestDPPLSyclProgramInterface () :
-        nOpenCLGpuQ(DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU)),
         spirvFile{"./multi_kernel.spv", std::ios::binary | std::ios::ate},
         spirvFileSize(std::filesystem::file_size("./multi_kernel.spv")),
-        spirvBuffer(spirvFileSize)
+        spirvBuffer(spirvFileSize),
+        nOpenCLGpuQ(DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU))
     {
         spirvFile.seekg(0, std::ios::beg);
         spirvFile.read(spirvBuffer.data(), spirvFileSize);
