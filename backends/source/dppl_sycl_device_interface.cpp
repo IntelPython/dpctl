@@ -28,6 +28,7 @@
 #include "Support/CBindingWrapping.h"
 #include <iomanip>
 #include <iostream>
+#include <cstring>
 #include <CL/sycl.hpp>                /* SYCL headers   */
 
 using namespace cl::sycl;
@@ -220,8 +221,13 @@ DPPLDevice_GetName (__dppl_keep const DPPLSyclDeviceRef DRef)
     auto D = unwrap(DRef);
     if (D) {
         auto name = D->get_info<info::device::name>();
-        auto cstr_name = new char [name.length()+1];
-        std::strcpy (cstr_name, name.c_str());
+        auto cstr_len = name.length()+1;
+        auto cstr_name = new char[cstr_len];
+#ifdef _WIN32
+        strncpy_s(cstr_name, cstr_len, name.c_str(), cstr_len);
+#else
+        std::strncpy(cstr_name, name.c_str(), cstr_len);
+#endif
         return cstr_name;
     }
     return nullptr;
@@ -233,8 +239,13 @@ DPPLDevice_GetVendorName (__dppl_keep const DPPLSyclDeviceRef DRef)
     auto D = unwrap(DRef);
     if (D) {
         auto vendor = D->get_info<info::device::vendor>();
-        auto cstr_vendor = new char [vendor.length()+1];
-        std::strcpy (cstr_vendor, vendor.c_str());
+        auto cstr_len = vendor.length()+1;
+        auto cstr_vendor = new char[cstr_len];
+#ifdef _WIN32
+        strncpy_s(cstr_vendor, cstr_len, vendor.c_str(), cstr_len);
+#else
+        std::strncpy(cstr_vendor, vendor.c_str(), cstr_len);
+#endif
         return cstr_vendor;
     }
     return nullptr;
@@ -246,8 +257,13 @@ DPPLDevice_GetDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef)
     auto D = unwrap(DRef);
     if (D) {
         auto driver = D->get_info<info::device::driver_version>();
-        auto cstr_driver = new char [driver.length()+1];
-        std::strcpy (cstr_driver, driver.c_str());
+        auto cstr_len = driver.length()+1;
+        auto cstr_driver = new char[cstr_len];
+#ifdef _WIN32
+        strncpy_s(cstr_driver, cstr_len, driver.c_str(), cstr_len);
+#else
+        std::strncpy(cstr_driver, driver.c_str(), cstr_len);
+#endif
         return cstr_driver;
     }
     return nullptr;
