@@ -79,12 +79,6 @@ public:
                     auto devty = d.get_info<info::device::device_type>();
                     if(devty == DTy && be == BE) {
                         SelectedDevices.push_back(d);
-
-                        // Workaround for situations when in some environments
-                        // get_devices() returns each device TWICE. Then it fails in call
-                        // for context constructor with all doubled devices.
-                        // So use only one first device.
-                        break;
                     }
                 }
                 if (SelectedDevices.size() > 0) {
