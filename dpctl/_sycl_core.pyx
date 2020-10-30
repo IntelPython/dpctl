@@ -387,7 +387,7 @@ cdef class SyclQueue:
         ret._context = ctx
         ret._device = dev
         return ret
-    
+
     def __dealloc__ (self):
         DPPLQueue_Delete(self._queue_ref)
 
