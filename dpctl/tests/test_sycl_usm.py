@@ -205,11 +205,6 @@ class TestMemoryUSMBase:
         dpctl.has_sycl_platforms(), "No SYCL Devices except the default host device."
     )
     def test_sycl_usm_array_interface(self):
-        import sys
-
-        if self.MemoryUSMClass is MemoryUSMHost and sys.platform in ["win32", "cygwin"]:
-            # MemoryUSMHost.copy_to_host() hangs on Windows. TODO: investigate
-            raise unittest.SkipTest
         m = self.MemoryUSMClass(256)
         m2 = Dummy(m.nbytes)
         hb = np.random.randint(0, 256, size=256, dtype="|u1")
