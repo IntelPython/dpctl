@@ -19,10 +19,6 @@ set "INSTALL_PREFIX=%cd%"
 cd ..\build_cmake
 
 set "DPCPP_ROOT=%ONEAPI_ROOT%\compiler\latest\windows"
-set NUMPY_INC=
-for /f "delims=" %%a in ('%CONDA_PREFIX%\python.exe -c "import numpy; print(numpy.get_include())"') do @set NUMPY_INC=%%a 
-set PYTHON_INC=
-for /f "delims=" %%a in ('%CONDA_PREFIX%\python.exe -c "import distutils.sysconfig as sc; print(sc.get_python_inc())"') do @set PYTHON_INC=%%a 
 
 if defined USE_GTEST (
     set "_GTEST_INCLUDE_DIR=%CONDA_PREFIX%\Library\include"
@@ -41,8 +37,6 @@ cmake -G Ninja ^
     "-DCMAKE_CXX_COMPILER:PATH=%DPCPP_ROOT%\bin\dpcpp.exe" ^
     "-DGTEST_INCLUDE_DIR=%_GTEST_INCLUDE_DIR%" ^
     "-DGTEST_LIB_DIR=%_GTEST_LIB_DIR%" ^
-    "-DPYTHON_INCLUDE_DIR=%PYTHON_INC%" ^
-    "-DNUMPY_INCLUDE_DIR=%NUMPY_INC%" ^
     "%cd%\..\backends"
 IF %ERRORLEVEL% NEQ 0 exit /b 1
 
