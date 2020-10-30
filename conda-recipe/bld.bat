@@ -1,5 +1,8 @@
-call "%ONEAPI_ROOT%compiler\latest\env\vars.bat"
-IF ERRORLEVEL 1 exit /b 1
+call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
+IF %ERRORLEVEL% NEQ 0 (
+	echo "oneAPI compiler activation failed%"
+	exit /b 1
+)
 REM conda uses %ERRORLEVEL% but FPGA scripts can set it. So it should be reseted.
 set ERRORLEVEL=
 
@@ -10,7 +13,7 @@ rmdir /S /Q build_cmake
 mkdir build_cmake
 cd build_cmake
 
-set "DPCPP_ROOT=%ONEAPI_ROOT%compiler\latest\windows"
+set "DPCPP_ROOT=%ONEAPI_ROOT%\compiler\latest\windows"
 set "INSTALL_PREFIX=%cd%\..\install"
 
 rmdir /S /Q "%INSTALL_PREFIX%"
@@ -20,7 +23,7 @@ cmake -G Ninja ^
     "-DCMAKE_INSTALL_PREFIX=%INSTALL_PREFIX%" ^
     "-DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%" ^
     "-DDPCPP_ROOT=%DPCPP_ROOT%" ^
-    "%SRC_DIR%/backends"
+    "%SRC_DIR%\backends"
 IF %ERRORLEVEL% NEQ 0 exit /b 1
 
 ninja -n
