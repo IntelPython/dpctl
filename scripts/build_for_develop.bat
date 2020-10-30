@@ -32,7 +32,7 @@ if defined USE_GTEST (
     set "_GTEST_LIB_DIR="
 )
 cmake -G Ninja ^
-    -DCMAKE_BUILD_TYPE=Debug ^
+    -DCMAKE_BUILD_TYPE=Release ^
     "-DCMAKE_CXX_FLAGS=-Wno-unused-function /EHa" ^
     "-DCMAKE_INSTALL_PREFIX=%INSTALL_PREFIX%" ^
     "-DCMAKE_PREFIX_PATH=%INSTALL_PREFIX%" ^
