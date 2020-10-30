@@ -28,6 +28,7 @@
 # cython: language_level=3
 
 from ._backend cimport *
+from libc.stdint cimport uint32_t
 
 
 cdef class SyclContext:
@@ -48,10 +49,28 @@ cdef class SyclDevice:
     cdef const char *_vendor_name
     cdef const char *_device_name
     cdef const char *_driver_version
+    cdef uint32_t _max_compute_units
+    cdef uint32_t _max_work_item_dims
+    cdef size_t *_max_work_item_sizes
+    cdef size_t _max_work_group_size
+    cdef uint32_t _max_num_sub_groups
+    cdef bool _int64_base_atomics
+    cdef bool _int64_extended_atomics
 
     @staticmethod
     cdef SyclDevice _create (DPPLSyclDeviceRef dref)
     cdef DPPLSyclDeviceRef get_device_ref (self)
+    cpdef get_device_name (self)
+    cpdef get_device_type (self)
+    cpdef get_vendor_name (self)
+    cpdef get_driver_version (self)
+    cpdef get_max_compute_units (self)
+    cpdef get_max_work_item_dims (self)
+    cpdef get_max_work_item_sizes (self)
+    cpdef get_max_work_group_size (self)
+    cpdef get_max_num_sub_groups (self)
+    cpdef has_int64_base_atomics (self)
+    cpdef has_int64_extended_atomics (self)
 
 
 cdef class SyclEvent:
@@ -109,6 +128,8 @@ cdef class SyclQueue:
 
     @staticmethod
     cdef  SyclQueue _create (DPPLSyclQueueRef qref)
+    @staticmethod
+    cdef  SyclQueue _create_from_context_and_device (SyclContext ctx, SyclDevice dev)
     cpdef bool equals (self, SyclQueue q)
     cpdef SyclContext get_sycl_context (self)
     cpdef SyclDevice get_sycl_device (self)
@@ -117,7 +138,11 @@ cdef class SyclQueue:
                             list lS=*, list dEvents=*)
     cpdef void wait (self)
     cdef DPPLSyclQueueRef get_queue_ref (self)
-    cpdef memcpy (self, dest, src, int count)
+    cpdef memcpy (self, dest, src, size_t count)
+    cpdef prefetch (self, ptr, size_t count=*)
+    cpdef mem_advise (self, ptr, size_t count, int mem)
 
 
 cpdef SyclQueue get_current_queue()
+cpdef get_current_device_type ()
+cpdef get_current_backend()
