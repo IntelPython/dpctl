@@ -81,15 +81,9 @@ add_library(
 
 # Install DPPLSyclInterface
 target_include_directories(
-<<<<<<< HEAD
-    DPPLSyclInterface
-    PUBLIC
-    ${CMAKE_SOURCE_DIR}/include/
-=======
   DPPLSyclInterface
   PRIVATE
   ${CMAKE_SOURCE_DIR}/include/
->>>>>>> upstream_master
 )
 
 if(WIN32)
