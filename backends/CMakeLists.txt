@@ -38,28 +38,8 @@ function (check_for_dpcpp)
     endif()
 endfunction()
 
-function (check_for_numpy_inc)
-    string(COMPARE EQUAL "${NUMPY_INCLUDE_DIR}" "" no_numpy_inc)
-    if(${no_dpcpp_root})
-        message(FATAL_ERROR "Set the NUMPY_INCLUDE_DIR argument providing the \
-                             path to NumPy Headers.")
-    else()
-        message(STATUS "NUMPY_INCLUDE_DIR: ${NUMPY_INCLUDE_DIR}")
-    endif()
-
-    string(COMPARE EQUAL "${PYTHON_INCLUDE_DIR}" "" no_python_inc)
-    if(${no_dpcpp_root})
-        message(FATAL_ERROR "Set the PYTHON_INCLUDE_DIR argument providing the \
-                             path to Python Headers.")
-    else()
-        message(STATUS "PYTHON_INCLUDE_DIR: ${PYTHON_INCLUDE_DIR}")
-    endif()
-endfunction()
-
 # Check for dpcpp in the specified DPCPP_ROOT
 check_for_dpcpp()
-# Check if the locations of Numpy and Python headers were provided
-check_for_numpy_inc()
 
 if(WIN32)
     set(CMAKE_CXX_COMPILER:PATH "${DPCPP_ROOT}/bin/dpcpp")
@@ -104,8 +84,6 @@ target_include_directories(
   DPPLSyclInterface
   PRIVATE
   ${CMAKE_SOURCE_DIR}/include/
-  ${PYTHON_INCLUDE_DIR}
-  ${NUMPY_INCLUDE_DIR}
 )
 
 if(WIN32)
