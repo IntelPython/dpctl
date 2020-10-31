@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project("dpCtl - A lightweight SYCL wrapper for Python")
 
 # The function checks is DPCPP_ROOT is valid and points to a dpcpp installation
