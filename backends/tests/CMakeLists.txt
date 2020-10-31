@@ -37,4 +37,3 @@ target_link_libraries(
 )
 gtest_discover_tests(dpctl_c_api_tests)
 add_dependencies(check dpctl_c_api_tests)
-
