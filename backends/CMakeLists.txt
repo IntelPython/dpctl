@@ -123,8 +123,17 @@ foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION include/Support)
 endforeach()
 
+option(
+    BUILD_CAPI_TESTS
+    "Build dpctl C API google tests"
+    OFF
+)
+
 # Enable to build the dpCtl backend test cases
-add_subdirectory(tests)
+if(BUILD_CAPI_TESTS)
+    add_subdirectory(tests)
+endif()
+
 
 # Todo : Add build rules for doxygen
 # maybe refer https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/

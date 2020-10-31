@@ -17,8 +17,7 @@ cmake                                                       \
     -DDPCPP_ROOT=${DPCPP_ROOT}                              \
     -DCMAKE_C_COMPILER:PATH=${DPCPP_ROOT}/bin/clang         \
     -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/bin/dpcpp       \
-    -DGTEST_INCLUDE_DIR=${CONDA_PREFIX}/include/            \
-    -DGTEST_LIB_DIR=${CONDA_PREFIX}/lib                     \
+    -DBUILD_CAPI_TESTS=ON                                    \
     ../backends
 
 make V=1 -n -j 4 && make check && make install
