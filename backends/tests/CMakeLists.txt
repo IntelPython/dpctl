@@ -7,7 +7,7 @@ set(CMAKE_CTEST_COMMAND ctest --progress --output-on-failure -j 4)
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 enable_testing()
 
-include_directories(../include)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 link_directories(${GTEST_LIB_DIR})
 
 # Copy the spir-v input files to test build directory
