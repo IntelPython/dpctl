@@ -19,7 +19,7 @@ cmake                                                       \
     -DBUILD_CAPI_TESTS=ON                                   \
     ..
 
-make V=1 -n -j 4 make check && make install
+make V=1 -n -j 4 && make check && make install
 
 # For more verbose tests use:
 # cd tests
