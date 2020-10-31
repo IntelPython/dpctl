@@ -35,6 +35,6 @@ foreach(TEST_CASE ${DPCTL_C_API_TEST_CASES})
     target_link_libraries(
         ${TEST_CASE} ${CMAKE_THREAD_LIBS_INIT} GTest::GTest DPPLSyclInterface
     )
-    add_test(NAME ${TEST_CASE} COMMAND ${TEST_CASE})
+    gtest_discover_tests(${TEST_CASE})
     add_dependencies(check ${TEST_CASE})
 endforeach()
