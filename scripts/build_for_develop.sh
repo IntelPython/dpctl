@@ -21,7 +21,12 @@ cmake                                                       \
     ../backends
 
 make V=1 -n -j 4 && make check && make install
-#make V=1 -n -j 4 && make install
+
+# For more verbose tests use:
+# cd tests
+# ctest -V --progress --output-on-failure -j 4
+# cd ..
+
 popd
 cp install/lib/*.so dpctl/
 

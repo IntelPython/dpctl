@@ -3,7 +3,7 @@ find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)
 
 # Emulate autotools like make check target to build tests
-set(CMAKE_CTEST_COMMAND ctest -V)
+set(CMAKE_CTEST_COMMAND ctest --progress --output-on-failure -j 4)
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 enable_testing()
 
