@@ -30,11 +30,11 @@ foreach(tf ${spirv-test-files})
     file(COPY ${tf} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
 
-foreach(TEST_CASE ${DPCTL_C_API_TEST_CASES})
-    add_executable(${TEST_CASE} EXCLUDE_FROM_ALL ${TEST_CASE}.cpp)
-    target_link_libraries(
-        ${TEST_CASE} ${CMAKE_THREAD_LIBS_INIT} GTest::GTest DPPLSyclInterface
-    )
-    gtest_discover_tests(${TEST_CASE})
-    add_dependencies(check ${TEST_CASE})
-endforeach()
+file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+add_executable(dpctl_c_api_tests EXCLUDE_FROM_ALL ${sources})
+target_link_libraries(
+    dpctl_c_api_tests ${CMAKE_THREAD_LIBS_INIT} GTest::GTest DPPLSyclInterface
+)
+gtest_discover_tests(dpctl_c_api_tests)
+add_dependencies(check dpctl_c_api_tests)
+

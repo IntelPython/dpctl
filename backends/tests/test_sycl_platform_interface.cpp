@@ -64,11 +64,3 @@ TEST_F (TestDPPLSyclPlatformInterface, CheckDPPLPlatformDumpInfo)
 {
     EXPECT_NO_FATAL_FAILURE(DPPLPlatform_DumpInfo());
 }
-
-int
-main (int argc, char** argv)
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    int ret = RUN_ALL_TESTS();
-    return ret;
-}
