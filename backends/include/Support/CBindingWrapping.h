@@ -25,6 +25,10 @@
 
 #pragma once
 
+/*!
+    @brief Creates two convenience functions to reinterpret_cast an opaque
+    pointer to a pointer to a Sycl type and vice-versa.
+*/
 #define DEFINE_SIMPLE_CONVERSION_FUNCTIONS(ty, ref)                            \
     __attribute__((unused)) inline ty *unwrap(ref P)                           \
     {                                                                          \
@@ -36,7 +40,11 @@
             return reinterpret_cast<ref>(const_cast<ty*>(P));                  \
     }
 
- #define DEFINE_STDCXX_CONVERSION_FUNCTIONS(ty, ref)                           \
+/*!
+    @brief Add an overloaded unwrap to assert that a pointer can be legally
+    cast. @see DEFINE_SIMPLE_CONVERSION_FUNCTIONS()
+*/
+#define DEFINE_STDCXX_CONVERSION_FUNCTIONS(ty, ref)                            \
     DEFINE_SIMPLE_CONVERSION_FUNCTIONS(ty, ref)                                \
                                                                                \
     template<typename T>                                                       \
