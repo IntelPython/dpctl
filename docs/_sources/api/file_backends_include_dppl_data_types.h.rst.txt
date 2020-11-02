@@ -69,6 +69,8 @@ Included By
 
 - :ref:`file_backends_include_dppl_sycl_usm_interface.h`
 
+- :ref:`file_backends_include_dppl_utils.h`
+
 
 
 

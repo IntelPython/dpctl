@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__device__interface_8h_1ad842e3efd2606cc4ea8942ee8c9289bc:
+
+Function DPPLDevice_GetMaxWorkItemSizes
+=======================================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_device_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLDevice_GetMaxWorkItemSizes(const DPPLSyclDeviceRef)

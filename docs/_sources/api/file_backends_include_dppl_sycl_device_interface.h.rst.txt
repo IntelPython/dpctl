@@ -62,15 +62,31 @@ Functions
 ---------
 
 
+- :ref:`exhale_function_dppl__sycl__device__interface_8h_1af27c461ba4f72d8f99aa43938e1b504c`
+
 - :ref:`exhale_function_dppl__sycl__device__interface_8h_1a4de0363a31b711c9c9480cabdeaafe35`
 
 - :ref:`exhale_function_dppl__sycl__device__interface_8h_1a318fef3810b70fb5046c5902c0882e3a`
 
 - :ref:`exhale_function_dppl__sycl__device__interface_8h_1a1247248c3b3e54f97f032c482c4a4471`
 
+- :ref:`exhale_function_dppl__sycl__device__interface_8h_1a331410c881911f8a4ddfc6ff598363f2`
+
+- :ref:`exhale_function_dppl__sycl__device__interface_8h_1a9e50c5c9a20919f845d13d4c6da0c899`
+
+- :ref:`exhale_function_dppl__sycl__device__interface_8h_1a1b622fe1f9c03fd3ba3c09e3eadd4689`
+
+- :ref:`exhale_function_dppl__sycl__device__interface_8h_1adac62f661feb4673b8550dacdd1fc7f2`
+
+- :ref:`exhale_function_dppl__sycl__device__interface_8h_1ad842e3efd2606cc4ea8942ee8c9289bc`
+
 - :ref:`exhale_function_dppl__sycl__device__interface_8h_1a245243b4bd19e67f3d878781b0340877`
 
 - :ref:`exhale_function_dppl__sycl__device__interface_8h_1a05024b72193cb2808d1ffbfd2ac94427`
+
+- :ref:`exhale_function_dppl__sycl__device__interface_8h_1a429493ba0280fa42fec4717858432a6d`
+
+- :ref:`exhale_function_dppl__sycl__device__interface_8h_1a12285937b18b219423781d3f433006cd`
 
 - :ref:`exhale_function_dppl__sycl__device__interface_8h_1a482d2f4edbf67e090cde03856bf99f63`
 

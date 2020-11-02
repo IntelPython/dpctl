@@ -38,7 +38,7 @@
   <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Function DPPLQueueMgr_IsCurrentQueue" href="function_dppl__sycl__queue__manager_8h_1a4214e7a5d5b514874c3042dbcd91123c.html" />
+    <link rel="next" title="Function DPPLQueueMgr_GetQueueFromContextAndDevice" href="function_dppl__sycl__queue__manager_8h_1a2eb0b99690b1328beef272d310111354.html" />
     <link rel="prev" title="Function DPPLQueueMgr_GetNumQueues" href="function_dppl__sycl__queue__manager_8h_1a51d05c26d22ff2f4467c36420514c9f2.html" /> 
 </head>
 
@@ -91,6 +91,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl.memory_api.html">dpctl.memory Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
 </ul>
 
@@ -173,6 +174,7 @@
 <dt><strong>Return</strong></dt><dd><p>A copy of the sycl::queue corresponding to the device is returned wrapped inside a DPPLSyclDeviceType pointer. A runtime_error exception is raised if no such device exists. </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">BETy</span></code>: A valid Sycl backend value. </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">DeviceTy</span></code>: The type of Sycl device (sycl_device_type) </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">DNum</span></code>: Device id for the device (defaults to 0)</p></li>
 </ul>
@@ -192,7 +194,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="function_dppl__sycl__queue__manager_8h_1a4214e7a5d5b514874c3042dbcd91123c.html" class="btn btn-neutral float-right" title="Function DPPLQueueMgr_IsCurrentQueue" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="function_dppl__sycl__queue__manager_8h_1a2eb0b99690b1328beef272d310111354.html" class="btn btn-neutral float-right" title="Function DPPLQueueMgr_GetQueueFromContextAndDevice" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="function_dppl__sycl__queue__manager_8h_1a51d05c26d22ff2f4467c36420514c9f2.html" class="btn btn-neutral float-left" title="Function DPPLQueueMgr_GetNumQueues" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

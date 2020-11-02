@@ -89,6 +89,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl.memory_api.html">dpctl.memory Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
 </ul>
 
@@ -223,6 +224,13 @@
 
 <span class="n">DPPL_API</span>
 <span class="kt">void</span> <span class="n">DPPLQueueMgr_PopQueue</span> <span class="p">();</span>
+
+
+<span class="n">DPPL_API</span>
+<span class="n">__dppl_give</span> <span class="n">DPPLSyclQueueRef</span>
+<span class="n">DPPLQueueMgr_GetQueueFromContextAndDevice</span><span class="p">(</span><span class="n">__dppl_keep</span> <span class="n">DPPLSyclContextRef</span> <span class="n">CRef</span><span class="p">,</span>
+                                          <span class="n">__dppl_keep</span> <span class="n">DPPLSyclDeviceRef</span> <span class="n">DRef</span><span class="p">);</span>
+
 
 <span class="n">DPPL_C_EXTERN_C_END</span>
 </pre></div>

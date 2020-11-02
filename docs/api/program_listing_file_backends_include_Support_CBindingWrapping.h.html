@@ -89,6 +89,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl.memory_api.html">dpctl.memory Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
 </ul>
 
@@ -178,26 +179,29 @@
 <span class="c1">//===----------------------------------------------------------------------===//</span>
 <span class="c1">//===----------------------------------------------------------------------===//</span>
 
- <span class="cp">#pragma once</span>
+<span class="cp">#pragma once</span>
 
- <span class="cp">#define DEFINE_SIMPLE_CONVERSION_FUNCTIONS(ty, ref)     \</span>
-<span class="cp">   inline ty *unwrap(ref P) {                            \</span>
-<span class="cp">     return reinterpret_cast&lt;ty*&gt;(P);                    \</span>
-<span class="cp">   }                                                     \</span>
-<span class="cp">                                                         \</span>
-<span class="cp">   inline ref wrap(const ty *P) {                        \</span>
-<span class="cp">     return reinterpret_cast&lt;ref&gt;(const_cast&lt;ty*&gt;(P));   \</span>
-<span class="cp">   }</span>
+<span class="cp">#define DEFINE_SIMPLE_CONVERSION_FUNCTIONS(ty, ref)                            \</span>
+<span class="cp">    __attribute__((unused)) inline ty *unwrap(ref P)                           \</span>
+<span class="cp">    {                                                                          \</span>
+<span class="cp">        return reinterpret_cast&lt;ty*&gt;(P);                                       \</span>
+<span class="cp">    }                                                                          \</span>
+<span class="cp">                                                                               \</span>
+<span class="cp">    __attribute__((unused)) inline ref wrap(const ty *P)                       \</span>
+<span class="cp">    {                                                                          \</span>
+<span class="cp">            return reinterpret_cast&lt;ref&gt;(const_cast&lt;ty*&gt;(P));                  \</span>
+<span class="cp">    }</span>
 
- <span class="cp">#define DEFINE_STDCXX_CONVERSION_FUNCTIONS(ty, ref)     \</span>
-<span class="cp">   DEFINE_SIMPLE_CONVERSION_FUNCTIONS(ty, ref)           \</span>
-<span class="cp">                                                         \</span>
-<span class="cp">   template&lt;typename T&gt;                                  \</span>
-<span class="cp">   inline T *unwrap(ref P) {                             \</span>
-<span class="cp">     T *Q = (T*)unwrap(P);                               \</span>
-<span class="cp">     assert(Q &amp;&amp; &quot;Invalid cast!&quot;);                       \</span>
-<span class="cp">     return Q;                                           \</span>
-<span class="cp">   }</span>
+<span class="cp">#define DEFINE_STDCXX_CONVERSION_FUNCTIONS(ty, ref)                            \</span>
+<span class="cp">    DEFINE_SIMPLE_CONVERSION_FUNCTIONS(ty, ref)                                \</span>
+<span class="cp">                                                                               \</span>
+<span class="cp">    template&lt;typename T&gt;                                                       \</span>
+<span class="cp">    __attribute__((unused)) inline T *unwrap(ref P)                            \</span>
+<span class="cp">    {                                                                          \</span>
+<span class="cp">        T *Q = (T*)unwrap(P);                                                  \</span>
+<span class="cp">        assert(Q &amp;&amp; &quot;Invalid cast!&quot;);                                          \</span>
+<span class="cp">        return Q;                                                              \</span>
+<span class="cp">    }</span>
 </pre></div>
 </div>
 </div>

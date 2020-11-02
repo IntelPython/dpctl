@@ -33,6 +33,7 @@ Program Listing for File dppl_utils.h
    
    #pragma once
    
+   #include "dppl_data_types.h"
    #include "Support/DllExport.h"
    #include "Support/ExternC.h"
    #include "Support/MemOwnershipAttrs.h"
@@ -41,5 +42,8 @@ Program Listing for File dppl_utils.h
    
    DPPL_API
    void DPPLCString_Delete (__dppl_take const char* str);
+   
+   DPPL_API
+   void DPPLSize_t_Array_Delete (__dppl_take size_t* arr);
    
    DPPL_C_EXTERN_C_END

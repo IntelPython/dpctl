@@ -89,6 +89,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl.memory_api.html">dpctl.memory Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
 </ul>
 
@@ -194,11 +195,26 @@
 
 <span class="n">DPPL_API</span>
 <span class="n">__dppl_give</span> <span class="n">DPPLSyclUSMRef</span>
+<span class="n">DPPLaligned_alloc_shared</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+                          <span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclQueueRef</span> <span class="n">QRef</span><span class="p">);</span>
+
+<span class="n">DPPL_API</span>
+<span class="n">__dppl_give</span> <span class="n">DPPLSyclUSMRef</span>
 <span class="n">DPPLmalloc_host</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclQueueRef</span> <span class="n">QRef</span><span class="p">);</span>
 
 <span class="n">DPPL_API</span>
 <span class="n">__dppl_give</span> <span class="n">DPPLSyclUSMRef</span>
+<span class="n">DPPLaligned_alloc_host</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+                        <span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclQueueRef</span> <span class="n">QRef</span><span class="p">);</span>
+
+<span class="n">DPPL_API</span>
+<span class="n">__dppl_give</span> <span class="n">DPPLSyclUSMRef</span>
 <span class="n">DPPLmalloc_device</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclQueueRef</span> <span class="n">QRef</span><span class="p">);</span>
+
+<span class="n">DPPL_API</span>
+<span class="n">__dppl_give</span> <span class="n">DPPLSyclUSMRef</span>
+<span class="n">DPPLaligned_alloc_device</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+                          <span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclQueueRef</span> <span class="n">QRef</span><span class="p">);</span>
 
 <span class="n">DPPL_API</span>
 <span class="kt">void</span> <span class="n">DPPLfree_with_queue</span> <span class="p">(</span><span class="n">__dppl_take</span> <span class="n">DPPLSyclUSMRef</span> <span class="n">MRef</span><span class="p">,</span>
@@ -213,6 +229,10 @@
 <span class="n">DPPLUSM_GetPointerType</span> <span class="p">(</span><span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclUSMRef</span> <span class="n">MRef</span><span class="p">,</span>
                         <span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclContextRef</span> <span class="n">CRef</span><span class="p">);</span>
 
+<span class="n">DPPL_API</span>
+<span class="n">DPPLSyclDeviceRef</span>
+<span class="n">DPPLUSM_GetPointerDevice</span> <span class="p">(</span><span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclUSMRef</span> <span class="n">MRef</span><span class="p">,</span>
+                          <span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclContextRef</span> <span class="n">CRef</span><span class="p">);</span>
 <span class="n">DPPL_C_EXTERN_C_END</span>
 </pre></div>
 </div>

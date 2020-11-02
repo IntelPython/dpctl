@@ -65,6 +65,34 @@ Program Listing for File dppl_sycl_device_interface.h
    DPPLDevice_GetDriverInfo (__dppl_keep const DPPLSyclDeviceRef DRef);
    
    DPPL_API
+   uint32_t
+   DPPLDevice_GetMaxComputeUnits (__dppl_keep const DPPLSyclDeviceRef DRef);
+   
+   DPPL_API
+   uint32_t
+   DPPLDevice_GetMaxWorkItemDims (__dppl_keep const DPPLSyclDeviceRef DRef);
+   
+   DPPL_API
+   __dppl_keep size_t*
+   DPPLDevice_GetMaxWorkItemSizes (__dppl_keep const DPPLSyclDeviceRef DRef);
+   
+   DPPL_API
+   size_t
+   DPPLDevice_GetMaxWorkGroupSize (__dppl_keep const DPPLSyclDeviceRef DRef);
+   
+   DPPL_API
+   uint32_t
+   DPPLDevice_GetMaxNumSubGroups (__dppl_keep const DPPLSyclDeviceRef DRef);
+   
+   DPPL_API
+   bool
+   DPPLDevice_HasInt64BaseAtomics (__dppl_keep const DPPLSyclDeviceRef DRef);
+   
+   DPPL_API
+   bool
+   DPPLDevice_HasInt64ExtendedAtomics (__dppl_keep const DPPLSyclDeviceRef DRef);
+   
+   DPPL_API
    __dppl_give const char*
    DPPLDevice_GetName (__dppl_keep const DPPLSyclDeviceRef DRef);
    
@@ -75,4 +103,7 @@ Program Listing for File dppl_sycl_device_interface.h
    DPPL_API
    bool DPPLDevice_IsHostUnifiedMemory (__dppl_keep const DPPLSyclDeviceRef DRef);
    
+   DPPL_API
+   bool DPPLDevice_AreEq (__dppl_keep const DPPLSyclDeviceRef DevRef1,
+                          __dppl_keep const DPPLSyclDeviceRef DevRef2);
    DPPL_C_EXTERN_C_END

@@ -24,4 +24,5 @@ Indices and tables
 
     self
     dpCtl Python API <dpCtl_api>
+    dpctl.memory Python API <dpCtl.memory_api>
     api/dpCtl-CAPI_root

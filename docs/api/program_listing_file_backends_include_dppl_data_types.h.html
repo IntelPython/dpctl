@@ -89,6 +89,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl.memory_api.html">dpctl.memory Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
 </ul>
 
@@ -222,13 +223,14 @@
 
 <span class="cp">#endif </span><span class="cm">/* _MSC_VER */</span><span class="cp"></span>
 
-<span class="cm">/* Set defaults for constants which we cannot find. */</span>
 <span class="cp">#if !defined(INT64_MAX)</span>
 <span class="cp"># define INT64_MAX 9223372036854775807LL</span>
 <span class="cp">#endif</span>
+
 <span class="cp">#if !defined(INT64_MIN)</span>
 <span class="cp"># define INT64_MIN ((-INT64_MAX)-1)</span>
 <span class="cp">#endif</span>
+
 <span class="cp">#if !defined(UINT64_MAX)</span>
 <span class="cp"># define UINT64_MAX 0xffffffffffffffffULL</span>
 <span class="cp">#endif</span>

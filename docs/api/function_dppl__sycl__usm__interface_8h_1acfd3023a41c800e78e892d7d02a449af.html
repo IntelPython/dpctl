@@ -91,6 +91,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl.memory_api.html">dpctl.memory Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
 </ul>
 
@@ -168,9 +169,14 @@
 <dl class="cpp function">
 <dt id="_CPPv417DPPLmalloc_device6size_tK16DPPLSyclQueueRef">
 <span id="_CPPv317DPPLmalloc_device6size_tK16DPPLSyclQueueRef"></span><span id="_CPPv217DPPLmalloc_device6size_tK16DPPLSyclQueueRef"></span><span id="DPPLmalloc_device__s.DPPLSyclQueueRefC"></span><span class="target" id="dppl__sycl__usm__interface_8h_1acfd3023a41c800e78e892d7d02a449af"></span><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e.html#_CPPv414DPPLSyclUSMRef" title="DPPLSyclUSMRef">DPPLSyclUSMRef</a> <code class="sig-name descname">DPPLmalloc_device</code><span class="sig-paren">(</span>size_t <em>size</em>, <em class="property">const</em> <a class="reference internal" href="typedef_dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7.html#_CPPv416DPPLSyclQueueRef" title="DPPLSyclQueueRef">DPPLSyclQueueRef</a> <em>QRef</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417DPPLmalloc_device6size_tK16DPPLSyclQueueRef" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Crete USM device memory. </p>
+<dd><p>Create USM device memory. </p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The pointer to USM device memory. </p>
+<dt><strong>Return</strong></dt><dd><p>The pointer to USM device memory. On failure, returns nullptr. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: Number of bytes to allocate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">QRef</span></code>: Sycl queue reference to use in allocation</p></li>
+</ul>
 </dd>
 </dl>
 </p>

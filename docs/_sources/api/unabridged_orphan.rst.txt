@@ -45,11 +45,6 @@ Files
 .. toctree::
    :maxdepth: 5
 
-   file_backends_include_dppl_opencl_interface.h.rst
-
-.. toctree::
-   :maxdepth: 5
-
    file_backends_include_dppl_sycl_context_interface.h.rst
 
 .. toctree::
@@ -106,11 +101,6 @@ Files
    :maxdepth: 5
 
    file_backends_include_dppl_utils.h.rst
-
-.. toctree::
-   :maxdepth: 5
-
-   file_backends_include_error_check_macros.h.rst
 
 .. toctree::
    :maxdepth: 5

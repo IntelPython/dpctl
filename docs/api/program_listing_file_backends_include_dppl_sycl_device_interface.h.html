@@ -89,6 +89,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl.memory_api.html">dpctl.memory Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
 </ul>
 
@@ -212,6 +213,34 @@
 <span class="n">DPPLDevice_GetDriverInfo</span> <span class="p">(</span><span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclDeviceRef</span> <span class="n">DRef</span><span class="p">);</span>
 
 <span class="n">DPPL_API</span>
+<span class="kt">uint32_t</span>
+<span class="n">DPPLDevice_GetMaxComputeUnits</span> <span class="p">(</span><span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclDeviceRef</span> <span class="n">DRef</span><span class="p">);</span>
+
+<span class="n">DPPL_API</span>
+<span class="kt">uint32_t</span>
+<span class="n">DPPLDevice_GetMaxWorkItemDims</span> <span class="p">(</span><span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclDeviceRef</span> <span class="n">DRef</span><span class="p">);</span>
+
+<span class="n">DPPL_API</span>
+<span class="n">__dppl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
+<span class="n">DPPLDevice_GetMaxWorkItemSizes</span> <span class="p">(</span><span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclDeviceRef</span> <span class="n">DRef</span><span class="p">);</span>
+
+<span class="n">DPPL_API</span>
+<span class="kt">size_t</span>
+<span class="n">DPPLDevice_GetMaxWorkGroupSize</span> <span class="p">(</span><span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclDeviceRef</span> <span class="n">DRef</span><span class="p">);</span>
+
+<span class="n">DPPL_API</span>
+<span class="kt">uint32_t</span>
+<span class="n">DPPLDevice_GetMaxNumSubGroups</span> <span class="p">(</span><span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclDeviceRef</span> <span class="n">DRef</span><span class="p">);</span>
+
+<span class="n">DPPL_API</span>
+<span class="kt">bool</span>
+<span class="n">DPPLDevice_HasInt64BaseAtomics</span> <span class="p">(</span><span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclDeviceRef</span> <span class="n">DRef</span><span class="p">);</span>
+
+<span class="n">DPPL_API</span>
+<span class="kt">bool</span>
+<span class="n">DPPLDevice_HasInt64ExtendedAtomics</span> <span class="p">(</span><span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclDeviceRef</span> <span class="n">DRef</span><span class="p">);</span>
+
+<span class="n">DPPL_API</span>
 <span class="n">__dppl_give</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span>
 <span class="n">DPPLDevice_GetName</span> <span class="p">(</span><span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclDeviceRef</span> <span class="n">DRef</span><span class="p">);</span>
 
@@ -222,6 +251,9 @@
 <span class="n">DPPL_API</span>
 <span class="kt">bool</span> <span class="n">DPPLDevice_IsHostUnifiedMemory</span> <span class="p">(</span><span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclDeviceRef</span> <span class="n">DRef</span><span class="p">);</span>
 
+<span class="n">DPPL_API</span>
+<span class="kt">bool</span> <span class="n">DPPLDevice_AreEq</span> <span class="p">(</span><span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclDeviceRef</span> <span class="n">DevRef1</span><span class="p">,</span>
+                       <span class="n">__dppl_keep</span> <span class="k">const</span> <span class="n">DPPLSyclDeviceRef</span> <span class="n">DevRef2</span><span class="p">);</span>
 <span class="n">DPPL_C_EXTERN_C_END</span>
 </pre></div>
 </div>

@@ -89,6 +89,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl.memory_api.html">dpctl.memory Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
 </ul>
 
@@ -180,6 +181,7 @@
 
 <span class="cp">#pragma once</span>
 
+<span class="cp">#include</span> <span class="cpf">&quot;dppl_data_types.h&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Support/DllExport.h&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Support/ExternC.h&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Support/MemOwnershipAttrs.h&quot;</span><span class="cp"></span>
@@ -188,6 +190,9 @@
 
 <span class="n">DPPL_API</span>
 <span class="kt">void</span> <span class="n">DPPLCString_Delete</span> <span class="p">(</span><span class="n">__dppl_take</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">str</span><span class="p">);</span>
+
+<span class="n">DPPL_API</span>
+<span class="kt">void</span> <span class="n">DPPLSize_t_Array_Delete</span> <span class="p">(</span><span class="n">__dppl_take</span> <span class="kt">size_t</span><span class="o">*</span> <span class="n">arr</span><span class="p">);</span>
 
 <span class="n">DPPL_C_EXTERN_C_END</span>
 </pre></div>

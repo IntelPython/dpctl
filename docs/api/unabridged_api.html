@@ -89,6 +89,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl.memory_api.html">dpctl.memory Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
 </ul>
 
@@ -156,75 +157,8 @@
             
   <div class="section" id="full-api">
 <h1>Full API<a class="headerlink" href="#full-api" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="classes-and-structs">
-<h2>Classes and Structs<a class="headerlink" href="#classes-and-structs" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="structdp__buffer.html">Struct dp_buffer</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="structdp__buffer.html#struct-documentation">Struct Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="structdp__env.html">Struct dp_env</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="structdp__env.html#struct-documentation">Struct Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="structdp__kernel.html">Struct dp_kernel</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="structdp__kernel.html#struct-documentation">Struct Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="structdp__kernel__arg.html">Struct dp_kernel_arg</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="structdp__kernel__arg.html#struct-documentation">Struct Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="structdp__program.html">Struct dp_program</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="structdp__program.html#struct-documentation">Struct Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="structdp__runtime.html">Struct dp_runtime</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="structdp__runtime.html#struct-documentation">Struct Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="structdp__runtime__t.html">Struct dp_runtime_t</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="structdp__runtime__t.html#struct-documentation">Struct Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
 <div class="section" id="enums">
 <h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="enum_dppl__opencl__interface_8h_1a414d5545eb64717cf76cdfd716b67b29.html">Enum DP_GLUE_ERROR_CODES</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="enum_dppl__opencl__interface_8h_1a414d5545eb64717cf76cdfd716b67b29.html#enum-documentation">Enum Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="enum_dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584.html">Enum DPPLKernelArgType</a><ul>
@@ -254,104 +188,24 @@
 <h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a4128360b3dff32134797e6ca01cc5c7c.html">Function build_dp_program</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a4128360b3dff32134797e6ca01cc5c7c.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a039a2c3a423d2dabd9b0e7a46614954f.html">Function DPPLaligned_alloc_device</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a039a2c3a423d2dabd9b0e7a46614954f.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a24bbaf66864ceccc643643978d453383.html">Function create_dp_kernel</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a24bbaf66864ceccc643643978d453383.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1aa4dfeac2ef4a931e8e4fd20dd185a738.html">Function DPPLaligned_alloc_host</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1aa4dfeac2ef4a931e8e4fd20dd185a738.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a7659b305f3780aa0858c919b6baf4fa8.html">Function create_dp_kernel_arg</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a7659b305f3780aa0858c919b6baf4fa8.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1ac57c05f82c1675fd6cc62c397d33fc77.html">Function create_dp_kernel_arg_from_buffer</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1ac57c05f82c1675fd6cc62c397d33fc77.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a43b3debedd923d396376be492fbc02d1.html">Function create_dp_program_from_source</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a43b3debedd923d396376be492fbc02d1.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1ab1a000f75915669913b4de99edbea1ab.html">Function create_dp_program_from_spirv</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1ab1a000f75915669913b4de99edbea1ab.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1aa8cc64501aa87250c4a49fcaec2fb0b2.html">Function create_dp_runtime</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1aa8cc64501aa87250c4a49fcaec2fb0b2.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a566b3a99735a0d46ba7c295519e7443e.html">Function create_dp_rw_mem_buffer</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a566b3a99735a0d46ba7c295519e7443e.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1ad208cdc7cf60e150f128ae54e3073216.html">Function destroy_dp_kernel</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1ad208cdc7cf60e150f128ae54e3073216.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a907bd92804f632a6188250d45b0a245f.html">Function destroy_dp_kernel_arg</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a907bd92804f632a6188250d45b0a245f.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a609e92357cff6d2becc4300fa47fb30c.html">Function destroy_dp_program</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a609e92357cff6d2becc4300fa47fb30c.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1ae35d77471215c8e2ab7dd09f07e21eea.html">Function destroy_dp_runtime</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1ae35d77471215c8e2ab7dd09f07e21eea.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1af3c68c97b5f2334f97635c71edb0e586.html">Function destroy_dp_rw_mem_buffer</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1af3c68c97b5f2334f97635c71edb0e586.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a40a234cb0b46a284ba3f495842c13f09.html">Function DPPLaligned_alloc_shared</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a40a234cb0b46a284ba3f495842c13f09.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -398,6 +252,14 @@
 </div>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1af27c461ba4f72d8f99aa43938e1b504c.html">Function DPPLDevice_AreEq</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1af27c461ba4f72d8f99aa43938e1b504c.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a4de0363a31b711c9c9480cabdeaafe35.html">Function DPPLDevice_Delete</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a4de0363a31b711c9c9480cabdeaafe35.html#function-documentation">Function Documentation</a></li>
 </ul>
@@ -422,6 +284,46 @@
 </div>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a331410c881911f8a4ddfc6ff598363f2.html">Function DPPLDevice_GetMaxComputeUnits</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a331410c881911f8a4ddfc6ff598363f2.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a9e50c5c9a20919f845d13d4c6da0c899.html">Function DPPLDevice_GetMaxNumSubGroups</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a9e50c5c9a20919f845d13d4c6da0c899.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a1b622fe1f9c03fd3ba3c09e3eadd4689.html">Function DPPLDevice_GetMaxWorkGroupSize</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a1b622fe1f9c03fd3ba3c09e3eadd4689.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1adac62f661feb4673b8550dacdd1fc7f2.html">Function DPPLDevice_GetMaxWorkItemDims</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1adac62f661feb4673b8550dacdd1fc7f2.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1ad842e3efd2606cc4ea8942ee8c9289bc.html">Function DPPLDevice_GetMaxWorkItemSizes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1ad842e3efd2606cc4ea8942ee8c9289bc.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a245243b4bd19e67f3d878781b0340877.html">Function DPPLDevice_GetName</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a245243b4bd19e67f3d878781b0340877.html#function-documentation">Function Documentation</a></li>
 </ul>
@@ -432,6 +334,22 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a05024b72193cb2808d1ffbfd2ac94427.html">Function DPPLDevice_GetVendorName</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a05024b72193cb2808d1ffbfd2ac94427.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a429493ba0280fa42fec4717858432a6d.html">Function DPPLDevice_HasInt64BaseAtomics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a429493ba0280fa42fec4717858432a6d.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a12285937b18b219423781d3f433006cd.html">Function DPPLDevice_HasInt64ExtendedAtomics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a12285937b18b219423781d3f433006cd.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -678,8 +596,24 @@
 </div>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1aa19db7d31d4c5911cfc1ddecd8214c14.html">Function DPPLQueue_MemAdvise</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1aa19db7d31d4c5911cfc1ddecd8214c14.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a6a61d533ae3e841f6a78010e5f7aa018.html">Function DPPLQueue_Memcpy</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a6a61d533ae3e841f6a78010e5f7aa018.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1aefc1fa8887f7cc3a2a6123ef3f871628.html">Function DPPLQueue_Prefetch</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1aefc1fa8887f7cc3a2a6123ef3f871628.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -742,6 +676,14 @@
 </div>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a2eb0b99690b1328beef272d310111354.html">Function DPPLQueueMgr_GetQueueFromContextAndDevice</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a2eb0b99690b1328beef272d310111354.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a4214e7a5d5b514874c3042dbcd91123c.html">Function DPPLQueueMgr_IsCurrentQueue</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a4214e7a5d5b514874c3042dbcd91123c.html#function-documentation">Function Documentation</a></li>
 </ul>
@@ -774,64 +716,24 @@
 </div>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__utils_8h_1a45893de1aa435d3669abb401fa392c34.html">Function DPPLSize_t_Array_Delete</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__utils_8h_1a45893de1aa435d3669abb401fa392c34.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a78e99c976f1a0e6ac19dcd6efbef9116.html">Function DPPLUSM_GetPointerDevice</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a78e99c976f1a0e6ac19dcd6efbef9116.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1ab9f61396ce0d347bfd0dad4ff8f22787.html">Function DPPLUSM_GetPointerType</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1ab9f61396ce0d347bfd0dad4ff8f22787.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a57d1dd48b06dbc01af0ca5be40b0a142.html">Function read_dp_mem_buffer_from_device</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a57d1dd48b06dbc01af0ca5be40b0a142.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a1dff6cc96c6c5c712d2ed9a221919fa6.html">Function release_dp_context</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a1dff6cc96c6c5c712d2ed9a221919fa6.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a042f0d172f36953491338b4049dc740f.html">Function retain_dp_context</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a042f0d172f36953491338b4049dc740f.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a7856b6ab74fbbe6536fd81d64562e1df.html">Function set_args_and_enqueue_dp_kernel</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a7856b6ab74fbbe6536fd81d64562e1df.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a7522e1967af436d88e8e8fec48dda403.html">Function set_args_and_enqueue_dp_kernel_auto_blocking</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a7522e1967af436d88e8e8fec48dda403.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1af65969c48ec4f4c39acbfa713457dcda.html">Function set_curr_env</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1af65969c48ec4f4c39acbfa713457dcda.html#function-documentation">Function Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a28ad28083169569271ae8e82f1b3a580.html">Function write_dp_mem_buffer_to_device</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__opencl__interface_8h_1a28ad28083169569271ae8e82f1b3a580.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -873,30 +775,6 @@
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="define_error__check__macros_8h_1a3d05d4ff53571d917db5a64a5afe5ac5.html">Define CHECK_DPGLUE_ERROR</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_error__check__macros_8h_1a3d05d4ff53571d917db5a64a5afe5ac5.html#define-documentation">Define Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="define_error__check__macros_8h_1ac8b9ca6f31ac89dbfb2a35dd4cb7d24a.html">Define CHECK_MALLOC_ERROR</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_error__check__macros_8h_1ac8b9ca6f31ac89dbfb2a35dd4cb7d24a.html#define-documentation">Define Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="define_error__check__macros_8h_1a5c5d67855b5c14a46bc1c285188ddcc1.html">Define CHECK_OPEN_CL_ERROR</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_error__check__macros_8h_1a5c5d67855b5c14a46bc1c285188ddcc1.html#define-documentation">Define Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="define_CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05.html">Define DEFINE_SIMPLE_CONVERSION_FUNCTIONS</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="define_CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05.html#define-documentation">Define Documentation</a></li>
 </ul>
@@ -907,14 +785,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="define_CBindingWrapping_8h_1a0856bab1c65467280bf8c2062de4e3d5.html">Define DEFINE_STDCXX_CONVERSION_FUNCTIONS</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="define_CBindingWrapping_8h_1a0856bab1c65467280bf8c2062de4e3d5.html#define-documentation">Define Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="define_dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef.html">Define DPPL_API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef.html#define-documentation">Define Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -980,14 +850,6 @@
 <h2>Typedefs<a class="headerlink" href="#typedefs" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a162ccb3cf5ba5fd158c0526cb59412c5.html">Typedef buffer_t</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a162ccb3cf5ba5fd158c0526cb59412c5.html#typedef-documentation">Typedef Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a6f7f076797eb7499ab2c6caffed6efcb.html">Typedef DPPLSyclContextRef</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a6f7f076797eb7499ab2c6caffed6efcb.html#typedef-documentation">Typedef Documentation</a></li>
 </ul>
@@ -1046,46 +908,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e.html">Typedef DPPLSyclUSMRef</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e.html#typedef-documentation">Typedef Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a60a68d6cb63216c6954c6d6f4db3b6a4.html">Typedef env_t</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a60a68d6cb63216c6954c6d6f4db3b6a4.html#typedef-documentation">Typedef Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1ad6b9cfe3b0fec6fcd179adf2ed2fa12f.html">Typedef kernel_arg_t</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1ad6b9cfe3b0fec6fcd179adf2ed2fa12f.html#typedef-documentation">Typedef Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a4032a461689a915b743ca9d075ad8570.html">Typedef kernel_t</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a4032a461689a915b743ca9d075ad8570.html#typedef-documentation">Typedef Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1afad71e6b9f69f779865c7b36fdab8695.html">Typedef program_t</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1afad71e6b9f69f779865c7b36fdab8695.html#typedef-documentation">Typedef Documentation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a02fe9218ba15ed9a5addc7b692d4b8f5.html">Typedef runtime_t</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="typedef_dppl__opencl__interface_8h_1a02fe9218ba15ed9a5addc7b692d4b8f5.html#typedef-documentation">Typedef Documentation</a></li>
 </ul>
 </li>
 </ul>

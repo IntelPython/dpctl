@@ -1,0 +1,13 @@
+.. _exhale_function_dppl__sycl__queue__interface_8h_1aa19db7d31d4c5911cfc1ddecd8214c14:
+
+Function DPPLQueue_MemAdvise
+============================
+
+- Defined in :ref:`file_backends_include_dppl_sycl_queue_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPPLQueue_MemAdvise(DPPLSyclQueueRef, const void *, size_t, int)

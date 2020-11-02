@@ -89,6 +89,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpCtl.memory_api.html">dpctl.memory Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/dpCtl-CAPI_root.html">dpCtl C API</a></li>
 </ul>
 
@@ -157,6 +158,7 @@
 
 <div class="genindex-jumpbox">
  <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
@@ -164,13 +166,9 @@
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
- | <a href="#K"><strong>K</strong></a>
  | <a href="#M"><strong>M</strong></a>
- | <a href="#P"><strong>P</strong></a>
- | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#U"><strong>U</strong></a>
- | <a href="#W"><strong>W</strong></a>
  
 </div>
 <h2 id="_">_</h2>
@@ -189,14 +187,30 @@
   </ul></td>
 </tr></table>
 
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dpCtl_api.html#dpctl.SyclContext.addressof_ref">addressof_ref() (dpctl.SyclContext method)</a>
+
+      <ul>
+        <li><a href="dpCtl_api.html#dpctl.SyclDevice.addressof_ref">(dpctl.SyclDevice method)</a>
+</li>
+        <li><a href="dpCtl_api.html#dpctl.SyclEvent.addressof_ref">(dpctl.SyclEvent method)</a>
+</li>
+        <li><a href="dpCtl_api.html#dpctl.SyclKernel.addressof_ref">(dpctl.SyclKernel method)</a>
+</li>
+        <li><a href="dpCtl_api.html#dpctl.SyclProgram.addressof_ref">(dpctl.SyclProgram method)</a>
+</li>
+        <li><a href="dpCtl_api.html#dpctl.SyclQueue.addressof_ref">(dpctl.SyclQueue method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/typedef_dppl__opencl__interface_8h_1a162ccb3cf5ba5fd158c0526cb59412c5.html#_CPPv48buffer_t">buffer_t (C++ type)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/function_dppl__opencl__interface_8h_1a4128360b3dff32134797e6ca01cc5c7c.html#_CPPv416build_dp_program5env_t9program_t">build_dp_program (C++ function)</a>
+      <li><a href="dpCtl_api.html#dpctl.backend_type">backend_type (class in dpctl)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -204,27 +218,11 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/define_error__check__macros_8h_1a3d05d4ff53571d917db5a64a5afe5ac5.html#c.CHECK_DPGLUE_ERROR">CHECK_DPGLUE_ERROR (C macro)</a>
-</li>
-      <li><a href="api/define_error__check__macros_8h_1ac8b9ca6f31ac89dbfb2a35dd4cb7d24a.html#c.CHECK_MALLOC_ERROR">CHECK_MALLOC_ERROR (C macro)</a>
-</li>
-      <li><a href="api/define_error__check__macros_8h_1a5c5d67855b5c14a46bc1c285188ddcc1.html#c.CHECK_OPEN_CL_ERROR">CHECK_OPEN_CL_ERROR (C macro)</a>
-</li>
-      <li><a href="api/function_dppl__opencl__interface_8h_1a24bbaf66864ceccc643643978d453383.html#_CPPv416create_dp_kernel5env_t9program_tPKcP8kernel_t">create_dp_kernel (C++ function)</a>
-</li>
-      <li><a href="api/function_dppl__opencl__interface_8h_1a7659b305f3780aa0858c919b6baf4fa8.html#_CPPv420create_dp_kernel_argPKv6size_tP12kernel_arg_t">create_dp_kernel_arg (C++ function)</a>
+      <li><a href="dpCtl_api.html#dpctl.create_program_from_source">create_program_from_source() (in module dpctl)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/function_dppl__opencl__interface_8h_1ac57c05f82c1675fd6cc62c397d33fc77.html#_CPPv432create_dp_kernel_arg_from_bufferP8buffer_tP12kernel_arg_t">create_dp_kernel_arg_from_buffer (C++ function)</a>
-</li>
-      <li><a href="api/function_dppl__opencl__interface_8h_1a43b3debedd923d396376be492fbc02d1.html#_CPPv429create_dp_program_from_source5env_tjPPKcPK6size_tP9program_t">create_dp_program_from_source (C++ function)</a>
-</li>
-      <li><a href="api/function_dppl__opencl__interface_8h_1ab1a000f75915669913b4de99edbea1ab.html#_CPPv428create_dp_program_from_spirv5env_tPKv6size_tP9program_t">create_dp_program_from_spirv (C++ function)</a>
-</li>
-      <li><a href="api/function_dppl__opencl__interface_8h_1aa8cc64501aa87250c4a49fcaec2fb0b2.html#_CPPv417create_dp_runtimeP9runtime_t">create_dp_runtime (C++ function)</a>
-</li>
-      <li><a href="api/function_dppl__opencl__interface_8h_1a566b3a99735a0d46ba7c295519e7443e.html#_CPPv423create_dp_rw_mem_buffer5env_t6size_tP8buffer_t">create_dp_rw_mem_buffer (C++ function)</a>
+      <li><a href="dpCtl_api.html#dpctl.create_program_from_spirv">create_program_from_spirv() (in module dpctl)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -236,93 +234,9 @@
 </li>
       <li><a href="api/define_CBindingWrapping_8h_1a0856bab1c65467280bf8c2062de4e3d5.html#c.DEFINE_STDCXX_CONVERSION_FUNCTIONS">DEFINE_STDCXX_CONVERSION_FUNCTIONS (C macro)</a>
 </li>
-      <li><a href="api/function_dppl__opencl__interface_8h_1ad208cdc7cf60e150f128ae54e3073216.html#_CPPv417destroy_dp_kernelP8kernel_t">destroy_dp_kernel (C++ function)</a>
+      <li><a href="dpCtl_api.html#dpctl.device_context">device_context() (in module dpctl)</a>
 </li>
-      <li><a href="api/function_dppl__opencl__interface_8h_1a907bd92804f632a6188250d45b0a245f.html#_CPPv421destroy_dp_kernel_argP12kernel_arg_t">destroy_dp_kernel_arg (C++ function)</a>
-</li>
-      <li><a href="api/function_dppl__opencl__interface_8h_1a609e92357cff6d2becc4300fa47fb30c.html#_CPPv418destroy_dp_programP9program_t">destroy_dp_program (C++ function)</a>
-</li>
-      <li><a href="api/function_dppl__opencl__interface_8h_1ae35d77471215c8e2ab7dd09f07e21eea.html#_CPPv418destroy_dp_runtimeP9runtime_t">destroy_dp_runtime (C++ function)</a>
-</li>
-      <li><a href="api/function_dppl__opencl__interface_8h_1af3c68c97b5f2334f97635c71edb0e586.html#_CPPv424destroy_dp_rw_mem_bufferP8buffer_t">destroy_dp_rw_mem_buffer (C++ function)</a>
-</li>
-      <li><a href="api/structdp__buffer.html#_CPPv49dp_buffer">dp_buffer (C++ struct)</a>
-</li>
-      <li><a href="api/structdp__buffer.html#_CPPv4N9dp_buffer10buffer_ptrE">dp_buffer::buffer_ptr (C++ member)</a>
-</li>
-      <li><a href="api/structdp__buffer.html#_CPPv4N9dp_buffer3id_E">dp_buffer::id_ (C++ member)</a>
-</li>
-      <li><a href="api/structdp__buffer.html#_CPPv4N9dp_buffer17sizeof_buffer_ptrE">dp_buffer::sizeof_buffer_ptr (C++ member)</a>
-</li>
-      <li><a href="api/structdp__env.html#_CPPv46dp_env">dp_env (C++ struct)</a>
-</li>
-      <li><a href="api/structdp__env.html#_CPPv4N6dp_env7contextE">dp_env::context (C++ member)</a>
-</li>
-      <li><a href="api/structdp__env.html#_CPPv4N6dp_env6deviceE">dp_env::device (C++ member)</a>
-</li>
-      <li><a href="api/structdp__env.html#_CPPv4N6dp_env7dump_fnE">dp_env::dump_fn (C++ member)</a>
-</li>
-      <li><a href="api/structdp__env.html#_CPPv4N6dp_env3id_E">dp_env::id_ (C++ member)</a>
-</li>
-      <li><a href="api/structdp__env.html#_CPPv4N6dp_env19max_work_group_sizeE">dp_env::max_work_group_size (C++ member)</a>
-</li>
-      <li><a href="api/structdp__env.html#_CPPv4N6dp_env18max_work_item_dimsE">dp_env::max_work_item_dims (C++ member)</a>
-</li>
-      <li><a href="api/structdp__env.html#_CPPv4N6dp_env5queueE">dp_env::queue (C++ member)</a>
-</li>
-      <li><a href="api/structdp__env.html#_CPPv4N6dp_env23support_float64_atomicsE">dp_env::support_float64_atomics (C++ member)</a>
-</li>
-      <li><a href="api/structdp__env.html#_CPPv4N6dp_env21support_int64_atomicsE">dp_env::support_int64_atomics (C++ member)</a>
-</li>
-      <li><a href="api/enum_dppl__opencl__interface_8h_1a414d5545eb64717cf76cdfd716b67b29.html#_CPPv419DP_GLUE_ERROR_CODES">DP_GLUE_ERROR_CODES (C++ enum)</a>
-</li>
-      <li><a href="api/enum_dppl__opencl__interface_8h_1a414d5545eb64717cf76cdfd716b67b29.html#_CPPv4N19DP_GLUE_ERROR_CODES15DP_GLUE_FAILUREE">DP_GLUE_ERROR_CODES::DP_GLUE_FAILURE (C++ enumerator)</a>
-</li>
-      <li><a href="api/enum_dppl__opencl__interface_8h_1a414d5545eb64717cf76cdfd716b67b29.html#_CPPv4N19DP_GLUE_ERROR_CODES15DP_GLUE_SUCCESSE">DP_GLUE_ERROR_CODES::DP_GLUE_SUCCESS (C++ enumerator)</a>
-</li>
-      <li><a href="api/structdp__kernel.html#_CPPv49dp_kernel">dp_kernel (C++ struct)</a>
-</li>
-      <li><a href="api/structdp__kernel.html#_CPPv4N9dp_kernel7dump_fnE">dp_kernel::dump_fn (C++ member)</a>
-</li>
-      <li><a href="api/structdp__kernel.html#_CPPv4N9dp_kernel3id_E">dp_kernel::id_ (C++ member)</a>
-</li>
-      <li><a href="api/structdp__kernel.html#_CPPv4N9dp_kernel6kernelE">dp_kernel::kernel (C++ member)</a>
-</li>
-      <li><a href="api/structdp__kernel__arg.html#_CPPv413dp_kernel_arg">dp_kernel_arg (C++ struct)</a>
-</li>
-      <li><a href="api/structdp__kernel__arg.html#_CPPv4N13dp_kernel_arg8arg_sizeE">dp_kernel_arg::arg_size (C++ member)</a>
-</li>
-      <li><a href="api/structdp__kernel__arg.html#_CPPv4N13dp_kernel_arg9arg_valueE">dp_kernel_arg::arg_value (C++ member)</a>
-</li>
-      <li><a href="api/structdp__kernel__arg.html#_CPPv4N13dp_kernel_arg3id_E">dp_kernel_arg::id_ (C++ member)</a>
-</li>
-      <li><a href="api/structdp__program.html#_CPPv410dp_program">dp_program (C++ struct)</a>
-</li>
-      <li><a href="api/structdp__program.html#_CPPv4N10dp_program3id_E">dp_program::id_ (C++ member)</a>
-</li>
-      <li><a href="api/structdp__program.html#_CPPv4N10dp_program7programE">dp_program::program (C++ member)</a>
-</li>
-      <li><a href="api/structdp__runtime.html#_CPPv410dp_runtime">dp_runtime (C++ struct)</a>
-</li>
-      <li><a href="api/structdp__runtime.html#_CPPv4N10dp_runtime8curr_envE">dp_runtime::curr_env (C++ member)</a>
-</li>
-      <li><a href="api/structdp__runtime.html#_CPPv4N10dp_runtime7dump_fnE">dp_runtime::dump_fn (C++ member)</a>
-</li>
-      <li><a href="api/structdp__runtime.html#_CPPv4N10dp_runtime13first_cpu_envE">dp_runtime::first_cpu_env (C++ member)</a>
-</li>
-      <li><a href="api/structdp__runtime.html#_CPPv4N10dp_runtime13first_gpu_envE">dp_runtime::first_gpu_env (C++ member)</a>
-</li>
-      <li><a href="api/structdp__runtime.html#_CPPv4N10dp_runtime7has_cpuE">dp_runtime::has_cpu (C++ member)</a>
-</li>
-      <li><a href="api/structdp__runtime.html#_CPPv4N10dp_runtime7has_gpuE">dp_runtime::has_gpu (C++ member)</a>
-</li>
-      <li><a href="api/structdp__runtime.html#_CPPv4N10dp_runtime3id_E">dp_runtime::id_ (C++ member)</a>
-</li>
-      <li><a href="api/structdp__runtime.html#_CPPv4N10dp_runtime13num_platformsE">dp_runtime::num_platforms (C++ member)</a>
-</li>
-      <li><a href="api/structdp__runtime.html#_CPPv4N10dp_runtime12platform_idsE">dp_runtime::platform_ids (C++ member)</a>
-</li>
-      <li><a href="api/structdp__runtime__t.html#_CPPv412dp_runtime_t">dp_runtime_t (C++ struct)</a>
+      <li><a href="dpCtl_api.html#dpctl.device_type">device_type (class in dpctl)</a>
 </li>
       <li>
     dpctl
@@ -331,11 +245,24 @@
         <li><a href="dpCtl_api.html#module-dpctl">module</a>
 </li>
       </ul></li>
-      <li><a href="api/define_DllExport_8h_1a81776019eae18623511d676145f7cdef.html#c.DPPL_API">DPPL_API (C macro)</a>, <a href="api/define_dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef.html#c.DPPL_API">[1]</a>
+      <li>
+    dpctl.memory
+
+      <ul>
+        <li><a href="dpCtl.memory_api.html#module-dpctl.memory">module</a>
+</li>
+      </ul></li>
+      <li><a href="api/define_DllExport_8h_1a81776019eae18623511d676145f7cdef.html#c.DPPL_API">DPPL_API (C macro)</a>
 </li>
       <li><a href="api/define_ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0.html#c.DPPL_C_EXTERN_C_BEGIN">DPPL_C_EXTERN_C_BEGIN (C macro)</a>
 </li>
       <li><a href="api/define_ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb.html#c.DPPL_C_EXTERN_C_END">DPPL_C_EXTERN_C_END (C macro)</a>
+</li>
+      <li><a href="api/function_dppl__sycl__usm__interface_8h_1a039a2c3a423d2dabd9b0e7a46614954f.html#_CPPv424DPPLaligned_alloc_device6size_t6size_tK16DPPLSyclQueueRef">DPPLaligned_alloc_device (C++ function)</a>
+</li>
+      <li><a href="api/function_dppl__sycl__usm__interface_8h_1aa4dfeac2ef4a931e8e4fd20dd185a738.html#_CPPv422DPPLaligned_alloc_host6size_t6size_tK16DPPLSyclQueueRef">DPPLaligned_alloc_host (C++ function)</a>
+</li>
+      <li><a href="api/function_dppl__sycl__usm__interface_8h_1a40a234cb0b46a284ba3f495842c13f09.html#_CPPv424DPPLaligned_alloc_shared6size_t6size_tK16DPPLSyclQueueRef">DPPLaligned_alloc_shared (C++ function)</a>
 </li>
       <li><a href="api/function_dppl__sycl__context__interface_8h_1a8c4e985fc1c083d1247aa0ccbfe732c6.html#_CPPv417DPPLContext_AreEqK18DPPLSyclContextRefK18DPPLSyclContextRef">DPPLContext_AreEq (C++ function)</a>
 </li>
@@ -347,15 +274,31 @@
 </li>
       <li><a href="api/function_dppl__utils_8h_1a2df07db60880b4e2dbce4a54b4df0190.html#_CPPv418DPPLCString_DeletePKc">DPPLCString_Delete (C++ function)</a>
 </li>
+      <li><a href="api/function_dppl__sycl__device__interface_8h_1af27c461ba4f72d8f99aa43938e1b504c.html#_CPPv416DPPLDevice_AreEqK17DPPLSyclDeviceRefK17DPPLSyclDeviceRef">DPPLDevice_AreEq (C++ function)</a>
+</li>
       <li><a href="api/function_dppl__sycl__device__interface_8h_1a4de0363a31b711c9c9480cabdeaafe35.html#_CPPv417DPPLDevice_Delete17DPPLSyclDeviceRef">DPPLDevice_Delete (C++ function)</a>
 </li>
       <li><a href="api/function_dppl__sycl__device__interface_8h_1a318fef3810b70fb5046c5902c0882e3a.html#_CPPv419DPPLDevice_DumpInfoK17DPPLSyclDeviceRef">DPPLDevice_DumpInfo (C++ function)</a>
 </li>
       <li><a href="api/function_dppl__sycl__device__interface_8h_1a1247248c3b3e54f97f032c482c4a4471.html#_CPPv424DPPLDevice_GetDriverInfoK17DPPLSyclDeviceRef">DPPLDevice_GetDriverInfo (C++ function)</a>
 </li>
+      <li><a href="api/function_dppl__sycl__device__interface_8h_1a331410c881911f8a4ddfc6ff598363f2.html#_CPPv429DPPLDevice_GetMaxComputeUnitsK17DPPLSyclDeviceRef">DPPLDevice_GetMaxComputeUnits (C++ function)</a>
+</li>
+      <li><a href="api/function_dppl__sycl__device__interface_8h_1a9e50c5c9a20919f845d13d4c6da0c899.html#_CPPv429DPPLDevice_GetMaxNumSubGroupsK17DPPLSyclDeviceRef">DPPLDevice_GetMaxNumSubGroups (C++ function)</a>
+</li>
+      <li><a href="api/function_dppl__sycl__device__interface_8h_1a1b622fe1f9c03fd3ba3c09e3eadd4689.html#_CPPv430DPPLDevice_GetMaxWorkGroupSizeK17DPPLSyclDeviceRef">DPPLDevice_GetMaxWorkGroupSize (C++ function)</a>
+</li>
+      <li><a href="api/function_dppl__sycl__device__interface_8h_1adac62f661feb4673b8550dacdd1fc7f2.html#_CPPv429DPPLDevice_GetMaxWorkItemDimsK17DPPLSyclDeviceRef">DPPLDevice_GetMaxWorkItemDims (C++ function)</a>
+</li>
+      <li><a href="api/function_dppl__sycl__device__interface_8h_1ad842e3efd2606cc4ea8942ee8c9289bc.html#_CPPv430DPPLDevice_GetMaxWorkItemSizesK17DPPLSyclDeviceRef">DPPLDevice_GetMaxWorkItemSizes (C++ function)</a>
+</li>
       <li><a href="api/function_dppl__sycl__device__interface_8h_1a245243b4bd19e67f3d878781b0340877.html#_CPPv418DPPLDevice_GetNameK17DPPLSyclDeviceRef">DPPLDevice_GetName (C++ function)</a>
 </li>
       <li><a href="api/function_dppl__sycl__device__interface_8h_1a05024b72193cb2808d1ffbfd2ac94427.html#_CPPv424DPPLDevice_GetVendorNameK17DPPLSyclDeviceRef">DPPLDevice_GetVendorName (C++ function)</a>
+</li>
+      <li><a href="api/function_dppl__sycl__device__interface_8h_1a429493ba0280fa42fec4717858432a6d.html#_CPPv430DPPLDevice_HasInt64BaseAtomicsK17DPPLSyclDeviceRef">DPPLDevice_HasInt64BaseAtomics (C++ function)</a>
+</li>
+      <li><a href="api/function_dppl__sycl__device__interface_8h_1a12285937b18b219423781d3f433006cd.html#_CPPv434DPPLDevice_HasInt64ExtendedAtomicsK17DPPLSyclDeviceRef">DPPLDevice_HasInt64ExtendedAtomics (C++ function)</a>
 </li>
       <li><a href="api/function_dppl__sycl__device__interface_8h_1a482d2f4edbf67e090cde03856bf99f63.html#_CPPv424DPPLDevice_IsAcceleratorK17DPPLSyclDeviceRef">DPPLDevice_IsAccelerator (C++ function)</a>
 </li>
@@ -379,8 +322,6 @@
 </li>
       <li><a href="api/function_dppl__sycl__kernel__interface_8h_1ac9585b256c13bd87225cba9991e561be.html#_CPPv426DPPLKernel_GetFunctionNameK17DPPLSyclKernelRef">DPPLKernel_GetFunctionName (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/function_dppl__sycl__kernel__interface_8h_1a59c933b21d0176148617f524e6481f85.html#_CPPv421DPPLKernel_GetNumArgsK17DPPLSyclKernelRef">DPPLKernel_GetNumArgs (C++ function)</a>
 </li>
       <li><a href="api/enum_dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584.html#_CPPv417DPPLKernelArgType">DPPLKernelArgType (C++ enum)</a>
@@ -415,6 +356,8 @@
 </li>
       <li><a href="api/enum_dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584.html#_CPPv4N17DPPLKernelArgType23DPPL_UNSIGNED_LONG_LONGE">DPPLKernelArgType::DPPL_UNSIGNED_LONG_LONG (C++ enumerator)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/enum_dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584.html#_CPPv4N17DPPLKernelArgType13DPPL_VOID_PTRE">DPPLKernelArgType::DPPL_VOID_PTR (C++ enumerator)</a>
 </li>
       <li><a href="api/function_dppl__sycl__usm__interface_8h_1acfd3023a41c800e78e892d7d02a449af.html#_CPPv417DPPLmalloc_device6size_tK16DPPLSyclQueueRef">DPPLmalloc_device (C++ function)</a>
@@ -453,7 +396,11 @@
 </li>
       <li><a href="api/function_dppl__sycl__queue__interface_8h_1acf13ddbbcb614d0af6e2bf4be3d6a519.html#_CPPv419DPPLQueue_GetDeviceK16DPPLSyclQueueRef">DPPLQueue_GetDevice (C++ function)</a>
 </li>
+      <li><a href="api/function_dppl__sycl__queue__interface_8h_1aa19db7d31d4c5911cfc1ddecd8214c14.html#_CPPv419DPPLQueue_MemAdvise16DPPLSyclQueueRefPKv6size_ti">DPPLQueue_MemAdvise (C++ function)</a>
+</li>
       <li><a href="api/function_dppl__sycl__queue__interface_8h_1a6a61d533ae3e841f6a78010e5f7aa018.html#_CPPv416DPPLQueue_MemcpyK16DPPLSyclQueueRefPvPKv6size_t">DPPLQueue_Memcpy (C++ function)</a>
+</li>
+      <li><a href="api/function_dppl__sycl__queue__interface_8h_1aefc1fa8887f7cc3a2a6123ef3f871628.html#_CPPv418DPPLQueue_Prefetch16DPPLSyclQueueRefPKv6size_t">DPPLQueue_Prefetch (C++ function)</a>
 </li>
       <li><a href="api/function_dppl__sycl__queue__interface_8h_1adb0224648828059ff0f2bd477cb52573.html#_CPPv423DPPLQueue_SubmitNDRangeK17DPPLSyclKernelRefK16DPPLSyclQueueRefPPvPK17DPPLKernelArgType6size_tAL3E_K6size_tAL3E_K6size_t6size_tPK16DPPLSyclEventRef6size_t">DPPLQueue_SubmitNDRange (C++ function)</a>
 </li>
@@ -469,6 +416,8 @@
 </li>
       <li><a href="api/function_dppl__sycl__queue__manager_8h_1a0eadbd6202c025ac106b4c2f31b1c0f8.html#_CPPv421DPPLQueueMgr_GetQueue19DPPLSyclBackendType18DPPLSyclDeviceType6size_t">DPPLQueueMgr_GetQueue (C++ function)</a>
 </li>
+      <li><a href="api/function_dppl__sycl__queue__manager_8h_1a2eb0b99690b1328beef272d310111354.html#_CPPv441DPPLQueueMgr_GetQueueFromContextAndDevice18DPPLSyclContextRef17DPPLSyclDeviceRef">DPPLQueueMgr_GetQueueFromContextAndDevice (C++ function)</a>
+</li>
       <li><a href="api/function_dppl__sycl__queue__manager_8h_1a4214e7a5d5b514874c3042dbcd91123c.html#_CPPv427DPPLQueueMgr_IsCurrentQueueK16DPPLSyclQueueRef">DPPLQueueMgr_IsCurrentQueue (C++ function)</a>
 </li>
       <li><a href="api/function_dppl__sycl__queue__manager_8h_1af1b678a0e5406d481bf316f18454e719.html#_CPPv421DPPLQueueMgr_PopQueuev">DPPLQueueMgr_PopQueue (C++ function)</a>
@@ -476,6 +425,8 @@
       <li><a href="api/function_dppl__sycl__queue__manager_8h_1a6086f71d9f91065d98bb8f02f69f7723.html#_CPPv422DPPLQueueMgr_PushQueue19DPPLSyclBackendType18DPPLSyclDeviceType6size_t">DPPLQueueMgr_PushQueue (C++ function)</a>
 </li>
       <li><a href="api/function_dppl__sycl__queue__manager_8h_1a0e3748ad7e74b269d1d3b8df65d285bc.html#_CPPv430DPPLQueueMgr_SetAsDefaultQueue19DPPLSyclBackendType18DPPLSyclDeviceType6size_t">DPPLQueueMgr_SetAsDefaultQueue (C++ function)</a>
+</li>
+      <li><a href="api/function_dppl__utils_8h_1a45893de1aa435d3669abb401fa392c34.html#_CPPv423DPPLSize_t_Array_DeleteP6size_t">DPPLSize_t_Array_Delete (C++ function)</a>
 </li>
       <li><a href="api/enum_dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932.html#_CPPv419DPPLSyclBackendType">DPPLSyclBackendType (C++ enum)</a>
 </li>
@@ -521,9 +472,13 @@
 </li>
       <li><a href="api/typedef_dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e.html#_CPPv414DPPLSyclUSMRef">DPPLSyclUSMRef (C++ type)</a>
 </li>
+      <li><a href="api/function_dppl__sycl__usm__interface_8h_1a78e99c976f1a0e6ac19dcd6efbef9116.html#_CPPv424DPPLUSM_GetPointerDeviceK14DPPLSyclUSMRefK18DPPLSyclContextRef">DPPLUSM_GetPointerDevice (C++ function)</a>
+</li>
       <li><a href="api/function_dppl__sycl__usm__interface_8h_1ab9f61396ce0d347bfd0dad4ff8f22787.html#_CPPv422DPPLUSM_GetPointerTypeK14DPPLSyclUSMRefK18DPPLSyclContextRef">DPPLUSM_GetPointerType (C++ function)</a>
 </li>
       <li><a href="dpCtl_api.html#dpctl.dump">dump() (in module dpctl)</a>
+</li>
+      <li><a href="dpCtl_api.html#dpctl.SyclDevice.dump_device_info">dump_device_info() (dpctl.SyclDevice method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -531,25 +486,53 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/typedef_dppl__opencl__interface_8h_1a60a68d6cb63216c6954c6d6f4db3b6a4.html#_CPPv45env_t">env_t (C++ type)</a>
+      <li><a href="dpCtl_api.html#dpctl.SyclContext.equals">equals() (dpctl.SyclContext method)</a>
+
+      <ul>
+        <li><a href="dpCtl_api.html#dpctl.SyclQueue.equals">(dpctl.SyclQueue method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dpCtl_api.html#dpctl.get_current_backend">get_current_backend() (in module dpctl)</a>
+</li>
       <li><a href="dpCtl_api.html#dpctl.get_current_device_type">get_current_device_type() (in module dpctl)</a>
 </li>
       <li><a href="dpCtl_api.html#dpctl.get_current_queue">get_current_queue() (in module dpctl)</a>
 </li>
+      <li><a href="dpCtl_api.html#dpctl.SyclDevice.get_device_name">get_device_name() (dpctl.SyclDevice method)</a>
+</li>
+      <li><a href="dpCtl_api.html#dpctl.SyclDevice.get_device_type">get_device_type() (dpctl.SyclDevice method)</a>
+</li>
+      <li><a href="dpCtl_api.html#dpctl.SyclDevice.get_driver_version">get_driver_version() (dpctl.SyclDevice method)</a>
+</li>
+      <li><a href="dpCtl_api.html#dpctl.SyclKernel.get_function_name">get_function_name() (dpctl.SyclKernel method)</a>
+</li>
+      <li><a href="dpCtl_api.html#dpctl.SyclDevice.get_max_compute_units">get_max_compute_units() (dpctl.SyclDevice method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dpCtl_api.html#dpctl.get_include">get_include() (in module dpctl)</a>
+      <li><a href="dpCtl_api.html#dpctl.SyclDevice.get_max_num_sub_groups">get_max_num_sub_groups() (dpctl.SyclDevice method)</a>
+</li>
+      <li><a href="dpCtl_api.html#dpctl.SyclDevice.get_max_work_group_size">get_max_work_group_size() (dpctl.SyclDevice method)</a>
+</li>
+      <li><a href="dpCtl_api.html#dpctl.SyclDevice.get_max_work_item_dims">get_max_work_item_dims() (dpctl.SyclDevice method)</a>
+</li>
+      <li><a href="dpCtl_api.html#dpctl.SyclDevice.get_max_work_item_sizes">get_max_work_item_sizes() (dpctl.SyclDevice method)</a>
 </li>
       <li><a href="dpCtl_api.html#dpctl.get_num_activated_queues">get_num_activated_queues() (in module dpctl)</a>
 </li>
+      <li><a href="dpCtl_api.html#dpctl.SyclKernel.get_num_args">get_num_args() (dpctl.SyclKernel method)</a>
+</li>
       <li><a href="dpCtl_api.html#dpctl.get_num_platforms">get_num_platforms() (in module dpctl)</a>
+</li>
+      <li><a href="dpCtl_api.html#dpctl.SyclQueue.get_sycl_backend">get_sycl_backend() (dpctl.SyclQueue method)</a>
+</li>
+      <li><a href="dpCtl_api.html#dpctl.SyclDevice.get_vendor_name">get_vendor_name() (dpctl.SyclDevice method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -557,6 +540,12 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dpCtl_api.html#dpctl.SyclDevice.has_int64_base_atomics">has_int64_base_atomics() (dpctl.SyclDevice method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dpCtl_api.html#dpctl.SyclDevice.has_int64_extended_atomics">has_int64_extended_atomics() (dpctl.SyclDevice method)</a>
+</li>
       <li><a href="api/define_dppl__data__types_8h_1acd69981d54c27fe0ff514645dbfc6359.html#c.HUGE_VALF">HUGE_VALF (C macro)</a>
 </li>
   </ul></td>
@@ -574,20 +563,16 @@
   </ul></td>
 </tr></table>
 
-<h2 id="K">K</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/typedef_dppl__opencl__interface_8h_1ad6b9cfe3b0fec6fcd179adf2ed2fa12f.html#_CPPv412kernel_arg_t">kernel_arg_t (C++ type)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/typedef_dppl__opencl__interface_8h_1a4032a461689a915b743ca9d075ad8570.html#_CPPv48kernel_t">kernel_t (C++ type)</a>
-</li>
-  </ul></td>
-</tr></table>
-
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dpCtl.memory_api.html#dpctl.memory.MemoryUSMDevice">MemoryUSMDevice (class in dpctl.memory)</a>
+</li>
+      <li><a href="dpCtl.memory_api.html#dpctl.memory.MemoryUSMHost">MemoryUSMHost (class in dpctl.memory)</a>
+</li>
+      <li><a href="dpCtl.memory_api.html#dpctl.memory.MemoryUSMShared">MemoryUSMShared (class in dpctl.memory)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     module
@@ -595,44 +580,28 @@
       <ul>
         <li><a href="dpCtl_api.html#module-dpctl">dpctl</a>
 </li>
+        <li><a href="dpCtl.memory_api.html#module-dpctl.memory">dpctl.memory</a>
+</li>
       </ul></li>
-  </ul></td>
-</tr></table>
-
-<h2 id="P">P</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/typedef_dppl__opencl__interface_8h_1afad71e6b9f69f779865c7b36fdab8695.html#_CPPv49program_t">program_t (C++ type)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="R">R</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/function_dppl__opencl__interface_8h_1a57d1dd48b06dbc01af0ca5be40b0a142.html#_CPPv430read_dp_mem_buffer_from_device5env_t8buffer_tb6size_t6size_tPv">read_dp_mem_buffer_from_device (C++ function)</a>
-</li>
-      <li><a href="api/function_dppl__opencl__interface_8h_1a1dff6cc96c6c5c712d2ed9a221919fa6.html#_CPPv418release_dp_context5env_t">release_dp_context (C++ function)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/function_dppl__opencl__interface_8h_1a042f0d172f36953491338b4049dc740f.html#_CPPv417retain_dp_context5env_t">retain_dp_context (C++ function)</a>
-</li>
-      <li><a href="api/typedef_dppl__opencl__interface_8h_1a02fe9218ba15ed9a5addc7b692d4b8f5.html#_CPPv49runtime_t">runtime_t (C++ type)</a>
-</li>
   </ul></td>
 </tr></table>
 
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/function_dppl__opencl__interface_8h_1a7856b6ab74fbbe6536fd81d64562e1df.html#_CPPv430set_args_and_enqueue_dp_kernel5env_t8kernel_t6size_tPK12kernel_arg_tjPK6size_tPK6size_tPK6size_t">set_args_and_enqueue_dp_kernel (C++ function)</a>
+      <li><a href="dpCtl_api.html#dpctl.SyclContext">SyclContext (class in dpctl)</a>
+</li>
+      <li><a href="dpCtl_api.html#dpctl.SyclDevice">SyclDevice (class in dpctl)</a>
+</li>
+      <li><a href="dpCtl_api.html#dpctl.SyclEvent">SyclEvent (class in dpctl)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/function_dppl__opencl__interface_8h_1a7522e1967af436d88e8e8fec48dda403.html#_CPPv444set_args_and_enqueue_dp_kernel_auto_blocking5env_t8kernel_t6size_tPK12kernel_arg_tjP6size_tP6size_t">set_args_and_enqueue_dp_kernel_auto_blocking (C++ function)</a>
+      <li><a href="dpCtl_api.html#dpctl.SyclKernel">SyclKernel (class in dpctl)</a>
 </li>
-      <li><a href="api/function_dppl__opencl__interface_8h_1af65969c48ec4f4c39acbfa713457dcda.html#_CPPv412set_curr_env9runtime_t5env_t">set_curr_env (C++ function)</a>
+      <li><a href="dpCtl_api.html#dpctl.SyclProgram">SyclProgram (class in dpctl)</a>
+</li>
+      <li><a href="dpCtl_api.html#dpctl.SyclQueue">SyclQueue (class in dpctl)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -641,14 +610,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/define_dppl__data__types_8h_1a30654b4b67d97c42ca3f9b6052dda916.html#c.UINT64_MAX">UINT64_MAX (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="W">W</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/function_dppl__opencl__interface_8h_1a28ad28083169569271ae8e82f1b3a580.html#_CPPv429write_dp_mem_buffer_to_device5env_t8buffer_tb6size_t6size_tPKv">write_dp_mem_buffer_to_device (C++ function)</a>
 </li>
   </ul></td>
 </tr></table>

@@ -21,7 +21,6 @@ Files
 -----
 
 - :ref:`file_backends_include_dppl_data_types.h`
-- :ref:`file_backends_include_dppl_opencl_interface.h`
 - :ref:`file_backends_include_dppl_sycl_context_interface.h`
 - :ref:`file_backends_include_dppl_sycl_device_interface.h`
 - :ref:`file_backends_include_dppl_sycl_enum_types.h`
@@ -34,6 +33,5 @@ Files
 - :ref:`file_backends_include_dppl_sycl_types.h`
 - :ref:`file_backends_include_dppl_sycl_usm_interface.h`
 - :ref:`file_backends_include_dppl_utils.h`
-- :ref:`file_backends_include_error_check_macros.h`
 
 

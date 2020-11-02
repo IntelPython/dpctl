@@ -66,6 +66,8 @@ Functions
 
 - :ref:`exhale_function_dppl__sycl__queue__manager_8h_1a0eadbd6202c025ac106b4c2f31b1c0f8`
 
+- :ref:`exhale_function_dppl__sycl__queue__manager_8h_1a2eb0b99690b1328beef272d310111354`
+
 - :ref:`exhale_function_dppl__sycl__queue__manager_8h_1a4214e7a5d5b514874c3042dbcd91123c`
 
 - :ref:`exhale_function_dppl__sycl__queue__manager_8h_1af1b678a0e5406d481bf316f18454e719`

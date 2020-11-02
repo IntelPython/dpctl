@@ -66,7 +66,11 @@ Functions
 
 - :ref:`exhale_function_dppl__sycl__queue__interface_8h_1acf13ddbbcb614d0af6e2bf4be3d6a519`
 
+- :ref:`exhale_function_dppl__sycl__queue__interface_8h_1aa19db7d31d4c5911cfc1ddecd8214c14`
+
 - :ref:`exhale_function_dppl__sycl__queue__interface_8h_1a6a61d533ae3e841f6a78010e5f7aa018`
+
+- :ref:`exhale_function_dppl__sycl__queue__interface_8h_1aefc1fa8887f7cc3a2a6123ef3f871628`
 
 - :ref:`exhale_function_dppl__sycl__queue__interface_8h_1adb0224648828059ff0f2bd477cb52573`
 

@@ -91,6 +91,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpCtl.memory_api.html">dpctl.memory Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
 </ul>
 
@@ -169,6 +170,15 @@
 <dt id="_CPPv419DPPLfree_with_queue14DPPLSyclUSMRefK16DPPLSyclQueueRef">
 <span id="_CPPv319DPPLfree_with_queue14DPPLSyclUSMRefK16DPPLSyclQueueRef"></span><span id="_CPPv219DPPLfree_with_queue14DPPLSyclUSMRefK16DPPLSyclQueueRef"></span><span id="DPPLfree_with_queue__DPPLSyclUSMRef.DPPLSyclQueueRefC"></span><span class="target" id="dppl__sycl__usm__interface_8h_1ac9b6524feefd6d4e7eddae11ee76c4ec"></span>void <code class="sig-name descname">DPPLfree_with_queue</code><span class="sig-paren">(</span><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e.html#_CPPv414DPPLSyclUSMRef" title="DPPLSyclUSMRef">DPPLSyclUSMRef</a> <em>MRef</em>, <em class="property">const</em> <a class="reference internal" href="typedef_dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7.html#_CPPv416DPPLSyclQueueRef" title="DPPLSyclQueueRef">DPPLSyclQueueRef</a> <em>QRef</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DPPLfree_with_queue14DPPLSyclUSMRefK16DPPLSyclQueueRef" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Free USM memory. </p>
+<p><p>USM pointer must have been allocated using the same context as the one used to construct the queue. </p>
+<dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MRef</span></code>: USM pointer to free </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">QRef</span></code>: Sycl queue reference to use.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
 </dd></dl>
 
 </div>
