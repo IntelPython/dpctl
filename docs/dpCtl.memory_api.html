@@ -209,7 +209,7 @@ than ‘shared’.</p>
 </dd></dl>
 
 <hr class="docutils" />
-<p><strong>Comparing dpctl.memory to Rapids Memory manager (RMM)</strong></p>
+<p><strong>Comparing dpctl.memory to Rapids Memory Manager (RMM)</strong></p>
 <p>RMM implements DeviceBuffer which is Cython native class wrapping around something similar to <code class="docutils literal notranslate"><span class="pre">std::vector&lt;unsigned</span> <span class="pre">char,</span> <span class="pre">custom_cuda_allocator</span> <span class="pre">(calls</span> <span class="pre">resource</span> <span class="pre">manager)&gt;</span></code> which is called device_buffer.</p>
 <p>DeviceBuffer stores a unique pointer to an instance of this class. DeviceBuffer implements <code class="docutils literal notranslate"><span class="pre">__cuda_array_interface__</span></code>. Direct constructors always allocate
 new memory and copy provided inputs into the newly allocated array.</p>

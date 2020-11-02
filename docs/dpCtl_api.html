@@ -268,7 +268,7 @@ value is 1.</p>
 the global and local work-item IDs used by the
 data parallel execution model. The minimum
 value is 3 if this SYCL device is not of device
-type <a class="reference external" href="info::device_type::custom">info::device_type::custom</a>.</p>
+type <code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -278,7 +278,7 @@ type <a class="reference external" href="info::device_type::custom">info::device
 that are permitted in each dimension of the
 work-group of the nd_range. The minimum
 value is (1; 1; 1) for devices that are not of
-device type <a class="reference external" href="info::device_type::custom">info::device_type::custom</a>.</p>
+device type <code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -382,8 +382,7 @@ SyclProgram cast to a long.</p>
 <dl class="py method">
 <dt id="dpctl.SyclQueue.addressof_ref">
 <code class="sig-name descname">addressof_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.addressof_ref" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the address of the C API DPPLSyclQueueRef pointer as
-a long.</p>
+<dd><p>Returns the address of the C API DPPLSyclQueueRef pointer as a long.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>The address of the DPPLSyclQueueRef object used to create this
@@ -410,7 +409,7 @@ as this SycleQueue.</p>
 <dl class="py class">
 <dt id="dpctl.backend_type">
 <em class="property">class </em><code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">backend_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.backend_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>An enumeration.</p>
+<dd><p>Automatically numbers SYCL backend types with values starting from 1.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -423,19 +422,15 @@ kernels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>q</strong> (<a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><em>SyclQueue</em></a>) – The SyclQueue object wraps the Sycl device for
-which the program will be built.</p></li>
+<li><p><strong>q</strong> (<a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><em>SyclQueue</em></a>) – The <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> for which the
+<a class="reference internal" href="#dpctl.SyclProgram" title="dpctl.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> is going to be built.</p></li>
 <li><p><strong>source</strong> (<em>unicode</em>) – Source string for an OpenCL program.</p></li>
 <li><p><strong>copts</strong> (<em>unicode</em>) – Optional compilation flags that will be used
 when compiling the program.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>A SyclProgram object wrapping the</dt><dd><p>syc::program returned by the C API.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p>A <a class="reference internal" href="#dpctl.SyclProgram" title="dpctl.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the  sycl::program returned by the C API.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>program (<a class="reference internal" href="#dpctl.SyclProgram" title="dpctl.SyclProgram">SyclProgram</a>)</p>
@@ -452,17 +447,13 @@ a Sycl progrma from an compiled SPIR-V binary file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>q</strong> (<a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><em>SyclQueue</em></a>) – The SyclQueue object wraps the Sycl device for
-which the program will be built.</p></li>
+<li><p><strong>q</strong> (<a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><em>SyclQueue</em></a>) – The <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> for which the
+<a class="reference internal" href="#dpctl.SyclProgram" title="dpctl.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> is going to be built.</p></li>
 <li><p><strong>(</strong><strong>const char</strong><strong>[</strong> (<em>IL</em>) – ]) : SPIR-V binary IL file for an OpenCL program.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>A SyclProgram object wrapping the</dt><dd><p>syc::program returned by the C API.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p>A <a class="reference internal" href="#dpctl.SyclProgram" title="dpctl.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the  sycl::program returned by the C API.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>program (<a class="reference internal" href="#dpctl.SyclProgram" title="dpctl.SyclProgram">SyclProgram</a>)</p>
@@ -473,19 +464,18 @@ which the program will be built.</p></li>
 <dl class="py function">
 <dt id="dpctl.device_context">
 <code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">device_context</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.device_context" title="Permalink to this definition">¶</a></dt>
-<dd><p>The SYCL queue defined by the “backend:device type:device id”
-tuple is set as the currently active queue, <em>i.e.</em>, a subsequent call
-to <a class="reference internal" href="#dpctl.get_current_queue" title="dpctl.get_current_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code></a> inside the context returns the
-queue. The active queue is also returned by the context manager and
-can be directly used without having to call
-<a class="reference internal" href="#dpctl.get_current_queue" title="dpctl.get_current_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code></a>.</p>
+<dd><p>The SYCL queue defined by the “backend:device type:device id” tuple is
+set as the currently active queue, <em>i.e.</em>, a subsequent call to
+<a class="reference internal" href="#dpctl.get_current_queue" title="dpctl.get_current_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code></a> inside the context returns the queue.
+The active queue is also returned by the context manager and can be
+directly used without having to call <a class="reference internal" href="#dpctl.get_current_queue" title="dpctl.get_current_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code></a>.</p>
 <p>If a the request queue is not found an exception is raised.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="dpctl.device_type">
 <em class="property">class </em><code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">device_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.device_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>An enumeration.</p>
+<dd><p>Automatically numbers SYCL device types with values starting from 1.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -497,19 +487,19 @@ can be directly used without having to call
 <dl class="py function">
 <dt id="dpctl.get_current_backend">
 <code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_current_backend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_current_backend" title="Permalink to this definition">¶</a></dt>
-<dd><p>Obtain current backend type from Data Parallel Control package</p>
+<dd><p>Obtain current backend type from Data Parallel Control package.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpctl.get_current_device_type">
 <code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_current_device_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_current_device_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Obtain current device type from Data Parallel Control package</p>
+<dd><p>Obtain current device type from Data Parallel Control package.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpctl.get_current_queue">
 <code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_current_queue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_current_queue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Obtain current Sycl Queue from Data Parallel Control package</p>
+<dd><p>Obtain current Sycl Queue from Data Parallel Control package.</p>
 </dd></dl>
 
 <dl class="py function">
