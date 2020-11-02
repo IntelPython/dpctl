@@ -1,0 +1,60 @@
+= Data parallel control Python API specification (draft)
+Diptorup Deb <diptorup.deb@intel.com>
+v0.0
+:source-highlighter: pygments
+:icons: font
+
+== Introduction
+This document contains the specification of the data parallel control (dpCtl)
+Python runtime. DpCtl provides a way for Python packages and extensions to
+interact with SYCL, and to interoperate amongst each other by sharing SYCL
+devices, queues and USM memory.
+
+DpCtl has two main components that are described in this spec: a SYCL device
+manager and a SYCL USM memory manager.
+
+== Device manager
+
+The device manager exposes an API for Python applications and libraries to
+interact with SYCL devices. The device manager supports: creating a SYCL device
+including sub-devices, creating a SYCL queue for a specific device, querying
+device information, and getting the SYCL context for a specific device.
+
+=== Creating a SYCL device
+
+The recommended way of creating a SYCL device is using the `dpctl.device`
+context manager.
+
+[source,python]
+----
+
+with dpctl.device("opencl:gpu:0"):
+    pass
+----
+
+The `dpctl.device` context manager creates a new SYCL device object
+(`SyclDevice`) for the extent of the scope of the context manager. A new
+device can be created by passing a string to the context manager a three-tuple
+that specifies a SYCL backend, a SYCL device type, and a SYCL device ID. The
+three-tuple string supports the specification of the DPC++
+https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc[Filter Selector]
+extension, and additional functionality to support sub-devices.
+
+*_TODO_* : add verbiage about allowed backend, device type, and device id.
+
+*_TODO_* : All the values in the tuple are optional, but at least one the three
+options should be specified.
+
+The `dpctl.device` returns a new `SyclDevice` object.
+
+A `SYCLDevice` object has an API function to return a SYCL queue corresponding
+to the underlying SYCL device.
+
+[source,python]
+----
+
+with dpctl.device("opencl:gpu:0") as ocl_gpu0:
+    q = ocl_gpu0.get_queue()
+----
+
+== Memory manager
