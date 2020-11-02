@@ -38,40 +38,46 @@ from cpython.bytes cimport PyBytes_AS_STRING, PyBytes_FromStringAndSize
 
 import numpy as np
 
+__all__ = [
+    "MemoryUSMShared",
+    "MemoryUSMHost",
+    "MemoryUSMDevice"
+]
+
 cdef _throw_sycl_usm_ary_iface():
     raise ValueError("__sycl_usm_array_interface__ is malformed")
 
 
 cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
-                   void *src_ptr, SyclQueue src_queue, size_t nbytes):
-   """
-   Copies `nbytes` bytes from `src_ptr` USM memory to 
-   `dest_ptr` USM memory using host as the intemediary.
+                        void *src_ptr, SyclQueue src_queue, size_t nbytes):
+    """
+    Copies `nbytes` bytes from `src_ptr` USM memory to
+    `dest_ptr` USM memory using host as the intemediary.
 
-   This is useful when `src_ptr` and `dest_ptr` are bound to incompatible
-   SYCL contexts.
-   """
-   # could also have used bytearray(nbytes)
-   cdef unsigned char[::1] host_buf = np.empty((nbytes,), dtype="|u1")
-   
-   DPPLQueue_Memcpy(
-       src_queue.get_queue_ref(),
-       <void *>&host_buf[0],
-       src_ptr,
-       nbytes
-   )
+    This is useful when `src_ptr` and `dest_ptr` are bound to incompatible
+    SYCL contexts.
+    """
+    # could also have used bytearray(nbytes)
+    cdef unsigned char[::1] host_buf = np.empty((nbytes,), dtype="|u1")
 
-   DPPLQueue_Memcpy(
-       dest_queue.get_queue_ref(),
-       dest_ptr,
-       <void *>&host_buf[0],
-       nbytes
-   )
+    DPPLQueue_Memcpy(
+        src_queue.get_queue_ref(),
+        <void *>&host_buf[0],
+        src_ptr,
+        nbytes
+    )
+
+    DPPLQueue_Memcpy(
+        dest_queue.get_queue_ref(),
+        dest_ptr,
+        <void *>&host_buf[0],
+        nbytes
+    )
 
 
 cdef class _BufferData:
     """
-    Internal data struct populated from parsing 
+    Internal data struct populated from parsing
     `__sycl_usm_array_interface__` dictionary
     """
     cdef DPPLSyclUSMRef p
@@ -137,7 +143,7 @@ cdef class _BufferData:
 
 def _to_memory(unsigned char [::1] b, str usm_kind):
     """
-    Constructs Memory of the same size as the argument 
+    Constructs Memory of the same size as the argument
     and copies data into it"""
     cdef _Memory res
 
@@ -152,7 +158,7 @@ def _to_memory(unsigned char [::1] b, str usm_kind):
             "Unrecognized usm_kind={} stored in the "
             "pickle".format(usm_kind))
     res.copy_from_host(b)
-    
+
     return res
 
 
@@ -161,7 +167,7 @@ cdef class _Memory:
         self.memory_ptr = NULL
         self.nbytes = 0
         self.queue = None
-        self.refobj = None        
+        self.refobj = None
 
     cdef _cinit_alloc(self, Py_ssize_t alignment, Py_ssize_t nbytes,
                       bytes ptr_type, SyclQueue queue):
@@ -232,7 +238,7 @@ cdef class _Memory:
         else:
             raise ValueError(
                 "Argument {} does not expose "
-                "`__sycl_usm_array_interface__`.".format(other)                
+                "`__sycl_usm_array_interface__`.".format(other)
             )
 
     def __dealloc__(self):
@@ -300,7 +306,7 @@ cdef class _Memory:
 
     def __reduce__(self):
         return _to_memory, (self.copy_to_host(), self.get_usm_type())
-    
+
     property __sycl_usm_array_interface__:
         def __get__(self):
             cdef dict iface = {
@@ -337,7 +343,7 @@ cdef class _Memory:
         return kind.decode('UTF-8')
 
     cpdef copy_to_host(self, obj=None):
-        """Copy content of instance's memory into memory of 
+        """Copy content of instance's memory into memory of
         `obj`, or allocate NumPy array of obj is None"""
         # Cython does the right thing here
         cdef unsigned char[::1] host_buf = obj
@@ -377,11 +383,11 @@ cdef class _Memory:
         )
 
     cpdef copy_from_device(self, object sycl_usm_ary):
-        """Copy SYCL memory underlying the argument object into 
+        """Copy SYCL memory underlying the argument object into
         the memory of the instance"""
         cdef _BufferData src_buf
         cdef const char* kind
-    
+
         if not hasattr(sycl_usm_ary, '__sycl_usm_array_interface__'):
             raise ValueError("Object does not implement "
                              "`__sycl_usm_array_interface__` protocol")
@@ -409,7 +415,7 @@ cdef class _Memory:
                 )
         else:
             raise TypeError
-    
+
     cpdef bytes tobytes(self):
         """Constructs bytes object populated with copy of USM memory"""
         cdef Py_ssize_t nb = self.nbytes
