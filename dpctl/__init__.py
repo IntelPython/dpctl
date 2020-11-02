@@ -23,36 +23,30 @@
 ##
 ##===----------------------------------------------------------------------===##
 """
-    Data Parallel Control (dpCtl)
+    **Data Parallel Control (dpCtl)**
 
-    dpCtl provides a lightweight Python abstraction over DPC++/SYCL and
-    OpenCL runtime objects. The DPC++ runtime wrapper objects can be
-    accessed by importing dpctl. The OpenCL runtime wrapper objects can be
-    accessed by importing dpctl.ocldrv. The library is in an early-beta
-    stage of development and not yet ready for production usage.
+    DpCtl provides a lightweight Python wrapper over a subset of
+    DPC++/SYCL's API. The goal of dpCtl is not (yet) to provide a
+    abstraction for every SYCL function. DpCtl is intended to provide
+    a common runtime to manage specific SYCL resources, such as devices
+    and USM memory, for SYCL-based Python packages and extension modules.
 
-    dpCtl's intended usage is as a common SYCL interoperability layer for
-    different Python libraries and applications. The OpenCL support inside
-    dpCtl is slated to be deprecated and then removed in future releases
-    of the library.
-
-    Currently, only a small subset of DPC++ runtime objects are exposed
-    through the dpctl module. The main API classes are defined in the _sycl_core.pyx file.
-
-    Please use `pydoc dpctl._sycl_core` to look at the current API for dpctl.
-
-    Please use `pydoc dpctl.ocldrv` to look at the current API for dpctl.ocldrv.
-
+    Currently, dpCtl has two main features: a global SYCL queue manager
+    and a USM memory manager.
 """
 __author__ = "Intel Corp."
 
-from ._sycl_core import *
+from dpctl._sycl_core import *
+from dpctl._sycl_core import __all__ as _sycl_core__all__
 from ._version import get_versions
+
+
+__all__ = _sycl_core__all__
 
 
 def get_include():
     """
-    Return the directory that contains the dpCtl *.h header files.
+    Return the directory that contains the dpCtl \*.h header files.
 
     Extension modules that need to be compiled against dpCtl should use
     this function to locate the appropriate include directory.

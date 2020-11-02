@@ -33,6 +33,31 @@ from ._backend cimport *
 from .memory._memory cimport _Memory
 from libc.stdlib cimport malloc, free
 
+__all__ = [
+    "dump",
+    "get_current_backend",
+    "get_current_queue",
+    "get_current_device_type",
+    "get_num_platforms",
+    "get_num_activated_queues",
+    "get_num_queues",
+    "has_cpu_queues",
+    "has_gpu_queues",
+    "has_sycl_platforms",
+    "set_default_queue",
+    "is_in_device_context",
+    "create_program_from_source",
+    "create_program_from_spirv",
+    "device_type",
+    "backend_type",
+    "device_context",
+    "SyclContext",
+    "SyclDevice",
+    "SyclEvent",
+    "SyclKernel",
+    "SyclProgram",
+    "SyclQueue"
+]
 
 _logger = logging.getLogger(__name__)
 
@@ -936,19 +961,21 @@ from contextlib import contextmanager
 
 @contextmanager
 def device_context (str queue_str="opencl:gpu:0"):
-    # Create a new device context and add it to the front of the runtime's
-    # deque of active contexts (SyclQueueManager.active_contexts_).
-    # Also return a reference to the context. The behavior allows consumers
-    # of the context manager to either use the new context by indirectly
-    # calling get_current_context, or use the returned context object directly.
+    """ The SYCL queue defined by the "backend:device type:device id"
+    tuple is set as the currently active queue, *i.e.*, a subsequent call
+    to :func:`dpctl.get_current_queue()` inside the context returns the
+    queue. The active queue is also returned by the context manager and
+    can be directly used without having to call
+    :func:`dpctl.get_current_queue()`.
 
-    # If set_context is unable to create a new context an exception is raised.
+    If a the request queue is not found an exception is raised.
+    """
     ctxt = None
     try:
         attrs = queue_str.split(':')
         nattrs = len(attrs)
         if (nattrs < 2 or nattrs > 3):
-            raise ValueError("Invalid device context string. Should be "
+            raise ValueError("Invalid queue filter string. Should be "
                              "backend:device:device_number or "
                              "backend:device. In the later case the "
                              "device_number defaults to 0")
@@ -960,7 +987,7 @@ def device_context (str queue_str="opencl:gpu:0"):
         # Code to release resource
         if ctxt:
             _logger.debug(
-                "Removing the context from the stack of active contexts")
+                "Removing the queue from the stack of active queues")
             _mgr._remove_current_queue()
         else:
-            _logger.debug("No context was created so nothing to do")
+            _logger.debug("No queue was created so nothing to do")
