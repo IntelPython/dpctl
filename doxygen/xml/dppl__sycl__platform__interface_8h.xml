@@ -209,24 +209,24 @@
 <codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="ExternC_8h" kindref="compound">Support/ExternC.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="MemOwnershipAttrs_8h" kindref="compound">Support/MemOwnershipAttrs.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight></codeline>
-<codeline lineno="34"><highlight class="normal">DPPL_C_EXTERN_C_BEGIN</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><ref refid="ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" kindref="member">DPPL_C_EXTERN_C_BEGIN</ref></highlight></codeline>
 <codeline lineno="35"><highlight class="normal"></highlight></codeline>
-<codeline lineno="42"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="43"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__platform__interface_8h_1a1eec455f349ed9f351f33503396fc15f" kindref="member">DPPLPlatform_GetNumNonHostPlatforms</ref><sp/>();</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"></highlight></codeline>
-<codeline lineno="50"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="51"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__platform__interface_8h_1a45f96537552c640a2c8f48fba29dd35b" kindref="member">DPPLPlatform_GetNumNonHostBackends</ref><sp/>();</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"></highlight></codeline>
-<codeline lineno="59"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="60"><highlight class="normal"><ref refid="group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932" kindref="member">DPPLSyclBackendType</ref>*<sp/><ref refid="dppl__sycl__platform__interface_8h_1a3ff41b4a0bee315a37c2ef9da0041225" kindref="member">DPPLPlatform_GetListOfNonHostBackends</ref><sp/>();</highlight></codeline>
 <codeline lineno="61"><highlight class="normal"></highlight></codeline>
-<codeline lineno="67"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="68"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__platform__interface_8h_1adb32e6f7bc2ccf637199c998afe79cc5" kindref="member">DPPLPlatform_DeleteListOfBackends</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932" kindref="member">DPPLSyclBackendType</ref>*<sp/>BEArr);</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"></highlight></codeline>
-<codeline lineno="74"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="75"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__platform__interface_8h_1a2755c456a10b7a01689cfc47aac07a2a" kindref="member">DPPLPlatform_DumpInfo</ref><sp/>();</highlight></codeline>
 <codeline lineno="76"><highlight class="normal"></highlight></codeline>
-<codeline lineno="77"><highlight class="normal">DPPL_C_EXTERN_C_END</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><ref refid="ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" kindref="member">DPPL_C_EXTERN_C_END</ref></highlight></codeline>
     </programlisting>
     <location file="backends/include/dppl_sycl_platform_interface.h"/>
   </compounddef>

@@ -27,22 +27,22 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="17">
+      <node id="18">
         <label>dppl_sycl_queue_interface.h</label>
         <link refid="d4/d7b/dppl__sycl__queue__interface_8h"/>
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="18">
+      <node id="19">
         <label>dppl_sycl_usm_interface.h</label>
         <link refid="dc/d46/dppl__sycl__usm__interface_8h"/>
-        <childnode refid="19" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>dppl_sycl_event_interface.h</label>
         <link refid="da/d2c/dppl__sycl__event__interface_8h"/>
-        <childnode refid="12" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
       <node id="10">
@@ -53,14 +53,14 @@
         <label>dppl_sycl_platform_interface.cpp</label>
         <link refid="d7/d8a/dppl__sycl__platform__interface_8cpp"/>
       </node>
-      <node id="14">
+      <node id="15">
         <label>dppl_sycl_kernel_interface.cpp</label>
         <link refid="df/dde/dppl__sycl__kernel__interface_8cpp"/>
       </node>
-      <node id="13">
+      <node id="14">
         <label>dppl_sycl_kernel_interface.h</label>
         <link refid="dc/d31/dppl__sycl__kernel__interface_8h"/>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="9">
@@ -70,18 +70,20 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>dppl_sycl_event_interface.cpp</label>
         <link refid="df/deb/dppl__sycl__event__interface_8cpp"/>
       </node>
-      <node id="15">
+      <node id="16">
         <label>dppl_sycl_program_interface.h</label>
         <link refid="d1/d3d/dppl__sycl__program__interface_8h"/>
-        <childnode refid="16" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="19">
+      <node id="11">
         <label>dppl_sycl_usm_interface.cpp</label>
         <link refid="d8/d88/dppl__sycl__usm__interface_8cpp"/>
       </node>
@@ -89,7 +91,7 @@
         <label>dppl_sycl_queue_interface.cpp</label>
         <link refid="d7/dc5/dppl__sycl__queue__interface_8cpp"/>
       </node>
-      <node id="16">
+      <node id="17">
         <label>dppl_sycl_program_interface.cpp</label>
         <link refid="d0/d52/dppl__sycl__program__interface_8cpp"/>
       </node>
@@ -116,17 +118,17 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>

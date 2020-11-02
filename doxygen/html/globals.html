@@ -9,6 +9,10 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -48,6 +52,22 @@ $(function() {
 /* @license-end */</script>
 <div id="main-nav"></div>
 </div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('globals.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -79,12 +99,468 @@ $(function() {
 : <a class="el" href="d2/de3/group__MEM__MGMT__ATTR__MACROS.html#ga992ba513554faa4a42a193e0f31c4cb7">MemOwnershipAttrs.h</a>
 </li>
 </ul>
+
+
+<h3><a id="index_c"></a>- c -</h3><ul>
+<li>cmake_minimum_required()
+: <a class="el" href="da/d9e/CMakeLists_8txt.html#a2ca62aab47bd9a99e022b2cf9448bbfd">CMakeLists.txt</a>
+</li>
+</ul>
+
+
+<h3><a id="index_d"></a>- d -</h3><ul>
+<li>DEFINE_SIMPLE_CONVERSION_FUNCTIONS
+: <a class="el" href="d1/d38/CBindingWrapping_8h.html#a65c769c08fa9fee7f298ad9c9eee5e05">CBindingWrapping.h</a>
+</li>
+<li>DEFINE_STDCXX_CONVERSION_FUNCTIONS
+: <a class="el" href="d1/d38/CBindingWrapping_8h.html#a0856bab1c65467280bf8c2062de4e3d5">CBindingWrapping.h</a>
+</li>
+<li>DPPL_ACCELERATOR
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a3aeffb0db7e2c7a0655c7bf13afce302a9282b15aa4f82e77ca5355012f92a40f">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_ALL
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a3aeffb0db7e2c7a0655c7bf13afce302a8e509670e4d64921fac31321a34d128a">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_API
+: <a class="el" href="d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DllExport.h</a>
+</li>
+<li>DPPL_AUTOMATIC
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a3aeffb0db7e2c7a0655c7bf13afce302a8bc8ddf701f9fc4d730fd58fcde1ad73">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_C_EXTERN_C_BEGIN
+: <a class="el" href="d2/d0a/ExternC_8h.html#a27152e7d3c3be9b99f89d313df56aef0">ExternC.h</a>
+</li>
+<li>DPPL_C_EXTERN_C_END
+: <a class="el" href="d2/d0a/ExternC_8h.html#a03a64b28f62f6f38f6b8388a87a5a1fb">ExternC.h</a>
+</li>
+<li>DPPL_CHAR
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584a2d99b799d537d623d2b0ee6485467b20">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_CPU
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a3aeffb0db7e2c7a0655c7bf13afce302aa41f7995c46f3b674e94c0fc63515883">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_CUDA
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a006122c6b6223df098e3cb0ca34d1932ade87f53b911041833db021defc12a412">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_CUSTOM
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a3aeffb0db7e2c7a0655c7bf13afce302a95df589240a09e2c8abaed003a351424">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_DOUBLE
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584a155d02286e480febb3b05c93f382e6ec">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_FLOAT
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584ae7b3c682da8e3c7d1ae3960b8fcd02f6">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_GPU
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a3aeffb0db7e2c7a0655c7bf13afce302ab95e7557f3a390783f7b1b8809e04253">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_HOST
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a006122c6b6223df098e3cb0ca34d1932a529e11b8ff21e816cc451887c6076991">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_HOST_DEVICE
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a3aeffb0db7e2c7a0655c7bf13afce302a045c09118ff9344cd1d79decc87baac5">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_INT
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584aa192ed4bbb8b8cfa599ee630d9ba6318">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_LEVEL_ZERO
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a006122c6b6223df098e3cb0ca34d1932a9cf919f672faa098e1472bef6bb9766a">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_LONG
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584a273f3b7454fb7b13a58aeba780559e0a">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_LONG_DOUBLE
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584a5b8f99f225e7aea4e613ff1e00455d01">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_LONG_LONG
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584ae3421cc9aab30c22f405ed25f9a5859d">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_OPENCL
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a006122c6b6223df098e3cb0ca34d1932ab853d01482e628f7e60c58dcbdec0fed">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_SHORT
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584a9ee41f855b02a786ea6f31ebdb723ed5">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_SIGNED_CHAR
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584a476db3644d63de121718e2b349583e21">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_SIZE_T
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584a2bc9ee9d8d73d31b6737263ed20c0615">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_UNKNOWN_BACKEND
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a006122c6b6223df098e3cb0ca34d1932adf069013943418c0e2264d3f3c62f452">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_UNSIGNED_CHAR
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584adff4f2fa87cac3d0d007ba2e1cf91ea6">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_UNSIGNED_INT
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584a2eb82893c98ec9681aa0fa08278b4713">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_UNSIGNED_INT8
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584ac07923fbf7fd23c75fc01515eddf2c9c">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_UNSIGNED_LONG
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584abe1398ebe8e6e920a3c9387fef538dd9">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_UNSIGNED_LONG_LONG
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584a44ef98e549dc216d976961857e22ecf0">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPL_VOID_PTR
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584a406569ef3271265765ffbd96872aa598">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPLaligned_alloc_device()
+: <a class="el" href="dc/d46/dppl__sycl__usm__interface_8h.html#a6dfd143e5630cddc9b8adbc284c534db">dppl_sycl_usm_interface.h</a>
+, <a class="el" href="d8/d88/dppl__sycl__usm__interface_8cpp.html#aa15097b6a6ed3132cef7fad3abc1d948">dppl_sycl_usm_interface.cpp</a>
+</li>
+<li>DPPLaligned_alloc_host()
+: <a class="el" href="dc/d46/dppl__sycl__usm__interface_8h.html#a70a371ff68d657e7bd3ea74543fe1d33">dppl_sycl_usm_interface.h</a>
+, <a class="el" href="d8/d88/dppl__sycl__usm__interface_8cpp.html#a215e3ff3f81501d076742088d7c95a73">dppl_sycl_usm_interface.cpp</a>
+</li>
+<li>DPPLaligned_alloc_shared()
+: <a class="el" href="dc/d46/dppl__sycl__usm__interface_8h.html#a0bceedd8833c520e1ed228a5c4419f50">dppl_sycl_usm_interface.h</a>
+, <a class="el" href="d8/d88/dppl__sycl__usm__interface_8cpp.html#a435ef44d5083a78b85d9d6e4a43d88d6">dppl_sycl_usm_interface.cpp</a>
+</li>
+<li>DPPLContext_AreEq()
+: <a class="el" href="d8/d8e/dppl__sycl__context__interface_8h.html#a7422639886a0a4c32d4ec93cb9b4a4d5">dppl_sycl_context_interface.h</a>
+, <a class="el" href="dd/d48/dppl__sycl__context__interface_8cpp.html#ab591f8032de2f90d9f68cf3aedc386c7">dppl_sycl_context_interface.cpp</a>
+</li>
+<li>DPPLContext_Delete()
+: <a class="el" href="d8/d8e/dppl__sycl__context__interface_8h.html#a0fd0388d7bce93267070c48883371d72">dppl_sycl_context_interface.h</a>
+, <a class="el" href="dd/d48/dppl__sycl__context__interface_8cpp.html#a684ee9951381841f3223b5cf092fc616">dppl_sycl_context_interface.cpp</a>
+</li>
+<li>DPPLContext_GetBackend()
+: <a class="el" href="d8/d8e/dppl__sycl__context__interface_8h.html#a6ff9e30698c4d6c7f6c20ba968baa86f">dppl_sycl_context_interface.h</a>
+, <a class="el" href="dd/d48/dppl__sycl__context__interface_8cpp.html#a227eba99cb928fedb2444e1ffbb164a5">dppl_sycl_context_interface.cpp</a>
+</li>
+<li>DPPLContext_IsHost()
+: <a class="el" href="d8/d8e/dppl__sycl__context__interface_8h.html#ace97a607dccc76835fbbf0099979dd25">dppl_sycl_context_interface.h</a>
+, <a class="el" href="dd/d48/dppl__sycl__context__interface_8cpp.html#a2f15c6d0f3f72970ddf300e93e0e16ac">dppl_sycl_context_interface.cpp</a>
+</li>
+<li>DPPLCString_Delete()
+: <a class="el" href="dc/d8e/dppl__utils_8h.html#a598498bd3fe2bc98b4928ea76435c369">dppl_utils.h</a>
+, <a class="el" href="d4/dfa/dppl__utils_8cpp.html#a394378506c28563727c1bbaed302641b">dppl_utils.cpp</a>
+</li>
+<li>DPPLDevice_AreEq()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#aa6a2390fc58dd875f533d75e4172ae1e">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#abca2a6fa142c14f3595c3fbfb02fac2d">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_Delete()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#a58b34562aa960c9d971017e06848f10a">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#a59009126411ff0dc7f3947efc8341400">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_DumpInfo()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#a8e5a51fbff19a8dc532a970e88c96237">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#aeea6c24f218268d4350c61358096c0ed">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_GetDriverInfo()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#ad313a289642c16fb7ac17be43d34a2a4">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#a2e52dec1ea56462d838f4b22ce189d09">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_GetMaxComputeUnits()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#ab33cb8e27cf5dfd88fb547f41a763f34">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#aae0b439a246a8f1a1c2f41f1eccd192d">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_GetMaxNumSubGroups()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#ad66ae580d44bee90313e92822e1512c6">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#aab3f4a7881a41cb5a34c116864aec098">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_GetMaxWorkGroupSize()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#ada622bb1c0f87a075ce785f305787ca3">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#a15d8cc6ea98bab8122b0b22469bca6ff">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_GetMaxWorkItemDims()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#aea0375b3566b34e6e5352a11aab084b8">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#a5fd2e11dbddd20291fc935b0f901d4fe">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_GetMaxWorkItemSizes()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#a015a3ca5d67a6531dd198e6e3bd6c4f2">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#a0ca6889db9f8e7578d88379875556ed0">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_GetName()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#a07b9e305a36e28f10625aecac85e108d">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#a1bd4980d55b59455f5afb64d6ccd4fa5">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_GetVendorName()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#a66993f1bd2a372b68102d7c627b42325">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#a7e874d1e160aa60eb47b2001ce997b90">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_HasInt64BaseAtomics()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#a99516187682e2c9bd32ce19d3dd9f816">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#a7cd231d2b54bf6c43fdccba173abd733">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_HasInt64ExtendedAtomics()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#a81e2fdd6701bd3a2b4a93630b9481bfa">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#afa0e7313faeefaeb2bdd7681a31f6511">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_IsAccelerator()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#a2d66dee1e9b3197b50282d9c2922a4d1">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#a0cf642fd62d4fb84cf259b3b882583ca">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_IsCPU()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#aab17e347ca918c24a4570792973195d3">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#a0eb0429307a52e31a370e4c1e85c4a48">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_IsGPU()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#a6935ff5c11620630795625bfcded162c">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#a0b5ff4ec0cd66cab4ddc1a0673eebeac">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_IsHost()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#a31026bd059f4b30c564baf3b08352756">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#af404415e8df79c740ae9070e7c5d46a6">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLDevice_IsHostUnifiedMemory()
+: <a class="el" href="d8/d8f/dppl__sycl__device__interface_8h.html#aeb639b75522f2b45edf3c5fb3fa0fda0">dppl_sycl_device_interface.h</a>
+, <a class="el" href="d9/dba/dppl__sycl__device__interface_8cpp.html#af87056a71e298c0e2b7d07be740c6e9e">dppl_sycl_device_interface.cpp</a>
+</li>
+<li>DPPLEvent_Delete()
+: <a class="el" href="da/d2c/dppl__sycl__event__interface_8h.html#a9aeb473ed16316f62ce4fd0cab4ddbfc">dppl_sycl_event_interface.h</a>
+, <a class="el" href="df/deb/dppl__sycl__event__interface_8cpp.html#a20993c605cb12e8bc7655cb9e0b4431a">dppl_sycl_event_interface.cpp</a>
+</li>
+<li>DPPLEvent_Wait()
+: <a class="el" href="da/d2c/dppl__sycl__event__interface_8h.html#a63af087db1557f68894f3b66b0a9aebc">dppl_sycl_event_interface.h</a>
+, <a class="el" href="df/deb/dppl__sycl__event__interface_8cpp.html#a58a308e78dc5c23eb6956743ce486ce8">dppl_sycl_event_interface.cpp</a>
+</li>
+<li>DPPLfree_with_context()
+: <a class="el" href="dc/d46/dppl__sycl__usm__interface_8h.html#aba9e7050ecc296af4f0673c69fa1ea00">dppl_sycl_usm_interface.h</a>
+, <a class="el" href="d8/d88/dppl__sycl__usm__interface_8cpp.html#ae6fde78bc7c4c392a05d3acaffd913fb">dppl_sycl_usm_interface.cpp</a>
+</li>
+<li>DPPLfree_with_queue()
+: <a class="el" href="dc/d46/dppl__sycl__usm__interface_8h.html#a0056911125b8e1e12c35f9e7199ad65d">dppl_sycl_usm_interface.h</a>
+, <a class="el" href="d8/d88/dppl__sycl__usm__interface_8cpp.html#ad72c9069e6e744d28044f751880b9862">dppl_sycl_usm_interface.cpp</a>
+</li>
+<li>DPPLKernel_Delete()
+: <a class="el" href="df/dde/dppl__sycl__kernel__interface_8cpp.html#a2de94d9546c1a5ebdad48e33437d0d14">dppl_sycl_kernel_interface.cpp</a>
+, <a class="el" href="dc/d31/dppl__sycl__kernel__interface_8h.html#a47bcfc3a382e18570bbc437e0e53961f">dppl_sycl_kernel_interface.h</a>
+</li>
+<li>DPPLKernel_GetFunctionName()
+: <a class="el" href="dc/d31/dppl__sycl__kernel__interface_8h.html#a01c88f7f6700a77afc3734d9e896e2fe">dppl_sycl_kernel_interface.h</a>
+, <a class="el" href="df/dde/dppl__sycl__kernel__interface_8cpp.html#a0be13615bda6ea943282e8de1015fe6b">dppl_sycl_kernel_interface.cpp</a>
+</li>
+<li>DPPLKernel_GetNumArgs()
+: <a class="el" href="dc/d31/dppl__sycl__kernel__interface_8h.html#a5f0d25cde1a667d816955f0695c70ffe">dppl_sycl_kernel_interface.h</a>
+, <a class="el" href="df/dde/dppl__sycl__kernel__interface_8cpp.html#ae729889451b8be739361605e4526e1c5">dppl_sycl_kernel_interface.cpp</a>
+</li>
+<li>DPPLKernelArgType
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPLmalloc_device()
+: <a class="el" href="dc/d46/dppl__sycl__usm__interface_8h.html#a58445ec163298dfdb890805a5c8fc277">dppl_sycl_usm_interface.h</a>
+, <a class="el" href="d8/d88/dppl__sycl__usm__interface_8cpp.html#a54ec942fcfe5be5a75c8094911136a8e">dppl_sycl_usm_interface.cpp</a>
+</li>
+<li>DPPLmalloc_host()
+: <a class="el" href="dc/d46/dppl__sycl__usm__interface_8h.html#ac49f0b722b4689056a4998846723b8ed">dppl_sycl_usm_interface.h</a>
+, <a class="el" href="d8/d88/dppl__sycl__usm__interface_8cpp.html#a5e73a64eeaf746690c74ebb4faec5553">dppl_sycl_usm_interface.cpp</a>
+</li>
+<li>DPPLmalloc_shared()
+: <a class="el" href="dc/d46/dppl__sycl__usm__interface_8h.html#a55ce364a879d57f75a133f5ca071c4a5">dppl_sycl_usm_interface.h</a>
+, <a class="el" href="d8/d88/dppl__sycl__usm__interface_8cpp.html#accebf9181429b90b206e3925430f4854">dppl_sycl_usm_interface.cpp</a>
+</li>
+<li>DPPLPlatform_DeleteListOfBackends()
+: <a class="el" href="dd/d6a/dppl__sycl__platform__interface_8h.html#adb344f0150adf1b648bc3de73a7826b2">dppl_sycl_platform_interface.h</a>
+, <a class="el" href="d7/d8a/dppl__sycl__platform__interface_8cpp.html#a78b25df7918d22d7e58154fd208f48b7">dppl_sycl_platform_interface.cpp</a>
+</li>
+<li>DPPLPlatform_DumpInfo()
+: <a class="el" href="dd/d6a/dppl__sycl__platform__interface_8h.html#aa44daafa8958a2b643074cc1e25bead4">dppl_sycl_platform_interface.h</a>
+, <a class="el" href="d7/d8a/dppl__sycl__platform__interface_8cpp.html#a2755c456a10b7a01689cfc47aac07a2a">dppl_sycl_platform_interface.cpp</a>
+</li>
+<li>DPPLPlatform_GetListOfNonHostBackends()
+: <a class="el" href="dd/d6a/dppl__sycl__platform__interface_8h.html#a1dc65ec779607209825b5d163eb7d573">dppl_sycl_platform_interface.h</a>
+, <a class="el" href="d7/d8a/dppl__sycl__platform__interface_8cpp.html#a197c50a97b48341abd628cb792a0d9b5">dppl_sycl_platform_interface.cpp</a>
+</li>
+<li>DPPLPlatform_GetNumNonHostBackends()
+: <a class="el" href="dd/d6a/dppl__sycl__platform__interface_8h.html#aeb7264671028eda6e0722e6adadf0145">dppl_sycl_platform_interface.h</a>
+, <a class="el" href="d7/d8a/dppl__sycl__platform__interface_8cpp.html#a45f96537552c640a2c8f48fba29dd35b">dppl_sycl_platform_interface.cpp</a>
+</li>
+<li>DPPLPlatform_GetNumNonHostPlatforms()
+: <a class="el" href="dd/d6a/dppl__sycl__platform__interface_8h.html#aff1cc89b9d5484e28139ae996188dcc9">dppl_sycl_platform_interface.h</a>
+, <a class="el" href="d7/d8a/dppl__sycl__platform__interface_8cpp.html#a1eec455f349ed9f351f33503396fc15f">dppl_sycl_platform_interface.cpp</a>
+</li>
+<li>DPPLProgram_CreateFromOCLSource()
+: <a class="el" href="d1/d3d/dppl__sycl__program__interface_8h.html#af9f51f93daa64bedcd3790a416a4869a">dppl_sycl_program_interface.h</a>
+, <a class="el" href="d0/d52/dppl__sycl__program__interface_8cpp.html#ab104c713d5f35a4a27349567a73a174a">dppl_sycl_program_interface.cpp</a>
+</li>
+<li>DPPLProgram_CreateFromOCLSpirv()
+: <a class="el" href="d1/d3d/dppl__sycl__program__interface_8h.html#af4e571c77ac5590fc81639229153e94d">dppl_sycl_program_interface.h</a>
+, <a class="el" href="d0/d52/dppl__sycl__program__interface_8cpp.html#af7c7cf95e24871af186bc5db9011daaa">dppl_sycl_program_interface.cpp</a>
+</li>
+<li>DPPLProgram_Delete()
+: <a class="el" href="d1/d3d/dppl__sycl__program__interface_8h.html#a5852fc8ab7525ea20fcbbced4bda4b58">dppl_sycl_program_interface.h</a>
+, <a class="el" href="d0/d52/dppl__sycl__program__interface_8cpp.html#acb68481169c805872def0219bbc47ec0">dppl_sycl_program_interface.cpp</a>
+</li>
+<li>DPPLProgram_GetKernel()
+: <a class="el" href="d1/d3d/dppl__sycl__program__interface_8h.html#afdda6116401b8769a3b28edae7a85258">dppl_sycl_program_interface.h</a>
+, <a class="el" href="d0/d52/dppl__sycl__program__interface_8cpp.html#aed21ed1d4862e5c0c4e1bf7153156d80">dppl_sycl_program_interface.cpp</a>
+</li>
+<li>DPPLProgram_HasKernel()
+: <a class="el" href="d0/d52/dppl__sycl__program__interface_8cpp.html#a43de04fdb36d3fcfc733b010ea70ebdf">dppl_sycl_program_interface.cpp</a>
+, <a class="el" href="d1/d3d/dppl__sycl__program__interface_8h.html#ad204c641de13b034ef2bff5cb6e18b29">dppl_sycl_program_interface.h</a>
+</li>
+<li>DPPLQueue_AreEq()
+: <a class="el" href="d7/dc5/dppl__sycl__queue__interface_8cpp.html#a06a7d5df63924b1b597b1949cd61456a">dppl_sycl_queue_interface.cpp</a>
+, <a class="el" href="d4/d7b/dppl__sycl__queue__interface_8h.html#a350f06f85df063f47232ae6463f0177a">dppl_sycl_queue_interface.h</a>
+</li>
+<li>DPPLQueue_Delete()
+: <a class="el" href="d4/d7b/dppl__sycl__queue__interface_8h.html#a7c0ea006c1c53a359714a3f4fb50446c">dppl_sycl_queue_interface.h</a>
+, <a class="el" href="d7/dc5/dppl__sycl__queue__interface_8cpp.html#ac937c6e09a99bd4ec12499192458e13b">dppl_sycl_queue_interface.cpp</a>
+</li>
+<li>DPPLQueue_GetBackend()
+: <a class="el" href="d7/dc5/dppl__sycl__queue__interface_8cpp.html#a56355a1ee8b73f6a9919a369026caea7">dppl_sycl_queue_interface.cpp</a>
+, <a class="el" href="d4/d7b/dppl__sycl__queue__interface_8h.html#a976a9a7d08fb147f65160b0d8cc091af">dppl_sycl_queue_interface.h</a>
+</li>
+<li>DPPLQueue_GetContext()
+: <a class="el" href="d7/dc5/dppl__sycl__queue__interface_8cpp.html#aa245cab8a2c05c071f4c48e71e0546c2">dppl_sycl_queue_interface.cpp</a>
+, <a class="el" href="d4/d7b/dppl__sycl__queue__interface_8h.html#a5364a29559d40d5edc1cd758bf620993">dppl_sycl_queue_interface.h</a>
+</li>
+<li>DPPLQueue_GetDevice()
+: <a class="el" href="d7/dc5/dppl__sycl__queue__interface_8cpp.html#ac9c2ef66b417f95a2c669c55540cb9bc">dppl_sycl_queue_interface.cpp</a>
+, <a class="el" href="d4/d7b/dppl__sycl__queue__interface_8h.html#ae0f08839c2c9f3876e55564e517afda5">dppl_sycl_queue_interface.h</a>
+</li>
+<li>DPPLQueue_MemAdvise()
+: <a class="el" href="d7/dc5/dppl__sycl__queue__interface_8cpp.html#a0013f1e6f0be1650cfbc45cbb9a146da">dppl_sycl_queue_interface.cpp</a>
+, <a class="el" href="d4/d7b/dppl__sycl__queue__interface_8h.html#afa0130dd1438905be403da93d1d1ee39">dppl_sycl_queue_interface.h</a>
+</li>
+<li>DPPLQueue_Memcpy()
+: <a class="el" href="d7/dc5/dppl__sycl__queue__interface_8cpp.html#ad5335df2a33edd4b7c9c8efa3f1c49d3">dppl_sycl_queue_interface.cpp</a>
+, <a class="el" href="d4/d7b/dppl__sycl__queue__interface_8h.html#a2677d3a1f1f16550fcac031cd28780a3">dppl_sycl_queue_interface.h</a>
+</li>
+<li>DPPLQueue_Prefetch()
+: <a class="el" href="d7/dc5/dppl__sycl__queue__interface_8cpp.html#aa91340fbd13d614e83da2009529a6830">dppl_sycl_queue_interface.cpp</a>
+, <a class="el" href="d4/d7b/dppl__sycl__queue__interface_8h.html#a76671f7d2d34e1cd1d1f8692df87b561">dppl_sycl_queue_interface.h</a>
+</li>
+<li>DPPLQueue_SubmitNDRange()
+: <a class="el" href="d7/dc5/dppl__sycl__queue__interface_8cpp.html#a2f0d3daeda493a12eba8e366f28b5677">dppl_sycl_queue_interface.cpp</a>
+, <a class="el" href="d4/d7b/dppl__sycl__queue__interface_8h.html#a40056d38196d604d9e0fc8527e9043ff">dppl_sycl_queue_interface.h</a>
+</li>
+<li>DPPLQueue_SubmitRange()
+: <a class="el" href="d7/dc5/dppl__sycl__queue__interface_8cpp.html#ae42b5ba1c7ab2d52e0f23a5f0720fccf">dppl_sycl_queue_interface.cpp</a>
+, <a class="el" href="d4/d7b/dppl__sycl__queue__interface_8h.html#acaf20de090bd06d9f6706a17cef07e54">dppl_sycl_queue_interface.h</a>
+</li>
+<li>DPPLQueue_Wait()
+: <a class="el" href="d7/dc5/dppl__sycl__queue__interface_8cpp.html#a3185814062147585b2952c4d011614fd">dppl_sycl_queue_interface.cpp</a>
+, <a class="el" href="d4/d7b/dppl__sycl__queue__interface_8h.html#a42254e3ddd8633e829815d0561a97116">dppl_sycl_queue_interface.h</a>
+</li>
+<li>DPPLQueueMgr_GetCurrentQueue()
+: <a class="el" href="d0/de9/dppl__sycl__queue__manager_8h.html#a80b765ec2f49feaba3d781f491061d3b">dppl_sycl_queue_manager.h</a>
+, <a class="el" href="de/d84/dppl__sycl__queue__manager_8cpp.html#ac7e6ad9609ab0642726da599f862c704">dppl_sycl_queue_manager.cpp</a>
+</li>
+<li>DPPLQueueMgr_GetNumActivatedQueues()
+: <a class="el" href="de/d84/dppl__sycl__queue__manager_8cpp.html#acde652586f509a3eb596aa98b80b0761">dppl_sycl_queue_manager.cpp</a>
+, <a class="el" href="d0/de9/dppl__sycl__queue__manager_8h.html#a6562c651a4f1d10abc84e36f9d840040">dppl_sycl_queue_manager.h</a>
+</li>
+<li>DPPLQueueMgr_GetNumQueues()
+: <a class="el" href="d0/de9/dppl__sycl__queue__manager_8h.html#abdccdcdaa08980d3a21850d5b3424276">dppl_sycl_queue_manager.h</a>
+, <a class="el" href="de/d84/dppl__sycl__queue__manager_8cpp.html#a51d05c26d22ff2f4467c36420514c9f2">dppl_sycl_queue_manager.cpp</a>
+</li>
+<li>DPPLQueueMgr_GetQueue()
+: <a class="el" href="d0/de9/dppl__sycl__queue__manager_8h.html#a25030bcff6aa416374d49377f4501d1f">dppl_sycl_queue_manager.h</a>
+, <a class="el" href="de/d84/dppl__sycl__queue__manager_8cpp.html#a0eadbd6202c025ac106b4c2f31b1c0f8">dppl_sycl_queue_manager.cpp</a>
+</li>
+<li>DPPLQueueMgr_GetQueueFromContextAndDevice()
+: <a class="el" href="de/d84/dppl__sycl__queue__manager_8cpp.html#a5120f4cceea80b2958512544d334855f">dppl_sycl_queue_manager.cpp</a>
+, <a class="el" href="d0/de9/dppl__sycl__queue__manager_8h.html#a7f5c95eccc21d64a57572de6cae4a865">dppl_sycl_queue_manager.h</a>
+</li>
+<li>DPPLQueueMgr_IsCurrentQueue()
+: <a class="el" href="d0/de9/dppl__sycl__queue__manager_8h.html#af9d22f892ea2bff7196f8e4494fc9a17">dppl_sycl_queue_manager.h</a>
+, <a class="el" href="de/d84/dppl__sycl__queue__manager_8cpp.html#a733104b4ec39fa371a73c6f6c44407b2">dppl_sycl_queue_manager.cpp</a>
+</li>
+<li>DPPLQueueMgr_PopQueue()
+: <a class="el" href="d0/de9/dppl__sycl__queue__manager_8h.html#a8825a8fe46756cefe5fcb36d770ec462">dppl_sycl_queue_manager.h</a>
+, <a class="el" href="de/d84/dppl__sycl__queue__manager_8cpp.html#af1b678a0e5406d481bf316f18454e719">dppl_sycl_queue_manager.cpp</a>
+</li>
+<li>DPPLQueueMgr_PushQueue()
+: <a class="el" href="d0/de9/dppl__sycl__queue__manager_8h.html#a8a5d366ca716cec0aae921da7a70facf">dppl_sycl_queue_manager.h</a>
+, <a class="el" href="de/d84/dppl__sycl__queue__manager_8cpp.html#a713be798c7c0503339aa721f2c59af59">dppl_sycl_queue_manager.cpp</a>
+</li>
+<li>DPPLQueueMgr_SetAsDefaultQueue()
+: <a class="el" href="d0/de9/dppl__sycl__queue__manager_8h.html#a32a8fbfb3afbac3695efd83078d94dff">dppl_sycl_queue_manager.h</a>
+, <a class="el" href="de/d84/dppl__sycl__queue__manager_8cpp.html#a59faf38ae8ffc381c3cab932f41306a4">dppl_sycl_queue_manager.cpp</a>
+</li>
+<li>DPPLSize_t_Array_Delete()
+: <a class="el" href="d4/dfa/dppl__utils_8cpp.html#a13515bcc2c3443c6d9a3beb0944be37a">dppl_utils.cpp</a>
+, <a class="el" href="dc/d8e/dppl__utils_8h.html#aca98e7d1c1b71c3f7c940401ef8998e9">dppl_utils.h</a>
+</li>
+<li>DPPLSyclBackendType
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a006122c6b6223df098e3cb0ca34d1932">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPLSyclContextRef
+: <a class="el" href="d4/d8f/dppl__sycl__types_8h.html#a8a6779e2595695b1c3955221a0a56716">dppl_sycl_types.h</a>
+</li>
+<li>DPPLSyclDeviceRef
+: <a class="el" href="d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">dppl_sycl_types.h</a>
+</li>
+<li>DPPLSyclDeviceType
+: <a class="el" href="d9/d4f/dppl__sycl__enum__types_8h.html#a3aeffb0db7e2c7a0655c7bf13afce302">dppl_sycl_enum_types.h</a>
+</li>
+<li>DPPLSyclEventRef
+: <a class="el" href="d4/d8f/dppl__sycl__types_8h.html#a350c1387c650924e6c0e25f9f24a7892">dppl_sycl_types.h</a>
+</li>
+<li>DPPLSyclKernelRef
+: <a class="el" href="d4/d8f/dppl__sycl__types_8h.html#ac7590a7630c7ef3467d983c57e60b01f">dppl_sycl_types.h</a>
+</li>
+<li>DPPLSyclPlatformRef
+: <a class="el" href="d4/d8f/dppl__sycl__types_8h.html#ab8d36d6db024a870fa83e8b4dbed706e">dppl_sycl_types.h</a>
+</li>
+<li>DPPLSyclProgramRef
+: <a class="el" href="d4/d8f/dppl__sycl__types_8h.html#a6351df09d08e539e332d1174a61e40ed">dppl_sycl_types.h</a>
+</li>
+<li>DPPLSyclQueueRef
+: <a class="el" href="d4/d8f/dppl__sycl__types_8h.html#ab149964f3e071296799d1c7e15aae5a7">dppl_sycl_types.h</a>
+</li>
+<li>DPPLSyclUSMRef
+: <a class="el" href="d4/d8f/dppl__sycl__types_8h.html#a2cb2ce60eb645f7b35c3ea60fe153a2e">dppl_sycl_types.h</a>
+</li>
+<li>DPPLUSM_GetPointerDevice()
+: <a class="el" href="d8/d88/dppl__sycl__usm__interface_8cpp.html#a3d616260650d50ee1eb26a969e17e332">dppl_sycl_usm_interface.cpp</a>
+, <a class="el" href="dc/d46/dppl__sycl__usm__interface_8h.html#a1e1b27a8e257b933b20fe058ab6aa66d">dppl_sycl_usm_interface.h</a>
+</li>
+<li>DPPLUSM_GetPointerType()
+: <a class="el" href="d8/d88/dppl__sycl__usm__interface_8cpp.html#a802fa1e0c65e2eaa0baaeb35f0781973">dppl_sycl_usm_interface.cpp</a>
+, <a class="el" href="dc/d46/dppl__sycl__usm__interface_8h.html#aa5aedd233bf930e6f06eee4ff8f7e6c8">dppl_sycl_usm_interface.h</a>
+</li>
+</ul>
+
+
+<h3><a id="index_h"></a>- h -</h3><ul>
+<li>HUGE_VALF
+: <a class="el" href="d4/dcc/dppl__data__types_8h.html#acd69981d54c27fe0ff514645dbfc6359">dppl_data_types.h</a>
+</li>
+</ul>
+
+
+<h3><a id="index_i"></a>- i -</h3><ul>
+<li>if()
+: <a class="el" href="da/d9e/CMakeLists_8txt.html#a79010be137637b1fffdd9f3c0a926708">CMakeLists.txt</a>
+</li>
+<li>INT64_MAX
+: <a class="el" href="d4/dcc/dppl__data__types_8h.html#ad0d744f05898e32d01f73f8af3cd2071">dppl_data_types.h</a>
+</li>
+<li>INT64_MIN
+: <a class="el" href="d4/dcc/dppl__data__types_8h.html#ab21f12f372f67b8ff0aa3432336ede67">dppl_data_types.h</a>
+</li>
+</ul>
+
+
+<h3><a id="index_s"></a>- s -</h3><ul>
+<li>set()
+: <a class="el" href="da/d9e/CMakeLists_8txt.html#aa739aaa568ca4e3fb8021c8984335c14">CMakeLists.txt</a>
+</li>
+</ul>
+
+
+<h3><a id="index_u"></a>- u -</h3><ul>
+<li>UINT64_MAX
+: <a class="el" href="d4/dcc/dppl__data__types_8h.html#a30654b4b67d97c42ca3f9b6052dda916">dppl_data_types.h</a>
+</li>
+</ul>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.17
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+  </ul>
+</div>
 </body>
 </html>

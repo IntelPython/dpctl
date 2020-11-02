@@ -9,6 +9,10 @@
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
+<link href="../../navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../../resize.js"></script>
+<script type="text/javascript" src="../../navtreedata.js"></script>
+<script type="text/javascript" src="../../navtree.js"></script>
 <link href="../../search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../search/searchdata.js"></script>
 <script type="text/javascript" src="../../search/search.js"></script>
@@ -47,6 +51,23 @@ $(function() {
 });
 /* @license-end */</script>
 <div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('dd/d48/dppl__sycl__context__interface_8cpp_source.html','../../'); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -61,11 +82,6 @@ $(function() {
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="../../dir_dec21994cd756836ecefab773235960a.html">backends</a></li><li class="navelem"><a class="el" href="../../dir_588ecc3540b295d854fec09581271bc7.html">source</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="headertitle">
 <div class="title">dppl_sycl_context_interface.cpp</div>  </div>
@@ -143,10 +159,11 @@ $(function() {
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    }</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
 <div class="ttc" id="adppl__sycl__context__interface_8cpp_html_ab591f8032de2f90d9f68cf3aedc386c7"><div class="ttname"><a href="../../dd/d48/dppl__sycl__context__interface_8cpp.html#ab591f8032de2f90d9f68cf3aedc386c7">DPPLContext_AreEq</a></div><div class="ttdeci">bool DPPLContext_AreEq(__dppl_keep const DPPLSyclContextRef CtxRef1, __dppl_keep const DPPLSyclContextRef CtxRef2)</div><div class="ttdoc">Checks if two DPPLSyclContextRef objects point to the same sycl::context.</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d48/dppl__sycl__context__interface_8cpp_source.html#l00039">dppl_sycl_context_interface.cpp:39</a></div></div>
 <div class="ttc" id="aCBindingWrapping_8h_html"><div class="ttname"><a href="../../d1/d38/CBindingWrapping_8h.html">CBindingWrapping.h</a></div></div>
 <div class="ttc" id="adppl__sycl__enum__types_8h_html_a006122c6b6223df098e3cb0ca34d1932"><div class="ttname"><a href="../../d9/d4f/dppl__sycl__enum__types_8h.html#a006122c6b6223df098e3cb0ca34d1932">DPPLSyclBackendType</a></div><div class="ttdeci">DPPLSyclBackendType</div><div class="ttdoc">Redefinition of DPC++-specific Sycl backend types.</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d4f/dppl__sycl__enum__types_8h_source.html#l00038">dppl_sycl_enum_types.h:38</a></div></div>
-<div class="ttc" id="aCBindingWrapping_8h_html_a65c769c08fa9fee7f298ad9c9eee5e05"><div class="ttname"><a href="../../d1/d38/CBindingWrapping_8h.html#a65c769c08fa9fee7f298ad9c9eee5e05">DEFINE_SIMPLE_CONVERSION_FUNCTIONS</a></div><div class="ttdeci">#define DEFINE_SIMPLE_CONVERSION_FUNCTIONS(ty, ref)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d38/CBindingWrapping_8h_source.html#l00028">CBindingWrapping.h:28</a></div></div>
+<div class="ttc" id="aCBindingWrapping_8h_html_a65c769c08fa9fee7f298ad9c9eee5e05"><div class="ttname"><a href="../../d1/d38/CBindingWrapping_8h.html#a65c769c08fa9fee7f298ad9c9eee5e05">DEFINE_SIMPLE_CONVERSION_FUNCTIONS</a></div><div class="ttdeci">#define DEFINE_SIMPLE_CONVERSION_FUNCTIONS(ty, ref)</div><div class="ttdoc">Creates two convenience functions to reinterpret_cast an opaque pointer to a pointer to a Sycl type a...</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d38/CBindingWrapping_8h_source.html#l00032">CBindingWrapping.h:32</a></div></div>
 <div class="ttc" id="adppl__sycl__enum__types_8h_html_a006122c6b6223df098e3cb0ca34d1932a9cf919f672faa098e1472bef6bb9766a"><div class="ttname"><a href="../../d9/d4f/dppl__sycl__enum__types_8h.html#a006122c6b6223df098e3cb0ca34d1932a9cf919f672faa098e1472bef6bb9766a">DPPL_LEVEL_ZERO</a></div><div class="ttdeci">@ DPPL_LEVEL_ZERO</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d4f/dppl__sycl__enum__types_8h_source.html#l00043">dppl_sycl_enum_types.h:43</a></div></div>
 <div class="ttc" id="adppl__sycl__context__interface_8cpp_html_a2f15c6d0f3f72970ddf300e93e0e16ac"><div class="ttname"><a href="../../dd/d48/dppl__sycl__context__interface_8cpp.html#a2f15c6d0f3f72970ddf300e93e0e16ac">DPPLContext_IsHost</a></div><div class="ttdeci">bool DPPLContext_IsHost(__dppl_keep const DPPLSyclContextRef CtxRef)</div><div class="ttdoc">Returns true if this SYCL context is a host context.</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d48/dppl__sycl__context__interface_8cpp_source.html#l00048">dppl_sycl_context_interface.cpp:48</a></div></div>
 <div class="ttc" id="adppl__sycl__enum__types_8h_html_a006122c6b6223df098e3cb0ca34d1932ab853d01482e628f7e60c58dcbdec0fed"><div class="ttname"><a href="../../d9/d4f/dppl__sycl__enum__types_8h.html#a006122c6b6223df098e3cb0ca34d1932ab853d01482e628f7e60c58dcbdec0fed">DPPL_OPENCL</a></div><div class="ttdeci">@ DPPL_OPENCL</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d4f/dppl__sycl__enum__types_8h_source.html#l00041">dppl_sycl_enum_types.h:41</a></div></div>
@@ -160,10 +177,13 @@ $(function() {
 <div class="ttc" id="adppl__sycl__context__interface_8cpp_html_a684ee9951381841f3223b5cf092fc616"><div class="ttname"><a href="../../dd/d48/dppl__sycl__context__interface_8cpp.html#a684ee9951381841f3223b5cf092fc616">DPPLContext_Delete</a></div><div class="ttdeci">void DPPLContext_Delete(__dppl_take DPPLSyclContextRef CtxRef)</div><div class="ttdoc">Delete the pointer after casting it to sycl::context.</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d48/dppl__sycl__context__interface_8cpp_source.html#l00053">dppl_sycl_context_interface.cpp:53</a></div></div>
 <div class="ttc" id="agroup__MEM__MGMT__ATTR__MACROS_html_ga992ba513554faa4a42a193e0f31c4cb7"><div class="ttname"><a href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#ga992ba513554faa4a42a193e0f31c4cb7">__dppl_take</a></div><div class="ttdeci">#define __dppl_take</div><div class="ttdoc">The __dppl_take attribute indicates that the function &quot;takes&quot; over the ownership of the object and th...</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d8c/MemOwnershipAttrs_8h_source.html#l00065">MemOwnershipAttrs.h:65</a></div></div>
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="../../doxygen.png" alt="doxygen"/>
-</a> 1.8.17
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="../../dir_dec21994cd756836ecefab773235960a.html">backends</a></li><li class="navelem"><a class="el" href="../../dir_588ecc3540b295d854fec09581271bc7.html">source</a></li><li class="navelem"><a class="el" href="../../dd/d48/dppl__sycl__context__interface_8cpp.html">dppl_sycl_context_interface.cpp</a></li>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+  </ul>
+</div>
 </body>
 </html>

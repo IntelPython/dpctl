@@ -14,6 +14,7 @@
     <includedby refid="dppl__sycl__queue__interface_8h" local="yes">backends/include/dppl_sycl_queue_interface.h</includedby>
     <includedby refid="dppl__sycl__queue__manager_8h" local="yes">backends/include/dppl_sycl_queue_manager.h</includedby>
     <includedby refid="dppl__sycl__usm__interface_8h" local="yes">backends/include/dppl_sycl_usm_interface.h</includedby>
+    <includedby refid="dppl__utils_8h" local="yes">backends/include/dppl_utils.h</includedby>
     <incdepgraph>
       <node id="3">
         <label>stdint.h</label>
@@ -87,6 +88,12 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>backends/include/dppl_utils.h</label>
+        <link refid="dppl__utils_8h"/>
       </node>
       <node id="4">
         <label>backends/include/dppl_sycl_platform_interface.h</label>
@@ -106,45 +113,49 @@
         <name>INT64_MAX</name>
         <initializer>9223372036854775807LL</initializer>
         <briefdescription>
+<para>Represents tha largest possible value of a 64 bit signed integer. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="backends/include/dppl_data_types.h" line="81" column="10" bodyfile="backends/include/dppl_data_types.h" bodystart="81" bodyend="-1"/>
+        <location file="backends/include/dppl_data_types.h" line="83" column="10" bodyfile="backends/include/dppl_data_types.h" bodystart="83" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="dppl__data__types_8h_1ab21f12f372f67b8ff0aa3432336ede67" prot="public" static="no">
         <name>INT64_MIN</name>
-        <initializer>((-INT64_MAX)-1)</initializer>
+        <initializer>((-<ref refid="dppl__data__types_8h_1ad0d744f05898e32d01f73f8af3cd2071" kindref="member">INT64_MAX</ref>)-1)</initializer>
         <briefdescription>
+<para>Represents tha smallest possible value of a 64 bit signed integer. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="backends/include/dppl_data_types.h" line="84" column="10" bodyfile="backends/include/dppl_data_types.h" bodystart="84" bodyend="-1"/>
+        <location file="backends/include/dppl_data_types.h" line="90" column="10" bodyfile="backends/include/dppl_data_types.h" bodystart="90" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="dppl__data__types_8h_1a30654b4b67d97c42ca3f9b6052dda916" prot="public" static="no">
         <name>UINT64_MAX</name>
         <initializer>0xffffffffffffffffULL</initializer>
         <briefdescription>
+<para>Represents tha largest possible value of a 64bit unsigned integer. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="backends/include/dppl_data_types.h" line="87" column="10" bodyfile="backends/include/dppl_data_types.h" bodystart="87" bodyend="-1"/>
+        <location file="backends/include/dppl_data_types.h" line="97" column="10" bodyfile="backends/include/dppl_data_types.h" bodystart="97" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="dppl__data__types_8h_1acd69981d54c27fe0ff514645dbfc6359" prot="public" static="no">
         <name>HUGE_VALF</name>
         <initializer>(float)HUGE_VAL</initializer>
         <briefdescription>
+<para>Represents a positive expression of type float. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="backends/include/dppl_data_types.h" line="91" column="9" bodyfile="backends/include/dppl_data_types.h" bodystart="91" bodyend="-1"/>
+        <location file="backends/include/dppl_data_types.h" line="104" column="9" bodyfile="backends/include/dppl_data_types.h" bodystart="104" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -220,20 +231,21 @@
 <codeline lineno="76"><highlight class="normal"></highlight></codeline>
 <codeline lineno="77"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">/*<sp/>_MSC_VER<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="78"><highlight class="normal"></highlight></codeline>
-<codeline lineno="79"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Set<sp/>defaults<sp/>for<sp/>constants<sp/>which<sp/>we<sp/>cannot<sp/>find.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="80"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>!defined(INT64_MAX)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="81"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/>define<sp/>INT64_MAX<sp/>9223372036854775807LL</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="82"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="83"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>!defined(INT64_MIN)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="84"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/>define<sp/>INT64_MIN<sp/>((-INT64_MAX)-1)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="85"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="86"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>!defined(UINT64_MAX)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="87"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/>define<sp/>UINT64_MAX<sp/>0xffffffffffffffffULL</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="88"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="89"><highlight class="normal"></highlight></codeline>
-<codeline lineno="90"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>HUGE_VALF</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="91"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>HUGE_VALF<sp/>(float)HUGE_VAL</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="92"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="82"><highlight class="preprocessor">#if<sp/>!defined(INT64_MAX)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83" refid="dppl__data__types_8h_1ad0d744f05898e32d01f73f8af3cd2071" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/>define<sp/>INT64_MAX<sp/>9223372036854775807LL</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="preprocessor">#if<sp/>!defined(INT64_MIN)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="90" refid="dppl__data__types_8h_1ab21f12f372f67b8ff0aa3432336ede67" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/>define<sp/>INT64_MIN<sp/>((-INT64_MAX)-1)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="preprocessor">#if<sp/>!defined(UINT64_MAX)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97" refid="dppl__data__types_8h_1a30654b4b67d97c42ca3f9b6052dda916" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/>define<sp/>UINT64_MAX<sp/>0xffffffffffffffffULL</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="preprocessor">#ifndef<sp/>HUGE_VALF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104" refid="dppl__data__types_8h_1acd69981d54c27fe0ff514645dbfc6359" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>HUGE_VALF<sp/>(float)HUGE_VAL</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="backends/include/dppl_data_types.h"/>
   </compounddef>

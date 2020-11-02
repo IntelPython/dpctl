@@ -232,7 +232,7 @@
 <codeline lineno="27"><highlight class="normal"></highlight></codeline>
 <codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="ExternC_8h" kindref="compound">Support/ExternC.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight></codeline>
-<codeline lineno="30"><highlight class="normal">DPPL_C_EXTERN_C_BEGIN</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><ref refid="ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" kindref="member">DPPL_C_EXTERN_C_BEGIN</ref></highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight></codeline>
 <codeline lineno="36" refid="dppl__sycl__types_8h_1a6f7f076797eb7499ab2c6caffed6efcb" refkind="member"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">DPPLOpaqueSyclContext<sp/>*<ref refid="dppl__sycl__types_8h_1a6f7f076797eb7499ab2c6caffed6efcb" kindref="member">DPPLSyclContextRef</ref>;</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"></highlight></codeline>
@@ -250,7 +250,7 @@
 <codeline lineno="74"><highlight class="normal"></highlight></codeline>
 <codeline lineno="80" refid="dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" refkind="member"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">DPPLOpaqueSyclUSM<sp/>*<ref refid="dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref>;</highlight></codeline>
 <codeline lineno="81"><highlight class="normal"></highlight></codeline>
-<codeline lineno="82"><highlight class="normal">DPPL_C_EXTERN_C_END</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><ref refid="ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" kindref="member">DPPL_C_EXTERN_C_END</ref></highlight></codeline>
     </programlisting>
     <location file="backends/include/dppl_sycl_types.h"/>
   </compounddef>

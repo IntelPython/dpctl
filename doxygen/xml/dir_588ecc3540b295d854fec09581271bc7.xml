@@ -2,7 +2,6 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="dir_588ecc3540b295d854fec09581271bc7" kind="dir">
     <compoundname>source</compoundname>
-    <innerfile refid="db/de2/dppl__opencl__interface_8c">dppl_opencl_interface.c</innerfile>
     <innerfile refid="dd/d48/dppl__sycl__context__interface_8cpp">dppl_sycl_context_interface.cpp</innerfile>
     <innerfile refid="d9/dba/dppl__sycl__device__interface_8cpp">dppl_sycl_device_interface.cpp</innerfile>
     <innerfile refid="df/deb/dppl__sycl__event__interface_8cpp">dppl_sycl_event_interface.cpp</innerfile>

@@ -251,19 +251,19 @@ Returns the number of sycl::platform on the system. </para>
 <codeline lineno="33"><highlight class="normal"></highlight></codeline>
 <codeline lineno="34"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" kindref="member">DPPL_C_EXTERN_C_BEGIN</ref></highlight></codeline>
 <codeline lineno="35"><highlight class="normal"></highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="43"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="dd/d6a/dppl__sycl__platform__interface_8h_1aff1cc89b9d5484e28139ae996188dcc9" kindref="member">DPPLPlatform_GetNumNonHostPlatforms</ref><sp/>();</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"></highlight></codeline>
-<codeline lineno="50"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="51"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="dd/d6a/dppl__sycl__platform__interface_8h_1aeb7264671028eda6e0722e6adadf0145" kindref="member">DPPLPlatform_GetNumNonHostBackends</ref><sp/>();</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"></highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="60"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932" kindref="member">DPPLSyclBackendType</ref>*<sp/><ref refid="dd/d6a/dppl__sycl__platform__interface_8h_1a1dc65ec779607209825b5d163eb7d573" kindref="member">DPPLPlatform_GetListOfNonHostBackends</ref><sp/>();</highlight></codeline>
 <codeline lineno="61"><highlight class="normal"></highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="68"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dd/d6a/dppl__sycl__platform__interface_8h_1adb344f0150adf1b648bc3de73a7826b2" kindref="member">DPPLPlatform_DeleteListOfBackends</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="d9/d4f/dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932" kindref="member">DPPLSyclBackendType</ref>*<sp/>BEArr);</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"></highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="75"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dd/d6a/dppl__sycl__platform__interface_8h_1aa44daafa8958a2b643074cc1e25bead4" kindref="member">DPPLPlatform_DumpInfo</ref><sp/>();</highlight></codeline>
 <codeline lineno="76"><highlight class="normal"></highlight></codeline>
 <codeline lineno="77"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" kindref="member">DPPL_C_EXTERN_C_END</ref></highlight></codeline>

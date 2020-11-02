@@ -169,10 +169,10 @@
 <codeline lineno="34"><highlight class="normal"></highlight></codeline>
 <codeline lineno="35"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" kindref="member">DPPL_C_EXTERN_C_BEGIN</ref></highlight></codeline>
 <codeline lineno="36"><highlight class="normal"></highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="43"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="da/d2c/dppl__sycl__event__interface_8h_1a63af087db1557f68894f3b66b0a9aebc" kindref="member">DPPLEvent_Wait</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a350c1387c650924e6c0e25f9f24a7892" kindref="member">DPPLSyclEventRef</ref><sp/>ERef);</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"></highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="52"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="53"><highlight class="normal"><ref refid="da/d2c/dppl__sycl__event__interface_8h_1a9aeb473ed16316f62ce4fd0cab4ddbfc" kindref="member">DPPLEvent_Delete</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a350c1387c650924e6c0e25f9f24a7892" kindref="member">DPPLSyclEventRef</ref><sp/>ERef);</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"></highlight></codeline>

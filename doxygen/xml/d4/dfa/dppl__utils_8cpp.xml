@@ -10,27 +10,48 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="5">
+        <label>stdint.h</label>
+      </node>
+      <node id="7">
         <label>Support/DllExport.h</label>
         <link refid="d6/d26/DllExport_8h"/>
+      </node>
+      <node id="6">
+        <label>sys/types.h</label>
+      </node>
+      <node id="3">
+        <label>dppl_data_types.h</label>
+        <link refid="d4/dcc/dppl__data__types_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>dppl_utils.h</label>
         <link refid="dc/d8e/dppl__utils_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="4">
+      <node id="8">
         <label>Support/ExternC.h</label>
         <link refid="d2/d0a/ExternC_8h"/>
       </node>
-      <node id="5">
+      <node id="9">
         <label>Support/MemOwnershipAttrs.h</label>
         <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
+      </node>
+      <node id="4">
+        <label>inttypes.h</label>
       </node>
     </incdepgraph>
       <sectiondef kind="func">
@@ -61,6 +82,34 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_utils.cpp" line="28" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_utils.cpp" bodystart="28" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="function" id="d4/dfa/dppl__utils_8cpp_1a13515bcc2c3443c6d9a3beb0944be37a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void DPPLSize_t_Array_Delete</definition>
+        <argsstring>(__dppl_take size_t *arr)</argsstring>
+        <name>DPPLSize_t_Array_Delete</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref> size_t *</type>
+          <declname>arr</declname>
+        </param>
+        <briefdescription>
+<para>Deletes an array of size_t elements. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>arr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Array to be deleted. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_utils.cpp" line="33" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_utils.cpp" bodystart="33" bodyend="36"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -96,6 +145,11 @@
 <codeline lineno="29"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">[]<sp/>str;</highlight></codeline>
 <codeline lineno="31"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="d4/dfa/dppl__utils_8cpp_1a13515bcc2c3443c6d9a3beb0944be37a" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="d4/dfa/dppl__utils_8cpp_1a13515bcc2c3443c6d9a3beb0944be37a" kindref="member">DPPLSize_t_Array_Delete</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>arr)</highlight></codeline>
+<codeline lineno="34"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">[]<sp/>arr;</highlight></codeline>
+<codeline lineno="36"><highlight class="normal">}</highlight></codeline>
     </programlisting>
     <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_utils.cpp"/>
   </compounddef>

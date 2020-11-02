@@ -103,7 +103,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" line="72" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" bodystart="72" bodyend="75"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" line="77" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" bodystart="77" bodyend="80"/>
       </memberdef>
       <memberdef kind="function" id="df/dde/dppl__sycl__kernel__interface_8cpp_1a0be13615bda6ea943282e8de1015fe6b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref> char *</type>
@@ -134,7 +134,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" line="42" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" bodystart="42" bodyend="56"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" line="42" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" bodystart="42" bodyend="61"/>
       </memberdef>
       <memberdef kind="function" id="df/dde/dppl__sycl__kernel__interface_8cpp_1ae729889451b8be739361605e4526e1c5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -165,7 +165,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" line="59" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" bodystart="59" bodyend="69"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" line="64" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" bodystart="64" bodyend="74"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -221,29 +221,34 @@
 <codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>kernel_name<sp/>=<sp/>SyclKernel-&gt;get_info&lt;info::kernel::function_name&gt;();</highlight></codeline>
 <codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(kernel_name.empty())</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cstr_name<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>[kernel_name.length()+1];</highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>std::strcpy<sp/>(cstr_name,<sp/>kernel_name.c_str());</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>cstr_name;</highlight></codeline>
-<codeline lineno="56"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="57"><highlight class="normal"></highlight></codeline>
-<codeline lineno="58"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="59" refid="df/dde/dppl__sycl__kernel__interface_8cpp_1ae729889451b8be739361605e4526e1c5" refkind="member"><highlight class="normal"><ref refid="df/dde/dppl__sycl__kernel__interface_8cpp_1ae729889451b8be739361605e4526e1c5" kindref="member">DPPLKernel_GetNumArgs</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f" kindref="member">DPPLSyclKernelRef</ref><sp/>Kernel)</highlight></codeline>
-<codeline lineno="60"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!Kernel)<sp/>{</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>\todo<sp/>record<sp/>error</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-1;</highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"></highlight></codeline>
-<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>SyclKernel<sp/>=<sp/>unwrap(Kernel);</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>num_args<sp/>=<sp/>SyclKernel-&gt;get_info&lt;info::kernel::num_args&gt;();</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">)num_args;</highlight></codeline>
-<codeline lineno="69"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cstr_len<sp/>=<sp/>kernel_name.length()+1;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cstr_name<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">[cstr_len];</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>_WIN32</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>strncpy_s(cstr_name,<sp/>cstr_len,<sp/>kernel_name.c_str(),<sp/>cstr_len);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>std::strncpy<sp/>(cstr_name,<sp/>kernel_name.c_str(),<sp/>cstr_len);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>cstr_name;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64" refid="df/dde/dppl__sycl__kernel__interface_8cpp_1ae729889451b8be739361605e4526e1c5" refkind="member"><highlight class="normal"><ref refid="df/dde/dppl__sycl__kernel__interface_8cpp_1ae729889451b8be739361605e4526e1c5" kindref="member">DPPLKernel_GetNumArgs</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f" kindref="member">DPPLSyclKernelRef</ref><sp/>Kernel)</highlight></codeline>
+<codeline lineno="65"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!Kernel)<sp/>{</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>\todo<sp/>record<sp/>error</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-1;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"></highlight></codeline>
-<codeline lineno="71"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="72" refid="df/dde/dppl__sycl__kernel__interface_8cpp_1a2de94d9546c1a5ebdad48e33437d0d14" refkind="member"><highlight class="normal"><ref refid="df/dde/dppl__sycl__kernel__interface_8cpp_1a2de94d9546c1a5ebdad48e33437d0d14" kindref="member">DPPLKernel_Delete</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f" kindref="member">DPPLSyclKernelRef</ref><sp/>Kernel)</highlight></codeline>
-<codeline lineno="73"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/>unwrap(Kernel);</highlight></codeline>
-<codeline lineno="75"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>SyclKernel<sp/>=<sp/>unwrap(Kernel);</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>num_args<sp/>=<sp/>SyclKernel-&gt;get_info&lt;info::kernel::num_args&gt;();</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">)num_args;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="77" refid="df/dde/dppl__sycl__kernel__interface_8cpp_1a2de94d9546c1a5ebdad48e33437d0d14" refkind="member"><highlight class="normal"><ref refid="df/dde/dppl__sycl__kernel__interface_8cpp_1a2de94d9546c1a5ebdad48e33437d0d14" kindref="member">DPPLKernel_Delete</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f" kindref="member">DPPLSyclKernelRef</ref><sp/>Kernel)</highlight></codeline>
+<codeline lineno="78"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/>unwrap(Kernel);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal">}</highlight></codeline>
     </programlisting>
     <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp"/>
   </compounddef>

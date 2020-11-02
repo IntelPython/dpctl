@@ -9,6 +9,10 @@
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
+<link href="../../navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../../resize.js"></script>
+<script type="text/javascript" src="../../navtreedata.js"></script>
+<script type="text/javascript" src="../../navtree.js"></script>
 <link href="../../search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../search/searchdata.js"></script>
 <script type="text/javascript" src="../../search/search.js"></script>
@@ -47,6 +51,23 @@ $(function() {
 });
 /* @license-end */</script>
 <div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('d0/de9/dppl__sycl__queue__manager_8h.html','../../'); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -61,11 +82,6 @@ $(function() {
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="../../dir_dec21994cd756836ecefab773235960a.html">backends</a></li><li class="navelem"><a class="el" href="../../dir_efe784112ed64dd71eba3878931bbd0a.html">include</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
@@ -127,6 +143,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a25030bcff6aa416374d49377f4501d1f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> <a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad5917e4c2b4b0ab2b83b624964c60753">__dppl_give</a> <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#ab149964f3e071296799d1c7e15aae5a7">DPPLSyclQueueRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/de9/dppl__sycl__queue__manager_8h.html#a25030bcff6aa416374d49377f4501d1f">DPPLQueueMgr_GetQueue</a> (<a class="el" href="../../d9/d4f/dppl__sycl__enum__types_8h.html#a006122c6b6223df098e3cb0ca34d1932">DPPLSyclBackendType</a> BETy, <a class="el" href="../../d9/d4f/dppl__sycl__enum__types_8h.html#a3aeffb0db7e2c7a0655c7bf13afce302">DPPLSyclDeviceType</a> DeviceTy, size_t DNum)</td></tr>
 <tr class="memdesc:a25030bcff6aa416374d49377f4501d1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a sycl::queue object of the specified type and device id.  <a href="../../d0/de9/dppl__sycl__queue__manager_8h.html#a25030bcff6aa416374d49377f4501d1f">More...</a><br /></td></tr>
 <tr class="separator:a25030bcff6aa416374d49377f4501d1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f5c95eccc21d64a57572de6cae4a865"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> <a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad5917e4c2b4b0ab2b83b624964c60753">__dppl_give</a> <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#ab149964f3e071296799d1c7e15aae5a7">DPPLSyclQueueRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/de9/dppl__sycl__queue__manager_8h.html#a7f5c95eccc21d64a57572de6cae4a865">DPPLQueueMgr_GetQueueFromContextAndDevice</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#a8a6779e2595695b1c3955221a0a56716">DPPLSyclContextRef</a> CRef, <a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DRef)</td></tr>
+<tr class="memdesc:a7f5c95eccc21d64a57572de6cae4a865"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new instance of SYCL queue from SYCL context and SYCL device.  <a href="../../d0/de9/dppl__sycl__queue__manager_8h.html#a7f5c95eccc21d64a57572de6cae4a865">More...</a><br /></td></tr>
+<tr class="separator:a7f5c95eccc21d64a57572de6cae4a865"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9d22f892ea2bff7196f8e4494fc9a17"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/de9/dppl__sycl__queue__manager_8h.html#af9d22f892ea2bff7196f8e4494fc9a17">DPPLQueueMgr_IsCurrentQueue</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#ab149964f3e071296799d1c7e15aae5a7">DPPLSyclQueueRef</a> QRef)</td></tr>
 <tr class="memdesc:af9d22f892ea2bff7196f8e4494fc9a17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns True if the passed in queue and the current queue are the same, else returns False.  <a href="../../d0/de9/dppl__sycl__queue__manager_8h.html#af9d22f892ea2bff7196f8e4494fc9a17">More...</a><br /></td></tr>
 <tr class="separator:af9d22f892ea2bff7196f8e4494fc9a17"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -164,7 +183,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>A copy of the current (top of the stack) sycl::queue is returned wrapped inside an opaque DPPLSyclQueueRef pointer.</dd></dl>
 <dl class="section see"><dt>See also</dt><dd>QMgrHelper::getCurrentQueue() </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00482">482</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00478">478</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -187,7 +206,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>The number of activated queues.</dd></dl>
 <p>Returns inside the number of activated queues not including the global queue (QMgrHelper::active_queues[0]). </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00439">439</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00435">435</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -228,7 +247,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>The number of available queues.</dd></dl>
 <p>Returns the number of available queues for a specific backend and device type combination. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00453">453</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00449">449</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -267,6 +286,7 @@ Functions</h2></td></tr>
 <p>Get a sycl::queue object of the specified type and device id. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">BETy</td><td>A valid Sycl backend value. </td></tr>
     <tr><td class="paramname">DeviceTy</td><td>The type of Sycl device (sycl_device_type) </td></tr>
     <tr><td class="paramname">DNum</td><td>Device id for the device (defaults to 0)</td></tr>
   </table>
@@ -275,7 +295,49 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>A copy of the sycl::queue corresponding to the device is returned wrapped inside a DPPLSyclDeviceType pointer. A runtime_error exception is raised if no such device exists.</dd></dl>
 <p>Returns a copy of a sycl::queue corresponding to the specified device type and device number. A runtime_error gets thrown if no such device exists. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00491">491</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00487">487</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a7f5c95eccc21d64a57572de6cae4a865"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f5c95eccc21d64a57572de6cae4a865">&#9670;&nbsp;</a></span>DPPLQueueMgr_GetQueueFromContextAndDevice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> <a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad5917e4c2b4b0ab2b83b624964c60753">__dppl_give</a> <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#ab149964f3e071296799d1c7e15aae5a7">DPPLSyclQueueRef</a> DPPLQueueMgr_GetQueueFromContextAndDevice </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#a8a6779e2595695b1c3955221a0a56716">DPPLSyclContextRef</a>&#160;</td>
+          <td class="paramname"><em>CRef</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a>&#160;</td>
+          <td class="paramname"><em>DRef</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new instance of SYCL queue from SYCL context and SYCL device. </p>
+<p>The instance is not placed into queue manager. The user assumes ownership of the queue reference and should deallocate it using DPPLQueue_Delete.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">CRef</td><td>Sycl context reference </td></tr>
+    <tr><td class="paramname">DRef</td><td>Sycl device reference</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A copy of the sycl::queue created from given context and device references.</dd></dl>
+<p>The function constructs a new SYCL queue instance from SYCL conext and SYCL device. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00539">539</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -304,7 +366,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True or False depending on whether the QRef argument is the same as the currently activated queue. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00501">501</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00497">497</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -327,7 +389,7 @@ Functions</h2></td></tr>
 <p>DPPLPopSyclQueue only removes the reference from the DPPL stack of sycl::queue objects. Any instance of the popped queue that were previously acquired by calling DPPLPushSyclQueue() or <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp.html#ac7e6ad9609ab0642726da599f862c704" title="Get the sycl::queue object that is currently activated for this thread.">DPPLQueueMgr_GetCurrentQueue()</a> needs to be freed separately. In addition, a runtime_error is thrown when the stack contains only one sycl::queue, i.e., the default queue.</p>
 <dl class="section see"><dt>See also</dt><dd>QMgrHelper::popSyclQueue() </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00533">533</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00529">529</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -376,7 +438,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>A copy of the sycl::queue that was pushed to the top of DPPL's stack of sycl::queue objects. Nullptr is returned if no such device exists.</dd></dl>
 <dl class="section see"><dt>See also</dt><dd>QMgrHelper::pushSyclQueue() </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00523">523</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00519">519</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -424,16 +486,20 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>A copy of the sycl::queue that was set as the new default queue. If no queue could be created then returns Null.</dd></dl>
 <p>The function sets the global queue, i.e., the sycl::queue object at QMgrHelper::active_queues[0] vector to the sycl::queue corresponding to the specified device type and id. If not queue was found for the backend and device, Null is returned. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00512">512</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html#l00508">508</a> of file <a class="el" href="../../de/d84/dppl__sycl__queue__manager_8cpp_source.html">dppl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="../../doxygen.png" alt="doxygen"/>
-</a> 1.8.17
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="../../dir_dec21994cd756836ecefab773235960a.html">backends</a></li><li class="navelem"><a class="el" href="../../dir_efe784112ed64dd71eba3878931bbd0a.html">include</a></li><li class="navelem"><a class="el" href="../../d0/de9/dppl__sycl__queue__manager_8h.html">dppl_sycl_queue_manager.h</a></li>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+  </ul>
+</div>
 </body>
 </html>

@@ -9,6 +9,10 @@
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
+<link href="../../navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../../resize.js"></script>
+<script type="text/javascript" src="../../navtreedata.js"></script>
+<script type="text/javascript" src="../../navtree.js"></script>
 <link href="../../search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../search/searchdata.js"></script>
 <script type="text/javascript" src="../../search/search.js"></script>
@@ -47,6 +51,23 @@ $(function() {
 });
 /* @license-end */</script>
 <div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('dc/d31/dppl__sycl__kernel__interface_8h_source.html','../../'); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -61,11 +82,6 @@ $(function() {
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="../../dir_dec21994cd756836ecefab773235960a.html">backends</a></li><li class="navelem"><a class="el" href="../../dir_efe784112ed64dd71eba3878931bbd0a.html">include</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="headertitle">
 <div class="title">dppl_sycl_kernel_interface.h</div>  </div>
@@ -102,21 +118,22 @@ $(function() {
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<a class="code" href="../../d2/d0a/ExternC_8h.html#a27152e7d3c3be9b99f89d313df56aef0">DPPL_C_EXTERN_C_BEGIN</a></div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<a class="code" href="../../d0/da0/dppl__opencl__interface_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<a class="code" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a></div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad5917e4c2b4b0ab2b83b624964c60753">__dppl_give</a> <span class="keyword">const</span> <span class="keywordtype">char</span>*</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<a class="code" href="../../dc/d31/dppl__sycl__kernel__interface_8h.html#a01c88f7f6700a77afc3734d9e896e2fe">DPPLKernel_GetFunctionName</a> (<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> <span class="keyword">const</span> <a class="code" href="../../d4/d8f/dppl__sycl__types_8h.html#ac7590a7630c7ef3467d983c57e60b01f">DPPLSyclKernelRef</a> KRef);</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<a class="code" href="../../d0/da0/dppl__opencl__interface_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<a class="code" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a></div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keywordtype">size_t</span></div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<a class="code" href="../../dc/d31/dppl__sycl__kernel__interface_8h.html#a5f0d25cde1a667d816955f0695c70ffe">DPPLKernel_GetNumArgs</a> (<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> <span class="keyword">const</span> <a class="code" href="../../d4/d8f/dppl__sycl__types_8h.html#ac7590a7630c7ef3467d983c57e60b01f">DPPLSyclKernelRef</a> KRef);</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<a class="code" href="../../d0/da0/dppl__opencl__interface_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<a class="code" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a></div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keywordtype">void</span></div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<a class="code" href="../../dc/d31/dppl__sycl__kernel__interface_8h.html#a47bcfc3a382e18570bbc437e0e53961f">DPPLKernel_Delete</a> (<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#ga992ba513554faa4a42a193e0f31c4cb7">__dppl_take</a> <a class="code" href="../../d4/d8f/dppl__sycl__types_8h.html#ac7590a7630c7ef3467d983c57e60b01f">DPPLSyclKernelRef</a> KRef);</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<a class="code" href="../../d2/d0a/ExternC_8h.html#a03a64b28f62f6f38f6b8388a87a5a1fb">DPPL_C_EXTERN_C_END</a></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="adppl__sycl__kernel__interface_8h_html_a5f0d25cde1a667d816955f0695c70ffe"><div class="ttname"><a href="../../dc/d31/dppl__sycl__kernel__interface_8h.html#a5f0d25cde1a667d816955f0695c70ffe">DPPLKernel_GetNumArgs</a></div><div class="ttdeci">DPPL_API size_t DPPLKernel_GetNumArgs(__dppl_keep const DPPLSyclKernelRef KRef)</div><div class="ttdoc">Returns the number of arguments for the OpenCL kernel.</div><div class="ttdef"><b>Definition:</b> <a href="../../df/dde/dppl__sycl__kernel__interface_8cpp_source.html#l00059">dppl_sycl_kernel_interface.cpp:59</a></div></div>
+</div><!-- doc-content -->
+<div class="ttc" id="adppl__sycl__kernel__interface_8h_html_a5f0d25cde1a667d816955f0695c70ffe"><div class="ttname"><a href="../../dc/d31/dppl__sycl__kernel__interface_8h.html#a5f0d25cde1a667d816955f0695c70ffe">DPPLKernel_GetNumArgs</a></div><div class="ttdeci">DPPL_API size_t DPPLKernel_GetNumArgs(__dppl_keep const DPPLSyclKernelRef KRef)</div><div class="ttdoc">Returns the number of arguments for the OpenCL kernel.</div><div class="ttdef"><b>Definition:</b> <a href="../../df/dde/dppl__sycl__kernel__interface_8cpp_source.html#l00064">dppl_sycl_kernel_interface.cpp:64</a></div></div>
 <div class="ttc" id="aDllExport_8h_html"><div class="ttname"><a href="../../d6/d26/DllExport_8h.html">DllExport.h</a></div></div>
 <div class="ttc" id="adppl__sycl__types_8h_html"><div class="ttname"><a href="../../d4/d8f/dppl__sycl__types_8h.html">dppl_sycl_types.h</a></div></div>
 <div class="ttc" id="aExternC_8h_html_a03a64b28f62f6f38f6b8388a87a5a1fb"><div class="ttname"><a href="../../d2/d0a/ExternC_8h.html#a03a64b28f62f6f38f6b8388a87a5a1fb">DPPL_C_EXTERN_C_END</a></div><div class="ttdeci">#define DPPL_C_EXTERN_C_END</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d0a/ExternC_8h_source.html#l00033">ExternC.h:33</a></div></div>
@@ -125,17 +142,20 @@ $(function() {
 <div class="ttc" id="aExternC_8h_html_a27152e7d3c3be9b99f89d313df56aef0"><div class="ttname"><a href="../../d2/d0a/ExternC_8h.html#a27152e7d3c3be9b99f89d313df56aef0">DPPL_C_EXTERN_C_BEGIN</a></div><div class="ttdeci">#define DPPL_C_EXTERN_C_BEGIN</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d0a/ExternC_8h_source.html#l00032">ExternC.h:32</a></div></div>
 <div class="ttc" id="aMemOwnershipAttrs_8h_html"><div class="ttname"><a href="../../d4/d8c/MemOwnershipAttrs_8h.html">MemOwnershipAttrs.h</a></div></div>
 <div class="ttc" id="adppl__data__types_8h_html"><div class="ttname"><a href="../../d4/dcc/dppl__data__types_8h.html">dppl_data_types.h</a></div></div>
-<div class="ttc" id="adppl__sycl__kernel__interface_8h_html_a47bcfc3a382e18570bbc437e0e53961f"><div class="ttname"><a href="../../dc/d31/dppl__sycl__kernel__interface_8h.html#a47bcfc3a382e18570bbc437e0e53961f">DPPLKernel_Delete</a></div><div class="ttdeci">DPPL_API void DPPLKernel_Delete(__dppl_take DPPLSyclKernelRef KRef)</div><div class="ttdoc">Deletes the DPPLSyclKernelRef after casting it to a sycl::kernel.</div><div class="ttdef"><b>Definition:</b> <a href="../../df/dde/dppl__sycl__kernel__interface_8cpp_source.html#l00072">dppl_sycl_kernel_interface.cpp:72</a></div></div>
+<div class="ttc" id="aDllExport_8h_html_a81776019eae18623511d676145f7cdef"><div class="ttname"><a href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a></div><div class="ttdeci">#define DPPL_API</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d26/DllExport_8h_source.html#l00035">DllExport.h:35</a></div></div>
+<div class="ttc" id="adppl__sycl__kernel__interface_8h_html_a47bcfc3a382e18570bbc437e0e53961f"><div class="ttname"><a href="../../dc/d31/dppl__sycl__kernel__interface_8h.html#a47bcfc3a382e18570bbc437e0e53961f">DPPLKernel_Delete</a></div><div class="ttdeci">DPPL_API void DPPLKernel_Delete(__dppl_take DPPLSyclKernelRef KRef)</div><div class="ttdoc">Deletes the DPPLSyclKernelRef after casting it to a sycl::kernel.</div><div class="ttdef"><b>Definition:</b> <a href="../../df/dde/dppl__sycl__kernel__interface_8cpp_source.html#l00077">dppl_sycl_kernel_interface.cpp:77</a></div></div>
 <div class="ttc" id="agroup__MEM__MGMT__ATTR__MACROS_html_gad4d9a56ef90f267f24386752c8f0d365"><div class="ttname"><a href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a></div><div class="ttdeci">#define __dppl_keep</div><div class="ttdoc">The __dppl_keep attribute indicates that the function only uses the object and does not destroy it be...</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d8c/MemOwnershipAttrs_8h_source.html#l00074">MemOwnershipAttrs.h:74</a></div></div>
 <div class="ttc" id="adppl__sycl__types_8h_html_ac7590a7630c7ef3467d983c57e60b01f"><div class="ttname"><a href="../../d4/d8f/dppl__sycl__types_8h.html#ac7590a7630c7ef3467d983c57e60b01f">DPPLSyclKernelRef</a></div><div class="ttdeci">struct DPPLOpaqueSyclKernel * DPPLSyclKernelRef</div><div class="ttdoc">Opaque pointer to a sycl::kernel.</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d8f/dppl__sycl__types_8h_source.html#l00054">dppl_sycl_types.h:54</a></div></div>
 <div class="ttc" id="aExternC_8h_html"><div class="ttname"><a href="../../d2/d0a/ExternC_8h.html">ExternC.h</a></div></div>
-<div class="ttc" id="adppl__opencl__interface_8h_html_a81776019eae18623511d676145f7cdef"><div class="ttname"><a href="../../d0/da0/dppl__opencl__interface_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a></div><div class="ttdeci">#define DPPL_API</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/da0/dppl__opencl__interface_8h_source.html#l00040">dppl_opencl_interface.h:40</a></div></div>
 <div class="ttc" id="agroup__MEM__MGMT__ATTR__MACROS_html_ga992ba513554faa4a42a193e0f31c4cb7"><div class="ttname"><a href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#ga992ba513554faa4a42a193e0f31c4cb7">__dppl_take</a></div><div class="ttdeci">#define __dppl_take</div><div class="ttdoc">The __dppl_take attribute indicates that the function &quot;takes&quot; over the ownership of the object and th...</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d8c/MemOwnershipAttrs_8h_source.html#l00065">MemOwnershipAttrs.h:65</a></div></div>
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="../../doxygen.png" alt="doxygen"/>
-</a> 1.8.17
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="../../dir_dec21994cd756836ecefab773235960a.html">backends</a></li><li class="navelem"><a class="el" href="../../dir_efe784112ed64dd71eba3878931bbd0a.html">include</a></li><li class="navelem"><a class="el" href="../../dc/d31/dppl__sycl__kernel__interface_8h.html">dppl_sycl_kernel_interface.h</a></li>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+  </ul>
+</div>
 </body>
 </html>

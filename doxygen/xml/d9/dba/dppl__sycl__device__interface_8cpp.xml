@@ -6,12 +6,13 @@
     <includes refid="d1/d38/CBindingWrapping_8h" local="yes">Support/CBindingWrapping.h</includes>
     <includes local="no">iomanip</includes>
     <includes local="no">iostream</includes>
+    <includes local="no">cstring</includes>
     <includes local="no">CL/sycl.hpp</includes>
     <incdepgraph>
       <node id="13">
         <label>iomanip</label>
       </node>
-      <node id="15">
+      <node id="16">
         <label>CL/sycl.hpp</label>
       </node>
       <node id="5">
@@ -29,6 +30,8 @@
         <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
       <node id="12">
@@ -91,11 +94,56 @@
         <label>Support/MemOwnershipAttrs.h</label>
         <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
       </node>
+      <node id="15">
+        <label>cstring</label>
+      </node>
       <node id="4">
         <label>inttypes.h</label>
       </node>
     </incdepgraph>
       <sectiondef kind="func">
+      <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1abca2a6fa142c14f3595c3fbfb02fac2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool DPPLDevice_AreEq</definition>
+        <argsstring>(__dppl_keep const DPPLSyclDeviceRef DevRef1, __dppl_keep const DPPLSyclDeviceRef DevRef2)</argsstring>
+        <name>DPPLDevice_AreEq</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DevRef1</declname>
+        </param>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DevRef2</declname>
+        </param>
+        <briefdescription>
+<para>Checks if two DPPLSyclDeviceRef objects point to the same sycl::device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DevRef1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>First opaque pointer to the sycl device. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>DevRef2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Second opaque pointer to the sycl device. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the underlying sycl::device are same, false otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="281" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="281" bodyend="288"/>
+      </memberdef>
       <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1a59009126411ff0dc7f3947efc8341400" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void DPPLDevice_Delete</definition>
@@ -122,7 +170,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="99" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="99" bodyend="102"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="100" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="100" bodyend="103"/>
       </memberdef>
       <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1aeea6c24f218268d4350c61358096c0ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -141,7 +189,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="92" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="92" bodyend="96"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="93" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="93" bodyend="97"/>
       </memberdef>
       <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1a2e52dec1ea56462d838f4b22ce189d09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref> char *</type>
@@ -171,7 +219,157 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="144" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="144" bodyend="150"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="255" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="255" bodyend="270"/>
+      </memberdef>
+      <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1aae0b439a246a8f1a1c2f41f1eccd192d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t DPPLDevice_GetMaxComputeUnits</definition>
+        <argsstring>(__dppl_keep const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_GetMaxComputeUnits</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::max_compute_units&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="144" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="144" bodyend="151"/>
+      </memberdef>
+      <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1aab3f4a7881a41cb5a34c116864aec098" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t DPPLDevice_GetMaxNumSubGroups</definition>
+        <argsstring>(__dppl_keep const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_GetMaxNumSubGroups</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::max_num_sub_groups&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="189" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="189" bodyend="196"/>
+      </memberdef>
+      <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1a15d8cc6ea98bab8122b0b22469bca6ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t DPPLDevice_GetMaxWorkGroupSize</definition>
+        <argsstring>(__dppl_keep const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_GetMaxWorkGroupSize</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper for get_info&lt;info::device::max_work_group_size&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="179" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="179" bodyend="186"/>
+      </memberdef>
+      <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1a5fd2e11dbddd20291fc935b0f901d4fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t DPPLDevice_GetMaxWorkItemDims</definition>
+        <argsstring>(__dppl_keep const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_GetMaxWorkItemDims</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper for get_info&lt;info::device::max_work_item_dimensions&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="154" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="154" bodyend="161"/>
+      </memberdef>
+      <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1a0ca6889db9f8e7578d88379875556ed0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> size_t *</type>
+        <definition>__dppl_keep size_t* DPPLDevice_GetMaxWorkItemSizes</definition>
+        <argsstring>(__dppl_keep const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_GetMaxWorkItemSizes</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper for get_info&lt;info::device::max_work_item_sizes&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns NULL. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="164" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="164" bodyend="176"/>
       </memberdef>
       <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1a1bd4980d55b59455f5afb64d6ccd4fa5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref> char *</type>
@@ -201,7 +399,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="126" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="126" bodyend="132"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="219" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="219" bodyend="234"/>
       </memberdef>
       <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1a7e874d1e160aa60eb47b2001ce997b90" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref> char *</type>
@@ -231,7 +429,67 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="135" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="135" bodyend="141"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="237" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="237" bodyend="252"/>
+      </memberdef>
+      <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1a7cd231d2b54bf6c43fdccba173abd733" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool DPPLDevice_HasInt64BaseAtomics</definition>
+        <argsstring>(__dppl_keep const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_HasInt64BaseAtomics</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::aspect::int64_base_atomics&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns true if device has int64_base_atomics else returns false. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="199" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="199" bodyend="206"/>
+      </memberdef>
+      <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1afa0e7313faeefaeb2bdd7681a31f6511" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool DPPLDevice_HasInt64ExtendedAtomics</definition>
+        <argsstring>(__dppl_keep const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_HasInt64ExtendedAtomics</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::aspect::int64_extended_atomics&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns true if device has int64_extended_atomics else returns false. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="209" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="209" bodyend="216"/>
       </memberdef>
       <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1a0cf642fd62d4fb84cf259b3b882583ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -261,7 +519,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="104" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="104" bodyend="107"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="105" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="105" bodyend="112"/>
       </memberdef>
       <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1a0eb0429307a52e31a370e4c1e85c4a48" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -291,7 +549,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="109" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="109" bodyend="112"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="114" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="114" bodyend="121"/>
       </memberdef>
       <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1a0b5ff4ec0cd66cab4ddc1a0673eebeac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -321,7 +579,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="114" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="114" bodyend="117"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="123" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="123" bodyend="130"/>
       </memberdef>
       <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1af404415e8df79c740ae9070e7c5d46a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -351,7 +609,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="120" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="120" bodyend="123"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="133" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="133" bodyend="140"/>
       </memberdef>
       <memberdef kind="function" id="d9/dba/dppl__sycl__device__interface_8cpp_1af87056a71e298c0e2b7d07be740c6e9e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -381,7 +639,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="152" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="152" bodyend="155"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" line="272" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp" bodystart="272" bodyend="279"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -415,121 +673,254 @@
 <codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d1/d38/CBindingWrapping_8h" kindref="compound">Support/CBindingWrapping.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;iomanip&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;iostream&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;CL/sycl.hpp&gt;</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>SYCL<sp/>headers<sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="32"><highlight class="normal"></highlight></codeline>
-<codeline lineno="33"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">cl::sycl;</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">namespace</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="36"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="37"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Create<sp/>wrappers<sp/>for<sp/>C<sp/>Binding<sp/>types<sp/>(see<sp/>CBindingWrapping.h).</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><ref refid="d1/d38/CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05" kindref="member">DEFINE_SIMPLE_CONVERSION_FUNCTIONS</ref>(device,<sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref>)</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"></highlight></codeline>
-<codeline lineno="40"><highlight class="normal"><sp/></highlight></codeline>
-<codeline lineno="45"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>dump_device_info<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>device<sp/>&amp;<sp/>Device)</highlight></codeline>
-<codeline lineno="46"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>std::stringstream<sp/>ss;</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"></highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/>std::setw(4)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::left<sp/>&lt;&lt;<sp/>std::setw(16)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Name&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>Device.get_info&lt;info::device::name&gt;()<sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/>std::setw(4)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::left<sp/>&lt;&lt;<sp/>std::setw(16)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Driver<sp/>version&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>Device.get_info&lt;info::device::driver_version&gt;()<sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/>std::setw(4)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::left<sp/>&lt;&lt;<sp/>std::setw(16)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Vendor&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>Device.get_info&lt;info::device::vendor&gt;()<sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/>std::setw(4)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::left<sp/>&lt;&lt;<sp/>std::setw(16)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Profile&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>Device.get_info&lt;info::device::profile&gt;()<sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/>std::setw(4)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::left<sp/>&lt;&lt;<sp/>std::setw(16)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Device<sp/>type&quot;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="58"><highlight class="normal"></highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>devTy<sp/>=<sp/>Device.get_info&lt;info::device::device_type&gt;();</highlight></codeline>
-<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal">(devTy)</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>info::device_type::cpu:</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;cpu&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>info::device_type::gpu:</highlight></codeline>
-<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;gpu&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>info::device_type::accelerator:</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;accelerator&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>info::device_type::custom:</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;custom&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>info::device_type::host:</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;host&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;unknown&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"></highlight></codeline>
-<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/>std::cout<sp/>&lt;&lt;<sp/>ss.str();</highlight></codeline>
-<codeline lineno="82"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="83"><highlight class="normal"></highlight></codeline>
-<codeline lineno="84"><highlight class="normal">}<sp/></highlight><highlight class="comment">/*<sp/>end<sp/>of<sp/>anonymous<sp/>namespace<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="85"><highlight class="normal"></highlight></codeline>
-<codeline lineno="92" refid="d9/dba/dppl__sycl__device__interface_8cpp_1aeea6c24f218268d4350c61358096c0ed" refkind="member"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1aeea6c24f218268d4350c61358096c0ed" kindref="member">DPPLDevice_DumpInfo</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
-<codeline lineno="93"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Device<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/>dump_device_info(*Device);</highlight></codeline>
-<codeline lineno="96"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstring&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;CL/sycl.hpp&gt;</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>SYCL<sp/>headers<sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">cl::sycl;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="keyword">namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Create<sp/>wrappers<sp/>for<sp/>C<sp/>Binding<sp/>types<sp/>(see<sp/>CBindingWrapping.h).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><ref refid="d1/d38/CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05" kindref="member">DEFINE_SIMPLE_CONVERSION_FUNCTIONS</ref>(device,<sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref>)</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/></highlight></codeline>
+<codeline lineno="46"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>dump_device_info<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>device<sp/>&amp;<sp/>Device)</highlight></codeline>
+<codeline lineno="47"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>std::stringstream<sp/>ss;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/>std::setw(4)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::left<sp/>&lt;&lt;<sp/>std::setw(16)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Name&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>Device.get_info&lt;info::device::name&gt;()<sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/>std::setw(4)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::left<sp/>&lt;&lt;<sp/>std::setw(16)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Driver<sp/>version&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>Device.get_info&lt;info::device::driver_version&gt;()<sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/>std::setw(4)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::left<sp/>&lt;&lt;<sp/>std::setw(16)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Vendor&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>Device.get_info&lt;info::device::vendor&gt;()<sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/>std::setw(4)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::left<sp/>&lt;&lt;<sp/>std::setw(16)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Profile&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>Device.get_info&lt;info::device::profile&gt;()<sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/>std::setw(4)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::left<sp/>&lt;&lt;<sp/>std::setw(16)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Device<sp/>type&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>devTy<sp/>=<sp/>Device.get_info&lt;info::device::device_type&gt;();</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal">(devTy)</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>info::device_type::cpu:</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;cpu&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>info::device_type::gpu:</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;gpu&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>info::device_type::accelerator:</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;accelerator&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>info::device_type::custom:</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;custom&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>info::device_type::host:</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;host&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;unknown&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="charliteral">&apos;\n&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/>std::cout<sp/>&lt;&lt;<sp/>ss.str();</highlight></codeline>
+<codeline lineno="83"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal">}<sp/></highlight><highlight class="comment">/*<sp/>end<sp/>of<sp/>anonymous<sp/>namespace<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93" refid="d9/dba/dppl__sycl__device__interface_8cpp_1aeea6c24f218268d4350c61358096c0ed" refkind="member"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1aeea6c24f218268d4350c61358096c0ed" kindref="member">DPPLDevice_DumpInfo</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="94"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Device<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/>dump_device_info(*Device);</highlight></codeline>
+<codeline lineno="97"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="98"><highlight class="normal"></highlight></codeline>
-<codeline lineno="99" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a59009126411ff0dc7f3947efc8341400" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a59009126411ff0dc7f3947efc8341400" kindref="member">DPPLDevice_Delete</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
-<codeline lineno="100"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/>unwrap(DRef);</highlight></codeline>
-<codeline lineno="102"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="103"><highlight class="normal"></highlight></codeline>
-<codeline lineno="104" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a0cf642fd62d4fb84cf259b3b882583ca" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a0cf642fd62d4fb84cf259b3b882583ca" kindref="member">DPPLDevice_IsAccelerator</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
-<codeline lineno="105"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>unwrap(DRef)-&gt;is_accelerator();</highlight></codeline>
-<codeline lineno="107"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="108"><highlight class="normal"></highlight></codeline>
-<codeline lineno="109" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a0eb0429307a52e31a370e4c1e85c4a48" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a0eb0429307a52e31a370e4c1e85c4a48" kindref="member">DPPLDevice_IsCPU</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
-<codeline lineno="110"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>unwrap(DRef)-&gt;is_cpu();</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a59009126411ff0dc7f3947efc8341400" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a59009126411ff0dc7f3947efc8341400" kindref="member">DPPLDevice_Delete</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="101"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a0cf642fd62d4fb84cf259b3b882583ca" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a0cf642fd62d4fb84cf259b3b882583ca" kindref="member">DPPLDevice_IsAccelerator</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="106"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>D-&gt;is_accelerator();</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="112"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="113"><highlight class="normal"></highlight></codeline>
-<codeline lineno="114" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a0b5ff4ec0cd66cab4ddc1a0673eebeac" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a0b5ff4ec0cd66cab4ddc1a0673eebeac" kindref="member">DPPLDevice_IsGPU</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="114" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a0eb0429307a52e31a370e4c1e85c4a48" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a0eb0429307a52e31a370e4c1e85c4a48" kindref="member">DPPLDevice_IsCPU</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
 <codeline lineno="115"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>unwrap(DRef)-&gt;is_gpu();</highlight></codeline>
-<codeline lineno="117"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="118"><highlight class="normal"></highlight></codeline>
-<codeline lineno="119"><highlight class="normal"></highlight></codeline>
-<codeline lineno="120" refid="d9/dba/dppl__sycl__device__interface_8cpp_1af404415e8df79c740ae9070e7c5d46a6" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1af404415e8df79c740ae9070e7c5d46a6" kindref="member">DPPLDevice_IsHost</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
-<codeline lineno="121"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>unwrap(DRef)-&gt;is_host();</highlight></codeline>
-<codeline lineno="123"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="124"><highlight class="normal"></highlight></codeline>
-<codeline lineno="125"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
-<codeline lineno="126" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a1bd4980d55b59455f5afb64d6ccd4fa5" refkind="member"><highlight class="normal"><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a1bd4980d55b59455f5afb64d6ccd4fa5" kindref="member">DPPLDevice_GetName</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
-<codeline lineno="127"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>name<sp/>=<sp/>unwrap(DRef)-&gt;get_info&lt;info::device::name&gt;();</highlight></codeline>
-<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cstr_name<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>[name.length()+1];</highlight></codeline>
-<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/>std::strcpy<sp/>(cstr_name,<sp/>name.c_str());</highlight></codeline>
-<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>cstr_name;</highlight></codeline>
-<codeline lineno="132"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="133"><highlight class="normal"></highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
-<codeline lineno="135" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a7e874d1e160aa60eb47b2001ce997b90" refkind="member"><highlight class="normal"><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a7e874d1e160aa60eb47b2001ce997b90" kindref="member">DPPLDevice_GetVendorName</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
-<codeline lineno="136"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>vendor<sp/>=<sp/>unwrap(DRef)-&gt;get_info&lt;info::device::name&gt;();</highlight></codeline>
-<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cstr_vendor<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>[vendor.length()+1];</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/>std::strcpy<sp/>(cstr_vendor,<sp/>vendor.c_str());</highlight></codeline>
-<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>cstr_vendor;</highlight></codeline>
-<codeline lineno="141"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>D-&gt;is_cpu();</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a0b5ff4ec0cd66cab4ddc1a0673eebeac" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a0b5ff4ec0cd66cab4ddc1a0673eebeac" kindref="member">DPPLDevice_IsGPU</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="124"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>D-&gt;is_gpu();</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="130"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133" refid="d9/dba/dppl__sycl__device__interface_8cpp_1af404415e8df79c740ae9070e7c5d46a6" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1af404415e8df79c740ae9070e7c5d46a6" kindref="member">DPPLDevice_IsHost</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="134"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>D-&gt;is_host();</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="140"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
 <codeline lineno="142"><highlight class="normal"></highlight></codeline>
-<codeline lineno="143"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
-<codeline lineno="144" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a2e52dec1ea56462d838f4b22ce189d09" refkind="member"><highlight class="normal"><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a2e52dec1ea56462d838f4b22ce189d09" kindref="member">DPPLDevice_GetDriverInfo</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="143"><highlight class="normal">uint32_t</highlight></codeline>
+<codeline lineno="144" refid="d9/dba/dppl__sycl__device__interface_8cpp_1aae0b439a246a8f1a1c2f41f1eccd192d" refkind="member"><highlight class="normal"><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1aae0b439a246a8f1a1c2f41f1eccd192d" kindref="member">DPPLDevice_GetMaxComputeUnits</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
 <codeline lineno="145"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>driver<sp/>=<sp/>unwrap(DRef)-&gt;get_info&lt;info::device::driver_version&gt;();</highlight></codeline>
-<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cstr_driver<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>[driver.length()+1];</highlight></codeline>
-<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/>std::strcpy<sp/>(cstr_driver,<sp/>driver.c_str());</highlight></codeline>
-<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>cstr_driver;</highlight></codeline>
-<codeline lineno="150"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="151"><highlight class="normal"></highlight></codeline>
-<codeline lineno="152" refid="d9/dba/dppl__sycl__device__interface_8cpp_1af87056a71e298c0e2b7d07be740c6e9e" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1af87056a71e298c0e2b7d07be740c6e9e" kindref="member">DPPLDevice_IsHostUnifiedMemory</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
-<codeline lineno="153"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>unwrap(DRef)-&gt;get_info&lt;info::device::host_unified_memory&gt;();</highlight></codeline>
-<codeline lineno="155"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>D-&gt;get_info&lt;info::device::max_compute_units&gt;();</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
+<codeline lineno="151"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal">uint32_t</highlight></codeline>
+<codeline lineno="154" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a5fd2e11dbddd20291fc935b0f901d4fe" refkind="member"><highlight class="normal"><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a5fd2e11dbddd20291fc935b0f901d4fe" kindref="member">DPPLDevice_GetMaxWorkItemDims</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="155"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>D-&gt;get_info&lt;info::device::max_work_item_dimensions&gt;();</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
+<codeline lineno="161"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*</highlight></codeline>
+<codeline lineno="164" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a0ca6889db9f8e7578d88379875556ed0" refkind="member"><highlight class="normal"><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a0ca6889db9f8e7578d88379875556ed0" kindref="member">DPPLDevice_GetMaxWorkItemSizes</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="165"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>*sizes<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>id_sizes<sp/>=<sp/>D-&gt;get_info&lt;info::device::max_work_item_sizes&gt;();</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sizes<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">[3];</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0ul;<sp/>i<sp/>&lt;<sp/>3;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sizes[i]<sp/>=<sp/>id_sizes[i];</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>sizes;</highlight></codeline>
+<codeline lineno="176"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="179" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a15d8cc6ea98bab8122b0b22469bca6ff" refkind="member"><highlight class="normal"><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a15d8cc6ea98bab8122b0b22469bca6ff" kindref="member">DPPLDevice_GetMaxWorkGroupSize</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="180"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>D-&gt;get_info&lt;info::device::max_work_group_size&gt;();</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
+<codeline lineno="186"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal">uint32_t</highlight></codeline>
+<codeline lineno="189" refid="d9/dba/dppl__sycl__device__interface_8cpp_1aab3f4a7881a41cb5a34c116864aec098" refkind="member"><highlight class="normal"><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1aab3f4a7881a41cb5a34c116864aec098" kindref="member">DPPLDevice_GetMaxNumSubGroups</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="190"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>D-&gt;get_info&lt;info::device::max_num_sub_groups&gt;();</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
+<codeline lineno="196"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="199" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a7cd231d2b54bf6c43fdccba173abd733" refkind="member"><highlight class="normal"><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a7cd231d2b54bf6c43fdccba173abd733" kindref="member">DPPLDevice_HasInt64BaseAtomics</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="200"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>D-&gt;has(aspect::int64_base_atomics);</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="206"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"></highlight></codeline>
+<codeline lineno="208"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="209" refid="d9/dba/dppl__sycl__device__interface_8cpp_1afa0e7313faeefaeb2bdd7681a31f6511" refkind="member"><highlight class="normal"><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1afa0e7313faeefaeb2bdd7681a31f6511" kindref="member">DPPLDevice_HasInt64ExtendedAtomics</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="210"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>D-&gt;has(aspect::int64_extended_atomics);</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="216"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"></highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
+<codeline lineno="219" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a1bd4980d55b59455f5afb64d6ccd4fa5" refkind="member"><highlight class="normal"><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a1bd4980d55b59455f5afb64d6ccd4fa5" kindref="member">DPPLDevice_GetName</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="220"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>name<sp/>=<sp/>D-&gt;get_info&lt;info::device::name&gt;();</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cstr_len<sp/>=<sp/>name.length()+1;</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cstr_name<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">[cstr_len];</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>_WIN32</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>strncpy_s(cstr_name,<sp/>cstr_len,<sp/>name.c_str(),<sp/>cstr_len);</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::strncpy(cstr_name,<sp/>name.c_str(),<sp/>cstr_len);</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>cstr_name;</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="234"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
+<codeline lineno="237" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a7e874d1e160aa60eb47b2001ce997b90" refkind="member"><highlight class="normal"><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a7e874d1e160aa60eb47b2001ce997b90" kindref="member">DPPLDevice_GetVendorName</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="238"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>vendor<sp/>=<sp/>D-&gt;get_info&lt;info::device::vendor&gt;();</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cstr_len<sp/>=<sp/>vendor.length()+1;</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cstr_vendor<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">[cstr_len];</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>_WIN32</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>strncpy_s(cstr_vendor,<sp/>cstr_len,<sp/>vendor.c_str(),<sp/>cstr_len);</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::strncpy(cstr_vendor,<sp/>vendor.c_str(),<sp/>cstr_len);</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>cstr_vendor;</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="252"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
+<codeline lineno="255" refid="d9/dba/dppl__sycl__device__interface_8cpp_1a2e52dec1ea56462d838f4b22ce189d09" refkind="member"><highlight class="normal"><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1a2e52dec1ea56462d838f4b22ce189d09" kindref="member">DPPLDevice_GetDriverInfo</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="256"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>driver<sp/>=<sp/>D-&gt;get_info&lt;info::device::driver_version&gt;();</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cstr_len<sp/>=<sp/>driver.length()+1;</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cstr_driver<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">[cstr_len];</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>_WIN32</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>strncpy_s(cstr_driver,<sp/>cstr_len,<sp/>driver.c_str(),<sp/>cstr_len);</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::strncpy(cstr_driver,<sp/>driver.c_str(),<sp/>cstr_len);</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>cstr_driver;</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="270"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"></highlight></codeline>
+<codeline lineno="272" refid="d9/dba/dppl__sycl__device__interface_8cpp_1af87056a71e298c0e2b7d07be740c6e9e" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1af87056a71e298c0e2b7d07be740c6e9e" kindref="member">DPPLDevice_IsHostUnifiedMemory</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="273"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>D-&gt;get_info&lt;info::device::host_unified_memory&gt;();</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="279"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"></highlight></codeline>
+<codeline lineno="281" refid="d9/dba/dppl__sycl__device__interface_8cpp_1abca2a6fa142c14f3595c3fbfb02fac2d" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="d9/dba/dppl__sycl__device__interface_8cpp_1abca2a6fa142c14f3595c3fbfb02fac2d" kindref="member">DPPLDevice_AreEq</ref>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DevRef1,</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DevRef2)</highlight></codeline>
+<codeline lineno="283"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!(DevRef1<sp/>&amp;&amp;<sp/>DevRef2))</highlight></codeline>
+<codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>\todo<sp/>handle<sp/>error</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(*unwrap(DevRef1)<sp/>==<sp/>*unwrap(DevRef2));</highlight></codeline>
+<codeline lineno="288"><highlight class="normal">}</highlight></codeline>
     </programlisting>
     <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_device_interface.cpp"/>
   </compounddef>

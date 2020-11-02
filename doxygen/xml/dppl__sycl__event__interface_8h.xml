@@ -154,16 +154,16 @@
 <codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="MemOwnershipAttrs_8h" kindref="compound">Support/MemOwnershipAttrs.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal">DPPL_C_EXTERN_C_BEGIN</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><ref refid="ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" kindref="member">DPPL_C_EXTERN_C_BEGIN</ref></highlight></codeline>
 <codeline lineno="36"><highlight class="normal"></highlight></codeline>
-<codeline lineno="42"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="43"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__event__interface_8h_1af7f1a4ee75f61b1f1ec82a39cb8d9452" kindref="member">DPPLEvent_Wait</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/><ref refid="dppl__sycl__types_8h_1a350c1387c650924e6c0e25f9f24a7892" kindref="member">DPPLSyclEventRef</ref><sp/>ERef);</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"></highlight></codeline>
-<codeline lineno="51"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="52"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="53"><highlight class="normal"><ref refid="dppl__sycl__event__interface_8h_1a941ca1246380eda472171284f1b91234" kindref="member">DPPLEvent_Delete</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="dppl__sycl__types_8h_1a350c1387c650924e6c0e25f9f24a7892" kindref="member">DPPLSyclEventRef</ref><sp/>ERef);</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"></highlight></codeline>
-<codeline lineno="55"><highlight class="normal">DPPL_C_EXTERN_C_END</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><ref refid="ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" kindref="member">DPPL_C_EXTERN_C_END</ref></highlight></codeline>
     </programlisting>
     <location file="backends/include/dppl_sycl_event_interface.h"/>
   </compounddef>

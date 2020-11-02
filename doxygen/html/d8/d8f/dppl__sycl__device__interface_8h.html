@@ -9,6 +9,10 @@
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
+<link href="../../navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../../resize.js"></script>
+<script type="text/javascript" src="../../navtreedata.js"></script>
+<script type="text/javascript" src="../../navtree.js"></script>
 <link href="../../search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../search/searchdata.js"></script>
 <script type="text/javascript" src="../../search/search.js"></script>
@@ -47,6 +51,23 @@ $(function() {
 });
 /* @license-end */</script>
 <div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('d8/d8f/dppl__sycl__device__interface_8h.html','../../'); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -61,11 +82,6 @@ $(function() {
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="../../dir_dec21994cd756836ecefab773235960a.html">backends</a></li><li class="navelem"><a class="el" href="../../dir_efe784112ed64dd71eba3878931bbd0a.html">include</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
@@ -101,9 +117,10 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="../../d3/d91/dppl__sycl__device__interface_8h__dep__incl.png" border="0" usemap="#dppl__sycl__device__interface_8hdep" alt=""/></div>
 <map name="dppl__sycl__device__interface_8hdep" id="dppl__sycl__device__interface_8hdep">
-<area shape="rect" title=" " alt="" coords="131,5,341,32"/>
+<area shape="rect" title=" " alt="" coords="251,5,461,32"/>
 <area shape="rect" href="../../d0/de9/dppl__sycl__queue__manager_8h.html" title=" " alt="" coords="13,80,219,107"/>
 <area shape="rect" href="../../d9/dba/dppl__sycl__device__interface_8cpp.html" title=" " alt="" coords="243,80,469,107"/>
+<area shape="rect" href="../../d8/d88/dppl__sycl__usm__interface_8cpp.html" title=" " alt="" coords="492,80,703,107"/>
 <area shape="rect" href="../../de/d84/dppl__sycl__queue__manager_8cpp.html" title=" " alt="" coords="5,155,227,181"/>
 </map>
 </div>
@@ -112,6 +129,9 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:aa6a2390fc58dd875f533d75e4172ae1e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h.html#aa6a2390fc58dd875f533d75e4172ae1e">DPPLDevice_AreEq</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DevRef1, <a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DevRef2)</td></tr>
+<tr class="memdesc:aa6a2390fc58dd875f533d75e4172ae1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if two DPPLSyclDeviceRef objects point to the same sycl::device.  <a href="../../d8/d8f/dppl__sycl__device__interface_8h.html#aa6a2390fc58dd875f533d75e4172ae1e">More...</a><br /></td></tr>
+<tr class="separator:aa6a2390fc58dd875f533d75e4172ae1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a58b34562aa960c9d971017e06848f10a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h.html#a58b34562aa960c9d971017e06848f10a">DPPLDevice_Delete</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#ga992ba513554faa4a42a193e0f31c4cb7">__dppl_take</a> <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DRef)</td></tr>
 <tr class="memdesc:a58b34562aa960c9d971017e06848f10a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a DPPLSyclDeviceRef pointer after casting to to sycl::device.  <a href="../../d8/d8f/dppl__sycl__device__interface_8h.html#a58b34562aa960c9d971017e06848f10a">More...</a><br /></td></tr>
 <tr class="separator:a58b34562aa960c9d971017e06848f10a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -121,12 +141,33 @@ Functions</h2></td></tr>
 <tr class="memitem:ad313a289642c16fb7ac17be43d34a2a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> const <a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad5917e4c2b4b0ab2b83b624964c60753">__dppl_give</a> char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h.html#ad313a289642c16fb7ac17be43d34a2a4">DPPLDevice_GetDriverInfo</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DRef)</td></tr>
 <tr class="memdesc:ad313a289642c16fb7ac17be43d34a2a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the OpenCL software driver version as a C string.  <a href="../../d8/d8f/dppl__sycl__device__interface_8h.html#ad313a289642c16fb7ac17be43d34a2a4">More...</a><br /></td></tr>
 <tr class="separator:ad313a289642c16fb7ac17be43d34a2a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab33cb8e27cf5dfd88fb547f41a763f34"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h.html#ab33cb8e27cf5dfd88fb547f41a763f34">DPPLDevice_GetMaxComputeUnits</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DRef)</td></tr>
+<tr class="memdesc:ab33cb8e27cf5dfd88fb547f41a763f34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper over device.get_info&lt;info::device::max_compute_units&gt;().  <a href="../../d8/d8f/dppl__sycl__device__interface_8h.html#ab33cb8e27cf5dfd88fb547f41a763f34">More...</a><br /></td></tr>
+<tr class="separator:ab33cb8e27cf5dfd88fb547f41a763f34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad66ae580d44bee90313e92822e1512c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h.html#ad66ae580d44bee90313e92822e1512c6">DPPLDevice_GetMaxNumSubGroups</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DRef)</td></tr>
+<tr class="memdesc:ad66ae580d44bee90313e92822e1512c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper over device.get_info&lt;info::device::max_num_sub_groups&gt;.  <a href="../../d8/d8f/dppl__sycl__device__interface_8h.html#ad66ae580d44bee90313e92822e1512c6">More...</a><br /></td></tr>
+<tr class="separator:ad66ae580d44bee90313e92822e1512c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada622bb1c0f87a075ce785f305787ca3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h.html#ada622bb1c0f87a075ce785f305787ca3">DPPLDevice_GetMaxWorkGroupSize</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DRef)</td></tr>
+<tr class="memdesc:ada622bb1c0f87a075ce785f305787ca3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper for get_info&lt;info::device::max_work_group_size&gt;().  <a href="../../d8/d8f/dppl__sycl__device__interface_8h.html#ada622bb1c0f87a075ce785f305787ca3">More...</a><br /></td></tr>
+<tr class="separator:ada622bb1c0f87a075ce785f305787ca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea0375b3566b34e6e5352a11aab084b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h.html#aea0375b3566b34e6e5352a11aab084b8">DPPLDevice_GetMaxWorkItemDims</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DRef)</td></tr>
+<tr class="memdesc:aea0375b3566b34e6e5352a11aab084b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper for get_info&lt;info::device::max_work_item_dimensions&gt;().  <a href="../../d8/d8f/dppl__sycl__device__interface_8h.html#aea0375b3566b34e6e5352a11aab084b8">More...</a><br /></td></tr>
+<tr class="separator:aea0375b3566b34e6e5352a11aab084b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a015a3ca5d67a6531dd198e6e3bd6c4f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> <a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> size_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h.html#a015a3ca5d67a6531dd198e6e3bd6c4f2">DPPLDevice_GetMaxWorkItemSizes</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DRef)</td></tr>
+<tr class="memdesc:a015a3ca5d67a6531dd198e6e3bd6c4f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper for get_info&lt;info::device::max_work_item_sizes&gt;().  <a href="../../d8/d8f/dppl__sycl__device__interface_8h.html#a015a3ca5d67a6531dd198e6e3bd6c4f2">More...</a><br /></td></tr>
+<tr class="separator:a015a3ca5d67a6531dd198e6e3bd6c4f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07b9e305a36e28f10625aecac85e108d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> const <a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad5917e4c2b4b0ab2b83b624964c60753">__dppl_give</a> char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h.html#a07b9e305a36e28f10625aecac85e108d">DPPLDevice_GetName</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DRef)</td></tr>
 <tr class="memdesc:a07b9e305a36e28f10625aecac85e108d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a C string for the device name.  <a href="../../d8/d8f/dppl__sycl__device__interface_8h.html#a07b9e305a36e28f10625aecac85e108d">More...</a><br /></td></tr>
 <tr class="separator:a07b9e305a36e28f10625aecac85e108d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66993f1bd2a372b68102d7c627b42325"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> const <a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad5917e4c2b4b0ab2b83b624964c60753">__dppl_give</a> char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h.html#a66993f1bd2a372b68102d7c627b42325">DPPLDevice_GetVendorName</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DRef)</td></tr>
 <tr class="memdesc:a66993f1bd2a372b68102d7c627b42325"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a C string corresponding to the vendor name.  <a href="../../d8/d8f/dppl__sycl__device__interface_8h.html#a66993f1bd2a372b68102d7c627b42325">More...</a><br /></td></tr>
 <tr class="separator:a66993f1bd2a372b68102d7c627b42325"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99516187682e2c9bd32ce19d3dd9f816"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h.html#a99516187682e2c9bd32ce19d3dd9f816">DPPLDevice_HasInt64BaseAtomics</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DRef)</td></tr>
+<tr class="memdesc:a99516187682e2c9bd32ce19d3dd9f816"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper over device.get_info&lt;info::device::aspect::int64_base_atomics&gt;.  <a href="../../d8/d8f/dppl__sycl__device__interface_8h.html#a99516187682e2c9bd32ce19d3dd9f816">More...</a><br /></td></tr>
+<tr class="separator:a99516187682e2c9bd32ce19d3dd9f816"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81e2fdd6701bd3a2b4a93630b9481bfa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h.html#a81e2fdd6701bd3a2b4a93630b9481bfa">DPPLDevice_HasInt64ExtendedAtomics</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DRef)</td></tr>
+<tr class="memdesc:a81e2fdd6701bd3a2b4a93630b9481bfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper over device.get_info&lt;info::device::aspect::int64_extended_atomics&gt;.  <a href="../../d8/d8f/dppl__sycl__device__interface_8h.html#a81e2fdd6701bd3a2b4a93630b9481bfa">More...</a><br /></td></tr>
+<tr class="separator:a81e2fdd6701bd3a2b4a93630b9481bfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d66dee1e9b3197b50282d9c2922a4d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h.html#a2d66dee1e9b3197b50282d9c2922a4d1">DPPLDevice_IsAccelerator</a> (<a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a> DRef)</td></tr>
 <tr class="memdesc:a2d66dee1e9b3197b50282d9c2922a4d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this SYCL device is an OpenCL device and the device type is sycl::info::device_type::accelerator.  <a href="../../d8/d8f/dppl__sycl__device__interface_8h.html#a2d66dee1e9b3197b50282d9c2922a4d1">More...</a><br /></td></tr>
 <tr class="separator:a2d66dee1e9b3197b50282d9c2922a4d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -148,6 +189,46 @@ Functions</h2></td></tr>
 
 <p class="definition">Definition in file <a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h_source.html">dppl_sycl_device_interface.h</a>.</p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="aa6a2390fc58dd875f533d75e4172ae1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6a2390fc58dd875f533d75e4172ae1e">&#9670;&nbsp;</a></span>DPPLDevice_AreEq()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> bool DPPLDevice_AreEq </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a>&#160;</td>
+          <td class="paramname"><em>DevRef1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a>&#160;</td>
+          <td class="paramname"><em>DevRef2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks if two DPPLSyclDeviceRef objects point to the same sycl::device. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">DevRef1</td><td>First opaque pointer to the sycl device. </td></tr>
+    <tr><td class="paramname">DevRef2</td><td>Second opaque pointer to the sycl device. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the underlying sycl::device are same, false otherwise. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00281">281</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+
+</div>
+</div>
 <a id="a58b34562aa960c9d971017e06848f10a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a58b34562aa960c9d971017e06848f10a">&#9670;&nbsp;</a></span>DPPLDevice_Delete()</h2>
 
@@ -172,7 +253,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00099">99</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00100">100</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
 
 </div>
 </div>
@@ -201,7 +282,7 @@ Functions</h2></td></tr>
 </dl>
 <p>Prints some of the device info metadata for the device corresponding to the specified sycl::queue. Currently, device name, driver version, device vendor, and device profile are printed out. More attributed may be added later. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00092">92</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00093">93</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
 
 </div>
 </div>
@@ -230,7 +311,152 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A C string in the form major_number.minor.number that corresponds to the OpenCL driver version if this is a OpenCL device. </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00255">255</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ab33cb8e27cf5dfd88fb547f41a763f34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab33cb8e27cf5dfd88fb547f41a763f34">&#9670;&nbsp;</a></span>DPPLDevice_GetMaxComputeUnits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> uint32_t DPPLDevice_GetMaxComputeUnits </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a>&#160;</td>
+          <td class="paramname"><em>DRef</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Wrapper over device.get_info&lt;info::device::max_compute_units&gt;(). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">DRef</td><td>Opaque pointer to a sycl::device </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns the valid result if device exists else returns 0. </dd></dl>
+
 <p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00144">144</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ad66ae580d44bee90313e92822e1512c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad66ae580d44bee90313e92822e1512c6">&#9670;&nbsp;</a></span>DPPLDevice_GetMaxNumSubGroups()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> uint32_t DPPLDevice_GetMaxNumSubGroups </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a>&#160;</td>
+          <td class="paramname"><em>DRef</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Wrapper over device.get_info&lt;info::device::max_num_sub_groups&gt;. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">DRef</td><td>Opaque pointer to a sycl::device </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns the valid result if device exists else returns 0. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00189">189</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ada622bb1c0f87a075ce785f305787ca3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada622bb1c0f87a075ce785f305787ca3">&#9670;&nbsp;</a></span>DPPLDevice_GetMaxWorkGroupSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> size_t DPPLDevice_GetMaxWorkGroupSize </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a>&#160;</td>
+          <td class="paramname"><em>DRef</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Wrapper for get_info&lt;info::device::max_work_group_size&gt;(). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">DRef</td><td>Opaque pointer to a sycl::device </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns the valid result if device exists else returns 0. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00179">179</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aea0375b3566b34e6e5352a11aab084b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea0375b3566b34e6e5352a11aab084b8">&#9670;&nbsp;</a></span>DPPLDevice_GetMaxWorkItemDims()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> uint32_t DPPLDevice_GetMaxWorkItemDims </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a>&#160;</td>
+          <td class="paramname"><em>DRef</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Wrapper for get_info&lt;info::device::max_work_item_dimensions&gt;(). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">DRef</td><td>Opaque pointer to a sycl::device </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns the valid result if device exists else returns 0. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00154">154</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a015a3ca5d67a6531dd198e6e3bd6c4f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a015a3ca5d67a6531dd198e6e3bd6c4f2">&#9670;&nbsp;</a></span>DPPLDevice_GetMaxWorkItemSizes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> <a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> size_t* DPPLDevice_GetMaxWorkItemSizes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a>&#160;</td>
+          <td class="paramname"><em>DRef</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Wrapper for get_info&lt;info::device::max_work_item_sizes&gt;(). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">DRef</td><td>Opaque pointer to a sycl::device </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns the valid result if device exists else returns NULL. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00164">164</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
 
 </div>
 </div>
@@ -259,7 +485,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A C string containing the OpenCL device name. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00126">126</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00219">219</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
 
 </div>
 </div>
@@ -288,7 +514,65 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A C string containing the OpenCL device vendor name. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00135">135</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00237">237</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a99516187682e2c9bd32ce19d3dd9f816"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99516187682e2c9bd32ce19d3dd9f816">&#9670;&nbsp;</a></span>DPPLDevice_HasInt64BaseAtomics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> bool DPPLDevice_HasInt64BaseAtomics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a>&#160;</td>
+          <td class="paramname"><em>DRef</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Wrapper over device.get_info&lt;info::device::aspect::int64_base_atomics&gt;. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">DRef</td><td>Opaque pointer to a sycl::device </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns true if device has int64_base_atomics else returns false. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00199">199</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a81e2fdd6701bd3a2b4a93630b9481bfa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81e2fdd6701bd3a2b4a93630b9481bfa">&#9670;&nbsp;</a></span>DPPLDevice_HasInt64ExtendedAtomics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d6/d26/DllExport_8h.html#a81776019eae18623511d676145f7cdef">DPPL_API</a> bool DPPLDevice_HasInt64ExtendedAtomics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gad4d9a56ef90f267f24386752c8f0d365">__dppl_keep</a> const <a class="el" href="../../d4/d8f/dppl__sycl__types_8h.html#aa9dcc61bc2537114d09726e4cf5e424a">DPPLSyclDeviceRef</a>&#160;</td>
+          <td class="paramname"><em>DRef</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Wrapper over device.get_info&lt;info::device::aspect::int64_extended_atomics&gt;. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">DRef</td><td>Opaque pointer to a sycl::device </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns true if device has int64_extended_atomics else returns false. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00209">209</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
 
 </div>
 </div>
@@ -317,7 +601,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the device type is an accelerator, else False. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00104">104</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00105">105</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
 
 </div>
 </div>
@@ -346,7 +630,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the device type is a cpu, else False. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00109">109</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00114">114</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
 
 </div>
 </div>
@@ -375,7 +659,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the device type is a gpu, else False. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00114">114</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00123">123</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
 
 </div>
 </div>
@@ -404,7 +688,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the device is a host device, else False. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00120">120</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00133">133</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
 
 </div>
 </div>
@@ -433,16 +717,20 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Boolean indicating if the device shares a unified memory subsystem with the host. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00152">152</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html#l00272">272</a> of file <a class="el" href="../../d9/dba/dppl__sycl__device__interface_8cpp_source.html">dppl_sycl_device_interface.cpp</a>.</p>
 
 </div>
 </div>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="../../doxygen.png" alt="doxygen"/>
-</a> 1.8.17
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="../../dir_dec21994cd756836ecefab773235960a.html">backends</a></li><li class="navelem"><a class="el" href="../../dir_efe784112ed64dd71eba3878931bbd0a.html">include</a></li><li class="navelem"><a class="el" href="../../d8/d8f/dppl__sycl__device__interface_8h.html">dppl_sycl_device_interface.h</a></li>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+  </ul>
+</div>
 </body>
 </html>

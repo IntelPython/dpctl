@@ -3,10 +3,11 @@
   <compounddef id="d8/d88/dppl__sycl__usm__interface_8cpp" kind="file" language="C++">
     <compoundname>dppl_sycl_usm_interface.cpp</compoundname>
     <includes refid="dc/d46/dppl__sycl__usm__interface_8h" local="yes">dppl_sycl_usm_interface.h</includes>
+    <includes refid="d8/d8f/dppl__sycl__device__interface_8h" local="yes">dppl_sycl_device_interface.h</includes>
     <includes refid="d1/d38/CBindingWrapping_8h" local="yes">Support/CBindingWrapping.h</includes>
     <includes local="no">CL/sycl.hpp</includes>
     <incdepgraph>
-      <node id="12">
+      <node id="14">
         <label>CL/sycl.hpp</label>
       </node>
       <node id="2">
@@ -26,13 +27,35 @@
       <node id="5">
         <label>stdint.h</label>
       </node>
-      <node id="11">
+      <node id="13">
         <label>Support/CBindingWrapping.h</label>
         <link refid="d1/d38/CBindingWrapping_8h"/>
+      </node>
+      <node id="11">
+        <label>dppl_sycl_device_interface.h</label>
+        <link refid="d8/d8f/dppl__sycl__device__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
       </node>
       <node id="9">
         <label>Support/DllExport.h</label>
         <link refid="d6/d26/DllExport_8h"/>
+      </node>
+      <node id="12">
+        <label>dppl_sycl_enum_types.h</label>
+        <link refid="d9/d4f/dppl__sycl__enum__types_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
       </node>
       <node id="6">
         <label>sys/types.h</label>
@@ -44,7 +67,9 @@
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
       <node id="3">
@@ -76,6 +101,168 @@
       </node>
     </incdepgraph>
       <sectiondef kind="func">
+      <memberdef kind="function" id="d8/d88/dppl__sycl__usm__interface_8cpp_1aa15097b6a6ed3132cef7fad3abc1d948" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref> <ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></type>
+        <definition>__dppl_give DPPLSyclUSMRef DPPLaligned_alloc_device</definition>
+        <argsstring>(size_t alignment, size_t size, __dppl_keep const DPPLSyclQueueRef QRef)</argsstring>
+        <name>DPPLaligned_alloc_device</name>
+        <param>
+          <type>size_t</type>
+          <declname>alignment</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Create USM device memory. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>alignment</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Allocation&apos;s byte alignment </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bytes to allocate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl queue reference to use in allocation</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The pointer to USM device memory with requested alignment. On failure, returns nullptr. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="88" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="88" bodyend="94"/>
+      </memberdef>
+      <memberdef kind="function" id="d8/d88/dppl__sycl__usm__interface_8cpp_1a215e3ff3f81501d076742088d7c95a73" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref> <ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></type>
+        <definition>__dppl_give DPPLSyclUSMRef DPPLaligned_alloc_host</definition>
+        <argsstring>(size_t alignment, size_t size, __dppl_keep const DPPLSyclQueueRef QRef)</argsstring>
+        <name>DPPLaligned_alloc_host</name>
+        <param>
+          <type>size_t</type>
+          <declname>alignment</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Create USM host memory. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>alignment</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Allocation&apos;s byte alignment </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bytes to allocate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl queue reference to use in allocation</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The pointer to USM host memory with the requested alignment. On failure, returns nullptr. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="71" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="71" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="function" id="d8/d88/dppl__sycl__usm__interface_8cpp_1a435ef44d5083a78b85d9d6e4a43d88d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref> <ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></type>
+        <definition>__dppl_give DPPLSyclUSMRef DPPLaligned_alloc_shared</definition>
+        <argsstring>(size_t alignment, size_t size, __dppl_keep const DPPLSyclQueueRef QRef)</argsstring>
+        <name>DPPLaligned_alloc_shared</name>
+        <param>
+          <type>size_t</type>
+          <declname>alignment</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Create USM shared memory. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>alignment</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Allocation&apos;s byte alignment </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bytes to allocate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl queue reference to use in allocation</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The pointer to USM shared memory with the requested alignment. On failure, returns nullptr. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="54" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="54" bodyend="60"/>
+      </memberdef>
       <memberdef kind="function" id="d8/d88/dppl__sycl__usm__interface_8cpp_1ae6fde78bc7c4c392a05d3acaffd913fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void DPPLfree_with_context</definition>
@@ -96,7 +283,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="75" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="75" bodyend="81"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="104" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="104" bodyend="110"/>
       </memberdef>
       <memberdef kind="function" id="d8/d88/dppl__sycl__usm__interface_8cpp_1ad72c9069e6e744d28044f751880b9862" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -115,10 +302,28 @@
 <para>Free USM memory. </para>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>MRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>USM pointer to free </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl queue reference to use.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+USM pointer must have been allocated using the same context as the one used to construct the queue. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="67" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="67" bodyend="73"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="96" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="96" bodyend="102"/>
       </memberdef>
       <memberdef kind="function" id="d8/d88/dppl__sycl__usm__interface_8cpp_1a54ec942fcfe5be5a75c8094911136a8e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref> <ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></type>
@@ -134,16 +339,33 @@
           <declname>QRef</declname>
         </param>
         <briefdescription>
-<para>Crete USM device memory. </para>
+<para>Create USM device memory. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>The pointer to USM device memory. </para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bytes to allocate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl queue reference to use in allocation</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The pointer to USM device memory. On failure, returns nullptr. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="60" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="60" bodyend="65"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="80" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="80" bodyend="85"/>
       </memberdef>
       <memberdef kind="function" id="d8/d88/dppl__sycl__usm__interface_8cpp_1a5e73a64eeaf746690c74ebb4faec5553" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref> <ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></type>
@@ -159,16 +381,33 @@
           <declname>QRef</declname>
         </param>
         <briefdescription>
-<para>Crete USM host memory. </para>
+<para>Create USM host memory. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>The pointer to USM host memory. </para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bytes to allocate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl queue reference to use in allocation</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The pointer to USM host memory. On failure, returns nullptr. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="52" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="52" bodyend="57"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="63" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="63" bodyend="68"/>
       </memberdef>
       <memberdef kind="function" id="d8/d88/dppl__sycl__usm__interface_8cpp_1accebf9181429b90b206e3925430f4854" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref> <ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></type>
@@ -184,16 +423,75 @@
           <declname>QRef</declname>
         </param>
         <briefdescription>
-<para>Crete USM shared memory. </para>
+<para>Create USM shared memory. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>The pointer to USM shared memory. </para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bytes to allocate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl queue reference to use in allocation</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The pointer to USM shared memory. On failure, returns nullptr. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="44" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="44" bodyend="49"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="46" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="46" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="d8/d88/dppl__sycl__usm__interface_8cpp_1a3d616260650d50ee1eb26a969e17e332" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+        <definition>DPPLSyclDeviceRef DPPLUSM_GetPointerDevice</definition>
+        <argsstring>(__dppl_keep const DPPLSyclUSMRef MRef, __dppl_keep const DPPLSyclContextRef CRef)</argsstring>
+        <name>DPPLUSM_GetPointerDevice</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></type>
+          <declname>MRef</declname>
+        </param>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1a8a6779e2595695b1c3955221a0a56716" kindref="member">DPPLSyclContextRef</ref></type>
+          <declname>CRef</declname>
+        </param>
+        <briefdescription>
+<para>Get the device associated with USM pointer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>MRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>USM pointer </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>CRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl context reference associated with the pointer</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A DPPLSyclDeviceRef pointer to the sycl device. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="133" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="133" bodyend="142"/>
       </memberdef>
       <memberdef kind="function" id="d8/d88/dppl__sycl__usm__interface_8cpp_1a802fa1e0c65e2eaa0baaeb35f0781973" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const char *</type>
@@ -212,13 +510,30 @@
 <para>Get pointer type. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>&quot;host&quot;, &quot;device&quot;, &quot;shared&quot; or &quot;unknown&quot; </para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>MRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>USM Memory </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>CRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl context reference associated with the pointer</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>&quot;host&quot;, &quot;device&quot;, &quot;shared&quot; or &quot;unknown&quot; </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="84" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="84" bodyend="101"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="113" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" bodystart="113" bodyend="130"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -249,80 +564,121 @@
 <codeline lineno="25"><highlight class="comment"></highlight><highlight class="comment">//===----------------------------------------------------------------------===//</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="26"><highlight class="normal"></highlight></codeline>
 <codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="dc/d46/dppl__sycl__usm__interface_8h" kindref="compound">dppl_sycl_usm_interface.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d1/d38/CBindingWrapping_8h" kindref="compound">Support/CBindingWrapping.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="29"><highlight class="normal"></highlight></codeline>
-<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;CL/sycl.hpp&gt;</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>SYCL<sp/>headers<sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="31"><highlight class="normal"></highlight></codeline>
-<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">cl::sycl;</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"></highlight></codeline>
-<codeline lineno="34"><highlight class="normal"></highlight><highlight class="keyword">namespace</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Create<sp/>wrappers<sp/>for<sp/>C<sp/>Binding<sp/>types<sp/>(see<sp/>CBindingWrapping.h).</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="37"><highlight class="normal"><ref refid="d1/d38/CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05" kindref="member">DEFINE_SIMPLE_CONVERSION_FUNCTIONS</ref>(queue,<sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref>)</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><ref refid="d1/d38/CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05" kindref="member">DEFINE_SIMPLE_CONVERSION_FUNCTIONS</ref>(context,<sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a8a6779e2595695b1c3955221a0a56716" kindref="member">DPPLSyclContextRef</ref>)</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><ref refid="d1/d38/CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05" kindref="member">DEFINE_SIMPLE_CONVERSION_FUNCTIONS</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">,<sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref>)</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"></highlight></codeline>
-<codeline lineno="41"><highlight class="normal">}<sp/></highlight><highlight class="comment">/*<sp/>end<sp/>of<sp/>anonymous<sp/>namespace<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d8/d8f/dppl__sycl__device__interface_8h" kindref="compound">dppl_sycl_device_interface.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d1/d38/CBindingWrapping_8h" kindref="compound">Support/CBindingWrapping.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;CL/sycl.hpp&gt;</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>SYCL<sp/>headers<sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">cl::sycl;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Create<sp/>wrappers<sp/>for<sp/>C<sp/>Binding<sp/>types<sp/>(see<sp/>CBindingWrapping.h).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><ref refid="d1/d38/CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05" kindref="member">DEFINE_SIMPLE_CONVERSION_FUNCTIONS</ref>(queue,<sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref>)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><ref refid="d1/d38/CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05" kindref="member">DEFINE_SIMPLE_CONVERSION_FUNCTIONS</ref>(device,<sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref>)</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><ref refid="d1/d38/CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05" kindref="member">DEFINE_SIMPLE_CONVERSION_FUNCTIONS</ref>(context,<sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a8a6779e2595695b1c3955221a0a56716" kindref="member">DPPLSyclContextRef</ref>)</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><ref refid="d1/d38/CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05" kindref="member">DEFINE_SIMPLE_CONVERSION_FUNCTIONS</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">,<sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref>)</highlight></codeline>
 <codeline lineno="42"><highlight class="normal"></highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></highlight></codeline>
-<codeline lineno="44" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1accebf9181429b90b206e3925430f4854" refkind="member"><highlight class="normal"><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1accebf9181429b90b206e3925430f4854" kindref="member">DPPLmalloc_shared</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef)</highlight></codeline>
-<codeline lineno="45"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Q<sp/>=<sp/>unwrap(QRef);</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>malloc_shared(size,<sp/>*Q);</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>wrap(Ptr);</highlight></codeline>
-<codeline lineno="49"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"></highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></highlight></codeline>
-<codeline lineno="52" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a5e73a64eeaf746690c74ebb4faec5553" refkind="member"><highlight class="normal"><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a5e73a64eeaf746690c74ebb4faec5553" kindref="member">DPPLmalloc_host</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef)</highlight></codeline>
-<codeline lineno="53"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Q<sp/>=<sp/>unwrap(QRef);</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>malloc_host(size,<sp/>*Q);</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>wrap(Ptr);</highlight></codeline>
-<codeline lineno="57"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="58"><highlight class="normal"></highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></highlight></codeline>
-<codeline lineno="60" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a54ec942fcfe5be5a75c8094911136a8e" refkind="member"><highlight class="normal"><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a54ec942fcfe5be5a75c8094911136a8e" kindref="member">DPPLmalloc_device</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef)</highlight></codeline>
-<codeline lineno="61"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Q<sp/>=<sp/>unwrap(QRef);</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>malloc_device(size,<sp/>*Q);</highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>wrap(Ptr);</highlight></codeline>
-<codeline lineno="65"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="66"><highlight class="normal"></highlight></codeline>
-<codeline lineno="67" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1ad72c9069e6e744d28044f751880b9862" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1ad72c9069e6e744d28044f751880b9862" kindref="member">DPPLfree_with_queue</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref><sp/>MRef,</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef)</highlight></codeline>
-<codeline lineno="69"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>unwrap(MRef);</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Q<sp/>=<sp/>unwrap(QRef);</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/>free(Ptr,<sp/>*Q);</highlight></codeline>
-<codeline lineno="73"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"></highlight></codeline>
-<codeline lineno="75" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1ae6fde78bc7c4c392a05d3acaffd913fb" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1ae6fde78bc7c4c392a05d3acaffd913fb" kindref="member">DPPLfree_with_context</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref><sp/>MRef,</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a8a6779e2595695b1c3955221a0a56716" kindref="member">DPPLSyclContextRef</ref><sp/>CRef)</highlight></codeline>
-<codeline lineno="77"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>unwrap(MRef);</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>C<sp/>=<sp/>unwrap(CRef);</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/>free(Ptr,<sp/>*C);</highlight></codeline>
-<codeline lineno="81"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="82"><highlight class="normal"></highlight></codeline>
-<codeline lineno="83"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*</highlight></codeline>
-<codeline lineno="84" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a802fa1e0c65e2eaa0baaeb35f0781973" refkind="member"><highlight class="normal"><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a802fa1e0c65e2eaa0baaeb35f0781973" kindref="member">DPPLUSM_GetPointerType</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref><sp/>MRef,</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a8a6779e2595695b1c3955221a0a56716" kindref="member">DPPLSyclContextRef</ref><sp/>CRef)</highlight></codeline>
-<codeline lineno="86"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>unwrap(MRef);</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>C<sp/>=<sp/>unwrap(CRef);</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"></highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>kind<sp/>=<sp/>get_pointer_type(Ptr,<sp/>*C);</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal">(kind)<sp/>{</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>usm::alloc::host:</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;host&quot;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>usm::alloc::device:</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;device&quot;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>usm::alloc::shared:</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;shared&quot;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;unknown&quot;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="101"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="43"><highlight class="normal">}<sp/></highlight><highlight class="comment">/*<sp/>end<sp/>of<sp/>anonymous<sp/>namespace<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></highlight></codeline>
+<codeline lineno="46" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1accebf9181429b90b206e3925430f4854" refkind="member"><highlight class="normal"><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1accebf9181429b90b206e3925430f4854" kindref="member">DPPLmalloc_shared</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef)</highlight></codeline>
+<codeline lineno="47"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Q<sp/>=<sp/>unwrap(QRef);</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>malloc_shared(size,<sp/>*Q);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>wrap(Ptr);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></highlight></codeline>
+<codeline lineno="54" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a435ef44d5083a78b85d9d6e4a43d88d6" refkind="member"><highlight class="normal"><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a435ef44d5083a78b85d9d6e4a43d88d6" kindref="member">DPPLaligned_alloc_shared</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>alignment,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef)</highlight></codeline>
+<codeline lineno="56"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Q<sp/>=<sp/>unwrap(QRef);</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>aligned_alloc_shared(alignment,<sp/>size,<sp/>*Q);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>wrap(Ptr);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></highlight></codeline>
+<codeline lineno="63" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a5e73a64eeaf746690c74ebb4faec5553" refkind="member"><highlight class="normal"><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a5e73a64eeaf746690c74ebb4faec5553" kindref="member">DPPLmalloc_host</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef)</highlight></codeline>
+<codeline lineno="64"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Q<sp/>=<sp/>unwrap(QRef);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>malloc_host(size,<sp/>*Q);</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>wrap(Ptr);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></highlight></codeline>
+<codeline lineno="71" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a215e3ff3f81501d076742088d7c95a73" refkind="member"><highlight class="normal"><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a215e3ff3f81501d076742088d7c95a73" kindref="member">DPPLaligned_alloc_host</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>alignment,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef)</highlight></codeline>
+<codeline lineno="73"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Q<sp/>=<sp/>unwrap(QRef);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>aligned_alloc_host(alignment,<sp/>size,<sp/>*Q);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>wrap(Ptr);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></highlight></codeline>
+<codeline lineno="80" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a54ec942fcfe5be5a75c8094911136a8e" refkind="member"><highlight class="normal"><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a54ec942fcfe5be5a75c8094911136a8e" kindref="member">DPPLmalloc_device</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef)</highlight></codeline>
+<codeline lineno="81"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Q<sp/>=<sp/>unwrap(QRef);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>malloc_device(size,<sp/>*Q);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>wrap(Ptr);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref></highlight></codeline>
+<codeline lineno="88" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1aa15097b6a6ed3132cef7fad3abc1d948" refkind="member"><highlight class="normal"><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1aa15097b6a6ed3132cef7fad3abc1d948" kindref="member">DPPLaligned_alloc_device</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>alignment,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef)</highlight></codeline>
+<codeline lineno="90"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Q<sp/>=<sp/>unwrap(QRef);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>aligned_alloc_device(alignment,<sp/>size,<sp/>*Q);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>wrap(Ptr);</highlight></codeline>
+<codeline lineno="94"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1ad72c9069e6e744d28044f751880b9862" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1ad72c9069e6e744d28044f751880b9862" kindref="member">DPPLfree_with_queue</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref><sp/>MRef,</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef)</highlight></codeline>
+<codeline lineno="98"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>unwrap(MRef);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Q<sp/>=<sp/>unwrap(QRef);</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/>free(Ptr,<sp/>*Q);</highlight></codeline>
+<codeline lineno="102"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1ae6fde78bc7c4c392a05d3acaffd913fb" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1ae6fde78bc7c4c392a05d3acaffd913fb" kindref="member">DPPLfree_with_context</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref><sp/>MRef,</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a8a6779e2595695b1c3955221a0a56716" kindref="member">DPPLSyclContextRef</ref><sp/>CRef)</highlight></codeline>
+<codeline lineno="106"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>unwrap(MRef);</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>C<sp/>=<sp/>unwrap(CRef);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/>free(Ptr,<sp/>*C);</highlight></codeline>
+<codeline lineno="110"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*</highlight></codeline>
+<codeline lineno="113" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a802fa1e0c65e2eaa0baaeb35f0781973" refkind="member"><highlight class="normal"><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a802fa1e0c65e2eaa0baaeb35f0781973" kindref="member">DPPLUSM_GetPointerType</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref><sp/>MRef,</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a8a6779e2595695b1c3955221a0a56716" kindref="member">DPPLSyclContextRef</ref><sp/>CRef)</highlight></codeline>
+<codeline lineno="115"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>unwrap(MRef);</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>C<sp/>=<sp/>unwrap(CRef);</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>kind<sp/>=<sp/>get_pointer_type(Ptr,<sp/>*C);</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal">(kind)<sp/>{</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>usm::alloc::host:</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;host&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>usm::alloc::device:</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;device&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>usm::alloc::shared:</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;shared&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;unknown&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="130"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><ref refid="d4/d8f/dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></highlight></codeline>
+<codeline lineno="133" refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a3d616260650d50ee1eb26a969e17e332" refkind="member"><highlight class="normal"><ref refid="d8/d88/dppl__sycl__usm__interface_8cpp_1a3d616260650d50ee1eb26a969e17e332" kindref="member">DPPLUSM_GetPointerDevice</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kindref="member">DPPLSyclUSMRef</ref><sp/>MRef,</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a8a6779e2595695b1c3955221a0a56716" kindref="member">DPPLSyclContextRef</ref><sp/>CRef)</highlight></codeline>
+<codeline lineno="135"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Ptr<sp/>=<sp/>unwrap(MRef);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>C<sp/>=<sp/>unwrap(CRef);</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Dev<sp/>=<sp/>get_pointer_device(Ptr,<sp/>*C);</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>wrap(</highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/>device(Dev));</highlight></codeline>
+<codeline lineno="142"><highlight class="normal">}</highlight></codeline>
     </programlisting>
     <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp"/>
   </compounddef>

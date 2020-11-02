@@ -100,7 +100,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_kernel_interface.h" line="72" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" bodystart="72" bodyend="75" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_kernel_interface.h" declline="72" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_kernel_interface.h" line="72" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" bodystart="77" bodyend="80" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_kernel_interface.h" declline="72" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="dc/d31/dppl__sycl__kernel__interface_8h_1a01c88f7f6700a77afc3734d9e896e2fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/d0a/ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" kindref="member">DPPL_C_EXTERN_C_BEGIN</ref> <ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref> const <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref> char *</type>
@@ -130,7 +130,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_kernel_interface.h" line="50" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" bodystart="42" bodyend="56" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_kernel_interface.h" declline="50" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_kernel_interface.h" line="50" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" bodystart="42" bodyend="61" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_kernel_interface.h" declline="50" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="dc/d31/dppl__sycl__kernel__interface_8h_1a5f0d25cde1a667d816955f0695c70ffe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref> size_t</type>
@@ -160,7 +160,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_kernel_interface.h" line="62" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" bodystart="59" bodyend="69" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_kernel_interface.h" declline="62" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_kernel_interface.h" line="62" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_kernel_interface.cpp" bodystart="64" bodyend="74" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_kernel_interface.h" declline="62" declcolumn="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -202,15 +202,15 @@
 <codeline lineno="37"><highlight class="normal"></highlight></codeline>
 <codeline lineno="38"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" kindref="member">DPPL_C_EXTERN_C_BEGIN</ref></highlight></codeline>
 <codeline lineno="39"><highlight class="normal"></highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="49"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"><ref refid="dc/d31/dppl__sycl__kernel__interface_8h_1a01c88f7f6700a77afc3734d9e896e2fe" kindref="member">DPPLKernel_GetFunctionName</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f" kindref="member">DPPLSyclKernelRef</ref><sp/>KRef);</highlight></codeline>
 <codeline lineno="51"><highlight class="normal"></highlight></codeline>
-<codeline lineno="60"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="61"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="62"><highlight class="normal"><ref refid="dc/d31/dppl__sycl__kernel__interface_8h_1a5f0d25cde1a667d816955f0695c70ffe" kindref="member">DPPLKernel_GetNumArgs</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f" kindref="member">DPPLSyclKernelRef</ref><sp/>KRef);</highlight></codeline>
 <codeline lineno="63"><highlight class="normal"></highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="71"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="72"><highlight class="normal"><ref refid="dc/d31/dppl__sycl__kernel__interface_8h_1a47bcfc3a382e18570bbc437e0e53961f" kindref="member">DPPLKernel_Delete</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f" kindref="member">DPPLSyclKernelRef</ref><sp/>KRef);</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"></highlight></codeline>

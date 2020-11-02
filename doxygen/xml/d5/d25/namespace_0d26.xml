@@ -6,6 +6,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_program_interface.cpp" line="36" column="1"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_usm_interface.cpp" line="36" column="1"/>
   </compounddef>
 </doxygen>

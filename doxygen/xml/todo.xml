@@ -13,14 +13,14 @@
 <varlistentry><term>File <ref refid="dppl__sycl__program__interface_8h" kindref="compound">dppl_sycl_program_interface.h</ref>  </term></varlistentry>
 <listitem><para><anchor id="todo_1_todo000003"/>Investigate what we should do when we add support for Level-0 API.  </para>
 </listitem>
-<varlistentry><term>Member <ref refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584" kindref="member">DPPLKernelArgType</ref>  </term></varlistentry>
+<varlistentry><term>Global <ref refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584" kindref="member">DPPLKernelArgType</ref>  </term></varlistentry>
 <listitem><para><anchor id="todo_1_todo000001"/>Add support for sycl::buffer </para>
 </listitem>
-<varlistentry><term>Member <ref refid="dppl__sycl__queue__interface_8h_1adb0224648828059ff0f2bd477cb52573" kindref="member">DPPLQueue_SubmitNDRange</ref>  (const DPPLSyclKernelRef KRef, const DPPLSyclQueueRef QRef, void **Args, const DPPLKernelArgType *ArgTypes, size_t NArgs, const size_t gRange[3], const size_t lRange[3], size_t NDims, const DPPLSyclEventRef *DepEvents, size_t NDepEvents)</term></varlistentry>
+<varlistentry><term>Global <ref refid="dppl__sycl__queue__interface_8h_1adb0224648828059ff0f2bd477cb52573" kindref="member">DPPLQueue_SubmitNDRange</ref>  (const DPPLSyclKernelRef KRef, const DPPLSyclQueueRef QRef, void **Args, const DPPLKernelArgType *ArgTypes, size_t NArgs, const size_t gRange[3], const size_t lRange[3], size_t NDims, const DPPLSyclEventRef *DepEvents, size_t NDepEvents)</term></varlistentry>
 <listitem><para><anchor id="todo_1_todo000005"/>sycl::buffer arguments are not supported yet. </para>
 <para>Add support for id&lt;Dims&gt; WorkItemOffset </para>
 </listitem>
-<varlistentry><term>Member <ref refid="dppl__sycl__queue__interface_8h_1a7b9c13b2948d2f6a630209bf45fbc1b2" kindref="member">DPPLQueue_SubmitRange</ref>  (const DPPLSyclKernelRef KRef, const DPPLSyclQueueRef QRef, void **Args, const DPPLKernelArgType *ArgTypes, size_t NArgs, const size_t Range[3], size_t NRange, const DPPLSyclEventRef *DepEvents, size_t NDepEvents)</term></varlistentry>
+<varlistentry><term>Global <ref refid="dppl__sycl__queue__interface_8h_1a7b9c13b2948d2f6a630209bf45fbc1b2" kindref="member">DPPLQueue_SubmitRange</ref>  (const DPPLSyclKernelRef KRef, const DPPLSyclQueueRef QRef, void **Args, const DPPLKernelArgType *ArgTypes, size_t NArgs, const size_t Range[3], size_t NRange, const DPPLSyclEventRef *DepEvents, size_t NDepEvents)</term></varlistentry>
 <listitem><para><anchor id="todo_1_todo000004"/>sycl::buffer arguments are not supported yet. </para>
 <para>Add support for id&lt;Dims&gt; WorkItemOffset</para>
 </listitem>

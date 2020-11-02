@@ -2,32 +2,54 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="dc/d8e/dppl__utils_8h" kind="file" language="C++">
     <compoundname>dppl_utils.h</compoundname>
+    <includes refid="d4/dcc/dppl__data__types_8h" local="yes">dppl_data_types.h</includes>
     <includes refid="d6/d26/DllExport_8h" local="yes">Support/DllExport.h</includes>
     <includes refid="d2/d0a/ExternC_8h" local="yes">Support/ExternC.h</includes>
     <includes refid="d4/d8c/MemOwnershipAttrs_8h" local="yes">Support/MemOwnershipAttrs.h</includes>
     <includedby refid="d4/dfa/dppl__utils_8cpp" local="yes">dppl_utils.cpp</includedby>
     <incdepgraph>
-      <node id="2">
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+      <node id="6">
         <label>Support/DllExport.h</label>
         <link refid="d6/d26/DllExport_8h"/>
+      </node>
+      <node id="5">
+        <label>sys/types.h</label>
+      </node>
+      <node id="2">
+        <label>dppl_data_types.h</label>
+        <link refid="d4/dcc/dppl__data__types_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>dppl_utils.h</label>
         <link refid="dc/d8e/dppl__utils_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="7">
         <label>Support/ExternC.h</label>
         <link refid="d2/d0a/ExternC_8h"/>
       </node>
-      <node id="4">
+      <node id="8">
         <label>Support/MemOwnershipAttrs.h</label>
         <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
+      </node>
+      <node id="3">
+        <label>inttypes.h</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
@@ -69,7 +91,35 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_utils.h" line="39" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_utils.cpp" bodystart="28" bodyend="31" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_utils.h" declline="39" declcolumn="6"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_utils.h" line="40" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_utils.cpp" bodystart="28" bodyend="31" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_utils.h" declline="40" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="dc/d8e/dppl__utils_8h_1aca98e7d1c1b71c3f7c940401ef8998e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref> void</type>
+        <definition>DPPL_API void DPPLSize_t_Array_Delete</definition>
+        <argsstring>(__dppl_take size_t *arr)</argsstring>
+        <name>DPPLSize_t_Array_Delete</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref> size_t *</type>
+          <declname>arr</declname>
+        </param>
+        <briefdescription>
+<para>Deletes an array of size_t elements. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>arr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Array to be deleted. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_utils.h" line="48" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_utils.cpp" bodystart="33" bodyend="36" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_utils.h" declline="48" declcolumn="6"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -101,16 +151,20 @@
 <codeline lineno="24"><highlight class="normal"></highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="26"><highlight class="normal"></highlight></codeline>
-<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d6/d26/DllExport_8h" kindref="compound">Support/DllExport.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d2/d0a/ExternC_8h" kindref="compound">Support/ExternC.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d4/d8c/MemOwnershipAttrs_8h" kindref="compound">Support/MemOwnershipAttrs.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="30"><highlight class="normal"></highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" kindref="member">DPPL_C_EXTERN_C_BEGIN</ref></highlight></codeline>
-<codeline lineno="32"><highlight class="normal"></highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
-<codeline lineno="39"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dc/d8e/dppl__utils_8h_1a598498bd3fe2bc98b4928ea76435c369" kindref="member">DPPLCString_Delete</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>str);</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"></highlight></codeline>
-<codeline lineno="41"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" kindref="member">DPPL_C_EXTERN_C_END</ref></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d4/dcc/dppl__data__types_8h" kindref="compound">dppl_data_types.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d6/d26/DllExport_8h" kindref="compound">Support/DllExport.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d2/d0a/ExternC_8h" kindref="compound">Support/ExternC.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d4/d8c/MemOwnershipAttrs_8h" kindref="compound">Support/MemOwnershipAttrs.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" kindref="member">DPPL_C_EXTERN_C_BEGIN</ref></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dc/d8e/dppl__utils_8h_1a598498bd3fe2bc98b4928ea76435c369" kindref="member">DPPLCString_Delete</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>str);</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dc/d8e/dppl__utils_8h_1aca98e7d1c1b71c3f7c940401ef8998e9" kindref="member">DPPLSize_t_Array_Delete</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>arr);</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" kindref="member">DPPL_C_EXTERN_C_END</ref></highlight></codeline>
     </programlisting>
     <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_utils.h"/>
   </compounddef>

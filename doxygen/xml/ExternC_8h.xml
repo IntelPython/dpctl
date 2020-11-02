@@ -175,8 +175,8 @@
 <codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPPL_C_EXTERN_C_BEGIN<sp/><sp/>extern<sp/>&quot;C&quot;<sp/>{</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPPL_C_EXTERN_C_END<sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPPL_C_EXTERN_C_BEGIN</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPPL_C_EXTERN_C_END</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32" refid="ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPPL_C_EXTERN_C_BEGIN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPPL_C_EXTERN_C_END</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="backends/include/Support/ExternC.h"/>

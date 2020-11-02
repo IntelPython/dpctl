@@ -1,7 +1,11 @@
 <map id="dppl_utils.cpp" name="dppl_utils.cpp">
-<area shape="rect" id="node1" title=" " alt="" coords="191,5,303,32"/>
-<area shape="rect" id="node2" href="$dc/d8e/dppl__utils_8h.html" title=" " alt="" coords="199,80,296,107"/>
-<area shape="rect" id="node3" href="$d6/d26/DllExport_8h.html" title=" " alt="" coords="5,155,153,181"/>
-<area shape="rect" id="node4" href="$d2/d0a/ExternC_8h.html" title=" " alt="" coords="178,155,317,181"/>
-<area shape="rect" id="node5" href="$d4/d8c/MemOwnershipAttrs_8h.html" title=" " alt="" coords="341,155,562,181"/>
+<area shape="rect" id="node1" title=" " alt="" coords="349,5,461,32"/>
+<area shape="rect" id="node2" href="$dc/d8e/dppl__utils_8h.html" title=" " alt="" coords="356,80,453,107"/>
+<area shape="rect" id="node3" href="$d4/dcc/dppl__data__types_8h.html" title=" " alt="" coords="81,155,222,181"/>
+<area shape="rect" id="node7" href="$d6/d26/DllExport_8h.html" title=" " alt="" coords="247,155,395,181"/>
+<area shape="rect" id="node8" href="$d2/d0a/ExternC_8h.html" title=" " alt="" coords="419,155,558,181"/>
+<area shape="rect" id="node9" href="$d4/d8c/MemOwnershipAttrs_8h.html" title=" " alt="" coords="582,155,803,181"/>
+<area shape="rect" id="node4" title=" " alt="" coords="5,229,92,256"/>
+<area shape="rect" id="node5" title=" " alt="" coords="116,229,187,256"/>
+<area shape="rect" id="node6" title=" " alt="" coords="211,229,307,256"/>
 </map>

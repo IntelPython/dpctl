@@ -285,13 +285,77 @@
         </inbodydescription>
         <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_queue_interface.cpp" line="151" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_queue_interface.cpp" bodystart="151" bodyend="156"/>
       </memberdef>
-      <memberdef kind="function" id="d7/dc5/dppl__sycl__queue__interface_8cpp_1a79c60c5d5f5693edb06f7a0eee6a81a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="d7/dc5/dppl__sycl__queue__interface_8cpp_1a0013f1e6f0be1650cfbc45cbb9a146da" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void DPPLQueue_MemAdvise</definition>
+        <argsstring>(__dppl_keep DPPLSyclQueueRef QRef, const void *Ptr, size_t Count, int Advice)</argsstring>
+        <name>DPPLQueue_MemAdvise</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> <ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>Ptr</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>Count</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>Advice</declname>
+        </param>
+        <briefdescription>
+<para>C-API wrapper for sycl::queue::mem_advise, the function waits on an event till the operation completes. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to the sycl queue. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Ptr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An USM pointer to memory. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Count</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A number of bytes to prefetch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Advice</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Device-defined advice for the specified allocation. A value of 0 reverts the advice for Ptr to the default behavior. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_queue_interface.cpp" line="311" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_queue_interface.cpp" bodystart="311" bodyend="317"/>
+      </memberdef>
+      <memberdef kind="function" id="d7/dc5/dppl__sycl__queue__interface_8cpp_1ad5335df2a33edd4b7c9c8efa3f1c49d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void DPPLQueue_Memcpy</definition>
-        <argsstring>(__dppl_take const DPPLSyclQueueRef QRef, void *Dest, const void *Src, size_t Count)</argsstring>
+        <argsstring>(__dppl_keep const DPPLSyclQueueRef QRef, void *Dest, const void *Src, size_t Count)</argsstring>
         <name>DPPLQueue_Memcpy</name>
         <param>
-          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref></type>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> const <ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref></type>
           <declname>QRef</declname>
         </param>
         <param>
@@ -307,12 +371,99 @@
           <declname>Count</declname>
         </param>
         <briefdescription>
+<para>C-API wrapper for sycl::queue::memcpy, the function waits on an event till the memcpy operation completes. </para>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to the sycl queue. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Dest</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An USM pointer to the destination memory. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Src</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An USM pointer to the source memory. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Count</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A number of bytes to copy. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_queue_interface.cpp" line="293" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_queue_interface.cpp" bodystart="293" bodyend="299"/>
+      </memberdef>
+      <memberdef kind="function" id="d7/dc5/dppl__sycl__queue__interface_8cpp_1aa91340fbd13d614e83da2009529a6830" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void DPPLQueue_Prefetch</definition>
+        <argsstring>(__dppl_keep DPPLSyclQueueRef QRef, const void *Ptr, size_t Count)</argsstring>
+        <name>DPPLQueue_Prefetch</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref> <ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>Ptr</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>Count</declname>
+        </param>
+        <briefdescription>
+<para>C-API wrapper for sycl::queue::prefetch, the function waits on an event till the prefetch operation completes. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to the sycl queue. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Ptr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An USM pointer to memory. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Count</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A number of bytes to prefetch. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_queue_interface.cpp" line="302" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_queue_interface.cpp" bodystart="302" bodyend="308"/>
       </memberdef>
       <memberdef kind="function" id="d7/dc5/dppl__sycl__queue__interface_8cpp_1a2f0d3daeda493a12eba8e366f28b5677" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d4/d8f/dppl__sycl__types_8h_1a350c1387c650924e6c0e25f9f24a7892" kindref="member">DPPLSyclEventRef</ref></type>
@@ -904,13 +1055,31 @@
 <codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/>SyclQueue-&gt;wait();</highlight></codeline>
 <codeline lineno="291"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="292"><highlight class="normal"></highlight></codeline>
-<codeline lineno="293" refid="d7/dc5/dppl__sycl__queue__interface_8cpp_1a79c60c5d5f5693edb06f7a0eee6a81a4" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="d7/dc5/dppl__sycl__queue__interface_8cpp_1a79c60c5d5f5693edb06f7a0eee6a81a4" kindref="member">DPPLQueue_Memcpy</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef,</highlight></codeline>
+<codeline lineno="293" refid="d7/dc5/dppl__sycl__queue__interface_8cpp_1ad5335df2a33edd4b7c9c8efa3f1c49d3" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="d7/dc5/dppl__sycl__queue__interface_8cpp_1ad5335df2a33edd4b7c9c8efa3f1c49d3" kindref="member">DPPLQueue_Memcpy</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef,</highlight></codeline>
 <codeline lineno="294"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*Dest,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*Src,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>Count)</highlight></codeline>
 <codeline lineno="295"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Q<sp/>=<sp/>unwrap(QRef);</highlight></codeline>
 <codeline lineno="297"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">event</highlight><highlight class="normal"><sp/>=<sp/>Q-&gt;memcpy(Dest,<sp/>Src,<sp/>Count);</highlight></codeline>
 <codeline lineno="298"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">event</highlight><highlight class="normal">.wait();</highlight></codeline>
 <codeline lineno="299"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"></highlight></codeline>
+<codeline lineno="301"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="302" refid="d7/dc5/dppl__sycl__queue__interface_8cpp_1aa91340fbd13d614e83da2009529a6830" refkind="member"><highlight class="normal"><ref refid="d7/dc5/dppl__sycl__queue__interface_8cpp_1aa91340fbd13d614e83da2009529a6830" kindref="member">DPPLQueue_Prefetch</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef,</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*Ptr,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>Count)</highlight></codeline>
+<codeline lineno="304"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Q<sp/>=<sp/>unwrap(QRef);</highlight></codeline>
+<codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">event</highlight><highlight class="normal"><sp/>=<sp/>Q-&gt;prefetch(Ptr,<sp/>Count);</highlight></codeline>
+<codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">event</highlight><highlight class="normal">.wait();</highlight></codeline>
+<codeline lineno="308"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="309"><highlight class="normal"></highlight></codeline>
+<codeline lineno="310"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="311" refid="d7/dc5/dppl__sycl__queue__interface_8cpp_1a0013f1e6f0be1650cfbc45cbb9a146da" refkind="member"><highlight class="normal"><ref refid="d7/dc5/dppl__sycl__queue__interface_8cpp_1a0013f1e6f0be1650cfbc45cbb9a146da" kindref="member">DPPLQueue_MemAdvise</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kindref="member">DPPLSyclQueueRef</ref><sp/>QRef,</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*Ptr,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>Count,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>Advice)</highlight></codeline>
+<codeline lineno="313"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>Q<sp/>=<sp/>unwrap(QRef);</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">event</highlight><highlight class="normal"><sp/>=<sp/>Q-&gt;mem_advise(Ptr,<sp/>Count,<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">pi_mem_advice</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(Advice));</highlight></codeline>
+<codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">event</highlight><highlight class="normal">.wait();</highlight></codeline>
+<codeline lineno="317"><highlight class="normal">}</highlight></codeline>
     </programlisting>
     <location file="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_queue_interface.cpp"/>
   </compounddef>

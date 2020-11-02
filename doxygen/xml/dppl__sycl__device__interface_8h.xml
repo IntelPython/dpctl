@@ -289,6 +289,216 @@
         </inbodydescription>
         <location file="backends/include/dppl_sycl_device_interface.h" line="103" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="103" declcolumn="1"/>
       </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a331410c881911f8a4ddfc6ff598363f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t DPPLDevice_GetMaxComputeUnits</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_GetMaxComputeUnits</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::max_compute_units&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="113" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="113" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1adac62f661feb4673b8550dacdd1fc7f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t DPPLDevice_GetMaxWorkItemDims</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_GetMaxWorkItemDims</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper for get_info&lt;info::device::max_work_item_dimensions&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="123" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="123" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1ad842e3efd2606cc4ea8942ee8c9289bc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t *</type>
+        <definition>size_t* DPPLDevice_GetMaxWorkItemSizes</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_GetMaxWorkItemSizes</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper for get_info&lt;info::device::max_work_item_sizes&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns NULL. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="133" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="133" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a1b622fe1f9c03fd3ba3c09e3eadd4689" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t DPPLDevice_GetMaxWorkGroupSize</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_GetMaxWorkGroupSize</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper for get_info&lt;info::device::max_work_group_size&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="143" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="143" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a9e50c5c9a20919f845d13d4c6da0c899" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t DPPLDevice_GetMaxNumSubGroups</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_GetMaxNumSubGroups</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::max_num_sub_groups&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="153" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="153" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a429493ba0280fa42fec4717858432a6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool DPPLDevice_HasInt64BaseAtomics</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_HasInt64BaseAtomics</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::aspect::int64_base_atomics&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns true if device has int64_base_atomics else returns false. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="163" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="163" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a12285937b18b219423781d3f433006cd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool DPPLDevice_HasInt64ExtendedAtomics</definition>
+        <argsstring>(const DPPLSyclDeviceRef DRef)</argsstring>
+        <name>DPPLDevice_HasInt64ExtendedAtomics</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::aspect::int64_extended_atomics&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns true if device has int64_extended_atomics else returns false. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="173" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="173" declcolumn="1"/>
+      </memberdef>
       <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a245243b4bd19e67f3d878781b0340877" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const char *</type>
         <definition>const char* DPPLDevice_GetName</definition>
@@ -317,7 +527,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="backends/include/dppl_sycl_device_interface.h" line="113" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="113" declcolumn="1"/>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="183" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="183" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a05024b72193cb2808d1ffbfd2ac94427" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const char *</type>
@@ -347,7 +557,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="backends/include/dppl_sycl_device_interface.h" line="123" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="123" declcolumn="1"/>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="193" column="1" declfile="backends/include/dppl_sycl_device_interface.h" declline="193" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="dppl__sycl__device__interface_8h_1a2a7ac5edf7b421a482c50f28db3739ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -377,7 +587,49 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="backends/include/dppl_sycl_device_interface.h" line="134" column="6" declfile="backends/include/dppl_sycl_device_interface.h" declline="134" declcolumn="6"/>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="204" column="6" declfile="backends/include/dppl_sycl_device_interface.h" declline="204" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="dppl__sycl__device__interface_8h_1af27c461ba4f72d8f99aa43938e1b504c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool DPPLDevice_AreEq</definition>
+        <argsstring>(const DPPLSyclDeviceRef DevRef1, const DPPLSyclDeviceRef DevRef2)</argsstring>
+        <name>DPPLDevice_AreEq</name>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DevRef1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref></type>
+          <declname>DevRef2</declname>
+        </param>
+        <briefdescription>
+<para>Checks if two DPPLSyclDeviceRef objects point to the same sycl::device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DevRef1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>First opaque pointer to the sycl device. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>DevRef2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Second opaque pointer to the sycl device. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the underlying sycl::device are same, false otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="backends/include/dppl_sycl_device_interface.h" line="215" column="6" declfile="backends/include/dppl_sycl_device_interface.h" declline="215" declcolumn="6"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -416,42 +668,73 @@
 <codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="ExternC_8h" kindref="compound">Support/ExternC.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="MemOwnershipAttrs_8h" kindref="compound">Support/MemOwnershipAttrs.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="36"><highlight class="normal"></highlight></codeline>
-<codeline lineno="37"><highlight class="normal">DPPL_C_EXTERN_C_BEGIN</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><ref refid="ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" kindref="member">DPPL_C_EXTERN_C_BEGIN</ref></highlight></codeline>
 <codeline lineno="38"><highlight class="normal"></highlight></codeline>
-<codeline lineno="44"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="45"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1a318fef3810b70fb5046c5902c0882e3a" kindref="member">DPPLDevice_DumpInfo</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
 <codeline lineno="46"><highlight class="normal"></highlight></codeline>
-<codeline lineno="52"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="53"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1a4de0363a31b711c9c9480cabdeaafe35" kindref="member">DPPLDevice_Delete</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"></highlight></codeline>
-<codeline lineno="62"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="63"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1a482d2f4edbf67e090cde03856bf99f63" kindref="member">DPPLDevice_IsAccelerator</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"></highlight></codeline>
-<codeline lineno="72"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="73"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1a0ff1d7f7fb0310ecc042edff1b1e85a2" kindref="member">DPPLDevice_IsCPU</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"></highlight></codeline>
-<codeline lineno="82"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="83"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1a92d9aad30f459b12a6d5bc04773b1ef5" kindref="member">DPPLDevice_IsGPU</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
 <codeline lineno="84"><highlight class="normal"></highlight></codeline>
-<codeline lineno="91"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="92"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1ac98ce3a56af6cb12d09e4815e6b013b2" kindref="member">DPPLDevice_IsHost</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
 <codeline lineno="93"><highlight class="normal"></highlight></codeline>
-<codeline lineno="101"><highlight class="normal">DPPL_API</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
 <codeline lineno="102"><highlight class="normal"><ref refid="group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
 <codeline lineno="103"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1a1247248c3b3e54f97f032c482c4a4471" kindref="member">DPPLDevice_GetDriverInfo</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
 <codeline lineno="104"><highlight class="normal"></highlight></codeline>
-<codeline lineno="111"><highlight class="normal">DPPL_API</highlight></codeline>
-<codeline lineno="112"><highlight class="normal"><ref refid="group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1a245243b4bd19e67f3d878781b0340877" kindref="member">DPPLDevice_GetName</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="112"><highlight class="normal">uint32_t</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1a331410c881911f8a4ddfc6ff598363f2" kindref="member">DPPLDevice_GetMaxComputeUnits</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
 <codeline lineno="114"><highlight class="normal"></highlight></codeline>
-<codeline lineno="121"><highlight class="normal">DPPL_API</highlight></codeline>
-<codeline lineno="122"><highlight class="normal"><ref refid="group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
-<codeline lineno="123"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1a05024b72193cb2808d1ffbfd2ac94427" kindref="member">DPPLDevice_GetVendorName</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="122"><highlight class="normal">uint32_t</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1adac62f661feb4673b8550dacdd1fc7f2" kindref="member">DPPLDevice_GetMaxWorkItemDims</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
 <codeline lineno="124"><highlight class="normal"></highlight></codeline>
-<codeline lineno="133"><highlight class="normal">DPPL_API</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1a2a7ac5edf7b421a482c50f28db3739ff" kindref="member">DPPLDevice_IsHostUnifiedMemory</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
-<codeline lineno="135"><highlight class="normal"></highlight></codeline>
-<codeline lineno="136"><highlight class="normal">DPPL_C_EXTERN_C_END</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1ad842e3efd2606cc4ea8942ee8c9289bc" kindref="member">DPPLDevice_GetMaxWorkItemSizes</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1a1b622fe1f9c03fd3ba3c09e3eadd4689" kindref="member">DPPLDevice_GetMaxWorkGroupSize</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="152"><highlight class="normal">uint32_t</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1a9e50c5c9a20919f845d13d4c6da0c899" kindref="member">DPPLDevice_GetMaxNumSubGroups</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1a429493ba0280fa42fec4717858432a6d" kindref="member">DPPLDevice_HasInt64BaseAtomics</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1a12285937b18b219423781d3f433006cd" kindref="member">DPPLDevice_HasInt64ExtendedAtomics</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><ref refid="group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1a245243b4bd19e67f3d878781b0340877" kindref="member">DPPLDevice_GetName</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><ref refid="group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><ref refid="dppl__sycl__device__interface_8h_1a05024b72193cb2808d1ffbfd2ac94427" kindref="member">DPPLDevice_GetVendorName</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"></highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1a2a7ac5edf7b421a482c50f28db3739ff" kindref="member">DPPLDevice_IsHostUnifiedMemory</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><ref refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="215"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__device__interface_8h_1af27c461ba4f72d8f99aa43938e1b504c" kindref="member">DPPLDevice_AreEq</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DevRef1,</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kindref="member">DPPLSyclDeviceRef</ref><sp/>DevRef2);</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><ref refid="ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" kindref="member">DPPL_C_EXTERN_C_END</ref></highlight></codeline>
     </programlisting>
     <location file="backends/include/dppl_sycl_device_interface.h"/>
   </compounddef>

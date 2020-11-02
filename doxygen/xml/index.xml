@@ -1,85 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.17">
-  <compound refid="structdp__buffer" kind="struct"><name>dp_buffer</name>
-    <member refid="structdp__buffer_1a67a8a4d388ab614577e22c233282b867" kind="variable"><name>id_</name></member>
-    <member refid="structdp__buffer_1a9f8fb7b35695dfb16b06ea5358dd4811" kind="variable"><name>buffer_ptr</name></member>
-    <member refid="structdp__buffer_1a55d795a519be758db4697a384ceda73d" kind="variable"><name>sizeof_buffer_ptr</name></member>
-  </compound>
-  <compound refid="structdp__env" kind="struct"><name>dp_env</name>
-    <member refid="structdp__env_1a5b118346b049b427d0ad4ebd91d620d6" kind="variable"><name>id_</name></member>
-    <member refid="structdp__env_1a71fcd31fd9bea81c7e617eea47a3ba3c" kind="variable"><name>context</name></member>
-    <member refid="structdp__env_1acaebd487623f5184afaa8cc9e1484298" kind="variable"><name>device</name></member>
-    <member refid="structdp__env_1ad5a7563e4b9b8d43286b970e440e0725" kind="variable"><name>queue</name></member>
-    <member refid="structdp__env_1ac1c747b9c812e986f57bbd2b161762ce" kind="variable"><name>max_work_item_dims</name></member>
-    <member refid="structdp__env_1af84974f230719cf38988b6d6681058df" kind="variable"><name>max_work_group_size</name></member>
-    <member refid="structdp__env_1a35e7de8a20748ae145861aa568b31f5e" kind="variable"><name>support_int64_atomics</name></member>
-    <member refid="structdp__env_1ad13ac6ec1f1d52e3787b5e2e4a607096" kind="variable"><name>support_float64_atomics</name></member>
-    <member refid="structdp__env_1ad16df897c31528dfccd1e06df349634d" kind="variable"><name>dump_fn</name></member>
-  </compound>
-  <compound refid="structdp__kernel" kind="struct"><name>dp_kernel</name>
-    <member refid="structdp__kernel_1a411402b06ff840a33a3aa1730c8074c8" kind="variable"><name>id_</name></member>
-    <member refid="structdp__kernel_1a95dd37c1dba4059dd0a0a1af03a5d594" kind="variable"><name>kernel</name></member>
-    <member refid="structdp__kernel_1a5cc090097153e6109e216591700507d9" kind="variable"><name>dump_fn</name></member>
-  </compound>
-  <compound refid="structdp__kernel__arg" kind="struct"><name>dp_kernel_arg</name>
-    <member refid="structdp__kernel__arg_1a367c05865e2577a77cbd98712929aab0" kind="variable"><name>id_</name></member>
-    <member refid="structdp__kernel__arg_1aabfbf93d5c3a937f21ee5220bc202057" kind="variable"><name>arg_value</name></member>
-    <member refid="structdp__kernel__arg_1a5c1abe8db03d1d824331fcffeb8b7322" kind="variable"><name>arg_size</name></member>
-  </compound>
-  <compound refid="structdp__program" kind="struct"><name>dp_program</name>
-    <member refid="structdp__program_1a25795513ea0cde7c0716dede44c65c73" kind="variable"><name>id_</name></member>
-    <member refid="structdp__program_1a53c11334b6b4bc028b22febb7780bad2" kind="variable"><name>program</name></member>
-  </compound>
-  <compound refid="structdp__runtime" kind="struct"><name>dp_runtime</name>
-    <member refid="structdp__runtime_1ad785d329557ebd7b6e307e2811a8d60c" kind="variable"><name>id_</name></member>
-    <member refid="structdp__runtime_1abd0a6f9fdd977dd64bd0a7ca14dd4147" kind="variable"><name>num_platforms</name></member>
-    <member refid="structdp__runtime_1a5d5bb42519c837eea086b15bf13d2506" kind="variable"><name>platform_ids</name></member>
-    <member refid="structdp__runtime_1abd4319a31c44e42c4af13bba8e1eff4f" kind="variable"><name>has_cpu</name></member>
-    <member refid="structdp__runtime_1a4840f2fe8f593e71ee6c3bb44d0ec3ff" kind="variable"><name>has_gpu</name></member>
-    <member refid="structdp__runtime_1aeb6b605ee9b414e5f7c259b6ffd66f5c" kind="variable"><name>first_cpu_env</name></member>
-    <member refid="structdp__runtime_1a9350509521cb7b03ca792756c2628906" kind="variable"><name>first_gpu_env</name></member>
-    <member refid="structdp__runtime_1a838f0560d243cb2bc828c053c1e87f71" kind="variable"><name>curr_env</name></member>
-    <member refid="structdp__runtime_1a145de3ba28054f9f29bdb8c955ff9f66" kind="variable"><name>dump_fn</name></member>
-  </compound>
-  <compound refid="structdp__runtime__t" kind="struct"><name>dp_runtime_t</name>
-  </compound>
   <compound refid="dppl__data__types_8h" kind="file"><name>dppl_data_types.h</name>
     <member refid="dppl__data__types_8h_1ad0d744f05898e32d01f73f8af3cd2071" kind="define"><name>INT64_MAX</name></member>
     <member refid="dppl__data__types_8h_1ab21f12f372f67b8ff0aa3432336ede67" kind="define"><name>INT64_MIN</name></member>
     <member refid="dppl__data__types_8h_1a30654b4b67d97c42ca3f9b6052dda916" kind="define"><name>UINT64_MAX</name></member>
     <member refid="dppl__data__types_8h_1acd69981d54c27fe0ff514645dbfc6359" kind="define"><name>HUGE_VALF</name></member>
-  </compound>
-  <compound refid="dppl__opencl__interface_8h" kind="file"><name>dppl_opencl_interface.h</name>
-    <member refid="dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kind="define"><name>DPPL_API</name></member>
-    <member refid="dppl__opencl__interface_8h_1a414d5545eb64717cf76cdfd716b67b29" kind="enum"><name>DP_GLUE_ERROR_CODES</name></member>
-    <member refid="dppl__opencl__interface_8h_1a414d5545eb64717cf76cdfd716b67b29a60bed6172a9161c7ca7570174522ff55" kind="enumvalue"><name>DP_GLUE_SUCCESS</name></member>
-    <member refid="dppl__opencl__interface_8h_1a414d5545eb64717cf76cdfd716b67b29a9a5f99b6893b1471890b87154ba89315" kind="enumvalue"><name>DP_GLUE_FAILURE</name></member>
-    <member refid="dppl__opencl__interface_8h_1a60a68d6cb63216c6954c6d6f4db3b6a4" kind="typedef"><name>env_t</name></member>
-    <member refid="dppl__opencl__interface_8h_1a162ccb3cf5ba5fd158c0526cb59412c5" kind="typedef"><name>buffer_t</name></member>
-    <member refid="dppl__opencl__interface_8h_1a4032a461689a915b743ca9d075ad8570" kind="typedef"><name>kernel_t</name></member>
-    <member refid="dppl__opencl__interface_8h_1afad71e6b9f69f779865c7b36fdab8695" kind="typedef"><name>program_t</name></member>
-    <member refid="dppl__opencl__interface_8h_1ad6b9cfe3b0fec6fcd179adf2ed2fa12f" kind="typedef"><name>kernel_arg_t</name></member>
-    <member refid="dppl__opencl__interface_8h_1a02fe9218ba15ed9a5addc7b692d4b8f5" kind="typedef"><name>runtime_t</name></member>
-    <member refid="dppl__opencl__interface_8h_1af65969c48ec4f4c39acbfa713457dcda" kind="function"><name>set_curr_env</name></member>
-    <member refid="dppl__opencl__interface_8h_1aa8cc64501aa87250c4a49fcaec2fb0b2" kind="function"><name>create_dp_runtime</name></member>
-    <member refid="dppl__opencl__interface_8h_1ae35d77471215c8e2ab7dd09f07e21eea" kind="function"><name>destroy_dp_runtime</name></member>
-    <member refid="dppl__opencl__interface_8h_1a566b3a99735a0d46ba7c295519e7443e" kind="function"><name>create_dp_rw_mem_buffer</name></member>
-    <member refid="dppl__opencl__interface_8h_1af3c68c97b5f2334f97635c71edb0e586" kind="function"><name>destroy_dp_rw_mem_buffer</name></member>
-    <member refid="dppl__opencl__interface_8h_1a28ad28083169569271ae8e82f1b3a580" kind="function"><name>write_dp_mem_buffer_to_device</name></member>
-    <member refid="dppl__opencl__interface_8h_1a57d1dd48b06dbc01af0ca5be40b0a142" kind="function"><name>read_dp_mem_buffer_from_device</name></member>
-    <member refid="dppl__opencl__interface_8h_1ab1a000f75915669913b4de99edbea1ab" kind="function"><name>create_dp_program_from_spirv</name></member>
-    <member refid="dppl__opencl__interface_8h_1a43b3debedd923d396376be492fbc02d1" kind="function"><name>create_dp_program_from_source</name></member>
-    <member refid="dppl__opencl__interface_8h_1a609e92357cff6d2becc4300fa47fb30c" kind="function"><name>destroy_dp_program</name></member>
-    <member refid="dppl__opencl__interface_8h_1a4128360b3dff32134797e6ca01cc5c7c" kind="function"><name>build_dp_program</name></member>
-    <member refid="dppl__opencl__interface_8h_1a24bbaf66864ceccc643643978d453383" kind="function"><name>create_dp_kernel</name></member>
-    <member refid="dppl__opencl__interface_8h_1ad208cdc7cf60e150f128ae54e3073216" kind="function"><name>destroy_dp_kernel</name></member>
-    <member refid="dppl__opencl__interface_8h_1a7659b305f3780aa0858c919b6baf4fa8" kind="function"><name>create_dp_kernel_arg</name></member>
-    <member refid="dppl__opencl__interface_8h_1ac57c05f82c1675fd6cc62c397d33fc77" kind="function"><name>create_dp_kernel_arg_from_buffer</name></member>
-    <member refid="dppl__opencl__interface_8h_1a907bd92804f632a6188250d45b0a245f" kind="function"><name>destroy_dp_kernel_arg</name></member>
-    <member refid="dppl__opencl__interface_8h_1a7856b6ab74fbbe6536fd81d64562e1df" kind="function"><name>set_args_and_enqueue_dp_kernel</name></member>
-    <member refid="dppl__opencl__interface_8h_1a7522e1967af436d88e8e8fec48dda403" kind="function"><name>set_args_and_enqueue_dp_kernel_auto_blocking</name></member>
-    <member refid="dppl__opencl__interface_8h_1a042f0d172f36953491338b4049dc740f" kind="function"><name>retain_dp_context</name></member>
-    <member refid="dppl__opencl__interface_8h_1a1dff6cc96c6c5c712d2ed9a221919fa6" kind="function"><name>release_dp_context</name></member>
   </compound>
   <compound refid="dppl__sycl__context__interface_8h" kind="file"><name>dppl_sycl_context_interface.h</name>
     <member refid="dppl__sycl__context__interface_8h_1a8c4e985fc1c083d1247aa0ccbfe732c6" kind="function"><name>DPPLContext_AreEq</name></member>
@@ -95,9 +20,17 @@
     <member refid="dppl__sycl__device__interface_8h_1a92d9aad30f459b12a6d5bc04773b1ef5" kind="function"><name>DPPLDevice_IsGPU</name></member>
     <member refid="dppl__sycl__device__interface_8h_1ac98ce3a56af6cb12d09e4815e6b013b2" kind="function"><name>DPPLDevice_IsHost</name></member>
     <member refid="dppl__sycl__device__interface_8h_1a1247248c3b3e54f97f032c482c4a4471" kind="function"><name>DPPLDevice_GetDriverInfo</name></member>
+    <member refid="dppl__sycl__device__interface_8h_1a331410c881911f8a4ddfc6ff598363f2" kind="function"><name>DPPLDevice_GetMaxComputeUnits</name></member>
+    <member refid="dppl__sycl__device__interface_8h_1adac62f661feb4673b8550dacdd1fc7f2" kind="function"><name>DPPLDevice_GetMaxWorkItemDims</name></member>
+    <member refid="dppl__sycl__device__interface_8h_1ad842e3efd2606cc4ea8942ee8c9289bc" kind="function"><name>DPPLDevice_GetMaxWorkItemSizes</name></member>
+    <member refid="dppl__sycl__device__interface_8h_1a1b622fe1f9c03fd3ba3c09e3eadd4689" kind="function"><name>DPPLDevice_GetMaxWorkGroupSize</name></member>
+    <member refid="dppl__sycl__device__interface_8h_1a9e50c5c9a20919f845d13d4c6da0c899" kind="function"><name>DPPLDevice_GetMaxNumSubGroups</name></member>
+    <member refid="dppl__sycl__device__interface_8h_1a429493ba0280fa42fec4717858432a6d" kind="function"><name>DPPLDevice_HasInt64BaseAtomics</name></member>
+    <member refid="dppl__sycl__device__interface_8h_1a12285937b18b219423781d3f433006cd" kind="function"><name>DPPLDevice_HasInt64ExtendedAtomics</name></member>
     <member refid="dppl__sycl__device__interface_8h_1a245243b4bd19e67f3d878781b0340877" kind="function"><name>DPPLDevice_GetName</name></member>
     <member refid="dppl__sycl__device__interface_8h_1a05024b72193cb2808d1ffbfd2ac94427" kind="function"><name>DPPLDevice_GetVendorName</name></member>
     <member refid="dppl__sycl__device__interface_8h_1a2a7ac5edf7b421a482c50f28db3739ff" kind="function"><name>DPPLDevice_IsHostUnifiedMemory</name></member>
+    <member refid="dppl__sycl__device__interface_8h_1af27c461ba4f72d8f99aa43938e1b504c" kind="function"><name>DPPLDevice_AreEq</name></member>
   </compound>
   <compound refid="dppl__sycl__enum__types_8h" kind="file"><name>dppl_sycl_enum_types.h</name>
     <member refid="dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932" kind="enum"><name>DPPLSyclBackendType</name></member>
@@ -165,6 +98,8 @@
     <member refid="dppl__sycl__queue__interface_8h_1adb0224648828059ff0f2bd477cb52573" kind="function"><name>DPPLQueue_SubmitNDRange</name></member>
     <member refid="dppl__sycl__queue__interface_8h_1a30d7a2a6652d0071a16b6dd1734602e2" kind="function"><name>DPPLQueue_Wait</name></member>
     <member refid="dppl__sycl__queue__interface_8h_1a6a61d533ae3e841f6a78010e5f7aa018" kind="function"><name>DPPLQueue_Memcpy</name></member>
+    <member refid="dppl__sycl__queue__interface_8h_1aefc1fa8887f7cc3a2a6123ef3f871628" kind="function"><name>DPPLQueue_Prefetch</name></member>
+    <member refid="dppl__sycl__queue__interface_8h_1aa19db7d31d4c5911cfc1ddecd8214c14" kind="function"><name>DPPLQueue_MemAdvise</name></member>
   </compound>
   <compound refid="dppl__sycl__queue__manager_8h" kind="file"><name>dppl_sycl_queue_manager.h</name>
     <member refid="dppl__sycl__queue__manager_8h_1ac7e6ad9609ab0642726da599f862c704" kind="function"><name>DPPLQueueMgr_GetCurrentQueue</name></member>
@@ -175,6 +110,7 @@
     <member refid="dppl__sycl__queue__manager_8h_1a0e3748ad7e74b269d1d3b8df65d285bc" kind="function"><name>DPPLQueueMgr_SetAsDefaultQueue</name></member>
     <member refid="dppl__sycl__queue__manager_8h_1a6086f71d9f91065d98bb8f02f69f7723" kind="function"><name>DPPLQueueMgr_PushQueue</name></member>
     <member refid="dppl__sycl__queue__manager_8h_1af1b678a0e5406d481bf316f18454e719" kind="function"><name>DPPLQueueMgr_PopQueue</name></member>
+    <member refid="dppl__sycl__queue__manager_8h_1a2eb0b99690b1328beef272d310111354" kind="function"><name>DPPLQueueMgr_GetQueueFromContextAndDevice</name></member>
   </compound>
   <compound refid="dppl__sycl__types_8h" kind="file"><name>dppl_sycl_types.h</name>
     <member refid="dppl__sycl__types_8h_1a6f7f076797eb7499ab2c6caffed6efcb" kind="typedef"><name>DPPLSyclContextRef</name></member>
@@ -188,19 +124,19 @@
   </compound>
   <compound refid="dppl__sycl__usm__interface_8h" kind="file"><name>dppl_sycl_usm_interface.h</name>
     <member refid="dppl__sycl__usm__interface_8h_1a6059d326a204127c8123cb5721ae8f20" kind="function"><name>DPPLmalloc_shared</name></member>
+    <member refid="dppl__sycl__usm__interface_8h_1a40a234cb0b46a284ba3f495842c13f09" kind="function"><name>DPPLaligned_alloc_shared</name></member>
     <member refid="dppl__sycl__usm__interface_8h_1a4c1dac9306eca0cb79386e9c86aecaad" kind="function"><name>DPPLmalloc_host</name></member>
+    <member refid="dppl__sycl__usm__interface_8h_1aa4dfeac2ef4a931e8e4fd20dd185a738" kind="function"><name>DPPLaligned_alloc_host</name></member>
     <member refid="dppl__sycl__usm__interface_8h_1acfd3023a41c800e78e892d7d02a449af" kind="function"><name>DPPLmalloc_device</name></member>
+    <member refid="dppl__sycl__usm__interface_8h_1a039a2c3a423d2dabd9b0e7a46614954f" kind="function"><name>DPPLaligned_alloc_device</name></member>
     <member refid="dppl__sycl__usm__interface_8h_1ac9b6524feefd6d4e7eddae11ee76c4ec" kind="function"><name>DPPLfree_with_queue</name></member>
     <member refid="dppl__sycl__usm__interface_8h_1ae8fd9cee7ab33f4ad110c86dad7c355a" kind="function"><name>DPPLfree_with_context</name></member>
     <member refid="dppl__sycl__usm__interface_8h_1ab9f61396ce0d347bfd0dad4ff8f22787" kind="function"><name>DPPLUSM_GetPointerType</name></member>
+    <member refid="dppl__sycl__usm__interface_8h_1a78e99c976f1a0e6ac19dcd6efbef9116" kind="function"><name>DPPLUSM_GetPointerDevice</name></member>
   </compound>
   <compound refid="dppl__utils_8h" kind="file"><name>dppl_utils.h</name>
     <member refid="dppl__utils_8h_1a2df07db60880b4e2dbce4a54b4df0190" kind="function"><name>DPPLCString_Delete</name></member>
-  </compound>
-  <compound refid="error__check__macros_8h" kind="file"><name>error_check_macros.h</name>
-    <member refid="error__check__macros_8h_1a5c5d67855b5c14a46bc1c285188ddcc1" kind="define"><name>CHECK_OPEN_CL_ERROR</name></member>
-    <member refid="error__check__macros_8h_1ac8b9ca6f31ac89dbfb2a35dd4cb7d24a" kind="define"><name>CHECK_MALLOC_ERROR</name></member>
-    <member refid="error__check__macros_8h_1a3d05d4ff53571d917db5a64a5afe5ac5" kind="define"><name>CHECK_DPGLUE_ERROR</name></member>
+    <member refid="dppl__utils_8h_1a45893de1aa435d3669abb401fa392c34" kind="function"><name>DPPLSize_t_Array_Delete</name></member>
   </compound>
   <compound refid="CBindingWrapping_8h" kind="file"><name>CBindingWrapping.h</name>
     <member refid="CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05" kind="define"><name>DEFINE_SIMPLE_CONVERSION_FUNCTIONS</name></member>

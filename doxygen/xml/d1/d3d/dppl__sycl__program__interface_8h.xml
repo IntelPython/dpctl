@@ -113,7 +113,7 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>CompileOptions</parametername>
+<parametername>CompileOpts</parametername>
 </parameternamelist>
 <parameterdescription>
 <para>Extra compiler flags (refer Sycl spec.) </para>
@@ -126,7 +126,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" line="75" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_program_interface.cpp" bodystart="95" bodyend="134" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" declline="75" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" line="76" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_program_interface.cpp" bodystart="95" bodyend="133" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" declline="76" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="d1/d3d/dppl__sycl__program__interface_8h_1af4e571c77ac5590fc81639229153e94d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/d0a/ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" kindref="member">DPPL_C_EXTERN_C_BEGIN</ref> <ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref> <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref> <ref refid="d4/d8f/dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed" kindref="member">DPPLSyclProgramRef</ref></type>
@@ -167,6 +167,14 @@
 <para>SPIR-V binary </para>
 </parameterdescription>
 </parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Length</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The size of the IL binary in bytes. </para>
+</parameterdescription>
+</parameteritem>
 </parameterlist>
 <simplesect kind="return"><para>A new SyclProgramRef pointer if the program creation succeeded, else returns NULL. </para>
 </simplesect>
@@ -174,7 +182,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" line="60" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_program_interface.cpp" bodystart="44" bodyend="92" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" declline="60" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" line="61" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_program_interface.cpp" bodystart="44" bodyend="92" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" declline="61" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="d1/d3d/dppl__sycl__program__interface_8h_1a5852fc8ab7525ea20fcbbced4bda4b58" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref> void</type>
@@ -202,7 +210,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" line="112" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_program_interface.cpp" bodystart="177" bodyend="180" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" declline="112" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" line="113" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_program_interface.cpp" bodystart="176" bodyend="179" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" declline="113" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="d1/d3d/dppl__sycl__program__interface_8h_1afdda6116401b8769a3b28edae7a85258" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref> <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref> <ref refid="d4/d8f/dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f" kindref="member">DPPLSyclKernelRef</ref></type>
@@ -244,7 +252,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" line="89" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_program_interface.cpp" bodystart="137" bodyend="157" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" declline="89" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" line="90" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_program_interface.cpp" bodystart="136" bodyend="156" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" declline="90" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="d1/d3d/dppl__sycl__program__interface_8h_1ad204c641de13b034ef2bff5cb6e18b29" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref> bool</type>
@@ -286,7 +294,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" line="102" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_program_interface.cpp" bodystart="160" bodyend="174" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" declline="102" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" line="103" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/source/dppl_sycl_program_interface.cpp" bodystart="159" bodyend="173" declfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h" declline="103" declcolumn="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -328,33 +336,33 @@
 <codeline lineno="37"><highlight class="normal"></highlight></codeline>
 <codeline lineno="38"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" kindref="member">DPPL_C_EXTERN_C_BEGIN</ref></highlight></codeline>
 <codeline lineno="39"><highlight class="normal"></highlight></codeline>
-<codeline lineno="58"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed" kindref="member">DPPLSyclProgramRef</ref></highlight></codeline>
-<codeline lineno="60"><highlight class="normal"><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1af4e571c77ac5590fc81639229153e94d" kindref="member">DPPLProgram_CreateFromOCLSpirv</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a8a6779e2595695b1c3955221a0a56716" kindref="member">DPPLSyclContextRef</ref><sp/>Ctx,</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*IL,</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>Length);</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"></highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed" kindref="member">DPPLSyclProgramRef</ref></highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1af9f51f93daa64bedcd3790a416a4869a" kindref="member">DPPLProgram_CreateFromOCLSource</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a8a6779e2595695b1c3955221a0a56716" kindref="member">DPPLSyclContextRef</ref><sp/>Ctx,</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*Source,</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*CompileOpts);</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"></highlight></codeline>
-<codeline lineno="87"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
-<codeline lineno="88"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f" kindref="member">DPPLSyclKernelRef</ref></highlight></codeline>
-<codeline lineno="89"><highlight class="normal"><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1afdda6116401b8769a3b28edae7a85258" kindref="member">DPPLProgram_GetKernel</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed" kindref="member">DPPLSyclProgramRef</ref><sp/>PRef,</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*KernelName);</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"></highlight></codeline>
-<codeline lineno="100"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
-<codeline lineno="101"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="102"><highlight class="normal"><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1ad204c641de13b034ef2bff5cb6e18b29" kindref="member">DPPLProgram_HasKernel</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed" kindref="member">DPPLSyclProgramRef</ref><sp/>PRef,</highlight></codeline>
-<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*KernelName);</highlight></codeline>
-<codeline lineno="104"><highlight class="normal"></highlight></codeline>
-<codeline lineno="110"><highlight class="normal"><ref refid="d0/da0/dppl__opencl__interface_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
-<codeline lineno="111"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="112"><highlight class="normal"><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1a5852fc8ab7525ea20fcbbced4bda4b58" kindref="member">DPPLProgram_Delete</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed" kindref="member">DPPLSyclProgramRef</ref><sp/>PRef);</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"></highlight></codeline>
-<codeline lineno="114"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" kindref="member">DPPL_C_EXTERN_C_END</ref></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed" kindref="member">DPPLSyclProgramRef</ref></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1af4e571c77ac5590fc81639229153e94d" kindref="member">DPPLProgram_CreateFromOCLSpirv</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a8a6779e2595695b1c3955221a0a56716" kindref="member">DPPLSyclContextRef</ref><sp/>Ctx,</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*IL,</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>Length);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed" kindref="member">DPPLSyclProgramRef</ref></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1af9f51f93daa64bedcd3790a416a4869a" kindref="member">DPPLProgram_CreateFromOCLSource</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a8a6779e2595695b1c3955221a0a56716" kindref="member">DPPLSyclContextRef</ref><sp/>Ctx,</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*Source,</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*CompileOpts);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kindref="member">__dppl_give</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f" kindref="member">DPPLSyclKernelRef</ref></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1afdda6116401b8769a3b28edae7a85258" kindref="member">DPPLProgram_GetKernel</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed" kindref="member">DPPLSyclProgramRef</ref><sp/>PRef,</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*KernelName);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1ad204c641de13b034ef2bff5cb6e18b29" kindref="member">DPPLProgram_HasKernel</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed" kindref="member">DPPLSyclProgramRef</ref><sp/>PRef,</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kindref="member">__dppl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*KernelName);</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1a81776019eae18623511d676145f7cdef" kindref="member">DPPL_API</ref></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><ref refid="d1/d3d/dppl__sycl__program__interface_8h_1a5852fc8ab7525ea20fcbbced4bda4b58" kindref="member">DPPLProgram_Delete</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kindref="member">__dppl_take</ref><sp/><ref refid="d4/d8f/dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed" kindref="member">DPPLSyclProgramRef</ref><sp/>PRef);</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" kindref="member">DPPL_C_EXTERN_C_END</ref></highlight></codeline>
     </programlisting>
     <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/dppl_sycl_program_interface.h"/>
   </compounddef>

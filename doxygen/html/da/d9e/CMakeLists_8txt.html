@@ -9,6 +9,10 @@
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
+<link href="../../navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../../resize.js"></script>
+<script type="text/javascript" src="../../navtreedata.js"></script>
+<script type="text/javascript" src="../../navtree.js"></script>
 <link href="../../search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../search/searchdata.js"></script>
 <script type="text/javascript" src="../../search/search.js"></script>
@@ -47,6 +51,23 @@ $(function() {
 });
 /* @license-end */</script>
 <div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('da/d9e/CMakeLists_8txt.html','../../'); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -61,7 +82,6 @@ $(function() {
 </iframe>
 </div>
 
-</div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
@@ -72,16 +92,16 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a6f878f291c546003618b45033d5cdcbb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d9e/CMakeLists_8txt.html#a6f878f291c546003618b45033d5cdcbb">cmake_minimum_required</a> (VERSION 3.3.2 FATAL_ERROR) project(&quot;Data-parallel Control (dpCtl)&quot;) function(check_for_dpcpp) string(COMPARE EQUAL &quot;$</td></tr>
-<tr class="separator:a6f878f291c546003618b45033d5cdcbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79010be137637b1fffdd9f3c0a926708"><td class="memItemLeft" align="right" valign="top">no_dpcpp_root&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d9e/CMakeLists_8txt.html#a79010be137637b1fffdd9f3c0a926708">if</a> (${no_dpcpp_root}) message(FATAL_ERROR &quot;Set the DPCPP_ROOT argument providing the path to \ a dpcpp installation.&quot;) endif() if(WIN32) <a class="el" href="../../da/d9e/CMakeLists_8txt.html#a3c08e61ce0afb3c3b27b9856b061109b">set</a>(dpcpp_cmd &quot;$</td></tr>
+<tr class="memitem:a2ca62aab47bd9a99e022b2cf9448bbfd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d9e/CMakeLists_8txt.html#a2ca62aab47bd9a99e022b2cf9448bbfd">cmake_minimum_required</a> (VERSION 3.3.2 FATAL_ERROR) project(&quot;dpCtl - A lightweight SYCL wrapper for Python&quot;) function(check_for_dpcpp) string(COMPARE EQUAL &quot;$</td></tr>
+<tr class="separator:a2ca62aab47bd9a99e022b2cf9448bbfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79010be137637b1fffdd9f3c0a926708"><td class="memItemLeft" align="right" valign="top">no_dpcpp_root&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d9e/CMakeLists_8txt.html#a79010be137637b1fffdd9f3c0a926708">if</a> (${no_dpcpp_root}) message(FATAL_ERROR &quot;Set the DPCPP_ROOT argument providing the path to \ a dpcpp installation.&quot;) endif() if(WIN32) <a class="el" href="../../da/d9e/CMakeLists_8txt.html#aa739aaa568ca4e3fb8021c8984335c14">set</a>(dpcpp_cmd &quot;$</td></tr>
 <tr class="separator:a79010be137637b1fffdd9f3c0a926708"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c08e61ce0afb3c3b27b9856b061109b"><td class="memItemLeft" align="right" valign="top">bin dpcpp&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d9e/CMakeLists_8txt.html#a3c08e61ce0afb3c3b27b9856b061109b">set</a> (dpcpp_arg &quot;--version&quot;) elseif(UNIX) set(dpcpp_cmd &quot;dpcpp&quot;) set(dpcpp_arg &quot;--version&quot;) else() message(FATAL_ERROR &quot;Unsupported system.&quot;) endif() execute_process(COMMAND $</td></tr>
-<tr class="separator:a3c08e61ce0afb3c3b27b9856b061109b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa739aaa568ca4e3fb8021c8984335c14"><td class="memItemLeft" align="right" valign="top">bin dpcpp&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d9e/CMakeLists_8txt.html#aa739aaa568ca4e3fb8021c8984335c14">set</a> (dpcpp_arg &quot;--version&quot;) elseif(UNIX) set(dpcpp_cmd &quot;$</td></tr>
+<tr class="separator:aa739aaa568ca4e3fb8021c8984335c14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a6f878f291c546003618b45033d5cdcbb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6f878f291c546003618b45033d5cdcbb">&#9670;&nbsp;</a></span>cmake_minimum_required()</h2>
+<a id="a2ca62aab47bd9a99e022b2cf9448bbfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ca62aab47bd9a99e022b2cf9448bbfd">&#9670;&nbsp;</a></span>cmake_minimum_required()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -120,8 +140,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a3c08e61ce0afb3c3b27b9856b061109b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3c08e61ce0afb3c3b27b9856b061109b">&#9670;&nbsp;</a></span>set()</h2>
+<a id="aa739aaa568ca4e3fb8021c8984335c14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa739aaa568ca4e3fb8021c8984335c14">&#9670;&nbsp;</a></span>set()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -141,11 +161,15 @@ Functions</h2></td></tr>
 </div>
 </div>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="../../doxygen.png" alt="doxygen"/>
-</a> 1.8.17
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="../../da/d9e/CMakeLists_8txt.html">CMakeLists.txt</a></li>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+  </ul>
+</div>
 </body>
 </html>

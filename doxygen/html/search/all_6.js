@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['first_5fcpu_5fenv_169',['first_cpu_env',['../d5/d48/structdp__runtime.html#aeb6b605ee9b414e5f7c259b6ffd66f5c',1,'dp_runtime']]],
-  ['first_5fgpu_5fenv_170',['first_gpu_env',['../d5/d48/structdp__runtime.html#a9350509521cb7b03ca792756c2628906',1,'dp_runtime']]]
+  ['memory_20management_20attributes_2e_149',['Memory management attributes.',['../d2/de3/group__MEM__MGMT__ATTR__MACROS.html',1,'']]],
+  ['memownershipattrs_2eh_150',['MemOwnershipAttrs.h',['../d4/d8c/MemOwnershipAttrs_8h.html',1,'']]]
 ];
