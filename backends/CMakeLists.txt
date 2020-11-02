@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project("dpCtl - A lightweight SYCL wrapper for Python")
 
 # The function checks is DPCPP_ROOT is valid and points to a dpcpp installation
@@ -123,8 +123,17 @@ foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION include/Support)
 endforeach()
 
+option(
+    BUILD_CAPI_TESTS
+    "Build dpctl C API google tests"
+    OFF
+)
+
 # Enable to build the dpCtl backend test cases
-add_subdirectory(tests)
+if(BUILD_CAPI_TESTS)
+    add_subdirectory(tests)
+endif()
+
 
 # Todo : Add build rules for doxygen
 # maybe refer https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/
