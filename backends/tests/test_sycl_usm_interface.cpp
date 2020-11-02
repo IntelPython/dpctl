@@ -183,10 +183,3 @@ TEST_F (TestDPPLSyclUSMInterface, AlignedAllocHost)
     DPPLfree_with_queue(Ptr, Q);
 }
 
-int
-main (int argc, char** argv)
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    int ret = RUN_ALL_TESTS();
-    return ret;
-}

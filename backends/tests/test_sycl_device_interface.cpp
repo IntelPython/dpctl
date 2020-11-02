@@ -395,10 +395,3 @@ TEST_F (TestDPPLSyclDeviceInterface, CheckLevel0GPU_IsGPU)
     EXPECT_TRUE(DPPLDevice_IsGPU(OpenCL_Level0_gpu));
 }
 
-int
-main (int argc, char** argv)
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    int ret = RUN_ALL_TESTS();
-    return ret;
-}
