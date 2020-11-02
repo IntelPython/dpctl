@@ -23,11 +23,13 @@ else()
   link_directories(${GTEST_LIB_DIR})
 
   set(DPCTL_C_API_TEST_CASES
+    test_sycl_device_interface
     test_sycl_kernel_interface
     test_sycl_platform_interface
     test_sycl_program_interface
     test_sycl_queue_interface
     test_sycl_queue_manager
+    test_sycl_usm_interface
   )
 
   # Copy the spir-v input files to test build directory

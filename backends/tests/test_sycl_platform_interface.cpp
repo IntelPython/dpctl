@@ -32,13 +32,13 @@ struct TestDPPLSyclPlatformInterface : public ::testing::Test
 TEST_F (TestDPPLSyclPlatformInterface, CheckGetNumPlatforms)
 {
     auto nplatforms = DPPLPlatform_GetNumNonHostPlatforms();
-    EXPECT_GE(nplatforms, 0);
+    EXPECT_GE(nplatforms, 0ul);
 }
 
 TEST_F (TestDPPLSyclPlatformInterface, GetNumBackends)
 {
     auto nbackends = DPPLPlatform_GetNumNonHostBackends();
-    EXPECT_GE(nbackends, 0);
+    EXPECT_GE(nbackends, 0ul);
 }
 
 TEST_F (TestDPPLSyclPlatformInterface, GetListOfBackends)

@@ -41,7 +41,7 @@ get_set_of_non_hostbackends ()
 {
     std::set<DPPLSyclBackendType> be_set;
     for (auto p : platform::get_platforms()) {
-		if(p.is_host())
+        if(p.is_host())
             continue;
         auto be = p.get_backend();
         switch (be)
@@ -155,12 +155,12 @@ void DPPLPlatform_DumpInfo ()
 */
 size_t DPPLPlatform_GetNumNonHostPlatforms ()
 {
-	auto nNonHostPlatforms = 0ul;
-	for (auto &p : platform::get_platforms()) {
-		if (p.is_host())
-			continue;
-		++nNonHostPlatforms;
-	}
+    auto nNonHostPlatforms = 0ul;
+    for (auto &p : platform::get_platforms()) {
+        if (p.is_host())
+            continue;
+        ++nNonHostPlatforms;
+    }
     return nNonHostPlatforms;
 }
 

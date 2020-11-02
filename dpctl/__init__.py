@@ -1,4 +1,4 @@
-##===----------------- _memory.pyx - dpctl module -------*- Cython -*------===##
+##===----------------- __init__.py - dpctl module -------*- Cython -*------===##
 ##
 ##                      Data Parallel Control (dpCtl)
 ##

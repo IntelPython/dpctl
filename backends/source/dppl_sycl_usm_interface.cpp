@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dppl_sycl_usm_interface.h"
+#include "dppl_sycl_device_interface.h"
 #include "Support/CBindingWrapping.h"
 
 #include <CL/sycl.hpp>                /* SYCL headers   */
@@ -35,6 +36,7 @@ namespace
 {
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPPLSyclQueueRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPPLSyclDeviceRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPPLSyclContextRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPPLSyclUSMRef)
 
@@ -49,6 +51,15 @@ DPPLmalloc_shared (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 }
 
 __dppl_give DPPLSyclUSMRef
+DPPLaligned_alloc_shared (size_t alignment, size_t size,
+                          __dppl_keep const DPPLSyclQueueRef QRef)
+{
+    auto Q = unwrap(QRef);
+    auto Ptr = aligned_alloc_shared(alignment, size, *Q);
+    return wrap(Ptr);
+}
+
+__dppl_give DPPLSyclUSMRef
 DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
@@ -57,10 +68,28 @@ DPPLmalloc_host (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 }
 
 __dppl_give DPPLSyclUSMRef
+DPPLaligned_alloc_host (size_t alignment, size_t size,
+                        __dppl_keep const DPPLSyclQueueRef QRef)
+{
+    auto Q = unwrap(QRef);
+    auto Ptr = aligned_alloc_host(alignment, size, *Q);
+    return wrap(Ptr);
+}
+
+__dppl_give DPPLSyclUSMRef
 DPPLmalloc_device (size_t size, __dppl_keep const DPPLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = malloc_device(size, *Q);
+    return wrap(Ptr);
+}
+
+__dppl_give DPPLSyclUSMRef
+DPPLaligned_alloc_device (size_t alignment, size_t size,
+                          __dppl_keep const DPPLSyclQueueRef QRef)
+{
+    auto Q = unwrap(QRef);
+    auto Ptr = aligned_alloc_device(alignment, size, *Q);
     return wrap(Ptr);
 }
 
@@ -98,4 +127,16 @@ DPPLUSM_GetPointerType (__dppl_keep const DPPLSyclUSMRef MRef,
         default:
             return "unknown";
     }
+}
+
+DPPLSyclDeviceRef
+DPPLUSM_GetPointerDevice (__dppl_keep const DPPLSyclUSMRef MRef,
+                          __dppl_keep const DPPLSyclContextRef CRef)
+{
+    auto Ptr = unwrap(MRef);
+    auto C = unwrap(CRef);
+
+    auto Dev = get_pointer_device(Ptr, *C);
+
+    return wrap(new device(Dev));
 }
