@@ -23,19 +23,22 @@
 ##
 ##===----------------------------------------------------------------------===##
 """
-    Data Parallel Control Memory
+    **Data Parallel Control Memory**
 
-    `dpctl.memory` provides Python objects for untyped USM memory 
+    `dpctl.memory` provides Python objects for untyped USM memory
     container of bytes for each kind of USM pointers: shared pointers,
     device pointers and host pointers.
 
     Shared and host pointers are accessible from both host and a device,
     while device pointers are only accessible from device.
 
-    Python objects corresponding to shared and host pointers implement 
+    Python objects corresponding to shared and host pointers implement
     Python simple buffer protocol. It is therefore possible to use these
-    objects to maniputalate USM memory using NumPy or `bytearray`, 
+    objects to maniputalate USM memory using NumPy or `bytearray`,
     `memoryview`, or `array.array` classes.
-    
+
 """
 from ._memory import MemoryUSMShared, MemoryUSMDevice, MemoryUSMHost
+from ._memory import __all__ as _memory__all__
+
+__all__ = _memory__all__
