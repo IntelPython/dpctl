@@ -18,31 +18,44 @@ manager and a SYCL USM memory manager.
 
 == Device manager
 
-The device manager exposes an API for Python applications and libraries to
-interact with SYCL devices. The device manager supports: creating a SYCL device
-including sub-devices, creating a SYCL queue for a specific device, querying
-device information, and getting the SYCL context for a specific device.
+The dpCtl device manager exposes an API for Python applications and libraries to
+interact with SYCL devices. The device manager supports the following main
+functionalities:
+
+- Ability to create a new SYCL device from a filter selector string, or a
+  Python object wrapping an existing SYCL device.
+- Create a sub-device from a SYCL device.
+- A getter function to get a cached SYCL queue for a specific device.
+- Ability to create a new SYCL queue from a device.
+- Ability to get the SYCL context for a specific device.
+- Getter functions for various (to be specified) device info attributes.
 
 === Creating a SYCL device
 
-DpCtl provides two ways to create a SYCL device. The `SyclDevice` provides a
-direct way to create a wrapper Python object for a SYCL device. A SYCL device
-can also be indirectly created using the `dpctl.device` context manager.
+Dpctl provides a Python context manager `dpctl.device` to create a new SYCL
+device.
 
 [source,python]
 ----
-
+# Creating a new SyclDevice using a string that abstracts a DPC++ filter
+# selector.
 with dpctl.device("opencl:gpu:0"):
+    pass
+
+# Creating a new SyclDevice from another Python object.
+with dpctl.device(device_obj):
     pass
 ----
 
-The `dpctl.device` context manager creates a new SYCL device object
-(`SyclDevice`) for the extent of the scope of the context manager. A new
-device can be created by passing a string to the context manager a three-tuple
-that specifies a SYCL backend, a SYCL device type, and a SYCL device ID. The
-three-tuple string supports the specification of the DPC++
-https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc[Filter Selector]
-extension, and additional functionality to support sub-devices.
+The `dpctl.device` context manager creates a new `dpctl.SyclDevice` object and
+yields the object back to caller. In addition, it makes a queue corresponding
+to that device the "activated queue", _i.e._, the queue returned by
+`dpctl.get_current_queue()`. The queue and the device remain in scope for the
+lifetime of the context manager. Note that dpCtl creates cached queues for each
+device when the module is loaded and `dpctl.device` retrieves the cached queue
+and does not create a new queue.
+
+A possible implementation of the `dpctl.device` context manager can be:
 
 [source,python]
 ----
@@ -53,11 +66,11 @@ def device(inp):
     that either constructs `dpctl.SyclDevice` or provide a named "sycl_device" PyCapsule
     that carries a pointer to `sycl::device`.
     """
-    if isintsnace(inp, str):
+    if isinstance(inp, str):
         yield from_filter(inp)
     elif hasattr(inp, '__get_device__'):
         cdef object dev  = inp.__get_device__()
-        if (isintance(dev, dpctl.SyclDevice)):
+        if (isinstance(dev, dpctl.SyclDevice)):
             yield dev
         elif is_capsule(inp, expected_name):
             dev = device_from_capsule(inp)
@@ -66,10 +79,22 @@ def device(inp):
         raise TypeError('')
 ----
 
-*_TODO_* : add verbiage about allowed backend, device type, and device id.
+The https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc[DPC++ filter selector]
+is a three-tuple specifying a SYCL backend, a SYCL device type, and a SYCL
+device ID. Each component is optional, but at least one should be provided.
 
-*_TODO_* : All the values in the tuple are optional, but at least one the three
-options should be specified.
+When a Python object is passed in to the `dpctl.device` context manager we can
+use an existing object to create a
+
+** Sub-devices**
+The current filter selector proposal does not allow specifying sub-devices and
+dpCtl can either provide a super set of the filter selector with a possible
+fourth optional parameter to specify a sub device.
+
+Another way to support sub-devices will be to expose the `create_sub_device()`
+functionality of SYCL via dpCtl.
+
+
 
 The `dpctl.device` returns a new `SyclDevice` object.
 
