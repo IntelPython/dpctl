@@ -1,48 +1,48 @@
-call "%ONEAPI_ROOT%compiler\latest\env\vars.bat"
-IF ERRORLEVEL 1 exit 1
-REM conda uses %ERRORLEVEL% but FPGA scripts can set it. So it should be reseted.
-set ERRORLEVEL=
+@REM call "%ONEAPI_ROOT%compiler\latest\env\vars.bat"
+@REM IF ERRORLEVEL 1 exit 1
+@REM REM conda uses %ERRORLEVEL% but FPGA scripts can set it. So it should be reseted.
+@REM set ERRORLEVEL=
 
-set "CC=clang-cl.exe"
-set "CXX=dpcpp.exe"
+@REM set "CC=clang-cl.exe"
+@REM set "CXX=dpcpp.exe"
 
-rmdir /S /Q build_cmake
-mkdir build_cmake
-cd build_cmake
+@REM rmdir /S /Q build_cmake
+@REM mkdir build_cmake
+@REM cd build_cmake
 
-set "DPCPP_ROOT=%ONEAPI_ROOT%\compiler\latest\windows"
-set "INSTALL_PREFIX=%cd%\..\install"
+@REM set "DPCPP_ROOT=%ONEAPI_ROOT%\compiler\latest\windows"
+@REM set "INSTALL_PREFIX=%cd%\..\install"
 
-rmdir /S /Q "%INSTALL_PREFIX%"
+@REM rmdir /S /Q "%INSTALL_PREFIX%"
 
-cmake -G Ninja ^
-    -DCMAKE_BUILD_TYPE=Release ^
-    "-DCMAKE_INSTALL_PREFIX=%INSTALL_PREFIX%" ^
-    "-DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%" ^
-    "-DDPCPP_ROOT=%DPCPP_ROOT%" ^
-    "%SRC_DIR%/backends"
-IF %ERRORLEVEL% NEQ 0 exit 1
+@REM cmake -G Ninja ^
+@REM     -DCMAKE_BUILD_TYPE=Release ^
+@REM     "-DCMAKE_INSTALL_PREFIX=%INSTALL_PREFIX%" ^
+@REM     "-DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%" ^
+@REM     "-DDPCPP_ROOT=%DPCPP_ROOT%" ^
+@REM     "%SRC_DIR%/backends"
+@REM IF %ERRORLEVEL% NEQ 0 exit 1
 
-ninja -n
-ninja install
-IF %ERRORLEVEL% NEQ 0 exit 1
+@REM ninja -n
+@REM ninja install
+@REM IF %ERRORLEVEL% NEQ 0 exit 1
 
-cd ..
-xcopy install\lib\*.lib dpctl /E /Y
-xcopy install\bin\*.dll dpctl /E /Y
+@REM cd ..
+@REM xcopy install\lib\*.lib dpctl /E /Y
+@REM xcopy install\bin\*.dll dpctl /E /Y
 
-mkdir dpctl\include
-xcopy backends\include dpctl\include /E /Y
+@REM mkdir dpctl\include
+@REM xcopy backends\include dpctl\include /E /Y
 
 
-REM required by _opencl_core (dpctl.ocldrv)
-set "DPPL_OPENCL_INTERFACE_LIBDIR=dpctl"
-set "DPPL_OPENCL_INTERFACE_INCLDIR=dpctl\include"
-set "OpenCL_LIBDIR=%DPCPP_ROOT%\lib"
+@REM REM required by _opencl_core (dpctl.ocldrv)
+@REM set "DPPL_OPENCL_INTERFACE_LIBDIR=dpctl"
+@REM set "DPPL_OPENCL_INTERFACE_INCLDIR=dpctl\include"
+@REM set "OpenCL_LIBDIR=%DPCPP_ROOT%\lib"
 
-REM required by _sycl_core(dpctl)
-set "DPPL_SYCL_INTERFACE_LIBDIR=dpctl"
-set "DPPL_SYCL_INTERFACE_INCLDIR=dpctl\include"
+@REM REM required by _sycl_core(dpctl)
+@REM set "DPPL_SYCL_INTERFACE_LIBDIR=dpctl"
+@REM set "DPPL_SYCL_INTERFACE_INCLDIR=dpctl\include"
 
 "%PYTHON%" setup.py clean --all
 "%PYTHON%" setup.py build install
