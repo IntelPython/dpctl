@@ -62,21 +62,33 @@ A possible implementation of the `dpctl.device` context manager can be:
 @contextmanager
 def device(inp):
     """
-    Device received a filter spec, or an object that implement `__get_device__` method
-    that either constructs `dpctl.SyclDevice` or provide a named "sycl_device" PyCapsule
-    that carries a pointer to `sycl::device`.
+    Device received a filter spec, or an object that implement `__get_device__`
+    method that either constructs `dpctl.SyclDevice` or provide a named
+    "sycl_device" PyCapsule that carries a pointer to `sycl::device`.
     """
-    if isinstance(inp, str):
-        yield from_filter(inp)
-    elif hasattr(inp, '__get_device__'):
-        cdef object dev  = inp.__get_device__()
-        if (isinstance(dev, dpctl.SyclDevice)):
+    dev = None
+    try:
+        if isinstance(inp, str):
+            dev = select_device_from_filter(str)
+            _set_as_current_queue(dev)
             yield dev
-        elif is_capsule(inp, expected_name):
-            dev = device_from_capsule(inp)
-            yield dev
-    else:
-        raise TypeError('')
+        elif hasattr(inp, '__get_device__'):
+            cdef object dev  = inp.__get_device__()
+            if (isinstance(dev, dpctl.SyclDevice)):
+                _set_as_current_queue(dev)
+                yield dev
+            elif is_capsule(inp, expected_name):
+                dev = device_from_capsule(inp)
+                _set_as_current_queue(dev)
+                yield dev
+        else:
+            raise TypeError('')
+    finally:
+        # Code to release resource
+        if dev:
+            _mgr._remove_current_queue()
+        else:
+            pass
 ----
 
 The https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc[DPC++ filter selector]
@@ -94,18 +106,34 @@ fourth optional parameter to specify a sub device.
 Another way to support sub-devices will be to expose the `create_sub_device()`
 functionality of SYCL via dpCtl.
 
+=== Use Case 1
 
-
-The `dpctl.device` returns a new `SyclDevice` object.
-
-A `SYCLDevice` object has an API function to return a SYCL queue corresponding
-to the underlying SYCL device.
+Interoperability across different Python libraries that share the same device
+and queue.
 
 [source,python]
 ----
+with dpctl.device("gpu"):
+    # Both Numba and dpnp rely on dpctl.get_current_queue() and use the same
+    # SYCL queue.
+    numba.foo()
+    dpnp.bar()
+----
 
-with dpctl.device("opencl:gpu:0") as ocl_gpu0:
-    q = ocl_gpu0.get_queue()
+=== Use Case 2
+
+Interoperability across different Python libraries that share the same device
+**but** not the same queue.
+
+[source,python]
+----
+with dpctl.device("gpu") as gpu_dev:
+    # Both Numba relies on the queue returned by dpctl.get_current_queue()
+    numba.foo()
+    # Libbar uses the `gpu_dev` Sycl device to create its own queue.
+    libbar.foo(gpu_dev)
 ----
 
 == Memory manager
+
+**_TODO_**
