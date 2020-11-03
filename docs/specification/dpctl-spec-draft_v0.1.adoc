@@ -5,6 +5,9 @@ v0.0
 :icons: font
 
 == Introduction
+
+*_TODO_* Motivating paragraph about what issue we are addressing.
+
 This document contains the specification of the data parallel control (dpCtl)
 Python runtime. DpCtl provides a way for Python packages and extensions to
 interact with SYCL, and to interoperate amongst each other by sharing SYCL
@@ -22,8 +25,9 @@ device information, and getting the SYCL context for a specific device.
 
 === Creating a SYCL device
 
-The recommended way of creating a SYCL device is using the `dpctl.device`
-context manager.
+DpCtl provides two ways to create a SYCL device. The `SyclDevice` provides a
+direct way to create a wrapper Python object for a SYCL device. A SYCL device
+can also be indirectly created using the `dpctl.device` context manager.
 
 [source,python]
 ----
