@@ -1,4 +1,4 @@
-//===-------------- dppl_utils.cpp - dpctl-C_API  ----*---- C++ -----*-----===//
+//===-------------------- test_main.cpp - dpctl-C_API ---*--- C++ ----*----===//
 //
 //               Data Parallel Control Library (dpCtl)
 //
@@ -19,18 +19,16 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file implements the helper functions defined in dppl_utils.h.
+/// A common test runner for all tests in dpctl C API.
 ///
 //===----------------------------------------------------------------------===//
 
-#include "dppl_utils.h"
+#include <gtest/gtest.h>
 
-void DPPLCString_Delete (__dppl_take const char* str)
+int
+main (int argc, char** argv)
 {
-    delete[] str;
-}
-
-void DPPLSize_t_Array_Delete (__dppl_take size_t* arr)
-{
-    delete[] arr;
+    ::testing::InitGoogleTest(&argc, argv);
+    int ret = RUN_ALL_TESTS();
+    return ret;
 }

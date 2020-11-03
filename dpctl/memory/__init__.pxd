@@ -27,6 +27,4 @@
 # distutils: language = c++
 # cython: language_level=3
 
-from dpctl._sycl_core cimport *
-from dpctl._memory import *
-
+from dpctl.memory._memory cimport *

@@ -2,8 +2,7 @@
 
 What?
 ====
-A lightweight Python package exposing a subset of OpenCL and SYCL
-functionalities.
+A lightweight Python package exposing a subset of SYCL functionalities.
 
 Requirements
 ============

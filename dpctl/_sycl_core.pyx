@@ -29,60 +29,91 @@
 from __future__ import print_function
 from enum import Enum, auto
 import logging
-from .backend cimport *
-from ._memory cimport Memory
+from ._backend cimport *
+from .memory._memory cimport _Memory
 from libc.stdlib cimport malloc, free
 
+__all__ = [
+    "dump",
+    "get_current_backend",
+    "get_current_queue",
+    "get_current_device_type",
+    "get_num_platforms",
+    "get_num_activated_queues",
+    "get_num_queues",
+    "has_cpu_queues",
+    "has_gpu_queues",
+    "has_sycl_platforms",
+    "set_default_queue",
+    "is_in_device_context",
+    "create_program_from_source",
+    "create_program_from_spirv",
+    "device_type",
+    "backend_type",
+    "device_context",
+    "SyclContext",
+    "SyclDevice",
+    "SyclEvent",
+    "SyclKernel",
+    "SyclProgram",
+    "SyclQueue"
+]
 
 _logger = logging.getLogger(__name__)
 
 
 class device_type(Enum):
+    """
+    Automatically numbers SYCL device types with values starting from 1.
+    """
     gpu = auto()
     cpu = auto()
     accelerator = auto()
     host_device = auto()
 
 class backend_type(Enum):
+    """
+    Automatically numbers SYCL backend types with values starting from 1.
+    """
     opencl = auto()
     level_zero = auto()
     cuda = auto()
     host = auto()
 
 cdef class UnsupportedBackendError (Exception):
-    '''This exception is raised when a device type other than CPU or GPU is
+    """This exception is raised when a device type other than CPU or GPU is
        encountered.
-    '''
+    """
     pass
 
 cdef class UnsupportedDeviceError (Exception):
-    '''This exception is raised when a device type other than CPU or GPU is
+    """This exception is raised when a device type other than CPU or GPU is
        encountered.
-    '''
+    """
     pass
 
 cdef class SyclProgramCompilationError (Exception):
-    '''This exception is raised when a sycl program could not be built from
+    """This exception is raised when a sycl program could not be built from
        either a spirv binary file or a string source.
-    '''
+    """
     pass
 
 cdef class SyclKernelSubmitError (Exception):
-    '''This exception is raised when a sycl program could not be built from
+    """This exception is raised when a sycl program could not be built from
        either a spirv binary file or a string source.
-    '''
+    """
     pass
 
 cdef class SyclKernelInvalidRangeError (Exception):
-    '''This exception is raised when a range that has more than three
+    """This exception is raised when a range that has more than three
        dimensions or less than one dimension.
-    '''
+    """
     pass
 
 cdef class SyclQueueCreationError (Exception):
-    '''This exception is raised when a range that has more than three
+    """This exception is raised when a range that has more than three
        dimensions or less than one dimension.
-    '''
+    """
     pass
 
 cdef class SyclContext:
@@ -116,8 +147,8 @@ cdef class SyclContext:
         return int(<size_t>self._ctx_ref)
 
 cdef class SyclDevice:
-    ''' Wrapper class for a Sycl Device
-    '''
+    """ Wrapper class for a Sycl Device
+    """
 
     @staticmethod
     cdef SyclDevice _create (DPPLSyclDeviceRef dref):
@@ -126,6 +157,13 @@ cdef class SyclDevice:
         ret._vendor_name = DPPLDevice_GetVendorName(dref)
         ret._device_name = DPPLDevice_GetName(dref)
         ret._driver_version = DPPLDevice_GetDriverInfo(dref)
+        ret._max_compute_units = DPPLDevice_GetMaxComputeUnits(dref)
+        ret._max_work_item_dims = DPPLDevice_GetMaxWorkItemDims(dref)
+        ret._max_work_item_sizes = DPPLDevice_GetMaxWorkItemSizes(dref)
+        ret._max_work_group_size = DPPLDevice_GetMaxWorkGroupSize(dref)
+        ret._max_num_sub_groups = DPPLDevice_GetMaxNumSubGroups(dref)
+        ret._int64_base_atomics = DPPLDevice_HasInt64BaseAtomics(dref)
+        ret._int64_extended_atomics = DPPLDevice_HasInt64ExtendedAtomics(dref)
         return ret
 
     def __dealloc__ (self):
@@ -133,20 +171,21 @@ cdef class SyclDevice:
         DPPLCString_Delete(self._device_name)
         DPPLCString_Delete(self._vendor_name)
         DPPLCString_Delete(self._driver_version)
+        DPPLSize_t_Array_Delete(self._max_work_item_sizes)
 
     def dump_device_info (self):
-        ''' Print information about the SYCL device.
-        '''
+        """ Print information about the SYCL device.
+        """
         DPPLDevice_DumpInfo(self._device_ref)
 
-    def get_device_name (self):
-        ''' Returns the name of the device as a string
-        '''
+    cpdef get_device_name (self):
+        """ Returns the name of the device as a string
+        """
         return self._device_name.decode()
 
-    def get_device_type (self):
-        ''' Returns the type of the device as a `device_type` enum
-        '''
+    cpdef get_device_type (self):
+        """ Returns the type of the device as a `device_type` enum
+        """
         if DPPLDevice_IsGPU(self._device_ref):
             return device_type.gpu
         elif DPPLDevice_IsCPU(self._device_ref):
@@ -154,22 +193,74 @@ cdef class SyclDevice:
         else:
             raise ValueError("Unknown device type.")
 
-    def get_vendor_name (self):
-        ''' Returns the device vendor name as a string
-        '''
+    cpdef get_vendor_name (self):
+        """ Returns the device vendor name as a string
+        """
         return self._vendor_name.decode()
 
-    def get_driver_version (self):
-        ''' Returns the OpenCL software driver version as a string
+    cpdef get_driver_version (self):
+        """ Returns the OpenCL software driver version as a string
             in the form: major number.minor number, if this SYCL
             device is an OpenCL device. Returns a string class
             with the value "1.2" if this SYCL device is a host device.
-        '''
+        """
         return self._driver_version.decode()
 
+    cpdef has_int64_base_atomics (self):
+        """ Returns true if device has int64_base_atomics else returns false.
+        """
+        return self._int64_base_atomics
+
+    cpdef has_int64_extended_atomics (self):
+        """ Returns true if device has int64_extended_atomics else returns false.
+        """
+        return self._int64_extended_atomics
+
+    cpdef get_max_compute_units (self):
+        """ Returns the number of parallel compute units
+            available to the device. The minimum value is 1.
+        """
+        return self._max_compute_units
+
+    cpdef get_max_work_item_dims (self):
+        """ Returns the maximum dimensions that specify
+            the global and local work-item IDs used by the
+            data parallel execution model. The minimum
+            value is 3 if this SYCL device is not of device
+            type ``info::device_type::custom``.
+        """
+        return self._max_work_item_dims
+
+    cpdef get_max_work_item_sizes (self):
+        """ Returns the maximum number of work-items
+            that are permitted in each dimension of the
+            work-group of the nd_range. The minimum
+            value is (1; 1; 1) for devices that are not of
+            device type ``info::device_type::custom``.
+        """
+        max_work_item_sizes = []
+        for n in range(3):
+            max_work_item_sizes.append(self._max_work_item_sizes[n])
+        return tuple(max_work_item_sizes)
+
+    cpdef get_max_work_group_size (self):
+        """ Returns the maximum number of work-items
+            that are permitted in a work-group executing a
+            kernel on a single compute unit. The minimum
+            value is 1.
+        """
+        return self._max_work_group_size
+
+    cpdef get_max_num_sub_groups (self):
+        """ Returns the maximum number of sub-groups
+            in a work-group for any kernel executed on the
+            device. The minimum value is 1.
+        """
+        return self._max_num_sub_groups
+
     cdef DPPLSyclDeviceRef get_device_ref (self):
-        ''' Returns the DPPLSyclDeviceRef pointer for this class.
-        '''
+        """ Returns the DPPLSyclDeviceRef pointer for this class.
+        """
         return self._device_ref
 
     def addressof_ref (self):
@@ -183,8 +274,8 @@ cdef class SyclDevice:
         return int(<size_t>self._device_ref)
 
 cdef class SyclEvent:
-    ''' Wrapper class for a Sycl Event
-    '''
+    """ Wrapper class for a Sycl Event
+    """
 
     @staticmethod
     cdef SyclEvent _create (DPPLSyclEventRef eref, list args):
@@ -198,15 +289,15 @@ cdef class SyclEvent:
         DPPLEvent_Delete(self._event_ref)
 
     cdef DPPLSyclEventRef get_event_ref (self):
-        ''' Returns the DPPLSyclEventRef pointer for this class.
-        '''
+        """ Returns the DPPLSyclEventRef pointer for this class.
+        """
         return self._event_ref
 
     cpdef void wait (self):
         DPPLEvent_Wait(self._event_ref)
 
     def addressof_ref (self):
-        """Returns the address of the C API DPPLSyclEventRef pointer as
+        """ Returns the address of the C API DPPLSyclEventRef pointer as
         a long.
 
         Returns:
@@ -217,9 +308,9 @@ cdef class SyclEvent:
 
 
 cdef class SyclKernel:
-    ''' Wraps a sycl::kernel object created from an OpenCL interoperability
+    """ Wraps a sycl::kernel object created from an OpenCL interoperability
         kernel.
-    '''
+    """
 
     @staticmethod
     cdef SyclKernel _create (DPPLSyclKernelRef kref):
@@ -233,22 +324,22 @@ cdef class SyclKernel:
         DPPLCString_Delete(self._function_name)
 
     def get_function_name (self):
-        ''' Returns the name of the Kernel function.
-        '''
+        """ Returns the name of the Kernel function.
+        """
         return self._function_name.decode()
 
     def get_num_args (self):
-        ''' Returns the number of arguments for this kernel function.
-        '''
+        """ Returns the number of arguments for this kernel function.
+        """
         return DPPLKernel_GetNumArgs(self._kernel_ref)
 
     cdef DPPLSyclKernelRef get_kernel_ref (self):
-        ''' Returns the DPPLSyclKernelRef pointer for this SyclKernel.
-        '''
+        """ Returns the DPPLSyclKernelRef pointer for this SyclKernel.
+        """
         return self._kernel_ref
 
     def addressof_ref (self):
-        """Returns the address of the C API DPPLSyclKernelRef pointer
+        """ Returns the address of the C API DPPLSyclKernelRef pointer
         as a long.
 
         Returns:
@@ -258,13 +349,13 @@ cdef class SyclKernel:
         return int(<size_t>self._kernel_ref)
 
 cdef class SyclProgram:
-    ''' Wraps a sycl::program object created from an OpenCL interoperability
+    """ Wraps a sycl::program object created from an OpenCL interoperability
         program.
 
         SyclProgram exposes the C API from dppl_sycl_program_interface.h. A
         SyclProgram can be created from either a source string or a SPIR-V
         binary file.
-    '''
+    """
 
     @staticmethod
     cdef SyclProgram _create (DPPLSyclProgramRef pref):
@@ -300,8 +391,8 @@ cdef class SyclProgram:
 import ctypes
 
 cdef class SyclQueue:
-    ''' Wrapper class for a Sycl queue.
-    '''
+    """ Wrapper class for a Sycl queue.
+    """
 
     @staticmethod
     cdef SyclQueue _create (DPPLSyclQueueRef qref):
@@ -311,6 +402,21 @@ cdef class SyclQueue:
         ret._context = SyclContext._create(DPPLQueue_GetContext(qref))
         ret._device = SyclDevice._create(DPPLQueue_GetDevice(qref))
         ret._queue_ref = qref
+        return ret
+
+    @staticmethod
+    cdef SyclQueue _create_from_context_and_device(SyclContext ctx, SyclDevice dev):
+        cdef SyclQueue ret = SyclQueue.__new__(SyclQueue)
+        cdef DPPLSyclContextRef cref = ctx.get_context_ref()
+        cdef DPPLSyclDeviceRef dref = dev.get_device_ref()
+        cdef DPPLSyclQueueRef qref = DPPLQueueMgr_GetQueueFromContextAndDevice(
+            cref, dref)
+
+        if qref is NULL:
+            raise SyclQueueCreationError("Queue creation failed.")
+        ret._queue_ref = qref
+        ret._context = ctx
+        ret._device = dev
         return ret
 
     def __dealloc__ (self):
@@ -370,7 +476,7 @@ cdef class SyclQueue:
             elif isinstance(arg, ctypes.c_double):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._DOUBLE
-            elif isinstance(arg, Memory):
+            elif isinstance(arg, _Memory):
                 kargs[idx]= <void*>(<size_t>arg._pointer)
                 kargty[idx] = _arg_data_type._VOID_PTR
             else:
@@ -430,8 +536,7 @@ cdef class SyclQueue:
         return self._queue_ref
 
     def addressof_ref (self):
-        """Returns the address of the C API DPPLSyclQueueRef pointer as
-        a long.
+        """ Returns the address of the C API DPPLSyclQueueRef pointer as a long.
 
         Returns:
             The address of the DPPLSyclQueueRef object used to create this
@@ -541,26 +646,52 @@ cdef class SyclQueue:
     cpdef void wait (self):
         DPPLQueue_Wait(self._queue_ref)
 
-    cpdef memcpy (self, dest, src, int count):
+    cpdef memcpy (self, dest, src, size_t count):
         cdef void *c_dest
         cdef void *c_src
 
-        if isinstance(dest, Memory):
-            c_dest = <void*>(<Memory>dest).memory_ptr
+        if isinstance(dest, _Memory):
+            c_dest = <void*>(<_Memory>dest).memory_ptr
         else:
-            raise TypeError("Parameter dest should be Memory.")
+            raise TypeError("Parameter `dest` should have type _Memory.")
 
-        if isinstance(src, Memory):
-            c_src = <void*>(<Memory>src).memory_ptr
+        if isinstance(src, _Memory):
+            c_src = <void*>(<_Memory>src).memory_ptr
         else:
-            raise TypeError("Parameter src should be Memory.")
+            raise TypeError("Parameter `src` should have type _Memory.")
 
         DPPLQueue_Memcpy(self._queue_ref, c_dest, c_src, count)
 
+    cpdef prefetch (self, mem, size_t count=0):
+       cdef void *ptr
+
+       if isinstance(mem, _Memory):
+           ptr = <void*>(<_Memory>mem).memory_ptr
+       else:
+           raise TypeError("Parameter `mem` should have type _Memory")
+
+       if (count <=0 or count > self.nbytes):
+           count = self.nbytes
+
+       DPPLQueue_Prefetch(self._queue_ref, ptr, count)
+
+    cpdef mem_advise (self, mem, size_t count, int advice):
+       cdef void *ptr
+
+       if isinstance(mem, _Memory):
+           ptr = <void*>(<_Memory>mem).memory_ptr
+       else:
+           raise TypeError("Parameter `mem` should have type _Memory")
+
+       if (count <=0 or count > self.nbytes):
+           count = self.nbytes
+
+       DPPLQueue_MemAdvise(self._queue_ref, ptr, count, advice)
+
 
 cdef class _SyclRTManager:
-    ''' Wrapper for the C API's sycl queue manager interface.
-    '''
+    """ Wrapper for the C API's sycl queue manager interface.
+    """
     cdef dict _backend_str_ty_dict
     cdef dict _device_str_ty_dict
     cdef dict _backend_enum_ty_dict
@@ -607,8 +738,8 @@ cdef class _SyclRTManager:
         DPPLQueueMgr_PopQueue()
 
     def dump (self):
-        ''' Prints information about the Runtime object.
-        '''
+        """ Prints information about the Runtime object.
+        """
         DPPLPlatform_DumpInfo()
 
     def print_available_backends (self):
@@ -616,29 +747,29 @@ cdef class _SyclRTManager:
         """
         print(self._backend_str_ty_dict.keys())
 
-    def get_current_backend (self):
+    cpdef get_current_backend (self):
         """ Returns the backend for the current queue as `backend_type` enum
         """
         return self.get_current_queue().get_sycl_backend()
 
-    def get_current_device_type (self):
-        ''' Returns current device type as `device_type` enum
-        '''
+    cpdef get_current_device_type (self):
+        """ Returns current device type as `device_type` enum
+        """
         return self.get_current_queue().get_sycl_device().get_device_type()
 
     cpdef SyclQueue get_current_queue (self):
-        ''' Returns the activated SYCL queue as a PyCapsule.
-        '''
+        """ Returns the activated SYCL queue as a PyCapsule.
+        """
         return SyclQueue._create(DPPLQueueMgr_GetCurrentQueue())
 
     def get_num_activated_queues (self):
-        ''' Return the number of currently activated queues for this thread.
-        '''
+        """ Return the number of currently activated queues for this thread.
+        """
         return DPPLQueueMgr_GetNumActivatedQueues()
 
     def get_num_platforms (self):
-        ''' Returns the number of available non-host SYCL platforms.
-        '''
+        """ Returns the number of available non-host SYCL platforms.
+        """
         return DPPLPlatform_GetNumNonHostPlatforms()
 
     def get_num_queues (self, backend_ty, device_ty):
@@ -736,7 +867,6 @@ _mgr = _SyclRTManager()
 
 # Global bound functions
 dump                     = _mgr.dump
-get_current_device_type  = _mgr.get_current_device_type
 get_num_platforms        = _mgr.get_num_platforms
 get_num_activated_queues = _mgr.get_num_activated_queues
 get_num_queues           = _mgr.get_num_queues
@@ -747,28 +877,41 @@ set_default_queue        = _mgr.set_default_queue
 is_in_device_context     = _mgr.is_in_device_context
 
 cpdef SyclQueue get_current_queue():
-    ''' Obtain current Sycl Queue from Data Parallel Control package '''
+    """
+        Obtain current Sycl Queue from Data Parallel Control package.
+    """
     return _mgr.get_current_queue()
 
+cpdef get_current_device_type():
+    """
+        Obtain current device type from Data Parallel Control package.
+    """
+    return _mgr.get_current_device_type()
+
+cpdef get_current_backend():
+    """
+        Obtain current backend type from Data Parallel Control package.
+    """
+    return _mgr.get_current_backend()
 
 def create_program_from_source (SyclQueue q, unicode source, unicode copts=""):
-    ''' Creates a Sycl interoperability program from an OpenCL source string.
+    """
+        Creates a Sycl interoperability program from an OpenCL source string.
 
         We use the DPPLProgram_CreateFromOCLSource() C API function to create
         a Sycl progrma from an OpenCL source program that can contain multiple
         kernels.
 
         Parameters:
-                q (SyclQueue)   : The SyclQueue object wraps the Sycl device for
-                                  which the program will be built.
-                source (unicode): Source string for an OpenCL program.
-                copts (unicode) : Optional compilation flags that will be used
-                                  when compiling the program.
+            q (SyclQueue)   : The :class:`SyclQueue` for which the
+                              :class:`SyclProgram` is going to be built.
+            source (unicode): Source string for an OpenCL program.
+            copts (unicode) : Optional compilation flags that will be used
+                              when compiling the program.
 
         Returns:
-            program (SyclProgram): A SyclProgram object wrapping the
-                                    syc::program returned by the C API.
-    '''
+            program (SyclProgram): A :class:`SyclProgram` object wrapping the  sycl::program returned by the C API.
+    """
 
     BE = q.get_sycl_backend()
     if BE != backend_type.opencl:
@@ -793,20 +936,20 @@ def create_program_from_source (SyclQueue q, unicode source, unicode copts=""):
 cimport cython.array
 
 def create_program_from_spirv (SyclQueue q, const unsigned char[:] IL):
-    ''' Creates a Sycl interoperability program from an SPIR-V binary.
+    """
+        Creates a Sycl interoperability program from an SPIR-V binary.
 
         We use the DPPLProgram_CreateFromOCLSpirv() C API function to create
         a Sycl progrma from an compiled SPIR-V binary file.
 
         Parameters:
-            q (SyclQueue): The SyclQueue object wraps the Sycl device for
-                           which the program will be built.
+            q (SyclQueue): The :class:`SyclQueue` for which the
+                           :class:`SyclProgram` is going to be built.
             IL (const char[:]) : SPIR-V binary IL file for an OpenCL program.
 
         Returns:
-            program (SyclProgram): A SyclProgram object wrapping the
-                                   syc::program returned by the C API.
-    '''
+            program (SyclProgram): A :class:`SyclProgram` object wrapping the  sycl::program returned by the C API.
+    """
     BE = q.get_sycl_backend()
     if BE != backend_type.opencl:
         raise ValueError(
@@ -829,19 +972,21 @@ from contextlib import contextmanager
 
 @contextmanager
 def device_context (str queue_str="opencl:gpu:0"):
-    # Create a new device context and add it to the front of the runtime's
-    # deque of active contexts (SyclQueueManager.active_contexts_).
-    # Also return a reference to the context. The behavior allows consumers
-    # of the context manager to either use the new context by indirectly
-    # calling get_current_context, or use the returned context object directly.
+    """
+        The SYCL queue defined by the "backend:device type:device id" tuple is
+        set as the currently active queue, *i.e.*, a subsequent call to
+        :func:`dpctl.get_current_queue()` inside the context returns the queue.
+        The active queue is also returned by the context manager and can be
+        directly used without having to call :func:`dpctl.get_current_queue()`.
 
-    # If set_context is unable to create a new context an exception is raised.
+        If a the request queue is not found an exception is raised.
+    """
     ctxt = None
     try:
         attrs = queue_str.split(':')
         nattrs = len(attrs)
         if (nattrs < 2 or nattrs > 3):
-            raise ValueError("Invalid device context string. Should be "
+            raise ValueError("Invalid queue filter string. Should be "
                              "backend:device:device_number or "
                              "backend:device. In the later case the "
                              "device_number defaults to 0")
@@ -853,7 +998,7 @@ def device_context (str queue_str="opencl:gpu:0"):
         # Code to release resource
         if ctxt:
             _logger.debug(
-                "Removing the context from the stack of active contexts")
+                "Removing the queue from the stack of active queues")
             _mgr._remove_current_queue()
         else:
-            _logger.debug("No context was created so nothing to do")
+            _logger.debug("No queue was created so nothing to do")
