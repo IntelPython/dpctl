@@ -44,6 +44,28 @@ three-tuple string supports the specification of the DPC++
 https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc[Filter Selector]
 extension, and additional functionality to support sub-devices.
 
+[source,python]
+----
+@contextmanager
+def device(inp):
+    """
+    Device received a filter spec, or an object that implement `__get_device__` method
+    that either constructs `dpctl.SyclDevice` or provide a named "sycl_device" PyCapsule
+    that carries a pointer to `sycl::device`.
+    """
+    if isintsnace(inp, str):
+        yield from_filter(inp)
+    elif hasattr(inp, '__get_device__'):
+        cdef object dev  = inp.__get_device__()
+        if (isintance(dev, dpctl.SyclDevice)):
+            yield dev
+        elif is_capsule(inp, expected_name):
+            dev = device_from_capsule(inp)
+            yield dev
+    else:
+        raise TypeError('')
+----
+
 *_TODO_* : add verbiage about allowed backend, device type, and device id.
 
 *_TODO_* : All the values in the tuple are optional, but at least one the three
