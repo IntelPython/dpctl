@@ -25,6 +25,7 @@ import os
 import os.path
 import sys
 import versioneer
+import subprocess
 
 from setuptools import setup, Extension, find_packages
 from Cython.Build import cythonize
@@ -47,6 +48,26 @@ elif sys.platform in ["win32", "cygwin"]:
     IS_WIN = True
 else:
     assert False, sys.platform + " not supported"
+
+if IS_LIN:
+    os.environ["CC"] = "clang"
+    os.environ["CXX"] = "clang++"
+    os.environ["DPCPP_ROOT"] = os.environ["ONEAPI_ROOT"] + "/compiler/latest/linux/"
+    os.environ["DPPL_OPENCL_INTERFACE_LIBDIR"] = "dpctl"
+    os.environ["DPPL_OPENCL_INTERFACE_INCLDIR"] = "dpctl/include"
+    os.environ["OpenCL_LIBDIR"] = os.environ["DPCPP_ROOT"] + "/lib"
+    os.environ["DPPL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
+    os.environ["DPPL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
+
+elif IS_WIN:
+    os.environ["CC"] = "clang-cl.exe"
+    os.environ["CXX"] = "dpcpp.exe"
+    os.environ["DPCPP_ROOT"] = "%ONEAPI_ROOT%\compiler\latest\windows"
+    os.environ["DPPL_OPENCL_INTERFACE_LIBDIR"] = "dpctl"
+    os.environ["DPPL_OPENCL_INTERFACE_INCLDIR"] = "dpctl\include"
+    os.environ["OpenCL_LIBDIR"] = os.environ["DPCPP_ROOT"] + "\lib"
+    os.environ["DPPL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
+    os.environ["DPPL_SYCL_INTERFACE_INCLDIR"] = "dpctl\include"
 
 dppl_sycl_interface_lib = os.environ["DPPL_SYCL_INTERFACE_LIBDIR"]
 dppl_sycl_interface_include = os.environ["DPPL_SYCL_INTERFACE_INCLDIR"]
@@ -99,7 +120,15 @@ def get_suppressed_warning_flags():
         return []
 
 
+def build_backend():
+    if IS_LIN:
+        subprocess.check_call(["/bin/bash", "-c", "scripts/build_backend.sh"])
+    elif IS_WIN:
+        subprocess.check_call(["cmd.exe", "/c", "scripts\\build_backend.bat"])
+
+
 def extensions():
+    build_backend()
     # Security flags
     eca = get_sdl_cflags()
     ela = get_sdl_ldflags()
