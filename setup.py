@@ -49,25 +49,26 @@ elif sys.platform in ["win32", "cygwin"]:
 else:
     assert False, sys.platform + " not supported"
 
-if IS_LIN:
-    os.environ["CC"] = "clang"
-    os.environ["CXX"] = "clang++"
-    os.environ["DPCPP_ROOT"] = os.environ["ONEAPI_ROOT"] + "/compiler/latest/linux/"
-    os.environ["DPPL_OPENCL_INTERFACE_LIBDIR"] = "dpctl"
-    os.environ["DPPL_OPENCL_INTERFACE_INCLDIR"] = "dpctl/include"
-    os.environ["OpenCL_LIBDIR"] = os.environ["DPCPP_ROOT"] + "/lib"
-    os.environ["DPPL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
-    os.environ["DPPL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
+# if IS_LIN:
+#     os.environ["CC"] = "clang"
+#     os.environ["CXX"] = "clang++"
+#     os.environ["DPCPP_ROOT"] = os.environ["ONEAPI_ROOT"] + "/compiler/latest/linux/"
+#     os.environ["DPPL_OPENCL_INTERFACE_LIBDIR"] = "dpctl"
+#     os.environ["DPPL_OPENCL_INTERFACE_INCLDIR"] = "dpctl/include"
+#     os.environ["OpenCL_LIBDIR"] = os.environ["DPCPP_ROOT"] + "/lib"
+#     os.environ["DPPL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
+#     os.environ["DPPL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
+#     os.environ["CFLAGS"] = "-fPIC -O3 " + os.environ["CFLAGS"]
 
-elif IS_WIN:
-    os.environ["CC"] = "clang-cl.exe"
-    os.environ["CXX"] = "dpcpp.exe"
-    os.environ["DPCPP_ROOT"] = "%ONEAPI_ROOT%\compiler\latest\windows"
-    os.environ["DPPL_OPENCL_INTERFACE_LIBDIR"] = "dpctl"
-    os.environ["DPPL_OPENCL_INTERFACE_INCLDIR"] = "dpctl\include"
-    os.environ["OpenCL_LIBDIR"] = os.environ["DPCPP_ROOT"] + "\lib"
-    os.environ["DPPL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
-    os.environ["DPPL_SYCL_INTERFACE_INCLDIR"] = "dpctl\include"
+# elif IS_WIN:
+#     os.environ["CC"] = "clang-cl.exe"
+#     os.environ["CXX"] = "dpcpp.exe"
+#     os.environ["DPCPP_ROOT"] = "%ONEAPI_ROOT%\compiler\latest\windows"
+#     os.environ["DPPL_OPENCL_INTERFACE_LIBDIR"] = "dpctl"
+#     os.environ["DPPL_OPENCL_INTERFACE_INCLDIR"] = "dpctl\include"
+#     os.environ["OpenCL_LIBDIR"] = os.environ["DPCPP_ROOT"] + "\lib"
+#     os.environ["DPPL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
+#     os.environ["DPPL_SYCL_INTERFACE_INCLDIR"] = "dpctl\include"
 
 dppl_sycl_interface_lib = os.environ["DPPL_SYCL_INTERFACE_LIBDIR"]
 dppl_sycl_interface_include = os.environ["DPPL_SYCL_INTERFACE_INCLDIR"]
@@ -128,7 +129,7 @@ def build_backend():
 
 
 def extensions():
-    build_backend()
+    # build_backend()
     # Security flags
     eca = get_sdl_cflags()
     ela = get_sdl_ldflags()
@@ -190,6 +191,7 @@ def extensions():
     return exts
 
 
+# build_backend()
 setup(
     name="dpctl",
     version=versioneer.get_version(),

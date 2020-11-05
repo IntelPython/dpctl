@@ -42,12 +42,12 @@ cp -r backends/include/* dpctl/include
 
 
 # required by dpctl.sycl_core
-# export DPPL_SYCL_INTERFACE_LIBDIR=dpctl
-# export DPPL_SYCL_INTERFACE_INCLDIR=dpctl/include
+export DPPL_SYCL_INTERFACE_LIBDIR=dpctl
+export DPPL_SYCL_INTERFACE_INCLDIR=dpctl/include
 
 
 # # FIXME: How to pass this using setup.py? This flags is needed when
 # # dpcpp compiles the generated cpp file.
-# export CFLAGS="-fPIC -O3 ${CFLAGS}"
+export CFLAGS="-fPIC -O3 ${CFLAGS}"
 # ${PYTHON} setup.py clean --all
 # ${PYTHON} setup.py build install
