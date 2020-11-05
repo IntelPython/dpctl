@@ -1,16 +1,5 @@
 #!/bin/bash
 
-# We need dpcpp to compile dppl_sycl_interface
-if [ ! -z "${ONEAPI_ROOT}" ]; then
-    # Suppress error b/c it could fail on Ubuntu 18.04
-    source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh || true
-    export CC=clang
-    export CXX=clang++
-else
-    echo "DPCPP is needed to build DPPL. Abort!"
-    exit 1
-fi
-
 rm -rf build_cmake
 mkdir build_cmake
 pushd build_cmake
@@ -39,15 +28,3 @@ cp install/lib/*.so dpctl/
 
 mkdir -p dpctl/include
 cp -r backends/include/* dpctl/include
-
-
-# required by dpctl.sycl_core
-export DPPL_SYCL_INTERFACE_LIBDIR=dpctl
-export DPPL_SYCL_INTERFACE_INCLDIR=dpctl/include
-
-
-# # FIXME: How to pass this using setup.py? This flags is needed when
-# # dpcpp compiles the generated cpp file.
-export CFLAGS="-fPIC -O3 ${CFLAGS}"
-# ${PYTHON} setup.py clean --all
-# ${PYTHON} setup.py build install

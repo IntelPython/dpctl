@@ -1,8 +1,3 @@
-call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
-IF %ERRORLEVEL% NEQ 0 (
-	echo "oneAPI compiler activation failed"
-	exit /b 1
-)
 REM conda uses %ERRORLEVEL% but FPGA scripts can set it. So it should be reseted.
 set ERRORLEVEL=
 
@@ -36,12 +31,3 @@ xcopy install\bin\*.dll dpctl /E /Y
 
 mkdir dpctl\include
 xcopy backends\include dpctl\include /E /Y
-
-
-REM required by _sycl_core(dpctl)
-@REM set "DPPL_SYCL_INTERFACE_LIBDIR=dpctl"
-@REM set "DPPL_SYCL_INTERFACE_INCLDIR=dpctl\include"
-
-@REM "%PYTHON%" setup.py clean --all
-@REM "%PYTHON%" setup.py build install
-@REM IF %ERRORLEVEL% NEQ 0 exit /b 1
