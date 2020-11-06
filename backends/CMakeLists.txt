@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project("dpCtl - A lightweight SYCL wrapper for Python")
 
 # The function checks is DPCPP_ROOT is valid and points to a dpcpp installation
@@ -13,7 +13,7 @@ function (check_for_dpcpp)
         set (dpcpp_cmd "${DPCPP_ROOT}/bin/dpcpp")
         set (dpcpp_arg "--version")
     elseif(UNIX)
-        set (dpcpp_cmd "dpcpp")
+        set (dpcpp_cmd "${DPCPP_ROOT}/bin/dpcpp")
         set (dpcpp_arg "--version")
     else()
         message(FATAL_ERROR "Unsupported system.")
@@ -38,28 +38,8 @@ function (check_for_dpcpp)
     endif()
 endfunction()
 
-function (check_for_numpy_inc)
-    string(COMPARE EQUAL "${NUMPY_INCLUDE_DIR}" "" no_numpy_inc)
-    if(${no_dpcpp_root})
-        message(FATAL_ERROR "Set the NUMPY_INCLUDE_DIR argument providing the \
-                             path to NumPy Headers.")
-    else()
-        message(STATUS "NUMPY_INCLUDE_DIR: ${NUMPY_INCLUDE_DIR}")
-    endif()
-
-    string(COMPARE EQUAL "${PYTHON_INCLUDE_DIR}" "" no_python_inc)
-    if(${no_dpcpp_root})
-        message(FATAL_ERROR "Set the PYTHON_INCLUDE_DIR argument providing the \
-                             path to Python Headers.")
-    else()
-        message(STATUS "PYTHON_INCLUDE_DIR: ${PYTHON_INCLUDE_DIR}")
-    endif()
-endfunction()
-
 # Check for dpcpp in the specified DPCPP_ROOT
 check_for_dpcpp()
-# Check if the locations of Numpy and Python headers were provided
-check_for_numpy_inc()
 
 if(WIN32)
     set(CMAKE_CXX_COMPILER:PATH "${DPCPP_ROOT}/bin/dpcpp")
@@ -106,8 +86,6 @@ target_include_directories(
   PRIVATE
   ${CMAKE_SOURCE_DIR}/include/
   ${CMAKE_SOURCE_DIR}/details/include/
-  ${PYTHON_INCLUDE_DIR}
-  ${NUMPY_INCLUDE_DIR}
 )
 
 if(WIN32)
@@ -153,8 +131,17 @@ foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION details/include)
 endforeach()
 
+option(
+    BUILD_CAPI_TESTS
+    "Build dpctl C API google tests"
+    OFF
+)
+
 # Enable to build the dpCtl backend test cases
-add_subdirectory(tests)
+if(BUILD_CAPI_TESTS)
+    add_subdirectory(tests)
+endif()
+
 
 # Todo : Add build rules for doxygen
 # maybe refer https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/

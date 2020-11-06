@@ -52,6 +52,7 @@ DPPL_C_EXTERN_C_BEGIN
  *
  * @param    Ctx            An opaque pointer to a sycl::context
  * @param    IL             SPIR-V binary
+ * @param    Length         The size of the IL binary in bytes.
  * @return   A new SyclProgramRef pointer if the program creation succeeded,
  *           else returns NULL.
  */
@@ -66,7 +67,7 @@ DPPLProgram_CreateFromOCLSpirv (__dppl_keep const DPPLSyclContextRef Ctx,
  *
  * @param    Ctx            An opaque pointer to a sycl::context
  * @param    Source         OpenCL source string
- * @param    CompileOptions Extra compiler flags (refer Sycl spec.)
+ * @param    CompileOpts    Extra compiler flags (refer Sycl spec.)
  * @return   A new SyclProgramRef pointer if the program creation succeeded,
  *           else returns NULL.
  */

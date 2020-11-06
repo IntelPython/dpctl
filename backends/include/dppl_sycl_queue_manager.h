@@ -56,6 +56,7 @@ __dppl_give DPPLSyclQueueRef DPPLQueueMgr_GetCurrentQueue ();
 /*!
  * @brief Get a sycl::queue object of the specified type and device id.
  *
+ * @param    BETy           A valid Sycl backend value.
  * @param    DeviceTy       The type of Sycl device (sycl_device_type)
  * @param    DNum           Device id for the device (defaults to 0)
  *
