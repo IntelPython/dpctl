@@ -23,7 +23,6 @@ requirements:
         - make  # [unix]
         - ninja  # [win]
         - numpy >=1.17
-        - gtest
     run:
         - python
         - numpy >=1.17
