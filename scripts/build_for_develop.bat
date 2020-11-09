@@ -21,11 +21,9 @@ cd ..\build_cmake
 set "DPCPP_ROOT=%ONEAPI_ROOT%\compiler\latest\windows"
 
 if defined USE_GTEST (
-    set "_GTEST_INCLUDE_DIR=%CONDA_PREFIX%\Library\include"
-    set "_GTEST_LIB_DIR=%CONDA_PREFIX%\Library\lib"
+    set "_BUILD_CAPI_TEST=ON"
 ) else (
-    set "_GTEST_INCLUDE_DIR="
-    set "_GTEST_LIB_DIR="
+    set "_BUILD_CAPI_TEST=OFF"
 )
 cmake -G Ninja ^
     -DCMAKE_BUILD_TYPE=Release ^
@@ -35,12 +33,11 @@ cmake -G Ninja ^
     "-DDPCPP_ROOT=%DPCPP_ROOT%" ^
     "-DCMAKE_C_COMPILER:PATH=%DPCPP_ROOT%\bin\clang-cl.exe" ^
     "-DCMAKE_CXX_COMPILER:PATH=%DPCPP_ROOT%\bin\dpcpp.exe" ^
-    "-DGTEST_INCLUDE_DIR=%_GTEST_INCLUDE_DIR%" ^
-    "-DGTEST_LIB_DIR=%_GTEST_LIB_DIR%" ^
+    "-DBUILD_CAPI_TESTS=%_BUILD_CAPI_TEST%" ^
     "%cd%\..\backends"
 IF %ERRORLEVEL% NEQ 0 exit /b 1
 
-ninja -n 
+ninja -n
 IF %ERRORLEVEL% NEQ 0 exit /b 1
 if defined USE_GTEST (
     ninja check
