@@ -20,7 +20,7 @@
 ##
 ## \file
 ## This file declares the extension types and functions for the Cython API
-## implemented in dpctl.memory_memory.pyx.
+## implemented in dpctl.memory._memory.pyx.
 ##
 ##===----------------------------------------------------------------------===##
 
