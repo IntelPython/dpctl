@@ -7,9 +7,6 @@ pushd build_cmake
 INSTALL_PREFIX=`pwd`/../install
 rm -rf ${INSTALL_PREFIX}
 
-PYTHON_INC=`${PYTHON} -c "import distutils.sysconfig;                  \
-                        print(distutils.sysconfig.get_python_inc())"`
-NUMPY_INC=`${PYTHON} -c "import numpy; print(numpy.get_include())"`
 DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest/linux/
 
 cmake                                                       \
@@ -17,8 +14,8 @@ cmake                                                       \
     -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}                \
     -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX}                   \
     -DDPCPP_ROOT=${DPCPP_ROOT}                              \
-    -DPYTHON_INCLUDE_DIR=${PYTHON_INC}                      \
-    -DNUMPY_INCLUDE_DIR=${NUMPY_INC}                        \
+    -DCMAKE_C_COMPILER:PATH=${DPCPP_ROOT}/bin/clang         \
+    -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/bin/dpcpp       \
     ../backends
 
 make -j 4 && make install

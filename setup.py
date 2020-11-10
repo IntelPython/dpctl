@@ -28,6 +28,7 @@ import versioneer
 import subprocess
 
 from setuptools import setup, Extension, find_packages
+from setuptools.command.build_py import build_py as _build_py
 from Cython.Build import cythonize
 
 import numpy as np
@@ -50,11 +51,12 @@ else:
     assert False, sys.platform + " not supported"
 
 if IS_LIN:
-    os.environ["CC"] = "clang"
-    os.environ["CXX"] = "clang++"
+    DPCPP_ROOT = os.environ["ONEAPI_ROOT"] + "/compiler/latest/linux"
+    os.environ["CC"] = DPCPP_ROOT + "/bin/clang"
+    os.environ["CXX"] = DPCPP_ROOT + "/bin/dpcpp"
     os.environ["DPPL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
     os.environ["DPPL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
-    os.environ["CFLAGS"] = "-fPIC -O3 " + os.environ["CFLAGS"]
+    os.environ["CFLAGS"] = "-fPIC"
 
 elif IS_WIN:
     os.environ["CC"] = "clang-cl.exe"
@@ -182,11 +184,22 @@ def extensions():
     return exts
 
 
-build_backend()
+class build_py(_build_py):
+    def run(self):
+        build_backend()
+        return super().run()
+
+
+def _get_cmdclass():
+    cmdclass = versioneer.get_cmdclass()
+    cmdclass["build_py"] = build_py
+    return cmdclass
+
+
 setup(
     name="dpctl",
     version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+    cmdclass=_get_cmdclass(),
     description="A lightweight Python wrapper for a subset of OpenCL and SYCL.",
     license="Apache 2.0",
     author="Intel Corporation",
