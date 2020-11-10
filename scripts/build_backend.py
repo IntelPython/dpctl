@@ -90,7 +90,7 @@ if IS_WIN:
     os.system(
         "xcopy "
         + dpctl_dir
-        + "install\\lib\\*.lib "
+        + "\\install\\lib\\*.lib "
         + dpctl_dir
         + "\\dpctl\\"
         + " /E /Y"
@@ -98,7 +98,7 @@ if IS_WIN:
     os.system(
         "xcopy "
         + dpctl_dir
-        + "install\\bin\\*.dll "
+        + "\\install\\bin\\*.dll "
         + dpctl_dir
         + "\\dpctl\\"
         + " /E /Y"
