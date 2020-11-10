@@ -87,8 +87,22 @@ if IS_WIN:
         assert 1, "install failed"
 
     os.chdir(dpctl_dir)
-    os.system("cp " + dpctl_dir + "install\\lib\\*.lib " + dpctl_dir + "\\dpctl\\")
-    os.system("cp " + dpctl_dir + "install\\bin\\*.dll " + dpctl_dir + "\\dpctl\\")
+    os.system(
+        "xcopy "
+        + dpctl_dir
+        + "install\\lib\\*.lib "
+        + dpctl_dir
+        + "\\dpctl\\"
+        + " /E /Y"
+    )
+    os.system(
+        "xcopy "
+        + dpctl_dir
+        + "install\\bin\\*.dll "
+        + dpctl_dir
+        + "\\dpctl\\"
+        + " /E /Y"
+    )
 
     include_dir = os.path.join(dpctl_dir, "dpctl\\include")
     if os.path.exists(include_dir):
