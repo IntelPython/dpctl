@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 import shutil
+import glob
 
 IS_WIN = False
 IS_LIN = False
@@ -16,10 +17,9 @@ else:
 ONEAPI_ROOT = os.environ.get("ONEAPI_ROOT")
 
 if IS_LIN:
-    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, "compiler/latest/linux")
+    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, "compiler", "latest", "linux")
 if IS_WIN:
-    os.environ["ERRORLEVEL"] = ""
-    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, "compiler\latest\windows")
+    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, "compiler" "latest" "windows")
 
 dpctl_dir = os.getcwd()
 build_cmake_dir = os.path.join(dpctl_dir, "build_cmake")
@@ -42,8 +42,8 @@ if IS_LIN:
             "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
             "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
             "-DDPCPP_ROOT=" + DPCPP_ROOT,
-            "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin/clang"),
-            "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin/dpcpp"),
+            "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
+            "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "dpcpp"),
             backends_dir,
         ],
         stderr=subprocess.STDOUT,
@@ -54,13 +54,8 @@ if IS_LIN:
     subprocess.check_call(["make", "install"])
 
     os.chdir(dpctl_dir)
-    os.system("cp " + dpctl_dir + "/install/lib/*.so " + dpctl_dir + "/dpctl/")
-
-    include_dir = os.path.join(dpctl_dir, "dpctl/include")
-    if os.path.exists(include_dir):
-        shutil.rmtree(include_dir)
-
-    shutil.copytree(os.path.join(dpctl_dir, "backends/include"), include_dir)
+    for file in glob.glob(os.path.join(dpctl_dir, "install", "lib", "*.so")):
+        shutil.copy(file, os.path.join(dpctl_dir, "dpctl"))
 
 if IS_WIN:
     subprocess.check_call(
@@ -78,34 +73,18 @@ if IS_WIN:
         shell=True,
     )
 
-    if os.environ["ERRORLEVEL"] != 0:
-        assert 1, "cmake failed"
-
     subprocess.check_call(["ninja", "-n"])
     subprocess.check_call(["ninja", "install"])
-    if os.environ["ERRORLEVEL"] != 0:
-        assert 1, "install failed"
 
     os.chdir(dpctl_dir)
-    os.system(
-        "xcopy "
-        + dpctl_dir
-        + "\\install\\lib\\*.lib "
-        + dpctl_dir
-        + "\\dpctl\\"
-        + " /E /Y"
-    )
-    os.system(
-        "xcopy "
-        + dpctl_dir
-        + "\\install\\bin\\*.dll "
-        + dpctl_dir
-        + "\\dpctl\\"
-        + " /E /Y"
-    )
+    for file in glob.glob(os.path.join(dpctl_dir, "install", "lib", "*.lib")):
+        shutil.copy(file, os.path.join(dpctl_dir, "dpctl"))
 
-    include_dir = os.path.join(dpctl_dir, "dpctl\\include")
-    if os.path.exists(include_dir):
-        shutil.rmtree(include_dir)
+    for file in glob.glob(os.path.join(dpctl_dir, "install", "bin", "*.dll")):
+        shutil.copy(file, os.path.join(dpctl_dir, "dpctl"))
 
-    shutil.copytree(os.path.join(dpctl_dir, "backends\\include"), include_dir)
+include_dir = os.path.join(dpctl_dir, "dpctl", "include")
+if os.path.exists(include_dir):
+    shutil.rmtree(include_dir)
+
+shutil.copytree(os.path.join(dpctl_dir, "backends", "include"), include_dir)

@@ -117,12 +117,8 @@ def get_suppressed_warning_flags():
 
 def build_backend():
     dpctl_dir = os.getcwd()
-    if IS_LIN:
-        build_backend_py = os.path.join(dpctl_dir, "scripts/build_backend.py")
-        subprocess.check_call([sys.executable, build_backend_py])
-    elif IS_WIN:
-        build_backend_py = os.path.join(dpctl_dir, "scripts\\build_backend.py")
-        subprocess.check_call([sys.executable, build_backend_py])
+    build_script = os.path.join(dpctl_dir, "scripts", "build_backend.py")
+    subprocess.check_call([sys.executable, build_script])
 
 
 def extensions():
