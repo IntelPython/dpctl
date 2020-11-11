@@ -28,7 +28,8 @@ import versioneer
 import subprocess
 
 from setuptools import setup, Extension, find_packages
-from setuptools.command.build_py import build_py as _build_py
+from setuptools.command.install import install as _install
+from setuptools.command.develop import develop as _develop
 from Cython.Build import cythonize
 
 import numpy as np
@@ -183,7 +184,13 @@ def extensions():
     return exts
 
 
-class build_py(_build_py):
+class install(_install):
+    def run(self):
+        build_backend()
+        return super().run()
+
+
+class develop(_develop):
     def run(self):
         build_backend()
         return super().run()
@@ -191,7 +198,8 @@ class build_py(_build_py):
 
 def _get_cmdclass():
     cmdclass = versioneer.get_cmdclass()
-    cmdclass["build_py"] = build_py
+    cmdclass["install"] = install
+    cmdclass["develop"] = develop
     return cmdclass
 
 

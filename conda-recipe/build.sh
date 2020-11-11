@@ -10,4 +10,4 @@ else
 fi
 
 ${PYTHON} setup.py clean --all
-${PYTHON} setup.py build install
+${PYTHON} setup.py install
