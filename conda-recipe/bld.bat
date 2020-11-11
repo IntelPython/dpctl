@@ -5,5 +5,5 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 "%PYTHON%" setup.py clean --all
-"%PYTHON%" setup.py build install
+"%PYTHON%" setup.py install
 IF %ERRORLEVEL% NEQ 0 exit /b 1
