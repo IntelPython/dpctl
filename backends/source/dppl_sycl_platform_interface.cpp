@@ -125,13 +125,12 @@ void DPPLPlatform_DumpInfo ()
                << "Device type";
 
             auto devTy = devices[dn].get_info<info::device::device_type>();
-            ss << ConvertEnumToStr(devTy);
+            ss << StrToDeviceType(devTy);
         }
         std::cout << ss.str();
         ++i;
     }
 }
-
 
 /*!
 * Returns the number of sycl::platform on the system.

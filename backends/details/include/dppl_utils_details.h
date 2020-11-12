@@ -27,5 +27,5 @@
 #include <CL/sycl.hpp>
 using namespace cl::sycl;
 
-std::string ConvertEnumToStr(info::device_type devTy);
-info::device_type ConvertStrToEnum(std::string devTyStr);
+std::string StrToDeviceType(info::device_type devTy);
+info::device_type DeviceTypeToStr(std::string devTyStr);

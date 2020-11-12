@@ -26,9 +26,13 @@
 #include "dppl_utils_details.h"
 #include <string>
 #include <sstream>
+
 using namespace cl::sycl;
 
-std::string ConvertEnumToStr(info::device_type devTy)
+/*!
+* Transforms enum info::device_type to string.
+*/
+std::string StrToDeviceType(info::device_type devTy)
 {
     std::stringstream ss;
     switch (devTy)
@@ -54,7 +58,10 @@ std::string ConvertEnumToStr(info::device_type devTy)
     return ss.str();
 }
 
-info::device_type ConvertStrToEnum(std::string devTyStr)
+/*!
+* Transforms string to enum info::device_type.
+*/
+info::device_type DeviceTypeToStr(std::string devTyStr)
 {
     info::device_type devTy;
     if (devTyStr == "cpu") {
@@ -67,6 +74,9 @@ info::device_type ConvertStrToEnum(std::string devTyStr)
         devTy = info::device_type::custom;
     } else if(devTyStr == "host") {
         devTy = info::device_type::host;
+    } else {
+        // \todo handle the error
+        throw std::runtime_error("Unknown device type.");
     }
     return devTy;
 }
