@@ -37,7 +37,7 @@ conda install dpctl
 ```
 
 Build and Install with setuptools
-===========
+=================================
 dpCtl relies on DPC++ runtime. With Intel oneAPI installed you should activate it.
 
 For install:
