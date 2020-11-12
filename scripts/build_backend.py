@@ -35,7 +35,7 @@ if os.path.exists(INSTALL_PREFIX):
 backends_dir = os.path.join(dpctl_dir, "backends")
 
 if IS_LIN:
-    cmake = [
+    cmake_args = [
         "cmake",
         "-DCMAKE_BUILD_TYPE=Release",
         "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
@@ -45,7 +45,7 @@ if IS_LIN:
         "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang++"),
         backends_dir,
     ]
-    subprocess.check_call(cmake, stderr=subprocess.STDOUT, shell=False)
+    subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=False)
     subprocess.check_call(["make", "-j", "4"])
     subprocess.check_call(["make", "install"])
 
@@ -54,7 +54,7 @@ if IS_LIN:
         shutil.copy(file, os.path.join(dpctl_dir, "dpctl"))
 
 if IS_WIN:
-    cmake = [
+    cmake_args = [
         "cmake",
         "-G",
         "Ninja",
@@ -64,7 +64,7 @@ if IS_WIN:
         "-DDPCPP_ROOT=" + DPCPP_ROOT,
         backends_dir,
     ]
-    subprocess.check_call(cmake, stderr=subprocess.STDOUT, shell=True)
+    subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=True)
     subprocess.check_call(["ninja", "-n"])
     subprocess.check_call(["ninja", "install"])
 

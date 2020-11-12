@@ -27,8 +27,8 @@ import sys
 import versioneer
 import subprocess
 
-from setuptools.command.install import install as _install
-from setuptools.command.develop import develop as _develop
+from setuptools.command.install import install as orig_install
+from setuptools.command.develop import develop as orig_develop
 from setuptools import setup, Extension, find_packages
 from Cython.Build import cythonize
 
@@ -117,8 +117,7 @@ def get_suppressed_warning_flags():
 
 
 def build_backend():
-    dpctl_dir = os.getcwd()
-    build_script = os.path.join(dpctl_dir, "scripts", "build_backend.py")
+    build_script = os.path.join(os.getcwd(), "scripts", "build_backend.py")
     subprocess.check_call([sys.executable, build_script])
 
 
@@ -184,13 +183,13 @@ def extensions():
     return exts
 
 
-class install(_install):
+class install(orig_install):
     def run(self):
         build_backend()
         return super().run()
 
 
-class develop(_develop):
+class develop(orig_develop):
     def run(self):
         build_backend()
         return super().run()
