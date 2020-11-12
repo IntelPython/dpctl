@@ -22,12 +22,12 @@ conda activate build-env
 ```
 2. Activate oneAPI DPC++ compiler environmnet and build conda package
 ```bash
-source $ONEAPI_ROOT/compiler/latest/env/vars.sh
+source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
 conda build conda-recipe
 ```
 On Windows to cope with [long file names](https://github.com/IntelPython/dpctl/issues/15):
 ```cmd
-call %ONEAPI_ROOT%\compiler\latest\env\vars.bat
+call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
 conda build --croot=C:/tmp conda-recipe
 ```
 
