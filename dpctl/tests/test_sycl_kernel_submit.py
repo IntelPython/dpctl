@@ -24,10 +24,10 @@
 ##===----------------------------------------------------------------------===##
 import ctypes
 import dpctl
-import unittest
+import dpctl.experimental as dpctl_exp
 import dpctl.memory as dpctl_mem
 import numpy as np
-
+import unittest
 
 @unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
 class Test1DKernelSubmit(unittest.TestCase):
@@ -39,7 +39,7 @@ class Test1DKernelSubmit(unittest.TestCase):
         }"
         with dpctl.device_context("opencl:gpu:0"):
             q = dpctl.get_current_queue()
-            prog = dpctl.create_program_from_source(q, oclSrc)
+            prog = dpctl_exp.create_program_from_source(q, oclSrc)
             axpyKernel = prog.get_sycl_kernel("axpy")
 
             abuf = dpctl_mem.MemoryUSMShared(1024 * np.dtype("i").itemsize)
