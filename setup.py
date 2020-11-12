@@ -27,8 +27,8 @@ import sys
 import versioneer
 import subprocess
 
-from setuptools.command.install import install as orig_install
-from setuptools.command.develop import develop as orig_develop
+import setuptools.command.install as orig_install
+import setuptools.command.develop as orig_develop
 from setuptools import setup, Extension, find_packages
 from Cython.Build import cythonize
 
@@ -183,13 +183,13 @@ def extensions():
     return exts
 
 
-class install(orig_install):
+class install(orig_install.install):
     def run(self):
         build_backend()
         return super().run()
 
 
-class develop(orig_develop):
+class develop(orig_develop.develop):
     def run(self):
         build_backend()
         return super().run()
