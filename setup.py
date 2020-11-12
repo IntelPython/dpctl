@@ -27,9 +27,9 @@ import sys
 import versioneer
 import subprocess
 
-from setuptools import setup, Extension, find_packages
 from setuptools.command.install import install as _install
 from setuptools.command.develop import develop as _develop
+from setuptools import setup, Extension, find_packages
 from Cython.Build import cythonize
 
 import numpy as np

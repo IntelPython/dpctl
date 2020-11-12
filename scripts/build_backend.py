@@ -35,21 +35,17 @@ if os.path.exists(INSTALL_PREFIX):
 backends_dir = os.path.join(dpctl_dir, "backends")
 
 if IS_LIN:
-    subprocess.check_call(
-        [
-            "cmake",
-            "-DCMAKE_BUILD_TYPE=Release",
-            "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
-            "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
-            "-DDPCPP_ROOT=" + DPCPP_ROOT,
-            "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
-            "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "dpcpp"),
-            backends_dir,
-        ],
-        stderr=subprocess.STDOUT,
-        shell=False,
-    )
-
+    cmake = [
+        "cmake",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
+        "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
+        "-DDPCPP_ROOT=" + DPCPP_ROOT,
+        "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
+        "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang++"),
+        backends_dir,
+    ]
+    subprocess.check_call(cmake, stderr=subprocess.STDOUT, shell=False)
     subprocess.check_call(["make", "-j", "4"])
     subprocess.check_call(["make", "install"])
 
@@ -58,21 +54,17 @@ if IS_LIN:
         shutil.copy(file, os.path.join(dpctl_dir, "dpctl"))
 
 if IS_WIN:
-    subprocess.check_call(
-        [
-            "cmake",
-            "-G",
-            "Ninja",
-            "-DCMAKE_BUILD_TYPE=Release",
-            "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
-            "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
-            "-DDPCPP_ROOT=" + DPCPP_ROOT,
-            backends_dir,
-        ],
-        stderr=subprocess.STDOUT,
-        shell=True,
-    )
-
+    cmake = [
+        "cmake",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
+        "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
+        "-DDPCPP_ROOT=" + DPCPP_ROOT,
+        backends_dir,
+    ]
+    subprocess.check_call(cmake, stderr=subprocess.STDOUT, shell=True)
     subprocess.check_call(["ninja", "-n"])
     subprocess.check_call(["ninja", "install"])
 
