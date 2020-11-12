@@ -54,7 +54,7 @@ else:
 if IS_LIN:
     DPCPP_ROOT = os.environ["ONEAPI_ROOT"] + "/compiler/latest/linux"
     os.environ["CC"] = DPCPP_ROOT + "/bin/clang"
-    os.environ["CXX"] = DPCPP_ROOT + "/bin/dpcpp"
+    os.environ["CXX"] = DPCPP_ROOT + "/bin/clang++"
     os.environ["DPPL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
     os.environ["DPPL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
     os.environ["CFLAGS"] = "-fPIC"
