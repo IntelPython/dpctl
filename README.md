@@ -38,7 +38,7 @@ conda install dpctl
 
 Using dpCtl
 ===========
-dpCtl relies on DPC++ runtime. With Intel oneAPI installed you should activate it.
+dpCtl relies on DPC++ runtime. With Intel oneAPI installed you could activate it.
 
 On Windows:
 ```cmd
@@ -48,6 +48,9 @@ On Linux:
 ```bash
 source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
 ```
+
+If dpCtl is installed via conda package then it uses DPC++ runtime from `dpcpp_cpp_rt`
+and oneAPI is not required.
 
 Examples
 ========
