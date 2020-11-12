@@ -52,7 +52,7 @@ source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
 ```
 
 If dpCtl is installed via conda package then it uses DPC++ runtime from `dpcpp_cpp_rt`
-and it is not necessaru to activate oneAPI DPC++ compiler environment.
+and it is not necessary to activate oneAPI DPC++ compiler environment.
 
 Examples
 ========
