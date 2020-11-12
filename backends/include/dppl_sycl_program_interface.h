@@ -41,11 +41,10 @@ DPPL_C_EXTERN_C_BEGIN
  * @brief Create a Sycl program from an OpenCL SPIR-V binary file.
  *
  * Sycl 1.2 does not expose any method to create a sycl::program from a SPIR-V
- * IL file. To get around this limitation, we need to use the Sycl feature to
- * create an interoperability kernel from an OpenCL kernel. This function first
- * creates an OpenCL program and kernel from the SPIR-V binary and then using
- * the Sycl-OpenCL interoperability feature creates a Sycl kernel from the
- * OpenCL kernel.
+ * IL file. To get around this limitation, we first creare a SYCL
+ * interoperability program and then create a SYCL program from the
+ * interoperability program. Currently, interoperability programs can be created
+ * for OpenCL and Level-0 backends.
  *
  * The feature to create a Sycl kernel from a SPIR-V IL binary will be available
  * in Sycl 2.0 at which point this function may become deprecated.

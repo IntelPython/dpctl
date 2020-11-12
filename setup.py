@@ -177,6 +177,13 @@ def extensions():
             ],
             **extension_args
         ),
+        Extension(
+            "dpctl.experimental._program",
+            [
+                os.path.join("dpctl", "experimental", "_program.pyx"),
+            ],
+            **extension_args
+        ),
     ]
 
     exts = cythonize(extensions)

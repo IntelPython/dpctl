@@ -28,6 +28,7 @@
 # cython: language_level=3
 
 from ._backend cimport *
+from .experimental._program cimport SyclKernel
 from libc.stdint cimport uint32_t
 
 
@@ -83,34 +84,6 @@ cdef class SyclEvent:
     cdef  SyclEvent _create (DPPLSyclEventRef e, list args)
     cdef  DPPLSyclEventRef get_event_ref (self)
     cpdef void wait (self)
-
-
-cdef class SyclKernel:
-    ''' Wraps a sycl::kernel object created from an OpenCL interoperability
-        kernel.
-    '''
-    cdef DPPLSyclKernelRef _kernel_ref
-    cdef const char *_function_name
-    cdef DPPLSyclKernelRef get_kernel_ref (self)
-
-    @staticmethod
-    cdef SyclKernel _create (DPPLSyclKernelRef kref)
-
-
-cdef class SyclProgram:
-    ''' Wraps a sycl::program object created from an OpenCL interoperability
-        program.
-
-        SyclProgram exposes the C API from dppl_sycl_program_interface.h. A
-        SyclProgram can be created from either a source string or a SPIR-V
-        binary file.
-    '''
-    cdef DPPLSyclProgramRef _program_ref
-
-    @staticmethod
-    cdef  SyclProgram _create (DPPLSyclProgramRef pref)
-    cdef  DPPLSyclProgramRef get_program_ref (self)
-    cpdef SyclKernel get_sycl_kernel(self, str kernel_name)
 
 
 cdef class SyclQueue:
