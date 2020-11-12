@@ -36,6 +36,20 @@ conda build --croot=C:/tmp conda-recipe
 conda install dpctl
 ```
 
+Build and Install with setuptools
+===========
+dpCtl relies on DPC++ runtime. With Intel oneAPI installed you should activate it.
+
+For install:
+```cmd
+python setup.py install
+```
+
+For development:
+```cmd
+python setup.py develop
+```
+
 Using dpCtl
 ===========
 dpCtl relies on DPC++ runtime. With Intel oneAPI installed you should activate it.
