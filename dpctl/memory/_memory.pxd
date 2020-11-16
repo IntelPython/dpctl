@@ -45,6 +45,8 @@ cdef class _Memory:
 
     @staticmethod
     cdef SyclDevice get_pointer_device(DPPLSyclUSMRef p, SyclContext ctx)
+    @staticmethod
+    cdef bytes get_pointer_type(DPPLSyclUSMRef p, SyclContext ctx)
 
 
 cdef class MemoryUSMShared(_Memory):
