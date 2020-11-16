@@ -45,5 +45,7 @@ set "DPPL_SYCL_INTERFACE_LIBDIR=dpctl"
 set "DPPL_SYCL_INTERFACE_INCLDIR=dpctl\include"
 
 "%PYTHON%" setup.py clean --all
-"%PYTHON%" setup.py build install
+"%PYTHON%" setup.py build install bdist_wheel
 IF %ERRORLEVEL% NEQ 0 exit 1
+if NOT "%WHEELS_OUTPUT_FOLDER%"=="" copy dist\dpctl*.whl %WHEELS_OUTPUT_FOLDER%
+if errorlevel 1 exit 1
