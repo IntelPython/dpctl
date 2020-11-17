@@ -55,7 +55,10 @@ export DPPL_SYCL_INTERFACE_INCLDIR=dpctl/include
 export CFLAGS="-fPIC -O3 ${CFLAGS}"
 export LDFLAGS="-L ${OpenCL_LIBDIR} ${LDFLAGS}"
 ${PYTHON} setup.py clean --all
-${PYTHON} setup.py build install bdist_wheel -p manylinux1_x86_64
+${PYTHON} setup.py build install
+
+# Build wheel package
 if [ -n "${WHEELS_OUTPUT_FOLDER}" ]; then
+    $PYTHON setup.py bdist_wheel -p manylinux1_x86_64
     cp dist/dpctl*.whl ${WHEELS_OUTPUT_FOLDER}
 fi
