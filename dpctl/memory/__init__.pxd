@@ -1,4 +1,4 @@
-##===------------- __init__.pxd - dpctl module --------*- Cython -*-------===##
+##===----------- __init__.pxd - dpctl.memory module ----*- Cython -*-------===##
 ##
 ##                      Data Parallel Control (dpCtl)
 ##
@@ -20,7 +20,7 @@
 ##
 ## \file
 ## This file declares the extension types and functions for the Cython API
-## implemented in sycl_core.pyx.
+## implemented in dpctl.memory_memory.pyx.
 ##
 ##===----------------------------------------------------------------------===##
 
