@@ -59,7 +59,7 @@ void dump_device_info (const device & Device)
     ss << std::setw(4) << " " << std::left << std::setw(16) << "Device type";
 
     auto devTy = Device.get_info<info::device::device_type>();
-    ss << StrToDeviceType(devTy);
+    ss << DDPL_StrToDeviceType(devTy);
 
     std::cout << ss.str();
 }

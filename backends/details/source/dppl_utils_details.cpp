@@ -32,7 +32,7 @@ using namespace cl::sycl;
 /*!
 * Transforms enum info::device_type to string.
 */
-std::string StrToDeviceType(info::device_type devTy)
+std::string DDPL_StrToDeviceType(info::device_type devTy)
 {
     std::stringstream ss;
     switch (devTy)
@@ -61,7 +61,7 @@ std::string StrToDeviceType(info::device_type devTy)
 /*!
 * Transforms string to enum info::device_type.
 */
-info::device_type DeviceTypeToStr(std::string devTyStr)
+info::device_type DPPL_DeviceTypeToStr(std::string devTyStr)
 {
     info::device_type devTy;
     if (devTyStr == "cpu") {
