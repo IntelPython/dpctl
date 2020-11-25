@@ -290,10 +290,28 @@ DPPLQueue_Wait (__dppl_keep DPPLSyclQueueRef QRef)
     SyclQueue->wait();
 }
 
-void DPPLQueue_Memcpy (__dppl_take const DPPLSyclQueueRef QRef,
+void DPPLQueue_Memcpy (__dppl_keep const DPPLSyclQueueRef QRef,
                        void *Dest, const void *Src, size_t Count)
 {
     auto Q = unwrap(QRef);
     auto event = Q->memcpy(Dest, Src, Count);
+    event.wait();
+}
+
+void
+DPPLQueue_Prefetch (__dppl_keep DPPLSyclQueueRef QRef,
+                    const void *Ptr, size_t Count)
+{
+    auto Q = unwrap(QRef);
+    auto event = Q->prefetch(Ptr, Count);
+    event.wait();
+}
+
+void
+DPPLQueue_MemAdvise (__dppl_keep DPPLSyclQueueRef QRef,
+                     const void *Ptr, size_t Count, int Advice)
+{
+    auto Q = unwrap(QRef);
+    auto event = Q->mem_advise(Ptr, Count, static_cast<pi_mem_advice>(Advice));
     event.wait();
 }

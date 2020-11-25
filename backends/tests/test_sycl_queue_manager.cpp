@@ -83,7 +83,7 @@ TEST_F (TestDPPLSyclQueueManager, CheckDPPLGetCurrentQueue)
     if(!has_devices())
         GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
-    DPPLSyclQueueRef q;
+    DPPLSyclQueueRef q = nullptr;
     ASSERT_NO_THROW(q = DPPLQueueMgr_GetCurrentQueue());
     ASSERT_TRUE(q != nullptr);
 }
@@ -170,7 +170,6 @@ TEST_F (TestDPPLSyclQueueManager, CheckGetNumActivatedQueues)
 
     auto nOpenCLCpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_CPU);
     auto nOpenCLGpuQ = DPPLQueueMgr_GetNumQueues(DPPL_OPENCL, DPPL_GPU);
-    auto nL0GpuQ     = DPPLQueueMgr_GetNumQueues(DPPL_LEVEL_ZERO, DPPL_GPU);
 
     // Add a queue to main thread
     if(!nOpenCLCpuQ || !nOpenCLGpuQ)
@@ -192,10 +191,10 @@ TEST_F (TestDPPLSyclQueueManager, CheckGetNumActivatedQueues)
 
     // Verify what the expected number of activated queues each time a thread
     // called getNumActivatedQueues.
-    EXPECT_EQ(num0, 1);
-    EXPECT_EQ(num1, 2);
-    EXPECT_EQ(num2, 1);
-    EXPECT_EQ(num4, 0);
+    EXPECT_EQ(num0, 1ul);
+    EXPECT_EQ(num1, 2ul);
+    EXPECT_EQ(num2, 1ul);
+    EXPECT_EQ(num4, 0ul);
 
     DPPLQueue_Delete(q);
 }
@@ -244,10 +243,20 @@ TEST_F (TestDPPLSyclQueueManager, CheckIsCurrentQueue2)
     DPPLQueueMgr_PopQueue();
 }
 
-int
-main (int argc, char** argv)
+TEST_F (TestDPPLSyclQueueManager, CreateQueueFromDeviceAndContext)
 {
-    ::testing::InitGoogleTest(&argc, argv);
-    int ret = RUN_ALL_TESTS();
-    return ret;
+    auto Q = DPPLQueueMgr_GetCurrentQueue();
+    auto D = DPPLQueue_GetDevice(Q);
+    auto C = DPPLQueue_GetContext(Q);
+
+    auto Q2 = DPPLQueueMgr_GetQueueFromContextAndDevice(C, D);
+    auto D2 = DPPLQueue_GetDevice(Q2);
+    auto C2 = DPPLQueue_GetContext(Q2);
+
+    EXPECT_TRUE(DPPLDevice_AreEq(D, D2));
+    EXPECT_TRUE(DPPLContext_AreEq(C, C2));
+
+    DPPLQueue_Delete(Q2);
+    DPPLQueue_Delete(Q);
 }
+

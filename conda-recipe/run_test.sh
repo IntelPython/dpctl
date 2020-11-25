@@ -6,5 +6,4 @@ set -e
 source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh || true
 
 ${PYTHON} -c "import dpctl"
-${PYTHON} -c "import dpctl.ocldrv"
 ${PYTHON} -m unittest -v dpctl.tests

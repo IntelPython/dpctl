@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project("dpCtl - A lightweight SYCL wrapper for Python")
 
 # The function checks is DPCPP_ROOT is valid and points to a dpcpp installation
@@ -13,7 +13,7 @@ function (check_for_dpcpp)
         set (dpcpp_cmd "${DPCPP_ROOT}/bin/dpcpp")
         set (dpcpp_arg "--version")
     elseif(UNIX)
-        set (dpcpp_cmd "dpcpp")
+        set (dpcpp_cmd "${DPCPP_ROOT}/bin/dpcpp")
         set (dpcpp_arg "--version")
     else()
         message(FATAL_ERROR "Unsupported system.")
@@ -38,28 +38,8 @@ function (check_for_dpcpp)
     endif()
 endfunction()
 
-function (check_for_numpy_inc)
-    string(COMPARE EQUAL "${NUMPY_INCLUDE_DIR}" "" no_numpy_inc)
-    if(${no_dpcpp_root})
-        message(FATAL_ERROR "Set the NUMPY_INCLUDE_DIR argument providing the \
-                             path to NumPy Headers.")
-    else()
-        message(STATUS "NUMPY_INCLUDE_DIR: ${NUMPY_INCLUDE_DIR}")
-    endif()
-
-    string(COMPARE EQUAL "${PYTHON_INCLUDE_DIR}" "" no_python_inc)
-    if(${no_dpcpp_root})
-        message(FATAL_ERROR "Set the PYTHON_INCLUDE_DIR argument providing the \
-                             path to Python Headers.")
-    else()
-        message(STATUS "PYTHON_INCLUDE_DIR: ${PYTHON_INCLUDE_DIR}")
-    endif()
-endfunction()
-
 # Check for dpcpp in the specified DPCPP_ROOT
 check_for_dpcpp()
-# Check if the locations of Numpy and Python headers were provided
-check_for_numpy_inc()
 
 if(WIN32)
     set(CMAKE_CXX_COMPILER:PATH "${DPCPP_ROOT}/bin/dpcpp")
@@ -68,30 +48,21 @@ if(WIN32)
     message(STATUS "Resetting CXX compiler to: " ${CMAKE_CXX_COMPILER})
     message(STATUS "Resetting C compiler to: " ${CMAKE_C_COMPILER})
     message(STATUS "Resetting Linker to: " ${CMAKE_LINK})
-
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}                                        \
-       -Wall -Wextra -Winit-self -Wuninitialized -Wmissing-declarations        \
-       -fdiagnostics-color=auto -O3                                            \
-    ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qstd=c++17")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3 -DDEBUG ")
+    set(WARNING_FLAGS "-Wall -Wextra -Winit-self -Wunused-function -Wuninitialized -Wmissing-declarations")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WARNING_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS} -Qstd=c++17")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG -Qstd=c++17")
 elseif(UNIX)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}                                        \
-       -Wall -Wextra -Winit-self -Wuninitialized -Wmissing-declarations        \
-       -fdiagnostics-color=auto -O3                                            \
-    ")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3 -DDEBUG ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fsycl")
+    set(SDL_FLAGS "-fstack-protector -fstack-protector-all -fpic -fPIC -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -fno-strict-overflow -fno-delete-null-pointer-checks")
+    set(WARNING_FLAGS "-Wall -Wextra -Winit-self -Wunused-function -Wuninitialized -Wmissing-declarations -fdiagnostics-color=auto")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WARNING_FLAGS} ${SDL_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS} ${SDL_FLAGS} -std=c++17 -fsycl")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG -std=c++17 -fsycl")
 else()
     message(FATAL_ERROR "Unsupported system.")
 endif()
-
-
-set(OpenCL_INCLUDE_DIR "${DPCPP_ROOT}/include/sycl")
-set(OpenCL_LIBRARY "${DPCPP_ROOT}/lib/libOpenCL.so")
-
-message(STATUS "OpenCL_INCLUDE_DIR: ${OpenCL_INCLUDE_DIR}")
-message(STATUS "OpenCL_LIBRARY: ${OpenCL_LIBRARY}")
 
 add_library(
   DPPLSyclInterface
@@ -106,13 +77,7 @@ add_library(
   source/dppl_sycl_queue_manager.cpp
   source/dppl_sycl_usm_interface.cpp
   source/dppl_utils.cpp
-)
-
-# Install DPPLOpenCLInterface
-add_library(
-  DPPLOpenCLInterface
-  SHARED
-  source/dppl_opencl_interface.c
+  details/source/dppl_utils_details.cpp
 )
 
 # Install DPPLSyclInterface
@@ -120,20 +85,7 @@ target_include_directories(
   DPPLSyclInterface
   PRIVATE
   ${CMAKE_SOURCE_DIR}/include/
-  ${PYTHON_INCLUDE_DIR}
-  ${NUMPY_INCLUDE_DIR}
-)
-
-target_include_directories(
-    DPPLOpenCLInterface
-    PRIVATE
-    ${CMAKE_SOURCE_DIR}/include/
-)
-
-target_include_directories(
-    DPPLOpenCLInterface
-    PUBLIC
-    ${OpenCL_INCLUDE_DIR}
+  ${CMAKE_SOURCE_DIR}/details/include/
 )
 
 if(WIN32)
@@ -152,24 +104,12 @@ if(WIN32)
         PRIVATE ${DPCPP_ROOT}/lib/sycl.lib
         PRIVATE ${DPCPP_ROOT}/lib/OpenCL.lib
     )
-    target_link_libraries(
-        DPPLOpenCLInterface
-        PRIVATE ${DPCPP_ROOT}/lib/OpenCL.lib
-    )
 endif()
 
 install(
   TARGETS
   DPPLSyclInterface
   LIBRARY DESTINATION
-  "${CMAKE_INSTALL_PREFIX}/lib/"
-)
-
-install(
-  TARGETS
-  DPPLOpenCLInterface
-  LIBRARY
-  DESTINATION
   "${CMAKE_INSTALL_PREFIX}/lib/"
 )
 
@@ -185,8 +125,23 @@ foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION include/Support)
 endforeach()
 
+# Install all headers in details/include
+file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/details/include/*.h*")
+foreach(HEADER ${HEADERS})
+  install(FILES "${HEADER}" DESTINATION details/include)
+endforeach()
+
+option(
+    BUILD_CAPI_TESTS
+    "Build dpctl C API google tests"
+    OFF
+)
+
 # Enable to build the dpCtl backend test cases
-add_subdirectory(tests)
+if(BUILD_CAPI_TESTS)
+    add_subdirectory(tests)
+endif()
+
 
 # Todo : Add build rules for doxygen
 # maybe refer https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/

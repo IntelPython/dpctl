@@ -50,8 +50,13 @@ DPPLKernel_GetFunctionName (__dppl_keep const DPPLSyclKernelRef Kernel)
     auto kernel_name = SyclKernel->get_info<info::kernel::function_name>();
     if(kernel_name.empty())
         return nullptr;
-    auto cstr_name = new char [kernel_name.length()+1];
-    std::strcpy (cstr_name, kernel_name.c_str());
+    auto cstr_len = kernel_name.length()+1;
+    auto cstr_name = new char[cstr_len];
+#ifdef _WIN32
+    strncpy_s(cstr_name, cstr_len, kernel_name.c_str(), cstr_len);
+#else
+    std::strncpy (cstr_name, kernel_name.c_str(), cstr_len);
+#endif
     return cstr_name;
 }
 
