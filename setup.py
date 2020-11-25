@@ -201,6 +201,7 @@ def _get_cmdclass():
     cmdclass["develop"] = develop
     return cmdclass
 
+print("packages:", find_packages(include=["*"]))
 
 setup(
     name="dpctl",

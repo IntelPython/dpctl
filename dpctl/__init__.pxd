@@ -29,4 +29,4 @@
 
 from dpctl._sycl_core cimport *
 from dpctl._memory import *
-
+from dparray import *
