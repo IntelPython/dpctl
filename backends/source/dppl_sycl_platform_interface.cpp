@@ -148,7 +148,12 @@ size_t DPPLPlatform_GetNumNonHostPlatforms ()
 
 size_t DPPLPlatform_GetNumNonHostBackends ()
 {
-    return get_set_of_non_hostbackends().size();
+    auto be_set = get_set_of_non_hostbackends();
+
+    if (be_set.empty())
+        return 0;
+
+    return be_set.size();
 }
 
 __dppl_give DPPLSyclBackendType *DPPLPlatform_GetListOfNonHostBackends ()

@@ -47,7 +47,7 @@ bool DPPLContext_AreEq (__dppl_keep const DPPLSyclContextRef CtxRef1,
 
 bool DPPLContext_IsHost (__dppl_keep const DPPLSyclContextRef CtxRef)
 {
-    auto Ctx = unwrap(CtxRef)
+    auto Ctx = unwrap(CtxRef);
     if (Ctx) {
         return Ctx->is_host();
     }
