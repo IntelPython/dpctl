@@ -1,4 +1,4 @@
-//===------ dppl_utils_details.cpp - dpctl-C_API  ----*---- C++ -----*-----===//
+//===------ dppl_utils_helper.cpp - dpctl-C_API  ----*---- C++ -----*-----===//
 //
 //               Data Parallel Control Library (dpCtl)
 //
@@ -19,11 +19,11 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file implements the helper functions defined in dppl_utils_details.h.
+/// This file implements the helper functions defined in dppl_utils_helper.h.
 ///
 //===----------------------------------------------------------------------===//
 
-#include "dppl_utils_details.h"
+#include "dppl_utils_helper.h"
 #include <string>
 #include <sstream>
 
@@ -32,7 +32,7 @@ using namespace cl::sycl;
 /*!
 * Transforms enum info::device_type to string.
 */
-std::string DDPL_StrToDeviceType(info::device_type devTy)
+std::string DPPL_DeviceTypeToStr(info::device_type devTy)
 {
     std::stringstream ss;
     switch (devTy)
@@ -61,7 +61,7 @@ std::string DDPL_StrToDeviceType(info::device_type devTy)
 /*!
 * Transforms string to enum info::device_type.
 */
-info::device_type DPPL_DeviceTypeToStr(std::string devTyStr)
+info::device_type DPPL_StrToDeviceType(std::string devTyStr)
 {
     info::device_type devTy;
     if (devTyStr == "cpu") {
