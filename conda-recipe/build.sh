@@ -11,3 +11,9 @@ fi
 
 ${PYTHON} setup.py clean --all
 ${PYTHON} setup.py install
+
+# Build wheel package
+if [ -n "${WHEELS_OUTPUT_FOLDER}" ]; then
+    $PYTHON setup.py bdist_wheel -p manylinux1_x86_64
+    cp dist/dpctl*.whl ${WHEELS_OUTPUT_FOLDER}
+fi
