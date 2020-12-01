@@ -1,5 +1,8 @@
-call "%ONEAPI_ROOT%compiler\latest\env\vars.bat"
-IF ERRORLEVEL 1 exit 1
+call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
+IF %ERRORLEVEL% NEQ 0 (
+	echo "oneAPI compiler activation failed"
+	exit /b 1
+)
 REM conda uses %ERRORLEVEL% but FPGA scripts can set it. So it should be reseted.
 set ERRORLEVEL=
 
@@ -20,12 +23,12 @@ cmake -G Ninja ^
     "-DCMAKE_INSTALL_PREFIX=%INSTALL_PREFIX%" ^
     "-DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%" ^
     "-DDPCPP_ROOT=%DPCPP_ROOT%" ^
-    "%SRC_DIR%/backends"
-IF %ERRORLEVEL% NEQ 0 exit 1
+    "%SRC_DIR%\backends"
+IF %ERRORLEVEL% NEQ 0 exit /b 1
 
 ninja -n
 ninja install
-IF %ERRORLEVEL% NEQ 0 exit 1
+IF %ERRORLEVEL% NEQ 0 exit /b 1
 
 cd ..
 xcopy install\lib\*.lib dpctl /E /Y
@@ -35,18 +38,13 @@ mkdir dpctl\include
 xcopy backends\include dpctl\include /E /Y
 
 
-REM required by _opencl_core (dpctl.ocldrv)
-set "DPPL_OPENCL_INTERFACE_LIBDIR=dpctl"
-set "DPPL_OPENCL_INTERFACE_INCLDIR=dpctl\include"
-set "OpenCL_LIBDIR=%DPCPP_ROOT%\lib"
-
 REM required by _sycl_core(dpctl)
 set "DPPL_SYCL_INTERFACE_LIBDIR=dpctl"
 set "DPPL_SYCL_INTERFACE_INCLDIR=dpctl\include"
 
 "%PYTHON%" setup.py clean --all
 "%PYTHON%" setup.py build install
-IF %ERRORLEVEL% NEQ 0 exit 1
+IF %ERRORLEVEL% NEQ 0 exit /b 1
 
 rem Build wheel package
 if NOT "%WHEELS_OUTPUT_FOLDER%"=="" (

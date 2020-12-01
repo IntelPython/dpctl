@@ -96,7 +96,6 @@ DPPLProgram_CreateFromOCLSource (__dppl_keep const DPPLSyclContextRef Ctx,
                                  __dppl_keep const char *Source,
                                  __dppl_keep const char *CompileOpts)
 {
-    cl_int err;
     std::string compileOpts;
     context *SyclCtx = nullptr;
     program *SyclProgram = nullptr;
