@@ -29,3 +29,8 @@ void DPPLCString_Delete (__dppl_take const char* str)
 {
     delete[] str;
 }
+
+void DPPLSize_t_Array_Delete (__dppl_take size_t* arr)
+{
+    delete[] arr;
+}

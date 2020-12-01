@@ -56,6 +56,7 @@ __dppl_give DPPLSyclQueueRef DPPLQueueMgr_GetCurrentQueue ();
 /*!
  * @brief Get a sycl::queue object of the specified type and device id.
  *
+ * @param    BETy           A valid Sycl backend value.
  * @param    DeviceTy       The type of Sycl device (sycl_device_type)
  * @param    DNum           Device id for the device (defaults to 0)
  *
@@ -157,5 +158,26 @@ DPPLQueueMgr_PushQueue (DPPLSyclBackendType BETy,
  */
 DPPL_API
 void DPPLQueueMgr_PopQueue ();
+
+
+/*!
+ * @brief Creates a new instance of SYCL queue from SYCL context and
+ * SYCL device.
+ *
+ * The instance is not placed into queue manager. The user assumes
+ * ownership of the queue reference and should deallocate it using
+ * DPPLQueue_Delete.
+ *
+ * @param    CRef           Sycl context reference
+ * @param    DRef           Sycl device reference
+ *
+ * @return A copy of the sycl::queue created from given context and device
+ * references.
+ */
+DPPL_API
+__dppl_give DPPLSyclQueueRef
+DPPLQueueMgr_GetQueueFromContextAndDevice(__dppl_keep DPPLSyclContextRef CRef,
+                                          __dppl_keep DPPLSyclDeviceRef DRef);
+
 
 DPPL_C_EXTERN_C_END

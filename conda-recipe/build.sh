@@ -40,10 +40,6 @@ cp install/lib/*.so dpctl/
 mkdir -p dpctl/include
 cp -r backends/include/* dpctl/include
 
-# required by dpctl.opencl_core
-export DPPL_OPENCL_INTERFACE_LIBDIR=dpctl
-export DPPL_OPENCL_INTERFACE_INCLDIR=dpctl/include
-export OpenCL_LIBDIR=${DPCPP_ROOT}/lib
 
 # required by dpctl.sycl_core
 export DPPL_SYCL_INTERFACE_LIBDIR=dpctl
@@ -53,7 +49,6 @@ export DPPL_SYCL_INTERFACE_INCLDIR=dpctl/include
 # FIXME: How to pass this using setup.py? This flags is needed when
 # dpcpp compiles the generated cpp file.
 export CFLAGS="-fPIC -O3 ${CFLAGS}"
-export LDFLAGS="-L ${OpenCL_LIBDIR} ${LDFLAGS}"
 ${PYTHON} setup.py clean --all
 ${PYTHON} setup.py build install
 

@@ -1,7 +1,8 @@
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 What?
 ====
-A lightweight Python package exposing a subset of OpenCL and SYCL
-functionalities.
+A lightweight Python package exposing a subset of SYCL functionalities.
 
 Requirements
 ============

@@ -18,7 +18,6 @@ requirements:
         - {{ compiler('cxx') }}
     host:
         - setuptools
-        - cffi >=1.0.0
         - cython
         - cmake
         - python
@@ -29,7 +28,6 @@ requirements:
     run:
         - python
         - numpy >=1.17
-        - cffi >=1.0.0
 
 about:
     home: https://github.com/IntelPython/dpCtl.git

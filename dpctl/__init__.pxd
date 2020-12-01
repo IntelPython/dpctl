@@ -1,4 +1,4 @@
-##===------------- sycl_core.pxd - dpctl module --------*- Cython -*-------===##
+##===------------- __init__.pxd - dpctl module --------*- Cython -*-------===##
 ##
 ##                      Data Parallel Control (dpCtl)
 ##
@@ -28,3 +28,5 @@
 # cython: language_level=3
 
 from dpctl._sycl_core cimport *
+from dpctl._memory import *
+

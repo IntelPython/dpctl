@@ -199,4 +199,30 @@ DPPL_API
 void DPPLQueue_Memcpy (__dppl_keep const DPPLSyclQueueRef QRef,
                        void *Dest, const void *Src, size_t Count);
 
+/*!
+ * @brief C-API wrapper for sycl::queue::prefetch, the function waits on an event
+ * till the prefetch operation completes.
+ *
+ * @param    QRef           An opaque pointer to the sycl queue.
+ * @param    Ptr            An USM pointer to memory.
+ * @param    Count          A number of bytes to prefetch.
+ */
+DPPL_API
+void DPPLQueue_Prefetch (__dppl_keep DPPLSyclQueueRef QRef,
+                         const void *Ptr, size_t Count);
+
+/*!
+ * @brief C-API wrapper for sycl::queue::mem_advise, the function waits on an event
+ * till the operation completes.
+ *
+ * @param    QRef           An opaque pointer to the sycl queue.
+ * @param    Ptr            An USM pointer to memory.
+ * @param    Count          A number of bytes to prefetch.
+ * @param    Advice         Device-defined advice for the specified allocation. 
+ *                           A value of 0 reverts the advice for Ptr to the default behavior.
+ */
+DPPL_API
+void DPPLQueue_MemAdvise (__dppl_keep DPPLSyclQueueRef QRef,
+                          const void *Ptr, size_t Count, int Advice);
+
 DPPL_C_EXTERN_C_END
