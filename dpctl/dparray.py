@@ -15,7 +15,7 @@ def dprint(*args):
         sys.stdout.flush()
 
 import dpctl
-from dpctl._memory import MemoryUSMShared
+from dpctl.memory import MemoryUSMShared
 
 functions_list = [o[0] for o in getmembers(np) if isfunction(o[1]) or isbuiltin(o[1])]
 class_list = [o for o in getmembers(np) if isclass(o[1])]
@@ -38,7 +38,8 @@ class ndarray(np.ndarray):
             nelems = np.prod(shape)
             dt = np.dtype(dtype)
             isz = dt.itemsize
-            buf = MemoryUSMShared(nbytes=isz*max(1,nelems))
+            nbytes = int(isz*max(1, nelems))
+            buf = MemoryUSMShared(nbytes)
             new_obj = np.ndarray.__new__(
                 subtype, shape, dtype=dt,
                 buffer=buf, offset=0,
@@ -71,7 +72,8 @@ class ndarray(np.ndarray):
                             dtype=dtype, buffer=buffer,
                             offset=offset, strides=strides,
                             order=order)
-            buf = MemoryUSMShared(nbytes=ar.nbytes)
+            nbytes = int(ar.nbytes)
+            buf = MemoryUSMShared(nbytes)
             new_obj = np.ndarray.__new__(
                 subtype, shape, dtype=dtype,
                 buffer=buf, offset=0,
