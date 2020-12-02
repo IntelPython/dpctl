@@ -3,19 +3,10 @@ from dpctl import dparray
 import numpy
 
 
-def func_operation_with_const(dpctl_array):
-    return dpctl_array * 2.0 + 13
-
-
-def multiply_func(np_array, dpcrtl_array):
-    return np_array * dpcrtl_array
-
-
 class TestOverloadList(unittest.TestCase):
-    maxDiff = None
-
-    X = dparray.ndarray((256, 4), dtype='d')
-    X.fill(1.0)
+    def setUp(self):
+        self.X = dparray.ndarray((256, 4), dtype="d")
+        self.X.fill(1.0)
 
     def test_dparray_type(self):
         self.assertIsInstance(self.X, dparray.ndarray)
@@ -38,13 +29,16 @@ class TestOverloadList(unittest.TestCase):
         self.assertIsInstance(C, dparray.ndarray)
 
     def test_dparray_through_python_func(self):
+        def func_operation_with_const(dpctl_array):
+            return dpctl_array * 2.0 + 13
+
         C = self.X * 5
         dp_func = func_operation_with_const(C)
         self.assertIsInstance(dp_func, dparray.ndarray)
 
     def test_dparray_mixing_dpctl_and_numpy(self):
-        dp_numpy = numpy.ones((256, 4), dtype='d')
-        res = multiply_func(dp_numpy, self.X)
+        dp_numpy = numpy.ones((256, 4), dtype="d")
+        res = dp_numpy * self.X
         self.assertIsInstance(res, dparray.ndarray)
 
     def test_dparray_shape(self):
@@ -55,6 +49,15 @@ class TestOverloadList(unittest.TestCase):
         res = self.X.T
         self.assertEqual(res.shape, (4, 256))
 
+    def test_numpy_ravel_with_dparray(self):
+        res = numpy.ravel(self.X)
+        self.assertEqual(res.shape, (1024,))
 
-if __name__ == '__main__':
+    @unittest.expectedFailure
+    def test_numpy_sum_with_dparray(self):
+        res = numpy.sum(self.X)
+        self.assertEqual(res, 1024.0)
+
+
+if __name__ == "__main__":
     unittest.main()
