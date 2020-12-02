@@ -148,7 +148,9 @@ def extensions():
         runtime_library_dirs = []
 
     extension_args = {
-        "depends": [dppl_sycl_interface_include,],
+        "depends": [
+            dppl_sycl_interface_include,
+        ],
         "include_dirs": [np.get_include(), dppl_sycl_interface_include],
         "extra_compile_args": eca
         + get_other_cxxflags()
@@ -163,12 +165,16 @@ def extensions():
     extensions = [
         Extension(
             "dpctl._sycl_core",
-            [os.path.join("dpctl", "_sycl_core.pyx"),],
+            [
+                os.path.join("dpctl", "_sycl_core.pyx"),
+            ],
             **extension_args
         ),
         Extension(
             "dpctl.memory._memory",
-            [os.path.join("dpctl", "memory", "_memory.pyx"),],
+            [
+                os.path.join("dpctl", "memory", "_memory.pyx"),
+            ],
             **extension_args
         ),
     ]
