@@ -77,7 +77,7 @@ add_library(
   source/dppl_sycl_queue_manager.cpp
   source/dppl_sycl_usm_interface.cpp
   source/dppl_utils.cpp
-  details/source/dppl_utils_details.cpp
+  helper/source/dppl_utils_helper.cpp
 )
 
 # Install DPPLSyclInterface
@@ -85,7 +85,7 @@ target_include_directories(
   DPPLSyclInterface
   PRIVATE
   ${CMAKE_SOURCE_DIR}/include/
-  ${CMAKE_SOURCE_DIR}/details/include/
+  ${CMAKE_SOURCE_DIR}/helper/include/
 )
 
 if(WIN32)
@@ -125,10 +125,10 @@ foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION include/Support)
 endforeach()
 
-# Install all headers in details/include
-file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/details/include/*.h*")
+# Install all headers in helper/include
+file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/helper/include/*.h*")
 foreach(HEADER ${HEADERS})
-  install(FILES "${HEADER}" DESTINATION details/include)
+  install(FILES "${HEADER}" DESTINATION helper/include)
 endforeach()
 
 option(
