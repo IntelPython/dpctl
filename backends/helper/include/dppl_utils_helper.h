@@ -27,5 +27,5 @@
 #include <CL/sycl.hpp>
 using namespace cl::sycl;
 
-std::string DDPL_StrToDeviceType(info::device_type devTy);
-info::device_type DPPL_DeviceTypeToStr(std::string devTyStr);
+std::string DPPL_DeviceTypeToStr(info::device_type devTy);
+info::device_type DPPL_StrToDeviceType(std::string devTyStr);
