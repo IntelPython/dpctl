@@ -19,7 +19,7 @@ def dprint(*args):
 functions_list = [o[0] for o in getmembers(np) if isfunction(o[1]) or isbuiltin(o[1])]
 class_list = [o for o in getmembers(np) if isclass(o[1])]
 
-array_interface_property = "__array_interface__"
+array_interface_property = "__sycl_usm_array_interface__"
 
 
 def has_array_interface(x):
@@ -119,30 +119,10 @@ class ndarray(np.ndarray):
         # subclass of ndarray, including our own.
         if hasattr(obj, array_interface_property):
             return
-        if isinstance(obj, numba.core.runtime._nrt_python._MemInfo):
-            mobj = obj
-            while isinstance(mobj, numba.core.runtime._nrt_python._MemInfo):
-                dprint("array_finalize got Numba MemInfo")
-                ea = mobj.external_allocator
-                d = mobj.data
-                dprint("external_allocator:", hex(ea), type(ea))
-                dprint("data:", hex(d), type(d))
-                dppl_rt_allocator = numba.dppl._dppl_rt.get_external_allocator()
-                dprint(
-                    "dppl external_allocator:",
-                    hex(dppl_rt_allocator),
-                    type(dppl_rt_allocator),
-                )
-                dprint(dir(mobj))
-                if ea == dppl_rt_allocator:
-                    return
-                mobj = mobj.parent
-                if isinstance(mobj, ndarray):
-                    mobj = mobj.base
         if isinstance(obj, np.ndarray):
             ob = self
             while isinstance(ob, np.ndarray):
-                if hasattr(obj, array_interface_property):
+                if hasattr(ob, array_interface_property):
                     return
                 ob = ob.base
 
