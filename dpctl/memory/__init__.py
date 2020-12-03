@@ -1,4 +1,4 @@
-##===---------- memory/__init__.py - dpctl module -------*- Python -*------===##
+##===---------- __init__.py - dpctl.memory module -------*- Python -*------===##
 ##
 ##                      Data Parallel Control (dpCtl)
 ##
@@ -19,7 +19,8 @@
 ##===----------------------------------------------------------------------===##
 ##
 ## \file
-## This top-level dpctl module.
+## This is the dpctl.memory module containing the USM memory manager features
+## of dpctl.
 ##
 ##===----------------------------------------------------------------------===##
 """

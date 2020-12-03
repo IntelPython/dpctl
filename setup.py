@@ -25,7 +25,10 @@ import os
 import os.path
 import sys
 import versioneer
+import subprocess
 
+import setuptools.command.install as orig_install
+import setuptools.command.develop as orig_develop
 from setuptools import setup, Extension, find_packages
 from Cython.Build import cythonize
 
@@ -47,6 +50,20 @@ elif sys.platform in ["win32", "cygwin"]:
     IS_WIN = True
 else:
     assert False, sys.platform + " not supported"
+
+if IS_LIN:
+    DPCPP_ROOT = os.environ["ONEAPI_ROOT"] + "/compiler/latest/linux"
+    os.environ["CC"] = DPCPP_ROOT + "/bin/clang"
+    os.environ["CXX"] = DPCPP_ROOT + "/bin/clang++"
+    os.environ["DPPL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
+    os.environ["DPPL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
+    os.environ["CFLAGS"] = "-fPIC"
+
+elif IS_WIN:
+    os.environ["CC"] = "clang-cl.exe"
+    os.environ["CXX"] = "dpcpp.exe"
+    os.environ["DPPL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
+    os.environ["DPPL_SYCL_INTERFACE_INCLDIR"] = "dpctl\include"
 
 dppl_sycl_interface_lib = os.environ["DPPL_SYCL_INTERFACE_LIBDIR"]
 dppl_sycl_interface_include = os.environ["DPPL_SYCL_INTERFACE_INCLDIR"]
@@ -97,6 +114,11 @@ def get_suppressed_warning_flags():
         return ["-Wno-deprecated-declarations"]
     elif IS_WIN:
         return []
+
+
+def build_backend():
+    build_script = os.path.join(os.getcwd(), "scripts", "build_backend.py")
+    subprocess.check_call([sys.executable, build_script])
 
 
 def extensions():
@@ -161,10 +183,29 @@ def extensions():
     return exts
 
 
+class install(orig_install.install):
+    def run(self):
+        build_backend()
+        return super().run()
+
+
+class develop(orig_develop.develop):
+    def run(self):
+        build_backend()
+        return super().run()
+
+
+def _get_cmdclass():
+    cmdclass = versioneer.get_cmdclass()
+    cmdclass["install"] = install
+    cmdclass["develop"] = develop
+    return cmdclass
+
+
 setup(
     name="dpctl",
     version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+    cmdclass=_get_cmdclass(),
     description="A lightweight Python wrapper for a subset of OpenCL and SYCL.",
     license="Apache 2.0",
     author="Intel Corporation",
