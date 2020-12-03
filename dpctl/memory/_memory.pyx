@@ -1,29 +1,29 @@
-##===--------------- _memory.pyx - dpctl module --------*- Cython -*-------===##
-##
-##                      Data Parallel Control (dpCtl)
-##
-## Copyright 2020 Intel Corporation
-##
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-##
-##    http://www.apache.org/licenses/LICENSE-2.0
-##
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-##
-##===----------------------------------------------------------------------===##
-##
-## \file
-## This file implements Python buffer protocol using Sycl USM shared and host
-## allocators. The USM device allocator is also exposed through this module for
-## use in other Python modules.
-##
-##===----------------------------------------------------------------------===##
+#===--------------- _memory.pyx - dpctl module --------*- Cython -*---------===#
+#
+#                      Data Parallel Control (dpCtl)
+#
+# Copyright 2020 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#===------------------------------------------------------------------------===#
+#
+# \file
+# This file implements Python buffer protocol using Sycl USM shared and host
+# allocators. The USM device allocator is also exposed through this module for
+# use in other Python modules.
+#
+#===------------------------------------------------------------------------===#
 
 # distutils: language = c++
 # cython: language_level=3
@@ -440,7 +440,7 @@ cdef class _Memory:
         cdef const char * usm_type = DPCTLUSM_GetPointerType(p, ctx.get_context_ref())
 
         return <bytes>usm_type
-    
+
 
 cdef class MemoryUSMShared(_Memory):
     """
