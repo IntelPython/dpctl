@@ -24,6 +24,7 @@
 ##===----------------------------------------------------------------------===##
 
 import dpctl
+import dpctl.program as dpctl_prog
 import unittest
 import os
 
@@ -42,7 +43,7 @@ class TestProgramFromOCLSource(unittest.TestCase):
         }"
         with dpctl.device_context("opencl:gpu:0"):
             q = dpctl.get_current_queue()
-            prog = dpctl.create_program_from_source(q, oclSrc)
+            prog = dpctl_prog.create_program_from_source(q, oclSrc)
             self.assertIsNotNone(prog)
 
             self.assertTrue(prog.has_sycl_kernel("add"))
@@ -67,7 +68,7 @@ class TestProgramFromSPRIV(unittest.TestCase):
             spirv = fin.read()
             with dpctl.device_context("opencl:gpu:0"):
                 q = dpctl.get_current_queue()
-                prog = dpctl.create_program_from_spirv(q, spirv)
+                prog = dpctl_prog.create_program_from_spirv(q, spirv)
                 self.assertIsNotNone(prog)
                 self.assertTrue(prog.has_sycl_kernel("add"))
                 self.assertTrue(prog.has_sycl_kernel("axpy"))
@@ -86,6 +87,7 @@ class TestProgramFromSPRIV(unittest.TestCase):
     "No Level0 GPU queues available",
 )
 class TestProgramForLevel0GPU(unittest.TestCase):
+    @unittest.expectedFailure
     def test_create_program_from_spirv(self):
 
         CURR_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -94,12 +96,9 @@ class TestProgramForLevel0GPU(unittest.TestCase):
             spirv = fin.read()
             with dpctl.device_context("level0:gpu:0"):
                 q = dpctl.get_current_queue()
-                try:
-                    prog = dpctl.create_program_from_spirv(q, spirv)
-                    self.fail("Tried to create program for an unsupported Level0 GPU.")
-                except ValueError:
-                    pass
+                prog = dpctl_prog.create_program_from_spirv(q, spirv)
 
+    @unittest.expectedFailure
     def test_create_program_from_source(self):
         oclSrc = "                                                             \
         kernel void add(global int* a, global int* b, global int* c) {         \
@@ -112,12 +111,7 @@ class TestProgramForLevel0GPU(unittest.TestCase):
         }"
         with dpctl.device_context("level0:gpu:0"):
             q = dpctl.get_current_queue()
-            try:
-                prog = dpctl.create_program_from_source(q, oclSrc)
-                self.fail("Tried to create program for an unsupported Level0 GPU.")
-            except ValueError:
-                pass
-
+            prog = dpctl_prog.create_program_from_source(q, oclSrc)
 
 if __name__ == "__main__":
     unittest.main()

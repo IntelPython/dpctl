@@ -38,9 +38,9 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(program, DPCTLSyclProgramRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
 
-__dppl_give DPCTLSyclProgramRef
+__dpctl_give DPCTLSyclProgramRef
 createOpenCLInterOpProgram (const context &SyclCtx,
-                            __dppl_keep const void *IL,
+                            __dpctl_keep const void *IL,
                             size_t length)
 {
     cl_int err;
@@ -85,12 +85,12 @@ createOpenCLInterOpProgram (const context &SyclCtx,
 
 } /* end of anonymous namespace */
 
-__dppl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromOCLSpirv (__dppl_keep const DPPLSyclContextRef CtxRef,
-                                 __dppl_keep const void *IL,
+__dpctl_give DPCTLSyclProgramRef
+DPCTLProgram_CreateFromOCLSpirv (__dpctl_keep const DPCTLSyclContextRef CtxRef,
+                                 __dpctl_keep const void *IL,
                                  size_t length)
 {
-    DPPLSyclProgramRef Pref = nullptr;
+    DPCTLSyclProgramRef Pref = nullptr;
     context *SyclCtx = nullptr;
     if(!CtxRef) {
         // \todo handle error
@@ -114,10 +114,10 @@ DPCTLProgram_CreateFromOCLSpirv (__dppl_keep const DPPLSyclContextRef CtxRef,
     return Pref;
 }
 
-__dppl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromOCLSource (__dppl_keep const DPPLSyclContextRef Ctx,
-                                  __dppl_keep const char *Source,
-                                  __dppl_keep const char *CompileOpts)
+__dpctl_give DPCTLSyclProgramRef
+DPCTLProgram_CreateFromOCLSource (__dpctl_keep const DPCTLSyclContextRef Ctx,
+                                  __dpctl_keep const char *Source,
+                                  __dpctl_keep const char *CompileOpts)
 {
     std::string compileOpts;
     context *SyclCtx = nullptr;
