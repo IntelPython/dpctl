@@ -20,7 +20,7 @@ print(dir(queue))
 # the with device_context scope gets reset to what ever context was set
 # at entry of the scope. For this case, the context would go back to the
 # default context
-with device_context('opencl:cpu:0') as cpu_queue:
+with device_context("opencl:cpu:0") as cpu_queue:
     print("========================================")
     print("Current context inside with scope")
     print("========================================")

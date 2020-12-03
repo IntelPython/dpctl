@@ -8,4 +8,3 @@ print(X.sum(axis=0))
 
 # compute column-wise total with SYCL extension
 print(sb.columnwise_total(X))
-

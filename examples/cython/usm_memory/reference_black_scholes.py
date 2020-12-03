@@ -1,5 +1,6 @@
 import math
 
+
 def ref_python_black_scholes(price, strike, t, rate, vol):
     mr = -rate
     sig_sig_two = vol * vol * 2
@@ -20,19 +21,18 @@ def ref_python_black_scholes(price, strike, t, rate, vol):
     w1 = (a - b + c) * y
     w2 = (a - b - c) * y
 
-    if (w1 > 0):
+    if w1 > 0:
         d1 = 0.5 * math.erfc(-w1)
         d1c = 1.0 - d1
     else:
         d1c = 0.5 * math.erfc(w1)
         d1 = 1.0 - d1c
-    if (w2 > 0):
+    if w2 > 0:
         d2 = 0.5 * math.erfc(-w2)
         d2c = 1.0 - d2
     else:
         d2c = 0.5 * math.erfc(w2)
         d2 = 1.0 - d2c
-        
 
     call = P * d1 - Se * d2
     put = Se * d2c - P * d1c

@@ -20,4 +20,3 @@ mdq = dpmem.MemoryUSMDevice(256, queue=mda._queue)
 # information about device associate with USM buffer
 print("Allocation performed on device:")
 mda._queue.get_sycl_device().dump_device_info()
-
