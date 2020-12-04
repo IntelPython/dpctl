@@ -21,12 +21,12 @@
 # distutils: language = c++
 # cython: language_level=3
 
-from .._backend cimport DPPLSyclUSMRef
+from .._backend cimport DPCTLSyclUSMRef
 from .._sycl_core cimport SyclQueue, SyclDevice, SyclContext
 
 
 cdef class _Memory:
-    cdef DPPLSyclUSMRef memory_ptr
+    cdef DPCTLSyclUSMRef memory_ptr
     cdef Py_ssize_t nbytes
     cdef SyclQueue queue
     cdef object refobj
@@ -44,9 +44,9 @@ cdef class _Memory:
     cpdef bytes tobytes(self)
 
     @staticmethod
-    cdef SyclDevice get_pointer_device(DPPLSyclUSMRef p, SyclContext ctx)
+    cdef SyclDevice get_pointer_device(DPCTLSyclUSMRef p, SyclContext ctx)
     @staticmethod
-    cdef bytes get_pointer_type(DPPLSyclUSMRef p, SyclContext ctx)
+    cdef bytes get_pointer_type(DPCTLSyclUSMRef p, SyclContext ctx)
 
 
 cdef class MemoryUSMShared(_Memory):

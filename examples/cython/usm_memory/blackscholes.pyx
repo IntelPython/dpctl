@@ -10,14 +10,14 @@ import dpctl
 import numpy as np
 
 cdef extern from "sycl_blackscholes.hpp":
-    cdef void cpp_blackscholes[T](c_dpctl.DPPLSyclQueueRef, size_t n_opts, T* option_params, T* callput)
-    cdef void cpp_populate_params[T](c_dpctl.DPPLSyclQueueRef, size_t n_opts, T* option_params, T pl, T ph, T sl, T sh, T tl, T th, T rl, T rh, T vl, T vh, int seed)
+    cdef void cpp_blackscholes[T](c_dpctl.DPCTLSyclQueueRef, size_t n_opts, T* option_params, T* callput)
+    cdef void cpp_populate_params[T](c_dpctl.DPCTLSyclQueueRef, size_t n_opts, T* option_params, T pl, T ph, T sl, T sh, T tl, T th, T rl, T rh, T vl, T vh, int seed)
 
 def black_scholes_price(floating[:, ::1] option_params):
     cdef size_t n_opts = option_params.shape[0]
     cdef size_t n_params = option_params.shape[1]
     cdef c_dpctl.SyclQueue q
-    cdef c_dpctl.DPPLSyclQueueRef q_ptr
+    cdef c_dpctl.DPCTLSyclQueueRef q_ptr
     cdef c_dpctl_mem.MemoryUSMShared mobj
     cdef floating[:, :] call_put_prices
     cdef cnp.ndarray callput_arr
@@ -56,7 +56,7 @@ def populate_params(floating[:, ::1] option_params, pl, ph, sl, sh, tl, th, rl, 
     cdef size_t n_params = option_params.shape[1]
 
     cdef c_dpctl.SyclQueue q
-    cdef c_dpctl.DPPLSyclQueueRef q_ptr
+    cdef c_dpctl.DPCTLSyclQueueRef q_ptr
     cdef double* dp
     cdef float* fp
     

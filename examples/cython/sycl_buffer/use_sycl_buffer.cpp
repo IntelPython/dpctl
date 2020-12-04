@@ -1,10 +1,10 @@
 #include <CL/sycl.hpp>
 #include "use_sycl_buffer.h"
 #include <oneapi/mkl.hpp>
-#include "dppl_sycl_types.h"
+#include "dpctl_sycl_types.h"
 
 int
-c_columnwise_total(DPPLSyclQueueRef q_ref, size_t n, size_t m, double *mat, double *ct) {
+c_columnwise_total(DPCTLSyclQueueRef q_ref, size_t n, size_t m, double *mat, double *ct) {
 
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
@@ -56,7 +56,7 @@ c_columnwise_total(DPPLSyclQueueRef q_ref, size_t n, size_t m, double *mat, doub
 inline size_t upper_multiple(size_t n, size_t wg) { return wg * ((n + wg - 1)/wg); }
 
 int
-c_columnwise_total_no_mkl(DPPLSyclQueueRef q_ref, size_t n, size_t m, double *mat, double *ct) {
+c_columnwise_total_no_mkl(DPCTLSyclQueueRef q_ref, size_t n, size_t m, double *mat, double *ct) {
 
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 

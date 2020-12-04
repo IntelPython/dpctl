@@ -25,7 +25,7 @@ if (GIT_FOUND)
     )
 endif (GIT_FOUND)
 
-set(DOXYGEN_INPUT_DIR ../backends)
+set(DOXYGEN_INPUT_DIR ../dpctl-capi)
 set(DOXYGEN_OUTPUT_DIR ${DOC_OUTPUT_DIR}/doxygen)
 set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/html/index.html)
 set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)

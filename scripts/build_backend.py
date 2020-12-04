@@ -32,7 +32,7 @@ INSTALL_PREFIX = os.path.join(dpctl_dir, "install")
 if os.path.exists(INSTALL_PREFIX):
     shutil.rmtree(INSTALL_PREFIX)
 
-backends_dir = os.path.join(dpctl_dir, "backends")
+backends = os.path.join(dpctl_dir, "dpctl-capi")
 
 if IS_LIN:
     cmake_args = [
@@ -43,7 +43,7 @@ if IS_LIN:
         "-DDPCPP_ROOT=" + DPCPP_ROOT,
         "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
         "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang++"),
-        backends_dir,
+        backends,
     ]
     subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=False)
     subprocess.check_call(["make", "-j", "4"])
@@ -62,7 +62,7 @@ if IS_WIN:
         "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
         "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
         "-DDPCPP_ROOT=" + DPCPP_ROOT,
-        backends_dir,
+        backends,
     ]
     subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=True)
     subprocess.check_call(["ninja", "-n"])
@@ -79,4 +79,4 @@ include_dir = os.path.join(dpctl_dir, "dpctl", "include")
 if os.path.exists(include_dir):
     shutil.rmtree(include_dir)
 
-shutil.copytree(os.path.join(dpctl_dir, "backends", "include"), include_dir)
+shutil.copytree(os.path.join(dpctl_dir, "dpctl-capi", "include"), include_dir)

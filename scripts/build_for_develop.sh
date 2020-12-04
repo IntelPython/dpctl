@@ -18,7 +18,7 @@ cmake                                                       \
     -DCMAKE_C_COMPILER:PATH=${DPCPP_ROOT}/bin/clang         \
     -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/bin/dpcpp       \
     -DBUILD_CAPI_TESTS=ON                                   \
-    ../backends
+    ../dpctl-capi
 
 make V=1 -n -j 4 && make check && make install
 
@@ -31,10 +31,10 @@ popd
 cp install/lib/*.so dpctl/
 
 mkdir -p dpctl/include
-cp -r backends/include/* dpctl/include
+cp -r dpctl-capi/include/* dpctl/include
 
-export DPPL_SYCL_INTERFACE_LIBDIR=dpctl
-export DPPL_SYCL_INTERFACE_INCLDIR=dpctl/include
+export DPCTL_SYCL_INTERFACE_LIBDIR=dpctl
+export DPCTL_SYCL_INTERFACE_INCLDIR=dpctl/include
 
 export CC=${DPCPP_ROOT}/bin/clang
 export CXX=${DPCPP_ROOT}/bin/dpcpp

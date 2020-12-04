@@ -1,4 +1,4 @@
-##===---------- setup.py - dpctl.ocldrv interface -----*- Python -*-----===##
+##===------------- setup.py - dpctl.ocldrv interface -----*- Python -*-----===##
 ##
 ##               Data Parallel Control Library (dpCtl)
 ##
@@ -55,18 +55,18 @@ if IS_LIN:
     DPCPP_ROOT = os.environ["ONEAPI_ROOT"] + "/compiler/latest/linux"
     os.environ["CC"] = DPCPP_ROOT + "/bin/clang"
     os.environ["CXX"] = DPCPP_ROOT + "/bin/clang++"
-    os.environ["DPPL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
-    os.environ["DPPL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
+    os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
+    os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
     os.environ["CFLAGS"] = "-fPIC"
 
 elif IS_WIN:
     os.environ["CC"] = "clang-cl.exe"
     os.environ["CXX"] = "dpcpp.exe"
-    os.environ["DPPL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
-    os.environ["DPPL_SYCL_INTERFACE_INCLDIR"] = "dpctl\include"
+    os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
+    os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl\include"
 
-dppl_sycl_interface_lib = os.environ["DPPL_SYCL_INTERFACE_LIBDIR"]
-dppl_sycl_interface_include = os.environ["DPPL_SYCL_INTERFACE_INCLDIR"]
+dpctl_sycl_interface_lib = os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"]
+dpctl_sycl_interface_include = os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"]
 sycl_lib = os.environ["ONEAPI_ROOT"] + "\compiler\latest\windows\lib"
 
 
@@ -129,18 +129,18 @@ def extensions():
     librarys = []
 
     if IS_LIN:
-        libs += ["rt", "DPPLSyclInterface"]
+        libs += ["rt", "DPCTLSyclInterface"]
     elif IS_MAC:
         pass
     elif IS_WIN:
-        libs += ["DPPLSyclInterface", "sycl"]
+        libs += ["DPCTLSyclInterface", "sycl"]
 
     if IS_LIN:
-        librarys = [dppl_sycl_interface_lib]
+        librarys = [dpctl_sycl_interface_lib]
     elif IS_WIN:
-        librarys = [dppl_sycl_interface_lib, sycl_lib]
+        librarys = [dpctl_sycl_interface_lib, sycl_lib]
     elif IS_MAC:
-        librarys = [dppl_sycl_interface_lib]
+        librarys = [dpctl_sycl_interface_lib]
 
     if IS_LIN or IS_MAC:
         runtime_library_dirs = ["$ORIGIN"]
@@ -149,9 +149,9 @@ def extensions():
 
     extension_args = {
         "depends": [
-            dppl_sycl_interface_include,
+            dpctl_sycl_interface_include,
         ],
-        "include_dirs": [np.get_include(), dppl_sycl_interface_include],
+        "include_dirs": [np.get_include(), dpctl_sycl_interface_include],
         "extra_compile_args": eca
         + get_other_cxxflags()
         + get_suppressed_warning_flags(),
