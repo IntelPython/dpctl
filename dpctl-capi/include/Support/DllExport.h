@@ -1,4 +1,4 @@
-//===---------- Support/DllExport.h - DPCTL-SYCL interface ---*--- C ---*---===//
+//===--------- Support/DllExport.h - DPCTL-SYCL interface ---*--- C ---*---===//
 //
 //               Data Parallel Control Library (dpCtl)
 //

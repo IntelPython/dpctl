@@ -1,4 +1,4 @@
-//===------------- dpctl_sycl_usm_interface.h - dpctl-C_API ---*---C++ -*---===//
+//===------------ dpctl_sycl_usm_interface.h - dpctl-C_API ---*---C++ -*---===//
 //
 //               Data Parallel Control Library (dpCtl)
 //
@@ -58,7 +58,7 @@ DPCTLmalloc_shared (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
 DPCTLaligned_alloc_shared (size_t alignment, size_t size,
-                          __dpctl_keep const DPCTLSyclQueueRef QRef);
+                           __dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Create USM host memory.
@@ -85,7 +85,7 @@ DPCTLmalloc_host (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
 DPCTLaligned_alloc_host (size_t alignment, size_t size,
-                        __dpctl_keep const DPCTLSyclQueueRef QRef);
+                         __dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Create USM device memory.
@@ -112,7 +112,7 @@ DPCTLmalloc_device (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
 DPCTLaligned_alloc_device (size_t alignment, size_t size,
-                          __dpctl_keep const DPCTLSyclQueueRef QRef);
+                           __dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Free USM memory.
@@ -125,7 +125,7 @@ DPCTLaligned_alloc_device (size_t alignment, size_t size,
  */
 DPCTL_API
 void DPCTLfree_with_queue (__dpctl_take DPCTLSyclUSMRef MRef,
-                          __dpctl_keep const DPCTLSyclQueueRef QRef);
+                           __dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Free USM memory.
@@ -133,7 +133,7 @@ void DPCTLfree_with_queue (__dpctl_take DPCTLSyclUSMRef MRef,
  */
 DPCTL_API
 void DPCTLfree_with_context (__dpctl_take DPCTLSyclUSMRef MRef,
-                            __dpctl_keep const DPCTLSyclContextRef CRef);
+                             __dpctl_keep const DPCTLSyclContextRef CRef);
 
 /*!
  * @brief Get pointer type.
@@ -146,7 +146,7 @@ void DPCTLfree_with_context (__dpctl_take DPCTLSyclUSMRef MRef,
 DPCTL_API
 const char *
 DPCTLUSM_GetPointerType (__dpctl_keep const DPCTLSyclUSMRef MRef,
-                        __dpctl_keep const DPCTLSyclContextRef CRef);
+                         __dpctl_keep const DPCTLSyclContextRef CRef);
 
 /*!
  * @brief Get the device associated with USM pointer.
@@ -159,5 +159,5 @@ DPCTLUSM_GetPointerType (__dpctl_keep const DPCTLSyclUSMRef MRef,
 DPCTL_API
 DPCTLSyclDeviceRef
 DPCTLUSM_GetPointerDevice (__dpctl_keep const DPCTLSyclUSMRef MRef,
-                          __dpctl_keep const DPCTLSyclContextRef CRef);
+                           __dpctl_keep const DPCTLSyclContextRef CRef);
 DPCTL_C_EXTERN_C_END

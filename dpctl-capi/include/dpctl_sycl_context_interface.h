@@ -1,4 +1,4 @@
-//===----------- dpctl_sycl_context_interface.h - dpctl-C_API --*--C++ --*--===//
+//===---------- dpctl_sycl_context_interface.h - dpctl-C_API --*--C++ --*--===//
 //
 //               Data Parallel Control Library (dpCtl)
 //
@@ -45,7 +45,7 @@ DPCTL_C_EXTERN_C_BEGIN
  */
 DPCTL_API
 bool DPCTLContext_AreEq (__dpctl_keep const DPCTLSyclContextRef CtxRef1,
-                        __dpctl_keep const DPCTLSyclContextRef CtxRef2);
+                         __dpctl_keep const DPCTLSyclContextRef CtxRef2);
 
 /*!
  * @brief Returns true if this SYCL context is a host context.

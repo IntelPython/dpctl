@@ -1,4 +1,4 @@
-//===-------- test_sycl_usm_interface.cpp - dpctl-C_API ---*--- C++ --*--===//
+//===---------- test_sycl_usm_interface.cpp - dpctl-C_API ---*--- C++ --*--===//
 //
 //               Data Parallel Control Library (dpCtl)
 //

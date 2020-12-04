@@ -1,4 +1,4 @@
-//===----------- dpctl_sycl_queue_manager.h - dpctl-C_API ---*---C++ ---*---===//
+//===---------- dpctl_sycl_queue_manager.h - dpctl-C_API ---*---C++ ---*---===//
 //
 //               Data Parallel Control Library (dpCtl)
 //
@@ -67,8 +67,8 @@ __dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue ();
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
 DPCTLQueueMgr_GetQueue (DPCTLSyclBackendType BETy,
-                       DPCTLSyclDeviceType DeviceTy,
-                       size_t DNum);
+                        DPCTLSyclDeviceType DeviceTy,
+                        size_t DNum);
 
 /*!
  * @brief Get the number of activated queues not including the global or
@@ -89,7 +89,7 @@ size_t DPCTLQueueMgr_GetNumActivatedQueues ();
  */
 DPCTL_API
 size_t DPCTLQueueMgr_GetNumQueues (DPCTLSyclBackendType BETy,
-                                  DPCTLSyclDeviceType DeviceTy);
+                                   DPCTLSyclDeviceType DeviceTy);
 
 /*!
  * @brief Returns True if the passed in queue and the current queue are the
@@ -116,8 +116,8 @@ bool DPCTLQueueMgr_IsCurrentQueue (__dpctl_keep const DPCTLSyclQueueRef QRef);
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
 DPCTLQueueMgr_SetAsDefaultQueue (DPCTLSyclBackendType BETy,
-                                DPCTLSyclDeviceType DeviceTy,
-                                size_t DNum);
+                                 DPCTLSyclDeviceType DeviceTy,
+                                 size_t DNum);
 
 /*!
  * @brief Pushes a new sycl::queue object to the top of DPCTL's thread-local
@@ -142,8 +142,8 @@ DPCTLQueueMgr_SetAsDefaultQueue (DPCTLSyclBackendType BETy,
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
 DPCTLQueueMgr_PushQueue (DPCTLSyclBackendType BETy,
-                        DPCTLSyclDeviceType DeviceTy,
-                        size_t DNum);
+                         DPCTLSyclDeviceType DeviceTy,
+                         size_t DNum);
 
 /*!
  * @brief Pops the top of stack element from DPCTL's stack of activated
@@ -177,7 +177,7 @@ void DPCTLQueueMgr_PopQueue ();
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
 DPCTLQueueMgr_GetQueueFromContextAndDevice(__dpctl_keep DPCTLSyclContextRef CRef,
-                                          __dpctl_keep DPCTLSyclDeviceRef DRef);
+                                           __dpctl_keep DPCTLSyclDeviceRef DRef);
 
 
 DPCTL_C_EXTERN_C_END

@@ -1,4 +1,4 @@
-//===--- dpctl_sycl_enum_types.h - DPCTL-SYCL interface ---*---C++ -----*----===//
+//===- dpctl_sycl_enum_types.h - DPCTL-SYCL interface ---*---C++ -----*----===//
 //
 //               Python Data Parallel Processing Library (PyDPCTL)
 //

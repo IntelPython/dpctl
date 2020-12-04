@@ -1,4 +1,4 @@
-//===--------- dpctl_sycl_queue_manager.cpp - dpctl-C_API  --*-- C++ ---*---===//
+//===-------- dpctl_sycl_queue_manager.cpp - dpctl-C_API  --*-- C++ ---*---===//
 //
 //               Data Parallel Control Library (dpCtl)
 //

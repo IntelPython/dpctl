@@ -1,4 +1,4 @@
-##===------------- test_sycl_device.py - dpctl  -------*- Python -*---------===##
+##===------------ test_sycl_device.py - dpctl  -------*- Python -*---------===##
 ##
 ##                      Data Parallel Control (dpctl)
 ##

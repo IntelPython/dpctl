@@ -1,4 +1,4 @@
-//===----------- dpctl_sycl_program_interface.h - dpctl-C_API --*--C++ --*--===//
+//===---------- dpctl_sycl_program_interface.h - dpctl-C_API --*--C++ --*--===//
 //
 //               Data Parallel Control Library (dpCtl)
 //
@@ -59,8 +59,8 @@ DPCTL_C_EXTERN_C_BEGIN
 DPCTL_API
 __dpctl_give DPCTLSyclProgramRef
 DPCTLProgram_CreateFromOCLSpirv (__dpctl_keep const DPCTLSyclContextRef Ctx,
-                                __dpctl_keep const void *IL,
-                                size_t Length);
+                                 __dpctl_keep const void *IL,
+                                 size_t Length);
 
 /*!
  * @brief Create a Sycl program from an OpenCL kernel source string.
@@ -74,8 +74,8 @@ DPCTLProgram_CreateFromOCLSpirv (__dpctl_keep const DPCTLSyclContextRef Ctx,
 DPCTL_API
 __dpctl_give DPCTLSyclProgramRef
 DPCTLProgram_CreateFromOCLSource (__dpctl_keep const DPCTLSyclContextRef Ctx,
-                                 __dpctl_keep const char *Source,
-                                 __dpctl_keep const char *CompileOpts);
+                                  __dpctl_keep const char *Source,
+                                  __dpctl_keep const char *CompileOpts);
 
 /*!
  * @brief Returns the SyclKernel with given name from the program, if not found
@@ -88,7 +88,7 @@ DPCTLProgram_CreateFromOCLSource (__dpctl_keep const DPCTLSyclContextRef Ctx,
 DPCTL_API
 __dpctl_give DPCTLSyclKernelRef
 DPCTLProgram_GetKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
-                       __dpctl_keep const char *KernelName);
+                        __dpctl_keep const char *KernelName);
 
 /*!
  * @brief Return True if a SyclKernel with given name exists in the program, if
@@ -101,7 +101,7 @@ DPCTLProgram_GetKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
 DPCTL_API
 bool
 DPCTLProgram_HasKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
-                       __dpctl_keep const char *KernelName);
+                        __dpctl_keep const char *KernelName);
 
 /*!
  * @brief Frees the DPCTLSyclProgramRef pointer.

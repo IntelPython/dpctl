@@ -1,4 +1,4 @@
-//===---------- dpctl_sycl_device_interface.h - dpctl-C_API ---*---C++ -*---===//
+//===--------- dpctl_sycl_device_interface.h - dpctl-C_API ---*---C++ -*---===//
 //
 //               Data Parallel Control Library (dpCtl)
 //
@@ -213,5 +213,5 @@ bool DPCTLDevice_IsHostUnifiedMemory (__dpctl_keep const DPCTLSyclDeviceRef DRef
  */
 DPCTL_API
 bool DPCTLDevice_AreEq (__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
-                       __dpctl_keep const DPCTLSyclDeviceRef DevRef2);
+                        __dpctl_keep const DPCTLSyclDeviceRef DevRef2);
 DPCTL_C_EXTERN_C_END

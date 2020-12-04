@@ -1,4 +1,4 @@
-//===----------- dpctl_sycl_queue_interface.h - dpctl-C_API ---*---C++ -*---===//
+//===---------- dpctl_sycl_queue_interface.h - dpctl-C_API ---*---C++ -*---===//
 //
 //               Data Parallel Control Library (dpCtl)
 //
@@ -53,7 +53,7 @@ void DPCTLQueue_Delete (__dpctl_take DPCTLSyclQueueRef QRef);
  */
 DPCTL_API
 bool DPCTLQueue_AreEq (__dpctl_keep const DPCTLSyclQueueRef QRef1,
-                      __dpctl_keep const DPCTLSyclQueueRef QRef2);
+                       __dpctl_keep const DPCTLSyclQueueRef QRef2);
 
 /*!
  * @brief Returns the Sycl backend for the provided sycl::queue.
@@ -119,14 +119,14 @@ DPCTLQueue_GetDevice (__dpctl_keep const DPCTLSyclQueueRef QRef);
 DPCTL_API
 DPCTLSyclEventRef
 DPCTLQueue_SubmitRange (__dpctl_keep const DPCTLSyclKernelRef KRef,
-                       __dpctl_keep const DPCTLSyclQueueRef QRef,
-                       __dpctl_keep void **Args,
-                       __dpctl_keep const DPCTLKernelArgType *ArgTypes,
-                       size_t NArgs,
-                       __dpctl_keep const size_t Range[3],
-                       size_t NRange,
-                       __dpctl_keep const DPCTLSyclEventRef *DepEvents,
-                       size_t NDepEvents);
+                        __dpctl_keep const DPCTLSyclQueueRef QRef,
+                        __dpctl_keep void **Args,
+                        __dpctl_keep const DPCTLKernelArgType *ArgTypes,
+                        size_t NArgs,
+                        __dpctl_keep const size_t Range[3],
+                        size_t NRange,
+                        __dpctl_keep const DPCTLSyclEventRef *DepEvents,
+                        size_t NDepEvents);
 
 /*!
  * @brief Submits the kernel to the specified queue with the provided nd_range
@@ -166,15 +166,15 @@ DPCTLQueue_SubmitRange (__dpctl_keep const DPCTLSyclKernelRef KRef,
 DPCTL_API
 DPCTLSyclEventRef
 DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
-                        __dpctl_keep const DPCTLSyclQueueRef QRef,
-                        __dpctl_keep void **Args,
-                        __dpctl_keep const DPCTLKernelArgType *ArgTypes,
-                        size_t NArgs,
-                        __dpctl_keep const size_t gRange[3],
-                        __dpctl_keep const size_t lRange[3],
-                        size_t NDims,
-                        __dpctl_keep const DPCTLSyclEventRef *DepEvents,
-                        size_t NDepEvents);
+                         __dpctl_keep const DPCTLSyclQueueRef QRef,
+                         __dpctl_keep void **Args,
+                         __dpctl_keep const DPCTLKernelArgType *ArgTypes,
+                         size_t NArgs,
+                         __dpctl_keep const size_t gRange[3],
+                         __dpctl_keep const size_t lRange[3],
+                         size_t NDims,
+                         __dpctl_keep const DPCTLSyclEventRef *DepEvents,
+                         size_t NDepEvents);
 
 /*!
  * @brief Calls the sycl::queue.submit function to do a blocking wait on all
@@ -197,7 +197,7 @@ DPCTLQueue_Wait (__dpctl_keep const DPCTLSyclQueueRef QRef);
  */
 DPCTL_API
 void DPCTLQueue_Memcpy (__dpctl_keep const DPCTLSyclQueueRef QRef,
-                       void *Dest, const void *Src, size_t Count);
+                        void *Dest, const void *Src, size_t Count);
 
 /*!
  * @brief C-API wrapper for sycl::queue::prefetch, the function waits on an event
@@ -209,7 +209,7 @@ void DPCTLQueue_Memcpy (__dpctl_keep const DPCTLSyclQueueRef QRef,
  */
 DPCTL_API
 void DPCTLQueue_Prefetch (__dpctl_keep DPCTLSyclQueueRef QRef,
-                         const void *Ptr, size_t Count);
+                          const void *Ptr, size_t Count);
 
 /*!
  * @brief C-API wrapper for sycl::queue::mem_advise, the function waits on an event
@@ -223,6 +223,6 @@ void DPCTLQueue_Prefetch (__dpctl_keep DPCTLSyclQueueRef QRef,
  */
 DPCTL_API
 void DPCTLQueue_MemAdvise (__dpctl_keep DPCTLSyclQueueRef QRef,
-                          const void *Ptr, size_t Count, int Advice);
+                           const void *Ptr, size_t Count, int Advice);
 
 DPCTL_C_EXTERN_C_END

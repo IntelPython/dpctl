@@ -1,4 +1,4 @@
-//===----- test_sycl_device_interface.cpp - dpctl-C_API interface -*- C++ -*-===//
+//===--- test_sycl_device_interface.cpp - dpctl-C_API interface -*- C++ -*-===//
 //
 //               Python Data Parallel Processing Library (PyDPCTL)
 //

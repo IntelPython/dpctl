@@ -1,4 +1,4 @@
-//===------------ Support/ExternC.h - DPCTL-SYCL interface ---*--- C ---*---===//
+//===----------- Support/ExternC.h - DPCTL-SYCL interface ---*--- C ---*---===//
 //
 //               Data Parallel Control Library (dpCtl)
 //

@@ -1,4 +1,4 @@
-##===---------- setup.py - dpctl.ocldrv interface -----*- Python -*-----===##
+##===------------- setup.py - dpctl.ocldrv interface -----*- Python -*-----===##
 ##
 ##               Data Parallel Control Library (dpCtl)
 ##

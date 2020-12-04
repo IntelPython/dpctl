@@ -1,4 +1,4 @@
-//===----- dpctl_mem_ownership_attrs.h - DPCTL-SYCL interface --*-- C++ --*--===//
+//===--- dpctl_mem_ownership_attrs.h - DPCTL-SYCL interface --*-- C++ --*--===//
 //
 //               Data Parallel Control Library (dpCtl)
 //

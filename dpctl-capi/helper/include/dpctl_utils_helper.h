@@ -1,4 +1,4 @@
-//===------------------- dpctl_utils.h - dpctl-C_API ---*--- C++ -----*-----===//
+//===------------------ dpctl_utils.h - dpctl-C_API ---*--- C++ -----*-----===//
 //
 //               Data Parallel Control Library (dpCtl)
 //
