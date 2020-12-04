@@ -1,5 +1,4 @@
 include versioneer.py
-include dparray.py
 recursive-include dpctl/include *.h *.hpp
 include dpctl/*.pxd
 include dpctl/*DPPL*Interface.*
