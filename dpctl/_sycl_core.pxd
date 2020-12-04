@@ -34,18 +34,18 @@ from libc.stdint cimport uint32_t
 cdef class SyclContext:
     ''' Wrapper class for a Sycl Context
     '''
-    cdef DPPLSyclContextRef _ctxt_ref
+    cdef DPCTLSyclContextRef _ctxt_ref
 
     @staticmethod
-    cdef SyclContext _create (DPPLSyclContextRef ctxt)
+    cdef SyclContext _create (DPCTLSyclContextRef ctxt)
     cpdef bool equals (self, SyclContext ctxt)
-    cdef DPPLSyclContextRef get_context_ref (self)
+    cdef DPCTLSyclContextRef get_context_ref (self)
 
 
 cdef class SyclDevice:
     ''' Wrapper class for a Sycl Device
     '''
-    cdef DPPLSyclDeviceRef _device_ref
+    cdef DPCTLSyclDeviceRef _device_ref
     cdef const char *_vendor_name
     cdef const char *_device_name
     cdef const char *_driver_version
@@ -58,8 +58,8 @@ cdef class SyclDevice:
     cdef bool _int64_extended_atomics
 
     @staticmethod
-    cdef SyclDevice _create (DPPLSyclDeviceRef dref)
-    cdef DPPLSyclDeviceRef get_device_ref (self)
+    cdef SyclDevice _create (DPCTLSyclDeviceRef dref)
+    cdef DPCTLSyclDeviceRef get_device_ref (self)
     cpdef get_device_name (self)
     cpdef get_device_type (self)
     cpdef get_vendor_name (self)
@@ -76,12 +76,12 @@ cdef class SyclDevice:
 cdef class SyclEvent:
     ''' Wrapper class for a Sycl Event
     '''
-    cdef  DPPLSyclEventRef _event_ref
+    cdef  DPCTLSyclEventRef _event_ref
     cdef list _args
 
     @staticmethod
-    cdef  SyclEvent _create (DPPLSyclEventRef e, list args)
-    cdef  DPPLSyclEventRef get_event_ref (self)
+    cdef  SyclEvent _create (DPCTLSyclEventRef e, list args)
+    cdef  DPCTLSyclEventRef get_event_ref (self)
     cpdef void wait (self)
 
 
@@ -89,55 +89,55 @@ cdef class SyclKernel:
     ''' Wraps a sycl::kernel object created from an OpenCL interoperability
         kernel.
     '''
-    cdef DPPLSyclKernelRef _kernel_ref
+    cdef DPCTLSyclKernelRef _kernel_ref
     cdef const char *_function_name
-    cdef DPPLSyclKernelRef get_kernel_ref (self)
+    cdef DPCTLSyclKernelRef get_kernel_ref (self)
 
     @staticmethod
-    cdef SyclKernel _create (DPPLSyclKernelRef kref)
+    cdef SyclKernel _create (DPCTLSyclKernelRef kref)
 
 
 cdef class SyclProgram:
     ''' Wraps a sycl::program object created from an OpenCL interoperability
         program.
 
-        SyclProgram exposes the C API from dppl_sycl_program_interface.h. A
+        SyclProgram exposes the C API from dpctl_sycl_program_interface.h. A
         SyclProgram can be created from either a source string or a SPIR-V
         binary file.
     '''
-    cdef DPPLSyclProgramRef _program_ref
+    cdef DPCTLSyclProgramRef _program_ref
 
     @staticmethod
-    cdef  SyclProgram _create (DPPLSyclProgramRef pref)
-    cdef  DPPLSyclProgramRef get_program_ref (self)
+    cdef  SyclProgram _create (DPCTLSyclProgramRef pref)
+    cdef  DPCTLSyclProgramRef get_program_ref (self)
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name)
 
 
 cdef class SyclQueue:
     ''' Wrapper class for a Sycl queue.
     '''
-    cdef DPPLSyclQueueRef _queue_ref
+    cdef DPCTLSyclQueueRef _queue_ref
     cdef SyclContext _context
     cdef SyclDevice _device
 
     cdef _raise_queue_submit_error (self, fname, errcode)
     cdef _raise_invalid_range_error (self, fname, ndims, errcode)
     cdef int _populate_args (self, list args, void **kargs,
-                             DPPLKernelArgType *kargty)
+                             DPCTLKernelArgType *kargty)
     cdef int _populate_range (self, size_t Range[3], list gS, size_t nGS)
 
     @staticmethod
-    cdef  SyclQueue _create (DPPLSyclQueueRef qref)
+    cdef  SyclQueue _create (DPCTLSyclQueueRef qref)
     @staticmethod
     cdef  SyclQueue _create_from_context_and_device (SyclContext ctx, SyclDevice dev)
     cpdef bool equals (self, SyclQueue q)
     cpdef SyclContext get_sycl_context (self)
     cpdef SyclDevice get_sycl_device (self)
-    cdef  DPPLSyclQueueRef get_queue_ref (self)
+    cdef  DPCTLSyclQueueRef get_queue_ref (self)
     cpdef SyclEvent submit (self, SyclKernel kernel, list args, list gS,
                             list lS=*, list dEvents=*)
     cpdef void wait (self)
-    cdef DPPLSyclQueueRef get_queue_ref (self)
+    cdef DPCTLSyclQueueRef get_queue_ref (self)
     cpdef memcpy (self, dest, src, size_t count)
     cpdef prefetch (self, ptr, size_t count=*)
     cpdef mem_advise (self, ptr, size_t count, int mem)

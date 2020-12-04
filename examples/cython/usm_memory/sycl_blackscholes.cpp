@@ -1,5 +1,5 @@
 #include <CL/sycl.hpp>
-#include "dppl_sycl_types.h"
+#include "dpctl_sycl_types.h"
 #include "sycl_blackscholes.hpp"
 #include "mkl_rng_sycl_device.hpp"
 
@@ -19,7 +19,7 @@ constexpr int CALL = 0;
 constexpr int PUT = 1;
 
 template<typename T>
-extern void cpp_blackscholes(DPPLSyclQueueRef q_ptr, size_t n_opts, T* params, T* callput) {
+extern void cpp_blackscholes(DPCTLSyclQueueRef q_ptr, size_t n_opts, T* params, T* callput) {
     using data_t = T;
 
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ptr));
@@ -100,7 +100,7 @@ extern void cpp_blackscholes(DPPLSyclQueueRef q_ptr, size_t n_opts, T* params, T
 }
 
 template<typename T>
-void cpp_populate_params(DPPLSyclQueueRef q_ptr, size_t n_opts, T* params, T pl, T ph, T sl, T sh, T tl, T th, T rl, T rh, T vl, T vh, int seed) {
+void cpp_populate_params(DPCTLSyclQueueRef q_ptr, size_t n_opts, T* params, T pl, T ph, T sl, T sh, T tl, T th, T rl, T rh, T vl, T vh, int seed) {
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ptr));
 
     auto ctx = q.get_context();
@@ -158,13 +158,13 @@ void cpp_populate_params(DPPLSyclQueueRef q_ptr, size_t n_opts, T* params, T pl,
 
 // instantation for object files to not be empty
 
-template void cpp_blackscholes<double>(DPPLSyclQueueRef q_ptr, size_t n_opts, double* params, double* callput);
-template void cpp_blackscholes<float>(DPPLSyclQueueRef q_ptr, size_t n_opts, float* params, float* callput);
+template void cpp_blackscholes<double>(DPCTLSyclQueueRef q_ptr, size_t n_opts, double* params, double* callput);
+template void cpp_blackscholes<float>(DPCTLSyclQueueRef q_ptr, size_t n_opts, float* params, float* callput);
 
 
-template void cpp_populate_params<double>(DPPLSyclQueueRef q_ptr, size_t n_opts, double* params,
+template void cpp_populate_params<double>(DPCTLSyclQueueRef q_ptr, size_t n_opts, double* params,
 					  double pl, double ph, double sl, double sh, double tl, double th,
 					  double rl, double rh, double vl, double vh, int seed);
-template void cpp_populate_params<float>(DPPLSyclQueueRef q_ptr, size_t n_opts, float* params,
+template void cpp_populate_params<float>(DPCTLSyclQueueRef q_ptr, size_t n_opts, float* params,
 					  float pl, float ph, float sl, float sh, float tl, float th,
 					  float rl, float rh, float vl, float vh, int seed);
