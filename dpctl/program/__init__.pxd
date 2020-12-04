@@ -1,4 +1,4 @@
-# ===-------- tests/dpctl_tests/__init__.py - dpctl  ------*- Python -*-----===#
+# ===---------- __init__.pxd - dpctl.program module -*- Cython -*-----------===#
 #
 #                      Data Parallel Control (dpCtl)
 #
@@ -16,17 +16,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# ===-----------------------------------------------------------------------===#
+# ===----------------------------------------------------------------------===##
 #
 # \file
-# Top-level module of all dpctl Python unit test cases.
+# This file declares the extension types and functions for the Cython API
+# implemented in dpctl.program._program.pyx.
+#
 # ===-----------------------------------------------------------------------===#
 
-from .test_dump_functions import *
-from .test_sycl_device import *
-from .test_sycl_kernel_submit import *
-from .test_sycl_program import *
-from .test_sycl_queue import *
-from .test_sycl_queue_manager import *
-from .test_sycl_queue_memcpy import *
-from .test_sycl_usm import *
+# distutils: language = c++
+# cython: language_level=3
+
+from dpctl.program._program cimport *

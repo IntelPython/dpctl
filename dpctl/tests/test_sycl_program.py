@@ -1,29 +1,30 @@
-##===------------- test_sycl_program.py - dpctl  -------*- Python -*-------===##
-##
-##                      Data Parallel Control (dpctl)
-##
-## Copyright 2020 Intel Corporation
-##
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-##
-##    http://www.apache.org/licenses/LICENSE-2.0
-##
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-##
-##===----------------------------------------------------------------------===##
-##
-## \file
-## Defines unit test cases for the SyclProgram and SyclKernel classes defined
-##  in sycl_core.pyx.
-##===----------------------------------------------------------------------===##
+# ===------------- test_sycl_program.py - dpctl  -------*- Python -*--------===#
+#
+#                      Data Parallel Control (dpctl)
+#
+# Copyright 2020 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# ===-----------------------------------------------------------------------===#
+#
+# \file
+# Defines unit test cases for the SyclProgram and SyclKernel classes defined
+#  in sycl_core.pyx.
+# ===-----------------------------------------------------------------------===#
 
 import dpctl
+import dpctl.program as dpctl_prog
 import unittest
 import os
 
@@ -42,7 +43,7 @@ class TestProgramFromOCLSource(unittest.TestCase):
         }"
         with dpctl.device_context("opencl:gpu:0"):
             q = dpctl.get_current_queue()
-            prog = dpctl.create_program_from_source(q, oclSrc)
+            prog = dpctl_prog.create_program_from_source(q, oclSrc)
             self.assertIsNotNone(prog)
 
             self.assertTrue(prog.has_sycl_kernel("add"))
@@ -67,7 +68,7 @@ class TestProgramFromSPRIV(unittest.TestCase):
             spirv = fin.read()
             with dpctl.device_context("opencl:gpu:0"):
                 q = dpctl.get_current_queue()
-                prog = dpctl.create_program_from_spirv(q, spirv)
+                prog = dpctl_prog.create_program_from_spirv(q, spirv)
                 self.assertIsNotNone(prog)
                 self.assertTrue(prog.has_sycl_kernel("add"))
                 self.assertTrue(prog.has_sycl_kernel("axpy"))
@@ -86,6 +87,7 @@ class TestProgramFromSPRIV(unittest.TestCase):
     "No Level0 GPU queues available",
 )
 class TestProgramForLevel0GPU(unittest.TestCase):
+    @unittest.expectedFailure
     def test_create_program_from_spirv(self):
 
         CURR_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -94,12 +96,9 @@ class TestProgramForLevel0GPU(unittest.TestCase):
             spirv = fin.read()
             with dpctl.device_context("level0:gpu:0"):
                 q = dpctl.get_current_queue()
-                try:
-                    prog = dpctl.create_program_from_spirv(q, spirv)
-                    self.fail("Tried to create program for an unsupported Level0 GPU.")
-                except ValueError:
-                    pass
+                prog = dpctl_prog.create_program_from_spirv(q, spirv)
 
+    @unittest.expectedFailure
     def test_create_program_from_source(self):
         oclSrc = "                                                             \
         kernel void add(global int* a, global int* b, global int* c) {         \
@@ -112,11 +111,7 @@ class TestProgramForLevel0GPU(unittest.TestCase):
         }"
         with dpctl.device_context("level0:gpu:0"):
             q = dpctl.get_current_queue()
-            try:
-                prog = dpctl.create_program_from_source(q, oclSrc)
-                self.fail("Tried to create program for an unsupported Level0 GPU.")
-            except ValueError:
-                pass
+            prog = dpctl_prog.create_program_from_source(q, oclSrc)
 
 
 if __name__ == "__main__":

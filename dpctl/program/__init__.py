@@ -1,4 +1,4 @@
-# ===-------- tests/dpctl_tests/__init__.py - dpctl  ------*- Python -*-----===#
+# ==---------- __init__.py - dpctl.program module ----*---- Python ----*----===#
 #
 #                      Data Parallel Control (dpCtl)
 #
@@ -16,17 +16,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# ===-----------------------------------------------------------------------===#
+# ==------------------------------------------------------------------------===#
 #
 # \file
-# Top-level module of all dpctl Python unit test cases.
-# ===-----------------------------------------------------------------------===#
+# This dpctl.program module wraps Sycl program creation functions defined in
+# dppl_sycl_program_interface.h.
+#
+# ==------------------------------------------------------------------------===#
+"""
+    **Data Parallel Control Program**
 
-from .test_dump_functions import *
-from .test_sycl_device import *
-from .test_sycl_kernel_submit import *
-from .test_sycl_program import *
-from .test_sycl_queue import *
-from .test_sycl_queue_manager import *
-from .test_sycl_queue_memcpy import *
-from .test_sycl_usm import *
+    `dpctl.program` module provides a way to create a SYCL kernel from either a
+    source string or SPIR-V binary file.
+
+"""
+from ._program import *
+from ._program import __all__ as _program__all__
+
+__all__ = _program__all__

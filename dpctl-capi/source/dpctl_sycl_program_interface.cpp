@@ -38,22 +38,13 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(program, DPCTLSyclProgramRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
 
-} /* end of anonymous namespace */
-
 __dpctl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromOCLSpirv (__dpctl_keep const DPCTLSyclContextRef CtxRef,
-                                __dpctl_keep const void *IL,
-                                size_t length)
+createOpenCLInterOpProgram (const context &SyclCtx,
+                            __dpctl_keep const void *IL,
+                            size_t length)
 {
     cl_int err;
-    context *SyclCtx;
-    if(!CtxRef) {
-        // \todo handle error
-        return nullptr;
-    }
-
-    SyclCtx = unwrap(CtxRef);
-    auto CLCtx   = SyclCtx->get();
+    auto CLCtx   = SyclCtx.get();
     auto CLProgram = clCreateProgramWithIL(CLCtx, IL, length, &err);
     if (err) {
         // \todo: record the error string and any other information.
@@ -61,7 +52,7 @@ DPCTLProgram_CreateFromOCLSpirv (__dpctl_keep const DPCTLSyclContextRef CtxRef,
                      "binary. OpenCL Error " << err << ".\n";
         return nullptr;
     }
-    auto SyclDevices = SyclCtx->get_devices();
+    auto SyclDevices = SyclCtx.get_devices();
 
     // Get a list of CL Devices from the Sycl devices
     auto CLDevices = new cl_device_id[SyclDevices.size()];
@@ -83,18 +74,50 @@ DPCTLProgram_CreateFromOCLSpirv (__dpctl_keep const DPCTLSyclContextRef CtxRef,
 
     // Create the Sycl program from OpenCL program
     try {
-        auto SyclProgram = new program(*SyclCtx, CLProgram);
+        auto SyclProgram = new program(SyclCtx, CLProgram);
         return wrap(SyclProgram);
-    } catch (invalid_object_error) {
+    } catch (invalid_object_error &e) {
         // \todo record error
+        std::cerr << e.what() << '\n';
         return nullptr;
     }
 }
 
+} /* end of anonymous namespace */
+
+__dpctl_give DPCTLSyclProgramRef
+DPCTLProgram_CreateFromOCLSpirv (__dpctl_keep const DPCTLSyclContextRef CtxRef,
+                                 __dpctl_keep const void *IL,
+                                 size_t length)
+{
+    DPCTLSyclProgramRef Pref = nullptr;
+    context *SyclCtx = nullptr;
+    if(!CtxRef) {
+        // \todo handle error
+        return Pref;
+    }
+
+    SyclCtx = unwrap(CtxRef);
+    // get the backend type
+    auto BE = SyclCtx->get_platform().get_backend();
+    switch (BE)
+    {
+    case backend::opencl:
+        Pref = createOpenCLInterOpProgram(*SyclCtx, IL, length);
+        break;
+    case backend::level_zero:
+        break;
+    default:
+        break;
+    }
+
+    return Pref;
+}
+
 __dpctl_give DPCTLSyclProgramRef
 DPCTLProgram_CreateFromOCLSource (__dpctl_keep const DPCTLSyclContextRef Ctx,
-                                 __dpctl_keep const char *Source,
-                                 __dpctl_keep const char *CompileOpts)
+                                  __dpctl_keep const char *Source,
+                                  __dpctl_keep const char *CompileOpts)
 {
     std::string compileOpts;
     context *SyclCtx = nullptr;
@@ -118,23 +141,43 @@ DPCTLProgram_CreateFromOCLSource (__dpctl_keep const DPCTLSyclContextRef Ctx,
         compileOpts = CompileOpts;
     }
 
-    try{
-        SyclProgram->build_with_source(source, compileOpts);
-        return wrap(SyclProgram);
-    } catch (compile_program_error) {
-        delete SyclProgram;
-        // \todo record error
+    // get the backend type
+    auto BE = SyclCtx->get_platform().get_backend();
+    switch (BE)
+    {
+    case backend::opencl:
+        try {
+            SyclProgram->build_with_source(source, compileOpts);
+            return wrap(SyclProgram);
+        } catch (compile_program_error &e) {
+            std::cerr << e.what() << '\n';
+            delete SyclProgram;
+            // \todo record error
+            return nullptr;
+        } catch (feature_not_supported &e) {
+            std::cerr << e.what() << '\n';
+            delete SyclProgram;
+            // \todo record error
+            return nullptr;
+        } catch (runtime_error &e) {
+            std::cerr << e.what() << '\n';
+            delete SyclProgram;
+            // \todo record error
+            return nullptr;
+        }
+        break;
+    case backend::level_zero:
+        std::cerr << "CreateFromSource is not supported in Level Zero.\n";
         return nullptr;
-    } catch (feature_not_supported) {
-        delete SyclProgram;
-        // \todo record error
+    default:
+        std::cerr << "CreateFromSource is not supported in unknown backend.\n";
         return nullptr;
     }
 }
 
 __dpctl_give DPCTLSyclKernelRef
 DPCTLProgram_GetKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
-                       __dpctl_keep const char *KernelName)
+                        __dpctl_keep const char *KernelName)
 {
     if(!PRef) {
         // \todo record error
@@ -149,15 +192,16 @@ DPCTLProgram_GetKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
     try {
         auto SyclKernel = new kernel(SyclProgram->get_kernel(name));
         return wrap(SyclKernel);
-    } catch (invalid_object_error) {
+    } catch (invalid_object_error &e) {
         // \todo record error
+        std::cerr << e.what() << '\n';
         return nullptr;
     }
 }
 
 bool
 DPCTLProgram_HasKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
-                       __dpctl_keep const char *KernelName)
+                        __dpctl_keep const char *KernelName)
 {
     if(!PRef) {
         // \todo handle error
@@ -167,7 +211,8 @@ DPCTLProgram_HasKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
     auto SyclProgram = unwrap(PRef);
     try {
         return SyclProgram->has_kernel(KernelName);
-    } catch (invalid_object_error) {
+    } catch (invalid_object_error &e) {
+        std::cerr << e.what() << '\n';
         return false;
     }
 }
