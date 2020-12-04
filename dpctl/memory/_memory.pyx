@@ -1,4 +1,4 @@
-#===--------------- _memory.pyx - dpctl module --------*- Cython -*---------===#
+# ===-------------- _memory.pyx - dpctl module --------*- Cython -*---------===#
 #
 #                      Data Parallel Control (dpCtl)
 #
@@ -16,14 +16,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#===------------------------------------------------------------------------===#
+# ===-----------------------------------------------------------------------===#
 #
 # \file
 # This file implements Python buffer protocol using Sycl USM shared and host
 # allocators. The USM device allocator is also exposed through this module for
 # use in other Python modules.
 #
-#===------------------------------------------------------------------------===#
+# ===-----------------------------------------------------------------------===#
 
 # distutils: language = c++
 # cython: language_level=3

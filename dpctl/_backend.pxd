@@ -1,4 +1,4 @@
-#===------------- backend.pyx - dpctl module -------*- Cython -*------------===#
+# ===------------ backend.pyx - dpctl module -------*- Cython -*------------===#
 #
 #                      Data Parallel Control (dpCtl)
 #
@@ -16,13 +16,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#===------------------------------------------------------------------------===#
+# ===-----------------------------------------------------------------------===#
 #
 # \file
 # This file defines the Cython extern types for the functions and opaque data
 # types defined by dpctl's C API.
 #
-#===------------------------------------------------------------------------===#
+# ===-----------------------------------------------------------------------===#
 
 # distutils: language = c++
 # cython: language_level=3

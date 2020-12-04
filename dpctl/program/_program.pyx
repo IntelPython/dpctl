@@ -1,4 +1,4 @@
-#===------- _program.pyx - dpctl.program module ---*--- Cython ------*------===#
+# ===------- _program.pyx - dpctl.program module ---*--- Cython ------*-----===#
 #
 #                      Data Parallel Control (dpCtl)
 #
@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#===------------------------------------------------------------------------===#
+# ===-----------------------------------------------------------------------===#
 #
 # \file
 # This file implements a a Python interface for SYCL's program and kernel
@@ -24,7 +24,7 @@
 # a OpenCL source file or a SPIR-V binary file are also included in the
 # module.
 #
-#===------------------------------------------------------------------------===#
+# ===-----------------------------------------------------------------------===#
 
 # distutils: language = c++
 # cython: language_level=3

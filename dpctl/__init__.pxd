@@ -1,4 +1,4 @@
-#===------------- __init__.pxd - dpctl module --------*- Cython -*----------===#
+# ===------------ __init__.pxd - dpctl module --------*- Cython -*----------===#
 #
 #                      Data Parallel Control (dpCtl)
 #
@@ -16,13 +16,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#===------------------------------------------------------------------------===#
+# ===-----------------------------------------------------------------------===#
 #
 # \file
 # This file declares the extension types and functions for the Cython API
 # implemented in sycl_core.pyx.
 #
-#===------------------------------------------------------------------------===#
+# ===-----------------------------------------------------------------------===#
 
 # distutils: language = c++
 # cython: language_level=3

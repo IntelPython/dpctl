@@ -1,4 +1,4 @@
-#===-------------- _program.pxd - dpctl.program module -*-- Cython ----*----===#
+# ===------------- _program.pxd - dpctl.program module -*-- Cython ----*----===#
 #
 #                      Data Parallel Control (dpCtl)
 #
@@ -16,13 +16,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#===------------------------------------------------------------------------===#
+# ===-----------------------------------------------------------------------===#
 #
 # \file
 # This file has the Cython function declarations for the functions defined
 # in dpctl.program._program.pyx
 #
-#===------------------------------------------------------------------------===#
+# ===-----------------------------------------------------------------------===#
 
 # distutils: language = c++
 # cython: language_level=3

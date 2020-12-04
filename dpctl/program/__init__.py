@@ -1,4 +1,4 @@
-#===---------- __init__.py - dpctl.program module ----*---- Python ----*----===#
+# ==---------- __init__.py - dpctl.program module ----*---- Python ----*----===#
 #
 #                      Data Parallel Control (dpCtl)
 #
@@ -16,13 +16,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#===------------------------------------------------------------------------===#
+# ==------------------------------------------------------------------------===#
 #
 # \file
 # This dpctl.program module wraps Sycl program creation functions defined in
 # dppl_sycl_program_interface.h.
 #
-#===------------------------------------------------------------------------===#
+# ==------------------------------------------------------------------------===#
 """
     **Data Parallel Control Program**
 
