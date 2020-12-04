@@ -30,3 +30,4 @@ from .test_sycl_queue import *
 from .test_sycl_queue_manager import *
 from .test_sycl_queue_memcpy import *
 from .test_sycl_usm import *
+from .test_dparray import *
