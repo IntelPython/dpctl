@@ -3,7 +3,7 @@ from dpctl import dparray
 import numpy
 
 
-class TestOverloadList(unittest.TestCase):
+class Test_dparray(unittest.TestCase):
     def setUp(self):
         self.X = dparray.ndarray((256, 4), dtype="d")
         self.X.fill(1.0)
