@@ -1,10 +1,11 @@
 from __future__ import print_function
 
-from dpctl import runtime, device_context, device_type
+import dpctl
+from dpctl import device_context, device_type
 
 
 # Global runtime object inside dpctl
-rt = runtime
+rt = dpctl
 
 # Print metadata about the runtime
 rt.dump()
@@ -19,11 +20,11 @@ print(dir(queue))
 # the with device_context scope gets reset to what ever context was set
 # at entry of the scope. For this case, the context would go back to the
 # default context
-with device_context(device_type.cpu, 0) as cpu_queue:
+with device_context("opencl:cpu:0") as cpu_queue:
     print("========================================")
     print("Current context inside with scope")
     print("========================================")
-    rt.dump_queue(cpu_queue)
+    cpu_queue.get_sycl_device().dump_device_info()
 
     # Note the current context can be either directly accessed by using
     # the "cpu_queue" object, or it can be accessed via the runtime's
@@ -31,10 +32,10 @@ with device_context(device_type.cpu, 0) as cpu_queue:
     print("========================================")
     print("Looking up current context using runtime")
     print("========================================")
-    rt.dump_queue(rt.get_current_queue())
+    rt.get_current_queue().get_sycl_device().dump_device_info()
 
 
 print("========================================")
 print("Current context after exiting with scope")
 print("========================================")
-rt.dump_queue(rt.get_current_queue())
+rt.get_current_queue().get_sycl_device().dump_device_info()

@@ -29,7 +29,7 @@
 #include <iostream>
 #include <set>
 #include <sstream>
-#include "../details/include/dppl_utils_details.h"
+#include "../helper/include/dppl_utils_helper.h"
 
 #include <CL/sycl.hpp>
 
@@ -125,7 +125,7 @@ void DPPLPlatform_DumpInfo ()
                << "Device type";
 
             auto devTy = devices[dn].get_info<info::device::device_type>();
-            ss << DDPL_StrToDeviceType(devTy);
+            ss << DPPL_DeviceTypeToStr(devTy);
         }
         std::cout << ss.str();
         ++i;
@@ -148,7 +148,12 @@ size_t DPPLPlatform_GetNumNonHostPlatforms ()
 
 size_t DPPLPlatform_GetNumNonHostBackends ()
 {
-    return get_set_of_non_hostbackends().size();
+    auto be_set = get_set_of_non_hostbackends();
+
+    if (be_set.empty())
+        return 0;
+
+    return be_set.size();
 }
 
 __dppl_give DPPLSyclBackendType *DPPLPlatform_GetListOfNonHostBackends ()
