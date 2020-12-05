@@ -429,10 +429,18 @@ cdef class _Memory:
 
     @staticmethod
     cdef SyclDevice get_pointer_device(DPPLSyclUSMRef p, SyclContext ctx):
+        """Returns sycl device used to allocate given pointer `p` in given sycl context `ctx`"""
         cdef DPPLSyclDeviceRef dref = DPPLUSM_GetPointerDevice(p, ctx.get_context_ref())
 
         return SyclDevice._create(dref)
 
+    @staticmethod
+    cdef bytes get_pointer_type(DPPLSyclUSMRef p, SyclContext ctx):
+        """Returns USM-type of given pointer `p` in given sycl context `ctx`"""
+        cdef const char * usm_type = DPPLUSM_GetPointerType(p, ctx.get_context_ref())
+
+        return <bytes>usm_type
+    
 
 cdef class MemoryUSMShared(_Memory):
     """

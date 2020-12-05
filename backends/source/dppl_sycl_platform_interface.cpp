@@ -29,6 +29,7 @@
 #include <iostream>
 #include <set>
 #include <sstream>
+#include "../helper/include/dppl_utils_helper.h"
 
 #include <CL/sycl.hpp>
 
@@ -124,26 +125,7 @@ void DPPLPlatform_DumpInfo ()
                << "Device type";
 
             auto devTy = devices[dn].get_info<info::device::device_type>();
-            switch (devTy)
-            {
-            case info::device_type::cpu:
-                ss << "cpu" << '\n';
-                break;
-            case info::device_type::gpu:
-                ss << "gpu" << '\n';
-                break;
-            case info::device_type::accelerator:
-                ss << "accelerator" << '\n';
-                break;
-            case info::device_type::custom:
-                ss << "custom" << '\n';
-                break;
-            case info::device_type::host:
-                ss << "host" << '\n';
-                break;
-            default:
-                ss << "unknown" << '\n';
-            }
+            ss << DPPL_DeviceTypeToStr(devTy);
         }
         std::cout << ss.str();
         ++i;

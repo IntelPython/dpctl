@@ -2,12 +2,15 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Added
+- setup.py builds C++ backend for develop and install commands.
 
 ## [0.4.0] - 2020-11-04
 ### Added
 - Device descriptors "max_compute_units", "max_work_item_dimensions", "max_work_item_sizes", "max_work_group_size", "max_num_sub_groups" and "aspects" for int64 atomics inside dpctl C API and inside the dpctl.SyclDevice class.
 - MemoryUSM* classes moved to `dpctl.memory` module, added support for aligned allocation, added support for `prefetch` and `mem_advise` (sychronous) methods, implemented `copy_to_host`, `copy_from_host` and `copy_from_device` methods, pickling support, and zero-copy interoperability with Python objects which implement `__sycl_usm_array_inerface__` protocol.
 - Helper scripts to generate API documentation for both C API and Python.
+
 
 ### Fixed
 - Compiler warnings when building libDPPLSyclInterface and the Cython extensions.
