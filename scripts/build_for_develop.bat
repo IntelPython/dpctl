@@ -34,7 +34,7 @@ cmake -G Ninja ^
     "-DCMAKE_C_COMPILER:PATH=%DPCPP_ROOT%\bin\clang-cl.exe" ^
     "-DCMAKE_CXX_COMPILER:PATH=%DPCPP_ROOT%\bin\dpcpp.exe" ^
     "-DBUILD_CAPI_TESTS=%_BUILD_CAPI_TEST%" ^
-    "%cd%\..\backends"
+    "%cd%\..\dpctl-capi"
 IF %ERRORLEVEL% NEQ 0 exit /b 1
 
 ninja -n
@@ -51,12 +51,12 @@ xcopy install\lib\*.lib dpctl /E /Y
 xcopy install\bin\*.dll dpctl /E /Y
 
 mkdir dpctl\include
-xcopy backends\include dpctl\include /E /Y
+xcopy dpctl-capi\include dpctl\include /E /Y
 
 
 REM required by _sycl_core(dpctl)
-set "DPPL_SYCL_INTERFACE_LIBDIR=dpctl"
-set "DPPL_SYCL_INTERFACE_INCLDIR=dpctl\include"
+set "DPCTL_SYCL_INTERFACE_LIBDIR=dpctl"
+set "DPCTL_SYCL_INTERFACE_INCLDIR=dpctl\include"
 set "CC=clang-cl.exe"
 set "CXX=dpcpp.exe"
 

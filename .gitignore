@@ -41,7 +41,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-dppl_conda_pkg
+dpctl_conda_pkg
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -81,4 +81,4 @@ target/
 .python-version
 
 # generated Cython files
-_dppl_bindings*
+_dpctl_bindings*

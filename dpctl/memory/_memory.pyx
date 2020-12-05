@@ -1,29 +1,29 @@
-##===--------------- _memory.pyx - dpctl module --------*- Cython -*-------===##
-##
-##                      Data Parallel Control (dpCtl)
-##
-## Copyright 2020 Intel Corporation
-##
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-##
-##    http://www.apache.org/licenses/LICENSE-2.0
-##
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-##
-##===----------------------------------------------------------------------===##
-##
-## \file
-## This file implements Python buffer protocol using Sycl USM shared and host
-## allocators. The USM device allocator is also exposed through this module for
-## use in other Python modules.
-##
-##===----------------------------------------------------------------------===##
+# ===-------------- _memory.pyx - dpctl module --------*- Cython -*---------===#
+#
+#                      Data Parallel Control (dpCtl)
+#
+# Copyright 2020 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# ===-----------------------------------------------------------------------===#
+#
+# \file
+# This file implements Python buffer protocol using Sycl USM shared and host
+# allocators. The USM device allocator is also exposed through this module for
+# use in other Python modules.
+#
+# ===-----------------------------------------------------------------------===#
 
 # distutils: language = c++
 # cython: language_level=3
@@ -60,14 +60,14 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
     # could also have used bytearray(nbytes)
     cdef unsigned char[::1] host_buf = np.empty((nbytes,), dtype="|u1")
 
-    DPPLQueue_Memcpy(
+    DPCTLQueue_Memcpy(
         src_queue.get_queue_ref(),
         <void *>&host_buf[0],
         src_ptr,
         nbytes
     )
 
-    DPPLQueue_Memcpy(
+    DPCTLQueue_Memcpy(
         dest_queue.get_queue_ref(),
         dest_ptr,
         <void *>&host_buf[0],
@@ -80,7 +80,7 @@ cdef class _BufferData:
     Internal data struct populated from parsing
     `__sycl_usm_array_interface__` dictionary
     """
-    cdef DPPLSyclUSMRef p
+    cdef DPCTLSyclUSMRef p
     cdef int writeable
     cdef object dt
     cdef Py_ssize_t itemsize
@@ -123,7 +123,7 @@ cdef class _BufferData:
 
         buf = _BufferData.__new__(_BufferData)
         arr_data_ptr = <Py_ssize_t>ary_data_tuple[0]
-        buf.p = <DPPLSyclUSMRef>(<void*>arr_data_ptr)
+        buf.p = <DPCTLSyclUSMRef>(<void*>arr_data_ptr)
         buf.writeable = 1 if ary_data_tuple[1] else 0
         buf.itemsize = <Py_ssize_t>(dt.itemsize)
         buf.nbytes = (<Py_ssize_t>ary_shape[0]) * buf.itemsize
@@ -171,7 +171,7 @@ cdef class _Memory:
 
     cdef _cinit_alloc(self, Py_ssize_t alignment, Py_ssize_t nbytes,
                       bytes ptr_type, SyclQueue queue):
-        cdef DPPLSyclUSMRef p
+        cdef DPCTLSyclUSMRef p
 
         self._cinit_empty()
 
@@ -181,22 +181,22 @@ cdef class _Memory:
 
             if (ptr_type == b"shared"):
                 if alignment > 0:
-                    p = DPPLaligned_alloc_shared(alignment, nbytes,
+                    p = DPCTLaligned_alloc_shared(alignment, nbytes,
                                                  queue.get_queue_ref())
                 else:
-                    p = DPPLmalloc_shared(nbytes, queue.get_queue_ref())
+                    p = DPCTLmalloc_shared(nbytes, queue.get_queue_ref())
             elif (ptr_type == b"host"):
                 if alignment > 0:
-                    p = DPPLaligned_alloc_host(alignment, nbytes,
+                    p = DPCTLaligned_alloc_host(alignment, nbytes,
                                                queue.get_queue_ref())
                 else:
-                    p = DPPLmalloc_host(nbytes, queue.get_queue_ref())
+                    p = DPCTLmalloc_host(nbytes, queue.get_queue_ref())
             elif (ptr_type == b"device"):
                 if (alignment > 0):
-                    p = DPPLaligned_alloc_device(alignment, nbytes,
+                    p = DPCTLaligned_alloc_device(alignment, nbytes,
                                                   queue.get_queue_ref())
                 else:
-                    p = DPPLmalloc_device(nbytes, queue.get_queue_ref())
+                    p = DPCTLmalloc_device(nbytes, queue.get_queue_ref())
             else:
                 raise RuntimeError("Pointer type is unknown: {}" \
                     .format(ptr_type.decode("UTF-8")))
@@ -243,14 +243,14 @@ cdef class _Memory:
 
     def __dealloc__(self):
         if (self.refobj is None and self.memory_ptr):
-            DPPLfree_with_queue(self.memory_ptr,
+            DPCTLfree_with_queue(self.memory_ptr,
                                 self.queue.get_queue_ref())
         self._cinit_empty()
 
     cdef _getbuffer(self, Py_buffer *buffer, int flags):
         # memory_ptr is Ref which is pointer to SYCL type. For USM it is void*.
         cdef SyclContext ctx = self._context
-        cdef const char * kind = DPPLUSM_GetPointerType(
+        cdef const char * kind = DPCTLUSM_GetPointerType(
             self.memory_ptr,
             ctx.get_context_ref())
         if kind == b'device':
@@ -326,16 +326,16 @@ cdef class _Memory:
         cdef SyclQueue q
         if syclobj is None:
             ctx = self._context
-            kind = DPPLUSM_GetPointerType(self.memory_ptr,
+            kind = DPCTLUSM_GetPointerType(self.memory_ptr,
                                           ctx.get_context_ref())
         elif isinstance(syclobj, SyclContext):
             ctx = <SyclContext>(syclobj)
-            kind = DPPLUSM_GetPointerType(self.memory_ptr,
+            kind = DPCTLUSM_GetPointerType(self.memory_ptr,
                                           ctx.get_context_ref())
         elif isinstance(syclobj, SyclQueue):
             q = <SyclQueue>(syclobj)
             ctx = q.get_sycl_context()
-            kind = DPPLUSM_GetPointerType(self.memory_ptr,
+            kind = DPCTLUSM_GetPointerType(self.memory_ptr,
                                           ctx.get_context_ref())
         else:
             raise ValueError("syclobj keyword can be either None, "
@@ -357,7 +357,7 @@ cdef class _Memory:
             raise ValueError("Destination object is too small to "
                              "accommodate {} bytes".format(self.nbytes))
         # call kernel to copy from
-        DPPLQueue_Memcpy(
+        DPCTLQueue_Memcpy(
             self.queue.get_queue_ref(),
             <void *>&host_buf[0],     # destination
             <void *>self.memory_ptr,  # source
@@ -375,7 +375,7 @@ cdef class _Memory:
             raise ValueError("Source object is too large to be "
                              "accommodated in {} bytes buffer".format(self.nbytes))
         # call kernel to copy from
-        DPPLQueue_Memcpy(
+        DPCTLQueue_Memcpy(
             self.queue.get_queue_ref(),
             <void *>self.memory_ptr,  # destination
             <void *>&host_buf[0],     # source
@@ -398,7 +398,7 @@ cdef class _Memory:
             if (src_buf.nbytes > self.nbytes):
                 raise ValueError("Source object is too large to "
                                  "be accommondated in {} bytes buffer".format(self.nbytes))
-            kind = DPPLUSM_GetPointerType(
+            kind = DPCTLUSM_GetPointerType(
                 src_buf.p, self.queue.get_sycl_context().get_context_ref())
             if (kind == b'unknown'):
                 copy_via_host(
@@ -407,7 +407,7 @@ cdef class _Memory:
                     <size_t>src_buf.nbytes
                 )
             else:
-                DPPLQueue_Memcpy(
+                DPCTLQueue_Memcpy(
                     self.queue.get_queue_ref(),
                     <void *>self.memory_ptr,
                     <void *>src_buf.p,
@@ -428,19 +428,19 @@ cdef class _Memory:
         return b
 
     @staticmethod
-    cdef SyclDevice get_pointer_device(DPPLSyclUSMRef p, SyclContext ctx):
+    cdef SyclDevice get_pointer_device(DPCTLSyclUSMRef p, SyclContext ctx):
         """Returns sycl device used to allocate given pointer `p` in given sycl context `ctx`"""
-        cdef DPPLSyclDeviceRef dref = DPPLUSM_GetPointerDevice(p, ctx.get_context_ref())
+        cdef DPCTLSyclDeviceRef dref = DPCTLUSM_GetPointerDevice(p, ctx.get_context_ref())
 
         return SyclDevice._create(dref)
 
     @staticmethod
-    cdef bytes get_pointer_type(DPPLSyclUSMRef p, SyclContext ctx):
+    cdef bytes get_pointer_type(DPCTLSyclUSMRef p, SyclContext ctx):
         """Returns USM-type of given pointer `p` in given sycl context `ctx`"""
-        cdef const char * usm_type = DPPLUSM_GetPointerType(p, ctx.get_context_ref())
+        cdef const char * usm_type = DPCTLUSM_GetPointerType(p, ctx.get_context_ref())
 
         return <bytes>usm_type
-    
+
 
 cdef class MemoryUSMShared(_Memory):
     """

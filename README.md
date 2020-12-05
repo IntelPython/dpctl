@@ -76,10 +76,16 @@ Examples
 ========
 See examples in folder `examples`.
 
-Run examples:
+Run python examples:
 ```bash
-python examples/create_sycl_queues.py
+for script in `ls examples/python/`; do echo "executing ${script}"; python examples/python/${script}; done
 ```
+
+Examples of building Cython extensions with DPC++ compiler, that interoperate with dpCtl can be found in 
+folder `cython`.
+
+Each example in `cython` folder can be built using `CC=clang CXX=dpcpp python setup.py build_ext --inplace`.
+Please refer to `run.py` script in respective folders to execute extensions.
 
 Tests
 =====

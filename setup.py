@@ -1,26 +1,26 @@
-##===---------- setup.py - dpctl.ocldrv interface -----*- Python -*-----===##
-##
-##               Data Parallel Control Library (dpCtl)
-##
-## Copyright 2020 Intel Corporation
-##
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-##
-##    http://www.apache.org/licenses/LICENSE-2.0
-##
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-##
-##===----------------------------------------------------------------------===##
-###
-### \file
-### This file builds the dpctl and dpctl.ocldrv extension modules.
-##===----------------------------------------------------------------------===##
+# ===-------------------- setup.py - dpctl -----*----- Python -------*------===#
+#
+#               Data Parallel Control Library (dpCtl)
+#
+# Copyright 2020 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# ===-----------------------------------------------------------------------===#
+#
+# \file
+# This file builds all the extension modules for dpctl.
+# ===-----------------------------------------------------------------------===#
 import os
 import os.path
 import sys
@@ -55,18 +55,18 @@ if IS_LIN:
     DPCPP_ROOT = os.environ["ONEAPI_ROOT"] + "/compiler/latest/linux"
     os.environ["CC"] = DPCPP_ROOT + "/bin/clang"
     os.environ["CXX"] = DPCPP_ROOT + "/bin/clang++"
-    os.environ["DPPL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
-    os.environ["DPPL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
+    os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
+    os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
     os.environ["CFLAGS"] = "-fPIC"
 
 elif IS_WIN:
     os.environ["CC"] = "clang-cl.exe"
     os.environ["CXX"] = "dpcpp.exe"
-    os.environ["DPPL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
-    os.environ["DPPL_SYCL_INTERFACE_INCLDIR"] = "dpctl\include"
+    os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
+    os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl\include"
 
-dppl_sycl_interface_lib = os.environ["DPPL_SYCL_INTERFACE_LIBDIR"]
-dppl_sycl_interface_include = os.environ["DPPL_SYCL_INTERFACE_INCLDIR"]
+dpctl_sycl_interface_lib = os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"]
+dpctl_sycl_interface_include = os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"]
 sycl_lib = os.environ["ONEAPI_ROOT"] + "\compiler\latest\windows\lib"
 
 
@@ -129,18 +129,18 @@ def extensions():
     librarys = []
 
     if IS_LIN:
-        libs += ["rt", "DPPLSyclInterface"]
+        libs += ["rt", "DPCTLSyclInterface"]
     elif IS_MAC:
         pass
     elif IS_WIN:
-        libs += ["DPPLSyclInterface", "sycl"]
+        libs += ["DPCTLSyclInterface", "sycl"]
 
     if IS_LIN:
-        librarys = [dppl_sycl_interface_lib]
+        librarys = [dpctl_sycl_interface_lib]
     elif IS_WIN:
-        librarys = [dppl_sycl_interface_lib, sycl_lib]
+        librarys = [dpctl_sycl_interface_lib, sycl_lib]
     elif IS_MAC:
-        librarys = [dppl_sycl_interface_lib]
+        librarys = [dpctl_sycl_interface_lib]
 
     if IS_LIN or IS_MAC:
         runtime_library_dirs = ["$ORIGIN"]
@@ -149,9 +149,9 @@ def extensions():
 
     extension_args = {
         "depends": [
-            dppl_sycl_interface_include,
+            dpctl_sycl_interface_include,
         ],
-        "include_dirs": [np.get_include(), dppl_sycl_interface_include],
+        "include_dirs": [np.get_include(), dpctl_sycl_interface_include],
         "extra_compile_args": eca
         + get_other_cxxflags()
         + get_suppressed_warning_flags(),
@@ -174,6 +174,13 @@ def extensions():
             "dpctl.memory._memory",
             [
                 os.path.join("dpctl", "memory", "_memory.pyx"),
+            ],
+            **extension_args
+        ),
+        Extension(
+            "dpctl.program._program",
+            [
+                os.path.join("dpctl", "program", "_program.pyx"),
             ],
             **extension_args
         ),
