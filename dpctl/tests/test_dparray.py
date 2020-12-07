@@ -23,7 +23,7 @@
 ##===----------------------------------------------------------------------===##
 
 import unittest
-from dpctl.dptensor import dparray
+from dpctl.dptensor import numpy_usm_shared as dparray
 import numpy
 
 

@@ -1,1 +1,1 @@
-from .dparray import *
+import dpctl.dptensor.numpy_usm_shared
