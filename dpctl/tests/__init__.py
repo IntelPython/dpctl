@@ -22,6 +22,7 @@
 # Top-level module of all dpctl Python unit test cases.
 # ===-----------------------------------------------------------------------===#
 
+from .test_dparray import *
 from .test_dump_functions import *
 from .test_sycl_device import *
 from .test_sycl_kernel_submit import *
