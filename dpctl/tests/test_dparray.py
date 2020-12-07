@@ -59,7 +59,7 @@ class Test_dparray(unittest.TestCase):
         C = self.X * 5
         dp_func = func_operation_with_const(C)
         self.assertIsInstance(dp_func, dparray.ndarray)
-        
+
     def test_dparray_mixing_dpctl_and_numpy(self):
         dp_numpy = numpy.ones((256, 4), dtype="d")
         res = dp_numpy * self.X
