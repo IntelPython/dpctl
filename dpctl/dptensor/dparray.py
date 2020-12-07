@@ -25,7 +25,6 @@
 import numpy as np
 from inspect import getmembers, isfunction, isclass, isbuiltin
 from numbers import Number
-from types import FunctionType as ftype, BuiltinFunctionType as bftype
 import sys
 import inspect
 import dpctl
