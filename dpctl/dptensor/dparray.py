@@ -49,6 +49,19 @@ array_interface_property = "__sycl_usm_array_interface__"
 def has_array_interface(x):
     return hasattr(x, array_interface_property)
 
+def _get_usm_base(ary):
+    ob = ary
+    while True:
+        if ob is None:
+            return None
+        elif hasattr(ob, '__sycl_usm_array_interface__'):
+            return ob
+        elif isinstance(ob, np.ndarray):
+            ob = ob.base
+        elif isinstance(ob, memoryview):
+            ob = ob.obj
+        else:
+            return None
 
 class ndarray(np.ndarray):
     """
@@ -80,7 +93,9 @@ class ndarray(np.ndarray):
                 dprint("buffer None new_obj already has sycl_usm")
             else:
                 dprint("buffer None new_obj will add sycl_usm")
-                setattr(new_obj, array_interface_property, {})
+                setattr(new_obj,
+                        array_interface_property,
+                        new_obj._getter_sycl_usm_array_interface_())
             return new_obj
         # zero copy if buffer is a usm backed array-like thing
         elif hasattr(buffer, array_interface_property):
@@ -99,7 +114,8 @@ class ndarray(np.ndarray):
                 dprint("buffer None new_obj already has sycl_usm")
             else:
                 dprint("buffer None new_obj will add sycl_usm")
-                setattr(new_obj, array_interface_property, {})
+                setattr(new_obj, array_interface_property,
+                        new_obj._getter_sycl_usm_array_interface_())
             return new_obj
         else:
             dprint("dparray::ndarray __new__ buffer not None and not sycl_usm")
@@ -129,8 +145,28 @@ class ndarray(np.ndarray):
                 dprint("buffer None new_obj already has sycl_usm")
             else:
                 dprint("buffer None new_obj will add sycl_usm")
-                setattr(new_obj, array_interface_property, {})
+                setattr(new_obj, array_interface_property,
+                        new_obj._getter_sycl_usm_array_interface_())
             return new_obj
+
+
+    def _getter_sycl_usm_array_interface_(self):
+        ary_iface = self.__array_interface__
+        _base = _get_usm_base(self)
+        if _base is None:
+            raise TypeError
+
+        usm_iface = getattr(_base, '__sycl_usm_array_interface__', None)
+        if usm_iface is None:
+            raise TypeError
+
+        if (ary_iface['data'][0]  == usm_iface['data'][0]):
+            ary_iface['version'] = usm_iface['version']
+            ary_iface['syclobj'] = usm_iface['syclobj']
+        else:
+            raise TypeError
+        return ary_iface
+
 
     def __array_finalize__(self, obj):
         dprint("__array_finalize__:", obj, hex(id(obj)), type(obj))
@@ -155,6 +191,7 @@ class ndarray(np.ndarray):
         raise ValueError(
             "Non-USM allocated ndarray can not viewed as a USM-allocated one without a copy"
         )
+
 
     # Tell Numba to not treat this type just like a NumPy ndarray but to propagate its type.
     # This way it will use the custom dparray allocator.
