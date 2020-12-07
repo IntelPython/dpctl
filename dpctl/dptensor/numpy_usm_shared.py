@@ -63,6 +63,7 @@ def _get_usm_base(ary):
         else:
             return None
 
+
 class ndarray(np.ndarray):
     """
     numpy.ndarray subclass whose underlying memory buffer is allocated
@@ -167,7 +168,7 @@ class ndarray(np.ndarray):
         if usm_iface is None:
             raise TypeError
 
-        if ary_iface["data"][0]  == usm_iface["data"][0]:
+        if ary_iface["data"][0] == usm_iface["data"][0]:
             ary_iface["version"] = usm_iface["version"]
             ary_iface["syclobj"] = usm_iface["syclobj"]
         else:
