@@ -28,4 +28,3 @@
 # cython: language_level=3
 
 from dpctl._sycl_core cimport *
-from dpctl._memory import *
