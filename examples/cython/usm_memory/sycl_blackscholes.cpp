@@ -1,7 +1,8 @@
 #include <CL/sycl.hpp>
+#include <oneapi/mkl.hpp>
+#include <oneapi/mkl/rng/device.hpp>
 #include "dpctl_sycl_types.h"
 #include "sycl_blackscholes.hpp"
-#include "mkl_rng_sycl_device.hpp"
 
 template<typename T>
 class black_scholes_kernel;
