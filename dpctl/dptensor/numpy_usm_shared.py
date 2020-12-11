@@ -69,6 +69,7 @@ class ndarray(np.ndarray):
     numpy.ndarray subclass whose underlying memory buffer is allocated
     with a foreign allocator.
     """
+
     external_usm_checkers = []
 
     def add_external_usm_checker(func):
