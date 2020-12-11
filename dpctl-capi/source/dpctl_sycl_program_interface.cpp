@@ -27,9 +27,11 @@
 #include "dpctl_sycl_program_interface.h"
 #include "Support/CBindingWrapping.h"
 
-#include <CL/sycl.hpp> /* Sycl headers */
-#include <CL/cl.h>     /* OpenCL headers */
-
+#include <CL/sycl.hpp>          /* Sycl headers       */
+#include <CL/cl.h>              /* OpenCL headers     */
+#if 0
+#include <level_zero/zet_api.h> /* Level Zero headers */
+#endif
 using namespace cl::sycl;
 
 namespace
@@ -82,7 +84,56 @@ createOpenCLInterOpProgram (const context &SyclCtx,
         return nullptr;
     }
 }
+#if 0
+template <backend BE>
+__dpctl_give DPCTLSyclProgramRef
+createLevelZeroInterOpProgram (const context &SyclCtx,
+                               const void *IL,
+                               size_t length,
+                               const char* BuildOptions)
+{
+    auto ZeCtx   = SyclCtx.get_native<BE>();
+    auto SyclDevices = SyclCtx.get_devices();
+    if(SyclDevices.size() > 1) {
+        // We only support build to one device with Level Zero now.
+        // TODO: log error
+        return nullptr;
+    }
 
+    // Specialization constants are not yet supported.
+    // Refer https://bit.ly/33UEDYN for details on specialization constants.
+    ze_module_constants_t ZeSpecConstants = {};
+    ZeSpecConstants.numConstants = 0;
+
+    // Populate the Level Zero module descriptions
+    ze_module_desc_t ZeModuleDesc = {};
+    ZeModuleDesc.format = ZE_MODULE_FORMAT_IL_SPIRV;
+    ZeModuleDesc.inputSize = length;
+    ZeModuleDesc.pInputModule = (uint8_t*)IL;
+    ZeModuleDesc.pBuildFlags = BuildOptions;
+    ZeModuleDesc.pConstants = &ZeSpecConstants;
+
+    auto ZeDevice = SyclDevices[0].get_native<BE>();
+    ze_module_handle_t ZeModule;
+    auto ret = zeModuleCreate(ZeContext, ZeDevice, &ZeModuleDesc, &ZeModule,
+                              nullptr);
+    if(ret != ZE_RESULT_SUCCESS) {
+        // TODO: handle error
+        return nullptr;
+    }
+#if 0
+    // Create the Sycl program from the ZeModule
+    try {
+        auto SyclProgram = new program(SyclCtx, ZeModule);
+        return wrap(SyclProgram);
+    } catch (invalid_object_error &e) {
+        // \todo record error
+        std::cerr << e.what() << '\n';
+        return nullptr;
+    }
+#endif
+}
+#endif
 } /* end of anonymous namespace */
 
 __dpctl_give DPCTLSyclProgramRef
