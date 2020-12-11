@@ -16,7 +16,11 @@ print(
 
 import timeit
 
-print("Running time of 100 calls to columnwise_total on matrix with shape {}".format(X.shape))
+print(
+    "Running time of 100 calls to columnwise_total on matrix with shape {}".format(
+        X.shape
+    )
+)
 
 print("Times for default_selector, inclusive of queue creation:")
 print(
