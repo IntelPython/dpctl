@@ -1,4 +1,4 @@
-import syclbuffer as sb
+import syclbuffer_naive as sb
 import numpy as np
 
 X = np.random.randn(20, 10)
