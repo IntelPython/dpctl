@@ -162,6 +162,9 @@ class ndarray(np.ndarray):
                 )
             return new_obj
 
+    def __sycl_usm_array_interface__(self):
+        return self._getter_sycl_usm_array_interface()
+
     def _getter_sycl_usm_array_interface_(self):
         ary_iface = self.__array_interface__
         _base = _get_usm_base(self)
