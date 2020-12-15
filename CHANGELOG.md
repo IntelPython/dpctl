@@ -12,10 +12,10 @@ All notable changes to this project will be documented in this file.
 - Callback mechanism so that `numba_dppy.numpy_usm_shared` can register with `dpctl.dptensor.numpy_usm_shared.ndarray` a callback function to look and see if the object is a Numba MemInfo with USM allocator.
 
 ### Changed
-- Renamed DPPL to DPCTL.
+- All usage of `DPPL` in C-API functions was changed to `DPCTL`, e.g., `DPPLQueueMgr_GetCurrentQueue` to `DPCTLQueueMgr_GetCurrentQueue`.
 - Renamed the backends folder in dpctl to dpctl-capi.
 - Refactoring the backend functions to prep for changes to add L0 support.
-- Moved SyclProgram and SyclKernel out of dpctl into dpctl.program.
+- Moved SyclProgram and SyclKernel out of dpctl into `dpctl.program`.
 
 ## [0.4.0] - 2020-11-04
 ### Added
