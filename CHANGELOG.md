@@ -3,13 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
-- setup.py builds C++ backend for develop and install commands.
 
 ## [0.5.0] - 2020-12-17
 ### Added
 - New `dptensor` sub-module containing `numpy_usm_shared`(dparray).
 - Examples of building Cython extensions with DPC++ compiler that interoperate with dpCtl.
 - Callback mechanism so that `numba_dppy.numpy_usm_shared` can register with `dpctl.dptensor.numpy_usm_shared.ndarray` a callback function to look and see if the object is a Numba MemInfo object with USM allocator.
+- setup.py builds C++ backend for develop and install commands.
 
 ### Changed
 - All usage of `DPPL` in C-API functions was changed to `DPCTL`, _e.g._, `DPPLQueueMgr_GetCurrentQueue` to `DPCTLQueueMgr_GetCurrentQueue`.
