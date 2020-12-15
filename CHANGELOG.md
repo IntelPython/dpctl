@@ -7,15 +7,15 @@ All notable changes to this project will be documented in this file.
 
 ## [0.5.0] - 2020-12-17
 ### Added
-- New dptensor submodule containing `numpy_usm_shared`(dparray).
+- New `dptensor` sub-module containing `numpy_usm_shared`(dparray).
 - Examples of building Cython extensions with DPC++ compiler that interoperate with dpCtl.
-- Callback mechanism so that `numba_dppy.numpy_usm_shared` can register with `dpctl.dptensor.numpy_usm_shared.ndarray` a callback function to look and see if the object is a Numba MemInfo with USM allocator.
+- Callback mechanism so that `numba_dppy.numpy_usm_shared` can register with `dpctl.dptensor.numpy_usm_shared.ndarray` a callback function to look and see if the object is a Numba MemInfo object with USM allocator.
 
 ### Changed
-- All usage of `DPPL` in C-API functions was changed to `DPCTL`, e.g., `DPPLQueueMgr_GetCurrentQueue` to `DPCTLQueueMgr_GetCurrentQueue`.
-- Renamed the backends folder in dpctl to dpctl-capi.
-- Refactoring the backend functions to prep for changes to add L0 support.
-- Moved SyclProgram and SyclKernel out of dpctl into `dpctl.program`.
+- All usage of `DPPL` in C-API functions was changed to `DPCTL`, _e.g._, `DPPLQueueMgr_GetCurrentQueue` to `DPCTLQueueMgr_GetCurrentQueue`.
+- Renamed the backends folder in `dpctl` to `dpctl-capi`.
+- Refactoring the `dpctl-capi` functions to prepare for changes to add Level Zero program creation.
+- `SyclProgram` and `SyclKernel` classes were moved out of `dpctl` into the `dpctl.program` sub-module.
 
 ## [0.4.0] - 2020-11-04
 ### Added
