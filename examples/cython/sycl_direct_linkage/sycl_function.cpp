@@ -1,6 +1,6 @@
 #include <CL/sycl.hpp>
 #include "sycl_function.hpp"
-#include "mkl_blas_sycl.hpp"
+#include <oneapi/mkl.hpp>
 #include "mkl.h"
 
 int c_columnwise_total(cl::sycl::queue &q, size_t n, size_t m, double *mat, double *ct) {

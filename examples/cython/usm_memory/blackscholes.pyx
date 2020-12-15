@@ -2,7 +2,7 @@
 # distutils: language=c++
 
 cimport dpctl as c_dpctl
-cimport dpctl._memory as c_dpctl_mem
+cimport dpctl.memory as c_dpctl_mem
 cimport numpy as cnp
 from cython cimport floating
 
