@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 ## [0.5.0] - 2020-12-17
 ### Added
 - New dptensor submodule containing `numpy_usm_shared`(dparray).
-- Examples of building Cython extensions with DPC++ compiler, that interoperate with dpCtl.
+- Examples of building Cython extensions with DPC++ compiler that interoperate with dpCtl.
 - Callback mechanism so that `numba_dppy.numpy_usm_shared` can register with `dpctl.dptensor.numpy_usm_shared.ndarray` a callback function to look and see if the object is a Numba MemInfo with USM allocator.
 
 ### Changed
