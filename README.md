@@ -42,6 +42,18 @@ conda install dpctl
 Build and Install with setuptools
 =================================
 dpCtl relies on DPC++ runtime. With Intel oneAPI installed you should activate it.
+`setup.py` requires environment variable `ONEAPI_ROOT` and following packages
+installed:
+- `cython`
+- `numpy`
+- `cmake` - for building C API
+- `ninja` - only on Windows
+
+Activate DPC++ compiler:
+```bash
+export ONEAPI_ROOT=/opt/intel/oneapi
+source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
+```
 
 For install:
 ```cmd
@@ -81,10 +93,11 @@ Run python examples:
 for script in `ls examples/python/`; do echo "executing ${script}"; python examples/python/${script}; done
 ```
 
-Examples of building Cython extensions with DPC++ compiler, that interoperate with dpCtl can be found in 
-folder `cython`.
+Examples of building Cython extensions with DPC++ compiler, that interoperate
+with dpCtl can be found in folder `cython`.
 
-Each example in `cython` folder can be built using `CC=clang CXX=dpcpp python setup.py build_ext --inplace`.
+Each example in `cython` folder can be built using
+`CC=clang CXX=dpcpp python setup.py build_ext --inplace`.
 Please refer to `run.py` script in respective folders to execute extensions.
 
 Tests
