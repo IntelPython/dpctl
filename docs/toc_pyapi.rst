@@ -5,4 +5,5 @@ Python API
     :maxdepth: 1
 
     SYCL runtime wrapper classes and queue manager <dpCtl_api>
-    SYCL USM memory manager <dpCtl.memory_api>
+    USM memory manager <dpCtl.memory_api>
+    Program manager <dpCtl.program_api>

@@ -1,3 +1,4 @@
+# ===-----------------------------------------------------------------------===#
 #                      Data Parallel Control (dpCtl)
 #
 # Copyright 2020 Intel Corporation
@@ -14,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# ===-----------------------------------------------------------------------===#
 
 """
     **Data Parallel Control (dpCtl)**

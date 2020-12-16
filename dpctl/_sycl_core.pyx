@@ -645,7 +645,7 @@ cdef class _SyclRTManager:
     def _remove_current_queue(self):
         DPCTLQueueMgr_PopQueue()
 
-    def dump (self):
+    def dump(self):
         """ Prints information about the Runtime object.
         """
         DPCTLPlatform_DumpInfo()
@@ -816,7 +816,7 @@ cpdef get_current_backend():
 from contextlib import contextmanager
 
 @contextmanager
-def device_context (str queue_str="opencl:gpu:0"):
+def device_context(str queue_str="opencl:gpu:0"):
     """
         The SYCL queue defined by the "backend:device type:device id" tuple is
         set as the currently active queue, *i.e.*, a subsequent call to
