@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - All usage of `DPPL` in C-API functions was changed to `DPCTL`, _e.g._, `DPPLQueueMgr_GetCurrentQueue` to `DPCTLQueueMgr_GetCurrentQueue`.
-- Renamed the backends folder in `dpctl` to `dpctl-capi`.
+- Renamed the C-API directory is now called `dpctl-capi` instead of `backends`.
 - Refactoring the `dpctl-capi` functions to prepare for changes to add Level Zero program creation.
 - `SyclProgram` and `SyclKernel` classes were moved out of `dpctl` into the `dpctl.program` sub-module.
 
