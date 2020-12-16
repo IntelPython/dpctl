@@ -3,7 +3,7 @@ What?
 
 Generator scripts for dpCtl API documentation. To run these scripts, follow
 the following steps:
-
+`cd dpctl/docs` <br/>
 `mkdir build` <br/>
 `cd build` <br/>
 `cmake -DDPCTL_DOCGEN_PREFIX=<WHERE_YOU_WANT_DOCS_TO_BE_GENERATED>` ..<br/>
