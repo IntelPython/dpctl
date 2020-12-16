@@ -190,8 +190,8 @@ class ndarray(np.ndarray):
             return
         # When called in new-from-template, `obj` is another instance of our own
         # subclass, that we might use to update the new `self` instance.
-        # However, when called from view casting, `obj` can be an instance of any
-        # subclass of ndarray, including our own.
+        # However, when called from view casting, `obj` can be an instance of
+        # any subclass of ndarray, including our own.
         if hasattr(obj, array_interface_property):
             return
         for ext_checker in ndarray.external_usm_checkers:
@@ -204,14 +204,16 @@ class ndarray(np.ndarray):
                     return
                 ob = ob.base
 
-        # Just raise an exception since __array_ufunc__ makes all reasonable cases not
-        # need the code below.
+        # Just raise an exception since __array_ufunc__ makes all
+        # reasonable cases not need the code below.
         raise ValueError(
-            "Non-USM allocated ndarray can not viewed as a USM-allocated one without a copy"
+            "Non-USM allocated ndarray can not viewed as a USM-allocated \
+             one without a copy"
         )
 
-    # Tell Numba to not treat this type just like a NumPy ndarray but to propagate its type.
-    # This way it will use the custom numpy_usm_shared allocator.
+    # Tell Numba to not treat this type just like a NumPy ndarray but to
+    # propagate its type. This way it will use the custom numpy_usm_shared
+    # allocator.
     __numba_no_subtype_ndarray__ = True
 
     # Convert to a NumPy ndarray.
@@ -257,8 +259,8 @@ class ndarray(np.ndarray):
                 out_as_np = np.ndarray(out.shape, out.dtype, out)
                 kwargs["out"] = out_as_np
             else:
-                # If they manually gave numpy_usm_shared as out kwarg then we have to also
-                # cast as regular NumPy ndarray to avoid recursion.
+                # If they manually gave numpy_usm_shared as out kwarg then we
+                # have to also cast as regular NumPy ndarray to avoid recursion.
                 if isinstance(kwargs["out"], ndarray):
                     out = kwargs["out"]
                     kwargs["out"] = np.ndarray(out.shape, out.dtype, out)
@@ -282,7 +284,8 @@ for c in class_list:
     cname = c[0]
     if isdef(cname):
         continue
-    # For now we do the simple thing and copy the types from NumPy module into numpy_usm_shared module.
+    # For now we do the simple thing and copy the types from NumPy module
+    # into numpy_usm_shared module.
     new_func = "%s = np.%s" % (cname, cname)
     try:
         the_code = compile(new_func, "__init__", "exec")
