@@ -1,28 +1,39 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+
 ## [Unreleased]
-### Added
 
 ## [0.5.0] - 2020-12-17
 ### Added
-- New `dptensor` sub-module containing `numpy_usm_shared`(dparray).
-- Examples of building Cython extensions with DPC++ compiler that interoperate with dpCtl.
-- Callback mechanism so that `numba_dppy.numpy_usm_shared` can register with `dpctl.dptensor.numpy_usm_shared.ndarray` a callback function to look and see if the object is a Numba MemInfo object with USM allocator.
-- setup.py builds C++ backend for develop and install commands.
+- `_Memory.get_pointer_type` static method which returns kind of USM pointer.
+- Utility functions to transform string to device type and back.
+- New `dpctl.dptensor.numpy_usm_shared` module containing USM array. USM array
+extends NumPy ndarray.
+- A lot of new examples. Including examples of building Cython extensions with DPC++ compiler that interoperate with dpCtl.
+- Mechanism for registering a callback function to look and see if the object
+supports USM.
 
 ### Changed
+- setup.py builds C++ backend for develop and install commands.
+- Building wheels.
+- Use DPC++ runtime from package `dpcpp_cpp_rt`.
 - All usage of `DPPL` in C-API functions was changed to `DPCTL`, _e.g._, `DPPLQueueMgr_GetCurrentQueue` to `DPCTLQueueMgr_GetCurrentQueue`.
 - Renamed the C-API directory is now called `dpctl-capi` instead of `backends`.
 - Refactoring the `dpctl-capi` functions to prepare for changes to add Level Zero program creation.
 - `SyclProgram` and `SyclKernel` classes were moved out of `dpctl` into the `dpctl.program` sub-module.
+
+### Fixed
+- Klockwork static code analysis warnings.
 
 ## [0.4.0] - 2020-11-04
 ### Added
 - Device descriptors "max_compute_units", "max_work_item_dimensions", "max_work_item_sizes", "max_work_group_size", "max_num_sub_groups" and "aspects" for int64 atomics inside dpctl C API and inside the dpctl.SyclDevice class.
 - MemoryUSM* classes moved to `dpctl.memory` module, added support for aligned allocation, added support for `prefetch` and `mem_advise` (sychronous) methods, implemented `copy_to_host`, `copy_from_host` and `copy_from_device` methods, pickling support, and zero-copy interoperability with Python objects which implement `__sycl_usm_array_inerface__` protocol.
 - Helper scripts to generate API documentation for both C API and Python.
-
 
 ### Fixed
 - Compiler warnings when building libDPPLSyclInterface and the Cython extensions.
