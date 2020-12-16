@@ -303,7 +303,7 @@ cdef class SyclQueue:
     """
 
     @staticmethod
-    cdef SyclQueue _create (DPCTLSyclQueueRef qref):
+    cdef SyclQueue _create(DPCTLSyclQueueRef qref):
         if qref is NULL:
             raise SyclQueueCreationError("Queue creation failed.")
         cdef SyclQueue ret = SyclQueue.__new__(SyclQueue)
@@ -605,7 +605,7 @@ cdef class _SyclRTManager:
     cdef dict _backend_enum_ty_dict
     cdef dict _device_enum_ty_dict
 
-    def __cinit__ (self):
+    def __cinit__(self):
 
         self._backend_str_ty_dict = {
             "opencl" : _backend_type._OPENCL,
@@ -627,7 +627,7 @@ cdef class _SyclRTManager:
             device_type.gpu : _device_type._GPU,
         }
 
-    def _set_as_current_queue (self, backend_ty, device_ty, device_id):
+    def _set_as_current_queue(self, backend_ty, device_ty, device_id):
         cdef DPCTLSyclQueueRef queue_ref
 
         try :
@@ -642,7 +642,7 @@ cdef class _SyclRTManager:
             raise UnsupportedBackendError("Backend can only be opencl or "
                                           "level-0")
 
-    def _remove_current_queue (self):
+    def _remove_current_queue(self):
         DPCTLQueueMgr_PopQueue()
 
     def dump (self):
@@ -650,37 +650,39 @@ cdef class _SyclRTManager:
         """
         DPCTLPlatform_DumpInfo()
 
-    def print_available_backends (self):
-        """ Prints the available backends.
+    def print_available_backends(self):
+        """ Prints the available SYCL backends.
         """
         print(self._backend_str_ty_dict.keys())
 
-    cpdef get_current_backend (self):
-        """ Returns the backend for the current queue as `backend_type` enum
+    cpdef get_current_backend(self):
+        """ Returns the backend for the current queue as a `backend_type` enum
         """
         return self.get_current_queue().get_sycl_backend()
 
-    cpdef get_current_device_type (self):
-        """ Returns current device type as `device_type` enum
+    cpdef get_current_device_type(self):
+        """ Returns current device type as a `device_type` enum
         """
         return self.get_current_queue().get_sycl_device().get_device_type()
 
-    cpdef SyclQueue get_current_queue (self):
-        """ Returns the activated SYCL queue as a PyCapsule.
+    cpdef SyclQueue get_current_queue(self):
+        """ Returns the currently activate SYCL queue as a new SyclQueue object.
+        If there are no active queues then a SyclQueueCreationError exception is
+        raised.
         """
         return SyclQueue._create(DPCTLQueueMgr_GetCurrentQueue())
 
-    def get_num_activated_queues (self):
-        """ Return the number of currently activated queues for this thread.
+    def get_num_activated_queues(self):
+        """ Returns the number of currently activated queues for this thread.
         """
         return DPCTLQueueMgr_GetNumActivatedQueues()
 
-    def get_num_platforms (self):
+    def get_num_platforms(self):
         """ Returns the number of available non-host SYCL platforms.
         """
         return DPCTLPlatform_GetNumNonHostPlatforms()
 
-    def get_num_queues (self, backend_ty, device_ty):
+    def get_num_queues(self, backend_ty, device_ty):
         cdef size_t num = 0
         try :
             beTy = self._backend_enum_ty_dict[backend_ty]
@@ -699,7 +701,7 @@ cdef class _SyclRTManager:
 
         return num
 
-    def has_gpu_queues (self, backend_ty=backend_type.opencl):
+    def has_gpu_queues(self, backend_ty=backend_type.opencl):
         cdef size_t num = 0
         try :
             beTy = self._backend_enum_ty_dict[backend_ty]
@@ -714,7 +716,7 @@ cdef class _SyclRTManager:
         else:
             return False
 
-    def has_cpu_queues (self, backend_ty=backend_type.opencl):
+    def has_cpu_queues(self, backend_ty=backend_type.opencl):
         cdef size_t num = 0
         try :
             beTy = self._backend_enum_ty_dict[backend_ty]
@@ -729,21 +731,21 @@ cdef class _SyclRTManager:
         else:
             return False
 
-    def has_sycl_platforms (self):
+    def has_sycl_platforms(self):
         cdef size_t num_platforms = DPCTLPlatform_GetNumNonHostPlatforms()
         if num_platforms:
             return True
         else:
             return False
 
-    def is_in_device_context (self):
+    def is_in_device_context(self):
         cdef size_t num = DPCTLQueueMgr_GetNumActivatedQueues()
         if num:
             return True
         else:
             return False
 
-    def set_default_queue (self, backend_ty, device_ty, device_id):
+    def set_default_queue(self, backend_ty, device_ty, device_id):
         cdef DPCTLSyclQueueRef ret
         try :
             if isinstance(backend_ty, str):
@@ -785,8 +787,19 @@ set_default_queue        = _mgr.set_default_queue
 is_in_device_context     = _mgr.is_in_device_context
 
 cpdef SyclQueue get_current_queue():
-    """
-        Obtain current Sycl Queue from Data Parallel Control package.
+    """ Returns the currently activate SYCL queue as a new SyclQueue object.
+
+    Returns:
+        SyclQueue: If there is a currently active SYCL queue that queue
+        is returned wrapped in a SyclQueue object. The SyclQueue object
+        owns a copy of the currently active SYCL queue as an opaque 
+        `DPCTLSyclQueueRef` pointer. The pointer is freed when the SyclQueue
+        is garbage collected.
+
+    Raises:
+        SyclQueueCreationError: If no currently active SYCL queue found.
+        Note that no active queue indicates that the underlying stack used
+        to maintain the list of active queues is corrupted.
     """
     return _mgr.get_current_queue()
 

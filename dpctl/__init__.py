@@ -1,5 +1,3 @@
-# ===---------------- __init__.py - dpctl module -------*- Cython -*--------===#
-#
 #                      Data Parallel Control (dpCtl)
 #
 # Copyright 2020 Intel Corporation
@@ -16,12 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# ===-----------------------------------------------------------------------===#
-#
-# \file
-# The top-level dpctl module.
-#
-# ===-----------------------------------------------------------------------===#
+
 """
     **Data Parallel Control (dpCtl)**
 
@@ -31,8 +24,14 @@
     a common runtime to manage specific SYCL resources, such as devices
     and USM memory, for SYCL-based Python packages and extension modules.
 
-    Currently, dpCtl has two main features: a global SYCL queue manager
-    and a USM memory manager.
+    The main features presently provided by dpCtl are:
+
+    * A SYCL queue manager exposed directly inside the top-level `dpctl`
+      module.
+    * A USM memory manager (`dpctl.memory`) that provides Python objects
+      implementing the Python buffer protocol using USM shared and USM host
+      allocators. The memory manager also exposes various utility functions
+      to wrap SYCL's USM allocators, deallocators, `memcpy` functions, *etc.*
 """
 __author__ = "Intel Corp."
 
