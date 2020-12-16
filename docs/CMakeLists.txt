@@ -23,6 +23,16 @@ if (GIT_FOUND)
         OUTPUT_VARIABLE CURRENT_RELEASE
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
+    set(CURRENT_COMMIT "")
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} describe --tags
+        RESULT_VARIABLE result
+        OUTPUT_VARIABLE CURRENT_COMMIT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    if (NOT "${CURRENT_RELEASE}" STREQUAL "${CURRENT_COMMIT}")
+        set(CURRENT_RELEASE "master")
+    endif ()
 endif (GIT_FOUND)
 
 set(DOXYGEN_INPUT_DIR ../dpctl-capi)
