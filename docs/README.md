@@ -25,7 +25,6 @@ Before you generate the documentation make sure you have the following
 packages installed:
 
 - sphinx
-- sphinx_rtd_theme
 - doxygen
 - breathe
 - exhale
