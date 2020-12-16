@@ -792,14 +792,12 @@ cpdef SyclQueue get_current_queue():
     Returns:
         SyclQueue: If there is a currently active SYCL queue that queue
         is returned wrapped in a SyclQueue object. The SyclQueue object
-        owns a copy of the currently active SYCL queue as an opaque 
+        owns a copy of the currently active SYCL queue as an opaque
         `DPCTLSyclQueueRef` pointer. The pointer is freed when the SyclQueue
         is garbage collected.
 
     Raises:
         SyclQueueCreationError: If no currently active SYCL queue found.
-        Note that no active queue indicates that the underlying stack used
-        to maintain the list of active queues is corrupted.
     """
     return _mgr.get_current_queue()
 
