@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpCtl C API &mdash; Data-parallel Control (dpctl) 0.3.8 documentation</title>
+  <title>dpCtl C API &mdash; Data-parallel Control (dpctl) master documentation</title>
   
 
   
@@ -38,8 +38,8 @@
   <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Enum DPPLKernelArgType" href="enum_dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584.html" />
-    <link rel="prev" title="dpCtl Memory Python API" href="../dpCtl.memory_api.html" /> 
+    <link rel="next" title="Enum DPCTLKernelArgType" href="enum_dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089.html" />
+    <link rel="prev" title="dpCtl Program Python API" href="../dpCtl.program_api.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.3.8
+                master
               </div>
             
           
@@ -90,115 +90,114 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dpCtl_api.html">dpCtl Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dpCtl.memory_api.html">dpctl.memory Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../toc_pyapi.html">Python API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">dpCtl C API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#class-hierarchy">Class Hierarchy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#file-hierarchy">File Hierarchy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#full-api">Full API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#enums">Enums</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="enum_dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584.html">Enum DPPLKernelArgType</a></li>
-<li class="toctree-l4"><a class="reference internal" href="enum_dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932.html">Enum DPPLSyclBackendType</a></li>
-<li class="toctree-l4"><a class="reference internal" href="enum_dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302.html">Enum DPPLSyclDeviceType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="enum_dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089.html">Enum DPCTLKernelArgType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="enum_dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933.html">Enum DPCTLSyclBackendType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="enum_dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff.html">Enum DPCTLSyclDeviceType</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a039a2c3a423d2dabd9b0e7a46614954f.html">Function DPPLaligned_alloc_device</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1aa4dfeac2ef4a931e8e4fd20dd185a738.html">Function DPPLaligned_alloc_host</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a40a234cb0b46a284ba3f495842c13f09.html">Function DPPLaligned_alloc_shared</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__context__interface_8h_1a8c4e985fc1c083d1247aa0ccbfe732c6.html">Function DPPLContext_AreEq</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__context__interface_8h_1af3b7ab8fc55644f50a5ab737132a9e56.html">Function DPPLContext_Delete</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__context__interface_8h_1a3469c7efd47e9a522e61837d48426cb4.html">Function DPPLContext_GetBackend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__context__interface_8h_1ada83bf074d712fb7c9049e61f7fb60cc.html">Function DPPLContext_IsHost</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__utils_8h_1a2df07db60880b4e2dbce4a54b4df0190.html">Function DPPLCString_Delete</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1af27c461ba4f72d8f99aa43938e1b504c.html">Function DPPLDevice_AreEq</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a4de0363a31b711c9c9480cabdeaafe35.html">Function DPPLDevice_Delete</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a318fef3810b70fb5046c5902c0882e3a.html">Function DPPLDevice_DumpInfo</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a1247248c3b3e54f97f032c482c4a4471.html">Function DPPLDevice_GetDriverInfo</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a331410c881911f8a4ddfc6ff598363f2.html">Function DPPLDevice_GetMaxComputeUnits</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a9e50c5c9a20919f845d13d4c6da0c899.html">Function DPPLDevice_GetMaxNumSubGroups</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a1b622fe1f9c03fd3ba3c09e3eadd4689.html">Function DPPLDevice_GetMaxWorkGroupSize</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1adac62f661feb4673b8550dacdd1fc7f2.html">Function DPPLDevice_GetMaxWorkItemDims</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1ad842e3efd2606cc4ea8942ee8c9289bc.html">Function DPPLDevice_GetMaxWorkItemSizes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a245243b4bd19e67f3d878781b0340877.html">Function DPPLDevice_GetName</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a05024b72193cb2808d1ffbfd2ac94427.html">Function DPPLDevice_GetVendorName</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a429493ba0280fa42fec4717858432a6d.html">Function DPPLDevice_HasInt64BaseAtomics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a12285937b18b219423781d3f433006cd.html">Function DPPLDevice_HasInt64ExtendedAtomics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a482d2f4edbf67e090cde03856bf99f63.html">Function DPPLDevice_IsAccelerator</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a0ff1d7f7fb0310ecc042edff1b1e85a2.html">Function DPPLDevice_IsCPU</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a92d9aad30f459b12a6d5bc04773b1ef5.html">Function DPPLDevice_IsGPU</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1ac98ce3a56af6cb12d09e4815e6b013b2.html">Function DPPLDevice_IsHost</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a2a7ac5edf7b421a482c50f28db3739ff.html">Function DPPLDevice_IsHostUnifiedMemory</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__event__interface_8h_1a941ca1246380eda472171284f1b91234.html">Function DPPLEvent_Delete</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__event__interface_8h_1af7f1a4ee75f61b1f1ec82a39cb8d9452.html">Function DPPLEvent_Wait</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1ae8fd9cee7ab33f4ad110c86dad7c355a.html">Function DPPLfree_with_context</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1ac9b6524feefd6d4e7eddae11ee76c4ec.html">Function DPPLfree_with_queue</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__kernel__interface_8h_1a27d27a763f299192256cc41f784f4510.html">Function DPPLKernel_Delete</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__kernel__interface_8h_1ac9585b256c13bd87225cba9991e561be.html">Function DPPLKernel_GetFunctionName</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__kernel__interface_8h_1a59c933b21d0176148617f524e6481f85.html">Function DPPLKernel_GetNumArgs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1acfd3023a41c800e78e892d7d02a449af.html">Function DPPLmalloc_device</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a4c1dac9306eca0cb79386e9c86aecaad.html">Function DPPLmalloc_host</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a6059d326a204127c8123cb5721ae8f20.html">Function DPPLmalloc_shared</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1adb32e6f7bc2ccf637199c998afe79cc5.html">Function DPPLPlatform_DeleteListOfBackends</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1a2755c456a10b7a01689cfc47aac07a2a.html">Function DPPLPlatform_DumpInfo</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1a3ff41b4a0bee315a37c2ef9da0041225.html">Function DPPLPlatform_GetListOfNonHostBackends</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1a45f96537552c640a2c8f48fba29dd35b.html">Function DPPLPlatform_GetNumNonHostBackends</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1a1eec455f349ed9f351f33503396fc15f.html">Function DPPLPlatform_GetNumNonHostPlatforms</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1a1a4750b24487335ecaa1481d8cded60f.html">Function DPPLProgram_CreateFromOCLSource</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1a73b021c98d0109b93e43b6e1eecd535f.html">Function DPPLProgram_CreateFromOCLSpirv</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1a54639690d0fc41e58a5e30d9a0824b7a.html">Function DPPLProgram_Delete</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1af6204db8d350c05dd38ea72df53f3276.html">Function DPPLProgram_GetKernel</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1a8d431de6777cac25c3b58e1921945984.html">Function DPPLProgram_HasKernel</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a037c40cb3c4afcdffc4b70857010c764.html">Function DPPLQueue_AreEq</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a7e3214378ba95cb51ec1b2a48f83de09.html">Function DPPLQueue_Delete</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a1f9d578cac96f8cb812dca8d1431359e.html">Function DPPLQueue_GetBackend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a0979f426a1f6a5957f8cae233dc4ed20.html">Function DPPLQueue_GetContext</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1acf13ddbbcb614d0af6e2bf4be3d6a519.html">Function DPPLQueue_GetDevice</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1aa19db7d31d4c5911cfc1ddecd8214c14.html">Function DPPLQueue_MemAdvise</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a6a61d533ae3e841f6a78010e5f7aa018.html">Function DPPLQueue_Memcpy</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1aefc1fa8887f7cc3a2a6123ef3f871628.html">Function DPPLQueue_Prefetch</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1adb0224648828059ff0f2bd477cb52573.html">Function DPPLQueue_SubmitNDRange</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a7b9c13b2948d2f6a630209bf45fbc1b2.html">Function DPPLQueue_SubmitRange</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a30d7a2a6652d0071a16b6dd1734602e2.html">Function DPPLQueue_Wait</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1ac7e6ad9609ab0642726da599f862c704.html">Function DPPLQueueMgr_GetCurrentQueue</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1acde652586f509a3eb596aa98b80b0761.html">Function DPPLQueueMgr_GetNumActivatedQueues</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a51d05c26d22ff2f4467c36420514c9f2.html">Function DPPLQueueMgr_GetNumQueues</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a0eadbd6202c025ac106b4c2f31b1c0f8.html">Function DPPLQueueMgr_GetQueue</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a2eb0b99690b1328beef272d310111354.html">Function DPPLQueueMgr_GetQueueFromContextAndDevice</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a4214e7a5d5b514874c3042dbcd91123c.html">Function DPPLQueueMgr_IsCurrentQueue</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1af1b678a0e5406d481bf316f18454e719.html">Function DPPLQueueMgr_PopQueue</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a6086f71d9f91065d98bb8f02f69f7723.html">Function DPPLQueueMgr_PushQueue</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a0e3748ad7e74b269d1d3b8df65d285bc.html">Function DPPLQueueMgr_SetAsDefaultQueue</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__utils_8h_1a45893de1aa435d3669abb401fa392c34.html">Function DPPLSize_t_Array_Delete</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a78e99c976f1a0e6ac19dcd6efbef9116.html">Function DPPLUSM_GetPointerDevice</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1ab9f61396ce0d347bfd0dad4ff8f22787.html">Function DPPLUSM_GetPointerType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1adebcaee4d7ef16dc19bf19c9ef94656d.html">Function DPCTLaligned_alloc_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a915f7efd52088039812616ada4c3dd95.html">Function DPCTLaligned_alloc_host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a0acb51afcc115c87af9bf4aa7c092856.html">Function DPCTLaligned_alloc_shared</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__context__interface_8h_1a87699f14f783bf855ab2d9b573227ea0.html">Function DPCTLContext_AreEq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__context__interface_8h_1ac6918507628172187175ca627b215c36.html">Function DPCTLContext_Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__context__interface_8h_1afccc249e262e239fcb158f3298b943c0.html">Function DPCTLContext_GetBackend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__context__interface_8h_1a52b5b4195920c76393f7a0b43f2c411b.html">Function DPCTLContext_IsHost</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__utils_8h_1a725ddcf07244319ac6d27fc6324dcd75.html">Function DPCTLCString_Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1aafa965de32c38467d33c2d6145fd896c.html">Function DPCTLDevice_AreEq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a5281de70c0b7643b6951fc8da0c7a430.html">Function DPCTLDevice_Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a198f7624641ff085f4d5cc88d06d61cb.html">Function DPCTLDevice_DumpInfo</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a4d2297cd1a3ae556b218baf3c8b7fa90.html">Function DPCTLDevice_GetDriverInfo</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a9169afe0c71a696e5bc0d003f070c8d2.html">Function DPCTLDevice_GetMaxComputeUnits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1adffd9e8bee5e2e0da5592afcf5757c51.html">Function DPCTLDevice_GetMaxNumSubGroups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1aab85455aae0a2a8f82745373be70a7ba.html">Function DPCTLDevice_GetMaxWorkGroupSize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1aaf934620ad6a98f353fee65240e06386.html">Function DPCTLDevice_GetMaxWorkItemDims</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a3cc7baf97db884f18a0b92cb87531f93.html">Function DPCTLDevice_GetMaxWorkItemSizes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a61c3a340925cd740a594816c7c6a4159.html">Function DPCTLDevice_GetName</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a60f3249e114e87d7e8dd6f40731e1d7c.html">Function DPCTLDevice_GetVendorName</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1afb9f319cd04c573556def0d8ccb4442b.html">Function DPCTLDevice_HasInt64BaseAtomics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a4a37272ac40b90d395ff4d75dffc8d3a.html">Function DPCTLDevice_HasInt64ExtendedAtomics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a7bdcd6adb421e4145a08b4813b8c1fb6.html">Function DPCTLDevice_IsAccelerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a320343d18a6f7466937a0dce03d57a7b.html">Function DPCTLDevice_IsCPU</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1ace9a25a0f31c57332d450a75276d6f9d.html">Function DPCTLDevice_IsGPU</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a08096504b0a67849a3c5fea75d931810.html">Function DPCTLDevice_IsHost</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a4482bf80b1449c1d8098c25e4b35d9e3.html">Function DPCTLDevice_IsHostUnifiedMemory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__event__interface_8h_1a739f821842ad6167604e425834e2dc90.html">Function DPCTLEvent_Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__event__interface_8h_1ae5be102ee4f57e65c86f6e244267ff78.html">Function DPCTLEvent_Wait</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a083fe05fa8c0f8dfda6531f84074ce8a.html">Function DPCTLfree_with_context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1acf8046ce650e41e85b706c6381de6bb1.html">Function DPCTLfree_with_queue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__kernel__interface_8h_1a58555200d669b00fb60d454c4d8478b7.html">Function DPCTLKernel_Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__kernel__interface_8h_1abb422585b2184b9c76d00e092c3dae81.html">Function DPCTLKernel_GetFunctionName</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__kernel__interface_8h_1a56139ab32dbbf0e8891662f231985482.html">Function DPCTLKernel_GetNumArgs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1ac158c54c3d5ce7199cad07f413db68fb.html">Function DPCTLmalloc_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1aed5f97115ec622f37066e166f04a4af3.html">Function DPCTLmalloc_host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a22463b2068a811bb108f1f505163f66f.html">Function DPCTLmalloc_shared</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1aeb410503aadc96be62d2f12d785b65cd.html">Function DPCTLPlatform_DeleteListOfBackends</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1a3ad326a2bf1863475d0131d61b635b2c.html">Function DPCTLPlatform_DumpInfo</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1a53be574a7076656d1490d4b994c684bb.html">Function DPCTLPlatform_GetListOfNonHostBackends</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1a73bdc873aaab97a2e7a1365bac59c7b1.html">Function DPCTLPlatform_GetNumNonHostBackends</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1af4f288016ff408116e0656e7c809bb85.html">Function DPCTLPlatform_GetNumNonHostPlatforms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1a37752d8eb8f9a78d4445801cbfc46907.html">Function DPCTLProgram_CreateFromOCLSource</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1a7219641c57da2d9ab196099fca12cc77.html">Function DPCTLProgram_CreateFromOCLSpirv</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1ae9b67e80353bf2af0f9116d6180a7e20.html">Function DPCTLProgram_Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1aff8800500718866502989154678afabf.html">Function DPCTLProgram_GetKernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1a08fff852d4c7e5f85bec38cbdbae52d7.html">Function DPCTLProgram_HasKernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a9c9fdac520043ab034187f7e29a15df3.html">Function DPCTLQueue_AreEq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a8a43adb5a1f02d9d10c23c82bf5d7cca.html">Function DPCTLQueue_Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a32dacd6d2ac40a3dbd656d0888385774.html">Function DPCTLQueue_GetBackend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a080a8afce2b269f75aafca2a088108b2.html">Function DPCTLQueue_GetContext</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1afa0c34cb4a0a748fdea3fc96872245d4.html">Function DPCTLQueue_GetDevice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1ab8b04f0bd92db5207107b7f4d00e0dea.html">Function DPCTLQueue_MemAdvise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a70ad1d363b7c97f9c1e6bea6086614dd.html">Function DPCTLQueue_Memcpy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1ae716e5ec42e9c407409ad54eed417fa8.html">Function DPCTLQueue_Prefetch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a4b028a6ecfa607ac8fdb50233d8d1c42.html">Function DPCTLQueue_SubmitNDRange</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a798fcfd6344469ebd02ba4b23100820a.html">Function DPCTLQueue_SubmitRange</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a7260971fb39c34ba4f3c5de265d46e70.html">Function DPCTLQueue_Wait</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1aa70cd1c9dca649d309c689f473cd17d8.html">Function DPCTLQueueMgr_GetCurrentQueue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a22e01116058119d7370b482130971e19.html">Function DPCTLQueueMgr_GetNumActivatedQueues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a207d8c268822cd0f605340ce59e03aaa.html">Function DPCTLQueueMgr_GetNumQueues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1afa5e14912992f251601311abe7614920.html">Function DPCTLQueueMgr_GetQueue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a73d537e36027fb92e6051910b1c4ec34.html">Function DPCTLQueueMgr_GetQueueFromContextAndDevice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a9702defbb0763021fee0b504b6718fae.html">Function DPCTLQueueMgr_IsCurrentQueue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1ab7092ee56c64ddb5389268e0570213a3.html">Function DPCTLQueueMgr_PopQueue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a7e6663d3cbf2a469e3aad61a502f2a61.html">Function DPCTLQueueMgr_PushQueue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a02f27815319f495f473c5610e580ec98.html">Function DPCTLQueueMgr_SetAsDefaultQueue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__utils_8h_1a30605edde1856376ab9501f35f848d8b.html">Function DPCTLSize_t_Array_Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1ac4b9976d0b4ed6d804395d81e771816c.html">Function DPCTLUSM_GetPointerDevice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1ac78d09589b55a67843a0cb47de9de3b0.html">Function DPCTLUSM_GetPointerType</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#defines">Defines</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753.html">Define __dppl_give</a></li>
-<li class="toctree-l4"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365.html">Define __dppl_keep</a></li>
-<li class="toctree-l4"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1gaac2c75cb8f2e7c8a4ec7436cf1ad537f.html">Define __dppl_null</a></li>
-<li class="toctree-l4"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7.html">Define __dppl_take</a></li>
+<li class="toctree-l4"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452.html">Define __dpctl_give</a></li>
+<li class="toctree-l4"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7.html">Define __dpctl_keep</a></li>
+<li class="toctree-l4"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1ga8afac1975b8353a1bd54ac25b2572d04.html">Define __dpctl_null</a></li>
+<li class="toctree-l4"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6.html">Define __dpctl_take</a></li>
 <li class="toctree-l4"><a class="reference internal" href="define_CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05.html">Define DEFINE_SIMPLE_CONVERSION_FUNCTIONS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="define_CBindingWrapping_8h_1a0856bab1c65467280bf8c2062de4e3d5.html">Define DEFINE_STDCXX_CONVERSION_FUNCTIONS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="define_DllExport_8h_1a81776019eae18623511d676145f7cdef.html">Define DPPL_API</a></li>
-<li class="toctree-l4"><a class="reference internal" href="define_ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0.html">Define DPPL_C_EXTERN_C_BEGIN</a></li>
-<li class="toctree-l4"><a class="reference internal" href="define_ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb.html">Define DPPL_C_EXTERN_C_END</a></li>
-<li class="toctree-l4"><a class="reference internal" href="define_dppl__data__types_8h_1acd69981d54c27fe0ff514645dbfc6359.html">Define HUGE_VALF</a></li>
-<li class="toctree-l4"><a class="reference internal" href="define_dppl__data__types_8h_1ad0d744f05898e32d01f73f8af3cd2071.html">Define INT64_MAX</a></li>
-<li class="toctree-l4"><a class="reference internal" href="define_dppl__data__types_8h_1ab21f12f372f67b8ff0aa3432336ede67.html">Define INT64_MIN</a></li>
-<li class="toctree-l4"><a class="reference internal" href="define_dppl__data__types_8h_1a30654b4b67d97c42ca3f9b6052dda916.html">Define UINT64_MAX</a></li>
+<li class="toctree-l4"><a class="reference internal" href="define_DllExport_8h_1aed0c117c235d99c414e0b5033d096785.html">Define DPCTL_API</a></li>
+<li class="toctree-l4"><a class="reference internal" href="define_ExternC_8h_1ad85f54ad0bab1d5206255e5920261be3.html">Define DPCTL_C_EXTERN_C_BEGIN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="define_ExternC_8h_1a6956fffc46b54bcdd0e7fd53cd3a6619.html">Define DPCTL_C_EXTERN_C_END</a></li>
+<li class="toctree-l4"><a class="reference internal" href="define_dpctl__data__types_8h_1acd69981d54c27fe0ff514645dbfc6359.html">Define HUGE_VALF</a></li>
+<li class="toctree-l4"><a class="reference internal" href="define_dpctl__data__types_8h_1ad0d744f05898e32d01f73f8af3cd2071.html">Define INT64_MAX</a></li>
+<li class="toctree-l4"><a class="reference internal" href="define_dpctl__data__types_8h_1ab21f12f372f67b8ff0aa3432336ede67.html">Define INT64_MIN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="define_dpctl__data__types_8h_1a30654b4b67d97c42ca3f9b6052dda916.html">Define UINT64_MAX</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#typedefs">Typedefs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a6f7f076797eb7499ab2c6caffed6efcb.html">Typedef DPPLSyclContextRef</a></li>
-<li class="toctree-l4"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a.html">Typedef DPPLSyclDeviceRef</a></li>
-<li class="toctree-l4"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a350c1387c650924e6c0e25f9f24a7892.html">Typedef DPPLSyclEventRef</a></li>
-<li class="toctree-l4"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f.html">Typedef DPPLSyclKernelRef</a></li>
-<li class="toctree-l4"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1ab8d36d6db024a870fa83e8b4dbed706e.html">Typedef DPPLSyclPlatformRef</a></li>
-<li class="toctree-l4"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed.html">Typedef DPPLSyclProgramRef</a></li>
-<li class="toctree-l4"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7.html">Typedef DPPLSyclQueueRef</a></li>
-<li class="toctree-l4"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e.html">Typedef DPPLSyclUSMRef</a></li>
+<li class="toctree-l4"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1ae29f49592112350adaf99af68f29cc56.html">Typedef DPCTLSyclContextRef</a></li>
+<li class="toctree-l4"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d.html">Typedef DPCTLSyclDeviceRef</a></li>
+<li class="toctree-l4"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03.html">Typedef DPCTLSyclEventRef</a></li>
+<li class="toctree-l4"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844.html">Typedef DPCTLSyclKernelRef</a></li>
+<li class="toctree-l4"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0.html">Typedef DPCTLSyclPlatformRef</a></li>
+<li class="toctree-l4"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172.html">Typedef DPCTLSyclProgramRef</a></li>
+<li class="toctree-l4"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a.html">Typedef DPCTLSyclQueueRef</a></li>
+<li class="toctree-l4"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6.html">Typedef DPCTLSyclUSMRef</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +275,7 @@
 <ul class="treeView" id="class-treeView">
   <li>
     <ul class="collapsibleList">
-      <li>Enum <a href="enum_dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584.html#exhale-enum-dppl-sycl-enum-types-8h-1a1dee0e39cee059b74fb70e666ff7a584">DPPLKernelArgType</a></li><li>Enum <a href="enum_dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932.html#exhale-enum-dppl-sycl-enum-types-8h-1a006122c6b6223df098e3cb0ca34d1932">DPPLSyclBackendType</a></li><li class="lastChild">Enum <a href="enum_dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302.html#exhale-enum-dppl-sycl-enum-types-8h-1a3aeffb0db7e2c7a0655c7bf13afce302">DPPLSyclDeviceType</a></li>
+      <li>Enum <a href="enum_dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089.html#exhale-enum-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089">DPCTLKernelArgType</a></li><li>Enum <a href="enum_dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933.html#exhale-enum-dpctl-sycl-enum-types-8h-1aa217d239d7e3752c49bd9fd42c71c933">DPCTLSyclBackendType</a></li><li class="lastChild">Enum <a href="enum_dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff.html#exhale-enum-dpctl-sycl-enum-types-8h-1a15d8954e4e712e2ec00838a9283d13ff">DPCTLSyclDeviceType</a></li>
     </ul>
   </li><!-- only tree view element -->
 </ul><!-- /treeView class-treeView --></div>
@@ -285,7 +284,7 @@
 <ul class="treeView" id="file-treeView">
   <li>
     <ul class="collapsibleList">
-      <li class="lastChild">Directory <a href="dir_backends.html#dir-backends">backends</a><ul><li class="lastChild">Directory <a href="dir_backends_include.html#dir-backends-include">include</a><ul><li>Directory <a href="dir_backends_include_Support.html#dir-backends-include-Support">Support</a><ul><li>File <a href="file_backends_include_Support_CBindingWrapping.h.html#file-backends-include-Support-CBindingWrapping.h">CBindingWrapping.h</a></li><li>File <a href="file_backends_include_Support_DllExport.h.html#file-backends-include-Support-DllExport.h">DllExport.h</a></li><li>File <a href="file_backends_include_Support_ExternC.h.html#file-backends-include-Support-ExternC.h">ExternC.h</a></li><li class="lastChild">File <a href="file_backends_include_Support_MemOwnershipAttrs.h.html#file-backends-include-Support-MemOwnershipAttrs.h">MemOwnershipAttrs.h</a></li></ul></li><li>File <a href="file_backends_include_dppl_data_types.h.html#file-backends-include-dppl-data-types.h">dppl_data_types.h</a></li><li>File <a href="file_backends_include_dppl_sycl_context_interface.h.html#file-backends-include-dppl-sycl-context-interface.h">dppl_sycl_context_interface.h</a></li><li>File <a href="file_backends_include_dppl_sycl_device_interface.h.html#file-backends-include-dppl-sycl-device-interface.h">dppl_sycl_device_interface.h</a></li><li>File <a href="file_backends_include_dppl_sycl_enum_types.h.html#file-backends-include-dppl-sycl-enum-types.h">dppl_sycl_enum_types.h</a></li><li>File <a href="file_backends_include_dppl_sycl_event_interface.h.html#file-backends-include-dppl-sycl-event-interface.h">dppl_sycl_event_interface.h</a></li><li>File <a href="file_backends_include_dppl_sycl_kernel_interface.h.html#file-backends-include-dppl-sycl-kernel-interface.h">dppl_sycl_kernel_interface.h</a></li><li>File <a href="file_backends_include_dppl_sycl_platform_interface.h.html#file-backends-include-dppl-sycl-platform-interface.h">dppl_sycl_platform_interface.h</a></li><li>File <a href="file_backends_include_dppl_sycl_program_interface.h.html#file-backends-include-dppl-sycl-program-interface.h">dppl_sycl_program_interface.h</a></li><li>File <a href="file_backends_include_dppl_sycl_queue_interface.h.html#file-backends-include-dppl-sycl-queue-interface.h">dppl_sycl_queue_interface.h</a></li><li>File <a href="file_backends_include_dppl_sycl_queue_manager.h.html#file-backends-include-dppl-sycl-queue-manager.h">dppl_sycl_queue_manager.h</a></li><li>File <a href="file_backends_include_dppl_sycl_types.h.html#file-backends-include-dppl-sycl-types.h">dppl_sycl_types.h</a></li><li>File <a href="file_backends_include_dppl_sycl_usm_interface.h.html#file-backends-include-dppl-sycl-usm-interface.h">dppl_sycl_usm_interface.h</a></li><li class="lastChild">File <a href="file_backends_include_dppl_utils.h.html#file-backends-include-dppl-utils.h">dppl_utils.h</a></li></ul></li></ul></li>
+      <li class="lastChild">Directory <a href="dir_dpctl-capi.html#dir-dpctl-capi">dpctl-capi</a><ul><li class="lastChild">Directory <a href="dir_dpctl-capi_include.html#dir-dpctl-capi-include">include</a><ul><li>Directory <a href="dir_dpctl-capi_include_Support.html#dir-dpctl-capi-include-Support">Support</a><ul><li>File <a href="file_dpctl-capi_include_Support_CBindingWrapping.h.html#file-dpctl-capi-include-Support-CBindingWrapping.h">CBindingWrapping.h</a></li><li>File <a href="file_dpctl-capi_include_Support_DllExport.h.html#file-dpctl-capi-include-Support-DllExport.h">DllExport.h</a></li><li>File <a href="file_dpctl-capi_include_Support_ExternC.h.html#file-dpctl-capi-include-Support-ExternC.h">ExternC.h</a></li><li class="lastChild">File <a href="file_dpctl-capi_include_Support_MemOwnershipAttrs.h.html#file-dpctl-capi-include-Support-MemOwnershipAttrs.h">MemOwnershipAttrs.h</a></li></ul></li><li>File <a href="file_dpctl-capi_include_dpctl_data_types.h.html#file-dpctl-capi-include-dpctl-data-types.h">dpctl_data_types.h</a></li><li>File <a href="file_dpctl-capi_include_dpctl_sycl_context_interface.h.html#file-dpctl-capi-include-dpctl-sycl-context-interface.h">dpctl_sycl_context_interface.h</a></li><li>File <a href="file_dpctl-capi_include_dpctl_sycl_device_interface.h.html#file-dpctl-capi-include-dpctl-sycl-device-interface.h">dpctl_sycl_device_interface.h</a></li><li>File <a href="file_dpctl-capi_include_dpctl_sycl_enum_types.h.html#file-dpctl-capi-include-dpctl-sycl-enum-types.h">dpctl_sycl_enum_types.h</a></li><li>File <a href="file_dpctl-capi_include_dpctl_sycl_event_interface.h.html#file-dpctl-capi-include-dpctl-sycl-event-interface.h">dpctl_sycl_event_interface.h</a></li><li>File <a href="file_dpctl-capi_include_dpctl_sycl_kernel_interface.h.html#file-dpctl-capi-include-dpctl-sycl-kernel-interface.h">dpctl_sycl_kernel_interface.h</a></li><li>File <a href="file_dpctl-capi_include_dpctl_sycl_platform_interface.h.html#file-dpctl-capi-include-dpctl-sycl-platform-interface.h">dpctl_sycl_platform_interface.h</a></li><li>File <a href="file_dpctl-capi_include_dpctl_sycl_program_interface.h.html#file-dpctl-capi-include-dpctl-sycl-program-interface.h">dpctl_sycl_program_interface.h</a></li><li>File <a href="file_dpctl-capi_include_dpctl_sycl_queue_interface.h.html#file-dpctl-capi-include-dpctl-sycl-queue-interface.h">dpctl_sycl_queue_interface.h</a></li><li>File <a href="file_dpctl-capi_include_dpctl_sycl_queue_manager.h.html#file-dpctl-capi-include-dpctl-sycl-queue-manager.h">dpctl_sycl_queue_manager.h</a></li><li>File <a href="file_dpctl-capi_include_dpctl_sycl_types.h.html#file-dpctl-capi-include-dpctl-sycl-types.h">dpctl_sycl_types.h</a></li><li>File <a href="file_dpctl-capi_include_dpctl_sycl_usm_interface.h.html#file-dpctl-capi-include-dpctl-sycl-usm-interface.h">dpctl_sycl_usm_interface.h</a></li><li class="lastChild">File <a href="file_dpctl-capi_include_dpctl_utils.h.html#file-dpctl-capi-include-dpctl-utils.h">dpctl_utils.h</a></li></ul></li></ul></li>
     </ul>
   </li><!-- only tree view element -->
 </ul><!-- /treeView file-treeView --></div>
@@ -295,24 +294,24 @@
 <h3>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h3>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="enum_dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584.html">Enum DPPLKernelArgType</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="enum_dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584.html#enum-documentation">Enum Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="enum_dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089.html">Enum DPCTLKernelArgType</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="enum_dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089.html#enum-documentation">Enum Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="enum_dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932.html">Enum DPPLSyclBackendType</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="enum_dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932.html#enum-documentation">Enum Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="enum_dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933.html">Enum DPCTLSyclBackendType</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="enum_dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933.html#enum-documentation">Enum Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="enum_dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302.html">Enum DPPLSyclDeviceType</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="enum_dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302.html#enum-documentation">Enum Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="enum_dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff.html">Enum DPCTLSyclDeviceType</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="enum_dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff.html#enum-documentation">Enum Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -322,552 +321,552 @@
 <h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a039a2c3a423d2dabd9b0e7a46614954f.html">Function DPPLaligned_alloc_device</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a039a2c3a423d2dabd9b0e7a46614954f.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1adebcaee4d7ef16dc19bf19c9ef94656d.html">Function DPCTLaligned_alloc_device</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1adebcaee4d7ef16dc19bf19c9ef94656d.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1aa4dfeac2ef4a931e8e4fd20dd185a738.html">Function DPPLaligned_alloc_host</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1aa4dfeac2ef4a931e8e4fd20dd185a738.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a915f7efd52088039812616ada4c3dd95.html">Function DPCTLaligned_alloc_host</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a915f7efd52088039812616ada4c3dd95.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a40a234cb0b46a284ba3f495842c13f09.html">Function DPPLaligned_alloc_shared</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a40a234cb0b46a284ba3f495842c13f09.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a0acb51afcc115c87af9bf4aa7c092856.html">Function DPCTLaligned_alloc_shared</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a0acb51afcc115c87af9bf4aa7c092856.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__context__interface_8h_1a8c4e985fc1c083d1247aa0ccbfe732c6.html">Function DPPLContext_AreEq</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__context__interface_8h_1a8c4e985fc1c083d1247aa0ccbfe732c6.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__context__interface_8h_1a87699f14f783bf855ab2d9b573227ea0.html">Function DPCTLContext_AreEq</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__context__interface_8h_1a87699f14f783bf855ab2d9b573227ea0.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__context__interface_8h_1af3b7ab8fc55644f50a5ab737132a9e56.html">Function DPPLContext_Delete</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__context__interface_8h_1af3b7ab8fc55644f50a5ab737132a9e56.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__context__interface_8h_1ac6918507628172187175ca627b215c36.html">Function DPCTLContext_Delete</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__context__interface_8h_1ac6918507628172187175ca627b215c36.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__context__interface_8h_1a3469c7efd47e9a522e61837d48426cb4.html">Function DPPLContext_GetBackend</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__context__interface_8h_1a3469c7efd47e9a522e61837d48426cb4.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__context__interface_8h_1afccc249e262e239fcb158f3298b943c0.html">Function DPCTLContext_GetBackend</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__context__interface_8h_1afccc249e262e239fcb158f3298b943c0.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__context__interface_8h_1ada83bf074d712fb7c9049e61f7fb60cc.html">Function DPPLContext_IsHost</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__context__interface_8h_1ada83bf074d712fb7c9049e61f7fb60cc.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__context__interface_8h_1a52b5b4195920c76393f7a0b43f2c411b.html">Function DPCTLContext_IsHost</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__context__interface_8h_1a52b5b4195920c76393f7a0b43f2c411b.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__utils_8h_1a2df07db60880b4e2dbce4a54b4df0190.html">Function DPPLCString_Delete</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__utils_8h_1a2df07db60880b4e2dbce4a54b4df0190.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__utils_8h_1a725ddcf07244319ac6d27fc6324dcd75.html">Function DPCTLCString_Delete</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__utils_8h_1a725ddcf07244319ac6d27fc6324dcd75.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1af27c461ba4f72d8f99aa43938e1b504c.html">Function DPPLDevice_AreEq</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1af27c461ba4f72d8f99aa43938e1b504c.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1aafa965de32c38467d33c2d6145fd896c.html">Function DPCTLDevice_AreEq</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1aafa965de32c38467d33c2d6145fd896c.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a4de0363a31b711c9c9480cabdeaafe35.html">Function DPPLDevice_Delete</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a4de0363a31b711c9c9480cabdeaafe35.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a5281de70c0b7643b6951fc8da0c7a430.html">Function DPCTLDevice_Delete</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a5281de70c0b7643b6951fc8da0c7a430.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a318fef3810b70fb5046c5902c0882e3a.html">Function DPPLDevice_DumpInfo</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a318fef3810b70fb5046c5902c0882e3a.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a198f7624641ff085f4d5cc88d06d61cb.html">Function DPCTLDevice_DumpInfo</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a198f7624641ff085f4d5cc88d06d61cb.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a1247248c3b3e54f97f032c482c4a4471.html">Function DPPLDevice_GetDriverInfo</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a1247248c3b3e54f97f032c482c4a4471.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a4d2297cd1a3ae556b218baf3c8b7fa90.html">Function DPCTLDevice_GetDriverInfo</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a4d2297cd1a3ae556b218baf3c8b7fa90.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a331410c881911f8a4ddfc6ff598363f2.html">Function DPPLDevice_GetMaxComputeUnits</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a331410c881911f8a4ddfc6ff598363f2.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a9169afe0c71a696e5bc0d003f070c8d2.html">Function DPCTLDevice_GetMaxComputeUnits</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a9169afe0c71a696e5bc0d003f070c8d2.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a9e50c5c9a20919f845d13d4c6da0c899.html">Function DPPLDevice_GetMaxNumSubGroups</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a9e50c5c9a20919f845d13d4c6da0c899.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1adffd9e8bee5e2e0da5592afcf5757c51.html">Function DPCTLDevice_GetMaxNumSubGroups</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1adffd9e8bee5e2e0da5592afcf5757c51.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a1b622fe1f9c03fd3ba3c09e3eadd4689.html">Function DPPLDevice_GetMaxWorkGroupSize</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a1b622fe1f9c03fd3ba3c09e3eadd4689.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1aab85455aae0a2a8f82745373be70a7ba.html">Function DPCTLDevice_GetMaxWorkGroupSize</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1aab85455aae0a2a8f82745373be70a7ba.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1adac62f661feb4673b8550dacdd1fc7f2.html">Function DPPLDevice_GetMaxWorkItemDims</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1adac62f661feb4673b8550dacdd1fc7f2.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1aaf934620ad6a98f353fee65240e06386.html">Function DPCTLDevice_GetMaxWorkItemDims</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1aaf934620ad6a98f353fee65240e06386.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1ad842e3efd2606cc4ea8942ee8c9289bc.html">Function DPPLDevice_GetMaxWorkItemSizes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1ad842e3efd2606cc4ea8942ee8c9289bc.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a3cc7baf97db884f18a0b92cb87531f93.html">Function DPCTLDevice_GetMaxWorkItemSizes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a3cc7baf97db884f18a0b92cb87531f93.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a245243b4bd19e67f3d878781b0340877.html">Function DPPLDevice_GetName</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a245243b4bd19e67f3d878781b0340877.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a61c3a340925cd740a594816c7c6a4159.html">Function DPCTLDevice_GetName</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a61c3a340925cd740a594816c7c6a4159.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a05024b72193cb2808d1ffbfd2ac94427.html">Function DPPLDevice_GetVendorName</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a05024b72193cb2808d1ffbfd2ac94427.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a60f3249e114e87d7e8dd6f40731e1d7c.html">Function DPCTLDevice_GetVendorName</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a60f3249e114e87d7e8dd6f40731e1d7c.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a429493ba0280fa42fec4717858432a6d.html">Function DPPLDevice_HasInt64BaseAtomics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a429493ba0280fa42fec4717858432a6d.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1afb9f319cd04c573556def0d8ccb4442b.html">Function DPCTLDevice_HasInt64BaseAtomics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1afb9f319cd04c573556def0d8ccb4442b.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a12285937b18b219423781d3f433006cd.html">Function DPPLDevice_HasInt64ExtendedAtomics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a12285937b18b219423781d3f433006cd.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a4a37272ac40b90d395ff4d75dffc8d3a.html">Function DPCTLDevice_HasInt64ExtendedAtomics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a4a37272ac40b90d395ff4d75dffc8d3a.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a482d2f4edbf67e090cde03856bf99f63.html">Function DPPLDevice_IsAccelerator</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a482d2f4edbf67e090cde03856bf99f63.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a7bdcd6adb421e4145a08b4813b8c1fb6.html">Function DPCTLDevice_IsAccelerator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a7bdcd6adb421e4145a08b4813b8c1fb6.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a0ff1d7f7fb0310ecc042edff1b1e85a2.html">Function DPPLDevice_IsCPU</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a0ff1d7f7fb0310ecc042edff1b1e85a2.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a320343d18a6f7466937a0dce03d57a7b.html">Function DPCTLDevice_IsCPU</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a320343d18a6f7466937a0dce03d57a7b.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a92d9aad30f459b12a6d5bc04773b1ef5.html">Function DPPLDevice_IsGPU</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a92d9aad30f459b12a6d5bc04773b1ef5.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1ace9a25a0f31c57332d450a75276d6f9d.html">Function DPCTLDevice_IsGPU</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1ace9a25a0f31c57332d450a75276d6f9d.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1ac98ce3a56af6cb12d09e4815e6b013b2.html">Function DPPLDevice_IsHost</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1ac98ce3a56af6cb12d09e4815e6b013b2.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a08096504b0a67849a3c5fea75d931810.html">Function DPCTLDevice_IsHost</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a08096504b0a67849a3c5fea75d931810.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a2a7ac5edf7b421a482c50f28db3739ff.html">Function DPPLDevice_IsHostUnifiedMemory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__device__interface_8h_1a2a7ac5edf7b421a482c50f28db3739ff.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a4482bf80b1449c1d8098c25e4b35d9e3.html">Function DPCTLDevice_IsHostUnifiedMemory</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__device__interface_8h_1a4482bf80b1449c1d8098c25e4b35d9e3.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__event__interface_8h_1a941ca1246380eda472171284f1b91234.html">Function DPPLEvent_Delete</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__event__interface_8h_1a941ca1246380eda472171284f1b91234.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__event__interface_8h_1a739f821842ad6167604e425834e2dc90.html">Function DPCTLEvent_Delete</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__event__interface_8h_1a739f821842ad6167604e425834e2dc90.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__event__interface_8h_1af7f1a4ee75f61b1f1ec82a39cb8d9452.html">Function DPPLEvent_Wait</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__event__interface_8h_1af7f1a4ee75f61b1f1ec82a39cb8d9452.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__event__interface_8h_1ae5be102ee4f57e65c86f6e244267ff78.html">Function DPCTLEvent_Wait</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__event__interface_8h_1ae5be102ee4f57e65c86f6e244267ff78.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1ae8fd9cee7ab33f4ad110c86dad7c355a.html">Function DPPLfree_with_context</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1ae8fd9cee7ab33f4ad110c86dad7c355a.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a083fe05fa8c0f8dfda6531f84074ce8a.html">Function DPCTLfree_with_context</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a083fe05fa8c0f8dfda6531f84074ce8a.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1ac9b6524feefd6d4e7eddae11ee76c4ec.html">Function DPPLfree_with_queue</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1ac9b6524feefd6d4e7eddae11ee76c4ec.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1acf8046ce650e41e85b706c6381de6bb1.html">Function DPCTLfree_with_queue</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1acf8046ce650e41e85b706c6381de6bb1.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__kernel__interface_8h_1a27d27a763f299192256cc41f784f4510.html">Function DPPLKernel_Delete</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__kernel__interface_8h_1a27d27a763f299192256cc41f784f4510.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__kernel__interface_8h_1a58555200d669b00fb60d454c4d8478b7.html">Function DPCTLKernel_Delete</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__kernel__interface_8h_1a58555200d669b00fb60d454c4d8478b7.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__kernel__interface_8h_1ac9585b256c13bd87225cba9991e561be.html">Function DPPLKernel_GetFunctionName</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__kernel__interface_8h_1ac9585b256c13bd87225cba9991e561be.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__kernel__interface_8h_1abb422585b2184b9c76d00e092c3dae81.html">Function DPCTLKernel_GetFunctionName</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__kernel__interface_8h_1abb422585b2184b9c76d00e092c3dae81.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__kernel__interface_8h_1a59c933b21d0176148617f524e6481f85.html">Function DPPLKernel_GetNumArgs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__kernel__interface_8h_1a59c933b21d0176148617f524e6481f85.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__kernel__interface_8h_1a56139ab32dbbf0e8891662f231985482.html">Function DPCTLKernel_GetNumArgs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__kernel__interface_8h_1a56139ab32dbbf0e8891662f231985482.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1acfd3023a41c800e78e892d7d02a449af.html">Function DPPLmalloc_device</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1acfd3023a41c800e78e892d7d02a449af.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1ac158c54c3d5ce7199cad07f413db68fb.html">Function DPCTLmalloc_device</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1ac158c54c3d5ce7199cad07f413db68fb.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a4c1dac9306eca0cb79386e9c86aecaad.html">Function DPPLmalloc_host</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a4c1dac9306eca0cb79386e9c86aecaad.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1aed5f97115ec622f37066e166f04a4af3.html">Function DPCTLmalloc_host</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1aed5f97115ec622f37066e166f04a4af3.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a6059d326a204127c8123cb5721ae8f20.html">Function DPPLmalloc_shared</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a6059d326a204127c8123cb5721ae8f20.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a22463b2068a811bb108f1f505163f66f.html">Function DPCTLmalloc_shared</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a22463b2068a811bb108f1f505163f66f.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1adb32e6f7bc2ccf637199c998afe79cc5.html">Function DPPLPlatform_DeleteListOfBackends</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1adb32e6f7bc2ccf637199c998afe79cc5.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1aeb410503aadc96be62d2f12d785b65cd.html">Function DPCTLPlatform_DeleteListOfBackends</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1aeb410503aadc96be62d2f12d785b65cd.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1a2755c456a10b7a01689cfc47aac07a2a.html">Function DPPLPlatform_DumpInfo</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1a2755c456a10b7a01689cfc47aac07a2a.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1a3ad326a2bf1863475d0131d61b635b2c.html">Function DPCTLPlatform_DumpInfo</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1a3ad326a2bf1863475d0131d61b635b2c.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1a3ff41b4a0bee315a37c2ef9da0041225.html">Function DPPLPlatform_GetListOfNonHostBackends</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1a3ff41b4a0bee315a37c2ef9da0041225.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1a53be574a7076656d1490d4b994c684bb.html">Function DPCTLPlatform_GetListOfNonHostBackends</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1a53be574a7076656d1490d4b994c684bb.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1a45f96537552c640a2c8f48fba29dd35b.html">Function DPPLPlatform_GetNumNonHostBackends</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1a45f96537552c640a2c8f48fba29dd35b.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1a73bdc873aaab97a2e7a1365bac59c7b1.html">Function DPCTLPlatform_GetNumNonHostBackends</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1a73bdc873aaab97a2e7a1365bac59c7b1.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1a1eec455f349ed9f351f33503396fc15f.html">Function DPPLPlatform_GetNumNonHostPlatforms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__platform__interface_8h_1a1eec455f349ed9f351f33503396fc15f.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1af4f288016ff408116e0656e7c809bb85.html">Function DPCTLPlatform_GetNumNonHostPlatforms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__platform__interface_8h_1af4f288016ff408116e0656e7c809bb85.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1a1a4750b24487335ecaa1481d8cded60f.html">Function DPPLProgram_CreateFromOCLSource</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1a1a4750b24487335ecaa1481d8cded60f.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1a37752d8eb8f9a78d4445801cbfc46907.html">Function DPCTLProgram_CreateFromOCLSource</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1a37752d8eb8f9a78d4445801cbfc46907.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1a73b021c98d0109b93e43b6e1eecd535f.html">Function DPPLProgram_CreateFromOCLSpirv</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1a73b021c98d0109b93e43b6e1eecd535f.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1a7219641c57da2d9ab196099fca12cc77.html">Function DPCTLProgram_CreateFromOCLSpirv</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1a7219641c57da2d9ab196099fca12cc77.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1a54639690d0fc41e58a5e30d9a0824b7a.html">Function DPPLProgram_Delete</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1a54639690d0fc41e58a5e30d9a0824b7a.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1ae9b67e80353bf2af0f9116d6180a7e20.html">Function DPCTLProgram_Delete</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1ae9b67e80353bf2af0f9116d6180a7e20.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1af6204db8d350c05dd38ea72df53f3276.html">Function DPPLProgram_GetKernel</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1af6204db8d350c05dd38ea72df53f3276.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1aff8800500718866502989154678afabf.html">Function DPCTLProgram_GetKernel</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1aff8800500718866502989154678afabf.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1a8d431de6777cac25c3b58e1921945984.html">Function DPPLProgram_HasKernel</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__program__interface_8h_1a8d431de6777cac25c3b58e1921945984.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1a08fff852d4c7e5f85bec38cbdbae52d7.html">Function DPCTLProgram_HasKernel</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__program__interface_8h_1a08fff852d4c7e5f85bec38cbdbae52d7.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a037c40cb3c4afcdffc4b70857010c764.html">Function DPPLQueue_AreEq</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a037c40cb3c4afcdffc4b70857010c764.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a9c9fdac520043ab034187f7e29a15df3.html">Function DPCTLQueue_AreEq</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a9c9fdac520043ab034187f7e29a15df3.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a7e3214378ba95cb51ec1b2a48f83de09.html">Function DPPLQueue_Delete</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a7e3214378ba95cb51ec1b2a48f83de09.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a8a43adb5a1f02d9d10c23c82bf5d7cca.html">Function DPCTLQueue_Delete</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a8a43adb5a1f02d9d10c23c82bf5d7cca.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a1f9d578cac96f8cb812dca8d1431359e.html">Function DPPLQueue_GetBackend</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a1f9d578cac96f8cb812dca8d1431359e.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a32dacd6d2ac40a3dbd656d0888385774.html">Function DPCTLQueue_GetBackend</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a32dacd6d2ac40a3dbd656d0888385774.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a0979f426a1f6a5957f8cae233dc4ed20.html">Function DPPLQueue_GetContext</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a0979f426a1f6a5957f8cae233dc4ed20.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a080a8afce2b269f75aafca2a088108b2.html">Function DPCTLQueue_GetContext</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a080a8afce2b269f75aafca2a088108b2.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1acf13ddbbcb614d0af6e2bf4be3d6a519.html">Function DPPLQueue_GetDevice</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1acf13ddbbcb614d0af6e2bf4be3d6a519.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1afa0c34cb4a0a748fdea3fc96872245d4.html">Function DPCTLQueue_GetDevice</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1afa0c34cb4a0a748fdea3fc96872245d4.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1aa19db7d31d4c5911cfc1ddecd8214c14.html">Function DPPLQueue_MemAdvise</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1aa19db7d31d4c5911cfc1ddecd8214c14.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1ab8b04f0bd92db5207107b7f4d00e0dea.html">Function DPCTLQueue_MemAdvise</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1ab8b04f0bd92db5207107b7f4d00e0dea.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a6a61d533ae3e841f6a78010e5f7aa018.html">Function DPPLQueue_Memcpy</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a6a61d533ae3e841f6a78010e5f7aa018.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a70ad1d363b7c97f9c1e6bea6086614dd.html">Function DPCTLQueue_Memcpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a70ad1d363b7c97f9c1e6bea6086614dd.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1aefc1fa8887f7cc3a2a6123ef3f871628.html">Function DPPLQueue_Prefetch</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1aefc1fa8887f7cc3a2a6123ef3f871628.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1ae716e5ec42e9c407409ad54eed417fa8.html">Function DPCTLQueue_Prefetch</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1ae716e5ec42e9c407409ad54eed417fa8.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1adb0224648828059ff0f2bd477cb52573.html">Function DPPLQueue_SubmitNDRange</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1adb0224648828059ff0f2bd477cb52573.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a4b028a6ecfa607ac8fdb50233d8d1c42.html">Function DPCTLQueue_SubmitNDRange</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a4b028a6ecfa607ac8fdb50233d8d1c42.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a7b9c13b2948d2f6a630209bf45fbc1b2.html">Function DPPLQueue_SubmitRange</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a7b9c13b2948d2f6a630209bf45fbc1b2.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a798fcfd6344469ebd02ba4b23100820a.html">Function DPCTLQueue_SubmitRange</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a798fcfd6344469ebd02ba4b23100820a.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a30d7a2a6652d0071a16b6dd1734602e2.html">Function DPPLQueue_Wait</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__interface_8h_1a30d7a2a6652d0071a16b6dd1734602e2.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a7260971fb39c34ba4f3c5de265d46e70.html">Function DPCTLQueue_Wait</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__interface_8h_1a7260971fb39c34ba4f3c5de265d46e70.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1ac7e6ad9609ab0642726da599f862c704.html">Function DPPLQueueMgr_GetCurrentQueue</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1ac7e6ad9609ab0642726da599f862c704.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1aa70cd1c9dca649d309c689f473cd17d8.html">Function DPCTLQueueMgr_GetCurrentQueue</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1aa70cd1c9dca649d309c689f473cd17d8.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1acde652586f509a3eb596aa98b80b0761.html">Function DPPLQueueMgr_GetNumActivatedQueues</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1acde652586f509a3eb596aa98b80b0761.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a22e01116058119d7370b482130971e19.html">Function DPCTLQueueMgr_GetNumActivatedQueues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a22e01116058119d7370b482130971e19.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a51d05c26d22ff2f4467c36420514c9f2.html">Function DPPLQueueMgr_GetNumQueues</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a51d05c26d22ff2f4467c36420514c9f2.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a207d8c268822cd0f605340ce59e03aaa.html">Function DPCTLQueueMgr_GetNumQueues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a207d8c268822cd0f605340ce59e03aaa.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a0eadbd6202c025ac106b4c2f31b1c0f8.html">Function DPPLQueueMgr_GetQueue</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a0eadbd6202c025ac106b4c2f31b1c0f8.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1afa5e14912992f251601311abe7614920.html">Function DPCTLQueueMgr_GetQueue</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1afa5e14912992f251601311abe7614920.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a2eb0b99690b1328beef272d310111354.html">Function DPPLQueueMgr_GetQueueFromContextAndDevice</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a2eb0b99690b1328beef272d310111354.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a73d537e36027fb92e6051910b1c4ec34.html">Function DPCTLQueueMgr_GetQueueFromContextAndDevice</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a73d537e36027fb92e6051910b1c4ec34.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a4214e7a5d5b514874c3042dbcd91123c.html">Function DPPLQueueMgr_IsCurrentQueue</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a4214e7a5d5b514874c3042dbcd91123c.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a9702defbb0763021fee0b504b6718fae.html">Function DPCTLQueueMgr_IsCurrentQueue</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a9702defbb0763021fee0b504b6718fae.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1af1b678a0e5406d481bf316f18454e719.html">Function DPPLQueueMgr_PopQueue</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1af1b678a0e5406d481bf316f18454e719.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1ab7092ee56c64ddb5389268e0570213a3.html">Function DPCTLQueueMgr_PopQueue</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1ab7092ee56c64ddb5389268e0570213a3.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a6086f71d9f91065d98bb8f02f69f7723.html">Function DPPLQueueMgr_PushQueue</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a6086f71d9f91065d98bb8f02f69f7723.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a7e6663d3cbf2a469e3aad61a502f2a61.html">Function DPCTLQueueMgr_PushQueue</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a7e6663d3cbf2a469e3aad61a502f2a61.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a0e3748ad7e74b269d1d3b8df65d285bc.html">Function DPPLQueueMgr_SetAsDefaultQueue</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__queue__manager_8h_1a0e3748ad7e74b269d1d3b8df65d285bc.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a02f27815319f495f473c5610e580ec98.html">Function DPCTLQueueMgr_SetAsDefaultQueue</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__queue__manager_8h_1a02f27815319f495f473c5610e580ec98.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__utils_8h_1a45893de1aa435d3669abb401fa392c34.html">Function DPPLSize_t_Array_Delete</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__utils_8h_1a45893de1aa435d3669abb401fa392c34.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__utils_8h_1a30605edde1856376ab9501f35f848d8b.html">Function DPCTLSize_t_Array_Delete</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__utils_8h_1a30605edde1856376ab9501f35f848d8b.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a78e99c976f1a0e6ac19dcd6efbef9116.html">Function DPPLUSM_GetPointerDevice</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1a78e99c976f1a0e6ac19dcd6efbef9116.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1ac4b9976d0b4ed6d804395d81e771816c.html">Function DPCTLUSM_GetPointerDevice</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1ac4b9976d0b4ed6d804395d81e771816c.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1ab9f61396ce0d347bfd0dad4ff8f22787.html">Function DPPLUSM_GetPointerType</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_dppl__sycl__usm__interface_8h_1ab9f61396ce0d347bfd0dad4ff8f22787.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1ac78d09589b55a67843a0cb47de9de3b0.html">Function DPCTLUSM_GetPointerType</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1ac78d09589b55a67843a0cb47de9de3b0.html#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -877,32 +876,32 @@
 <h3>Defines<a class="headerlink" href="#defines" title="Permalink to this headline">¶</a></h3>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753.html">Define __dppl_give</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753.html#define-documentation">Define Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452.html">Define __dpctl_give</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452.html#define-documentation">Define Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365.html">Define __dppl_keep</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365.html#define-documentation">Define Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7.html">Define __dpctl_keep</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7.html#define-documentation">Define Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1gaac2c75cb8f2e7c8a4ec7436cf1ad537f.html">Define __dppl_null</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1gaac2c75cb8f2e7c8a4ec7436cf1ad537f.html#define-documentation">Define Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1ga8afac1975b8353a1bd54ac25b2572d04.html">Define __dpctl_null</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1ga8afac1975b8353a1bd54ac25b2572d04.html#define-documentation">Define Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7.html">Define __dppl_take</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7.html#define-documentation">Define Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6.html">Define __dpctl_take</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="define_group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6.html#define-documentation">Define Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -925,56 +924,56 @@
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="define_DllExport_8h_1a81776019eae18623511d676145f7cdef.html">Define DPPL_API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_DllExport_8h_1a81776019eae18623511d676145f7cdef.html#define-documentation">Define Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define_DllExport_8h_1aed0c117c235d99c414e0b5033d096785.html">Define DPCTL_API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="define_DllExport_8h_1aed0c117c235d99c414e0b5033d096785.html#define-documentation">Define Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="define_ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0.html">Define DPPL_C_EXTERN_C_BEGIN</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0.html#define-documentation">Define Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define_ExternC_8h_1ad85f54ad0bab1d5206255e5920261be3.html">Define DPCTL_C_EXTERN_C_BEGIN</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="define_ExternC_8h_1ad85f54ad0bab1d5206255e5920261be3.html#define-documentation">Define Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="define_ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb.html">Define DPPL_C_EXTERN_C_END</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb.html#define-documentation">Define Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define_ExternC_8h_1a6956fffc46b54bcdd0e7fd53cd3a6619.html">Define DPCTL_C_EXTERN_C_END</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="define_ExternC_8h_1a6956fffc46b54bcdd0e7fd53cd3a6619.html#define-documentation">Define Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="define_dppl__data__types_8h_1acd69981d54c27fe0ff514645dbfc6359.html">Define HUGE_VALF</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_dppl__data__types_8h_1acd69981d54c27fe0ff514645dbfc6359.html#define-documentation">Define Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define_dpctl__data__types_8h_1acd69981d54c27fe0ff514645dbfc6359.html">Define HUGE_VALF</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="define_dpctl__data__types_8h_1acd69981d54c27fe0ff514645dbfc6359.html#define-documentation">Define Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="define_dppl__data__types_8h_1ad0d744f05898e32d01f73f8af3cd2071.html">Define INT64_MAX</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_dppl__data__types_8h_1ad0d744f05898e32d01f73f8af3cd2071.html#define-documentation">Define Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define_dpctl__data__types_8h_1ad0d744f05898e32d01f73f8af3cd2071.html">Define INT64_MAX</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="define_dpctl__data__types_8h_1ad0d744f05898e32d01f73f8af3cd2071.html#define-documentation">Define Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="define_dppl__data__types_8h_1ab21f12f372f67b8ff0aa3432336ede67.html">Define INT64_MIN</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_dppl__data__types_8h_1ab21f12f372f67b8ff0aa3432336ede67.html#define-documentation">Define Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define_dpctl__data__types_8h_1ab21f12f372f67b8ff0aa3432336ede67.html">Define INT64_MIN</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="define_dpctl__data__types_8h_1ab21f12f372f67b8ff0aa3432336ede67.html#define-documentation">Define Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="define_dppl__data__types_8h_1a30654b4b67d97c42ca3f9b6052dda916.html">Define UINT64_MAX</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="define_dppl__data__types_8h_1a30654b4b67d97c42ca3f9b6052dda916.html#define-documentation">Define Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define_dpctl__data__types_8h_1a30654b4b67d97c42ca3f9b6052dda916.html">Define UINT64_MAX</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="define_dpctl__data__types_8h_1a30654b4b67d97c42ca3f9b6052dda916.html#define-documentation">Define Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -984,64 +983,64 @@
 <h3>Typedefs<a class="headerlink" href="#typedefs" title="Permalink to this headline">¶</a></h3>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a6f7f076797eb7499ab2c6caffed6efcb.html">Typedef DPPLSyclContextRef</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a6f7f076797eb7499ab2c6caffed6efcb.html#typedef-documentation">Typedef Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1ae29f49592112350adaf99af68f29cc56.html">Typedef DPCTLSyclContextRef</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1ae29f49592112350adaf99af68f29cc56.html#typedef-documentation">Typedef Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a.html">Typedef DPPLSyclDeviceRef</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a.html#typedef-documentation">Typedef Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d.html">Typedef DPCTLSyclDeviceRef</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d.html#typedef-documentation">Typedef Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a350c1387c650924e6c0e25f9f24a7892.html">Typedef DPPLSyclEventRef</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a350c1387c650924e6c0e25f9f24a7892.html#typedef-documentation">Typedef Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03.html">Typedef DPCTLSyclEventRef</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03.html#typedef-documentation">Typedef Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f.html">Typedef DPPLSyclKernelRef</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f.html#typedef-documentation">Typedef Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844.html">Typedef DPCTLSyclKernelRef</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844.html#typedef-documentation">Typedef Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1ab8d36d6db024a870fa83e8b4dbed706e.html">Typedef DPPLSyclPlatformRef</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1ab8d36d6db024a870fa83e8b4dbed706e.html#typedef-documentation">Typedef Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0.html">Typedef DPCTLSyclPlatformRef</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0.html#typedef-documentation">Typedef Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed.html">Typedef DPPLSyclProgramRef</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed.html#typedef-documentation">Typedef Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172.html">Typedef DPCTLSyclProgramRef</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172.html#typedef-documentation">Typedef Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7.html">Typedef DPPLSyclQueueRef</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7.html#typedef-documentation">Typedef Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a.html">Typedef DPCTLSyclQueueRef</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a.html#typedef-documentation">Typedef Documentation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e.html">Typedef DPPLSyclUSMRef</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="typedef_dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e.html#typedef-documentation">Typedef Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6.html">Typedef DPCTLSyclUSMRef</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6.html#typedef-documentation">Typedef Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -1058,10 +1057,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="enum_dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584.html" class="btn btn-neutral float-right" title="Enum DPPLKernelArgType" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="enum_dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089.html" class="btn btn-neutral float-right" title="Enum DPCTLKernelArgType" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../dpCtl.memory_api.html" class="btn btn-neutral float-left" title="dpCtl Memory Python API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../dpCtl.program_api.html" class="btn btn-neutral float-left" title="dpCtl Program Python API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

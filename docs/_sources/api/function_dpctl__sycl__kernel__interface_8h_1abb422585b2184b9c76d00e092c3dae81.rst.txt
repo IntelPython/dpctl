@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__kernel__interface_8h_1abb422585b2184b9c76d00e092c3dae81:
+
+Function DPCTLKernel_GetFunctionName
+====================================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_kernel_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLKernel_GetFunctionName(const DPCTLSyclKernelRef)

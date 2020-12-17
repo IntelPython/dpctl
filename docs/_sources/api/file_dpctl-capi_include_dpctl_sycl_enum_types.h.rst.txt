@@ -1,0 +1,64 @@
+
+.. _file_dpctl-capi_include_dpctl_sycl_enum_types.h:
+
+File dpctl_sycl_enum_types.h
+============================
+
+|exhale_lsh| :ref:`Parent directory <dir_dpctl-capi_include>` (``dpctl-capi/include``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``dpctl-capi/include/dpctl_sycl_enum_types.h``)
+-----------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_dpctl-capi_include_dpctl_sycl_enum_types.h.rst
+
+
+
+Detailed Description
+--------------------
+
+This header defines DPCTL specficif enum types that wrap corresponding Sycl enum classes. These enums are defined primarily so that Python extensions that use DPCTL do not have to include Sycl headers directly. 
+
+
+
+
+Includes
+--------
+
+
+- ``Support/ExternC.h`` (:ref:`file_dpctl-capi_include_Support_ExternC.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_dpctl-capi_include_dpctl_sycl_device_interface.h`
+
+- :ref:`file_dpctl-capi_include_dpctl_sycl_platform_interface.h`
+
+- :ref:`file_dpctl-capi_include_dpctl_sycl_queue_interface.h`
+
+
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089`
+
+- :ref:`exhale_enum_dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933`
+
+- :ref:`exhale_enum_dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff`
+

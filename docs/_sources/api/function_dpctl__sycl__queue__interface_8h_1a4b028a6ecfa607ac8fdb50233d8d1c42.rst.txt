@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__queue__interface_8h_1a4b028a6ecfa607ac8fdb50233d8d1c42:
+
+Function DPCTLQueue_SubmitNDRange
+=================================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_queue_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLQueue_SubmitNDRange(const DPCTLSyclKernelRef, const DPCTLSyclQueueRef, void **, const DPCTLKernelArgType *, size_t, const size_t, const size_t, size_t, const DPCTLSyclEventRef *, size_t)

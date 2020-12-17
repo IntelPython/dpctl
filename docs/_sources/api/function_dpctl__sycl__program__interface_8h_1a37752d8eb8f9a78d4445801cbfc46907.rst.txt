@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__program__interface_8h_1a37752d8eb8f9a78d4445801cbfc46907:
+
+Function DPCTLProgram_CreateFromOCLSource
+=========================================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_program_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLProgram_CreateFromOCLSource(const DPCTLSyclContextRef, const char *, const char *)

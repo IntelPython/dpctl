@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__queue__manager_8h_1afa5e14912992f251601311abe7614920:
+
+Function DPCTLQueueMgr_GetQueue
+===============================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_queue_manager.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLQueueMgr_GetQueue(DPCTLSyclBackendType, DPCTLSyclDeviceType, size_t)

@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__context__interface_8h_1ac6918507628172187175ca627b215c36:
+
+Function DPCTLContext_Delete
+============================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_context_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLContext_Delete(DPCTLSyclContextRef)

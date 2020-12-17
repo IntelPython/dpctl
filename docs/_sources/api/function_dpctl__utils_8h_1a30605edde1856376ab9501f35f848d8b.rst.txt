@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__utils_8h_1a30605edde1856376ab9501f35f848d8b:
+
+Function DPCTLSize_t_Array_Delete
+=================================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLSize_t_Array_Delete(size_t *)

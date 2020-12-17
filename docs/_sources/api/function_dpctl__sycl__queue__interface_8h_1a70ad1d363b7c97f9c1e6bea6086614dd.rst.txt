@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__queue__interface_8h_1a70ad1d363b7c97f9c1e6bea6086614dd:
+
+Function DPCTLQueue_Memcpy
+==========================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_queue_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLQueue_Memcpy(const DPCTLSyclQueueRef, void *, const void *, size_t)

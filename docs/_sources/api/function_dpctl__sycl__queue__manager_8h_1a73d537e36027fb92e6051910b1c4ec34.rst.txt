@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__queue__manager_8h_1a73d537e36027fb92e6051910b1c4ec34:
+
+Function DPCTLQueueMgr_GetQueueFromContextAndDevice
+===================================================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_queue_manager.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLQueueMgr_GetQueueFromContextAndDevice(DPCTLSyclContextRef, DPCTLSyclDeviceRef)

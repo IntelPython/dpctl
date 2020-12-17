@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__queue__manager_8h_1a22e01116058119d7370b482130971e19:
+
+Function DPCTLQueueMgr_GetNumActivatedQueues
+============================================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_queue_manager.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLQueueMgr_GetNumActivatedQueues()

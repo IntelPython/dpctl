@@ -1,0 +1,13 @@
+.. _exhale_typedef_dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6:
+
+Typedef DPCTLSyclUSMRef
+=======================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_types.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: DPCTLSyclUSMRef

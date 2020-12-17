@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['dpplkernelargtype_262',['DPPLKernelArgType',['../d9/d4f/dppl__sycl__enum__types_8h.html#a1dee0e39cee059b74fb70e666ff7a584',1,'dppl_sycl_enum_types.h']]],
-  ['dpplsyclbackendtype_263',['DPPLSyclBackendType',['../d9/d4f/dppl__sycl__enum__types_8h.html#a006122c6b6223df098e3cb0ca34d1932',1,'dppl_sycl_enum_types.h']]],
-  ['dpplsycldevicetype_264',['DPPLSyclDeviceType',['../d9/d4f/dppl__sycl__enum__types_8h.html#a3aeffb0db7e2c7a0655c7bf13afce302',1,'dppl_sycl_enum_types.h']]]
+  ['dpctlkernelargtype_270',['DPCTLKernelArgType',['../d3/d94/dpctl__sycl__enum__types_8h.html#a2b3d2dd8e0c358370eac0a59fb3fe089',1,'dpctl_sycl_enum_types.h']]],
+  ['dpctlsyclbackendtype_271',['DPCTLSyclBackendType',['../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933',1,'dpctl_sycl_enum_types.h']]],
+  ['dpctlsycldevicetype_272',['DPCTLSyclDeviceType',['../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ff',1,'dpctl_sycl_enum_types.h']]]
 ];

@@ -3,7 +3,7 @@
 Define DEFINE_SIMPLE_CONVERSION_FUNCTIONS
 =========================================
 
-- Defined in :ref:`file_backends_include_Support_CBindingWrapping.h`
+- Defined in :ref:`file_dpctl-capi_include_Support_CBindingWrapping.h`
 
 
 Define Documentation

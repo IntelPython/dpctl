@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__program__interface_8h_1aff8800500718866502989154678afabf:
+
+Function DPCTLProgram_GetKernel
+===============================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_program_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLProgram_GetKernel(DPCTLSyclProgramRef, const char *)

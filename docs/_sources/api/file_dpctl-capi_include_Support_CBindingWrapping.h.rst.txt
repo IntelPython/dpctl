@@ -1,0 +1,46 @@
+
+.. _file_dpctl-capi_include_Support_CBindingWrapping.h:
+
+File CBindingWrapping.h
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_dpctl-capi_include_Support>` (``dpctl-capi/include/Support``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``dpctl-capi/include/Support/CBindingWrapping.h``)
+--------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_dpctl-capi_include_Support_CBindingWrapping.h.rst
+
+
+
+Detailed Description
+--------------------
+
+This file declares the wrapping macros for the DPCTL C interface. 
+
+
+
+
+
+
+
+
+
+Defines
+-------
+
+
+- :ref:`exhale_define_CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05`
+
+- :ref:`exhale_define_CBindingWrapping_8h_1a0856bab1c65467280bf8c2062de4e3d5`
+

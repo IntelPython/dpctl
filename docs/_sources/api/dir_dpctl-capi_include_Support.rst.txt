@@ -1,0 +1,23 @@
+.. _dir_dpctl-capi_include_Support:
+
+
+Directory Support
+=================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_dpctl-capi_include>` (``dpctl-capi/include``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+*Directory path:* ``dpctl-capi/include/Support``
+
+
+Files
+-----
+
+- :ref:`file_dpctl-capi_include_Support_CBindingWrapping.h`
+- :ref:`file_dpctl-capi_include_Support_DllExport.h`
+- :ref:`file_dpctl-capi_include_Support_ExternC.h`
+- :ref:`file_dpctl-capi_include_Support_MemOwnershipAttrs.h`
+
+

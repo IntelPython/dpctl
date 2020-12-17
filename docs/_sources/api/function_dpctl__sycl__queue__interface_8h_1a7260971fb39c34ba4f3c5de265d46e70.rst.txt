@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__queue__interface_8h_1a7260971fb39c34ba4f3c5de265d46e70:
+
+Function DPCTLQueue_Wait
+========================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_queue_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLQueue_Wait(const DPCTLSyclQueueRef)

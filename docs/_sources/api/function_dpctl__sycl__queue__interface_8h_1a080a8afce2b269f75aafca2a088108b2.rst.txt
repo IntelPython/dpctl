@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__queue__interface_8h_1a080a8afce2b269f75aafca2a088108b2:
+
+Function DPCTLQueue_GetContext
+==============================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_queue_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLQueue_GetContext(const DPCTLSyclQueueRef)

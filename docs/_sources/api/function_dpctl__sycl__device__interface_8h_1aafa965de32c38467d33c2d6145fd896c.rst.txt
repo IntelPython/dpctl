@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__device__interface_8h_1aafa965de32c38467d33c2d6145fd896c:
+
+Function DPCTLDevice_AreEq
+==========================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_device_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLDevice_AreEq(const DPCTLSyclDeviceRef, const DPCTLSyclDeviceRef)

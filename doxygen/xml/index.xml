@@ -1,172 +1,172 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.17">
-  <compound refid="dppl__data__types_8h" kind="file"><name>dppl_data_types.h</name>
-    <member refid="dppl__data__types_8h_1ad0d744f05898e32d01f73f8af3cd2071" kind="define"><name>INT64_MAX</name></member>
-    <member refid="dppl__data__types_8h_1ab21f12f372f67b8ff0aa3432336ede67" kind="define"><name>INT64_MIN</name></member>
-    <member refid="dppl__data__types_8h_1a30654b4b67d97c42ca3f9b6052dda916" kind="define"><name>UINT64_MAX</name></member>
-    <member refid="dppl__data__types_8h_1acd69981d54c27fe0ff514645dbfc6359" kind="define"><name>HUGE_VALF</name></member>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.20" xml:lang="en-US">
+  <compound refid="dpctl__data__types_8h" kind="file"><name>dpctl_data_types.h</name>
+    <member refid="dpctl__data__types_8h_1ad0d744f05898e32d01f73f8af3cd2071" kind="define"><name>INT64_MAX</name></member>
+    <member refid="dpctl__data__types_8h_1ab21f12f372f67b8ff0aa3432336ede67" kind="define"><name>INT64_MIN</name></member>
+    <member refid="dpctl__data__types_8h_1a30654b4b67d97c42ca3f9b6052dda916" kind="define"><name>UINT64_MAX</name></member>
+    <member refid="dpctl__data__types_8h_1acd69981d54c27fe0ff514645dbfc6359" kind="define"><name>HUGE_VALF</name></member>
   </compound>
-  <compound refid="dppl__sycl__context__interface_8h" kind="file"><name>dppl_sycl_context_interface.h</name>
-    <member refid="dppl__sycl__context__interface_8h_1a8c4e985fc1c083d1247aa0ccbfe732c6" kind="function"><name>DPPLContext_AreEq</name></member>
-    <member refid="dppl__sycl__context__interface_8h_1ada83bf074d712fb7c9049e61f7fb60cc" kind="function"><name>DPPLContext_IsHost</name></member>
-    <member refid="dppl__sycl__context__interface_8h_1a3469c7efd47e9a522e61837d48426cb4" kind="function"><name>DPPLContext_GetBackend</name></member>
-    <member refid="dppl__sycl__context__interface_8h_1af3b7ab8fc55644f50a5ab737132a9e56" kind="function"><name>DPPLContext_Delete</name></member>
+  <compound refid="dpctl__sycl__context__interface_8h" kind="file"><name>dpctl_sycl_context_interface.h</name>
+    <member refid="dpctl__sycl__context__interface_8h_1a87699f14f783bf855ab2d9b573227ea0" kind="function"><name>DPCTLContext_AreEq</name></member>
+    <member refid="dpctl__sycl__context__interface_8h_1a52b5b4195920c76393f7a0b43f2c411b" kind="function"><name>DPCTLContext_IsHost</name></member>
+    <member refid="dpctl__sycl__context__interface_8h_1afccc249e262e239fcb158f3298b943c0" kind="function"><name>DPCTLContext_GetBackend</name></member>
+    <member refid="dpctl__sycl__context__interface_8h_1ac6918507628172187175ca627b215c36" kind="function"><name>DPCTLContext_Delete</name></member>
   </compound>
-  <compound refid="dppl__sycl__device__interface_8h" kind="file"><name>dppl_sycl_device_interface.h</name>
-    <member refid="dppl__sycl__device__interface_8h_1a318fef3810b70fb5046c5902c0882e3a" kind="function"><name>DPPLDevice_DumpInfo</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1a4de0363a31b711c9c9480cabdeaafe35" kind="function"><name>DPPLDevice_Delete</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1a482d2f4edbf67e090cde03856bf99f63" kind="function"><name>DPPLDevice_IsAccelerator</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1a0ff1d7f7fb0310ecc042edff1b1e85a2" kind="function"><name>DPPLDevice_IsCPU</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1a92d9aad30f459b12a6d5bc04773b1ef5" kind="function"><name>DPPLDevice_IsGPU</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1ac98ce3a56af6cb12d09e4815e6b013b2" kind="function"><name>DPPLDevice_IsHost</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1a1247248c3b3e54f97f032c482c4a4471" kind="function"><name>DPPLDevice_GetDriverInfo</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1a331410c881911f8a4ddfc6ff598363f2" kind="function"><name>DPPLDevice_GetMaxComputeUnits</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1adac62f661feb4673b8550dacdd1fc7f2" kind="function"><name>DPPLDevice_GetMaxWorkItemDims</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1ad842e3efd2606cc4ea8942ee8c9289bc" kind="function"><name>DPPLDevice_GetMaxWorkItemSizes</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1a1b622fe1f9c03fd3ba3c09e3eadd4689" kind="function"><name>DPPLDevice_GetMaxWorkGroupSize</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1a9e50c5c9a20919f845d13d4c6da0c899" kind="function"><name>DPPLDevice_GetMaxNumSubGroups</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1a429493ba0280fa42fec4717858432a6d" kind="function"><name>DPPLDevice_HasInt64BaseAtomics</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1a12285937b18b219423781d3f433006cd" kind="function"><name>DPPLDevice_HasInt64ExtendedAtomics</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1a245243b4bd19e67f3d878781b0340877" kind="function"><name>DPPLDevice_GetName</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1a05024b72193cb2808d1ffbfd2ac94427" kind="function"><name>DPPLDevice_GetVendorName</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1a2a7ac5edf7b421a482c50f28db3739ff" kind="function"><name>DPPLDevice_IsHostUnifiedMemory</name></member>
-    <member refid="dppl__sycl__device__interface_8h_1af27c461ba4f72d8f99aa43938e1b504c" kind="function"><name>DPPLDevice_AreEq</name></member>
+  <compound refid="dpctl__sycl__device__interface_8h" kind="file"><name>dpctl_sycl_device_interface.h</name>
+    <member refid="dpctl__sycl__device__interface_8h_1a198f7624641ff085f4d5cc88d06d61cb" kind="function"><name>DPCTLDevice_DumpInfo</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1a5281de70c0b7643b6951fc8da0c7a430" kind="function"><name>DPCTLDevice_Delete</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1a7bdcd6adb421e4145a08b4813b8c1fb6" kind="function"><name>DPCTLDevice_IsAccelerator</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1a320343d18a6f7466937a0dce03d57a7b" kind="function"><name>DPCTLDevice_IsCPU</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1ace9a25a0f31c57332d450a75276d6f9d" kind="function"><name>DPCTLDevice_IsGPU</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1a08096504b0a67849a3c5fea75d931810" kind="function"><name>DPCTLDevice_IsHost</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1a4d2297cd1a3ae556b218baf3c8b7fa90" kind="function"><name>DPCTLDevice_GetDriverInfo</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1a9169afe0c71a696e5bc0d003f070c8d2" kind="function"><name>DPCTLDevice_GetMaxComputeUnits</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1aaf934620ad6a98f353fee65240e06386" kind="function"><name>DPCTLDevice_GetMaxWorkItemDims</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1a3cc7baf97db884f18a0b92cb87531f93" kind="function"><name>DPCTLDevice_GetMaxWorkItemSizes</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1aab85455aae0a2a8f82745373be70a7ba" kind="function"><name>DPCTLDevice_GetMaxWorkGroupSize</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1adffd9e8bee5e2e0da5592afcf5757c51" kind="function"><name>DPCTLDevice_GetMaxNumSubGroups</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1afb9f319cd04c573556def0d8ccb4442b" kind="function"><name>DPCTLDevice_HasInt64BaseAtomics</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1a4a37272ac40b90d395ff4d75dffc8d3a" kind="function"><name>DPCTLDevice_HasInt64ExtendedAtomics</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1a61c3a340925cd740a594816c7c6a4159" kind="function"><name>DPCTLDevice_GetName</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1a60f3249e114e87d7e8dd6f40731e1d7c" kind="function"><name>DPCTLDevice_GetVendorName</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1a4482bf80b1449c1d8098c25e4b35d9e3" kind="function"><name>DPCTLDevice_IsHostUnifiedMemory</name></member>
+    <member refid="dpctl__sycl__device__interface_8h_1aafa965de32c38467d33c2d6145fd896c" kind="function"><name>DPCTLDevice_AreEq</name></member>
   </compound>
-  <compound refid="dppl__sycl__enum__types_8h" kind="file"><name>dppl_sycl_enum_types.h</name>
-    <member refid="dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932" kind="enum"><name>DPPLSyclBackendType</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932adf069013943418c0e2264d3f3c62f452" kind="enumvalue"><name>DPPL_UNKNOWN_BACKEND</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932ab853d01482e628f7e60c58dcbdec0fed" kind="enumvalue"><name>DPPL_OPENCL</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932a529e11b8ff21e816cc451887c6076991" kind="enumvalue"><name>DPPL_HOST</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932a9cf919f672faa098e1472bef6bb9766a" kind="enumvalue"><name>DPPL_LEVEL_ZERO</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a006122c6b6223df098e3cb0ca34d1932ade87f53b911041833db021defc12a412" kind="enumvalue"><name>DPPL_CUDA</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302" kind="enum"><name>DPPLSyclDeviceType</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302aa41f7995c46f3b674e94c0fc63515883" kind="enumvalue"><name>DPPL_CPU</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302ab95e7557f3a390783f7b1b8809e04253" kind="enumvalue"><name>DPPL_GPU</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302a9282b15aa4f82e77ca5355012f92a40f" kind="enumvalue"><name>DPPL_ACCELERATOR</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302a95df589240a09e2c8abaed003a351424" kind="enumvalue"><name>DPPL_CUSTOM</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302a8bc8ddf701f9fc4d730fd58fcde1ad73" kind="enumvalue"><name>DPPL_AUTOMATIC</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302a045c09118ff9344cd1d79decc87baac5" kind="enumvalue"><name>DPPL_HOST_DEVICE</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a3aeffb0db7e2c7a0655c7bf13afce302a8e509670e4d64921fac31321a34d128a" kind="enumvalue"><name>DPPL_ALL</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584" kind="enum"><name>DPPLKernelArgType</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584a2d99b799d537d623d2b0ee6485467b20" kind="enumvalue"><name>DPPL_CHAR</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584a476db3644d63de121718e2b349583e21" kind="enumvalue"><name>DPPL_SIGNED_CHAR</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584adff4f2fa87cac3d0d007ba2e1cf91ea6" kind="enumvalue"><name>DPPL_UNSIGNED_CHAR</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584a9ee41f855b02a786ea6f31ebdb723ed5" kind="enumvalue"><name>DPPL_SHORT</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584aa192ed4bbb8b8cfa599ee630d9ba6318" kind="enumvalue"><name>DPPL_INT</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584a2eb82893c98ec9681aa0fa08278b4713" kind="enumvalue"><name>DPPL_UNSIGNED_INT</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584ac07923fbf7fd23c75fc01515eddf2c9c" kind="enumvalue"><name>DPPL_UNSIGNED_INT8</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584a273f3b7454fb7b13a58aeba780559e0a" kind="enumvalue"><name>DPPL_LONG</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584abe1398ebe8e6e920a3c9387fef538dd9" kind="enumvalue"><name>DPPL_UNSIGNED_LONG</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584ae3421cc9aab30c22f405ed25f9a5859d" kind="enumvalue"><name>DPPL_LONG_LONG</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584a44ef98e549dc216d976961857e22ecf0" kind="enumvalue"><name>DPPL_UNSIGNED_LONG_LONG</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584a2bc9ee9d8d73d31b6737263ed20c0615" kind="enumvalue"><name>DPPL_SIZE_T</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584ae7b3c682da8e3c7d1ae3960b8fcd02f6" kind="enumvalue"><name>DPPL_FLOAT</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584a155d02286e480febb3b05c93f382e6ec" kind="enumvalue"><name>DPPL_DOUBLE</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584a5b8f99f225e7aea4e613ff1e00455d01" kind="enumvalue"><name>DPPL_LONG_DOUBLE</name></member>
-    <member refid="dppl__sycl__enum__types_8h_1a1dee0e39cee059b74fb70e666ff7a584a406569ef3271265765ffbd96872aa598" kind="enumvalue"><name>DPPL_VOID_PTR</name></member>
+  <compound refid="dpctl__sycl__enum__types_8h" kind="file"><name>dpctl_sycl_enum_types.h</name>
+    <member refid="dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" kind="enum"><name>DPCTLSyclBackendType</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933a12a821ba9b114d4f5f808ada54e4a7af" kind="enumvalue"><name>DPCTL_UNKNOWN_BACKEND</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66" kind="enumvalue"><name>DPCTL_OPENCL</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933ada27f03e8c495ea0ff5036af2bcda6ec" kind="enumvalue"><name>DPCTL_HOST</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933a528047c320d729a55d423881bcec91d6" kind="enumvalue"><name>DPCTL_LEVEL_ZERO</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933af053552df5521a8563b70300dc7f7b88" kind="enumvalue"><name>DPCTL_CUDA</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff" kind="enum"><name>DPCTLSyclDeviceType</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa7301bd6676b8167d6048d08072ceeb2e" kind="enumvalue"><name>DPCTL_CPU</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f" kind="enumvalue"><name>DPCTL_GPU</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa77c06e8aa17a0393baa03104d93a1c2c" kind="enumvalue"><name>DPCTL_ACCELERATOR</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffad64472511a7f7b3c711d56e34266e252" kind="enumvalue"><name>DPCTL_CUSTOM</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa56e696aa054417023c07b5d43f0ce30d" kind="enumvalue"><name>DPCTL_AUTOMATIC</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa6f66b14770eab4e002d856217057a935" kind="enumvalue"><name>DPCTL_HOST_DEVICE</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa965ac28a750a70af103119b14a0476e8" kind="enumvalue"><name>DPCTL_ALL</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089" kind="enum"><name>DPCTLKernelArgType</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089aa64f2eda338a0ab2c9908ed3b4b13e28" kind="enumvalue"><name>DPCTL_CHAR</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a7e509470448096791c4562a780167af6" kind="enumvalue"><name>DPCTL_SIGNED_CHAR</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a7ac29c6dbe1a624e0c643d2213e338ad" kind="enumvalue"><name>DPCTL_UNSIGNED_CHAR</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a52647c15a8dc9b6a8e291041a61dea9b" kind="enumvalue"><name>DPCTL_SHORT</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a8d298230de001a118114d3f131a4560f" kind="enumvalue"><name>DPCTL_INT</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089ac0f870cd24d337ea4ac315ef4ba78a35" kind="enumvalue"><name>DPCTL_UNSIGNED_INT</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089adf877eb9fb89ab6fb2a73c811c68efd1" kind="enumvalue"><name>DPCTL_UNSIGNED_INT8</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089ad3d11a5ac35436974b2da1cdff2d47b6" kind="enumvalue"><name>DPCTL_LONG</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a9ba552678ef2c9df779e4000e001114f" kind="enumvalue"><name>DPCTL_UNSIGNED_LONG</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a1a4514a74f1ea022f6d90d1fdbb566ce" kind="enumvalue"><name>DPCTL_LONG_LONG</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089aa39c37abf9129d5080438695dc3b6b01" kind="enumvalue"><name>DPCTL_UNSIGNED_LONG_LONG</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089ae8bb8ff226b420022ae91726441d0ece" kind="enumvalue"><name>DPCTL_SIZE_T</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a02d37ac1677aabdce409ab4dc37e89a9" kind="enumvalue"><name>DPCTL_FLOAT</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089ac31bd362e587d3f2c9d2db9fa67a995f" kind="enumvalue"><name>DPCTL_DOUBLE</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a35a34fc6d864ba0acc7d982e021c54ef" kind="enumvalue"><name>DPCTL_LONG_DOUBLE</name></member>
+    <member refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a68399621c4ff81e521dd7cddf2afc9b8" kind="enumvalue"><name>DPCTL_VOID_PTR</name></member>
   </compound>
-  <compound refid="dppl__sycl__event__interface_8h" kind="file"><name>dppl_sycl_event_interface.h</name>
-    <member refid="dppl__sycl__event__interface_8h_1af7f1a4ee75f61b1f1ec82a39cb8d9452" kind="function"><name>DPPLEvent_Wait</name></member>
-    <member refid="dppl__sycl__event__interface_8h_1a941ca1246380eda472171284f1b91234" kind="function"><name>DPPLEvent_Delete</name></member>
+  <compound refid="dpctl__sycl__event__interface_8h" kind="file"><name>dpctl_sycl_event_interface.h</name>
+    <member refid="dpctl__sycl__event__interface_8h_1ae5be102ee4f57e65c86f6e244267ff78" kind="function"><name>DPCTLEvent_Wait</name></member>
+    <member refid="dpctl__sycl__event__interface_8h_1a739f821842ad6167604e425834e2dc90" kind="function"><name>DPCTLEvent_Delete</name></member>
   </compound>
-  <compound refid="dppl__sycl__kernel__interface_8h" kind="file"><name>dppl_sycl_kernel_interface.h</name>
-    <member refid="dppl__sycl__kernel__interface_8h_1ac9585b256c13bd87225cba9991e561be" kind="function"><name>DPPLKernel_GetFunctionName</name></member>
-    <member refid="dppl__sycl__kernel__interface_8h_1a59c933b21d0176148617f524e6481f85" kind="function"><name>DPPLKernel_GetNumArgs</name></member>
-    <member refid="dppl__sycl__kernel__interface_8h_1a27d27a763f299192256cc41f784f4510" kind="function"><name>DPPLKernel_Delete</name></member>
+  <compound refid="dpctl__sycl__kernel__interface_8h" kind="file"><name>dpctl_sycl_kernel_interface.h</name>
+    <member refid="dpctl__sycl__kernel__interface_8h_1abb422585b2184b9c76d00e092c3dae81" kind="function"><name>DPCTLKernel_GetFunctionName</name></member>
+    <member refid="dpctl__sycl__kernel__interface_8h_1a56139ab32dbbf0e8891662f231985482" kind="function"><name>DPCTLKernel_GetNumArgs</name></member>
+    <member refid="dpctl__sycl__kernel__interface_8h_1a58555200d669b00fb60d454c4d8478b7" kind="function"><name>DPCTLKernel_Delete</name></member>
   </compound>
-  <compound refid="dppl__sycl__platform__interface_8h" kind="file"><name>dppl_sycl_platform_interface.h</name>
-    <member refid="dppl__sycl__platform__interface_8h_1a1eec455f349ed9f351f33503396fc15f" kind="function"><name>DPPLPlatform_GetNumNonHostPlatforms</name></member>
-    <member refid="dppl__sycl__platform__interface_8h_1a45f96537552c640a2c8f48fba29dd35b" kind="function"><name>DPPLPlatform_GetNumNonHostBackends</name></member>
-    <member refid="dppl__sycl__platform__interface_8h_1a3ff41b4a0bee315a37c2ef9da0041225" kind="function"><name>DPPLPlatform_GetListOfNonHostBackends</name></member>
-    <member refid="dppl__sycl__platform__interface_8h_1adb32e6f7bc2ccf637199c998afe79cc5" kind="function"><name>DPPLPlatform_DeleteListOfBackends</name></member>
-    <member refid="dppl__sycl__platform__interface_8h_1a2755c456a10b7a01689cfc47aac07a2a" kind="function"><name>DPPLPlatform_DumpInfo</name></member>
+  <compound refid="dpctl__sycl__platform__interface_8h" kind="file"><name>dpctl_sycl_platform_interface.h</name>
+    <member refid="dpctl__sycl__platform__interface_8h_1af4f288016ff408116e0656e7c809bb85" kind="function"><name>DPCTLPlatform_GetNumNonHostPlatforms</name></member>
+    <member refid="dpctl__sycl__platform__interface_8h_1a73bdc873aaab97a2e7a1365bac59c7b1" kind="function"><name>DPCTLPlatform_GetNumNonHostBackends</name></member>
+    <member refid="dpctl__sycl__platform__interface_8h_1a53be574a7076656d1490d4b994c684bb" kind="function"><name>DPCTLPlatform_GetListOfNonHostBackends</name></member>
+    <member refid="dpctl__sycl__platform__interface_8h_1aeb410503aadc96be62d2f12d785b65cd" kind="function"><name>DPCTLPlatform_DeleteListOfBackends</name></member>
+    <member refid="dpctl__sycl__platform__interface_8h_1a3ad326a2bf1863475d0131d61b635b2c" kind="function"><name>DPCTLPlatform_DumpInfo</name></member>
   </compound>
-  <compound refid="dppl__sycl__program__interface_8h" kind="file"><name>dppl_sycl_program_interface.h</name>
-    <member refid="dppl__sycl__program__interface_8h_1a73b021c98d0109b93e43b6e1eecd535f" kind="function"><name>DPPLProgram_CreateFromOCLSpirv</name></member>
-    <member refid="dppl__sycl__program__interface_8h_1a1a4750b24487335ecaa1481d8cded60f" kind="function"><name>DPPLProgram_CreateFromOCLSource</name></member>
-    <member refid="dppl__sycl__program__interface_8h_1af6204db8d350c05dd38ea72df53f3276" kind="function"><name>DPPLProgram_GetKernel</name></member>
-    <member refid="dppl__sycl__program__interface_8h_1a8d431de6777cac25c3b58e1921945984" kind="function"><name>DPPLProgram_HasKernel</name></member>
-    <member refid="dppl__sycl__program__interface_8h_1a54639690d0fc41e58a5e30d9a0824b7a" kind="function"><name>DPPLProgram_Delete</name></member>
+  <compound refid="dpctl__sycl__program__interface_8h" kind="file"><name>dpctl_sycl_program_interface.h</name>
+    <member refid="dpctl__sycl__program__interface_8h_1a7219641c57da2d9ab196099fca12cc77" kind="function"><name>DPCTLProgram_CreateFromOCLSpirv</name></member>
+    <member refid="dpctl__sycl__program__interface_8h_1a37752d8eb8f9a78d4445801cbfc46907" kind="function"><name>DPCTLProgram_CreateFromOCLSource</name></member>
+    <member refid="dpctl__sycl__program__interface_8h_1aff8800500718866502989154678afabf" kind="function"><name>DPCTLProgram_GetKernel</name></member>
+    <member refid="dpctl__sycl__program__interface_8h_1a08fff852d4c7e5f85bec38cbdbae52d7" kind="function"><name>DPCTLProgram_HasKernel</name></member>
+    <member refid="dpctl__sycl__program__interface_8h_1ae9b67e80353bf2af0f9116d6180a7e20" kind="function"><name>DPCTLProgram_Delete</name></member>
   </compound>
-  <compound refid="dppl__sycl__queue__interface_8h" kind="file"><name>dppl_sycl_queue_interface.h</name>
-    <member refid="dppl__sycl__queue__interface_8h_1a7e3214378ba95cb51ec1b2a48f83de09" kind="function"><name>DPPLQueue_Delete</name></member>
-    <member refid="dppl__sycl__queue__interface_8h_1a037c40cb3c4afcdffc4b70857010c764" kind="function"><name>DPPLQueue_AreEq</name></member>
-    <member refid="dppl__sycl__queue__interface_8h_1a1f9d578cac96f8cb812dca8d1431359e" kind="function"><name>DPPLQueue_GetBackend</name></member>
-    <member refid="dppl__sycl__queue__interface_8h_1a0979f426a1f6a5957f8cae233dc4ed20" kind="function"><name>DPPLQueue_GetContext</name></member>
-    <member refid="dppl__sycl__queue__interface_8h_1acf13ddbbcb614d0af6e2bf4be3d6a519" kind="function"><name>DPPLQueue_GetDevice</name></member>
-    <member refid="dppl__sycl__queue__interface_8h_1a7b9c13b2948d2f6a630209bf45fbc1b2" kind="function"><name>DPPLQueue_SubmitRange</name></member>
-    <member refid="dppl__sycl__queue__interface_8h_1adb0224648828059ff0f2bd477cb52573" kind="function"><name>DPPLQueue_SubmitNDRange</name></member>
-    <member refid="dppl__sycl__queue__interface_8h_1a30d7a2a6652d0071a16b6dd1734602e2" kind="function"><name>DPPLQueue_Wait</name></member>
-    <member refid="dppl__sycl__queue__interface_8h_1a6a61d533ae3e841f6a78010e5f7aa018" kind="function"><name>DPPLQueue_Memcpy</name></member>
-    <member refid="dppl__sycl__queue__interface_8h_1aefc1fa8887f7cc3a2a6123ef3f871628" kind="function"><name>DPPLQueue_Prefetch</name></member>
-    <member refid="dppl__sycl__queue__interface_8h_1aa19db7d31d4c5911cfc1ddecd8214c14" kind="function"><name>DPPLQueue_MemAdvise</name></member>
+  <compound refid="dpctl__sycl__queue__interface_8h" kind="file"><name>dpctl_sycl_queue_interface.h</name>
+    <member refid="dpctl__sycl__queue__interface_8h_1a8a43adb5a1f02d9d10c23c82bf5d7cca" kind="function"><name>DPCTLQueue_Delete</name></member>
+    <member refid="dpctl__sycl__queue__interface_8h_1a9c9fdac520043ab034187f7e29a15df3" kind="function"><name>DPCTLQueue_AreEq</name></member>
+    <member refid="dpctl__sycl__queue__interface_8h_1a32dacd6d2ac40a3dbd656d0888385774" kind="function"><name>DPCTLQueue_GetBackend</name></member>
+    <member refid="dpctl__sycl__queue__interface_8h_1a080a8afce2b269f75aafca2a088108b2" kind="function"><name>DPCTLQueue_GetContext</name></member>
+    <member refid="dpctl__sycl__queue__interface_8h_1afa0c34cb4a0a748fdea3fc96872245d4" kind="function"><name>DPCTLQueue_GetDevice</name></member>
+    <member refid="dpctl__sycl__queue__interface_8h_1a798fcfd6344469ebd02ba4b23100820a" kind="function"><name>DPCTLQueue_SubmitRange</name></member>
+    <member refid="dpctl__sycl__queue__interface_8h_1a4b028a6ecfa607ac8fdb50233d8d1c42" kind="function"><name>DPCTLQueue_SubmitNDRange</name></member>
+    <member refid="dpctl__sycl__queue__interface_8h_1a7260971fb39c34ba4f3c5de265d46e70" kind="function"><name>DPCTLQueue_Wait</name></member>
+    <member refid="dpctl__sycl__queue__interface_8h_1a70ad1d363b7c97f9c1e6bea6086614dd" kind="function"><name>DPCTLQueue_Memcpy</name></member>
+    <member refid="dpctl__sycl__queue__interface_8h_1ae716e5ec42e9c407409ad54eed417fa8" kind="function"><name>DPCTLQueue_Prefetch</name></member>
+    <member refid="dpctl__sycl__queue__interface_8h_1ab8b04f0bd92db5207107b7f4d00e0dea" kind="function"><name>DPCTLQueue_MemAdvise</name></member>
   </compound>
-  <compound refid="dppl__sycl__queue__manager_8h" kind="file"><name>dppl_sycl_queue_manager.h</name>
-    <member refid="dppl__sycl__queue__manager_8h_1ac7e6ad9609ab0642726da599f862c704" kind="function"><name>DPPLQueueMgr_GetCurrentQueue</name></member>
-    <member refid="dppl__sycl__queue__manager_8h_1a0eadbd6202c025ac106b4c2f31b1c0f8" kind="function"><name>DPPLQueueMgr_GetQueue</name></member>
-    <member refid="dppl__sycl__queue__manager_8h_1acde652586f509a3eb596aa98b80b0761" kind="function"><name>DPPLQueueMgr_GetNumActivatedQueues</name></member>
-    <member refid="dppl__sycl__queue__manager_8h_1a51d05c26d22ff2f4467c36420514c9f2" kind="function"><name>DPPLQueueMgr_GetNumQueues</name></member>
-    <member refid="dppl__sycl__queue__manager_8h_1a4214e7a5d5b514874c3042dbcd91123c" kind="function"><name>DPPLQueueMgr_IsCurrentQueue</name></member>
-    <member refid="dppl__sycl__queue__manager_8h_1a0e3748ad7e74b269d1d3b8df65d285bc" kind="function"><name>DPPLQueueMgr_SetAsDefaultQueue</name></member>
-    <member refid="dppl__sycl__queue__manager_8h_1a6086f71d9f91065d98bb8f02f69f7723" kind="function"><name>DPPLQueueMgr_PushQueue</name></member>
-    <member refid="dppl__sycl__queue__manager_8h_1af1b678a0e5406d481bf316f18454e719" kind="function"><name>DPPLQueueMgr_PopQueue</name></member>
-    <member refid="dppl__sycl__queue__manager_8h_1a2eb0b99690b1328beef272d310111354" kind="function"><name>DPPLQueueMgr_GetQueueFromContextAndDevice</name></member>
+  <compound refid="dpctl__sycl__queue__manager_8h" kind="file"><name>dpctl_sycl_queue_manager.h</name>
+    <member refid="dpctl__sycl__queue__manager_8h_1aa70cd1c9dca649d309c689f473cd17d8" kind="function"><name>DPCTLQueueMgr_GetCurrentQueue</name></member>
+    <member refid="dpctl__sycl__queue__manager_8h_1afa5e14912992f251601311abe7614920" kind="function"><name>DPCTLQueueMgr_GetQueue</name></member>
+    <member refid="dpctl__sycl__queue__manager_8h_1a22e01116058119d7370b482130971e19" kind="function"><name>DPCTLQueueMgr_GetNumActivatedQueues</name></member>
+    <member refid="dpctl__sycl__queue__manager_8h_1a207d8c268822cd0f605340ce59e03aaa" kind="function"><name>DPCTLQueueMgr_GetNumQueues</name></member>
+    <member refid="dpctl__sycl__queue__manager_8h_1a9702defbb0763021fee0b504b6718fae" kind="function"><name>DPCTLQueueMgr_IsCurrentQueue</name></member>
+    <member refid="dpctl__sycl__queue__manager_8h_1a02f27815319f495f473c5610e580ec98" kind="function"><name>DPCTLQueueMgr_SetAsDefaultQueue</name></member>
+    <member refid="dpctl__sycl__queue__manager_8h_1a7e6663d3cbf2a469e3aad61a502f2a61" kind="function"><name>DPCTLQueueMgr_PushQueue</name></member>
+    <member refid="dpctl__sycl__queue__manager_8h_1ab7092ee56c64ddb5389268e0570213a3" kind="function"><name>DPCTLQueueMgr_PopQueue</name></member>
+    <member refid="dpctl__sycl__queue__manager_8h_1a73d537e36027fb92e6051910b1c4ec34" kind="function"><name>DPCTLQueueMgr_GetQueueFromContextAndDevice</name></member>
   </compound>
-  <compound refid="dppl__sycl__types_8h" kind="file"><name>dppl_sycl_types.h</name>
-    <member refid="dppl__sycl__types_8h_1a6f7f076797eb7499ab2c6caffed6efcb" kind="typedef"><name>DPPLSyclContextRef</name></member>
-    <member refid="dppl__sycl__types_8h_1aa9dcc61bc2537114d09726e4cf5e424a" kind="typedef"><name>DPPLSyclDeviceRef</name></member>
-    <member refid="dppl__sycl__types_8h_1a350c1387c650924e6c0e25f9f24a7892" kind="typedef"><name>DPPLSyclEventRef</name></member>
-    <member refid="dppl__sycl__types_8h_1ac7590a7630c7ef3467d983c57e60b01f" kind="typedef"><name>DPPLSyclKernelRef</name></member>
-    <member refid="dppl__sycl__types_8h_1ab8d36d6db024a870fa83e8b4dbed706e" kind="typedef"><name>DPPLSyclPlatformRef</name></member>
-    <member refid="dppl__sycl__types_8h_1a6351df09d08e539e332d1174a61e40ed" kind="typedef"><name>DPPLSyclProgramRef</name></member>
-    <member refid="dppl__sycl__types_8h_1ab149964f3e071296799d1c7e15aae5a7" kind="typedef"><name>DPPLSyclQueueRef</name></member>
-    <member refid="dppl__sycl__types_8h_1a2cb2ce60eb645f7b35c3ea60fe153a2e" kind="typedef"><name>DPPLSyclUSMRef</name></member>
+  <compound refid="dpctl__sycl__types_8h" kind="file"><name>dpctl_sycl_types.h</name>
+    <member refid="dpctl__sycl__types_8h_1ae29f49592112350adaf99af68f29cc56" kind="typedef"><name>DPCTLSyclContextRef</name></member>
+    <member refid="dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kind="typedef"><name>DPCTLSyclDeviceRef</name></member>
+    <member refid="dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kind="typedef"><name>DPCTLSyclEventRef</name></member>
+    <member refid="dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844" kind="typedef"><name>DPCTLSyclKernelRef</name></member>
+    <member refid="dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kind="typedef"><name>DPCTLSyclPlatformRef</name></member>
+    <member refid="dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172" kind="typedef"><name>DPCTLSyclProgramRef</name></member>
+    <member refid="dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kind="typedef"><name>DPCTLSyclQueueRef</name></member>
+    <member refid="dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kind="typedef"><name>DPCTLSyclUSMRef</name></member>
   </compound>
-  <compound refid="dppl__sycl__usm__interface_8h" kind="file"><name>dppl_sycl_usm_interface.h</name>
-    <member refid="dppl__sycl__usm__interface_8h_1a6059d326a204127c8123cb5721ae8f20" kind="function"><name>DPPLmalloc_shared</name></member>
-    <member refid="dppl__sycl__usm__interface_8h_1a40a234cb0b46a284ba3f495842c13f09" kind="function"><name>DPPLaligned_alloc_shared</name></member>
-    <member refid="dppl__sycl__usm__interface_8h_1a4c1dac9306eca0cb79386e9c86aecaad" kind="function"><name>DPPLmalloc_host</name></member>
-    <member refid="dppl__sycl__usm__interface_8h_1aa4dfeac2ef4a931e8e4fd20dd185a738" kind="function"><name>DPPLaligned_alloc_host</name></member>
-    <member refid="dppl__sycl__usm__interface_8h_1acfd3023a41c800e78e892d7d02a449af" kind="function"><name>DPPLmalloc_device</name></member>
-    <member refid="dppl__sycl__usm__interface_8h_1a039a2c3a423d2dabd9b0e7a46614954f" kind="function"><name>DPPLaligned_alloc_device</name></member>
-    <member refid="dppl__sycl__usm__interface_8h_1ac9b6524feefd6d4e7eddae11ee76c4ec" kind="function"><name>DPPLfree_with_queue</name></member>
-    <member refid="dppl__sycl__usm__interface_8h_1ae8fd9cee7ab33f4ad110c86dad7c355a" kind="function"><name>DPPLfree_with_context</name></member>
-    <member refid="dppl__sycl__usm__interface_8h_1ab9f61396ce0d347bfd0dad4ff8f22787" kind="function"><name>DPPLUSM_GetPointerType</name></member>
-    <member refid="dppl__sycl__usm__interface_8h_1a78e99c976f1a0e6ac19dcd6efbef9116" kind="function"><name>DPPLUSM_GetPointerDevice</name></member>
+  <compound refid="dpctl__sycl__usm__interface_8h" kind="file"><name>dpctl_sycl_usm_interface.h</name>
+    <member refid="dpctl__sycl__usm__interface_8h_1a22463b2068a811bb108f1f505163f66f" kind="function"><name>DPCTLmalloc_shared</name></member>
+    <member refid="dpctl__sycl__usm__interface_8h_1a0acb51afcc115c87af9bf4aa7c092856" kind="function"><name>DPCTLaligned_alloc_shared</name></member>
+    <member refid="dpctl__sycl__usm__interface_8h_1aed5f97115ec622f37066e166f04a4af3" kind="function"><name>DPCTLmalloc_host</name></member>
+    <member refid="dpctl__sycl__usm__interface_8h_1a915f7efd52088039812616ada4c3dd95" kind="function"><name>DPCTLaligned_alloc_host</name></member>
+    <member refid="dpctl__sycl__usm__interface_8h_1ac158c54c3d5ce7199cad07f413db68fb" kind="function"><name>DPCTLmalloc_device</name></member>
+    <member refid="dpctl__sycl__usm__interface_8h_1adebcaee4d7ef16dc19bf19c9ef94656d" kind="function"><name>DPCTLaligned_alloc_device</name></member>
+    <member refid="dpctl__sycl__usm__interface_8h_1acf8046ce650e41e85b706c6381de6bb1" kind="function"><name>DPCTLfree_with_queue</name></member>
+    <member refid="dpctl__sycl__usm__interface_8h_1a083fe05fa8c0f8dfda6531f84074ce8a" kind="function"><name>DPCTLfree_with_context</name></member>
+    <member refid="dpctl__sycl__usm__interface_8h_1ac78d09589b55a67843a0cb47de9de3b0" kind="function"><name>DPCTLUSM_GetPointerType</name></member>
+    <member refid="dpctl__sycl__usm__interface_8h_1ac4b9976d0b4ed6d804395d81e771816c" kind="function"><name>DPCTLUSM_GetPointerDevice</name></member>
   </compound>
-  <compound refid="dppl__utils_8h" kind="file"><name>dppl_utils.h</name>
-    <member refid="dppl__utils_8h_1a2df07db60880b4e2dbce4a54b4df0190" kind="function"><name>DPPLCString_Delete</name></member>
-    <member refid="dppl__utils_8h_1a45893de1aa435d3669abb401fa392c34" kind="function"><name>DPPLSize_t_Array_Delete</name></member>
+  <compound refid="dpctl__utils_8h" kind="file"><name>dpctl_utils.h</name>
+    <member refid="dpctl__utils_8h_1a725ddcf07244319ac6d27fc6324dcd75" kind="function"><name>DPCTLCString_Delete</name></member>
+    <member refid="dpctl__utils_8h_1a30605edde1856376ab9501f35f848d8b" kind="function"><name>DPCTLSize_t_Array_Delete</name></member>
   </compound>
   <compound refid="CBindingWrapping_8h" kind="file"><name>CBindingWrapping.h</name>
     <member refid="CBindingWrapping_8h_1a65c769c08fa9fee7f298ad9c9eee5e05" kind="define"><name>DEFINE_SIMPLE_CONVERSION_FUNCTIONS</name></member>
     <member refid="CBindingWrapping_8h_1a0856bab1c65467280bf8c2062de4e3d5" kind="define"><name>DEFINE_STDCXX_CONVERSION_FUNCTIONS</name></member>
   </compound>
   <compound refid="DllExport_8h" kind="file"><name>DllExport.h</name>
-    <member refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" kind="define"><name>DPPL_API</name></member>
+    <member refid="DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kind="define"><name>DPCTL_API</name></member>
   </compound>
   <compound refid="ExternC_8h" kind="file"><name>ExternC.h</name>
-    <member refid="ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" kind="define"><name>DPPL_C_EXTERN_C_BEGIN</name></member>
-    <member refid="ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" kind="define"><name>DPPL_C_EXTERN_C_END</name></member>
+    <member refid="ExternC_8h_1ad85f54ad0bab1d5206255e5920261be3" kind="define"><name>DPCTL_C_EXTERN_C_BEGIN</name></member>
+    <member refid="ExternC_8h_1a6956fffc46b54bcdd0e7fd53cd3a6619" kind="define"><name>DPCTL_C_EXTERN_C_END</name></member>
   </compound>
   <compound refid="MemOwnershipAttrs_8h" kind="file"><name>MemOwnershipAttrs.h</name>
-    <member refid="group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kind="define"><name>__dppl_give</name></member>
-    <member refid="group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kind="define"><name>__dppl_take</name></member>
-    <member refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kind="define"><name>__dppl_keep</name></member>
-    <member refid="group__MEM__MGMT__ATTR__MACROS_1gaac2c75cb8f2e7c8a4ec7436cf1ad537f" kind="define"><name>__dppl_null</name></member>
+    <member refid="group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kind="define"><name>__dpctl_give</name></member>
+    <member refid="group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6" kind="define"><name>__dpctl_take</name></member>
+    <member refid="group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kind="define"><name>__dpctl_keep</name></member>
+    <member refid="group__MEM__MGMT__ATTR__MACROS_1ga8afac1975b8353a1bd54ac25b2572d04" kind="define"><name>__dpctl_null</name></member>
   </compound>
   <compound refid="group__MEM__MGMT__ATTR__MACROS" kind="group"><name>MEM_MGMT_ATTR_MACROS</name>
-    <member refid="group__MEM__MGMT__ATTR__MACROS_1gad5917e4c2b4b0ab2b83b624964c60753" kind="define"><name>__dppl_give</name></member>
-    <member refid="group__MEM__MGMT__ATTR__MACROS_1ga992ba513554faa4a42a193e0f31c4cb7" kind="define"><name>__dppl_take</name></member>
-    <member refid="group__MEM__MGMT__ATTR__MACROS_1gad4d9a56ef90f267f24386752c8f0d365" kind="define"><name>__dppl_keep</name></member>
-    <member refid="group__MEM__MGMT__ATTR__MACROS_1gaac2c75cb8f2e7c8a4ec7436cf1ad537f" kind="define"><name>__dppl_null</name></member>
+    <member refid="group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kind="define"><name>__dpctl_give</name></member>
+    <member refid="group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6" kind="define"><name>__dpctl_take</name></member>
+    <member refid="group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kind="define"><name>__dpctl_keep</name></member>
+    <member refid="group__MEM__MGMT__ATTR__MACROS_1ga8afac1975b8353a1bd54ac25b2572d04" kind="define"><name>__dpctl_null</name></member>
   </compound>
   <compound refid="todo" kind="page"><name>todo</name>
   </compound>
-  <compound refid="dir_dec21994cd756836ecefab773235960a" kind="dir"><name>backends</name>
+  <compound refid="dir_fb769b2a05a4998c015a890ce2c3a58b" kind="dir"><name>dpctl-capi</name>
   </compound>
-  <compound refid="dir_efe784112ed64dd71eba3878931bbd0a" kind="dir"><name>backends/include</name>
+  <compound refid="dir_0c9806b4364e80fb8854d03727b0336b" kind="dir"><name>dpctl-capi/include</name>
   </compound>
-  <compound refid="dir_209ac8ba26805070b7ced4ccbe04f939" kind="dir"><name>backends/include/Support</name>
+  <compound refid="dir_ca83c5f79da1ad49f808b039ec07d19c" kind="dir"><name>dpctl-capi/include/Support</name>
   </compound>
 </doxygenindex>

@@ -1,5 +1,13 @@
 var NAVTREEINDEX1 =
 {
+"df/d74/dpctl__sycl__context__interface_8h.html#a38955d262be1046aa7109cb461a8a9a1":[2,0,4,0],
+"df/d74/dpctl__sycl__context__interface_8h.html#aa6a2b2cf4f898df8824da1b52ba9ceb6":[2,0,4,2],
+"df/d74/dpctl__sycl__context__interface_8h_source.html":[2,0,4],
+"df/df4/dpctl__sycl__kernel__interface_8h.html":[2,0,11],
+"df/df4/dpctl__sycl__kernel__interface_8h.html#a02cb1ddc64d9f78d228a5dc222c8862b":[2,0,11,0],
+"df/df4/dpctl__sycl__kernel__interface_8h.html#aa1168e71afa1cf0a8cd56b67af6003a8":[2,0,11,1],
+"df/df4/dpctl__sycl__kernel__interface_8h.html#ae585c0ae9e5e1826ca24aac6f9b2a71d":[2,0,11,2],
+"df/df4/dpctl__sycl__kernel__interface_8h_source.html":[2,0,11],
 "files.html":[2,0],
 "globals.html":[2,1,0],
 "globals_defs.html":[2,1,5],

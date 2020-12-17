@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__usm__interface_8h_1aed5f97115ec622f37066e166f04a4af3:
+
+Function DPCTLmalloc_host
+=========================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_usm_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLmalloc_host(size_t, const DPCTLSyclQueueRef)

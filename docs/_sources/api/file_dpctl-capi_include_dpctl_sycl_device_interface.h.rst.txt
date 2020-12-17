@@ -1,0 +1,100 @@
+
+.. _file_dpctl-capi_include_dpctl_sycl_device_interface.h:
+
+File dpctl_sycl_device_interface.h
+==================================
+
+|exhale_lsh| :ref:`Parent directory <dir_dpctl-capi_include>` (``dpctl-capi/include``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``dpctl-capi/include/dpctl_sycl_device_interface.h``)
+-----------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_dpctl-capi_include_dpctl_sycl_device_interface.h.rst
+
+
+
+Detailed Description
+--------------------
+
+This header declares a C interface to sycl::device. Not all of the device API is exposed, only the bits needed in other places like context and queue interfaces. 
+
+
+
+
+Includes
+--------
+
+
+- ``Support/DllExport.h`` (:ref:`file_dpctl-capi_include_Support_DllExport.h`)
+
+- ``Support/ExternC.h`` (:ref:`file_dpctl-capi_include_Support_ExternC.h`)
+
+- ``Support/MemOwnershipAttrs.h`` (:ref:`file_dpctl-capi_include_Support_MemOwnershipAttrs.h`)
+
+- ``dpctl_data_types.h`` (:ref:`file_dpctl-capi_include_dpctl_data_types.h`)
+
+- ``dpctl_sycl_enum_types.h`` (:ref:`file_dpctl-capi_include_dpctl_sycl_enum_types.h`)
+
+- ``dpctl_sycl_types.h`` (:ref:`file_dpctl-capi_include_dpctl_sycl_types.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_dpctl-capi_include_dpctl_sycl_queue_manager.h`
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1aafa965de32c38467d33c2d6145fd896c`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1a5281de70c0b7643b6951fc8da0c7a430`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1a198f7624641ff085f4d5cc88d06d61cb`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1a4d2297cd1a3ae556b218baf3c8b7fa90`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1a9169afe0c71a696e5bc0d003f070c8d2`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1adffd9e8bee5e2e0da5592afcf5757c51`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1aab85455aae0a2a8f82745373be70a7ba`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1aaf934620ad6a98f353fee65240e06386`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1a3cc7baf97db884f18a0b92cb87531f93`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1a61c3a340925cd740a594816c7c6a4159`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1a60f3249e114e87d7e8dd6f40731e1d7c`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1afb9f319cd04c573556def0d8ccb4442b`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1a4a37272ac40b90d395ff4d75dffc8d3a`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1a7bdcd6adb421e4145a08b4813b8c1fb6`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1a320343d18a6f7466937a0dce03d57a7b`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1ace9a25a0f31c57332d450a75276d6f9d`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1a08096504b0a67849a3c5fea75d931810`
+
+- :ref:`exhale_function_dpctl__sycl__device__interface_8h_1a4482bf80b1449c1d8098c25e4b35d9e3`
+

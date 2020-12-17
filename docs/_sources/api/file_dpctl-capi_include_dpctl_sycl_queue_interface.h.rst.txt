@@ -1,0 +1,80 @@
+
+.. _file_dpctl-capi_include_dpctl_sycl_queue_interface.h:
+
+File dpctl_sycl_queue_interface.h
+=================================
+
+|exhale_lsh| :ref:`Parent directory <dir_dpctl-capi_include>` (``dpctl-capi/include``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``dpctl-capi/include/dpctl_sycl_queue_interface.h``)
+----------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_dpctl-capi_include_dpctl_sycl_queue_interface.h.rst
+
+
+
+Detailed Description
+--------------------
+
+This header declares a C interface to sycl::queue member functions. Note that sycl::queue constructors are not exposed in this interface. Instead, users should use the functions in :ref:`file_dpctl-capi_include_dpctl_sycl_queue_manager.h`. 
+
+
+
+
+Includes
+--------
+
+
+- ``Support/DllExport.h`` (:ref:`file_dpctl-capi_include_Support_DllExport.h`)
+
+- ``Support/ExternC.h`` (:ref:`file_dpctl-capi_include_Support_ExternC.h`)
+
+- ``Support/MemOwnershipAttrs.h`` (:ref:`file_dpctl-capi_include_Support_MemOwnershipAttrs.h`)
+
+- ``dpctl_data_types.h`` (:ref:`file_dpctl-capi_include_dpctl_data_types.h`)
+
+- ``dpctl_sycl_enum_types.h`` (:ref:`file_dpctl-capi_include_dpctl_sycl_enum_types.h`)
+
+- ``dpctl_sycl_types.h`` (:ref:`file_dpctl-capi_include_dpctl_sycl_types.h`)
+
+
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_dpctl__sycl__queue__interface_8h_1a9c9fdac520043ab034187f7e29a15df3`
+
+- :ref:`exhale_function_dpctl__sycl__queue__interface_8h_1a8a43adb5a1f02d9d10c23c82bf5d7cca`
+
+- :ref:`exhale_function_dpctl__sycl__queue__interface_8h_1a32dacd6d2ac40a3dbd656d0888385774`
+
+- :ref:`exhale_function_dpctl__sycl__queue__interface_8h_1a080a8afce2b269f75aafca2a088108b2`
+
+- :ref:`exhale_function_dpctl__sycl__queue__interface_8h_1afa0c34cb4a0a748fdea3fc96872245d4`
+
+- :ref:`exhale_function_dpctl__sycl__queue__interface_8h_1ab8b04f0bd92db5207107b7f4d00e0dea`
+
+- :ref:`exhale_function_dpctl__sycl__queue__interface_8h_1a70ad1d363b7c97f9c1e6bea6086614dd`
+
+- :ref:`exhale_function_dpctl__sycl__queue__interface_8h_1ae716e5ec42e9c407409ad54eed417fa8`
+
+- :ref:`exhale_function_dpctl__sycl__queue__interface_8h_1a4b028a6ecfa607ac8fdb50233d8d1c42`
+
+- :ref:`exhale_function_dpctl__sycl__queue__interface_8h_1a798fcfd6344469ebd02ba4b23100820a`
+
+- :ref:`exhale_function_dpctl__sycl__queue__interface_8h_1a7260971fb39c34ba4f3c5de265d46e70`
+
