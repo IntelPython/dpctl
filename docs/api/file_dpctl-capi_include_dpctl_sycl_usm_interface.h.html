@@ -1,0 +1,248 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>File dpctl_sycl_usm_interface.h &mdash; Data-parallel Control (dpctl) master documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../toc_pyapi.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data-parallel Control (dpctl)</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>File dpctl_sycl_usm_interface.h</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/file_dpctl-capi_include_dpctl_sycl_usm_interface.h.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="file-dpctl-sycl-usm-interface-h">
+<span id="file-dpctl-capi-include-dpctl-sycl-usm-interface-h"></span><h1>File dpctl_sycl_usm_interface.h<a class="headerlink" href="#file-dpctl-sycl-usm-interface-h" title="Permalink to this headline">¶</a></h1>
+<p>↰ <a class="reference internal" href="dir_dpctl-capi_include.html#dir-dpctl-capi-include"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">dpctl-capi/include</span></code>)</p>
+<div class="contents local topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#definition-dpctl-capi-include-dpctl-sycl-usm-interface-h" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">dpctl-capi/include/dpctl_sycl_usm_interface.h</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#detailed-description" id="id2">Detailed Description</a></p></li>
+<li><p><a class="reference internal" href="#includes" id="id3">Includes</a></p></li>
+<li><p><a class="reference internal" href="#functions" id="id4">Functions</a></p></li>
+</ul>
+</div>
+<div class="section" id="definition-dpctl-capi-include-dpctl-sycl-usm-interface-h">
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">dpctl-capi/include/dpctl_sycl_usm_interface.h</span></code>)<a class="headerlink" href="#definition-dpctl-capi-include-dpctl-sycl-usm-interface-h" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="program_listing_file_dpctl-capi_include_dpctl_sycl_usm_interface.h.html">Program Listing for File dpctl_sycl_usm_interface.h</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="detailed-description">
+<h2>Detailed Description<a class="headerlink" href="#detailed-description" title="Permalink to this headline">¶</a></h2>
+<p>This header declares a C interface to sycl::usm interface functions.</p>
+</div>
+<div class="section" id="includes">
+<h2>Includes<a class="headerlink" href="#includes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Support/DllExport.h</span></code> (<a class="reference internal" href="file_dpctl-capi_include_Support_DllExport.h.html#file-dpctl-capi-include-support-dllexport-h"><span class="std std-ref">File DllExport.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Support/ExternC.h</span></code> (<a class="reference internal" href="file_dpctl-capi_include_Support_ExternC.h.html#file-dpctl-capi-include-support-externc-h"><span class="std std-ref">File ExternC.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Support/MemOwnershipAttrs.h</span></code> (<a class="reference internal" href="file_dpctl-capi_include_Support_MemOwnershipAttrs.h.html#file-dpctl-capi-include-support-memownershipattrs-h"><span class="std std-ref">File MemOwnershipAttrs.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dpctl_data_types.h</span></code> (<a class="reference internal" href="file_dpctl-capi_include_dpctl_data_types.h.html#file-dpctl-capi-include-dpctl-data-types-h"><span class="std std-ref">File dpctl_data_types.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dpctl_sycl_types.h</span></code> (<a class="reference internal" href="file_dpctl-capi_include_dpctl_sycl_types.h.html#file-dpctl-capi-include-dpctl-sycl-types-h"><span class="std std-ref">File dpctl_sycl_types.h</span></a>)</p></li>
+</ul>
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1adebcaee4d7ef16dc19bf19c9ef94656d.html#exhale-function-dpctl-sycl-usm-interface-8h-1adebcaee4d7ef16dc19bf19c9ef94656d"><span class="std std-ref">Function DPCTLaligned_alloc_device</span></a></p></li>
+<li><p><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a915f7efd52088039812616ada4c3dd95.html#exhale-function-dpctl-sycl-usm-interface-8h-1a915f7efd52088039812616ada4c3dd95"><span class="std std-ref">Function DPCTLaligned_alloc_host</span></a></p></li>
+<li><p><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a0acb51afcc115c87af9bf4aa7c092856.html#exhale-function-dpctl-sycl-usm-interface-8h-1a0acb51afcc115c87af9bf4aa7c092856"><span class="std std-ref">Function DPCTLaligned_alloc_shared</span></a></p></li>
+<li><p><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a083fe05fa8c0f8dfda6531f84074ce8a.html#exhale-function-dpctl-sycl-usm-interface-8h-1a083fe05fa8c0f8dfda6531f84074ce8a"><span class="std std-ref">Function DPCTLfree_with_context</span></a></p></li>
+<li><p><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1acf8046ce650e41e85b706c6381de6bb1.html#exhale-function-dpctl-sycl-usm-interface-8h-1acf8046ce650e41e85b706c6381de6bb1"><span class="std std-ref">Function DPCTLfree_with_queue</span></a></p></li>
+<li><p><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1ac158c54c3d5ce7199cad07f413db68fb.html#exhale-function-dpctl-sycl-usm-interface-8h-1ac158c54c3d5ce7199cad07f413db68fb"><span class="std std-ref">Function DPCTLmalloc_device</span></a></p></li>
+<li><p><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1aed5f97115ec622f37066e166f04a4af3.html#exhale-function-dpctl-sycl-usm-interface-8h-1aed5f97115ec622f37066e166f04a4af3"><span class="std std-ref">Function DPCTLmalloc_host</span></a></p></li>
+<li><p><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1a22463b2068a811bb108f1f505163f66f.html#exhale-function-dpctl-sycl-usm-interface-8h-1a22463b2068a811bb108f1f505163f66f"><span class="std std-ref">Function DPCTLmalloc_shared</span></a></p></li>
+<li><p><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1ac4b9976d0b4ed6d804395d81e771816c.html#exhale-function-dpctl-sycl-usm-interface-8h-1ac4b9976d0b4ed6d804395d81e771816c"><span class="std std-ref">Function DPCTLUSM_GetPointerDevice</span></a></p></li>
+<li><p><a class="reference internal" href="function_dpctl__sycl__usm__interface_8h_1ac78d09589b55a67843a0cb47de9de3b0.html#exhale-function-dpctl-sycl-usm-interface-8h-1ac78d09589b55a67843a0cb47de9de3b0"><span class="std std-ref">Function DPCTLUSM_GetPointerType</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Intel Corp.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

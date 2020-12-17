@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__queue__interface_8h_1afa0c34cb4a0a748fdea3fc96872245d4:
+
+Function DPCTLQueue_GetDevice
+=============================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_queue_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLQueue_GetDevice(const DPCTLSyclQueueRef)

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+  <compounddef id="dir_a98cdb27705d26ddd05119c5e74cfe16" kind="dir">
+    <compoundname>helper</compoundname>
+    <innerdir refid="dir_8109735e5674a700d08bae4894274b3e">include</innerdir>
+    <innerdir refid="dir_cf81f0ca3d73978e2b91e3eca9e2c0e3">source</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/localdisk/work/akharche/dpctl/dpctl-capi/helper/"/>
+  </compounddef>
+</doxygen>

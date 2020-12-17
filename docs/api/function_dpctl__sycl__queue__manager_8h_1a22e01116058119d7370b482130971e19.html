@@ -1,0 +1,231 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Function DPCTLQueueMgr_GetNumActivatedQueues &mdash; Data-parallel Control (dpctl) master documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Function DPCTLQueueMgr_GetNumQueues" href="function_dpctl__sycl__queue__manager_8h_1a207d8c268822cd0f605340ce59e03aaa.html" />
+    <link rel="prev" title="Function DPCTLQueueMgr_GetCurrentQueue" href="function_dpctl__sycl__queue__manager_8h_1aa70cd1c9dca649d309c689f473cd17d8.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../toc_pyapi.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpCtl-CAPI_root.html">dpCtl C API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data-parallel Control (dpctl)</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="dpCtl-CAPI_root.html">dpCtl C API</a> &raquo;</li>
+        
+      <li>Function DPCTLQueueMgr_GetNumActivatedQueues</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/function_dpctl__sycl__queue__manager_8h_1a22e01116058119d7370b482130971e19.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="function-dpctlqueuemgr-getnumactivatedqueues">
+<span id="exhale-function-dpctl-sycl-queue-manager-8h-1a22e01116058119d7370b482130971e19"></span><h1>Function DPCTLQueueMgr_GetNumActivatedQueues<a class="headerlink" href="#function-dpctlqueuemgr-getnumactivatedqueues" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_dpctl-capi_include_dpctl_sycl_queue_manager.h.html#file-dpctl-capi-include-dpctl-sycl-queue-manager-h"><span class="std std-ref">File dpctl_sycl_queue_manager.h</span></a></p></li>
+</ul>
+<div class="section" id="function-documentation">
+<h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv435DPCTLQueueMgr_GetNumActivatedQueuesv">
+<span id="_CPPv335DPCTLQueueMgr_GetNumActivatedQueuesv"></span><span id="_CPPv235DPCTLQueueMgr_GetNumActivatedQueuesv"></span><span id="DPCTLQueueMgr_GetNumActivatedQueues"></span><span class="target" id="dpctl__sycl__queue__manager_8h_1a22e01116058119d7370b482130971e19"></span>size_t <code class="sig-name descname">DPCTLQueueMgr_GetNumActivatedQueues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv435DPCTLQueueMgr_GetNumActivatedQueuesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get the number of activated queues not including the global or default queue. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The number of activated queues. </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="function_dpctl__sycl__queue__manager_8h_1a207d8c268822cd0f605340ce59e03aaa.html" class="btn btn-neutral float-right" title="Function DPCTLQueueMgr_GetNumQueues" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="function_dpctl__sycl__queue__manager_8h_1aa70cd1c9dca649d309c689f473cd17d8.html" class="btn btn-neutral float-left" title="Function DPCTLQueueMgr_GetCurrentQueue" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Intel Corp.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__queue__interface_8h_1ab8b04f0bd92db5207107b7f4d00e0dea:
+
+Function DPCTLQueue_MemAdvise
+=============================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_queue_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLQueue_MemAdvise(DPCTLSyclQueueRef, const void *, size_t, int)

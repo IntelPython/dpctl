@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['huge_5fvalf_298',['HUGE_VALF',['../d4/dcc/dppl__data__types_8h.html#acd69981d54c27fe0ff514645dbfc6359',1,'dppl_data_types.h']]]
+  ['huge_5fvalf_306',['HUGE_VALF',['../dd/d1c/dpctl__data__types_8h.html#acd69981d54c27fe0ff514645dbfc6359',1,'dpctl_data_types.h']]]
 ];

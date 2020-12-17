@@ -1,145 +1,145 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
   <compounddef id="ExternC_8h" kind="file" language="C++">
     <compoundname>ExternC.h</compoundname>
-    <includedby refid="dppl__sycl__types_8h" local="yes">backends/include/dppl_sycl_types.h</includedby>
-    <includedby refid="dppl__sycl__enum__types_8h" local="yes">backends/include/dppl_sycl_enum_types.h</includedby>
-    <includedby refid="dppl__sycl__platform__interface_8h" local="yes">backends/include/dppl_sycl_platform_interface.h</includedby>
-    <includedby refid="dppl__sycl__context__interface_8h" local="yes">backends/include/dppl_sycl_context_interface.h</includedby>
-    <includedby refid="dppl__sycl__device__interface_8h" local="yes">backends/include/dppl_sycl_device_interface.h</includedby>
-    <includedby refid="dppl__sycl__event__interface_8h" local="yes">backends/include/dppl_sycl_event_interface.h</includedby>
-    <includedby refid="dppl__sycl__kernel__interface_8h" local="yes">backends/include/dppl_sycl_kernel_interface.h</includedby>
-    <includedby refid="dppl__sycl__program__interface_8h" local="yes">backends/include/dppl_sycl_program_interface.h</includedby>
-    <includedby refid="dppl__sycl__queue__interface_8h" local="yes">backends/include/dppl_sycl_queue_interface.h</includedby>
-    <includedby refid="dppl__sycl__queue__manager_8h" local="yes">backends/include/dppl_sycl_queue_manager.h</includedby>
-    <includedby refid="dppl__sycl__usm__interface_8h" local="yes">backends/include/dppl_sycl_usm_interface.h</includedby>
-    <includedby refid="dppl__utils_8h" local="yes">backends/include/dppl_utils.h</includedby>
+    <includedby refid="dpctl__sycl__context__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_context_interface.h</includedby>
+    <includedby refid="dpctl__sycl__device__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_device_interface.h</includedby>
+    <includedby refid="dpctl__sycl__enum__types_8h" local="yes">dpctl-capi/include/dpctl_sycl_enum_types.h</includedby>
+    <includedby refid="dpctl__sycl__event__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_event_interface.h</includedby>
+    <includedby refid="dpctl__sycl__kernel__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_kernel_interface.h</includedby>
+    <includedby refid="dpctl__sycl__platform__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_platform_interface.h</includedby>
+    <includedby refid="dpctl__sycl__program__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_program_interface.h</includedby>
+    <includedby refid="dpctl__sycl__queue__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_queue_interface.h</includedby>
+    <includedby refid="dpctl__sycl__queue__manager_8h" local="yes">dpctl-capi/include/dpctl_sycl_queue_manager.h</includedby>
+    <includedby refid="dpctl__sycl__types_8h" local="yes">dpctl-capi/include/dpctl_sycl_types.h</includedby>
+    <includedby refid="dpctl__sycl__usm__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_usm_interface.h</includedby>
+    <includedby refid="dpctl__utils_8h" local="yes">dpctl-capi/include/dpctl_utils.h</includedby>
     <invincdepgraph>
-      <node id="4">
-        <label>backends/include/dppl_sycl_queue_manager.h</label>
-        <link refid="dppl__sycl__queue__manager_8h"/>
-      </node>
-      <node id="9">
-        <label>backends/include/dppl_sycl_queue_interface.h</label>
-        <link refid="dppl__sycl__queue__interface_8h"/>
-      </node>
-      <node id="10">
-        <label>backends/include/dppl_sycl_usm_interface.h</label>
-        <link refid="dppl__sycl__usm__interface_8h"/>
-      </node>
-      <node id="6">
-        <label>backends/include/dppl_sycl_event_interface.h</label>
-        <link refid="dppl__sycl__event__interface_8h"/>
-      </node>
-      <node id="7">
-        <label>backends/include/dppl_sycl_kernel_interface.h</label>
-        <link refid="dppl__sycl__kernel__interface_8h"/>
-      </node>
-      <node id="5">
-        <label>backends/include/dppl_sycl_device_interface.h</label>
-        <link refid="dppl__sycl__device__interface_8h"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
       <node id="11">
-        <label>backends/include/dppl_sycl_enum_types.h</label>
-        <link refid="dppl__sycl__enum__types_8h"/>
-        <childnode refid="12" relation="include">
+        <label>dpctl-capi/include/dpctl_sycl_types.h</label>
+        <link refid="dpctl__sycl__types_8h"/>
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="8">
-        <label>backends/include/dppl_sycl_program_interface.h</label>
-        <link refid="dppl__sycl__program__interface_8h"/>
-      </node>
-      <node id="2">
-        <label>backends/include/dppl_sycl_types.h</label>
-        <link refid="dppl__sycl__types_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>dpctl-capi/include/dpctl_sycl_enum_types.h</label>
+        <link refid="dpctl__sycl__enum__types_8h"/>
         <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>dpctl-capi/include/dpctl_sycl_platform_interface.h</label>
+        <link refid="dpctl__sycl__platform__interface_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>dpctl-capi/include/dpctl_sycl_queue_manager.h</label>
+        <link refid="dpctl__sycl__queue__manager_8h"/>
+      </node>
+      <node id="8">
+        <label>dpctl-capi/include/dpctl_sycl_event_interface.h</label>
+        <link refid="dpctl__sycl__event__interface_8h"/>
+      </node>
+      <node id="12">
+        <label>dpctl-capi/include/dpctl_sycl_usm_interface.h</label>
+        <link refid="dpctl__sycl__usm__interface_8h"/>
+      </node>
+      <node id="2">
+        <label>dpctl-capi/include/dpctl_sycl_context_interface.h</label>
+        <link refid="dpctl__sycl__context__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>dpctl-capi/include/dpctl_sycl_program_interface.h</label>
+        <link refid="dpctl__sycl__program__interface_8h"/>
+      </node>
+      <node id="7">
+        <label>dpctl-capi/include/dpctl_sycl_queue_interface.h</label>
+        <link refid="dpctl__sycl__queue__interface_8h"/>
+      </node>
+      <node id="1">
+        <label>dpctl-capi/include/Support/ExternC.h</label>
+        <link refid="ExternC_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-      </node>
-      <node id="13">
-        <label>backends/include/dppl_utils.h</label>
-        <link refid="dppl__utils_8h"/>
-      </node>
-      <node id="1">
-        <label>backends/include/Support/ExternC.h</label>
-        <link refid="ExternC_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
         <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="12">
-        <label>backends/include/dppl_sycl_platform_interface.h</label>
-        <link refid="dppl__sycl__platform__interface_8h"/>
+      <node id="9">
+        <label>dpctl-capi/include/dpctl_sycl_kernel_interface.h</label>
+        <link refid="dpctl__sycl__kernel__interface_8h"/>
+      </node>
+      <node id="4">
+        <label>dpctl-capi/include/dpctl_sycl_device_interface.h</label>
+        <link refid="dpctl__sycl__device__interface_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>backends/include/dppl_sycl_context_interface.h</label>
-        <link refid="dppl__sycl__context__interface_8h"/>
-        <childnode refid="4" relation="include">
-        </childnode>
+      <node id="13">
+        <label>dpctl-capi/include/dpctl_utils.h</label>
+        <link refid="dpctl__utils_8h"/>
       </node>
     </invincdepgraph>
       <sectiondef kind="define">
-      <memberdef kind="define" id="ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" prot="public" static="no">
-        <name>DPPL_C_EXTERN_C_BEGIN</name>
+      <memberdef kind="define" id="ExternC_8h_1ad85f54ad0bab1d5206255e5920261be3" prot="public" static="no">
+        <name>DPCTL_C_EXTERN_C_BEGIN</name>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="backends/include/Support/ExternC.h" line="32" column="10" bodyfile="backends/include/Support/ExternC.h" bodystart="32" bodyend="-1"/>
+        <location file="dpctl-capi/include/Support/ExternC.h" line="32" column="10" bodyfile="dpctl-capi/include/Support/ExternC.h" bodystart="32" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" prot="public" static="no">
-        <name>DPPL_C_EXTERN_C_END</name>
+      <memberdef kind="define" id="ExternC_8h_1a6956fffc46b54bcdd0e7fd53cd3a6619" prot="public" static="no">
+        <name>DPCTL_C_EXTERN_C_END</name>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="backends/include/Support/ExternC.h" line="33" column="9" bodyfile="backends/include/Support/ExternC.h" bodystart="33" bodyend="-1"/>
+        <location file="dpctl-capi/include/Support/ExternC.h" line="33" column="9" bodyfile="dpctl-capi/include/Support/ExternC.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -148,7 +148,7 @@
 <para>This file defines an extern &quot;C&quot; wrapper. </para>
     </detaileddescription>
     <programlisting>
-<codeline lineno="1"><highlight class="comment">//===------------<sp/>Support/ExternC.h<sp/>-<sp/>DPPL-SYCL<sp/>interface<sp/>---*---<sp/>C<sp/>---*---===//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1"><highlight class="comment">//===-----------<sp/>Support/ExternC.h<sp/>-<sp/>DPCTL-SYCL<sp/>interface<sp/>---*---<sp/>C<sp/>---*---===//</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Data<sp/>Parallel<sp/>Control<sp/>Library<sp/>(dpCtl)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
@@ -172,13 +172,13 @@
 <codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="27"><highlight class="normal"></highlight></codeline>
 <codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPPL_C_EXTERN_C_BEGIN<sp/><sp/>extern<sp/>&quot;C&quot;<sp/>{</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPPL_C_EXTERN_C_END<sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPCTL_C_EXTERN_C_BEGIN<sp/><sp/>extern<sp/>&quot;C&quot;<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPCTL_C_EXTERN_C_END<sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="32" refid="ExternC_8h_1a27152e7d3c3be9b99f89d313df56aef0" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPPL_C_EXTERN_C_BEGIN</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="33" refid="ExternC_8h_1a03a64b28f62f6f38f6b8388a87a5a1fb" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPPL_C_EXTERN_C_END</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32" refid="ExternC_8h_1ad85f54ad0bab1d5206255e5920261be3" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPCTL_C_EXTERN_C_BEGIN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="ExternC_8h_1a6956fffc46b54bcdd0e7fd53cd3a6619" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DPCTL_C_EXTERN_C_END</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
-    <location file="backends/include/Support/ExternC.h"/>
+    <location file="dpctl-capi/include/Support/ExternC.h"/>
   </compounddef>
 </doxygen>

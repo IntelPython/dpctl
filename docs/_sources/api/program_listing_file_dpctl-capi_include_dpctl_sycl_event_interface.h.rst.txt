@@ -1,0 +1,52 @@
+
+.. _program_listing_file_dpctl-capi_include_dpctl_sycl_event_interface.h:
+
+Program Listing for File dpctl_sycl_event_interface.h
+=====================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_dpctl-capi_include_dpctl_sycl_event_interface.h>` (``dpctl-capi/include/dpctl_sycl_event_interface.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   //===---------- dpctl_sycl_event_interface.h - dpctl-C_API ---*---C++ -*---===//
+   //
+   //               Data Parallel Control Library (dpCtl)
+   //
+   // Copyright 2020 Intel Corporation
+   //
+   // Licensed under the Apache License, Version 2.0 (the "License");
+   // you may not use this file except in compliance with the License.
+   // You may obtain a copy of the License at
+   //
+   //    http://www.apache.org/licenses/LICENSE-2.0
+   //
+   // Unless required by applicable law or agreed to in writing, software
+   // distributed under the License is distributed on an "AS IS" BASIS,
+   // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   // See the License for the specific language governing permissions and
+   // limitations under the License.
+   //
+   //===----------------------------------------------------------------------===//
+   //===----------------------------------------------------------------------===//
+   
+   #pragma once
+   
+   #include "dpctl_data_types.h"
+   #include "dpctl_sycl_types.h"
+   #include "Support/DllExport.h"
+   #include "Support/ExternC.h"
+   #include "Support/MemOwnershipAttrs.h"
+   
+   
+   DPCTL_C_EXTERN_C_BEGIN
+   
+   DPCTL_API
+   void DPCTLEvent_Wait (__dpctl_keep DPCTLSyclEventRef ERef);
+   
+   DPCTL_API
+   void
+   DPCTLEvent_Delete (__dpctl_take DPCTLSyclEventRef ERef);
+   
+   DPCTL_C_EXTERN_C_END

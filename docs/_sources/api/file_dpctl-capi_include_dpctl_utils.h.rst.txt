@@ -1,0 +1,58 @@
+
+.. _file_dpctl-capi_include_dpctl_utils.h:
+
+File dpctl_utils.h
+==================
+
+|exhale_lsh| :ref:`Parent directory <dir_dpctl-capi_include>` (``dpctl-capi/include``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``dpctl-capi/include/dpctl_utils.h``)
+-------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_dpctl-capi_include_dpctl_utils.h.rst
+
+
+
+Detailed Description
+--------------------
+
+This file defines common helper functions used in other places in DPCTL. 
+
+
+
+
+Includes
+--------
+
+
+- ``Support/DllExport.h`` (:ref:`file_dpctl-capi_include_Support_DllExport.h`)
+
+- ``Support/ExternC.h`` (:ref:`file_dpctl-capi_include_Support_ExternC.h`)
+
+- ``Support/MemOwnershipAttrs.h`` (:ref:`file_dpctl-capi_include_Support_MemOwnershipAttrs.h`)
+
+- ``dpctl_data_types.h`` (:ref:`file_dpctl-capi_include_dpctl_data_types.h`)
+
+
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_dpctl__utils_8h_1a725ddcf07244319ac6d27fc6324dcd75`
+
+- :ref:`exhale_function_dpctl__utils_8h_1a30605edde1856376ab9501f35f848d8b`
+

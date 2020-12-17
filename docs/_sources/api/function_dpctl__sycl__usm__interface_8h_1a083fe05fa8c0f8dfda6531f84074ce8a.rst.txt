@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__usm__interface_8h_1a083fe05fa8c0f8dfda6531f84074ce8a:
+
+Function DPCTLfree_with_context
+===============================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_usm_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLfree_with_context(DPCTLSyclUSMRef, const DPCTLSyclContextRef)

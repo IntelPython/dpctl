@@ -1,0 +1,221 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+  <compounddef id="df/df4/dpctl__sycl__kernel__interface_8h" kind="file" language="C++">
+    <compoundname>dpctl_sycl_kernel_interface.h</compoundname>
+    <includes refid="dd/d1c/dpctl__data__types_8h" local="yes">dpctl_data_types.h</includes>
+    <includes refid="df/d57/dpctl__sycl__types_8h" local="yes">dpctl_sycl_types.h</includes>
+    <includes refid="d6/d26/DllExport_8h" local="yes">Support/DllExport.h</includes>
+    <includes refid="d2/d0a/ExternC_8h" local="yes">Support/ExternC.h</includes>
+    <includes refid="d4/d8c/MemOwnershipAttrs_8h" local="yes">Support/MemOwnershipAttrs.h</includes>
+    <includedby refid="d1/ddb/dpctl__sycl__kernel__interface_8cpp" local="yes">dpctl_sycl_kernel_interface.cpp</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>dpctl_data_types.h</label>
+        <link refid="dd/d1c/dpctl__data__types_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+      <node id="6">
+        <label>dpctl_sycl_types.h</label>
+        <link refid="df/d57/dpctl__sycl__types_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Support/DllExport.h</label>
+        <link refid="d6/d26/DllExport_8h"/>
+      </node>
+      <node id="5">
+        <label>sys/types.h</label>
+      </node>
+      <node id="9">
+        <label>Support/MemOwnershipAttrs.h</label>
+        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
+      </node>
+      <node id="7">
+        <label>Support/ExternC.h</label>
+        <link refid="d2/d0a/ExternC_8h"/>
+      </node>
+      <node id="1">
+        <label>dpctl_sycl_kernel_interface.h</label>
+        <link refid="df/df4/dpctl__sycl__kernel__interface_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>inttypes.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>dpctl_sycl_kernel_interface.cpp</label>
+        <link refid="d1/ddb/dpctl__sycl__kernel__interface_8cpp"/>
+      </node>
+      <node id="1">
+        <label>dpctl_sycl_kernel_interface.h</label>
+        <link refid="df/df4/dpctl__sycl__kernel__interface_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="df/df4/dpctl__sycl__kernel__interface_8h_1a02cb1ddc64d9f78d228a5dc222c8862b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> void</type>
+        <definition>DPCTL_API void DPCTLKernel_Delete</definition>
+        <argsstring>(__dpctl_take DPCTLSyclKernelRef KRef)</argsstring>
+        <name>DPCTLKernel_Delete</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6" kindref="member">__dpctl_take</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844" kindref="member">DPCTLSyclKernelRef</ref></type>
+          <declname>KRef</declname>
+        </param>
+        <briefdescription>
+<para>Deletes the DPCTLSyclKernelRef after casting it to a sycl::kernel. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>KRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DPCTLSyclKernelRef pointer to an OpenCL interoperability kernel. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_kernel_interface.h" line="72" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_kernel_interface.cpp" bodystart="77" bodyend="80" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_kernel_interface.h" declline="72" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="df/df4/dpctl__sycl__kernel__interface_8h_1aa1168e71afa1cf0a8cd56b67af6003a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d2/d0a/ExternC_8h_1ad85f54ad0bab1d5206255e5920261be3" kindref="member">DPCTL_C_EXTERN_C_BEGIN</ref> <ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> const char *</type>
+        <definition>DPCTL_C_EXTERN_C_BEGIN DPCTL_API __dpctl_give const char* DPCTLKernel_GetFunctionName</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclKernelRef KRef)</argsstring>
+        <name>DPCTLKernel_GetFunctionName</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref> const <ref refid="df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844" kindref="member">DPCTLSyclKernelRef</ref></type>
+          <declname>KRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a C string for the kernel name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>KRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DPCTLSyclKernelRef pointer to an OpenCL interoperability kernel. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>If a kernel name exists then returns it as a C string, else returns a nullptr. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_kernel_interface.h" line="50" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_kernel_interface.cpp" bodystart="42" bodyend="61" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_kernel_interface.h" declline="50" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="df/df4/dpctl__sycl__kernel__interface_8h_1ae585c0ae9e5e1826ca24aac6f9b2a71d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> size_t</type>
+        <definition>DPCTL_API size_t DPCTLKernel_GetNumArgs</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclKernelRef KRef)</argsstring>
+        <name>DPCTLKernel_GetNumArgs</name>
+        <param>
+          <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref> const <ref refid="df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844" kindref="member">DPCTLSyclKernelRef</ref></type>
+          <declname>KRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns the number of arguments for the OpenCL kernel. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>KRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DPCTLSyclKernelRef pointer to an OpenCL interoperability kernel. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the number of arguments for the OpenCL interoperability kernel. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_kernel_interface.h" line="62" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_kernel_interface.cpp" bodystart="64" bodyend="74" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_kernel_interface.h" declline="62" declcolumn="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>This header declares a C API to create Sycl kernels from OpenCL kernels. In future, API to create interoperability kernels from other languages such as Level-0 driver API may be added here.</para>
+<para><xrefsect id="dd/da0/todo_1_todo000002"><xreftitle>Todo</xreftitle><xrefdescription><para>Investigate what we should do when we add support for Level-0 API. </para>
+</xrefdescription></xrefsect></para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//===-----------<sp/>dpctl_sycl_kernel_interface.h<sp/>-<sp/>dpctl-C_API<sp/>--*--C++<sp/>--*--===//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Data<sp/>Parallel<sp/>Control<sp/>Library<sp/>(dpCtl)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Copyright<sp/>2020<sp/>Intel<sp/>Corporation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Licensed<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the<sp/>&quot;License&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">//<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance<sp/>with<sp/>the<sp/>License.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">//<sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,<sp/>software</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>See<sp/>the<sp/>License<sp/>for<sp/>the<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//<sp/>limitations<sp/>under<sp/>the<sp/>License.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//===----------------------------------------------------------------------===//</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"></highlight><highlight class="comment">//===----------------------------------------------------------------------===//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="dd/d1c/dpctl__data__types_8h" kindref="compound">dpctl_data_types.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="df/d57/dpctl__sycl__types_8h" kindref="compound">dpctl_sycl_types.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d6/d26/DllExport_8h" kindref="compound">Support/DllExport.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d2/d0a/ExternC_8h" kindref="compound">Support/ExternC.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d4/d8c/MemOwnershipAttrs_8h" kindref="compound">Support/MemOwnershipAttrs.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1ad85f54ad0bab1d5206255e5920261be3" kindref="member">DPCTL_C_EXTERN_C_BEGIN</ref></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><ref refid="df/df4/dpctl__sycl__kernel__interface_8h_1aa1168e71afa1cf0a8cd56b67af6003a8" kindref="member">DPCTLKernel_GetFunctionName</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844" kindref="member">DPCTLSyclKernelRef</ref><sp/>KRef);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><ref refid="df/df4/dpctl__sycl__kernel__interface_8h_1ae585c0ae9e5e1826ca24aac6f9b2a71d" kindref="member">DPCTLKernel_GetNumArgs</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844" kindref="member">DPCTLSyclKernelRef</ref><sp/>KRef);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><ref refid="df/df4/dpctl__sycl__kernel__interface_8h_1a02cb1ddc64d9f78d228a5dc222c8862b" kindref="member">DPCTLKernel_Delete</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6" kindref="member">__dpctl_take</ref><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844" kindref="member">DPCTLSyclKernelRef</ref><sp/>KRef);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a6956fffc46b54bcdd0e7fd53cd3a6619" kindref="member">DPCTL_C_EXTERN_C_END</ref></highlight></codeline>
+    </programlisting>
+    <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_kernel_interface.h"/>
+  </compounddef>
+</doxygen>

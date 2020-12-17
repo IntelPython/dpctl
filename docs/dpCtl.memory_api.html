@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpCtl Memory Python API &mdash; Data-parallel Control (dpctl) 0.3.8 documentation</title>
+  <title>dpCtl Memory Python API &mdash; Data-parallel Control (dpctl) master documentation</title>
   
 
   
@@ -38,7 +38,7 @@
   <link rel="stylesheet" href="_static/collapsible-lists/css/tree_view.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="dpCtl C API" href="api/dpCtl-CAPI_root.html" />
+    <link rel="next" title="dpCtl dptensor Python API" href="dpCtl.dptensor_api.html" />
     <link rel="prev" title="dpCtl Python API" href="dpCtl_api.html" /> 
 </head>
 
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.3.8
+                master
               </div>
             
           
@@ -90,8 +90,13 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dpCtl_api.html">dpCtl Python API</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">dpctl.memory Python API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="toc_pyapi.html">Python API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dpCtl_api.html">dpctl - SYCL runtime wrapper classes and queue manager</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">dpctl.memory - USM memory manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpCtl.dptensor_api.html">dpctl.dptensor - Data-parallel tensor containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpCtl.program_api.html">dpctl.program - Program manager</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api/dpCtl-CAPI_root.html">dpCtl C API</a></li>
 </ul>
 
@@ -138,6 +143,8 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
+          <li><a href="toc_pyapi.html">Python API</a> &raquo;</li>
+        
       <li>dpCtl Memory Python API</li>
     
     
@@ -157,57 +164,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-dpctl.memory">
-<span id="dpctl-memory-python-api"></span><span id="dpctl-memory-api"></span><h1>dpCtl Memory Python API<a class="headerlink" href="#module-dpctl.memory" title="Permalink to this headline">¶</a></h1>
-<p><strong>Data Parallel Control Memory</strong></p>
-<p><cite>dpctl.memory</cite> provides Python objects for untyped USM memory
-container of bytes for each kind of USM pointers: shared pointers,
-device pointers and host pointers.</p>
-<p>Shared and host pointers are accessible from both host and a device,
-while device pointers are only accessible from device.</p>
-<p>Python objects corresponding to shared and host pointers implement
-Python simple buffer protocol. It is therefore possible to use these
-objects to maniputalate USM memory using NumPy or <cite>bytearray</cite>,
-<cite>memoryview</cite>, or <cite>array.array</cite> classes.</p>
-<dl class="py class">
-<dt id="dpctl.memory.MemoryUSMDevice">
-<em class="property">class </em><code class="sig-prename descclassname">dpctl.memory.</code><code class="sig-name descname">MemoryUSMDevice</code><a class="headerlink" href="#dpctl.memory.MemoryUSMDevice" title="Permalink to this definition">¶</a></dt>
-<dd><p>MemoryUSMDevice(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
-USM device memory.</p>
-<p>Non-positive alignments are not used (malloc_device is used instead).
-The queue=None the current <cite>dpctl.get_current_queue()</cite> is used to allocate memory.</p>
-<p>MemoryUSMDevice(usm_obj) constructor create instance from <cite>usm_obj</cite> expected to
-implement <cite>__sycl_usm_array_interface__</cite> protocol and exposing a contiguous block of
-USM memory of USM device type. Using copy=True to perform a copy if USM type is other
-than ‘device’.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="dpctl.memory.MemoryUSMHost">
-<em class="property">class </em><code class="sig-prename descclassname">dpctl.memory.</code><code class="sig-name descname">MemoryUSMHost</code><a class="headerlink" href="#dpctl.memory.MemoryUSMHost" title="Permalink to this definition">¶</a></dt>
-<dd><p>MemoryUSMHost(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
-USM host memory.</p>
-<p>Non-positive alignments are not used (malloc_host is used instead).
-The queue=None the current <cite>dpctl.get_current_queue()</cite> is used to allocate memory.</p>
-<p>MemoryUSMDevice(usm_obj) constructor create instance from <cite>usm_obj</cite> expected to
-implement <cite>__sycl_usm_array_interface__</cite> protocol and exposing a contiguous block of
-USM memory of USM host type. Using copy=True to perform a copy if USM type is other
-than ‘host’.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="dpctl.memory.MemoryUSMShared">
-<em class="property">class </em><code class="sig-prename descclassname">dpctl.memory.</code><code class="sig-name descname">MemoryUSMShared</code><a class="headerlink" href="#dpctl.memory.MemoryUSMShared" title="Permalink to this definition">¶</a></dt>
-<dd><p>MemoryUSMShared(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
-USM shared memory.</p>
-<p>Non-positive alignments are not used (malloc_shared is used instead).
-The queue=None the current <cite>dpctl.get_current_queue()</cite> is used to allocate memory.</p>
-<p>MemoryUSMShared(usm_obj) constructor create instance from <cite>usm_obj</cite> expected to
-implement <cite>__sycl_usm_array_interface__</cite> protocol and exposing a contiguous block of
-USM memory of USM shared type. Using copy=True to perform a copy if USM type is other
-than ‘shared’.</p>
-</dd></dl>
-
+  <div class="section" id="dpctl-memory-python-api">
+<span id="dpctl-memory-api"></span><h1>dpCtl Memory Python API<a class="headerlink" href="#dpctl-memory-python-api" title="Permalink to this headline">¶</a></h1>
 <hr class="docutils" />
 <p><strong>Comparing dpctl.memory to Rapids Memory Manager (RMM)</strong></p>
 <p>RMM implements DeviceBuffer which is Cython native class wrapping around something similar to <code class="docutils literal notranslate"><span class="pre">std::vector&lt;unsigned</span> <span class="pre">char,</span> <span class="pre">custom_cuda_allocator</span> <span class="pre">(calls</span> <span class="pre">resource</span> <span class="pre">manager)&gt;</span></code> which is called device_buffer.</p>
@@ -234,7 +192,7 @@ the ownership being moved to the Cython extension instance.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="api/dpCtl-CAPI_root.html" class="btn btn-neutral float-right" title="dpCtl C API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpCtl.dptensor_api.html" class="btn btn-neutral float-right" title="dpCtl dptensor Python API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="dpCtl_api.html" class="btn btn-neutral float-left" title="dpCtl Python API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

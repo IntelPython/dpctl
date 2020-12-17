@@ -1,0 +1,13 @@
+.. _exhale_define_group__MEM__MGMT__ATTR__MACROS_1ga8afac1975b8353a1bd54ac25b2572d04:
+
+Define __dpctl_null
+===================
+
+- Defined in :ref:`file_dpctl-capi_include_Support_MemOwnershipAttrs.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: __dpctl_null

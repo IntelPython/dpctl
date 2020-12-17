@@ -1,0 +1,16 @@
+.. _dir_dpctl-capi:
+
+
+Directory dpctl-capi
+====================
+
+
+*Directory path:* ``dpctl-capi``
+
+Subdirectories
+--------------
+
+- :ref:`dir_dpctl-capi_include`
+
+
+

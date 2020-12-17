@@ -1,50 +1,42 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
   <compounddef id="DllExport_8h" kind="file" language="C++">
     <compoundname>DllExport.h</compoundname>
-    <includedby refid="dppl__sycl__platform__interface_8h" local="yes">backends/include/dppl_sycl_platform_interface.h</includedby>
-    <includedby refid="dppl__sycl__context__interface_8h" local="yes">backends/include/dppl_sycl_context_interface.h</includedby>
-    <includedby refid="dppl__sycl__device__interface_8h" local="yes">backends/include/dppl_sycl_device_interface.h</includedby>
-    <includedby refid="dppl__sycl__event__interface_8h" local="yes">backends/include/dppl_sycl_event_interface.h</includedby>
-    <includedby refid="dppl__sycl__kernel__interface_8h" local="yes">backends/include/dppl_sycl_kernel_interface.h</includedby>
-    <includedby refid="dppl__sycl__program__interface_8h" local="yes">backends/include/dppl_sycl_program_interface.h</includedby>
-    <includedby refid="dppl__sycl__queue__interface_8h" local="yes">backends/include/dppl_sycl_queue_interface.h</includedby>
-    <includedby refid="dppl__sycl__queue__manager_8h" local="yes">backends/include/dppl_sycl_queue_manager.h</includedby>
-    <includedby refid="dppl__sycl__usm__interface_8h" local="yes">backends/include/dppl_sycl_usm_interface.h</includedby>
-    <includedby refid="dppl__utils_8h" local="yes">backends/include/dppl_utils.h</includedby>
+    <includedby refid="dpctl__sycl__context__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_context_interface.h</includedby>
+    <includedby refid="dpctl__sycl__device__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_device_interface.h</includedby>
+    <includedby refid="dpctl__sycl__event__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_event_interface.h</includedby>
+    <includedby refid="dpctl__sycl__kernel__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_kernel_interface.h</includedby>
+    <includedby refid="dpctl__sycl__platform__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_platform_interface.h</includedby>
+    <includedby refid="dpctl__sycl__program__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_program_interface.h</includedby>
+    <includedby refid="dpctl__sycl__queue__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_queue_interface.h</includedby>
+    <includedby refid="dpctl__sycl__queue__manager_8h" local="yes">dpctl-capi/include/dpctl_sycl_queue_manager.h</includedby>
+    <includedby refid="dpctl__sycl__usm__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_usm_interface.h</includedby>
+    <includedby refid="dpctl__utils_8h" local="yes">dpctl-capi/include/dpctl_utils.h</includedby>
     <invincdepgraph>
-      <node id="4">
-        <label>backends/include/dppl_sycl_queue_manager.h</label>
-        <link refid="dppl__sycl__queue__manager_8h"/>
-      </node>
-      <node id="9">
-        <label>backends/include/dppl_sycl_queue_interface.h</label>
-        <link refid="dppl__sycl__queue__interface_8h"/>
-      </node>
-      <node id="10">
-        <label>backends/include/dppl_sycl_usm_interface.h</label>
-        <link refid="dppl__sycl__usm__interface_8h"/>
-      </node>
-      <node id="6">
-        <label>backends/include/dppl_sycl_event_interface.h</label>
-        <link refid="dppl__sycl__event__interface_8h"/>
-      </node>
       <node id="7">
-        <label>backends/include/dppl_sycl_kernel_interface.h</label>
-        <link refid="dppl__sycl__kernel__interface_8h"/>
-      </node>
-      <node id="5">
-        <label>backends/include/dppl_sycl_device_interface.h</label>
-        <link refid="dppl__sycl__device__interface_8h"/>
-        <childnode refid="4" relation="include">
+        <label>dpctl-capi/include/dpctl_sycl_platform_interface.h</label>
+        <link refid="dpctl__sycl__platform__interface_8h"/>
+        <childnode refid="2" relation="include">
         </childnode>
       </node>
+      <node id="3">
+        <label>dpctl-capi/include/dpctl_sycl_queue_manager.h</label>
+        <link refid="dpctl__sycl__queue__manager_8h"/>
+      </node>
+      <node id="5">
+        <label>dpctl-capi/include/dpctl_sycl_event_interface.h</label>
+        <link refid="dpctl__sycl__event__interface_8h"/>
+      </node>
+      <node id="10">
+        <label>dpctl-capi/include/dpctl_sycl_usm_interface.h</label>
+        <link refid="dpctl__sycl__usm__interface_8h"/>
+      </node>
       <node id="1">
-        <label>backends/include/Support/DllExport.h</label>
+        <label>dpctl-capi/include/Support/DllExport.h</label>
         <link refid="DllExport_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
@@ -56,44 +48,52 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="8">
-        <label>backends/include/dppl_sycl_program_interface.h</label>
-        <link refid="dppl__sycl__program__interface_8h"/>
-      </node>
-      <node id="11">
-        <label>backends/include/dppl_utils.h</label>
-        <link refid="dppl__utils_8h"/>
-      </node>
       <node id="2">
-        <label>backends/include/dppl_sycl_platform_interface.h</label>
-        <link refid="dppl__sycl__platform__interface_8h"/>
+        <label>dpctl-capi/include/dpctl_sycl_context_interface.h</label>
+        <link refid="dpctl__sycl__context__interface_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>backends/include/dppl_sycl_context_interface.h</label>
-        <link refid="dppl__sycl__context__interface_8h"/>
-        <childnode refid="4" relation="include">
+      <node id="8">
+        <label>dpctl-capi/include/dpctl_sycl_program_interface.h</label>
+        <link refid="dpctl__sycl__program__interface_8h"/>
+      </node>
+      <node id="9">
+        <label>dpctl-capi/include/dpctl_sycl_queue_interface.h</label>
+        <link refid="dpctl__sycl__queue__interface_8h"/>
+      </node>
+      <node id="6">
+        <label>dpctl-capi/include/dpctl_sycl_kernel_interface.h</label>
+        <link refid="dpctl__sycl__kernel__interface_8h"/>
+      </node>
+      <node id="4">
+        <label>dpctl-capi/include/dpctl_sycl_device_interface.h</label>
+        <link refid="dpctl__sycl__device__interface_8h"/>
+        <childnode refid="3" relation="include">
         </childnode>
+      </node>
+      <node id="11">
+        <label>dpctl-capi/include/dpctl_utils.h</label>
+        <link refid="dpctl__utils_8h"/>
       </node>
     </invincdepgraph>
       <sectiondef kind="define">
-      <memberdef kind="define" id="DllExport_8h_1a81776019eae18623511d676145f7cdef" prot="public" static="no">
-        <name>DPPL_API</name>
+      <memberdef kind="define" id="DllExport_8h_1aed0c117c235d99c414e0b5033d096785" prot="public" static="no">
+        <name>DPCTL_API</name>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="backends/include/Support/DllExport.h" line="35" column="14" bodyfile="backends/include/Support/DllExport.h" bodystart="35" bodyend="-1"/>
+        <location file="dpctl-capi/include/Support/DllExport.h" line="35" column="14" bodyfile="dpctl-capi/include/Support/DllExport.h" bodystart="35" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -102,7 +102,7 @@
 <para>This file defines a &quot;__declspec(dllexport)&quot; wrapper for windows. </para>
     </detaileddescription>
     <programlisting>
-<codeline lineno="1"><highlight class="comment">//===----------<sp/>Support/DllExport.h<sp/>-<sp/>DPPL-SYCL<sp/>interface<sp/>---*---<sp/>C<sp/>---*---===//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1"><highlight class="comment">//===---------<sp/>Support/DllExport.h<sp/>-<sp/>DPCTL-SYCL<sp/>interface<sp/>---*---<sp/>C<sp/>---*---===//</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Data<sp/>Parallel<sp/>Control<sp/>Library<sp/>(dpCtl)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
@@ -126,15 +126,15 @@
 <codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="27"><highlight class="normal"></highlight></codeline>
 <codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>_WIN32</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifdef<sp/>DPPLSyclInterface_EXPORTS</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>DPPL_API<sp/>__declspec(dllexport)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifdef<sp/>DPCTLSyclInterface_EXPORTS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>DPCTL_API<sp/>__declspec(dllexport)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>DPPL_API<sp/>__declspec(dllimport)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>DPCTL_API<sp/>__declspec(dllimport)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="35" refid="DllExport_8h_1a81776019eae18623511d676145f7cdef" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>define<sp/>DPPL_API</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35" refid="DllExport_8h_1aed0c117c235d99c414e0b5033d096785" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>define<sp/>DPCTL_API</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
-    <location file="backends/include/Support/DllExport.h"/>
+    <location file="dpctl-capi/include/Support/DllExport.h"/>
   </compounddef>
 </doxygen>

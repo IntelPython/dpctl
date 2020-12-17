@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+  <compounddef id="dir_ca83c5f79da1ad49f808b039ec07d19c" kind="dir">
+    <compoundname>dpctl-capi/include/Support</compoundname>
+    <innerfile refid="CBindingWrapping_8h">CBindingWrapping.h</innerfile>
+    <innerfile refid="DllExport_8h">DllExport.h</innerfile>
+    <innerfile refid="ExternC_8h">ExternC.h</innerfile>
+    <innerfile refid="MemOwnershipAttrs_8h">MemOwnershipAttrs.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="dpctl-capi/include/Support/"/>
+  </compounddef>
+</doxygen>

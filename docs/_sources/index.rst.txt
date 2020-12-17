@@ -19,10 +19,9 @@ Indices and tables
 * :ref:`search`
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
     :caption: Contents:
 
     self
-    dpCtl Python API <dpCtl_api>
-    dpctl.memory Python API <dpCtl.memory_api>
+    toc_pyapi
     api/dpCtl-CAPI_root
