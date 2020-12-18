@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__device__interface_8h_1a4a37272ac40b90d395ff4d75dffc8d3a:
+
+Function DPCTLDevice_HasInt64ExtendedAtomics
+============================================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_device_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLDevice_HasInt64ExtendedAtomics(const DPCTLSyclDeviceRef)

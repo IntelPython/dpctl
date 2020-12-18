@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__usm__interface_8h_1acf8046ce650e41e85b706c6381de6bb1:
+
+Function DPCTLfree_with_queue
+=============================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_usm_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLfree_with_queue(DPCTLSyclUSMRef, const DPCTLSyclQueueRef)

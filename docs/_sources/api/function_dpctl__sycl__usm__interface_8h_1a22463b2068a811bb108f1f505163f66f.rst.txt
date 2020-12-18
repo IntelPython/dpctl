@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__usm__interface_8h_1a22463b2068a811bb108f1f505163f66f:
+
+Function DPCTLmalloc_shared
+===========================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_usm_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLmalloc_shared(size_t, const DPCTLSyclQueueRef)

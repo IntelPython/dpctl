@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__usm__interface_8h_1ac4b9976d0b4ed6d804395d81e771816c:
+
+Function DPCTLUSM_GetPointerDevice
+==================================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_usm_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLUSM_GetPointerDevice(const DPCTLSyclUSMRef, const DPCTLSyclContextRef)

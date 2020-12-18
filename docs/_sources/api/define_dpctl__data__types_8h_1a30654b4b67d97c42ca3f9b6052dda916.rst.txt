@@ -1,0 +1,13 @@
+.. _exhale_define_dpctl__data__types_8h_1a30654b4b67d97c42ca3f9b6052dda916:
+
+Define UINT64_MAX
+=================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_data_types.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: UINT64_MAX

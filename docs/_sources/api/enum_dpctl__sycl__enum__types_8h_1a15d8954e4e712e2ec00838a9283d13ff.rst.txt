@@ -1,0 +1,13 @@
+.. _exhale_enum_dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff:
+
+Enum DPCTLSyclDeviceType
+========================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_enum_types.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: DPCTLSyclDeviceType

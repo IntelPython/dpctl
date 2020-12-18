@@ -1,0 +1,13 @@
+.. _exhale_typedef_dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a:
+
+Typedef DPCTLSyclQueueRef
+=========================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_types.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: DPCTLSyclQueueRef

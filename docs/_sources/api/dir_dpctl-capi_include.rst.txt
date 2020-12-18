@@ -1,0 +1,37 @@
+.. _dir_dpctl-capi_include:
+
+
+Directory include
+=================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_dpctl-capi>` (``dpctl-capi``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+*Directory path:* ``dpctl-capi/include``
+
+Subdirectories
+--------------
+
+- :ref:`dir_dpctl-capi_include_Support`
+
+
+Files
+-----
+
+- :ref:`file_dpctl-capi_include_dpctl_data_types.h`
+- :ref:`file_dpctl-capi_include_dpctl_sycl_context_interface.h`
+- :ref:`file_dpctl-capi_include_dpctl_sycl_device_interface.h`
+- :ref:`file_dpctl-capi_include_dpctl_sycl_enum_types.h`
+- :ref:`file_dpctl-capi_include_dpctl_sycl_event_interface.h`
+- :ref:`file_dpctl-capi_include_dpctl_sycl_kernel_interface.h`
+- :ref:`file_dpctl-capi_include_dpctl_sycl_platform_interface.h`
+- :ref:`file_dpctl-capi_include_dpctl_sycl_program_interface.h`
+- :ref:`file_dpctl-capi_include_dpctl_sycl_queue_interface.h`
+- :ref:`file_dpctl-capi_include_dpctl_sycl_queue_manager.h`
+- :ref:`file_dpctl-capi_include_dpctl_sycl_types.h`
+- :ref:`file_dpctl-capi_include_dpctl_sycl_usm_interface.h`
+- :ref:`file_dpctl-capi_include_dpctl_utils.h`
+
+

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpCtl Python API &mdash; Data-parallel Control (dpctl) 0.3.8 documentation</title>
+  <title>dpCtl Python API &mdash; Data-parallel Control (dpctl) 0.5.0 documentation</title>
   
 
   
@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="dpCtl Memory Python API" href="dpCtl.memory_api.html" />
-    <link rel="prev" title="Welcome to Data-parallel Control (dpCtl)’s documentation!" href="index.html" /> 
+    <link rel="prev" title="Python API" href="toc_pyapi.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.3.8
+                0.5.0
               </div>
             
           
@@ -90,8 +90,13 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">dpCtl Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dpCtl.memory_api.html">dpctl.memory Python API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="toc_pyapi.html">Python API</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">dpctl - SYCL runtime wrapper classes and queue manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpCtl.memory_api.html">dpctl.memory - USM memory manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpCtl.dptensor_api.html">dpctl.dptensor - Data-parallel tensor containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpCtl.program_api.html">dpctl.program - Program manager</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api/dpCtl-CAPI_root.html">dpCtl C API</a></li>
 </ul>
 
@@ -138,6 +143,8 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
+          <li><a href="toc_pyapi.html">Python API</a> &raquo;</li>
+        
       <li>dpCtl Python API</li>
     
     
@@ -165,8 +172,15 @@ DPC++/SYCL’s API. The goal of dpCtl is not (yet) to provide a
 abstraction for every SYCL function. DpCtl is intended to provide
 a common runtime to manage specific SYCL resources, such as devices
 and USM memory, for SYCL-based Python packages and extension modules.</p>
-<p>Currently, dpCtl has two main features: a global SYCL queue manager
-and a USM memory manager.</p>
+<p>The main features presently provided by dpCtl are:</p>
+<ul class="simple">
+<li><p>A SYCL queue manager exposed directly inside the top-level <cite>dpctl</cite>
+module.</p></li>
+<li><p>A USM memory manager (<cite>dpctl.memory</cite>) that provides Python objects
+implementing the Python buffer protocol using USM shared and USM host
+allocators. The memory manager also exposes various utility functions
+to wrap SYCL’s USM allocators, deallocators, <cite>memcpy</cite> functions, <em>etc.</em></p></li>
+</ul>
 <dl class="py class">
 <dt id="dpctl.SyclContext">
 <em class="property">class </em><code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">SyclContext</code><a class="headerlink" href="#dpctl.SyclContext" title="Permalink to this definition">¶</a></dt>
@@ -174,11 +188,11 @@ and a USM memory manager.</p>
 <dl class="py method">
 <dt id="dpctl.SyclContext.addressof_ref">
 <code class="sig-name descname">addressof_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclContext.addressof_ref" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the address of the DPPLSyclContextRef pointer as a
+<dd><p>Returns the address of the DPCTLSyclContextRef pointer as a
 long.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The address of the DPPLSyclContextRef object used to create this
+<dd class="field-odd"><p>The address of the DPCTLSyclContextRef object used to create this
 SyclContext cast to a long.</p>
 </dd>
 </dl>
@@ -200,11 +214,11 @@ as this SyclContext.</p>
 <dl class="py method">
 <dt id="dpctl.SyclDevice.addressof_ref">
 <code class="sig-name descname">addressof_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.addressof_ref" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the address of the DPPLSyclDeviceRef pointer as a
+<dd><p>Returns the address of the DPCTLSyclDeviceRef pointer as a
 long.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The address of the DPPLSyclDeviceRef object used to create this
+<dd class="field-odd"><p>The address of the DPCTLSyclDeviceRef object used to create this
 SyclDevice cast to a long.</p>
 </dd>
 </dl>
@@ -308,67 +322,12 @@ device type <code class="docutils literal notranslate"><span class="pre">info::d
 <dl class="py method">
 <dt id="dpctl.SyclEvent.addressof_ref">
 <code class="sig-name descname">addressof_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent.addressof_ref" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the address of the C API DPPLSyclEventRef pointer as
+<dd><p>Returns the address of the C API DPCTLSyclEventRef pointer as
 a long.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The address of the DPPLSyclEventRef object used to create this
+<dd class="field-odd"><p>The address of the DPCTLSyclEventRef object used to create this
 SyclEvent cast to a long.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="dpctl.SyclKernel">
-<em class="property">class </em><code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">SyclKernel</code><a class="headerlink" href="#dpctl.SyclKernel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wraps a sycl::kernel object created from an OpenCL interoperability
-kernel.</p>
-<dl class="py method">
-<dt id="dpctl.SyclKernel.addressof_ref">
-<code class="sig-name descname">addressof_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclKernel.addressof_ref" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the address of the C API DPPLSyclKernelRef pointer
-as a long.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The address of the DPPLSyclKernelRef object used to create this
-SyclKernel cast to a long.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="dpctl.SyclKernel.get_function_name">
-<code class="sig-name descname">get_function_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclKernel.get_function_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the name of the Kernel function.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="dpctl.SyclKernel.get_num_args">
-<code class="sig-name descname">get_num_args</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclKernel.get_num_args" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the number of arguments for this kernel function.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="dpctl.SyclProgram">
-<em class="property">class </em><code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">SyclProgram</code><a class="headerlink" href="#dpctl.SyclProgram" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wraps a sycl::program object created from an OpenCL interoperability
-program.</p>
-<p>SyclProgram exposes the C API from dppl_sycl_program_interface.h. A
-SyclProgram can be created from either a source string or a SPIR-V
-binary file.</p>
-<dl class="py method">
-<dt id="dpctl.SyclProgram.addressof_ref">
-<code class="sig-name descname">addressof_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclProgram.addressof_ref" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the address of the C API DPPLSyclProgramRef pointer
-as a long.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The address of the DPPLSyclProgramRef object used to create this
-SyclProgram cast to a long.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -382,10 +341,10 @@ SyclProgram cast to a long.</p>
 <dl class="py method">
 <dt id="dpctl.SyclQueue.addressof_ref">
 <code class="sig-name descname">addressof_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.addressof_ref" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the address of the C API DPPLSyclQueueRef pointer as a long.</p>
+<dd><p>Returns the address of the C API DPCTLSyclQueueRef pointer as a long.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The address of the DPPLSyclQueueRef object used to create this
+<dd class="field-odd"><p>The address of the DPCTLSyclQueueRef object used to create this
 SyclQueue cast to a long.</p>
 </dd>
 </dl>
@@ -410,55 +369,6 @@ as this SycleQueue.</p>
 <dt id="dpctl.backend_type">
 <em class="property">class </em><code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">backend_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.backend_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Automatically numbers SYCL backend types with values starting from 1.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="dpctl.create_program_from_source">
-<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">create_program_from_source</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.create_program_from_source" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a Sycl interoperability program from an OpenCL source string.</p>
-<p>We use the DPPLProgram_CreateFromOCLSource() C API function to create
-a Sycl progrma from an OpenCL source program that can contain multiple
-kernels.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>q</strong> (<a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><em>SyclQueue</em></a>) – The <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> for which the
-<a class="reference internal" href="#dpctl.SyclProgram" title="dpctl.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> is going to be built.</p></li>
-<li><p><strong>source</strong> (<em>unicode</em>) – Source string for an OpenCL program.</p></li>
-<li><p><strong>copts</strong> (<em>unicode</em>) – Optional compilation flags that will be used
-when compiling the program.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A <a class="reference internal" href="#dpctl.SyclProgram" title="dpctl.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the  sycl::program returned by the C API.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>program (<a class="reference internal" href="#dpctl.SyclProgram" title="dpctl.SyclProgram">SyclProgram</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="dpctl.create_program_from_spirv">
-<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">create_program_from_spirv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.create_program_from_spirv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a Sycl interoperability program from an SPIR-V binary.</p>
-<p>We use the DPPLProgram_CreateFromOCLSpirv() C API function to create
-a Sycl progrma from an compiled SPIR-V binary file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>q</strong> (<a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><em>SyclQueue</em></a>) – The <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> for which the
-<a class="reference internal" href="#dpctl.SyclProgram" title="dpctl.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> is going to be built.</p></li>
-<li><p><strong>(</strong><strong>const char</strong><strong>[</strong> (<em>IL</em>) – ]) : SPIR-V binary IL file for an OpenCL program.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A <a class="reference internal" href="#dpctl.SyclProgram" title="dpctl.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the  sycl::program returned by the C API.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>program (<a class="reference internal" href="#dpctl.SyclProgram" title="dpctl.SyclProgram">SyclProgram</a>)</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -499,13 +409,28 @@ directly used without having to call <a class="reference internal" href="#dpctl.
 <dl class="py function">
 <dt id="dpctl.get_current_queue">
 <code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_current_queue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_current_queue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Obtain current Sycl Queue from Data Parallel Control package.</p>
+<dd><p>Returns the currently activate SYCL queue as a new SyclQueue object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>If there is a currently active SYCL queue that queue
+is returned wrapped in a SyclQueue object. The SyclQueue object
+owns a copy of the currently active SYCL queue as an opaque
+<cite>DPCTLSyclQueueRef</cite> pointer. The pointer is freed when the SyclQueue
+is garbage collected.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue">SyclQueue</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>SyclQueueCreationError</strong> – If no currently active SYCL queue found.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpctl.get_num_activated_queues">
 <code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_num_activated_queues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_activated_queues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of currently activated queues for this thread.</p>
+<dd><p>Returns the number of currently activated queues for this thread.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -527,7 +452,7 @@ directly used without having to call <a class="reference internal" href="#dpctl.
         <a href="dpCtl.memory_api.html" class="btn btn-neutral float-right" title="dpCtl Memory Python API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Data-parallel Control (dpCtl)’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="toc_pyapi.html" class="btn btn-neutral float-left" title="Python API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

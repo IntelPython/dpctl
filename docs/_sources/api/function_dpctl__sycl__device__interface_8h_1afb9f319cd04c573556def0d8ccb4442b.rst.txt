@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__device__interface_8h_1afb9f319cd04c573556def0d8ccb4442b:
+
+Function DPCTLDevice_HasInt64BaseAtomics
+========================================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_device_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLDevice_HasInt64BaseAtomics(const DPCTLSyclDeviceRef)

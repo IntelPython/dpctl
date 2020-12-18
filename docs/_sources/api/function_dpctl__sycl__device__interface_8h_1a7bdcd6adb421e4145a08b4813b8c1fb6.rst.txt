@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__device__interface_8h_1a7bdcd6adb421e4145a08b4813b8c1fb6:
+
+Function DPCTLDevice_IsAccelerator
+==================================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_device_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLDevice_IsAccelerator(const DPCTLSyclDeviceRef)

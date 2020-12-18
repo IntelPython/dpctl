@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__queue__interface_8h_1ae716e5ec42e9c407409ad54eed417fa8:
+
+Function DPCTLQueue_Prefetch
+============================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_queue_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLQueue_Prefetch(DPCTLSyclQueueRef, const void *, size_t)

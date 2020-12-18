@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__queue__interface_8h_1a32dacd6d2ac40a3dbd656d0888385774:
+
+Function DPCTLQueue_GetBackend
+==============================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_queue_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLQueue_GetBackend(DPCTLSyclQueueRef)

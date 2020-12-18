@@ -1,0 +1,13 @@
+.. _exhale_define_DllExport_8h_1aed0c117c235d99c414e0b5033d096785:
+
+Define DPCTL_API
+================
+
+- Defined in :ref:`file_dpctl-capi_include_Support_DllExport.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: DPCTL_API

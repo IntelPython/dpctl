@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__platform__interface_8h_1a53be574a7076656d1490d4b994c684bb:
+
+Function DPCTLPlatform_GetListOfNonHostBackends
+===============================================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_platform_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLPlatform_GetListOfNonHostBackends()

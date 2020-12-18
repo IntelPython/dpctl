@@ -2,22 +2,26 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="d1/d38/CBindingWrapping_8h" kind="file" language="C++">
     <compoundname>CBindingWrapping.h</compoundname>
-    <includedby refid="dd/d48/dppl__sycl__context__interface_8cpp" local="yes">dppl_sycl_context_interface.cpp</includedby>
-    <includedby refid="d9/dba/dppl__sycl__device__interface_8cpp" local="yes">dppl_sycl_device_interface.cpp</includedby>
-    <includedby refid="df/deb/dppl__sycl__event__interface_8cpp" local="yes">dppl_sycl_event_interface.cpp</includedby>
-    <includedby refid="df/dde/dppl__sycl__kernel__interface_8cpp" local="yes">dppl_sycl_kernel_interface.cpp</includedby>
-    <includedby refid="d0/d52/dppl__sycl__program__interface_8cpp" local="yes">dppl_sycl_program_interface.cpp</includedby>
-    <includedby refid="d7/dc5/dppl__sycl__queue__interface_8cpp" local="yes">dppl_sycl_queue_interface.cpp</includedby>
-    <includedby refid="de/d84/dppl__sycl__queue__manager_8cpp" local="yes">dppl_sycl_queue_manager.cpp</includedby>
-    <includedby refid="d8/d88/dppl__sycl__usm__interface_8cpp" local="yes">dppl_sycl_usm_interface.cpp</includedby>
+    <includedby refid="d4/d08/dpctl__sycl__context__interface_8cpp" local="yes">dpctl_sycl_context_interface.cpp</includedby>
+    <includedby refid="de/dc3/dpctl__sycl__device__interface_8cpp" local="yes">dpctl_sycl_device_interface.cpp</includedby>
+    <includedby refid="db/dcc/dpctl__sycl__event__interface_8cpp" local="yes">dpctl_sycl_event_interface.cpp</includedby>
+    <includedby refid="d1/ddb/dpctl__sycl__kernel__interface_8cpp" local="yes">dpctl_sycl_kernel_interface.cpp</includedby>
+    <includedby refid="db/de0/dpctl__sycl__program__interface_8cpp" local="yes">dpctl_sycl_program_interface.cpp</includedby>
+    <includedby refid="d3/daf/dpctl__sycl__queue__interface_8cpp" local="yes">dpctl_sycl_queue_interface.cpp</includedby>
+    <includedby refid="d2/db7/dpctl__sycl__queue__manager_8cpp" local="yes">dpctl_sycl_queue_manager.cpp</includedby>
+    <includedby refid="d1/de8/dpctl__sycl__usm__interface_8cpp" local="yes">dpctl_sycl_usm_interface.cpp</includedby>
     <invincdepgraph>
       <node id="2">
-        <label>dppl_sycl_context_interface.cpp</label>
-        <link refid="dd/d48/dppl__sycl__context__interface_8cpp"/>
+        <label>dpctl_sycl_context_interface.cpp</label>
+        <link refid="d4/d08/dpctl__sycl__context__interface_8cpp"/>
       </node>
-      <node id="3">
-        <label>dppl_sycl_device_interface.cpp</label>
-        <link refid="d9/dba/dppl__sycl__device__interface_8cpp"/>
+      <node id="4">
+        <label>dpctl_sycl_event_interface.cpp</label>
+        <link refid="db/dcc/dpctl__sycl__event__interface_8cpp"/>
+      </node>
+      <node id="7">
+        <label>dpctl_sycl_queue_interface.cpp</label>
+        <link refid="d3/daf/dpctl__sycl__queue__interface_8cpp"/>
       </node>
       <node id="1">
         <label>CBindingWrapping.h</label>
@@ -40,28 +44,24 @@
         </childnode>
       </node>
       <node id="5">
-        <label>dppl_sycl_kernel_interface.cpp</label>
-        <link refid="df/dde/dppl__sycl__kernel__interface_8cpp"/>
-      </node>
-      <node id="4">
-        <label>dppl_sycl_event_interface.cpp</label>
-        <link refid="df/deb/dppl__sycl__event__interface_8cpp"/>
+        <label>dpctl_sycl_kernel_interface.cpp</label>
+        <link refid="d1/ddb/dpctl__sycl__kernel__interface_8cpp"/>
       </node>
       <node id="9">
-        <label>dppl_sycl_usm_interface.cpp</label>
-        <link refid="d8/d88/dppl__sycl__usm__interface_8cpp"/>
-      </node>
-      <node id="7">
-        <label>dppl_sycl_queue_interface.cpp</label>
-        <link refid="d7/dc5/dppl__sycl__queue__interface_8cpp"/>
+        <label>dpctl_sycl_usm_interface.cpp</label>
+        <link refid="d1/de8/dpctl__sycl__usm__interface_8cpp"/>
       </node>
       <node id="6">
-        <label>dppl_sycl_program_interface.cpp</label>
-        <link refid="d0/d52/dppl__sycl__program__interface_8cpp"/>
+        <label>dpctl_sycl_program_interface.cpp</label>
+        <link refid="db/de0/dpctl__sycl__program__interface_8cpp"/>
       </node>
       <node id="8">
-        <label>dppl_sycl_queue_manager.cpp</label>
-        <link refid="de/d84/dppl__sycl__queue__manager_8cpp"/>
+        <label>dpctl_sycl_queue_manager.cpp</label>
+        <link refid="d2/db7/dpctl__sycl__queue__manager_8cpp"/>
+      </node>
+      <node id="3">
+        <label>dpctl_sycl_device_interface.cpp</label>
+        <link refid="de/dc3/dpctl__sycl__device__interface_8cpp"/>
       </node>
     </invincdepgraph>
       <sectiondef kind="define">
@@ -85,7 +85,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/Support/CBindingWrapping.h" line="32" column="9" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/Support/CBindingWrapping.h" bodystart="32" bodyend="-1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/Support/CBindingWrapping.h" line="32" column="9" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/Support/CBindingWrapping.h" bodystart="32" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="d1/d38/CBindingWrapping_8h_1a0856bab1c65467280bf8c2062de4e3d5" prot="public" static="no">
         <name>DEFINE_STDCXX_CONVERSION_FUNCTIONS</name>
@@ -110,16 +110,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/Support/CBindingWrapping.h" line="47" column="9" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/include/Support/CBindingWrapping.h" bodystart="47" bodyend="-1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/Support/CBindingWrapping.h" line="47" column="9" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/Support/CBindingWrapping.h" bodystart="47" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>This file declares the wrapping macros for the DPPL C interface. </para>
+<para>This file declares the wrapping macros for the DPCTL C interface. </para>
     </detaileddescription>
     <programlisting>
-<codeline lineno="1"><highlight class="comment">//===-----<sp/>Support/CBindingWrapping.h<sp/>-<sp/>DPPL-SYCL<sp/>interface<sp/>--*--<sp/>C<sp/>---*---===//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1"><highlight class="comment">//===----<sp/>Support/CBindingWrapping.h<sp/>-<sp/>DPCTL-SYCL<sp/>interface<sp/>--*--<sp/>C<sp/>---*---===//</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Data<sp/>Parallel<sp/>Control<sp/>Library<sp/>(dpCtl)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
@@ -164,6 +164,6 @@
 <codeline lineno="55"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Q;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
 <codeline lineno="56"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}</highlight></codeline>
     </programlisting>
-    <location file="/home/diptorupd/Desktop/devel/dpctl/backends/include/Support/CBindingWrapping.h"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/Support/CBindingWrapping.h"/>
   </compounddef>
 </doxygen>

@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__usm__interface_8h_1adebcaee4d7ef16dc19bf19c9ef94656d:
+
+Function DPCTLaligned_alloc_device
+==================================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_usm_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLaligned_alloc_device(size_t, size_t, const DPCTLSyclQueueRef)

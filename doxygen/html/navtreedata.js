@@ -41,8 +41,8 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"d0/d52/dppl__sycl__program__interface_8cpp.html",
-"files.html"
+"d1/d38/CBindingWrapping_8h.html",
+"df/d74/dpctl__sycl__context__interface_8h.html#a38955d262be1046aa7109cb461a8a9a1"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

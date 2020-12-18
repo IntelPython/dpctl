@@ -1,0 +1,69 @@
+
+.. _file_dpctl-capi_include_dpctl_sycl_program_interface.h:
+
+File dpctl_sycl_program_interface.h
+===================================
+
+|exhale_lsh| :ref:`Parent directory <dir_dpctl-capi_include>` (``dpctl-capi/include``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``dpctl-capi/include/dpctl_sycl_program_interface.h``)
+------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_dpctl-capi_include_dpctl_sycl_program_interface.h.rst
+
+
+
+Detailed Description
+--------------------
+
+This header declares a C API to create Sycl program an interoperability program defined in OpenCL. In future, API to create interoperability kernels from other languages such as Level-0 driver API may be added here.
+
+TodoInvestigate what we should do when we add support for Level-0 API. 
+
+
+
+
+
+Includes
+--------
+
+
+- ``Support/DllExport.h`` (:ref:`file_dpctl-capi_include_Support_DllExport.h`)
+
+- ``Support/ExternC.h`` (:ref:`file_dpctl-capi_include_Support_ExternC.h`)
+
+- ``Support/MemOwnershipAttrs.h`` (:ref:`file_dpctl-capi_include_Support_MemOwnershipAttrs.h`)
+
+- ``dpctl_data_types.h`` (:ref:`file_dpctl-capi_include_dpctl_data_types.h`)
+
+- ``dpctl_sycl_types.h`` (:ref:`file_dpctl-capi_include_dpctl_sycl_types.h`)
+
+
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_dpctl__sycl__program__interface_8h_1a37752d8eb8f9a78d4445801cbfc46907`
+
+- :ref:`exhale_function_dpctl__sycl__program__interface_8h_1a7219641c57da2d9ab196099fca12cc77`
+
+- :ref:`exhale_function_dpctl__sycl__program__interface_8h_1ae9b67e80353bf2af0f9116d6180a7e20`
+
+- :ref:`exhale_function_dpctl__sycl__program__interface_8h_1aff8800500718866502989154678afabf`
+
+- :ref:`exhale_function_dpctl__sycl__program__interface_8h_1a08fff852d4c7e5f85bec38cbdbae52d7`
+

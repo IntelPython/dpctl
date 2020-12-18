@@ -1,0 +1,13 @@
+.. _exhale_function_dpctl__sycl__device__interface_8h_1a3cc7baf97db884f18a0b92cb87531f93:
+
+Function DPCTLDevice_GetMaxWorkItemSizes
+========================================
+
+- Defined in :ref:`file_dpctl-capi_include_dpctl_sycl_device_interface.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: DPCTLDevice_GetMaxWorkItemSizes(const DPCTLSyclDeviceRef)

@@ -3,13 +3,13 @@
   <compounddef id="da/d9e/CMakeLists_8txt" kind="file" language="C++">
     <compoundname>CMakeLists.txt</compoundname>
       <sectiondef kind="func">
-      <memberdef kind="function" id="da/d9e/CMakeLists_8txt_1a2ca62aab47bd9a99e022b2cf9448bbfd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="da/d9e/CMakeLists_8txt_1a3089bef173bd7b03cf89dfcf9ba56f73" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>cmake_minimum_required</definition>
-        <argsstring>(VERSION 3.3.2 FATAL_ERROR) project(&quot;dpCtl - A lightweight SYCL wrapper for Python&quot;) function(check_for_dpcpp) string(COMPARE EQUAL &quot;$</argsstring>
+        <argsstring>(VERSION 3.10 FATAL_ERROR) project(&quot;dpCtl - A lightweight SYCL wrapper for Python&quot;) function(check_for_dpcpp) string(COMPARE EQUAL &quot;$</argsstring>
         <name>cmake_minimum_required</name>
         <param>
-          <type>VERSION 3.3.2</type>
+          <type>VERSION 3.10</type>
           <declname>FATAL_ERROR</declname>
         </param>
         <briefdescription>
@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/CMakeLists.txt" line="1" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/CMakeLists.txt" bodystart="1" bodyend="6"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/CMakeLists.txt" line="1" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/CMakeLists.txt" bodystart="1" bodyend="6"/>
       </memberdef>
       <memberdef kind="function" id="da/d9e/CMakeLists_8txt_1a79010be137637b1fffdd9f3c0a926708" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>no_dpcpp_root</type>
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/CMakeLists.txt" line="7" column="5" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/CMakeLists.txt" bodystart="7" bodyend="13"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/CMakeLists.txt" line="7" column="5" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/CMakeLists.txt" bodystart="7" bodyend="13"/>
       </memberdef>
       <memberdef kind="function" id="da/d9e/CMakeLists_8txt_1aa739aaa568ca4e3fb8021c8984335c14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bin dpcpp</type>
@@ -50,7 +50,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/diptorupd/Desktop/devel/dpctl/backends/CMakeLists.txt" line="14" column="9" bodyfile="/home/diptorupd/Desktop/devel/dpctl/backends/CMakeLists.txt" bodystart="14" bodyend="16"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/CMakeLists.txt" line="14" column="9" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/CMakeLists.txt" bodystart="14" bodyend="16"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -58,7 +58,7 @@
     <detaileddescription>
     </detaileddescription>
     <programlisting>
-<codeline lineno="1"><highlight class="normal"><ref refid="da/d9e/CMakeLists_8txt_1a2ca62aab47bd9a99e022b2cf9448bbfd" kindref="member">cmake_minimum_required</ref>(VERSION<sp/>3.3.2<sp/>FATAL_ERROR)</highlight></codeline>
+<codeline lineno="1"><highlight class="normal"><ref refid="da/d9e/CMakeLists_8txt_1a3089bef173bd7b03cf89dfcf9ba56f73" kindref="member">cmake_minimum_required</ref>(VERSION<sp/>3.10<sp/>FATAL_ERROR)</highlight></codeline>
 <codeline lineno="2"><highlight class="normal">project(</highlight><highlight class="stringliteral">&quot;dpCtl<sp/>-<sp/>A<sp/>lightweight<sp/>SYCL<sp/>wrapper<sp/>for<sp/>Python&quot;</highlight><highlight class="normal">)</highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/>The<sp/>function<sp/>checks<sp/>is<sp/>DPCPP_ROOT<sp/>is<sp/>valid<sp/>and<sp/>points<sp/>to<sp/>a<sp/>dpcpp<sp/>installation</highlight><highlight class="normal"></highlight></codeline>
@@ -94,7 +94,7 @@
 <codeline lineno="34"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>message(STATUS<sp/>&quot;</highlight><highlight class="normal">dpcpp<sp/>ver[${dpcpp_result}]:<sp/>${X}</highlight><highlight class="stringliteral">&quot;)</highlight></codeline>
 <codeline lineno="35"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>endforeach()</highlight></codeline>
 <codeline lineno="36"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>else()</highlight></codeline>
-<codeline lineno="37"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>message(FATAL_ERROR<sp/>&quot;</highlight><highlight class="normal">DPCPP<sp/>needed<sp/>to<sp/>build<sp/>dppl_sycl_interface</highlight><highlight class="stringliteral">&quot;)</highlight></codeline>
+<codeline lineno="37"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>message(FATAL_ERROR<sp/>&quot;</highlight><highlight class="normal">DPCPP<sp/>needed<sp/>to<sp/>build<sp/>dpctl_sycl_interface</highlight><highlight class="stringliteral">&quot;)</highlight></codeline>
 <codeline lineno="38"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>endif()</highlight></codeline>
 <codeline lineno="39"><highlight class="stringliteral">endfunction()</highlight></codeline>
 <codeline lineno="40"><highlight class="stringliteral"></highlight></codeline>
@@ -125,70 +125,87 @@
 <codeline lineno="65"><highlight class="stringliteral">endif()</highlight></codeline>
 <codeline lineno="66"><highlight class="stringliteral"></highlight></codeline>
 <codeline lineno="67"><highlight class="stringliteral">add_library(</highlight></codeline>
-<codeline lineno="68"><highlight class="stringliteral"><sp/><sp/>DPPLSyclInterface</highlight></codeline>
+<codeline lineno="68"><highlight class="stringliteral"><sp/><sp/>DPCTLSyclInterface</highlight></codeline>
 <codeline lineno="69"><highlight class="stringliteral"><sp/><sp/>SHARED</highlight></codeline>
-<codeline lineno="70"><highlight class="stringliteral"><sp/><sp/>source/dppl_sycl_context_interface.cpp</highlight></codeline>
-<codeline lineno="71"><highlight class="stringliteral"><sp/><sp/>source/dppl_sycl_device_interface.cpp</highlight></codeline>
-<codeline lineno="72"><highlight class="stringliteral"><sp/><sp/>source/dppl_sycl_event_interface.cpp</highlight></codeline>
-<codeline lineno="73"><highlight class="stringliteral"><sp/><sp/>source/dppl_sycl_kernel_interface.cpp</highlight></codeline>
-<codeline lineno="74"><highlight class="stringliteral"><sp/><sp/>source/dppl_sycl_platform_interface.cpp</highlight></codeline>
-<codeline lineno="75"><highlight class="stringliteral"><sp/><sp/>source/dppl_sycl_program_interface.cpp</highlight></codeline>
-<codeline lineno="76"><highlight class="stringliteral"><sp/><sp/>source/dppl_sycl_queue_interface.cpp</highlight></codeline>
-<codeline lineno="77"><highlight class="stringliteral"><sp/><sp/>source/dppl_sycl_queue_manager.cpp</highlight></codeline>
-<codeline lineno="78"><highlight class="stringliteral"><sp/><sp/>source/dppl_sycl_usm_interface.cpp</highlight></codeline>
-<codeline lineno="79"><highlight class="stringliteral"><sp/><sp/>source/dppl_utils.cpp</highlight></codeline>
-<codeline lineno="80"><highlight class="stringliteral">)</highlight></codeline>
-<codeline lineno="81"><highlight class="stringliteral"></highlight></codeline>
-<codeline lineno="82"><highlight class="stringliteral">#<sp/>Install<sp/>DPPLSyclInterface</highlight></codeline>
-<codeline lineno="83"><highlight class="stringliteral">target_include_directories(</highlight></codeline>
-<codeline lineno="84"><highlight class="stringliteral"><sp/><sp/>DPPLSyclInterface</highlight></codeline>
-<codeline lineno="85"><highlight class="stringliteral"><sp/><sp/>PRIVATE</highlight></codeline>
-<codeline lineno="86"><highlight class="stringliteral"><sp/><sp/>${CMAKE_SOURCE_DIR}/include/</highlight></codeline>
-<codeline lineno="87"><highlight class="stringliteral">)</highlight></codeline>
-<codeline lineno="88"><highlight class="stringliteral"></highlight></codeline>
-<codeline lineno="89"><highlight class="stringliteral">if(WIN32)</highlight></codeline>
-<codeline lineno="90"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>message(</highlight></codeline>
-<codeline lineno="91"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>STATUS</highlight></codeline>
-<codeline lineno="92"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;</highlight><highlight class="normal">SYCL_INCLUDE_DIR:<sp/></highlight><highlight class="stringliteral">&quot;</highlight></codeline>
-<codeline lineno="93"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${DPCPP_ROOT}/include/sycl</highlight></codeline>
-<codeline lineno="94"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>)</highlight></codeline>
-<codeline lineno="95"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>target_include_directories(</highlight></codeline>
-<codeline lineno="96"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DPPLSyclInterface</highlight></codeline>
-<codeline lineno="97"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PUBLIC</highlight></codeline>
-<codeline lineno="98"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${DPCPP_ROOT}/include/sycl</highlight></codeline>
-<codeline lineno="99"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>)</highlight></codeline>
-<codeline lineno="100"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>target_link_libraries(</highlight></codeline>
-<codeline lineno="101"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DPPLSyclInterface</highlight></codeline>
-<codeline lineno="102"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PRIVATE<sp/>${DPCPP_ROOT}/lib/sycl.lib</highlight></codeline>
-<codeline lineno="103"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PRIVATE<sp/>${DPCPP_ROOT}/lib/OpenCL.lib</highlight></codeline>
-<codeline lineno="104"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>)</highlight></codeline>
-<codeline lineno="105"><highlight class="stringliteral">endif()</highlight></codeline>
-<codeline lineno="106"><highlight class="stringliteral"></highlight></codeline>
-<codeline lineno="107"><highlight class="stringliteral">install(</highlight></codeline>
-<codeline lineno="108"><highlight class="stringliteral"><sp/><sp/>TARGETS</highlight></codeline>
-<codeline lineno="109"><highlight class="stringliteral"><sp/><sp/>DPPLSyclInterface</highlight></codeline>
-<codeline lineno="110"><highlight class="stringliteral"><sp/><sp/>LIBRARY<sp/>DESTINATION</highlight></codeline>
-<codeline lineno="111"><highlight class="stringliteral"><sp/><sp/>&quot;</highlight><highlight class="normal">${CMAKE_INSTALL_PREFIX}/lib/</highlight><highlight class="stringliteral">&quot;</highlight></codeline>
-<codeline lineno="112"><highlight class="stringliteral">)</highlight></codeline>
-<codeline lineno="113"><highlight class="stringliteral"></highlight></codeline>
-<codeline lineno="114"><highlight class="stringliteral">#<sp/>Install<sp/>all<sp/>headers</highlight></codeline>
-<codeline lineno="115"><highlight class="stringliteral">file(GLOB<sp/>HEADERS<sp/>&quot;</highlight><highlight class="normal">${CMAKE_SOURCE_DIR}/include</highlight><highlight class="comment">/*.h*&quot;)</highlight></codeline>
-<codeline lineno="116"><highlight class="comment">foreach(HEADER<sp/>${HEADERS})</highlight></codeline>
-<codeline lineno="117"><highlight class="comment"><sp/><sp/>install(FILES<sp/>&quot;${HEADER}&quot;<sp/>DESTINATION<sp/>include)</highlight></codeline>
-<codeline lineno="118"><highlight class="comment">endforeach()</highlight></codeline>
-<codeline lineno="119"><highlight class="comment"></highlight></codeline>
-<codeline lineno="120"><highlight class="comment">#<sp/>Install<sp/>all<sp/>headers<sp/>in<sp/>include/Support</highlight></codeline>
-<codeline lineno="121"><highlight class="comment">file(GLOB<sp/>HEADERS<sp/>&quot;${CMAKE_SOURCE_DIR}/include/Support/*.h*&quot;)</highlight></codeline>
-<codeline lineno="122"><highlight class="comment">foreach(HEADER<sp/>${HEADERS})</highlight></codeline>
-<codeline lineno="123"><highlight class="comment"><sp/><sp/>install(FILES<sp/>&quot;${HEADER}&quot;<sp/>DESTINATION<sp/>include/Support)</highlight></codeline>
-<codeline lineno="124"><highlight class="comment">endforeach()</highlight></codeline>
-<codeline lineno="125"><highlight class="comment"></highlight></codeline>
-<codeline lineno="126"><highlight class="comment">#<sp/>Enable<sp/>to<sp/>build<sp/>the<sp/>dpCtl<sp/>backend<sp/>test<sp/>cases</highlight></codeline>
-<codeline lineno="127"><highlight class="comment">add_subdirectory(tests)</highlight></codeline>
-<codeline lineno="128"><highlight class="comment"></highlight></codeline>
-<codeline lineno="129"><highlight class="comment">#<sp/>Todo<sp/>:<sp/>Add<sp/>build<sp/>rules<sp/>for<sp/>doxygen</highlight></codeline>
-<codeline lineno="130"><highlight class="comment">#<sp/>maybe<sp/>refer<sp/>https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/</highlight></codeline>
+<codeline lineno="70"><highlight class="stringliteral"><sp/><sp/>source/dpctl_sycl_context_interface.cpp</highlight></codeline>
+<codeline lineno="71"><highlight class="stringliteral"><sp/><sp/>source/dpctl_sycl_device_interface.cpp</highlight></codeline>
+<codeline lineno="72"><highlight class="stringliteral"><sp/><sp/>source/dpctl_sycl_event_interface.cpp</highlight></codeline>
+<codeline lineno="73"><highlight class="stringliteral"><sp/><sp/>source/dpctl_sycl_kernel_interface.cpp</highlight></codeline>
+<codeline lineno="74"><highlight class="stringliteral"><sp/><sp/>source/dpctl_sycl_platform_interface.cpp</highlight></codeline>
+<codeline lineno="75"><highlight class="stringliteral"><sp/><sp/>source/dpctl_sycl_program_interface.cpp</highlight></codeline>
+<codeline lineno="76"><highlight class="stringliteral"><sp/><sp/>source/dpctl_sycl_queue_interface.cpp</highlight></codeline>
+<codeline lineno="77"><highlight class="stringliteral"><sp/><sp/>source/dpctl_sycl_queue_manager.cpp</highlight></codeline>
+<codeline lineno="78"><highlight class="stringliteral"><sp/><sp/>source/dpctl_sycl_usm_interface.cpp</highlight></codeline>
+<codeline lineno="79"><highlight class="stringliteral"><sp/><sp/>source/dpctl_utils.cpp</highlight></codeline>
+<codeline lineno="80"><highlight class="stringliteral"><sp/><sp/>helper/source/dpctl_utils_helper.cpp</highlight></codeline>
+<codeline lineno="81"><highlight class="stringliteral">)</highlight></codeline>
+<codeline lineno="82"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="83"><highlight class="stringliteral">#<sp/>Install<sp/>DPCTLSyclInterface</highlight></codeline>
+<codeline lineno="84"><highlight class="stringliteral">target_include_directories(</highlight></codeline>
+<codeline lineno="85"><highlight class="stringliteral"><sp/><sp/>DPCTLSyclInterface</highlight></codeline>
+<codeline lineno="86"><highlight class="stringliteral"><sp/><sp/>PRIVATE</highlight></codeline>
+<codeline lineno="87"><highlight class="stringliteral"><sp/><sp/>${CMAKE_SOURCE_DIR}/include/</highlight></codeline>
+<codeline lineno="88"><highlight class="stringliteral"><sp/><sp/>${CMAKE_SOURCE_DIR}/helper/include/</highlight></codeline>
+<codeline lineno="89"><highlight class="stringliteral">)</highlight></codeline>
+<codeline lineno="90"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="91"><highlight class="stringliteral">if(WIN32)</highlight></codeline>
+<codeline lineno="92"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>message(</highlight></codeline>
+<codeline lineno="93"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>STATUS</highlight></codeline>
+<codeline lineno="94"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;</highlight><highlight class="normal">SYCL_INCLUDE_DIR:<sp/></highlight><highlight class="stringliteral">&quot;</highlight></codeline>
+<codeline lineno="95"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${DPCPP_ROOT}/include/sycl</highlight></codeline>
+<codeline lineno="96"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="97"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>target_include_directories(</highlight></codeline>
+<codeline lineno="98"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DPCTLSyclInterface</highlight></codeline>
+<codeline lineno="99"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PUBLIC</highlight></codeline>
+<codeline lineno="100"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${DPCPP_ROOT}/include/sycl</highlight></codeline>
+<codeline lineno="101"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="102"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>target_link_libraries(</highlight></codeline>
+<codeline lineno="103"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DPCTLSyclInterface</highlight></codeline>
+<codeline lineno="104"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PRIVATE<sp/>${DPCPP_ROOT}/lib/sycl.lib</highlight></codeline>
+<codeline lineno="105"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PRIVATE<sp/>${DPCPP_ROOT}/lib/OpenCL.lib</highlight></codeline>
+<codeline lineno="106"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="107"><highlight class="stringliteral">endif()</highlight></codeline>
+<codeline lineno="108"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="109"><highlight class="stringliteral">install(</highlight></codeline>
+<codeline lineno="110"><highlight class="stringliteral"><sp/><sp/>TARGETS</highlight></codeline>
+<codeline lineno="111"><highlight class="stringliteral"><sp/><sp/>DPCTLSyclInterface</highlight></codeline>
+<codeline lineno="112"><highlight class="stringliteral"><sp/><sp/>LIBRARY<sp/>DESTINATION</highlight></codeline>
+<codeline lineno="113"><highlight class="stringliteral"><sp/><sp/>&quot;</highlight><highlight class="normal">${CMAKE_INSTALL_PREFIX}/lib/</highlight><highlight class="stringliteral">&quot;</highlight></codeline>
+<codeline lineno="114"><highlight class="stringliteral">)</highlight></codeline>
+<codeline lineno="115"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="116"><highlight class="stringliteral">#<sp/>Install<sp/>all<sp/>headers</highlight></codeline>
+<codeline lineno="117"><highlight class="stringliteral">file(GLOB<sp/>HEADERS<sp/>&quot;</highlight><highlight class="normal">${CMAKE_SOURCE_DIR}/include</highlight><highlight class="comment">/*.h*&quot;)</highlight></codeline>
+<codeline lineno="118"><highlight class="comment">foreach(HEADER<sp/>${HEADERS})</highlight></codeline>
+<codeline lineno="119"><highlight class="comment"><sp/><sp/>install(FILES<sp/>&quot;${HEADER}&quot;<sp/>DESTINATION<sp/>include)</highlight></codeline>
+<codeline lineno="120"><highlight class="comment">endforeach()</highlight></codeline>
+<codeline lineno="121"><highlight class="comment"></highlight></codeline>
+<codeline lineno="122"><highlight class="comment">#<sp/>Install<sp/>all<sp/>headers<sp/>in<sp/>include/Support</highlight></codeline>
+<codeline lineno="123"><highlight class="comment">file(GLOB<sp/>HEADERS<sp/>&quot;${CMAKE_SOURCE_DIR}/include/Support/*.h*&quot;)</highlight></codeline>
+<codeline lineno="124"><highlight class="comment">foreach(HEADER<sp/>${HEADERS})</highlight></codeline>
+<codeline lineno="125"><highlight class="comment"><sp/><sp/>install(FILES<sp/>&quot;${HEADER}&quot;<sp/>DESTINATION<sp/>include/Support)</highlight></codeline>
+<codeline lineno="126"><highlight class="comment">endforeach()</highlight></codeline>
+<codeline lineno="127"><highlight class="comment"></highlight></codeline>
+<codeline lineno="128"><highlight class="comment">#<sp/>Install<sp/>all<sp/>headers<sp/>in<sp/>helper/include</highlight></codeline>
+<codeline lineno="129"><highlight class="comment">file(GLOB<sp/>HEADERS<sp/>&quot;${CMAKE_SOURCE_DIR}/helper/include/*.h*&quot;)</highlight></codeline>
+<codeline lineno="130"><highlight class="comment">foreach(HEADER<sp/>${HEADERS})</highlight></codeline>
+<codeline lineno="131"><highlight class="comment"><sp/><sp/>install(FILES<sp/>&quot;${HEADER}&quot;<sp/>DESTINATION<sp/>helper/include)</highlight></codeline>
+<codeline lineno="132"><highlight class="comment">endforeach()</highlight></codeline>
+<codeline lineno="133"><highlight class="comment"></highlight></codeline>
+<codeline lineno="134"><highlight class="comment">option(</highlight></codeline>
+<codeline lineno="135"><highlight class="comment"><sp/><sp/><sp/><sp/>BUILD_CAPI_TESTS</highlight></codeline>
+<codeline lineno="136"><highlight class="comment"><sp/><sp/><sp/><sp/>&quot;Build<sp/>dpctl<sp/>C<sp/>API<sp/>google<sp/>tests&quot;</highlight></codeline>
+<codeline lineno="137"><highlight class="comment"><sp/><sp/><sp/><sp/>OFF</highlight></codeline>
+<codeline lineno="138"><highlight class="comment">)</highlight></codeline>
+<codeline lineno="139"><highlight class="comment"></highlight></codeline>
+<codeline lineno="140"><highlight class="comment">#<sp/>Enable<sp/>to<sp/>build<sp/>the<sp/>dpCtl<sp/>backend<sp/>test<sp/>cases</highlight></codeline>
+<codeline lineno="141"><highlight class="comment">if(BUILD_CAPI_TESTS)</highlight></codeline>
+<codeline lineno="142"><highlight class="comment"><sp/><sp/><sp/><sp/>add_subdirectory(tests)</highlight></codeline>
+<codeline lineno="143"><highlight class="comment">endif()</highlight></codeline>
+<codeline lineno="144"><highlight class="comment"></highlight></codeline>
+<codeline lineno="145"><highlight class="comment"></highlight></codeline>
+<codeline lineno="146"><highlight class="comment">#<sp/>Todo<sp/>:<sp/>Add<sp/>build<sp/>rules<sp/>for<sp/>doxygen</highlight></codeline>
+<codeline lineno="147"><highlight class="comment">#<sp/>maybe<sp/>refer<sp/>https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/</highlight></codeline>
     </programlisting>
-    <location file="/home/diptorupd/Desktop/devel/dpctl/backends/CMakeLists.txt"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/CMakeLists.txt"/>
   </compounddef>
 </doxygen>

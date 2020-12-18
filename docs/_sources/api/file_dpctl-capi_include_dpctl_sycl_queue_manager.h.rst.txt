@@ -1,0 +1,78 @@
+
+.. _file_dpctl-capi_include_dpctl_sycl_queue_manager.h:
+
+File dpctl_sycl_queue_manager.h
+===============================
+
+|exhale_lsh| :ref:`Parent directory <dir_dpctl-capi_include>` (``dpctl-capi/include``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``dpctl-capi/include/dpctl_sycl_queue_manager.h``)
+--------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_dpctl-capi_include_dpctl_sycl_queue_manager.h.rst
+
+
+
+Detailed Description
+--------------------
+
+This header declares a C interface to DPCTL's sycl::queue manager to maintain a thread local stack of sycl::queues objects for use inside Python programs. The C interface is designed in a way to not have to include the Sycl headers inside a Python extension module, since that would require the extension to be compiled using dpc++ or another Sycl compiler. Compiling the extension with a compiler different from what was used to compile the Python interpreter can cause run-time problems especially on MS Windows. Additionally, the C interface makes it easier to interoperate with Numba without having to deal with C++ name mangling. 
+
+
+
+
+Includes
+--------
+
+
+- ``Support/DllExport.h`` (:ref:`file_dpctl-capi_include_Support_DllExport.h`)
+
+- ``Support/ExternC.h`` (:ref:`file_dpctl-capi_include_Support_ExternC.h`)
+
+- ``Support/MemOwnershipAttrs.h`` (:ref:`file_dpctl-capi_include_Support_MemOwnershipAttrs.h`)
+
+- ``dpctl_data_types.h`` (:ref:`file_dpctl-capi_include_dpctl_data_types.h`)
+
+- ``dpctl_sycl_context_interface.h`` (:ref:`file_dpctl-capi_include_dpctl_sycl_context_interface.h`)
+
+- ``dpctl_sycl_device_interface.h`` (:ref:`file_dpctl-capi_include_dpctl_sycl_device_interface.h`)
+
+- ``dpctl_sycl_types.h`` (:ref:`file_dpctl-capi_include_dpctl_sycl_types.h`)
+
+
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_dpctl__sycl__queue__manager_8h_1aa70cd1c9dca649d309c689f473cd17d8`
+
+- :ref:`exhale_function_dpctl__sycl__queue__manager_8h_1a22e01116058119d7370b482130971e19`
+
+- :ref:`exhale_function_dpctl__sycl__queue__manager_8h_1a207d8c268822cd0f605340ce59e03aaa`
+
+- :ref:`exhale_function_dpctl__sycl__queue__manager_8h_1afa5e14912992f251601311abe7614920`
+
+- :ref:`exhale_function_dpctl__sycl__queue__manager_8h_1a73d537e36027fb92e6051910b1c4ec34`
+
+- :ref:`exhale_function_dpctl__sycl__queue__manager_8h_1a9702defbb0763021fee0b504b6718fae`
+
+- :ref:`exhale_function_dpctl__sycl__queue__manager_8h_1ab7092ee56c64ddb5389268e0570213a3`
+
+- :ref:`exhale_function_dpctl__sycl__queue__manager_8h_1a7e6663d3cbf2a469e3aad61a502f2a61`
+
+- :ref:`exhale_function_dpctl__sycl__queue__manager_8h_1a02f27815319f495f473c5610e580ec98`
+
