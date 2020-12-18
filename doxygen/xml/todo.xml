@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="todo" kind="page">
     <compoundname>todo</compoundname>
     <title>Todo List</title>
@@ -7,22 +7,22 @@
     </briefdescription>
     <detaileddescription>
 <para><variablelist>
-<varlistentry><term>Global <ref refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089" kindref="member">DPCTLKernelArgType</ref>  </term></varlistentry>
-<listitem><para><anchor id="todo_1_todo000001"/>Add support for sycl::buffer </para>
-</listitem>
 <varlistentry><term>File <ref refid="dpctl__sycl__kernel__interface_8h" kindref="compound">dpctl_sycl_kernel_interface.h</ref>  </term></varlistentry>
 <listitem><para><anchor id="todo_1_todo000002"/>Investigate what we should do when we add support for Level-0 API.  </para>
 </listitem>
 <varlistentry><term>File <ref refid="dpctl__sycl__program__interface_8h" kindref="compound">dpctl_sycl_program_interface.h</ref>  </term></varlistentry>
 <listitem><para><anchor id="todo_1_todo000003"/>Investigate what we should do when we add support for Level-0 API.  </para>
 </listitem>
-<varlistentry><term>Global <ref refid="dpctl__sycl__queue__interface_8h_1a798fcfd6344469ebd02ba4b23100820a" kindref="member">DPCTLQueue_SubmitRange</ref>  (const DPCTLSyclKernelRef KRef, const DPCTLSyclQueueRef QRef, void **Args, const DPCTLKernelArgType *ArgTypes, size_t NArgs, const size_t Range[3], size_t NRange, const DPCTLSyclEventRef *DepEvents, size_t NDepEvents)</term></varlistentry>
-<listitem><para><anchor id="todo_1_todo000004"/>sycl::buffer arguments are not supported yet. </para>
-<para><anchor id="todo_1_todo000005"/>Add support for id&lt;Dims&gt; WorkItemOffset </para>
+<varlistentry><term>Global <ref refid="dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089" kindref="member">DPCTLKernelArgType</ref>  </term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000001"/>Add support for sycl::buffer </para>
 </listitem>
 <varlistentry><term>Global <ref refid="dpctl__sycl__queue__interface_8h_1a4b028a6ecfa607ac8fdb50233d8d1c42" kindref="member">DPCTLQueue_SubmitNDRange</ref>  (const DPCTLSyclKernelRef KRef, const DPCTLSyclQueueRef QRef, void **Args, const DPCTLKernelArgType *ArgTypes, size_t NArgs, const size_t gRange[3], const size_t lRange[3], size_t NDims, const DPCTLSyclEventRef *DepEvents, size_t NDepEvents)</term></varlistentry>
-<listitem><para><anchor id="todo_1_todo000006"/>sycl::buffer arguments are not supported yet. </para>
-<para><anchor id="todo_1_todo000007"/>Add support for id&lt;Dims&gt; WorkItemOffset</para>
+<listitem><para><anchor id="todo_1_todo000005"/>sycl::buffer arguments are not supported yet. </para>
+<para>Add support for id&lt;Dims&gt; WorkItemOffset </para>
+</listitem>
+<varlistentry><term>Global <ref refid="dpctl__sycl__queue__interface_8h_1a798fcfd6344469ebd02ba4b23100820a" kindref="member">DPCTLQueue_SubmitRange</ref>  (const DPCTLSyclKernelRef KRef, const DPCTLSyclQueueRef QRef, void **Args, const DPCTLKernelArgType *ArgTypes, size_t NArgs, const size_t Range[3], size_t NRange, const DPCTLSyclEventRef *DepEvents, size_t NDepEvents)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000004"/>sycl::buffer arguments are not supported yet. </para>
+<para>Add support for id&lt;Dims&gt; WorkItemOffset</para>
 </listitem>
 </variablelist>
 </para>

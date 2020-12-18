@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="d3/daf/dpctl__sycl__queue__interface_8cpp" kind="file" language="C++">
     <compoundname>dpctl_sycl_queue_interface.cpp</compoundname>
     <includes refid="da/db8/dpctl__sycl__queue__interface_8h" local="yes">dpctl_sycl_queue_interface.h</includes>
@@ -12,36 +12,32 @@
       <node id="14">
         <label>stdbool.h</label>
       </node>
+      <node id="11">
+        <label>Support/MemOwnershipAttrs.h</label>
+        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
+      </node>
       <node id="18">
         <label>CL/sycl.hpp</label>
       </node>
-      <node id="3">
-        <label>dpctl_data_types.h</label>
-        <link refid="dd/d1c/dpctl__data__types_8h"/>
-        <childnode refid="4" relation="include">
+      <node id="1">
+        <label>dpctl_sycl_queue_interface.cpp</label>
+        <link refid="d3/daf/dpctl__sycl__queue__interface_8cpp"/>
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-      </node>
-      <node id="5">
-        <label>stdint.h</label>
-      </node>
-      <node id="17">
-        <label>stdexcept</label>
-      </node>
-      <node id="9">
-        <label>dpctl_sycl_types.h</label>
-        <link refid="df/d57/dpctl__sycl__types_8h"/>
-        <childnode refid="8" relation="include">
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
-      <node id="7">
-        <label>dpctl_sycl_enum_types.h</label>
-        <link refid="d3/d94/dpctl__sycl__enum__types_8h"/>
-        <childnode refid="8" relation="include">
-        </childnode>
+      <node id="15">
+        <label>Support/CBindingWrapping.h</label>
+        <link refid="d1/d38/CBindingWrapping_8h"/>
       </node>
       <node id="13">
         <label>dpctl_sycl_platform_interface.h</label>
@@ -57,12 +53,59 @@
         <childnode refid="11" relation="include">
         </childnode>
       </node>
+      <node id="5">
+        <label>stdint.h</label>
+      </node>
+      <node id="17">
+        <label>stdexcept</label>
+      </node>
+      <node id="7">
+        <label>dpctl_sycl_enum_types.h</label>
+        <link refid="d3/d94/dpctl__sycl__enum__types_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
       <node id="16">
         <label>exception</label>
       </node>
-      <node id="10">
-        <label>Support/DllExport.h</label>
-        <link refid="d6/d26/DllExport_8h"/>
+      <node id="2">
+        <label>dpctl_sycl_queue_interface.h</label>
+        <link refid="da/db8/dpctl__sycl__queue__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>dpctl_data_types.h</label>
+        <link refid="dd/d1c/dpctl__data__types_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>sys/types.h</label>
+      </node>
+      <node id="8">
+        <label>Support/ExternC.h</label>
+        <link refid="d2/d0a/ExternC_8h"/>
+      </node>
+      <node id="9">
+        <label>dpctl_sycl_types.h</label>
+        <link refid="df/d57/dpctl__sycl__types_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
       </node>
       <node id="12">
         <label>dpctl_sycl_context_interface.h</label>
@@ -82,52 +125,9 @@
         <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="6">
-        <label>sys/types.h</label>
-      </node>
-      <node id="15">
-        <label>Support/CBindingWrapping.h</label>
-        <link refid="d1/d38/CBindingWrapping_8h"/>
-      </node>
-      <node id="11">
-        <label>Support/MemOwnershipAttrs.h</label>
-        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
-      </node>
-      <node id="2">
-        <label>dpctl_sycl_queue_interface.h</label>
-        <link refid="da/db8/dpctl__sycl__queue__interface_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-      </node>
-      <node id="1">
-        <label>dpctl_sycl_queue_interface.cpp</label>
-        <link refid="d3/daf/dpctl__sycl__queue__interface_8cpp"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-      </node>
-      <node id="8">
-        <label>Support/ExternC.h</label>
-        <link refid="d2/d0a/ExternC_8h"/>
+      <node id="10">
+        <label>Support/DllExport.h</label>
+        <link refid="d6/d26/DllExport_8h"/>
       </node>
       <node id="4">
         <label>inttypes.h</label>
@@ -174,7 +174,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="127" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="127" bodyend="134"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="127" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="127" bodyend="134"/>
       </memberdef>
       <memberdef kind="function" id="d3/daf/dpctl__sycl__queue__interface_8cpp_1accf016df345a4c26ee4a55495b3aef15" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -193,7 +193,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="121" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="121" bodyend="124"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="121" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="121" bodyend="124"/>
       </memberdef>
       <memberdef kind="function" id="d3/daf/dpctl__sycl__queue__interface_8cpp_1a72c4b91edc254f40a51d62df15c5c3c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" kindref="member">DPCTLSyclBackendType</ref></type>
@@ -223,7 +223,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="136" column="22" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="136" bodyend="148"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="136" column="22" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="136" bodyend="148"/>
       </memberdef>
       <memberdef kind="function" id="d3/daf/dpctl__sycl__queue__interface_8cpp_1adfa60ac991652fd79f3b25f8e0f659f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08" kindref="member">DPCTLSyclContextRef</ref></type>
@@ -253,7 +253,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="159" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="159" bodyend="164"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="159" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="159" bodyend="164"/>
       </memberdef>
       <memberdef kind="function" id="d3/daf/dpctl__sycl__queue__interface_8cpp_1ac1758b0e87a7c970ca8300b26eb90bc4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
@@ -283,7 +283,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="151" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="151" bodyend="156"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="151" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="151" bodyend="156"/>
       </memberdef>
       <memberdef kind="function" id="d3/daf/dpctl__sycl__queue__interface_8cpp_1acb6509913a50d46b952e4e5333ea48ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -347,7 +347,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="311" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="311" bodyend="317"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="311" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="311" bodyend="317"/>
       </memberdef>
       <memberdef kind="function" id="d3/daf/dpctl__sycl__queue__interface_8cpp_1a8daf82eae622ddcd6af75ce91699b4cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -411,7 +411,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="293" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="293" bodyend="299"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="293" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="293" bodyend="299"/>
       </memberdef>
       <memberdef kind="function" id="d3/daf/dpctl__sycl__queue__interface_8cpp_1ac81be625421146d028e4b63c32eec91d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -463,7 +463,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="302" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="302" bodyend="308"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="302" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="302" bodyend="308"/>
       </memberdef>
       <memberdef kind="function" id="d3/daf/dpctl__sycl__queue__interface_8cpp_1a8c1dad67320fce6424bc0a007fd27b54" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
@@ -517,8 +517,8 @@
         </briefdescription>
         <detaileddescription>
 <para>A wrapper over sycl::queue.submit(). The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as parallel_for(nd_range&lt;NRange&gt;, *unwrap(KRef)).</para>
-<para><xrefsect id="dd/da0/todo_1_todo000006"><xreftitle>Todo</xreftitle><xrefdescription><para>sycl::buffer arguments are not supported yet. </para>
-</xrefdescription></xrefsect><xrefsect id="dd/da0/todo_1_todo000007"><xreftitle>Todo</xreftitle><xrefdescription><para>Add support for id&lt;Dims&gt; WorkItemOffset</para>
+<para><xrefsect id="dd/da0/todo_1_todo000005"><xreftitle>Todo</xreftitle><xrefdescription><para>sycl::buffer arguments are not supported yet. </para>
+<para>Add support for id&lt;Dims&gt; WorkItemOffset</para>
 </xrefdescription></xrefsect></para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
@@ -607,7 +607,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="225" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="225" bodyend="283"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="225" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="225" bodyend="283"/>
       </memberdef>
       <memberdef kind="function" id="d3/daf/dpctl__sycl__queue__interface_8cpp_1a8591232167677cb68cc9017f4d54302b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
@@ -658,7 +658,7 @@
         <detaileddescription>
 <para>A wrapper over sycl::queue.submit(). The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as parallel_for(range&lt;NRange&gt;, *unwrap(KRef)).</para>
 <para><xrefsect id="dd/da0/todo_1_todo000004"><xreftitle>Todo</xreftitle><xrefdescription><para>sycl::buffer arguments are not supported yet. </para>
-</xrefdescription></xrefsect><xrefsect id="dd/da0/todo_1_todo000005"><xreftitle>Todo</xreftitle><xrefdescription><para>Add support for id&lt;Dims&gt; WorkItemOffset</para>
+<para>Add support for id&lt;Dims&gt; WorkItemOffset</para>
 </xrefdescription></xrefsect></para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
@@ -739,7 +739,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="167" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="167" bodyend="222"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="167" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="167" bodyend="222"/>
       </memberdef>
       <memberdef kind="function" id="d3/daf/dpctl__sycl__queue__interface_8cpp_1aa2a46f1b9584aeca0cca01051fb81e54" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -767,7 +767,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="286" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="286" bodyend="291"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" line="286" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="286" bodyend="291"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -1081,6 +1081,6 @@
 <codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">event</highlight><highlight class="normal">.wait();</highlight></codeline>
 <codeline lineno="317"><highlight class="normal">}</highlight></codeline>
     </programlisting>
-    <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp"/>
   </compounddef>
 </doxygen>

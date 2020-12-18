@@ -1,21 +1,24 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="dpctl__data__types_8h" kind="file" language="C++">
     <compoundname>dpctl_data_types.h</compoundname>
     <includes local="no">inttypes.h</includes>
     <includes local="no">stdint.h</includes>
     <includes local="no">sys/types.h</includes>
     <includedby refid="dpctl__sycl__context__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_context_interface.h</includedby>
+    <includedby refid="dpctl__sycl__platform__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_platform_interface.h</includedby>
     <includedby refid="dpctl__sycl__device__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_device_interface.h</includedby>
     <includedby refid="dpctl__sycl__event__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_event_interface.h</includedby>
     <includedby refid="dpctl__sycl__kernel__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_kernel_interface.h</includedby>
-    <includedby refid="dpctl__sycl__platform__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_platform_interface.h</includedby>
     <includedby refid="dpctl__sycl__program__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_program_interface.h</includedby>
     <includedby refid="dpctl__sycl__queue__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_queue_interface.h</includedby>
     <includedby refid="dpctl__sycl__queue__manager_8h" local="yes">dpctl-capi/include/dpctl_sycl_queue_manager.h</includedby>
     <includedby refid="dpctl__sycl__usm__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_usm_interface.h</includedby>
     <includedby refid="dpctl__utils_8h" local="yes">dpctl-capi/include/dpctl_utils.h</includedby>
     <incdepgraph>
+      <node id="3">
+        <label>stdint.h</label>
+      </node>
       <node id="1">
         <label>dpctl-capi/include/dpctl_data_types.h</label>
         <link refid="dpctl__data__types_8h"/>
@@ -26,9 +29,6 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>stdint.h</label>
-      </node>
       <node id="4">
         <label>sys/types.h</label>
       </node>
@@ -37,6 +37,42 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="11">
+        <label>dpctl-capi/include/dpctl_utils.h</label>
+        <link refid="dpctl__utils_8h"/>
+      </node>
+      <node id="6">
+        <label>dpctl-capi/include/dpctl_sycl_event_interface.h</label>
+        <link refid="dpctl__sycl__event__interface_8h"/>
+      </node>
+      <node id="3">
+        <label>dpctl-capi/include/dpctl_sycl_queue_manager.h</label>
+        <link refid="dpctl__sycl__queue__manager_8h"/>
+      </node>
+      <node id="5">
+        <label>dpctl-capi/include/dpctl_sycl_device_interface.h</label>
+        <link refid="dpctl__sycl__device__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>dpctl-capi/include/dpctl_sycl_platform_interface.h</label>
+        <link refid="dpctl__sycl__platform__interface_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>dpctl-capi/include/dpctl_sycl_kernel_interface.h</label>
+        <link refid="dpctl__sycl__kernel__interface_8h"/>
+      </node>
+      <node id="10">
+        <label>dpctl-capi/include/dpctl_sycl_usm_interface.h</label>
+        <link refid="dpctl__sycl__usm__interface_8h"/>
+      </node>
+      <node id="9">
+        <label>dpctl-capi/include/dpctl_sycl_queue_interface.h</label>
+        <link refid="dpctl__sycl__queue__interface_8h"/>
+      </node>
       <node id="1">
         <label>dpctl-capi/include/dpctl_data_types.h</label>
         <link refid="dpctl__data__types_8h"/>
@@ -61,51 +97,15 @@
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="7">
-        <label>dpctl-capi/include/dpctl_sycl_platform_interface.h</label>
-        <link refid="dpctl__sycl__platform__interface_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>dpctl-capi/include/dpctl_sycl_queue_manager.h</label>
-        <link refid="dpctl__sycl__queue__manager_8h"/>
-      </node>
-      <node id="5">
-        <label>dpctl-capi/include/dpctl_sycl_event_interface.h</label>
-        <link refid="dpctl__sycl__event__interface_8h"/>
-      </node>
-      <node id="10">
-        <label>dpctl-capi/include/dpctl_sycl_usm_interface.h</label>
-        <link refid="dpctl__sycl__usm__interface_8h"/>
+      <node id="8">
+        <label>dpctl-capi/include/dpctl_sycl_program_interface.h</label>
+        <link refid="dpctl__sycl__program__interface_8h"/>
       </node>
       <node id="2">
         <label>dpctl-capi/include/dpctl_sycl_context_interface.h</label>
         <link refid="dpctl__sycl__context__interface_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
-      </node>
-      <node id="8">
-        <label>dpctl-capi/include/dpctl_sycl_program_interface.h</label>
-        <link refid="dpctl__sycl__program__interface_8h"/>
-      </node>
-      <node id="9">
-        <label>dpctl-capi/include/dpctl_sycl_queue_interface.h</label>
-        <link refid="dpctl__sycl__queue__interface_8h"/>
-      </node>
-      <node id="6">
-        <label>dpctl-capi/include/dpctl_sycl_kernel_interface.h</label>
-        <link refid="dpctl__sycl__kernel__interface_8h"/>
-      </node>
-      <node id="4">
-        <label>dpctl-capi/include/dpctl_sycl_device_interface.h</label>
-        <link refid="dpctl__sycl__device__interface_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="11">
-        <label>dpctl-capi/include/dpctl_utils.h</label>
-        <link refid="dpctl__utils_8h"/>
       </node>
     </invincdepgraph>
       <sectiondef kind="define">

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="dpctl__sycl__event__interface_8h" kind="file" language="C++">
     <compoundname>dpctl_sycl_event_interface.h</compoundname>
     <includes refid="dpctl__data__types_8h" local="yes">dpctl_data_types.h</includes>
@@ -8,24 +8,9 @@
     <includes refid="ExternC_8h" local="yes">Support/ExternC.h</includes>
     <includes refid="MemOwnershipAttrs_8h" local="yes">Support/MemOwnershipAttrs.h</includes>
     <incdepgraph>
-      <node id="2">
-        <label>dpctl_data_types.h</label>
-        <link refid="dpctl__data__types_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>stdint.h</label>
-      </node>
-      <node id="6">
-        <label>dpctl_sycl_types.h</label>
-        <link refid="dpctl__sycl__types_8h"/>
-        <childnode refid="7" relation="include">
-        </childnode>
+      <node id="9">
+        <label>Support/MemOwnershipAttrs.h</label>
+        <link refid="MemOwnershipAttrs_8h"/>
       </node>
       <node id="1">
         <label>dpctl-capi/include/dpctl_sycl_event_interface.h</label>
@@ -41,20 +26,35 @@
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="8">
-        <label>Support/DllExport.h</label>
-        <link refid="DllExport_8h"/>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+      <node id="2">
+        <label>dpctl_data_types.h</label>
+        <link refid="dpctl__data__types_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="5">
         <label>sys/types.h</label>
       </node>
-      <node id="9">
-        <label>Support/MemOwnershipAttrs.h</label>
-        <link refid="MemOwnershipAttrs_8h"/>
-      </node>
       <node id="7">
         <label>Support/ExternC.h</label>
         <link refid="ExternC_8h"/>
+      </node>
+      <node id="6">
+        <label>dpctl_sycl_types.h</label>
+        <link refid="dpctl__sycl__types_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Support/DllExport.h</label>
+        <link refid="DllExport_8h"/>
       </node>
       <node id="3">
         <label>inttypes.h</label>
@@ -157,11 +157,11 @@
 <codeline lineno="35"><highlight class="normal"><ref refid="ExternC_8h_1ad85f54ad0bab1d5206255e5920261be3" kindref="member">DPCTL_C_EXTERN_C_BEGIN</ref></highlight></codeline>
 <codeline lineno="36"><highlight class="normal"></highlight></codeline>
 <codeline lineno="42"><highlight class="normal"><ref refid="DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref></highlight></codeline>
-<codeline lineno="43" refid="dpctl__sycl__event__interface_8h_1ae5be102ee4f57e65c86f6e244267ff78" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__event__interface_8h_1ae5be102ee4f57e65c86f6e244267ff78" kindref="member">DPCTLEvent_Wait</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/><ref refid="dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref><sp/>ERef);</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__event__interface_8h_1ae5be102ee4f57e65c86f6e244267ff78" kindref="member">DPCTLEvent_Wait</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/><ref refid="dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref><sp/>ERef);</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"></highlight></codeline>
 <codeline lineno="51"><highlight class="normal"><ref refid="DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref></highlight></codeline>
 <codeline lineno="52"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="53" refid="dpctl__sycl__event__interface_8h_1a739f821842ad6167604e425834e2dc90" refkind="member"><highlight class="normal"><ref refid="dpctl__sycl__event__interface_8h_1a739f821842ad6167604e425834e2dc90" kindref="member">DPCTLEvent_Delete</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6" kindref="member">__dpctl_take</ref><sp/><ref refid="dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref><sp/>ERef);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><ref refid="dpctl__sycl__event__interface_8h_1a739f821842ad6167604e425834e2dc90" kindref="member">DPCTLEvent_Delete</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6" kindref="member">__dpctl_take</ref><sp/><ref refid="dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref><sp/>ERef);</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"></highlight></codeline>
 <codeline lineno="55"><highlight class="normal"><ref refid="ExternC_8h_1a6956fffc46b54bcdd0e7fd53cd3a6619" kindref="member">DPCTL_C_EXTERN_C_END</ref></highlight></codeline>
     </programlisting>

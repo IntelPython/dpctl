@@ -1,42 +1,12 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="d7/d8c/dpctl__utils_8cpp" kind="file" language="C++">
     <compoundname>dpctl_utils.cpp</compoundname>
     <includes refid="da/d48/dpctl__utils_8h" local="yes">dpctl_utils.h</includes>
     <incdepgraph>
-      <node id="3">
-        <label>dpctl_data_types.h</label>
-        <link refid="dd/d1c/dpctl__data__types_8h"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>stdint.h</label>
-      </node>
-      <node id="7">
-        <label>Support/DllExport.h</label>
-        <link refid="d6/d26/DllExport_8h"/>
-      </node>
-      <node id="6">
-        <label>sys/types.h</label>
-      </node>
       <node id="9">
         <label>Support/MemOwnershipAttrs.h</label>
         <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
-      </node>
-      <node id="1">
-        <label>dpctl_utils.cpp</label>
-        <link refid="d7/d8c/dpctl__utils_8cpp"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="8">
-        <label>Support/ExternC.h</label>
-        <link refid="d2/d0a/ExternC_8h"/>
       </node>
       <node id="2">
         <label>dpctl_utils.h</label>
@@ -49,6 +19,36 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+      </node>
+      <node id="5">
+        <label>stdint.h</label>
+      </node>
+      <node id="3">
+        <label>dpctl_data_types.h</label>
+        <link refid="dd/d1c/dpctl__data__types_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>sys/types.h</label>
+      </node>
+      <node id="8">
+        <label>Support/ExternC.h</label>
+        <link refid="d2/d0a/ExternC_8h"/>
+      </node>
+      <node id="1">
+        <label>dpctl_utils.cpp</label>
+        <link refid="d7/d8c/dpctl__utils_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Support/DllExport.h</label>
+        <link refid="d6/d26/DllExport_8h"/>
       </node>
       <node id="4">
         <label>inttypes.h</label>
@@ -81,7 +81,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_utils.cpp" line="28" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_utils.cpp" bodystart="28" bodyend="31"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_utils.cpp" line="28" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_utils.cpp" bodystart="28" bodyend="31"/>
       </memberdef>
       <memberdef kind="function" id="d7/d8c/dpctl__utils_8cpp_1ad45de90a9e61e86903b688d2281115a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -109,7 +109,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_utils.cpp" line="33" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_utils.cpp" bodystart="33" bodyend="36"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_utils.cpp" line="33" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_utils.cpp" bodystart="33" bodyend="36"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -151,6 +151,6 @@
 <codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">[]<sp/>arr;</highlight></codeline>
 <codeline lineno="36"><highlight class="normal">}</highlight></codeline>
     </programlisting>
-    <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_utils.cpp"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_utils.cpp"/>
   </compounddef>
 </doxygen>

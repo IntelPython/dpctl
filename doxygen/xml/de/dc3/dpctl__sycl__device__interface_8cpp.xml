@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="de/dc3/dpctl__sycl__device__interface_8cpp" kind="file" language="C++">
     <compoundname>dpctl_sycl_device_interface.cpp</compoundname>
     <includes refid="d4/d5a/dpctl__sycl__device__interface_8h" local="yes">dpctl_sycl_device_interface.h</includes>
@@ -10,11 +10,44 @@
     <includes local="no">CL/sycl.hpp</includes>
     <includes refid="d4/d3f/dpctl__utils__helper_8h" local="yes">../helper/include/dpctl_utils_helper.h</includes>
     <incdepgraph>
+      <node id="11">
+        <label>Support/MemOwnershipAttrs.h</label>
+        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
+      </node>
       <node id="13">
         <label>iomanip</label>
       </node>
       <node id="16">
         <label>CL/sycl.hpp</label>
+      </node>
+      <node id="2">
+        <label>dpctl_sycl_device_interface.h</label>
+        <link refid="d4/d5a/dpctl__sycl__device__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>Support/CBindingWrapping.h</label>
+        <link refid="d1/d38/CBindingWrapping_8h"/>
+      </node>
+      <node id="5">
+        <label>stdint.h</label>
+      </node>
+      <node id="7">
+        <label>dpctl_sycl_enum_types.h</label>
+        <link refid="d3/d94/dpctl__sycl__enum__types_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
       </node>
       <node id="3">
         <label>dpctl_data_types.h</label>
@@ -26,8 +59,21 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="5">
-        <label>stdint.h</label>
+      <node id="17">
+        <label>../helper/include/dpctl_utils_helper.h</label>
+        <link refid="d4/d3f/dpctl__utils__helper_8h"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>sys/types.h</label>
+      </node>
+      <node id="8">
+        <label>Support/ExternC.h</label>
+        <link refid="d2/d0a/ExternC_8h"/>
+      </node>
+      <node id="14">
+        <label>iostream</label>
       </node>
       <node id="9">
         <label>dpctl_sycl_types.h</label>
@@ -35,11 +81,12 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="7">
-        <label>dpctl_sycl_enum_types.h</label>
-        <link refid="d3/d94/dpctl__sycl__enum__types_8h"/>
-        <childnode refid="8" relation="include">
-        </childnode>
+      <node id="15">
+        <label>cstring</label>
+      </node>
+      <node id="10">
+        <label>Support/DllExport.h</label>
+        <link refid="d6/d26/DllExport_8h"/>
       </node>
       <node id="1">
         <label>dpctl_sycl_device_interface.cpp</label>
@@ -58,53 +105,6 @@
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
-      </node>
-      <node id="10">
-        <label>Support/DllExport.h</label>
-        <link refid="d6/d26/DllExport_8h"/>
-      </node>
-      <node id="6">
-        <label>sys/types.h</label>
-      </node>
-      <node id="17">
-        <label>../helper/include/dpctl_utils_helper.h</label>
-        <link refid="d4/d3f/dpctl__utils__helper_8h"/>
-        <childnode refid="16" relation="include">
-        </childnode>
-      </node>
-      <node id="12">
-        <label>Support/CBindingWrapping.h</label>
-        <link refid="d1/d38/CBindingWrapping_8h"/>
-      </node>
-      <node id="11">
-        <label>Support/MemOwnershipAttrs.h</label>
-        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
-      </node>
-      <node id="14">
-        <label>iostream</label>
-      </node>
-      <node id="8">
-        <label>Support/ExternC.h</label>
-        <link refid="d2/d0a/ExternC_8h"/>
-      </node>
-      <node id="2">
-        <label>dpctl_sycl_device_interface.h</label>
-        <link refid="d4/d5a/dpctl__sycl__device__interface_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-      </node>
-      <node id="15">
-        <label>cstring</label>
       </node>
       <node id="4">
         <label>inttypes.h</label>
@@ -151,7 +151,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="263" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="263" bodyend="270"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="263" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="263" bodyend="270"/>
       </memberdef>
       <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1aa98777ce128d2662d2e7536e55592284" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -179,7 +179,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="82" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="82" bodyend="85"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="82" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="82" bodyend="85"/>
       </memberdef>
       <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1a2b9e5af30244c8d945c17f6ae8a196ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -198,11 +198,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="75" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="75" bodyend="79"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="75" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="75" bodyend="79"/>
       </memberdef>
-      <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1a9d32157e41b0fea2ba7680450c96c708" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> const char *</type>
-        <definition>__dpctl_give const char* DPCTLDevice_GetDriverInfo</definition>
+      <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1a3795a1408e8f1fa2aa5dcb17403b64ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> char *</type>
+        <definition>const __dpctl_give char* DPCTLDevice_GetDriverInfo</definition>
         <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
         <name>DPCTLDevice_GetDriverInfo</name>
         <param>
@@ -228,7 +228,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="237" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="237" bodyend="252"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="237" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="237" bodyend="252"/>
       </memberdef>
       <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1a59f9a45e57b683aefda8d31b7067aa45" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint32_t</type>
@@ -258,7 +258,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="126" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="126" bodyend="133"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="126" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="126" bodyend="133"/>
       </memberdef>
       <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1adc73a82fa9e32ae840f1b39ef61be686" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint32_t</type>
@@ -288,7 +288,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="171" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="171" bodyend="178"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="171" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="171" bodyend="178"/>
       </memberdef>
       <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1a2713f182b5177cbc807c9e6079fcd3ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -318,7 +318,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="161" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="161" bodyend="168"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="161" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="161" bodyend="168"/>
       </memberdef>
       <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1a0fbd53bd4d8d3835303860c417305a74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint32_t</type>
@@ -348,7 +348,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="136" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="136" bodyend="143"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="136" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="136" bodyend="143"/>
       </memberdef>
       <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1aa671b831e8fbf4cc6c26ebd3ff077fd8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref> size_t *</type>
@@ -378,11 +378,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="146" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="146" bodyend="158"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="146" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="146" bodyend="158"/>
       </memberdef>
-      <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1aa8e6a1faf62a89fa8c3dc82f4d6ea07d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> const char *</type>
-        <definition>__dpctl_give const char* DPCTLDevice_GetName</definition>
+      <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1aad1afc0bfbfbd766418e041a368b1a81" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> char *</type>
+        <definition>const __dpctl_give char* DPCTLDevice_GetName</definition>
         <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
         <name>DPCTLDevice_GetName</name>
         <param>
@@ -408,11 +408,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="201" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="201" bodyend="216"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="201" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="201" bodyend="216"/>
       </memberdef>
-      <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1a5bbdc73f488ffb80e99b5ef480db404d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> const char *</type>
-        <definition>__dpctl_give const char* DPCTLDevice_GetVendorName</definition>
+      <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1a9c4b7257df6cac7b9b0f2e8cddcd9358" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> char *</type>
+        <definition>const __dpctl_give char* DPCTLDevice_GetVendorName</definition>
         <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
         <name>DPCTLDevice_GetVendorName</name>
         <param>
@@ -438,7 +438,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="219" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="219" bodyend="234"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="219" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="219" bodyend="234"/>
       </memberdef>
       <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1a9c06b20df91f352cc0166241d2df05c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -468,7 +468,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="181" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="181" bodyend="188"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="181" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="181" bodyend="188"/>
       </memberdef>
       <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1a840f5e62fba3157f70d6fccce83dbb82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -498,7 +498,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="191" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="191" bodyend="198"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="191" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="191" bodyend="198"/>
       </memberdef>
       <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1a77b8d77d3f7d65ede2f9892a31bc95d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -528,7 +528,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="87" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="87" bodyend="94"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="87" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="87" bodyend="94"/>
       </memberdef>
       <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1aa58bc080f5b7b652e670794079fe6600" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -558,7 +558,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="96" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="96" bodyend="103"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="96" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="96" bodyend="103"/>
       </memberdef>
       <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1af7075f8ca7519c4c380640af677ba7fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -588,7 +588,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="105" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="105" bodyend="112"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="105" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="105" bodyend="112"/>
       </memberdef>
       <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1a54aaa25ab4ee7ffac1b9d1814960b99e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -618,7 +618,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="115" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="115" bodyend="122"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="115" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="115" bodyend="122"/>
       </memberdef>
       <memberdef kind="function" id="de/dc3/dpctl__sycl__device__interface_8cpp_1a7030abf3ad35a84e95eda9bb66b36fdf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -648,7 +648,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="254" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="254" bodyend="261"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" line="254" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp" bodystart="254" bodyend="261"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -842,7 +842,7 @@
 <codeline lineno="198"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="199"><highlight class="normal"></highlight></codeline>
 <codeline lineno="200"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
-<codeline lineno="201" refid="de/dc3/dpctl__sycl__device__interface_8cpp_1aa8e6a1faf62a89fa8c3dc82f4d6ea07d" refkind="member"><highlight class="normal"><ref refid="de/dc3/dpctl__sycl__device__interface_8cpp_1aa8e6a1faf62a89fa8c3dc82f4d6ea07d" kindref="member">DPCTLDevice_GetName</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="201" refid="de/dc3/dpctl__sycl__device__interface_8cpp_1aad1afc0bfbfbd766418e041a368b1a81" refkind="member"><highlight class="normal"><ref refid="de/dc3/dpctl__sycl__device__interface_8cpp_1aad1afc0bfbfbd766418e041a368b1a81" kindref="member">DPCTLDevice_GetName</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
 <codeline lineno="202"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
 <codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
@@ -860,7 +860,7 @@
 <codeline lineno="216"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="217"><highlight class="normal"></highlight></codeline>
 <codeline lineno="218"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
-<codeline lineno="219" refid="de/dc3/dpctl__sycl__device__interface_8cpp_1a5bbdc73f488ffb80e99b5ef480db404d" refkind="member"><highlight class="normal"><ref refid="de/dc3/dpctl__sycl__device__interface_8cpp_1a5bbdc73f488ffb80e99b5ef480db404d" kindref="member">DPCTLDevice_GetVendorName</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="219" refid="de/dc3/dpctl__sycl__device__interface_8cpp_1a9c4b7257df6cac7b9b0f2e8cddcd9358" refkind="member"><highlight class="normal"><ref refid="de/dc3/dpctl__sycl__device__interface_8cpp_1a9c4b7257df6cac7b9b0f2e8cddcd9358" kindref="member">DPCTLDevice_GetVendorName</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
 <codeline lineno="220"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
 <codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
@@ -878,7 +878,7 @@
 <codeline lineno="234"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="235"><highlight class="normal"></highlight></codeline>
 <codeline lineno="236"><highlight class="normal"><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight></codeline>
-<codeline lineno="237" refid="de/dc3/dpctl__sycl__device__interface_8cpp_1a9d32157e41b0fea2ba7680450c96c708" refkind="member"><highlight class="normal"><ref refid="de/dc3/dpctl__sycl__device__interface_8cpp_1a9d32157e41b0fea2ba7680450c96c708" kindref="member">DPCTLDevice_GetDriverInfo</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
+<codeline lineno="237" refid="de/dc3/dpctl__sycl__device__interface_8cpp_1a3795a1408e8f1fa2aa5dcb17403b64ae" refkind="member"><highlight class="normal"><ref refid="de/dc3/dpctl__sycl__device__interface_8cpp_1a3795a1408e8f1fa2aa5dcb17403b64ae" kindref="member">DPCTLDevice_GetDriverInfo</ref><sp/>(<ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef)</highlight></codeline>
 <codeline lineno="238"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>D<sp/>=<sp/>unwrap(DRef);</highlight></codeline>
 <codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(D)<sp/>{</highlight></codeline>
@@ -913,6 +913,6 @@
 <codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(*unwrap(DevRef1)<sp/>==<sp/>*unwrap(DevRef2));</highlight></codeline>
 <codeline lineno="270"><highlight class="normal">}</highlight></codeline>
     </programlisting>
-    <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_device_interface.cpp"/>
   </compounddef>
 </doxygen>

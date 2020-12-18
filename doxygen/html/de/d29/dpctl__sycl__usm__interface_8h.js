@@ -9,5 +9,5 @@ var dpctl__sycl__usm__interface_8h =
     [ "DPCTLmalloc_host", "de/d29/dpctl__sycl__usm__interface_8h.html#a699b56970ac78f3b3ca87a2ad6ff4615", null ],
     [ "DPCTLmalloc_shared", "de/d29/dpctl__sycl__usm__interface_8h.html#ad303be21cd2fb9d8637595cdfbf34869", null ],
     [ "DPCTLUSM_GetPointerDevice", "de/d29/dpctl__sycl__usm__interface_8h.html#a7ebb5012408e40e3e78b4da551da8412", null ],
-    [ "DPCTLUSM_GetPointerType", "de/d29/dpctl__sycl__usm__interface_8h.html#a49fc6ee83c968adc278628c13cbee837", null ]
+    [ "DPCTLUSM_GetPointerType", "de/d29/dpctl__sycl__usm__interface_8h.html#a1e8658653d946578f1b4deb3333ec41c", null ]
 ];

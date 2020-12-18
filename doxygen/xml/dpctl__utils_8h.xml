@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="dpctl__utils_8h" kind="file" language="C++">
     <compoundname>dpctl_utils.h</compoundname>
     <includes refid="dpctl__data__types_8h" local="yes">dpctl_data_types.h</includes>
@@ -7,33 +7,9 @@
     <includes refid="ExternC_8h" local="yes">Support/ExternC.h</includes>
     <includes refid="MemOwnershipAttrs_8h" local="yes">Support/MemOwnershipAttrs.h</includes>
     <incdepgraph>
-      <node id="2">
-        <label>dpctl_data_types.h</label>
-        <link refid="dpctl__data__types_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>stdint.h</label>
-      </node>
-      <node id="6">
-        <label>Support/DllExport.h</label>
-        <link refid="DllExport_8h"/>
-      </node>
-      <node id="5">
-        <label>sys/types.h</label>
-      </node>
       <node id="8">
         <label>Support/MemOwnershipAttrs.h</label>
         <link refid="MemOwnershipAttrs_8h"/>
-      </node>
-      <node id="7">
-        <label>Support/ExternC.h</label>
-        <link refid="ExternC_8h"/>
       </node>
       <node id="1">
         <label>dpctl-capi/include/dpctl_utils.h</label>
@@ -46,6 +22,30 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
+      </node>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+      <node id="2">
+        <label>dpctl_data_types.h</label>
+        <link refid="dpctl__data__types_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>sys/types.h</label>
+      </node>
+      <node id="7">
+        <label>Support/ExternC.h</label>
+        <link refid="ExternC_8h"/>
+      </node>
+      <node id="6">
+        <label>Support/DllExport.h</label>
+        <link refid="DllExport_8h"/>
       </node>
       <node id="3">
         <label>inttypes.h</label>
@@ -146,10 +146,10 @@
 <codeline lineno="32"><highlight class="normal"><ref refid="ExternC_8h_1ad85f54ad0bab1d5206255e5920261be3" kindref="member">DPCTL_C_EXTERN_C_BEGIN</ref></highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight></codeline>
 <codeline lineno="39"><highlight class="normal"><ref refid="DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref></highlight></codeline>
-<codeline lineno="40" refid="dpctl__utils_8h_1a725ddcf07244319ac6d27fc6324dcd75" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dpctl__utils_8h_1a725ddcf07244319ac6d27fc6324dcd75" kindref="member">DPCTLCString_Delete</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6" kindref="member">__dpctl_take</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>str);</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dpctl__utils_8h_1a725ddcf07244319ac6d27fc6324dcd75" kindref="member">DPCTLCString_Delete</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6" kindref="member">__dpctl_take</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>str);</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"></highlight></codeline>
 <codeline lineno="47"><highlight class="normal"><ref refid="DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref></highlight></codeline>
-<codeline lineno="48" refid="dpctl__utils_8h_1a30605edde1856376ab9501f35f848d8b" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dpctl__utils_8h_1a30605edde1856376ab9501f35f848d8b" kindref="member">DPCTLSize_t_Array_Delete</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6" kindref="member">__dpctl_take</ref><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>arr);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dpctl__utils_8h_1a30605edde1856376ab9501f35f848d8b" kindref="member">DPCTLSize_t_Array_Delete</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6" kindref="member">__dpctl_take</ref><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>arr);</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"></highlight></codeline>
 <codeline lineno="50"><highlight class="normal"><ref refid="ExternC_8h_1a6956fffc46b54bcdd0e7fd53cd3a6619" kindref="member">DPCTL_C_EXTERN_C_END</ref></highlight></codeline>
     </programlisting>

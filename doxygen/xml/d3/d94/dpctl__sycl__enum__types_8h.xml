@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="d3/d94/dpctl__sycl__enum__types_8h" kind="file" language="C++">
     <compoundname>dpctl_sycl_enum_types.h</compoundname>
     <includes refid="d2/d0a/ExternC_8h" local="yes">Support/ExternC.h</includes>
-    <includedby refid="d4/d5a/dpctl__sycl__device__interface_8h" local="yes">dpctl_sycl_device_interface.h</includedby>
     <includedby refid="d3/d02/dpctl__sycl__platform__interface_8h" local="yes">dpctl_sycl_platform_interface.h</includedby>
+    <includedby refid="d4/d5a/dpctl__sycl__device__interface_8h" local="yes">dpctl_sycl_device_interface.h</includedby>
     <includedby refid="da/db8/dpctl__sycl__queue__interface_8h" local="yes">dpctl_sycl_queue_interface.h</includedby>
     <incdepgraph>
       <node id="1">
@@ -19,79 +19,79 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="6">
+        <label>dpctl_sycl_context_interface.cpp</label>
+        <link refid="d4/d08/dpctl__sycl__context__interface_8cpp"/>
+      </node>
       <node id="4">
-        <label>dpctl_sycl_queue_manager.cpp</label>
-        <link refid="d2/db7/dpctl__sycl__queue__manager_8cpp"/>
+        <label>dpctl_sycl_queue_manager.h</label>
+        <link refid="d1/dac/dpctl__sycl__queue__manager_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>dpctl_sycl_queue_interface.cpp</label>
+        <link refid="d3/daf/dpctl__sycl__queue__interface_8cpp"/>
+      </node>
+      <node id="9">
+        <label>dpctl_sycl_device_interface.h</label>
+        <link refid="d4/d5a/dpctl__sycl__device__interface_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>dpctl_sycl_platform_interface.h</label>
+        <link refid="d3/d02/dpctl__sycl__platform__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>dpctl_sycl_enum_types.h</label>
         <link refid="d3/d94/dpctl__sycl__enum__types_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="8">
         <label>dpctl_sycl_platform_interface.cpp</label>
         <link refid="d5/da7/dpctl__sycl__platform__interface_8cpp"/>
-      </node>
-      <node id="7">
-        <label>dpctl_sycl_platform_interface.h</label>
-        <link refid="d3/d02/dpctl__sycl__platform__interface_8h"/>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>dpctl_sycl_queue_manager.h</label>
-        <link refid="d1/dac/dpctl__sycl__queue__manager_8h"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>dpctl_sycl_device_interface.cpp</label>
-        <link refid="de/dc3/dpctl__sycl__device__interface_8cpp"/>
-      </node>
-      <node id="8">
-        <label>dpctl_sycl_context_interface.h</label>
-        <link refid="df/d74/dpctl__sycl__context__interface_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>dpctl_sycl_context_interface.cpp</label>
-        <link refid="d4/d08/dpctl__sycl__context__interface_8cpp"/>
       </node>
       <node id="12">
         <label>dpctl_sycl_queue_interface.h</label>
         <link refid="da/db8/dpctl__sycl__queue__interface_8h"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="10">
-        <label>dpctl_sycl_queue_interface.cpp</label>
-        <link refid="d3/daf/dpctl__sycl__queue__interface_8cpp"/>
+      <node id="11">
+        <label>dpctl_sycl_usm_interface.cpp</label>
+        <link refid="d1/de8/dpctl__sycl__usm__interface_8cpp"/>
       </node>
-      <node id="2">
-        <label>dpctl_sycl_device_interface.h</label>
-        <link refid="d4/d5a/dpctl__sycl__device__interface_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
+      <node id="5">
+        <label>dpctl_sycl_queue_manager.cpp</label>
+        <link refid="d2/db7/dpctl__sycl__queue__manager_8cpp"/>
+      </node>
+      <node id="3">
+        <label>dpctl_sycl_context_interface.h</label>
+        <link refid="df/d74/dpctl__sycl__context__interface_8h"/>
+        <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
       </node>
-      <node id="6">
-        <label>dpctl_sycl_usm_interface.cpp</label>
-        <link refid="d1/de8/dpctl__sycl__usm__interface_8cpp"/>
+      <node id="10">
+        <label>dpctl_sycl_device_interface.cpp</label>
+        <link refid="de/dc3/dpctl__sycl__device__interface_8cpp"/>
       </node>
     </invincdepgraph>
       <sectiondef kind="enum">
@@ -219,7 +219,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_enum_types.h" line="71" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_enum_types.h" bodystart="72" bodyend="89"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_enum_types.h" line="72" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_enum_types.h" bodystart="71" bodyend="89"/>
       </memberdef>
       <memberdef kind="enum" id="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" prot="public" static="no" strong="no">
         <type></type>
@@ -271,7 +271,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_enum_types.h" line="38" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_enum_types.h" bodystart="39" bodyend="45"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_enum_types.h" line="39" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_enum_types.h" bodystart="38" bodyend="45"/>
       </memberdef>
       <memberdef kind="enum" id="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff" prot="public" static="no" strong="no">
         <type></type>
@@ -339,7 +339,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_enum_types.h" line="51" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_enum_types.h" bodystart="52" bodyend="62"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_enum_types.h" line="52" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_enum_types.h" bodystart="51" bodyend="62"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -381,8 +381,8 @@
 <codeline lineno="41" refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66" kindref="member">DPCTL_OPENCL</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>1<sp/>&lt;&lt;<sp/>16,</highlight></codeline>
 <codeline lineno="42" refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933ada27f03e8c495ea0ff5036af2bcda6ec" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933ada27f03e8c495ea0ff5036af2bcda6ec" kindref="member">DPCTL_HOST</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>1<sp/>&lt;&lt;<sp/>15,</highlight></codeline>
 <codeline lineno="43" refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933a528047c320d729a55d423881bcec91d6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933a528047c320d729a55d423881bcec91d6" kindref="member">DPCTL_LEVEL_ZERO</ref><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>1<sp/>&lt;&lt;<sp/>14,</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933af053552df5521a8563b70300dc7f7b88" kindref="member">DPCTL_CUDA</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>1<sp/>&lt;&lt;<sp/>13</highlight></codeline>
-<codeline lineno="45" refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933af053552df5521a8563b70300dc7f7b88" refkind="member"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="44" refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933af053552df5521a8563b70300dc7f7b88" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933af053552df5521a8563b70300dc7f7b88" kindref="member">DPCTL_CUDA</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>1<sp/>&lt;&lt;<sp/>13</highlight></codeline>
+<codeline lineno="45"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="46"><highlight class="normal"></highlight></codeline>
 <codeline lineno="51" refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff" refkind="member"><highlight class="keyword">enum</highlight><highlight class="normal"><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff" kindref="member">DPCTLSyclDeviceType</ref></highlight></codeline>
 <codeline lineno="52"><highlight class="normal">{</highlight></codeline>
@@ -392,10 +392,10 @@
 <codeline lineno="56" refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffad64472511a7f7b3c711d56e34266e252" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffad64472511a7f7b3c711d56e34266e252" kindref="member">DPCTL_CUSTOM</ref><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>1<sp/>&lt;&lt;<sp/>3,</highlight></codeline>
 <codeline lineno="57" refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa56e696aa054417023c07b5d43f0ce30d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa56e696aa054417023c07b5d43f0ce30d" kindref="member">DPCTL_AUTOMATIC</ref><sp/><sp/><sp/>=<sp/>1<sp/>&lt;&lt;<sp/>4,</highlight></codeline>
 <codeline lineno="58" refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa6f66b14770eab4e002d856217057a935" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa6f66b14770eab4e002d856217057a935" kindref="member">DPCTL_HOST_DEVICE</ref><sp/>=<sp/>1<sp/>&lt;&lt;<sp/>5,</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa965ac28a750a70af103119b14a0476e8" kindref="member">DPCTL_ALL</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>1<sp/>&lt;&lt;<sp/>6</highlight></codeline>
+<codeline lineno="59" refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa965ac28a750a70af103119b14a0476e8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa965ac28a750a70af103119b14a0476e8" kindref="member">DPCTL_ALL</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>1<sp/>&lt;&lt;<sp/>6</highlight></codeline>
 <codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>IMP:<sp/>before<sp/>adding<sp/>new<sp/>values<sp/>here<sp/>look<sp/>at<sp/>DPCTLSyclBackendType<sp/>enum.<sp/>The</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>values<sp/>should<sp/>not<sp/>overlap.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="62" refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa965ac28a750a70af103119b14a0476e8" refkind="member"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="62"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="63"><highlight class="normal"></highlight></codeline>
 <codeline lineno="71" refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089" refkind="member"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">enum</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="72"><highlight class="normal">{</highlight></codeline>
@@ -414,11 +414,11 @@
 <codeline lineno="85" refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a02d37ac1677aabdce409ab4dc37e89a9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a02d37ac1677aabdce409ab4dc37e89a9" kindref="member">DPCTL_FLOAT</ref>,</highlight></codeline>
 <codeline lineno="86" refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089ac31bd362e587d3f2c9d2db9fa67a995f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089ac31bd362e587d3f2c9d2db9fa67a995f" kindref="member">DPCTL_DOUBLE</ref>,</highlight></codeline>
 <codeline lineno="87" refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a35a34fc6d864ba0acc7d982e021c54ef" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a35a34fc6d864ba0acc7d982e021c54ef" kindref="member">DPCTL_LONG_DOUBLE</ref>,</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a68399621c4ff81e521dd7cddf2afc9b8" kindref="member">DPCTL_VOID_PTR</ref></highlight></codeline>
-<codeline lineno="89" refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a68399621c4ff81e521dd7cddf2afc9b8" refkind="member"><highlight class="normal">}<sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089" kindref="member">DPCTLKernelArgType</ref>;</highlight></codeline>
+<codeline lineno="88" refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a68399621c4ff81e521dd7cddf2afc9b8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a68399621c4ff81e521dd7cddf2afc9b8" kindref="member">DPCTL_VOID_PTR</ref></highlight></codeline>
+<codeline lineno="89"><highlight class="normal">}<sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089" kindref="member">DPCTLKernelArgType</ref>;</highlight></codeline>
 <codeline lineno="90"><highlight class="normal"></highlight></codeline>
 <codeline lineno="91"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a6956fffc46b54bcdd0e7fd53cd3a6619" kindref="member">DPCTL_C_EXTERN_C_END</ref></highlight></codeline>
     </programlisting>
-    <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_enum_types.h"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_enum_types.h"/>
   </compounddef>
 </doxygen>

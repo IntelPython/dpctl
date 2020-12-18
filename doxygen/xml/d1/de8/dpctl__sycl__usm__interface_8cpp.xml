@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="d1/de8/dpctl__sycl__usm__interface_8cpp" kind="file" language="C++">
     <compoundname>dpctl_sycl_usm_interface.cpp</compoundname>
     <includes refid="de/d29/dpctl__sycl__usm__interface_8h" local="yes">dpctl_sycl_usm_interface.h</includes>
@@ -7,66 +7,12 @@
     <includes refid="d1/d38/CBindingWrapping_8h" local="yes">Support/CBindingWrapping.h</includes>
     <includes local="no">CL/sycl.hpp</includes>
     <incdepgraph>
-      <node id="14">
-        <label>CL/sycl.hpp</label>
-      </node>
-      <node id="3">
-        <label>dpctl_data_types.h</label>
-        <link refid="dd/d1c/dpctl__data__types_8h"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>stdint.h</label>
-      </node>
-      <node id="7">
-        <label>dpctl_sycl_types.h</label>
-        <link refid="df/d57/dpctl__sycl__types_8h"/>
-        <childnode refid="8" relation="include">
-        </childnode>
-      </node>
-      <node id="12">
-        <label>dpctl_sycl_enum_types.h</label>
-        <link refid="d3/d94/dpctl__sycl__enum__types_8h"/>
-        <childnode refid="8" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>dpctl_sycl_usm_interface.h</label>
-        <link refid="de/d29/dpctl__sycl__usm__interface_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>Support/DllExport.h</label>
-        <link refid="d6/d26/DllExport_8h"/>
-      </node>
-      <node id="6">
-        <label>sys/types.h</label>
-      </node>
-      <node id="13">
-        <label>Support/CBindingWrapping.h</label>
-        <link refid="d1/d38/CBindingWrapping_8h"/>
-      </node>
       <node id="10">
         <label>Support/MemOwnershipAttrs.h</label>
         <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
       </node>
-      <node id="8">
-        <label>Support/ExternC.h</label>
-        <link refid="d2/d0a/ExternC_8h"/>
+      <node id="14">
+        <label>CL/sycl.hpp</label>
       </node>
       <node id="11">
         <label>dpctl_sycl_device_interface.h</label>
@@ -84,6 +30,46 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
+      <node id="13">
+        <label>Support/CBindingWrapping.h</label>
+        <link refid="d1/d38/CBindingWrapping_8h"/>
+      </node>
+      <node id="5">
+        <label>stdint.h</label>
+      </node>
+      <node id="2">
+        <label>dpctl_sycl_usm_interface.h</label>
+        <link refid="de/d29/dpctl__sycl__usm__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>dpctl_sycl_enum_types.h</label>
+        <link refid="d3/d94/dpctl__sycl__enum__types_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>dpctl_data_types.h</label>
+        <link refid="dd/d1c/dpctl__data__types_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>sys/types.h</label>
+      </node>
       <node id="1">
         <label>dpctl_sycl_usm_interface.cpp</label>
         <link refid="d1/de8/dpctl__sycl__usm__interface_8cpp"/>
@@ -95,6 +81,20 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
+      </node>
+      <node id="8">
+        <label>Support/ExternC.h</label>
+        <link refid="d2/d0a/ExternC_8h"/>
+      </node>
+      <node id="7">
+        <label>dpctl_sycl_types.h</label>
+        <link refid="df/d57/dpctl__sycl__types_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>Support/DllExport.h</label>
+        <link refid="d6/d26/DllExport_8h"/>
       </node>
       <node id="4">
         <label>inttypes.h</label>
@@ -153,7 +153,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="88" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="88" bodyend="94"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="88" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="88" bodyend="94"/>
       </memberdef>
       <memberdef kind="function" id="d1/de8/dpctl__sycl__usm__interface_8cpp_1a64634320e4866afb11597fb755ccebd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
@@ -207,7 +207,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="71" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="71" bodyend="77"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="71" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="71" bodyend="77"/>
       </memberdef>
       <memberdef kind="function" id="d1/de8/dpctl__sycl__usm__interface_8cpp_1a823245a00d7f5bf2cb230541a6d46448" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
@@ -261,7 +261,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="54" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="54" bodyend="60"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="54" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="54" bodyend="60"/>
       </memberdef>
       <memberdef kind="function" id="d1/de8/dpctl__sycl__usm__interface_8cpp_1a609bf3e372c2ca931dcba37f9ae383b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -283,7 +283,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="104" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="104" bodyend="110"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="104" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="104" bodyend="110"/>
       </memberdef>
       <memberdef kind="function" id="d1/de8/dpctl__sycl__usm__interface_8cpp_1ac6a477d554b73d556210aa8a10ea7626" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -323,7 +323,7 @@ USM pointer must have been allocated using the same context as the one used to c
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="96" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="96" bodyend="102"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="96" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="96" bodyend="102"/>
       </memberdef>
       <memberdef kind="function" id="d1/de8/dpctl__sycl__usm__interface_8cpp_1aaca1953fcae5fa1a5311179045563272" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
@@ -365,7 +365,7 @@ USM pointer must have been allocated using the same context as the one used to c
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="80" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="80" bodyend="85"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="80" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="80" bodyend="85"/>
       </memberdef>
       <memberdef kind="function" id="d1/de8/dpctl__sycl__usm__interface_8cpp_1ae3b7d18f2b0a8ea1aa5faabe45070bca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
@@ -407,7 +407,7 @@ USM pointer must have been allocated using the same context as the one used to c
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="63" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="63" bodyend="68"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="63" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="63" bodyend="68"/>
       </memberdef>
       <memberdef kind="function" id="d1/de8/dpctl__sycl__usm__interface_8cpp_1a97325f7bca4391c8c2a26206415506ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
@@ -449,7 +449,7 @@ USM pointer must have been allocated using the same context as the one used to c
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="46" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="46" bodyend="51"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="46" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="46" bodyend="51"/>
       </memberdef>
       <memberdef kind="function" id="d1/de8/dpctl__sycl__usm__interface_8cpp_1a46d576bd3dd8d9ff1e859490a8d1a2a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
@@ -491,7 +491,7 @@ USM pointer must have been allocated using the same context as the one used to c
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="133" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="133" bodyend="142"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="133" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="133" bodyend="142"/>
       </memberdef>
       <memberdef kind="function" id="d1/de8/dpctl__sycl__usm__interface_8cpp_1a449e647c5b69e26bfce5aa2ccc425814" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const char *</type>
@@ -533,7 +533,7 @@ USM pointer must have been allocated using the same context as the one used to c
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="113" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="113" bodyend="130"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" line="113" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp" bodystart="113" bodyend="130"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -680,6 +680,6 @@ USM pointer must have been allocated using the same context as the one used to c
 <codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>wrap(</highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/>device(Dev));</highlight></codeline>
 <codeline lineno="142"><highlight class="normal">}</highlight></codeline>
     </programlisting>
-    <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_usm_interface.cpp"/>
   </compounddef>
 </doxygen>

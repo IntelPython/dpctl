@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Function DPCTLQueue_SubmitRange &mdash; Data-parallel Control (dpctl) master documentation</title>
+  <title>Function DPCTLQueue_SubmitRange &mdash; Data-parallel Control (dpctl) 0.5.0 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                master
+                0.5.0
               </div>
             
           
@@ -170,19 +170,7 @@
 <span id="_CPPv322DPCTLQueue_SubmitRangeK18DPCTLSyclKernelRefK17DPCTLSyclQueueRefPPvPK18DPCTLKernelArgType6size_tAL3E_K6size_t6size_tPK17DPCTLSyclEventRef6size_t"></span><span id="_CPPv222DPCTLQueue_SubmitRangeK18DPCTLSyclKernelRefK17DPCTLSyclQueueRefPPvPK18DPCTLKernelArgType6size_tA3_K6size_t6size_tPK17DPCTLSyclEventRef6size_t"></span><span id="DPCTLQueue_SubmitRange__DPCTLSyclKernelRefC.DPCTLSyclQueueRefC.voidPP.DPCTLKernelArgTypeCP.s.sCA.s.DPCTLSyclEventRefCP.s"></span><span class="target" id="dpctl__sycl__queue__interface_8h_1a798fcfd6344469ebd02ba4b23100820a"></span><a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03.html#_CPPv417DPCTLSyclEventRef" title="DPCTLSyclEventRef">DPCTLSyclEventRef</a> <code class="sig-name descname">DPCTLQueue_SubmitRange</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844.html#_CPPv418DPCTLSyclKernelRef" title="DPCTLSyclKernelRef">DPCTLSyclKernelRef</a> <em>KRef</em>, <em class="property">const</em> <a class="reference internal" href="typedef_dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a.html#_CPPv417DPCTLSyclQueueRef" title="DPCTLSyclQueueRef">DPCTLSyclQueueRef</a> <em>QRef</em>, void **<em>Args</em>, <em class="property">const</em> <a class="reference internal" href="enum_dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089.html#_CPPv418DPCTLKernelArgType" title="DPCTLKernelArgType">DPCTLKernelArgType</a> *<em>ArgTypes</em>, size_t <em>NArgs</em>, <em class="property">const</em> size_t <em>Range</em>[3], size_t <em>NRange</em>, <em class="property">const</em> <a class="reference internal" href="typedef_dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03.html#_CPPv417DPCTLSyclEventRef" title="DPCTLSyclEventRef">DPCTLSyclEventRef</a> *<em>DepEvents</em>, size_t <em>NDepEvents</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DPCTLQueue_SubmitRangeK18DPCTLSyclKernelRefK17DPCTLSyclQueueRefPPvPK18DPCTLKernelArgType6size_tAL3E_K6size_t6size_tPK17DPCTLSyclEventRef6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Submits the kernel to the specified queue with the provided range argument. </p>
 <p>A wrapper over sycl::queue.submit(). The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as parallel_for(range&lt;NRange&gt;, *unwrap(KRef)).</p>
-<p><dl class="xrefsect">
-<dt>
-<em>Todo:</em></dt>
-<dd><p>sycl::buffer arguments are not supported yet. </p>
-</dd></dl>
-
-<dl class="xrefsect">
-<dt>
-<em>Todo:</em></dt>
-<dd><p>Add support for id&lt;Dims&gt; WorkItemOffset</p>
-</dd></dl>
-
-</p>
+<p></p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>An opaque pointer to the sycl::event returned by the sycl::queue.submit() function. </p>
 </dd>

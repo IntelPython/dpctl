@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="d4/d3f/dpctl__utils__helper_8h" kind="file" language="C++">
     <compoundname>dpctl_utils_helper.h</compoundname>
     <includes local="no">CL/sycl.hpp</includes>
@@ -22,10 +22,6 @@
         <label>dpctl_sycl_platform_interface.cpp</label>
         <link refid="d5/da7/dpctl__sycl__platform__interface_8cpp"/>
       </node>
-      <node id="3">
-        <label>dpctl_sycl_device_interface.cpp</label>
-        <link refid="de/dc3/dpctl__sycl__device__interface_8cpp"/>
-      </node>
       <node id="2">
         <label>dpctl_utils_helper.cpp</label>
         <link refid="d3/d5b/dpctl__utils__helper_8cpp"/>
@@ -39,6 +35,10 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
+      </node>
+      <node id="3">
+        <label>dpctl_sycl_device_interface.cpp</label>
+        <link refid="de/dc3/dpctl__sycl__device__interface_8cpp"/>
       </node>
     </invincdepgraph>
     <innernamespace refid="d4/df1/namespacecl_1_1sycl">cl::sycl</innernamespace>
@@ -59,7 +59,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/helper/include/dpctl_utils_helper.h" line="30" column="13" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/helper/source/dpctl_utils_helper.cpp" bodystart="35" bodyend="59" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/helper/include/dpctl_utils_helper.h" declline="30" declcolumn="13"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/helper/include/dpctl_utils_helper.h" line="30" column="13" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/helper/source/dpctl_utils_helper.cpp" bodystart="35" bodyend="59" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/helper/include/dpctl_utils_helper.h" declline="30" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="d4/d3f/dpctl__utils__helper_8h_1af12ff9e60432ae08466e4095b5a4ef76" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>info::device_type</type>
@@ -77,7 +77,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/helper/include/dpctl_utils_helper.h" line="31" column="19" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/helper/source/dpctl_utils_helper.cpp" bodystart="64" bodyend="82" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/helper/include/dpctl_utils_helper.h" declline="31" declcolumn="19"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/helper/include/dpctl_utils_helper.h" line="31" column="19" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/helper/source/dpctl_utils_helper.cpp" bodystart="64" bodyend="82" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/helper/include/dpctl_utils_helper.h" declline="31" declcolumn="19"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -115,6 +115,6 @@
 <codeline lineno="30"><highlight class="normal">std::string<sp/><ref refid="d4/d3f/dpctl__utils__helper_8h_1a7848b5c8fe0b26236e350fa0d11d86fa" kindref="member">DPCTL_DeviceTypeToStr</ref>(info::device_type<sp/>devTy);</highlight></codeline>
 <codeline lineno="31"><highlight class="normal">info::device_type<sp/><ref refid="d4/d3f/dpctl__utils__helper_8h_1af12ff9e60432ae08466e4095b5a4ef76" kindref="member">DPCTL_StrToDeviceType</ref>(std::string<sp/>devTyStr);</highlight></codeline>
     </programlisting>
-    <location file="/localdisk/work/akharche/dpctl/dpctl-capi/helper/include/dpctl_utils_helper.h"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/helper/include/dpctl_utils_helper.h"/>
   </compounddef>
 </doxygen>

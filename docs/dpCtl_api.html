@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpCtl Python API &mdash; Data-parallel Control (dpctl) master documentation</title>
+  <title>dpCtl Python API &mdash; Data-parallel Control (dpctl) 0.5.0 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                master
+                0.5.0
               </div>
             
           
@@ -164,8 +164,281 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpctl-python-api">
-<span id="dpctl-api"></span><h1>dpCtl Python API<a class="headerlink" href="#dpctl-python-api" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-dpctl">
+<span id="dpctl-python-api"></span><span id="dpctl-api"></span><h1>dpCtl Python API<a class="headerlink" href="#module-dpctl" title="Permalink to this headline">¶</a></h1>
+<p><strong>Data Parallel Control (dpCtl)</strong></p>
+<p>DpCtl provides a lightweight Python wrapper over a subset of
+DPC++/SYCL’s API. The goal of dpCtl is not (yet) to provide a
+abstraction for every SYCL function. DpCtl is intended to provide
+a common runtime to manage specific SYCL resources, such as devices
+and USM memory, for SYCL-based Python packages and extension modules.</p>
+<p>The main features presently provided by dpCtl are:</p>
+<ul class="simple">
+<li><p>A SYCL queue manager exposed directly inside the top-level <cite>dpctl</cite>
+module.</p></li>
+<li><p>A USM memory manager (<cite>dpctl.memory</cite>) that provides Python objects
+implementing the Python buffer protocol using USM shared and USM host
+allocators. The memory manager also exposes various utility functions
+to wrap SYCL’s USM allocators, deallocators, <cite>memcpy</cite> functions, <em>etc.</em></p></li>
+</ul>
+<dl class="py class">
+<dt id="dpctl.SyclContext">
+<em class="property">class </em><code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">SyclContext</code><a class="headerlink" href="#dpctl.SyclContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper class for a Sycl Context</p>
+<dl class="py method">
+<dt id="dpctl.SyclContext.addressof_ref">
+<code class="sig-name descname">addressof_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclContext.addressof_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the address of the DPCTLSyclContextRef pointer as a
+long.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The address of the DPCTLSyclContextRef object used to create this
+SyclContext cast to a long.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclContext.equals">
+<code class="sig-name descname">equals</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclContext.equals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if the SyclContext argument has the same _context_ref
+as this SyclContext.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dpctl.SyclDevice">
+<em class="property">class </em><code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">SyclDevice</code><a class="headerlink" href="#dpctl.SyclDevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper class for a Sycl Device</p>
+<dl class="py method">
+<dt id="dpctl.SyclDevice.addressof_ref">
+<code class="sig-name descname">addressof_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.addressof_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the address of the DPCTLSyclDeviceRef pointer as a
+long.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The address of the DPCTLSyclDeviceRef object used to create this
+SyclDevice cast to a long.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclDevice.dump_device_info">
+<code class="sig-name descname">dump_device_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.dump_device_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print information about the SYCL device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclDevice.get_device_name">
+<code class="sig-name descname">get_device_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_device_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of the device as a string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclDevice.get_device_type">
+<code class="sig-name descname">get_device_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_device_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the type of the device as a <cite>device_type</cite> enum</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclDevice.get_driver_version">
+<code class="sig-name descname">get_driver_version</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_driver_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the OpenCL software driver version as a string
+in the form: major number.minor number, if this SYCL
+device is an OpenCL device. Returns a string class
+with the value “1.2” if this SYCL device is a host device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclDevice.get_max_compute_units">
+<code class="sig-name descname">get_max_compute_units</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_max_compute_units" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of parallel compute units
+available to the device. The minimum value is 1.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclDevice.get_max_num_sub_groups">
+<code class="sig-name descname">get_max_num_sub_groups</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_max_num_sub_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum number of sub-groups
+in a work-group for any kernel executed on the
+device. The minimum value is 1.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclDevice.get_max_work_group_size">
+<code class="sig-name descname">get_max_work_group_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_max_work_group_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum number of work-items
+that are permitted in a work-group executing a
+kernel on a single compute unit. The minimum
+value is 1.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclDevice.get_max_work_item_dims">
+<code class="sig-name descname">get_max_work_item_dims</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_max_work_item_dims" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum dimensions that specify
+the global and local work-item IDs used by the
+data parallel execution model. The minimum
+value is 3 if this SYCL device is not of device
+type <code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclDevice.get_max_work_item_sizes">
+<code class="sig-name descname">get_max_work_item_sizes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_max_work_item_sizes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum number of work-items
+that are permitted in each dimension of the
+work-group of the nd_range. The minimum
+value is (1; 1; 1) for devices that are not of
+device type <code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclDevice.get_vendor_name">
+<code class="sig-name descname">get_vendor_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_vendor_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the device vendor name as a string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclDevice.has_int64_base_atomics">
+<code class="sig-name descname">has_int64_base_atomics</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.has_int64_base_atomics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if device has int64_base_atomics else returns false.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclDevice.has_int64_extended_atomics">
+<code class="sig-name descname">has_int64_extended_atomics</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.has_int64_extended_atomics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if device has int64_extended_atomics else returns false.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dpctl.SyclEvent">
+<em class="property">class </em><code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">SyclEvent</code><a class="headerlink" href="#dpctl.SyclEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper class for a Sycl Event</p>
+<dl class="py method">
+<dt id="dpctl.SyclEvent.addressof_ref">
+<code class="sig-name descname">addressof_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent.addressof_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the address of the C API DPCTLSyclEventRef pointer as
+a long.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The address of the DPCTLSyclEventRef object used to create this
+SyclEvent cast to a long.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dpctl.SyclQueue">
+<em class="property">class </em><code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">SyclQueue</code><a class="headerlink" href="#dpctl.SyclQueue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper class for a Sycl queue.</p>
+<dl class="py method">
+<dt id="dpctl.SyclQueue.addressof_ref">
+<code class="sig-name descname">addressof_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.addressof_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the address of the C API DPCTLSyclQueueRef pointer as a long.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The address of the DPCTLSyclQueueRef object used to create this
+SyclQueue cast to a long.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclQueue.equals">
+<code class="sig-name descname">equals</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.equals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if the SyclQueue argument has the same _queue_ref
+as this SycleQueue.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclQueue.get_sycl_backend">
+<code class="sig-name descname">get_sycl_backend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.get_sycl_backend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Sycl bakend associated with the queue.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dpctl.backend_type">
+<em class="property">class </em><code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">backend_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.backend_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Automatically numbers SYCL backend types with values starting from 1.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpctl.device_context">
+<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">device_context</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.device_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SYCL queue defined by the “backend:device type:device id” tuple is
+set as the currently active queue, <em>i.e.</em>, a subsequent call to
+<a class="reference internal" href="#dpctl.get_current_queue" title="dpctl.get_current_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code></a> inside the context returns the queue.
+The active queue is also returned by the context manager and can be
+directly used without having to call <a class="reference internal" href="#dpctl.get_current_queue" title="dpctl.get_current_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code></a>.</p>
+<p>If a the request queue is not found an exception is raised.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="dpctl.device_type">
+<em class="property">class </em><code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">device_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.device_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Automatically numbers SYCL device types with values starting from 1.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpctl.dump">
+<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">dump</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.dump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints information about the Runtime object.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpctl.get_current_backend">
+<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_current_backend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_current_backend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain current backend type from Data Parallel Control package.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpctl.get_current_device_type">
+<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_current_device_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_current_device_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain current device type from Data Parallel Control package.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpctl.get_current_queue">
+<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_current_queue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_current_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the currently activate SYCL queue as a new SyclQueue object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>If there is a currently active SYCL queue that queue
+is returned wrapped in a SyclQueue object. The SyclQueue object
+owns a copy of the currently active SYCL queue as an opaque
+<cite>DPCTLSyclQueueRef</cite> pointer. The pointer is freed when the SyclQueue
+is garbage collected.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue">SyclQueue</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>SyclQueueCreationError</strong> – If no currently active SYCL queue found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpctl.get_num_activated_queues">
+<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_num_activated_queues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_activated_queues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of currently activated queues for this thread.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpctl.get_num_platforms">
+<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_num_platforms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_platforms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of available non-host SYCL platforms.</p>
+</dd></dl>
+
 </div>
 
 

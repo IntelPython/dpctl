@@ -1,0 +1,14 @@
+<map id="dpctl_sycl_enum_types.h" name="dpctl_sycl_enum_types.h">
+<area shape="rect" id="node1" title=" " alt="" coords="517,5,704,32"/>
+<area shape="rect" id="node2" href="$d3/d02/dpctl__sycl__platform__interface_8h.html" title=" " alt="" coords="535,80,686,121"/>
+<area shape="rect" id="node9" href="$d4/d5a/dpctl__sycl__device__interface_8h.html" title=" " alt="" coords="175,87,390,114"/>
+<area shape="rect" id="node12" href="$da/db8/dpctl__sycl__queue__interface_8h.html" title=" " alt="" coords="749,87,960,114"/>
+<area shape="rect" id="node3" href="$df/d74/dpctl__sycl__context__interface_8h.html" title=" " alt="" coords="519,169,662,211"/>
+<area shape="rect" id="node8" href="$d5/da7/dpctl__sycl__platform__interface_8cpp.html" title=" " alt="" coords="686,169,837,211"/>
+<area shape="rect" id="node4" href="$d1/dac/dpctl__sycl__queue__manager_8h.html" title=" " alt="" coords="85,266,296,293"/>
+<area shape="rect" id="node6" href="$d4/d08/dpctl__sycl__context__interface_8cpp.html" title=" " alt="" coords="519,259,662,300"/>
+<area shape="rect" id="node7" href="$d3/daf/dpctl__sycl__queue__interface_8cpp.html" title=" " alt="" coords="724,266,951,293"/>
+<area shape="rect" id="node5" href="$d2/db7/dpctl__sycl__queue__manager_8cpp.html" title=" " alt="" coords="78,348,303,375"/>
+<area shape="rect" id="node10" href="$de/dc3/dpctl__sycl__device__interface_8cpp.html" title=" " alt="" coords="27,177,256,203"/>
+<area shape="rect" id="node11" href="$d1/de8/dpctl__sycl__usm__interface_8cpp.html" title=" " alt="" coords="281,177,495,203"/>
+</map>

@@ -1,31 +1,26 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="db/dcc/dpctl__sycl__event__interface_8cpp" kind="file" language="C++">
     <compoundname>dpctl_sycl_event_interface.cpp</compoundname>
     <includes refid="d5/d12/dpctl__sycl__event__interface_8h" local="yes">dpctl_sycl_event_interface.h</includes>
     <includes refid="d1/d38/CBindingWrapping_8h" local="yes">Support/CBindingWrapping.h</includes>
     <includes local="no">CL/sycl.hpp</includes>
     <incdepgraph>
+      <node id="10">
+        <label>Support/MemOwnershipAttrs.h</label>
+        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
+      </node>
       <node id="12">
         <label>CL/sycl.hpp</label>
       </node>
-      <node id="3">
-        <label>dpctl_data_types.h</label>
-        <link refid="dd/d1c/dpctl__data__types_8h"/>
-        <childnode refid="4" relation="include">
+      <node id="1">
+        <label>dpctl_sycl_event_interface.cpp</label>
+        <link refid="db/dcc/dpctl__sycl__event__interface_8cpp"/>
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>stdint.h</label>
-      </node>
-      <node id="7">
-        <label>dpctl_sycl_types.h</label>
-        <link refid="df/d57/dpctl__sycl__types_8h"/>
-        <childnode refid="8" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -42,34 +37,39 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="9">
-        <label>Support/DllExport.h</label>
-        <link refid="d6/d26/DllExport_8h"/>
-      </node>
-      <node id="6">
-        <label>sys/types.h</label>
-      </node>
       <node id="11">
         <label>Support/CBindingWrapping.h</label>
         <link refid="d1/d38/CBindingWrapping_8h"/>
       </node>
-      <node id="10">
-        <label>Support/MemOwnershipAttrs.h</label>
-        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
+      <node id="5">
+        <label>stdint.h</label>
       </node>
-      <node id="1">
-        <label>dpctl_sycl_event_interface.cpp</label>
-        <link refid="db/dcc/dpctl__sycl__event__interface_8cpp"/>
-        <childnode refid="2" relation="include">
+      <node id="3">
+        <label>dpctl_data_types.h</label>
+        <link refid="dd/d1c/dpctl__data__types_8h"/>
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
+      </node>
+      <node id="6">
+        <label>sys/types.h</label>
       </node>
       <node id="8">
         <label>Support/ExternC.h</label>
         <link refid="d2/d0a/ExternC_8h"/>
+      </node>
+      <node id="7">
+        <label>dpctl_sycl_types.h</label>
+        <link refid="df/d57/dpctl__sycl__types_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>Support/DllExport.h</label>
+        <link refid="d6/d26/DllExport_8h"/>
       </node>
       <node id="4">
         <label>inttypes.h</label>
@@ -102,7 +102,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_event_interface.cpp" line="49" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_event_interface.cpp" bodystart="49" bodyend="52"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_event_interface.cpp" line="49" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_event_interface.cpp" bodystart="49" bodyend="52"/>
       </memberdef>
       <memberdef kind="function" id="db/dcc/dpctl__sycl__event__interface_8cpp_1a36356bbf7ee2ac21f961adb59e9c2b63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -130,7 +130,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_event_interface.cpp" line="41" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_event_interface.cpp" bodystart="41" bodyend="46"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_event_interface.cpp" line="41" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_event_interface.cpp" bodystart="41" bodyend="46"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -187,6 +187,6 @@
 <codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/>unwrap(ERef);</highlight></codeline>
 <codeline lineno="52"><highlight class="normal">}</highlight></codeline>
     </programlisting>
-    <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_event_interface.cpp"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_event_interface.cpp"/>
   </compounddef>
 </doxygen>

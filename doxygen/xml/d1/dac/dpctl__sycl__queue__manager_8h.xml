@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="d1/dac/dpctl__sycl__queue__manager_8h" kind="file" language="C++">
     <compoundname>dpctl_sycl_queue_manager.h</compoundname>
     <includes refid="dd/d1c/dpctl__data__types_8h" local="yes">dpctl_data_types.h</includes>
@@ -14,44 +14,9 @@
       <node id="13">
         <label>stdbool.h</label>
       </node>
-      <node id="2">
-        <label>dpctl_data_types.h</label>
-        <link refid="dd/d1c/dpctl__data__types_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>stdint.h</label>
-      </node>
-      <node id="6">
-        <label>dpctl_sycl_types.h</label>
-        <link refid="df/d57/dpctl__sycl__types_8h"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>dpctl_sycl_enum_types.h</label>
-        <link refid="d3/d94/dpctl__sycl__enum__types_8h"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>dpctl_sycl_platform_interface.h</label>
-        <link refid="d3/d02/dpctl__sycl__platform__interface_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
+      <node id="12">
+        <label>Support/MemOwnershipAttrs.h</label>
+        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
       </node>
       <node id="1">
         <label>dpctl_sycl_queue_manager.h</label>
@@ -71,9 +36,67 @@
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="11">
-        <label>Support/DllExport.h</label>
-        <link refid="d6/d26/DllExport_8h"/>
+      <node id="14">
+        <label>dpctl_sycl_device_interface.h</label>
+        <link refid="d4/d5a/dpctl__sycl__device__interface_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>dpctl_sycl_platform_interface.h</label>
+        <link refid="d3/d02/dpctl__sycl__platform__interface_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+      <node id="10">
+        <label>dpctl_sycl_enum_types.h</label>
+        <link refid="d3/d94/dpctl__sycl__enum__types_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>dpctl_data_types.h</label>
+        <link refid="dd/d1c/dpctl__data__types_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>sys/types.h</label>
+      </node>
+      <node id="7">
+        <label>Support/ExternC.h</label>
+        <link refid="d2/d0a/ExternC_8h"/>
+      </node>
+      <node id="6">
+        <label>dpctl_sycl_types.h</label>
+        <link refid="df/d57/dpctl__sycl__types_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
       </node>
       <node id="8">
         <label>dpctl_sycl_context_interface.h</label>
@@ -93,47 +116,24 @@
         <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="5">
-        <label>sys/types.h</label>
-      </node>
-      <node id="12">
-        <label>Support/MemOwnershipAttrs.h</label>
-        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
-      </node>
-      <node id="7">
-        <label>Support/ExternC.h</label>
-        <link refid="d2/d0a/ExternC_8h"/>
-      </node>
-      <node id="14">
-        <label>dpctl_sycl_device_interface.h</label>
-        <link refid="d4/d5a/dpctl__sycl__device__interface_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
+      <node id="11">
+        <label>Support/DllExport.h</label>
+        <link refid="d6/d26/DllExport_8h"/>
       </node>
       <node id="3">
         <label>inttypes.h</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="2">
-        <label>dpctl_sycl_queue_manager.cpp</label>
-        <link refid="d2/db7/dpctl__sycl__queue__manager_8cpp"/>
-      </node>
       <node id="1">
         <label>dpctl_sycl_queue_manager.h</label>
         <link refid="d1/dac/dpctl__sycl__queue__manager_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
+      </node>
+      <node id="2">
+        <label>dpctl_sycl_queue_manager.cpp</label>
+        <link refid="d2/db7/dpctl__sycl__queue__manager_8cpp"/>
       </node>
     </invincdepgraph>
       <sectiondef kind="func">
@@ -154,7 +154,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="54" column="32" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="478" bodyend="481" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="54" declcolumn="32"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="54" column="32" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="478" bodyend="481" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="54" declcolumn="32"/>
       </memberdef>
       <memberdef kind="function" id="d1/dac/dpctl__sycl__queue__manager_8h_1a563f8335ead48d3586b9837457cd3c13" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> size_t</type>
@@ -171,7 +171,7 @@ Returns inside the number of activated queues not including the global queue (QM
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="80" column="8" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="435" bodyend="443" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="80" declcolumn="8"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="80" column="8" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="435" bodyend="443" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="80" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="d1/dac/dpctl__sycl__queue__manager_8h_1ab7fceeb737c6759b799c92b597070d52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> size_t</type>
@@ -213,7 +213,7 @@ Returns the number of available queues for a specific backend and device type co
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="91" column="8" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="449" bodyend="473" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="91" declcolumn="8"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="91" column="8" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="449" bodyend="473" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="91" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="d1/dac/dpctl__sycl__queue__manager_8h_1a9cfce59d7bfc5033186c20ab6954e737" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
@@ -267,7 +267,7 @@ Returns a copy of a sycl::queue corresponding to the specified device type and d
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="69" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="487" bodyend="492" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="69" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="69" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="487" bodyend="492" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="69" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="d1/dac/dpctl__sycl__queue__manager_8h_1a81b6f33ea0a17c9513a9ea19ddaa3544" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
@@ -310,7 +310,7 @@ The function constructs a new SYCL queue instance from SYCL conext and SYCL devi
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="179" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="539" bodyend="546" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="179" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="179" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="539" bodyend="546" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="179" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="d1/dac/dpctl__sycl__queue__manager_8h_1a77d39c59561d3f427a1dde1ce81652db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> bool</type>
@@ -340,7 +340,7 @@ The function constructs a new SYCL queue instance from SYCL conext and SYCL devi
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="103" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="497" bodyend="500" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="103" declcolumn="6"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="103" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="497" bodyend="500" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="103" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="d1/dac/dpctl__sycl__queue__manager_8h_1a60e20b64f0c70866e2e08442962fd621" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> void</type>
@@ -358,7 +358,7 @@ The function constructs a new SYCL queue instance from SYCL conext and SYCL devi
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="160" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="529" bodyend="532" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="160" declcolumn="6"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="160" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="529" bodyend="532" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="160" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="d1/dac/dpctl__sycl__queue__manager_8h_1a3e7def4dc72567e111b633b1d8f84d6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
@@ -415,7 +415,7 @@ The function constructs a new SYCL queue instance from SYCL conext and SYCL devi
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="144" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="519" bodyend="524" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="144" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="144" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="519" bodyend="524" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="144" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="d1/dac/dpctl__sycl__queue__manager_8h_1a1591403f0924782109219208595d0ec7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
@@ -469,7 +469,7 @@ The function sets the global queue, i.e., the sycl::queue object at QMgrHelper::
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="118" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="508" bodyend="513" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="118" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" line="118" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_manager.cpp" bodystart="508" bodyend="513" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h" declline="118" declcolumn="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -554,6 +554,6 @@ The function sets the global queue, i.e., the sycl::queue object at QMgrHelper::
 <codeline lineno="182"><highlight class="normal"></highlight></codeline>
 <codeline lineno="183"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a6956fffc46b54bcdd0e7fd53cd3a6619" kindref="member">DPCTL_C_EXTERN_C_END</ref></highlight></codeline>
     </programlisting>
-    <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_manager.h"/>
   </compounddef>
 </doxygen>

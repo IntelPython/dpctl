@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.20" xml:lang="en-US">
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.17">
   <compound refid="dpctl__data__types_8h" kind="file"><name>dpctl_data_types.h</name>
     <member refid="dpctl__data__types_8h_1ad0d744f05898e32d01f73f8af3cd2071" kind="define"><name>INT64_MAX</name></member>
     <member refid="dpctl__data__types_8h_1ab21f12f372f67b8ff0aa3432336ede67" kind="define"><name>INT64_MIN</name></member>

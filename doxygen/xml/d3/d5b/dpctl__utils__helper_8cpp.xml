@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="d3/d5b/dpctl__utils__helper_8cpp" kind="file" language="C++">
     <compoundname>dpctl_utils_helper.cpp</compoundname>
     <includes refid="d4/d3f/dpctl__utils__helper_8h" local="yes">dpctl_utils_helper.h</includes>
@@ -49,7 +49,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/helper/source/dpctl_utils_helper.cpp" line="35" column="13" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/helper/source/dpctl_utils_helper.cpp" bodystart="35" bodyend="59"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/helper/source/dpctl_utils_helper.cpp" line="35" column="13" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/helper/source/dpctl_utils_helper.cpp" bodystart="35" bodyend="59"/>
       </memberdef>
       <memberdef kind="function" id="d3/d5b/dpctl__utils__helper_8cpp_1af12ff9e60432ae08466e4095b5a4ef76" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>info::device_type</type>
@@ -67,7 +67,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/helper/source/dpctl_utils_helper.cpp" line="64" column="19" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/helper/source/dpctl_utils_helper.cpp" bodystart="64" bodyend="82"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/helper/source/dpctl_utils_helper.cpp" line="64" column="19" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/helper/source/dpctl_utils_helper.cpp" bodystart="64" bodyend="82"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -149,6 +149,6 @@
 <codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>devTy;</highlight></codeline>
 <codeline lineno="82"><highlight class="normal">}</highlight></codeline>
     </programlisting>
-    <location file="/localdisk/work/akharche/dpctl/dpctl-capi/helper/source/dpctl_utils_helper.cpp"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/helper/source/dpctl_utils_helper.cpp"/>
   </compounddef>
 </doxygen>

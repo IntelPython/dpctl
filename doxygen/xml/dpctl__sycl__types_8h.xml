@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="dpctl__sycl__types_8h" kind="file" language="C++">
     <compoundname>dpctl_sycl_types.h</compoundname>
     <includes refid="ExternC_8h" local="yes">Support/ExternC.h</includes>
@@ -12,18 +12,44 @@
     <includedby refid="dpctl__sycl__queue__manager_8h" local="yes">dpctl-capi/include/dpctl_sycl_queue_manager.h</includedby>
     <includedby refid="dpctl__sycl__usm__interface_8h" local="yes">dpctl-capi/include/dpctl_sycl_usm_interface.h</includedby>
     <incdepgraph>
+      <node id="2">
+        <label>Support/ExternC.h</label>
+        <link refid="ExternC_8h"/>
+      </node>
       <node id="1">
         <label>dpctl-capi/include/dpctl_sycl_types.h</label>
         <link refid="dpctl__sycl__types_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="2">
-        <label>Support/ExternC.h</label>
-        <link refid="ExternC_8h"/>
-      </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="5">
+        <label>dpctl-capi/include/dpctl_sycl_event_interface.h</label>
+        <link refid="dpctl__sycl__event__interface_8h"/>
+      </node>
+      <node id="3">
+        <label>dpctl-capi/include/dpctl_sycl_queue_manager.h</label>
+        <link refid="dpctl__sycl__queue__manager_8h"/>
+      </node>
+      <node id="4">
+        <label>dpctl-capi/include/dpctl_sycl_device_interface.h</label>
+        <link refid="dpctl__sycl__device__interface_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>dpctl-capi/include/dpctl_sycl_kernel_interface.h</label>
+        <link refid="dpctl__sycl__kernel__interface_8h"/>
+      </node>
+      <node id="9">
+        <label>dpctl-capi/include/dpctl_sycl_usm_interface.h</label>
+        <link refid="dpctl__sycl__usm__interface_8h"/>
+      </node>
+      <node id="8">
+        <label>dpctl-capi/include/dpctl_sycl_queue_interface.h</label>
+        <link refid="dpctl__sycl__queue__interface_8h"/>
+      </node>
       <node id="1">
         <label>dpctl-capi/include/dpctl_sycl_types.h</label>
         <link refid="dpctl__sycl__types_8h"/>
@@ -44,39 +70,13 @@
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>dpctl-capi/include/dpctl_sycl_queue_manager.h</label>
-        <link refid="dpctl__sycl__queue__manager_8h"/>
-      </node>
-      <node id="5">
-        <label>dpctl-capi/include/dpctl_sycl_event_interface.h</label>
-        <link refid="dpctl__sycl__event__interface_8h"/>
-      </node>
-      <node id="9">
-        <label>dpctl-capi/include/dpctl_sycl_usm_interface.h</label>
-        <link refid="dpctl__sycl__usm__interface_8h"/>
-      </node>
-      <node id="2">
-        <label>dpctl-capi/include/dpctl_sycl_context_interface.h</label>
-        <link refid="dpctl__sycl__context__interface_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
       <node id="7">
         <label>dpctl-capi/include/dpctl_sycl_program_interface.h</label>
         <link refid="dpctl__sycl__program__interface_8h"/>
       </node>
-      <node id="8">
-        <label>dpctl-capi/include/dpctl_sycl_queue_interface.h</label>
-        <link refid="dpctl__sycl__queue__interface_8h"/>
-      </node>
-      <node id="6">
-        <label>dpctl-capi/include/dpctl_sycl_kernel_interface.h</label>
-        <link refid="dpctl__sycl__kernel__interface_8h"/>
-      </node>
-      <node id="4">
-        <label>dpctl-capi/include/dpctl_sycl_device_interface.h</label>
-        <link refid="dpctl__sycl__device__interface_8h"/>
+      <node id="2">
+        <label>dpctl-capi/include/dpctl_sycl_context_interface.h</label>
+        <link refid="dpctl__sycl__context__interface_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>

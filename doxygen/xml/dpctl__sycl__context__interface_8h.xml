@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="dpctl__sycl__context__interface_8h" kind="file" language="C++">
     <compoundname>dpctl_sycl_context_interface.h</compoundname>
     <includes refid="dpctl__data__types_8h" local="yes">dpctl_data_types.h</includes>
@@ -14,30 +14,9 @@
       <node id="12">
         <label>stdbool.h</label>
       </node>
-      <node id="2">
-        <label>dpctl_data_types.h</label>
-        <link refid="dpctl__data__types_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>stdint.h</label>
-      </node>
-      <node id="6">
-        <label>dpctl_sycl_types.h</label>
-        <link refid="dpctl__sycl__types_8h"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>dpctl_sycl_enum_types.h</label>
-        <link refid="dpctl__sycl__enum__types_8h"/>
-        <childnode refid="7" relation="include">
-        </childnode>
+      <node id="11">
+        <label>Support/MemOwnershipAttrs.h</label>
+        <link refid="MemOwnershipAttrs_8h"/>
       </node>
       <node id="8">
         <label>dpctl_sycl_platform_interface.h</label>
@@ -53,9 +32,37 @@
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="10">
-        <label>Support/DllExport.h</label>
-        <link refid="DllExport_8h"/>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+      <node id="9">
+        <label>dpctl_sycl_enum_types.h</label>
+        <link refid="dpctl__sycl__enum__types_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>dpctl_data_types.h</label>
+        <link refid="dpctl__data__types_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>sys/types.h</label>
+      </node>
+      <node id="7">
+        <label>Support/ExternC.h</label>
+        <link refid="ExternC_8h"/>
+      </node>
+      <node id="6">
+        <label>dpctl_sycl_types.h</label>
+        <link refid="dpctl__sycl__types_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>dpctl-capi/include/dpctl_sycl_context_interface.h</label>
@@ -75,16 +82,9 @@
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="5">
-        <label>sys/types.h</label>
-      </node>
-      <node id="11">
-        <label>Support/MemOwnershipAttrs.h</label>
-        <link refid="MemOwnershipAttrs_8h"/>
-      </node>
-      <node id="7">
-        <label>Support/ExternC.h</label>
-        <link refid="ExternC_8h"/>
+      <node id="10">
+        <label>Support/DllExport.h</label>
+        <link refid="DllExport_8h"/>
       </node>
       <node id="3">
         <label>inttypes.h</label>
@@ -274,18 +274,18 @@
 <codeline lineno="36"><highlight class="normal"><ref refid="ExternC_8h_1ad85f54ad0bab1d5206255e5920261be3" kindref="member">DPCTL_C_EXTERN_C_BEGIN</ref></highlight></codeline>
 <codeline lineno="37"><highlight class="normal"></highlight></codeline>
 <codeline lineno="46"><highlight class="normal"><ref refid="DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref></highlight></codeline>
-<codeline lineno="47" refid="dpctl__sycl__context__interface_8h_1a87699f14f783bf855ab2d9b573227ea0" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__context__interface_8h_1a87699f14f783bf855ab2d9b573227ea0" kindref="member">DPCTLContext_AreEq</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__types_8h_1ae29f49592112350adaf99af68f29cc56" kindref="member">DPCTLSyclContextRef</ref><sp/>CtxRef1,</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__context__interface_8h_1a87699f14f783bf855ab2d9b573227ea0" kindref="member">DPCTLContext_AreEq</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__types_8h_1ae29f49592112350adaf99af68f29cc56" kindref="member">DPCTLSyclContextRef</ref><sp/>CtxRef1,</highlight></codeline>
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__types_8h_1ae29f49592112350adaf99af68f29cc56" kindref="member">DPCTLSyclContextRef</ref><sp/>CtxRef2);</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"></highlight></codeline>
 <codeline lineno="56"><highlight class="normal"><ref refid="DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref></highlight></codeline>
-<codeline lineno="57" refid="dpctl__sycl__context__interface_8h_1a52b5b4195920c76393f7a0b43f2c411b" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__context__interface_8h_1a52b5b4195920c76393f7a0b43f2c411b" kindref="member">DPCTLContext_IsHost</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__types_8h_1ae29f49592112350adaf99af68f29cc56" kindref="member">DPCTLSyclContextRef</ref><sp/>CtxRef);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__context__interface_8h_1a52b5b4195920c76393f7a0b43f2c411b" kindref="member">DPCTLContext_IsHost</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__types_8h_1ae29f49592112350adaf99af68f29cc56" kindref="member">DPCTLSyclContextRef</ref><sp/>CtxRef);</highlight></codeline>
 <codeline lineno="58"><highlight class="normal"></highlight></codeline>
 <codeline lineno="66"><highlight class="normal"><ref refid="DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref></highlight></codeline>
 <codeline lineno="67"><highlight class="normal"><ref refid="dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" kindref="member">DPCTLSyclBackendType</ref></highlight></codeline>
-<codeline lineno="68" refid="dpctl__sycl__context__interface_8h_1afccc249e262e239fcb158f3298b943c0" refkind="member"><highlight class="normal"><ref refid="dpctl__sycl__context__interface_8h_1afccc249e262e239fcb158f3298b943c0" kindref="member">DPCTLContext_GetBackend</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__types_8h_1ae29f49592112350adaf99af68f29cc56" kindref="member">DPCTLSyclContextRef</ref><sp/>CtxRef);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><ref refid="dpctl__sycl__context__interface_8h_1afccc249e262e239fcb158f3298b943c0" kindref="member">DPCTLContext_GetBackend</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1gadd48a0161309931574aed2025a16ade7" kindref="member">__dpctl_keep</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__types_8h_1ae29f49592112350adaf99af68f29cc56" kindref="member">DPCTLSyclContextRef</ref><sp/>CtxRef);</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"></highlight></codeline>
 <codeline lineno="75"><highlight class="normal"><ref refid="DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref></highlight></codeline>
-<codeline lineno="76" refid="dpctl__sycl__context__interface_8h_1ac6918507628172187175ca627b215c36" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__context__interface_8h_1ac6918507628172187175ca627b215c36" kindref="member">DPCTLContext_Delete</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6" kindref="member">__dpctl_take</ref><sp/><ref refid="dpctl__sycl__types_8h_1ae29f49592112350adaf99af68f29cc56" kindref="member">DPCTLSyclContextRef</ref><sp/>CtxRef);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="dpctl__sycl__context__interface_8h_1ac6918507628172187175ca627b215c36" kindref="member">DPCTLContext_Delete</ref><sp/>(<ref refid="group__MEM__MGMT__ATTR__MACROS_1ga17fe5722d78d8ce138ca952889d07bc6" kindref="member">__dpctl_take</ref><sp/><ref refid="dpctl__sycl__types_8h_1ae29f49592112350adaf99af68f29cc56" kindref="member">DPCTLSyclContextRef</ref><sp/>CtxRef);</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"></highlight></codeline>
 <codeline lineno="78"><highlight class="normal"><ref refid="ExternC_8h_1a6956fffc46b54bcdd0e7fd53cd3a6619" kindref="member">DPCTL_C_EXTERN_C_END</ref></highlight></codeline>
     </programlisting>

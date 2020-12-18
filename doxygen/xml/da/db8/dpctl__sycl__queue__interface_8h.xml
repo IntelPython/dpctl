@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="da/db8/dpctl__sycl__queue__interface_8h" kind="file" language="C++">
     <compoundname>dpctl_sycl_queue_interface.h</compoundname>
     <includes refid="dd/d1c/dpctl__data__types_8h" local="yes">dpctl_data_types.h</includes>
@@ -10,41 +10,18 @@
     <includes refid="d4/d8c/MemOwnershipAttrs_8h" local="yes">Support/MemOwnershipAttrs.h</includes>
     <includedby refid="d3/daf/dpctl__sycl__queue__interface_8cpp" local="yes">dpctl_sycl_queue_interface.cpp</includedby>
     <incdepgraph>
-      <node id="2">
-        <label>dpctl_data_types.h</label>
-        <link refid="dd/d1c/dpctl__data__types_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
+      <node id="10">
+        <label>Support/MemOwnershipAttrs.h</label>
+        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
       </node>
       <node id="4">
         <label>stdint.h</label>
-      </node>
-      <node id="8">
-        <label>dpctl_sycl_types.h</label>
-        <link refid="df/d57/dpctl__sycl__types_8h"/>
-        <childnode refid="7" relation="include">
-        </childnode>
       </node>
       <node id="6">
         <label>dpctl_sycl_enum_types.h</label>
         <link refid="d3/d94/dpctl__sycl__enum__types_8h"/>
         <childnode refid="7" relation="include">
         </childnode>
-      </node>
-      <node id="9">
-        <label>Support/DllExport.h</label>
-        <link refid="d6/d26/DllExport_8h"/>
-      </node>
-      <node id="5">
-        <label>sys/types.h</label>
-      </node>
-      <node id="10">
-        <label>Support/MemOwnershipAttrs.h</label>
-        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
       </node>
       <node id="1">
         <label>dpctl_sycl_queue_interface.h</label>
@@ -62,24 +39,47 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
+      <node id="2">
+        <label>dpctl_data_types.h</label>
+        <link refid="dd/d1c/dpctl__data__types_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>sys/types.h</label>
+      </node>
       <node id="7">
         <label>Support/ExternC.h</label>
         <link refid="d2/d0a/ExternC_8h"/>
+      </node>
+      <node id="8">
+        <label>dpctl_sycl_types.h</label>
+        <link refid="df/d57/dpctl__sycl__types_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>Support/DllExport.h</label>
+        <link refid="d6/d26/DllExport_8h"/>
       </node>
       <node id="3">
         <label>inttypes.h</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="2">
+        <label>dpctl_sycl_queue_interface.cpp</label>
+        <link refid="d3/daf/dpctl__sycl__queue__interface_8cpp"/>
+      </node>
       <node id="1">
         <label>dpctl_sycl_queue_interface.h</label>
         <link refid="da/db8/dpctl__sycl__queue__interface_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-      </node>
-      <node id="2">
-        <label>dpctl_sycl_queue_interface.cpp</label>
-        <link refid="d3/daf/dpctl__sycl__queue__interface_8cpp"/>
       </node>
     </invincdepgraph>
       <sectiondef kind="func">
@@ -123,7 +123,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="55" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="127" bodyend="134" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="55" declcolumn="6"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="55" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="127" bodyend="134" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="55" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="da/db8/dpctl__sycl__queue__interface_8h_1ad09eba83cac8a984addeda6994a8172b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/d0a/ExternC_8h_1ad85f54ad0bab1d5206255e5920261be3" kindref="member">DPCTL_C_EXTERN_C_BEGIN</ref> <ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> void</type>
@@ -151,7 +151,7 @@ Delete the passed in pointer after verifying it points to a sycl::queue. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="45" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="121" bodyend="124" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="45" declcolumn="6"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="45" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="121" bodyend="124" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="45" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="da/db8/dpctl__sycl__queue__interface_8h_1a8c3629a8627e9748cdec34688f6ce908" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" kindref="member">DPCTLSyclBackendType</ref></type>
@@ -181,7 +181,7 @@ Delete the passed in pointer after verifying it points to a sycl::queue. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="66" column="22" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="136" bodyend="148" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="66" declcolumn="22"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="66" column="22" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="136" bodyend="148" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="66" declcolumn="22"/>
       </memberdef>
       <memberdef kind="function" id="da/db8/dpctl__sycl__queue__interface_8h_1ad11e27086f2cee7f3d22f33de1a24bc9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08" kindref="member">DPCTLSyclContextRef</ref></type>
@@ -211,7 +211,7 @@ Delete the passed in pointer after verifying it points to a sycl::queue. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="76" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="159" bodyend="164" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="76" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="76" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="159" bodyend="164" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="76" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="da/db8/dpctl__sycl__queue__interface_8h_1a44095b28dfb5c357e6c065749e9aa8c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> <ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
@@ -241,7 +241,7 @@ Delete the passed in pointer after verifying it points to a sycl::queue. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="86" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="151" bodyend="156" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="86" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="86" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="151" bodyend="156" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="86" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="da/db8/dpctl__sycl__queue__interface_8h_1a0ef8f0c4ee3fd1e0289633ffe3d283dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> void</type>
@@ -305,7 +305,7 @@ Delete the passed in pointer after verifying it points to a sycl::queue. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="225" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="311" bodyend="317" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="225" declcolumn="6"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="225" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="311" bodyend="317" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="225" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="da/db8/dpctl__sycl__queue__interface_8h_1a25103f4d9872482ce6efde712a807979" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> void</type>
@@ -369,7 +369,7 @@ Delete the passed in pointer after verifying it points to a sycl::queue. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="199" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="293" bodyend="299" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="199" declcolumn="6"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="199" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="293" bodyend="299" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="199" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="da/db8/dpctl__sycl__queue__interface_8h_1a4281ab0ca2559019d062411477f85a01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> void</type>
@@ -421,7 +421,7 @@ Delete the passed in pointer after verifying it points to a sycl::queue. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="211" column="6" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="302" bodyend="308" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="211" declcolumn="6"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="211" column="6" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="302" bodyend="308" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="211" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="da/db8/dpctl__sycl__queue__interface_8h_1aac9356153363bb89ade3116816fca94b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
@@ -475,8 +475,8 @@ Delete the passed in pointer after verifying it points to a sycl::queue. </para>
         </briefdescription>
         <detaileddescription>
 <para>A wrapper over sycl::queue.submit(). The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as parallel_for(nd_range&lt;NRange&gt;, *unwrap(KRef)).</para>
-<para><xrefsect id="dd/da0/todo_1_todo000006"><xreftitle>Todo</xreftitle><xrefdescription><para>sycl::buffer arguments are not supported yet. </para>
-</xrefdescription></xrefsect><xrefsect id="dd/da0/todo_1_todo000007"><xreftitle>Todo</xreftitle><xrefdescription><para>Add support for id&lt;Dims&gt; WorkItemOffset</para>
+<para><xrefsect id="dd/da0/todo_1_todo000005"><xreftitle>Todo</xreftitle><xrefdescription><para>sycl::buffer arguments are not supported yet. </para>
+<para>Add support for id&lt;Dims&gt; WorkItemOffset</para>
 </xrefdescription></xrefsect></para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
@@ -565,7 +565,7 @@ Delete the passed in pointer after verifying it points to a sycl::queue. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="168" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="225" bodyend="283" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="168" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="168" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="225" bodyend="283" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="168" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="da/db8/dpctl__sycl__queue__interface_8h_1a9ed0d59f789b4fb0959b0af022fdbe23" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
@@ -615,7 +615,7 @@ Delete the passed in pointer after verifying it points to a sycl::queue. </para>
         <detaileddescription>
 <para>A wrapper over sycl::queue.submit(). The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as parallel_for(range&lt;NRange&gt;, *unwrap(KRef)).</para>
 <para><xrefsect id="dd/da0/todo_1_todo000004"><xreftitle>Todo</xreftitle><xrefdescription><para>sycl::buffer arguments are not supported yet. </para>
-</xrefdescription></xrefsect><xrefsect id="dd/da0/todo_1_todo000005"><xreftitle>Todo</xreftitle><xrefdescription><para>Add support for id&lt;Dims&gt; WorkItemOffset</para>
+<para>Add support for id&lt;Dims&gt; WorkItemOffset</para>
 </xrefdescription></xrefsect></para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
@@ -696,7 +696,7 @@ Delete the passed in pointer after verifying it points to a sycl::queue. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="121" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="167" bodyend="222" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="121" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="121" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="167" bodyend="222" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="121" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="da/db8/dpctl__sycl__queue__interface_8h_1a3411357b2a09bad80be5b4fee8a8ed44" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d6/d26/DllExport_8h_1aed0c117c235d99c414e0b5033d096785" kindref="member">DPCTL_API</ref> void</type>
@@ -724,7 +724,7 @@ Delete the passed in pointer after verifying it points to a sycl::queue. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="187" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="286" bodyend="291" declfile="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="187" declcolumn="1"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" line="187" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_queue_interface.cpp" bodystart="286" bodyend="291" declfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h" declline="187" declcolumn="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -826,6 +826,6 @@ Delete the passed in pointer after verifying it points to a sycl::queue. </para>
 <codeline lineno="227"><highlight class="normal"></highlight></codeline>
 <codeline lineno="228"><highlight class="normal"><ref refid="d2/d0a/ExternC_8h_1a6956fffc46b54bcdd0e7fd53cd3a6619" kindref="member">DPCTL_C_EXTERN_C_END</ref></highlight></codeline>
     </programlisting>
-    <location file="/localdisk/work/akharche/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/include/dpctl_sycl_queue_interface.h"/>
   </compounddef>
 </doxygen>

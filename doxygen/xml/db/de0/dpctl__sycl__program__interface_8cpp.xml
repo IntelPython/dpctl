@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="db/de0/dpctl__sycl__program__interface_8cpp" kind="file" language="C++">
     <compoundname>dpctl_sycl_program_interface.cpp</compoundname>
     <includes refid="dc/d02/dpctl__sycl__program__interface_8h" local="yes">dpctl_sycl_program_interface.h</includes>
@@ -7,8 +7,22 @@
     <includes local="no">CL/sycl.hpp</includes>
     <includes local="no">CL/cl.h</includes>
     <incdepgraph>
+      <node id="10">
+        <label>Support/MemOwnershipAttrs.h</label>
+        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
+      </node>
       <node id="12">
         <label>CL/sycl.hpp</label>
+      </node>
+      <node id="11">
+        <label>Support/CBindingWrapping.h</label>
+        <link refid="d1/d38/CBindingWrapping_8h"/>
+      </node>
+      <node id="5">
+        <label>stdint.h</label>
+      </node>
+      <node id="13">
+        <label>CL/cl.h</label>
       </node>
       <node id="3">
         <label>dpctl_data_types.h</label>
@@ -20,8 +34,12 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="5">
-        <label>stdint.h</label>
+      <node id="6">
+        <label>sys/types.h</label>
+      </node>
+      <node id="8">
+        <label>Support/ExternC.h</label>
+        <link refid="d2/d0a/ExternC_8h"/>
       </node>
       <node id="7">
         <label>dpctl_sycl_types.h</label>
@@ -41,16 +59,6 @@
         <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="13">
-        <label>CL/cl.h</label>
-      </node>
-      <node id="9">
-        <label>Support/DllExport.h</label>
-        <link refid="d6/d26/DllExport_8h"/>
-      </node>
-      <node id="6">
-        <label>sys/types.h</label>
-      </node>
       <node id="2">
         <label>dpctl_sycl_program_interface.h</label>
         <link refid="dc/d02/dpctl__sycl__program__interface_8h"/>
@@ -65,17 +73,9 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="11">
-        <label>Support/CBindingWrapping.h</label>
-        <link refid="d1/d38/CBindingWrapping_8h"/>
-      </node>
-      <node id="10">
-        <label>Support/MemOwnershipAttrs.h</label>
-        <link refid="d4/d8c/MemOwnershipAttrs_8h"/>
-      </node>
-      <node id="8">
-        <label>Support/ExternC.h</label>
-        <link refid="d2/d0a/ExternC_8h"/>
+      <node id="9">
+        <label>Support/DllExport.h</label>
+        <link refid="d6/d26/DllExport_8h"/>
       </node>
       <node id="4">
         <label>inttypes.h</label>
@@ -134,7 +134,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" line="118" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" bodystart="118" bodyend="176"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" line="118" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" bodystart="118" bodyend="176"/>
       </memberdef>
       <memberdef kind="function" id="db/de0/dpctl__sycl__program__interface_8cpp_1ad41babca5973854c9bb6e06c13d356ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172" kindref="member">DPCTLSyclProgramRef</ref></type>
@@ -192,7 +192,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" line="89" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" bodystart="89" bodyend="115"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" line="89" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" bodystart="89" bodyend="115"/>
       </memberdef>
       <memberdef kind="function" id="db/de0/dpctl__sycl__program__interface_8cpp_1a5727082ed58b71d3b7bd17cf5a34d9a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -220,7 +220,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" line="221" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" bodystart="221" bodyend="224"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" line="221" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" bodystart="221" bodyend="224"/>
       </memberdef>
       <memberdef kind="function" id="db/de0/dpctl__sycl__program__interface_8cpp_1ae4b36bcb185ad1c1c5721280753e86a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="d2/de3/group__MEM__MGMT__ATTR__MACROS_1ga836492a42cdfef6419378dbf8d81f452" kindref="member">__dpctl_give</ref> <ref refid="df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844" kindref="member">DPCTLSyclKernelRef</ref></type>
@@ -262,7 +262,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" line="179" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" bodystart="179" bodyend="200"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" line="179" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" bodystart="179" bodyend="200"/>
       </memberdef>
       <memberdef kind="function" id="db/de0/dpctl__sycl__program__interface_8cpp_1a94177c43e3753c9a07525c45efd56c87" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -304,7 +304,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" line="203" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" bodystart="203" bodyend="218"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" line="203" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp" bodystart="203" bodyend="218"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -533,6 +533,6 @@
 <codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/>unwrap(PRef);</highlight></codeline>
 <codeline lineno="224"><highlight class="normal">}</highlight></codeline>
     </programlisting>
-    <location file="/localdisk/work/akharche/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/source/dpctl_sycl_program_interface.cpp"/>
   </compounddef>
 </doxygen>

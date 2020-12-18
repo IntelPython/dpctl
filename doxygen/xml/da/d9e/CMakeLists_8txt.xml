@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.20" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="da/d9e/CMakeLists_8txt" kind="file" language="C++">
     <compoundname>CMakeLists.txt</compoundname>
       <sectiondef kind="func">
@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/CMakeLists.txt" line="1" column="1" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/CMakeLists.txt" bodystart="1" bodyend="6"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/CMakeLists.txt" line="1" column="1" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/CMakeLists.txt" bodystart="1" bodyend="6"/>
       </memberdef>
       <memberdef kind="function" id="da/d9e/CMakeLists_8txt_1a79010be137637b1fffdd9f3c0a926708" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>no_dpcpp_root</type>
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/CMakeLists.txt" line="7" column="5" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/CMakeLists.txt" bodystart="7" bodyend="13"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/CMakeLists.txt" line="7" column="5" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/CMakeLists.txt" bodystart="7" bodyend="13"/>
       </memberdef>
       <memberdef kind="function" id="da/d9e/CMakeLists_8txt_1aa739aaa568ca4e3fb8021c8984335c14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bin dpcpp</type>
@@ -50,7 +50,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/localdisk/work/akharche/dpctl/dpctl-capi/CMakeLists.txt" line="14" column="9" bodyfile="/localdisk/work/akharche/dpctl/dpctl-capi/CMakeLists.txt" bodystart="14" bodyend="16"/>
+        <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/CMakeLists.txt" line="14" column="9" bodyfile="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/CMakeLists.txt" bodystart="14" bodyend="16"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -206,6 +206,6 @@
 <codeline lineno="146"><highlight class="comment">#<sp/>Todo<sp/>:<sp/>Add<sp/>build<sp/>rules<sp/>for<sp/>doxygen</highlight></codeline>
 <codeline lineno="147"><highlight class="comment">#<sp/>maybe<sp/>refer<sp/>https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/</highlight></codeline>
     </programlisting>
-    <location file="/localdisk/work/akharche/dpctl/dpctl-capi/CMakeLists.txt"/>
+    <location file="/home/diptorupd/Desktop/devel/dpctl/dpctl-capi/CMakeLists.txt"/>
   </compounddef>
 </doxygen>

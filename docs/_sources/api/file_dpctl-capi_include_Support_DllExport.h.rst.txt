@@ -37,6 +37,8 @@ Included By
 -----------
 
 
+- :ref:`file_dpctl-capi_include_dpctl_sycl_platform_interface.h`
+
 - :ref:`file_dpctl-capi_include_dpctl_sycl_context_interface.h`
 
 - :ref:`file_dpctl-capi_include_dpctl_sycl_device_interface.h`
@@ -44,8 +46,6 @@ Included By
 - :ref:`file_dpctl-capi_include_dpctl_sycl_event_interface.h`
 
 - :ref:`file_dpctl-capi_include_dpctl_sycl_kernel_interface.h`
-
-- :ref:`file_dpctl-capi_include_dpctl_sycl_platform_interface.h`
 
 - :ref:`file_dpctl-capi_include_dpctl_sycl_program_interface.h`
 

@@ -5,7 +5,7 @@ var NAVTREEINDEX1 =
 "df/d74/dpctl__sycl__context__interface_8h_source.html":[2,0,4],
 "df/df4/dpctl__sycl__kernel__interface_8h.html":[2,0,11],
 "df/df4/dpctl__sycl__kernel__interface_8h.html#a02cb1ddc64d9f78d228a5dc222c8862b":[2,0,11,0],
-"df/df4/dpctl__sycl__kernel__interface_8h.html#aa1168e71afa1cf0a8cd56b67af6003a8":[2,0,11,1],
+"df/df4/dpctl__sycl__kernel__interface_8h.html#a6fcafc771756b6663800cc5e44ca38b0":[2,0,11,1],
 "df/df4/dpctl__sycl__kernel__interface_8h.html#ae585c0ae9e5e1826ca24aac6f9b2a71d":[2,0,11,2],
 "df/df4/dpctl__sycl__kernel__interface_8h_source.html":[2,0,11],
 "files.html":[2,0],
