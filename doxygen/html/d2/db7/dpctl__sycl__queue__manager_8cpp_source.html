@@ -26,7 +26,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Data-parallel Control (dpCtl)
-   &#160;<span id="projectnumber">0.5.0</span>
+   &#160;<span id="projectnumber">master</span>
    </div>
    <div id="projectbrief">A SYCL queue and memory manager for Python modules.</div>
   </td>
@@ -302,257 +302,263 @@ $(document).ready(function(){initNavTree('d2/db7/dpctl__sycl__queue__manager_8cp
 <div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;        QRef = <span class="keyword">new</span> queue(gpuQs[DNum]);</div>
 <div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    }</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933a528047c320d729a55d423881bcec91d6">DPCTLSyclBackendType::DPCTL_LEVEL_ZERO</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTLSyclDeviceType::DPCTL_GPU</a>:</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    {</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;        <span class="keyword">auto</span> l0GpuQs = get_level0_gpu_queues();</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        <span class="keywordflow">if</span> (DNum &gt;= l0GpuQs.size()) {</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;            <span class="comment">// \todo handle error</span></div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;Level-0 GPU device &quot;</span> &lt;&lt; DNum</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; not found on system.\n&quot;</span>;</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        }</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        QRef = <span class="keyword">new</span> queue(l0GpuQs[DNum]);</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    }</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;Unsupported device type.\n&quot;</span>;</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    }</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160; </div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keywordflow">return</span> wrap(QRef);</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;}</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160; </div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="keywordtype">bool</span> QMgrHelper::isCurrentQueue (<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gadd48a0161309931574aed2025a16ade7">__dpctl_keep</a> <span class="keyword">const</span> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a> QRef)</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;{</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    <span class="keyword">auto</span> &amp;activated_q = get_active_queues();</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    <span class="keywordflow">if</span>(activated_q.empty()) {</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        <span class="comment">// \todo handle error</span></div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;No currently active queues.\n&quot;</span>;</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    }</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;    <span class="keyword">auto</span> last = activated_q.size() - 1;</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    <span class="keyword">auto</span> currQ = activated_q[last];</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <span class="keywordflow">return</span> (*unwrap(QRef) == currQ);</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;}</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160; </div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#ga836492a42cdfef6419378dbf8d81f452">__dpctl_give</a> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a></div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;QMgrHelper::setAsDefaultQueue (<a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933">DPCTLSyclBackendType</a> BETy,</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;                               <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ff">DPCTLSyclDeviceType</a> DeviceTy,</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;                               <span class="keywordtype">size_t</span> DNum)</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;{</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;    queue *QRef = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    <span class="keyword">auto</span> &amp;activeQ = get_active_queues();</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    <span class="keywordflow">if</span>(activeQ.empty()) {</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;active queue vector is corrupted.\n&quot;</span>;</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    }</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160; </div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    <span class="keywordflow">switch</span> (BETy|DeviceTy)</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    {</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66">DPCTLSyclBackendType::DPCTL_OPENCL</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffa7301bd6676b8167d6048d08072ceeb2e">DPCTLSyclDeviceType::DPCTL_CPU</a>:</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    {</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;        <span class="keyword">auto</span> oclcpu_q = get_opencl_cpu_queues();</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;        <span class="keywordflow">if</span> (DNum &gt;= oclcpu_q.size()) {</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;            <span class="comment">// \todo handle error</span></div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;OpenCL CPU device &quot;</span> &lt;&lt; DNum</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; not found on system\n.&quot;</span>;</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;        }</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;        activeQ[0] = oclcpu_q[DNum];</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    }</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;   <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66">DPCTLSyclBackendType::DPCTL_OPENCL</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTLSyclDeviceType::DPCTL_GPU</a>:</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    {</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        <span class="keyword">auto</span> oclgpu_q = get_opencl_gpu_queues();</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;        <span class="keywordflow">if</span> (DNum &gt;= oclgpu_q.size()) {</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;            <span class="comment">// \todo handle error</span></div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;OpenCL GPU device &quot;</span> &lt;&lt; DNum</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; not found on system\n.&quot;</span>;</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;        }</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        activeQ[0] = oclgpu_q[DNum];</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;    }</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933a528047c320d729a55d423881bcec91d6">DPCTLSyclBackendType::DPCTL_LEVEL_ZERO</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTLSyclDeviceType::DPCTL_GPU</a>:</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    {</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;        <span class="keyword">auto</span> l0gpu_q = get_level0_gpu_queues();</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;        <span class="keywordflow">if</span> (DNum &gt;= l0gpu_q.size()) {</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;            <span class="comment">// \todo handle error</span></div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;Level-0 GPU device &quot;</span> &lt;&lt; DNum</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; not found on system\n.&quot;</span>;</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;        }</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;        activeQ[0] = l0gpu_q[DNum];</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    }</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    {</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;Unsupported device type.\n&quot;</span>;</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    }</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    }</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160; </div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    QRef = <span class="keyword">new</span> queue(activeQ[0]);</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    <span class="keywordflow">return</span> wrap(QRef);</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;}</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160; </div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#ga836492a42cdfef6419378dbf8d81f452">__dpctl_give</a> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a></div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;QMgrHelper::pushSyclQueue (<a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933">DPCTLSyclBackendType</a> BETy,</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;                           <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ff">DPCTLSyclDeviceType</a> DeviceTy,</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;                           <span class="keywordtype">size_t</span> DNum)</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;{</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    queue *QRef = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    <span class="keyword">auto</span> &amp;activeQ = get_active_queues();</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    <span class="keywordflow">if</span>(activeQ.empty()) {</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;Why is there no previous global context?\n&quot;</span>;</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    }</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160; </div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;    <span class="keywordflow">switch</span> (BETy|DeviceTy)</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    {</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66">DPCTLSyclBackendType::DPCTL_OPENCL</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffa7301bd6676b8167d6048d08072ceeb2e">DPCTLSyclDeviceType::DPCTL_CPU</a>:</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933a528047c320d729a55d423881bcec91d6">DPCTLSyclBackendType::DPCTL_LEVEL_ZERO</a> |</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;         <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTLSyclDeviceType::DPCTL_GPU</a>:</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    {</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        <span class="keyword">auto</span> l0GpuQs = get_level0_gpu_queues();</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;        <span class="keywordflow">if</span> (DNum &gt;= l0GpuQs.size()) {</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;            <span class="comment">// \todo handle error</span></div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;Level-0 GPU device &quot;</span> &lt;&lt; DNum</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; not found on system.\n&quot;</span>;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        }</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        QRef = <span class="keyword">new</span> queue(l0GpuQs[DNum]);</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    }</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;Unsupported device type.\n&quot;</span>;</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    }</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160; </div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    <span class="keywordflow">return</span> wrap(QRef);</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;}</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160; </div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="keywordtype">bool</span> QMgrHelper::isCurrentQueue (<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gadd48a0161309931574aed2025a16ade7">__dpctl_keep</a> <span class="keyword">const</span> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a> QRef)</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;{</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    <span class="keyword">auto</span> &amp;activated_q = get_active_queues();</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    <span class="keywordflow">if</span>(activated_q.empty()) {</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        <span class="comment">// \todo handle error</span></div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;No currently active queues.\n&quot;</span>;</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;    }</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    <span class="keyword">auto</span> last = activated_q.size() - 1;</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <span class="keyword">auto</span> currQ = activated_q[last];</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    <span class="keywordflow">return</span> (*unwrap(QRef) == currQ);</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;}</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160; </div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#ga836492a42cdfef6419378dbf8d81f452">__dpctl_give</a> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a></div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;QMgrHelper::setAsDefaultQueue (<a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933">DPCTLSyclBackendType</a> BETy,</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;                               <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ff">DPCTLSyclDeviceType</a> DeviceTy,</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;                               <span class="keywordtype">size_t</span> DNum)</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;{</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    queue *QRef = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    <span class="keyword">auto</span> &amp;activeQ = get_active_queues();</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    <span class="keywordflow">if</span>(activeQ.empty()) {</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;active queue vector is corrupted.\n&quot;</span>;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    }</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160; </div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    <span class="keywordflow">switch</span> (BETy|DeviceTy)</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    {</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66">DPCTLSyclBackendType::DPCTL_OPENCL</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffa7301bd6676b8167d6048d08072ceeb2e">DPCTLSyclDeviceType::DPCTL_CPU</a>:</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    {</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;        <span class="keyword">auto</span> oclcpu_q = get_opencl_cpu_queues();</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;        <span class="keywordflow">if</span> (DNum &gt;= oclcpu_q.size()) {</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;            <span class="comment">// \todo handle error</span></div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;OpenCL CPU device &quot;</span> &lt;&lt; DNum</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; not found on system\n.&quot;</span>;</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;        }</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;        activeQ[0] = oclcpu_q[DNum];</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    }</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;   <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66">DPCTLSyclBackendType::DPCTL_OPENCL</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTLSyclDeviceType::DPCTL_GPU</a>:</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    {</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;        <span class="keyword">auto</span> oclgpu_q = get_opencl_gpu_queues();</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;        <span class="keywordflow">if</span> (DNum &gt;= oclgpu_q.size()) {</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;            <span class="comment">// \todo handle error</span></div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;OpenCL GPU device &quot;</span> &lt;&lt; DNum</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; not found on system\n.&quot;</span>;</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        }</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        activeQ[0] = oclgpu_q[DNum];</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    }</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933a528047c320d729a55d423881bcec91d6">DPCTLSyclBackendType::DPCTL_LEVEL_ZERO</a> |</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;         <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTLSyclDeviceType::DPCTL_GPU</a>:</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    {</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;        <span class="keyword">auto</span> l0gpu_q = get_level0_gpu_queues();</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;        <span class="keywordflow">if</span> (DNum &gt;= l0gpu_q.size()) {</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;            <span class="comment">// \todo handle error</span></div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;Level-0 GPU device &quot;</span> &lt;&lt; DNum</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; not found on system\n.&quot;</span>;</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;        }</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;        activeQ[0] = l0gpu_q[DNum];</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    }</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    {</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;Unsupported device type.\n&quot;</span>;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;    }</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    }</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160; </div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;    QRef = <span class="keyword">new</span> queue(activeQ[0]);</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keywordflow">return</span> wrap(QRef);</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;}</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160; </div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#ga836492a42cdfef6419378dbf8d81f452">__dpctl_give</a> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a></div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;QMgrHelper::pushSyclQueue (<a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933">DPCTLSyclBackendType</a> BETy,</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;                           <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ff">DPCTLSyclDeviceType</a> DeviceTy,</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;                           <span class="keywordtype">size_t</span> DNum)</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;{</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    queue *QRef = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;    <span class="keyword">auto</span> &amp;activeQ = get_active_queues();</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;    <span class="keywordflow">if</span>(activeQ.empty()) {</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;Why is there no previous global context?\n&quot;</span>;</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;    }</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160; </div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;    <span class="keywordflow">switch</span> (BETy|DeviceTy)</div>
 <div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;    {</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;        <span class="keywordflow">if</span> (DNum &gt;= get_opencl_cpu_queues().size()) {</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;            <span class="comment">// \todo handle error</span></div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;OpenCL CPU device &quot;</span> &lt;&lt; DNum</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; not found on system\n.&quot;</span>;</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;        }</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;        activeQ.emplace_back(get_opencl_cpu_queues()[DNum]);</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;        QRef = <span class="keyword">new</span> queue(activeQ[activeQ.size()-1]);</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    }</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66">DPCTLSyclBackendType::DPCTL_OPENCL</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTLSyclDeviceType::DPCTL_GPU</a>:</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;    {</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;        <span class="keywordflow">if</span> (DNum &gt;= get_opencl_gpu_queues().size()) {</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;            <span class="comment">// \todo handle error</span></div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;OpenCL GPU device &quot;</span> &lt;&lt; DNum</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; not found on system\n.&quot;</span>;</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;        }</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;        activeQ.emplace_back(get_opencl_gpu_queues()[DNum]);</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;        QRef = <span class="keyword">new</span> queue(activeQ[get_active_queues().size()-1]);</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;    }</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933a528047c320d729a55d423881bcec91d6">DPCTLSyclBackendType::DPCTL_LEVEL_ZERO</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTLSyclDeviceType::DPCTL_GPU</a>:</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;    {</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;        <span class="keywordflow">if</span> (DNum &gt;= get_level0_gpu_queues().size()) {</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;            <span class="comment">// \todo handle error</span></div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;Level-0 GPU device &quot;</span> &lt;&lt; DNum</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; not found on system\n.&quot;</span>;</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;        }</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;        activeQ.emplace_back(get_level0_gpu_queues()[DNum]);</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;        QRef = <span class="keyword">new</span> queue(activeQ[get_active_queues().size()-1]);</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;    }</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;    <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;    {</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;Unsupported device type.\n&quot;</span>;</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;    }</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    }</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160; </div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;    <span class="keywordflow">return</span> wrap(QRef);</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;}</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66">DPCTLSyclBackendType::DPCTL_OPENCL</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffa7301bd6676b8167d6048d08072ceeb2e">DPCTLSyclDeviceType::DPCTL_CPU</a>:</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    {</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;        <span class="keywordflow">if</span> (DNum &gt;= get_opencl_cpu_queues().size()) {</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;            <span class="comment">// \todo handle error</span></div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;OpenCL CPU device &quot;</span> &lt;&lt; DNum</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; not found on system\n.&quot;</span>;</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;        }</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;        activeQ.emplace_back(get_opencl_cpu_queues()[DNum]);</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;        QRef = <span class="keyword">new</span> queue(activeQ[activeQ.size()-1]);</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;    }</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66">DPCTLSyclBackendType::DPCTL_OPENCL</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTLSyclDeviceType::DPCTL_GPU</a>:</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    {</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        <span class="keywordflow">if</span> (DNum &gt;= get_opencl_gpu_queues().size()) {</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;            <span class="comment">// \todo handle error</span></div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;OpenCL GPU device &quot;</span> &lt;&lt; DNum</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; not found on system\n.&quot;</span>;</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;        }</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;        activeQ.emplace_back(get_opencl_gpu_queues()[DNum]);</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;        QRef = <span class="keyword">new</span> queue(activeQ[get_active_queues().size()-1]);</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;    }</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933a528047c320d729a55d423881bcec91d6">DPCTLSyclBackendType::DPCTL_LEVEL_ZERO</a> |</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;         <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTLSyclDeviceType::DPCTL_GPU</a>:</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;    {</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;        <span class="keywordflow">if</span> (DNum &gt;= get_level0_gpu_queues().size()) {</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;            <span class="comment">// \todo handle error</span></div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;Level-0 GPU device &quot;</span> &lt;&lt; DNum</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; not found on system\n.&quot;</span>;</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;        }</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;        activeQ.emplace_back(get_level0_gpu_queues()[DNum]);</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;        QRef = <span class="keyword">new</span> queue(activeQ[get_active_queues().size()-1]);</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;    }</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;    {</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;Unsupported device type.\n&quot;</span>;</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;    }</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    }</div>
 <div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160; </div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;<span class="keywordtype">void</span></div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;QMgrHelper::popSyclQueue ()</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;{</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    <span class="comment">// The first queue which is the &quot;default&quot; queue can not be removed.</span></div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;    <span class="keywordflow">if</span>(get_active_queues().size() &lt;= 1 ) {</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;No active contexts.\n&quot;</span>;</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;        <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    }</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;    get_active_queues().pop_back();</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;}</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160; </div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;} <span class="comment">/* end of anonymous namespace */</span></div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160; </div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;<span class="comment">//----------------------------- Public API -----------------------------------//</span></div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160; </div>
-<div class="line"><a name="l00435"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a22e01116058119d7370b482130971e19">  435</a></span>&#160;<span class="keywordtype">size_t</span> <a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a22e01116058119d7370b482130971e19">DPCTLQueueMgr_GetNumActivatedQueues</a> ()</div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;{</div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;    <span class="keywordflow">if</span> (QMgrHelper::get_active_queues().empty()) {</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;        <span class="comment">// \todo handle error</span></div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;No active contexts.\n&quot;</span>;</div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;    }</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;    <span class="keywordflow">return</span> QMgrHelper::get_active_queues().size() - 1;</div>
-<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;}</div>
-<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160; </div>
-<div class="line"><a name="l00449"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a207d8c268822cd0f605340ce59e03aaa">  449</a></span>&#160;<span class="keywordtype">size_t</span> <a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a207d8c268822cd0f605340ce59e03aaa">DPCTLQueueMgr_GetNumQueues</a> (<a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933">DPCTLSyclBackendType</a> BETy,</div>
-<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;                                  <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ff">DPCTLSyclDeviceType</a> DeviceTy)</div>
-<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;{</div>
-<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;    <span class="keywordflow">switch</span> (BETy|DeviceTy)</div>
-<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;    {</div>
-<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66">DPCTLSyclBackendType::DPCTL_OPENCL</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffa7301bd6676b8167d6048d08072ceeb2e">DPCTLSyclDeviceType::DPCTL_CPU</a>:</div>
-<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;    {</div>
-<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;        <span class="keywordflow">return</span> QMgrHelper::get_opencl_cpu_queues().size();</div>
-<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;    }</div>
-<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66">DPCTLSyclBackendType::DPCTL_OPENCL</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTLSyclDeviceType::DPCTL_GPU</a>:</div>
-<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;    {</div>
-<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;        <span class="keywordflow">return</span> QMgrHelper::get_opencl_gpu_queues().size();</div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;    }</div>
-<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933a528047c320d729a55d423881bcec91d6">DPCTLSyclBackendType::DPCTL_LEVEL_ZERO</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTLSyclDeviceType::DPCTL_GPU</a>:</div>
-<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;    {</div>
-<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;        <span class="keywordflow">return</span> QMgrHelper::get_level0_gpu_queues().size();</div>
-<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;    }</div>
-<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;    <span class="keywordflow">return</span> wrap(QRef);</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;}</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160; </div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;<span class="keywordtype">void</span></div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;QMgrHelper::popSyclQueue ()</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;{</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    <span class="comment">// The first queue which is the &quot;default&quot; queue can not be removed.</span></div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    <span class="keywordflow">if</span>(get_active_queues().size() &lt;= 1 ) {</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;No active contexts.\n&quot;</span>;</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;        <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;    }</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;    get_active_queues().pop_back();</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;}</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160; </div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;} <span class="comment">/* end of anonymous namespace */</span></div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160; </div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;<span class="comment">//----------------------------- Public API -----------------------------------//</span></div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160; </div>
+<div class="line"><a name="l00438"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a22e01116058119d7370b482130971e19">  438</a></span>&#160;<span class="keywordtype">size_t</span> <a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a22e01116058119d7370b482130971e19">DPCTLQueueMgr_GetNumActivatedQueues</a> ()</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;{</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;    <span class="keywordflow">if</span> (QMgrHelper::get_active_queues().empty()) {</div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;        <span class="comment">// \todo handle error</span></div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;No active contexts.\n&quot;</span>;</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;    }</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;    <span class="keywordflow">return</span> QMgrHelper::get_active_queues().size() - 1;</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;}</div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160; </div>
+<div class="line"><a name="l00452"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a207d8c268822cd0f605340ce59e03aaa">  452</a></span>&#160;<span class="keywordtype">size_t</span> <a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a207d8c268822cd0f605340ce59e03aaa">DPCTLQueueMgr_GetNumQueues</a> (<a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933">DPCTLSyclBackendType</a> BETy,</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;                                   <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ff">DPCTLSyclDeviceType</a> DeviceTy)</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;{</div>
+<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;    <span class="keywordflow">switch</span> (BETy|DeviceTy)</div>
+<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;    {</div>
+<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66">DPCTLSyclBackendType::DPCTL_OPENCL</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffa7301bd6676b8167d6048d08072ceeb2e">DPCTLSyclDeviceType::DPCTL_CPU</a>:</div>
+<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;    {</div>
+<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;        <span class="keywordflow">return</span> QMgrHelper::get_opencl_cpu_queues().size();</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;    }</div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66">DPCTLSyclBackendType::DPCTL_OPENCL</a> | <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTLSyclDeviceType::DPCTL_GPU</a>:</div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;    {</div>
+<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;        <span class="keywordflow">return</span> QMgrHelper::get_opencl_gpu_queues().size();</div>
+<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;    }</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933a528047c320d729a55d423881bcec91d6">DPCTLSyclBackendType::DPCTL_LEVEL_ZERO</a> |</div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;         <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTLSyclDeviceType::DPCTL_GPU</a>:</div>
 <div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;    {</div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;        <span class="comment">// \todo handle error</span></div>
-<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;Unsupported device type.\n&quot;</span>;</div>
-<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;    }</div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;    }</div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;}</div>
-<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160; </div>
-<div class="line"><a name="l00478"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#aa70cd1c9dca649d309c689f473cd17d8">  478</a></span>&#160;<a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a> <a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#aa70cd1c9dca649d309c689f473cd17d8">DPCTLQueueMgr_GetCurrentQueue</a> ()</div>
-<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;{</div>
-<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;    <span class="keywordflow">return</span> QMgrHelper::getCurrentQueue();</div>
-<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;}</div>
-<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160; </div>
-<div class="line"><a name="l00487"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#afa5e14912992f251601311abe7614920">  487</a></span>&#160;<a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a> <a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#afa5e14912992f251601311abe7614920">DPCTLQueueMgr_GetQueue</a> (<a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933">DPCTLSyclBackendType</a> BETy,</div>
-<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;                                        <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ff">DPCTLSyclDeviceType</a> DeviceTy,</div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;                                        <span class="keywordtype">size_t</span> DNum)</div>
-<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;{</div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;    <span class="keywordflow">return</span> QMgrHelper::getQueue(BETy, DeviceTy, DNum);</div>
-<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;}</div>
-<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160; </div>
-<div class="line"><a name="l00497"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a276d76fee8127fbe8bbbb70273559a25">  497</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a276d76fee8127fbe8bbbb70273559a25">DPCTLQueueMgr_IsCurrentQueue</a> (<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gadd48a0161309931574aed2025a16ade7">__dpctl_keep</a> <span class="keyword">const</span> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a> QRef)</div>
-<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;{</div>
-<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;    <span class="keywordflow">return</span> QMgrHelper::isCurrentQueue(QRef);</div>
-<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;}</div>
-<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#ga836492a42cdfef6419378dbf8d81f452">__dpctl_give</a> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a></div>
-<div class="line"><a name="l00508"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ae1f1a03d42ca7478013f1746c105ac66">  508</a></span>&#160;<a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ae1f1a03d42ca7478013f1746c105ac66">DPCTLQueueMgr_SetAsDefaultQueue</a> (<a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933">DPCTLSyclBackendType</a> BETy,</div>
-<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;                                <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ff">DPCTLSyclDeviceType</a> DeviceTy,</div>
-<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;                                <span class="keywordtype">size_t</span> DNum)</div>
-<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;{</div>
-<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;    <span class="keywordflow">return</span> QMgrHelper::setAsDefaultQueue(BETy, DeviceTy, DNum);</div>
-<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;}</div>
-<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160; </div>
-<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#ga836492a42cdfef6419378dbf8d81f452">__dpctl_give</a> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a></div>
-<div class="line"><a name="l00519"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a5bda499a06672322b2b5f217df3dc6f4">  519</a></span>&#160;<a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a5bda499a06672322b2b5f217df3dc6f4">DPCTLQueueMgr_PushQueue</a> (<a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933">DPCTLSyclBackendType</a> BETy,</div>
-<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;                        <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ff">DPCTLSyclDeviceType</a> DeviceTy,</div>
-<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;                        <span class="keywordtype">size_t</span> DNum)</div>
-<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;{</div>
-<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;    <span class="keywordflow">return</span> QMgrHelper::pushSyclQueue(BETy, DeviceTy, DNum);</div>
-<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;}</div>
-<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160; </div>
-<div class="line"><a name="l00529"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ab7092ee56c64ddb5389268e0570213a3">  529</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ab7092ee56c64ddb5389268e0570213a3">DPCTLQueueMgr_PopQueue</a> ()</div>
-<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;{</div>
-<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;    QMgrHelper::popSyclQueue();</div>
-<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;}</div>
-<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160; </div>
-<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;<a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a></div>
-<div class="line"><a name="l00539"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ad33ff618b3b63cf80d548cc7ba091643">  539</a></span>&#160;<a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ad33ff618b3b63cf80d548cc7ba091643">DPCTLQueueMgr_GetQueueFromContextAndDevice</a> (<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gadd48a0161309931574aed2025a16ade7">__dpctl_keep</a> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#accf78808322af80b73da617cb2f15f08">DPCTLSyclContextRef</a> CRef,</div>
-<div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;                                           <a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gadd48a0161309931574aed2025a16ade7">__dpctl_keep</a> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#a8dae76b436012ecbdebbd568e77f440d">DPCTLSyclDeviceRef</a> DRef)</div>
-<div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;{</div>
-<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;    <span class="keyword">auto</span> dev = unwrap(DRef);</div>
-<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;    <span class="keyword">auto</span> ctx = unwrap(CRef);</div>
-<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160; </div>
-<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;    <span class="keywordflow">return</span> wrap(<span class="keyword">new</span> queue(*ctx, *dev));</div>
-<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;}</div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;        <span class="keywordflow">return</span> QMgrHelper::get_level0_gpu_queues().size();</div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;    }</div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;    {</div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;        <span class="comment">// \todo handle error</span></div>
+<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;Unsupported device type.\n&quot;</span>;</div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;    }</div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;    }</div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;}</div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160; </div>
+<div class="line"><a name="l00482"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#aa70cd1c9dca649d309c689f473cd17d8">  482</a></span>&#160;<a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a> <a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#aa70cd1c9dca649d309c689f473cd17d8">DPCTLQueueMgr_GetCurrentQueue</a> ()</div>
+<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;{</div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;    <span class="keywordflow">return</span> QMgrHelper::getCurrentQueue();</div>
+<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;}</div>
+<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160; </div>
+<div class="line"><a name="l00491"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#afa5e14912992f251601311abe7614920">  491</a></span>&#160;<a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a> <a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#afa5e14912992f251601311abe7614920">DPCTLQueueMgr_GetQueue</a> (<a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933">DPCTLSyclBackendType</a> BETy,</div>
+<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;                                          <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ff">DPCTLSyclDeviceType</a> DeviceTy,</div>
+<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;                                          <span class="keywordtype">size_t</span> DNum)</div>
+<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;{</div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;    <span class="keywordflow">return</span> QMgrHelper::getQueue(BETy, DeviceTy, DNum);</div>
+<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;}</div>
+<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160; </div>
+<div class="line"><a name="l00501"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a276d76fee8127fbe8bbbb70273559a25">  501</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a276d76fee8127fbe8bbbb70273559a25">DPCTLQueueMgr_IsCurrentQueue</a> (<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gadd48a0161309931574aed2025a16ade7">__dpctl_keep</a> <span class="keyword">const</span> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a> QRef)</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;{</div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;    <span class="keywordflow">return</span> QMgrHelper::isCurrentQueue(QRef);</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;}</div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#ga836492a42cdfef6419378dbf8d81f452">__dpctl_give</a> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a></div>
+<div class="line"><a name="l00512"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ae1f1a03d42ca7478013f1746c105ac66">  512</a></span>&#160;<a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ae1f1a03d42ca7478013f1746c105ac66">DPCTLQueueMgr_SetAsDefaultQueue</a> (<a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933">DPCTLSyclBackendType</a> BETy,</div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;                                 <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ff">DPCTLSyclDeviceType</a> DeviceTy,</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;                                 <span class="keywordtype">size_t</span> DNum)</div>
+<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;{</div>
+<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;    <span class="keywordflow">return</span> QMgrHelper::setAsDefaultQueue(BETy, DeviceTy, DNum);</div>
+<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;}</div>
+<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160; </div>
+<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;<a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#ga836492a42cdfef6419378dbf8d81f452">__dpctl_give</a> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a></div>
+<div class="line"><a name="l00523"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a5bda499a06672322b2b5f217df3dc6f4">  523</a></span>&#160;<a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a5bda499a06672322b2b5f217df3dc6f4">DPCTLQueueMgr_PushQueue</a> (<a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933">DPCTLSyclBackendType</a> BETy,</div>
+<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;                         <a class="code" href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ff">DPCTLSyclDeviceType</a> DeviceTy,</div>
+<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;                         <span class="keywordtype">size_t</span> DNum)</div>
+<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;{</div>
+<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;    <span class="keywordflow">return</span> QMgrHelper::pushSyclQueue(BETy, DeviceTy, DNum);</div>
+<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;}</div>
+<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160; </div>
+<div class="line"><a name="l00533"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ab7092ee56c64ddb5389268e0570213a3">  533</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ab7092ee56c64ddb5389268e0570213a3">DPCTLQueueMgr_PopQueue</a> ()</div>
+<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;{</div>
+<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;    QMgrHelper::popSyclQueue();</div>
+<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;}</div>
+<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160; </div>
+<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;<a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a></div>
+<div class="line"><a name="l00543"></a><span class="lineno"><a class="line" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ad33ff618b3b63cf80d548cc7ba091643">  543</a></span>&#160;<a class="code" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ad33ff618b3b63cf80d548cc7ba091643">DPCTLQueueMgr_GetQueueFromContextAndDevice</a> (</div>
+<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;    <a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gadd48a0161309931574aed2025a16ade7">__dpctl_keep</a> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#accf78808322af80b73da617cb2f15f08">DPCTLSyclContextRef</a> CRef,</div>
+<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;    <a class="code" href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gadd48a0161309931574aed2025a16ade7">__dpctl_keep</a> <a class="code" href="../../df/d57/dpctl__sycl__types_8h.html#a8dae76b436012ecbdebbd568e77f440d">DPCTLSyclDeviceRef</a> DRef</div>
+<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;)</div>
+<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;{</div>
+<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;    <span class="keyword">auto</span> dev = unwrap(DRef);</div>
+<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;    <span class="keyword">auto</span> ctx = unwrap(CRef);</div>
+<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160; </div>
+<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;    <span class="keywordflow">return</span> wrap(<span class="keyword">new</span> queue(*ctx, *dev));</div>
+<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="agroup__MEM__MGMT__ATTR__MACROS_html_gadd48a0161309931574aed2025a16ade7"><div class="ttname"><a href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#gadd48a0161309931574aed2025a16ade7">__dpctl_keep</a></div><div class="ttdeci">#define __dpctl_keep</div><div class="ttdoc">The __dpctl_keep attribute indicates that the function only uses the object and does not destroy it b...</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d8c/MemOwnershipAttrs_8h_source.html#l00074">MemOwnershipAttrs.h:74</a></div></div>
@@ -561,22 +567,22 @@ $(document).ready(function(){initNavTree('d2/db7/dpctl__sycl__queue__manager_8cp
 <div class="ttc" id="adpctl__sycl__queue__manager_8h_html"><div class="ttname"><a href="../../d1/dac/dpctl__sycl__queue__manager_8h.html">dpctl_sycl_queue_manager.h</a></div></div>
 <div class="ttc" id="adpctl__sycl__enum__types_8h_html_a15d8954e4e712e2ec00838a9283d13ff"><div class="ttname"><a href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ff">DPCTLSyclDeviceType</a></div><div class="ttdeci">DPCTLSyclDeviceType</div><div class="ttdoc">DPCTL device types that are equivalent to Sycl's device_type.</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d94/dpctl__sycl__enum__types_8h_source.html#l00051">dpctl_sycl_enum_types.h:51</a></div></div>
 <div class="ttc" id="adpctl__sycl__types_8h_html_af23137a8bf20ff63b10db9f7f987799a"><div class="ttname"><a href="../../df/d57/dpctl__sycl__types_8h.html#af23137a8bf20ff63b10db9f7f987799a">DPCTLSyclQueueRef</a></div><div class="ttdeci">struct DPCTLOpaqueSyclQueue * DPCTLSyclQueueRef</div><div class="ttdoc">Opaque pointer to a sycl::queue.</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d57/dpctl__sycl__types_8h_source.html#l00073">dpctl_sycl_types.h:73</a></div></div>
-<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_a5bda499a06672322b2b5f217df3dc6f4"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a5bda499a06672322b2b5f217df3dc6f4">DPCTLQueueMgr_PushQueue</a></div><div class="ttdeci">__dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_PushQueue(DPCTLSyclBackendType BETy, DPCTLSyclDeviceType DeviceTy, size_t DNum)</div><div class="ttdoc">Pushes a new sycl::queue object to the top of DPCTL's thread-local stack of a &quot;activated&quot; queues,...</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00519">dpctl_sycl_queue_manager.cpp:519</a></div></div>
+<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_a5bda499a06672322b2b5f217df3dc6f4"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a5bda499a06672322b2b5f217df3dc6f4">DPCTLQueueMgr_PushQueue</a></div><div class="ttdeci">__dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_PushQueue(DPCTLSyclBackendType BETy, DPCTLSyclDeviceType DeviceTy, size_t DNum)</div><div class="ttdoc">Pushes a new sycl::queue object to the top of DPCTL's thread-local stack of a &quot;activated&quot; queues,...</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00523">dpctl_sycl_queue_manager.cpp:523</a></div></div>
 <div class="ttc" id="aCBindingWrapping_8h_html"><div class="ttname"><a href="../../d1/d38/CBindingWrapping_8h.html">CBindingWrapping.h</a></div></div>
-<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_a207d8c268822cd0f605340ce59e03aaa"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a207d8c268822cd0f605340ce59e03aaa">DPCTLQueueMgr_GetNumQueues</a></div><div class="ttdeci">size_t DPCTLQueueMgr_GetNumQueues(DPCTLSyclBackendType BETy, DPCTLSyclDeviceType DeviceTy)</div><div class="ttdoc">Get the number of available queues for given backend and device type combination.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00449">dpctl_sycl_queue_manager.cpp:449</a></div></div>
+<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_a207d8c268822cd0f605340ce59e03aaa"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a207d8c268822cd0f605340ce59e03aaa">DPCTLQueueMgr_GetNumQueues</a></div><div class="ttdeci">size_t DPCTLQueueMgr_GetNumQueues(DPCTLSyclBackendType BETy, DPCTLSyclDeviceType DeviceTy)</div><div class="ttdoc">Get the number of available queues for given backend and device type combination.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00452">dpctl_sycl_queue_manager.cpp:452</a></div></div>
 <div class="ttc" id="aCBindingWrapping_8h_html_a65c769c08fa9fee7f298ad9c9eee5e05"><div class="ttname"><a href="../../d1/d38/CBindingWrapping_8h.html#a65c769c08fa9fee7f298ad9c9eee5e05">DEFINE_SIMPLE_CONVERSION_FUNCTIONS</a></div><div class="ttdeci">#define DEFINE_SIMPLE_CONVERSION_FUNCTIONS(ty, ref)</div><div class="ttdoc">Creates two convenience functions to reinterpret_cast an opaque pointer to a pointer to a Sycl type a...</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d38/CBindingWrapping_8h_source.html#l00032">CBindingWrapping.h:32</a></div></div>
-<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_a276d76fee8127fbe8bbbb70273559a25"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a276d76fee8127fbe8bbbb70273559a25">DPCTLQueueMgr_IsCurrentQueue</a></div><div class="ttdeci">bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef)</div><div class="ttdoc">Returns True if the passed in queue and the current queue are the same, else returns False.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00497">dpctl_sycl_queue_manager.cpp:497</a></div></div>
-<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_afa5e14912992f251601311abe7614920"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#afa5e14912992f251601311abe7614920">DPCTLQueueMgr_GetQueue</a></div><div class="ttdeci">DPCTLSyclQueueRef DPCTLQueueMgr_GetQueue(DPCTLSyclBackendType BETy, DPCTLSyclDeviceType DeviceTy, size_t DNum)</div><div class="ttdoc">Get a sycl::queue object of the specified type and device id.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00487">dpctl_sycl_queue_manager.cpp:487</a></div></div>
-<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_aa70cd1c9dca649d309c689f473cd17d8"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#aa70cd1c9dca649d309c689f473cd17d8">DPCTLQueueMgr_GetCurrentQueue</a></div><div class="ttdeci">DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue()</div><div class="ttdoc">Get the sycl::queue object that is currently activated for this thread.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00478">dpctl_sycl_queue_manager.cpp:478</a></div></div>
-<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_a22e01116058119d7370b482130971e19"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a22e01116058119d7370b482130971e19">DPCTLQueueMgr_GetNumActivatedQueues</a></div><div class="ttdeci">size_t DPCTLQueueMgr_GetNumActivatedQueues()</div><div class="ttdoc">Get the number of activated queues not including the global or default queue.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00435">dpctl_sycl_queue_manager.cpp:435</a></div></div>
+<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_a276d76fee8127fbe8bbbb70273559a25"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a276d76fee8127fbe8bbbb70273559a25">DPCTLQueueMgr_IsCurrentQueue</a></div><div class="ttdeci">bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef)</div><div class="ttdoc">Returns True if the passed in queue and the current queue are the same, else returns False.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00501">dpctl_sycl_queue_manager.cpp:501</a></div></div>
+<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_afa5e14912992f251601311abe7614920"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#afa5e14912992f251601311abe7614920">DPCTLQueueMgr_GetQueue</a></div><div class="ttdeci">DPCTLSyclQueueRef DPCTLQueueMgr_GetQueue(DPCTLSyclBackendType BETy, DPCTLSyclDeviceType DeviceTy, size_t DNum)</div><div class="ttdoc">Get a sycl::queue object of the specified type and device id.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00491">dpctl_sycl_queue_manager.cpp:491</a></div></div>
+<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_aa70cd1c9dca649d309c689f473cd17d8"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#aa70cd1c9dca649d309c689f473cd17d8">DPCTLQueueMgr_GetCurrentQueue</a></div><div class="ttdeci">DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue()</div><div class="ttdoc">Get the sycl::queue object that is currently activated for this thread.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00482">dpctl_sycl_queue_manager.cpp:482</a></div></div>
+<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_a22e01116058119d7370b482130971e19"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#a22e01116058119d7370b482130971e19">DPCTLQueueMgr_GetNumActivatedQueues</a></div><div class="ttdeci">size_t DPCTLQueueMgr_GetNumActivatedQueues()</div><div class="ttdoc">Get the number of activated queues not including the global or default queue.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00438">dpctl_sycl_queue_manager.cpp:438</a></div></div>
 <div class="ttc" id="adpctl__sycl__types_8h_html_a8dae76b436012ecbdebbd568e77f440d"><div class="ttname"><a href="../../df/d57/dpctl__sycl__types_8h.html#a8dae76b436012ecbdebbd568e77f440d">DPCTLSyclDeviceRef</a></div><div class="ttdeci">struct DPCTLOpaqueSyclDevice * DPCTLSyclDeviceRef</div><div class="ttdoc">Opaque pointer to a sycl::device.</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d57/dpctl__sycl__types_8h_source.html#l00042">dpctl_sycl_types.h:42</a></div></div>
-<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_ab7092ee56c64ddb5389268e0570213a3"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ab7092ee56c64ddb5389268e0570213a3">DPCTLQueueMgr_PopQueue</a></div><div class="ttdeci">void DPCTLQueueMgr_PopQueue()</div><div class="ttdoc">Pops the top of stack element from DPCTL's stack of activated sycl::queue objects.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00529">dpctl_sycl_queue_manager.cpp:529</a></div></div>
-<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_ae1f1a03d42ca7478013f1746c105ac66"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ae1f1a03d42ca7478013f1746c105ac66">DPCTLQueueMgr_SetAsDefaultQueue</a></div><div class="ttdeci">__dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_SetAsDefaultQueue(DPCTLSyclBackendType BETy, DPCTLSyclDeviceType DeviceTy, size_t DNum)</div><div class="ttdoc">Set the default DPCTL queue to the sycl::queue for the given backend and device type combination and ...</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00508">dpctl_sycl_queue_manager.cpp:508</a></div></div>
+<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_ab7092ee56c64ddb5389268e0570213a3"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ab7092ee56c64ddb5389268e0570213a3">DPCTLQueueMgr_PopQueue</a></div><div class="ttdeci">void DPCTLQueueMgr_PopQueue()</div><div class="ttdoc">Pops the top of stack element from DPCTL's stack of activated sycl::queue objects.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00533">dpctl_sycl_queue_manager.cpp:533</a></div></div>
+<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_ae1f1a03d42ca7478013f1746c105ac66"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ae1f1a03d42ca7478013f1746c105ac66">DPCTLQueueMgr_SetAsDefaultQueue</a></div><div class="ttdeci">__dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_SetAsDefaultQueue(DPCTLSyclBackendType BETy, DPCTLSyclDeviceType DeviceTy, size_t DNum)</div><div class="ttdoc">Set the default DPCTL queue to the sycl::queue for the given backend and device type combination and ...</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00512">dpctl_sycl_queue_manager.cpp:512</a></div></div>
 <div class="ttc" id="agroup__MEM__MGMT__ATTR__MACROS_html_ga836492a42cdfef6419378dbf8d81f452"><div class="ttname"><a href="../../d2/de3/group__MEM__MGMT__ATTR__MACROS.html#ga836492a42cdfef6419378dbf8d81f452">__dpctl_give</a></div><div class="ttdeci">#define __dpctl_give</div><div class="ttdoc">The __dpctl_give attribute indicates that a new object is returned and the caller now owns the object...</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d8c/MemOwnershipAttrs_8h_source.html#l00049">MemOwnershipAttrs.h:49</a></div></div>
 <div class="ttc" id="adpctl__sycl__enum__types_8h_html_aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66"><div class="ttname"><a href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66">DPCTL_OPENCL</a></div><div class="ttdeci">@ DPCTL_OPENCL</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d94/dpctl__sycl__enum__types_8h_source.html#l00041">dpctl_sycl_enum_types.h:41</a></div></div>
 <div class="ttc" id="adpctl__sycl__enum__types_8h_html_aa217d239d7e3752c49bd9fd42c71c933"><div class="ttname"><a href="../../d3/d94/dpctl__sycl__enum__types_8h.html#aa217d239d7e3752c49bd9fd42c71c933">DPCTLSyclBackendType</a></div><div class="ttdeci">DPCTLSyclBackendType</div><div class="ttdoc">Redefinition of DPC++-specific Sycl backend types.</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d94/dpctl__sycl__enum__types_8h_source.html#l00038">dpctl_sycl_enum_types.h:38</a></div></div>
 <div class="ttc" id="adpctl__sycl__enum__types_8h_html_a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f"><div class="ttname"><a href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f">DPCTL_GPU</a></div><div class="ttdeci">@ DPCTL_GPU</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d94/dpctl__sycl__enum__types_8h_source.html#l00054">dpctl_sycl_enum_types.h:54</a></div></div>
-<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_ad33ff618b3b63cf80d548cc7ba091643"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ad33ff618b3b63cf80d548cc7ba091643">DPCTLQueueMgr_GetQueueFromContextAndDevice</a></div><div class="ttdeci">DPCTLSyclQueueRef DPCTLQueueMgr_GetQueueFromContextAndDevice(__dpctl_keep DPCTLSyclContextRef CRef, __dpctl_keep DPCTLSyclDeviceRef DRef)</div><div class="ttdoc">Creates a new instance of SYCL queue from SYCL context and SYCL device.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00539">dpctl_sycl_queue_manager.cpp:539</a></div></div>
+<div class="ttc" id="adpctl__sycl__queue__manager_8cpp_html_ad33ff618b3b63cf80d548cc7ba091643"><div class="ttname"><a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp.html#ad33ff618b3b63cf80d548cc7ba091643">DPCTLQueueMgr_GetQueueFromContextAndDevice</a></div><div class="ttdeci">DPCTLSyclQueueRef DPCTLQueueMgr_GetQueueFromContextAndDevice(__dpctl_keep DPCTLSyclContextRef CRef, __dpctl_keep DPCTLSyclDeviceRef DRef)</div><div class="ttdoc">Creates a new instance of SYCL queue from SYCL context and SYCL device.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00543">dpctl_sycl_queue_manager.cpp:543</a></div></div>
 <div class="ttc" id="adpctl__sycl__enum__types_8h_html_a15d8954e4e712e2ec00838a9283d13ffa7301bd6676b8167d6048d08072ceeb2e"><div class="ttname"><a href="../../d3/d94/dpctl__sycl__enum__types_8h.html#a15d8954e4e712e2ec00838a9283d13ffa7301bd6676b8167d6048d08072ceeb2e">DPCTL_CPU</a></div><div class="ttdeci">@ DPCTL_CPU</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d94/dpctl__sycl__enum__types_8h_source.html#l00053">dpctl_sycl_enum_types.h:53</a></div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

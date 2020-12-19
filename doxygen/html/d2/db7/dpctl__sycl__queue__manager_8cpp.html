@@ -26,7 +26,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Data-parallel Control (dpCtl)
-   &#160;<span id="projectnumber">0.5.0</span>
+   &#160;<span id="projectnumber">master</span>
    </div>
    <div id="projectbrief">A SYCL queue and memory manager for Python modules.</div>
   </td>
@@ -176,7 +176,7 @@ Functions</h2></td></tr>
 <p>Get the sycl::queue object that is currently activated for this thread. </p>
 <dl class="section see"><dt>See also</dt><dd>QMgrHelper::getCurrentQueue() </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00478">478</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00482">482</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -198,7 +198,7 @@ Functions</h2></td></tr>
 <p>Get the number of activated queues not including the global or default queue. </p>
 <p>Returns inside the number of activated queues not including the global queue (QMgrHelper::active_queues[0]). </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00435">435</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00438">438</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -231,7 +231,7 @@ Functions</h2></td></tr>
 <p>Get the number of available queues for given backend and device type combination. </p>
 <p>Returns the number of available queues for a specific backend and device type combination. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00449">449</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00452">452</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -270,7 +270,7 @@ Functions</h2></td></tr>
 <p>Get a sycl::queue object of the specified type and device id. </p>
 <p>Returns a copy of a sycl::queue corresponding to the specified device type and device number. A runtime_error gets thrown if no such device exists. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00487">487</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00491">491</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -303,7 +303,7 @@ Functions</h2></td></tr>
 <p>Creates a new instance of SYCL queue from SYCL context and SYCL device. </p>
 <p>The function constructs a new SYCL queue instance from SYCL conext and SYCL device. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00539">539</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00543">543</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -332,7 +332,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True or False depending on whether the QRef argument is the same as the currently activated queue. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00497">497</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00501">501</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -354,7 +354,7 @@ Functions</h2></td></tr>
 <p>Pops the top of stack element from DPCTL's stack of activated sycl::queue objects. </p>
 <dl class="section see"><dt>See also</dt><dd>QMgrHelper::popSyclQueue() </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00529">529</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00533">533</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -393,7 +393,7 @@ Functions</h2></td></tr>
 <p>Pushes a new sycl::queue object to the top of DPCTL's thread-local stack of a "activated" queues, and returns a copy of the queue to caller. </p>
 <dl class="section see"><dt>See also</dt><dd>QMgrHelper::pushSyclQueue() </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00519">519</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00523">523</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>
@@ -432,7 +432,7 @@ Functions</h2></td></tr>
 <p>Set the default DPCTL queue to the sycl::queue for the given backend and device type combination and return a DPCTLSyclQueueRef for that queue. If no queue was created Null is returned to caller. </p>
 <p>The function sets the global queue, i.e., the sycl::queue object at QMgrHelper::active_queues[0] vector to the sycl::queue corresponding to the specified device type and id. If not queue was found for the backend and device, Null is returned. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00508">508</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html#l00512">512</a> of file <a class="el" href="../../d2/db7/dpctl__sycl__queue__manager_8cpp_source.html">dpctl_sycl_queue_manager.cpp</a>.</p>
 
 </div>
 </div>

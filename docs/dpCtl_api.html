@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpCtl Python API &mdash; Data-parallel Control (dpctl) 0.5.0 documentation</title>
+  <title>dpCtl Python API &mdash; Data-parallel Control (dpctl) master documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.5.0
+                master
               </div>
             
           
@@ -360,7 +360,7 @@ as this SycleQueue.</p>
 <dl class="py method">
 <dt id="dpctl.SyclQueue.get_sycl_backend">
 <code class="sig-name descname">get_sycl_backend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.get_sycl_backend" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the Sycl bakend associated with the queue.</p>
+<dd><p>Returns the Sycl backend associated with the queue.</p>
 </dd></dl>
 
 </dd></dl>
@@ -368,42 +368,182 @@ as this SycleQueue.</p>
 <dl class="py class">
 <dt id="dpctl.backend_type">
 <em class="property">class </em><code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">backend_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.backend_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Automatically numbers SYCL backend types with values starting from 1.</p>
+<dd><p>An enumeration of supported SYCL backends.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 60%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name of backend</p></th>
+<th class="head"><p>Enum value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>OpenCL</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Level Zero</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Cuda</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Host</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpctl.device_context">
 <code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">device_context</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.device_context" title="Permalink to this definition">¶</a></dt>
-<dd><p>The SYCL queue defined by the “backend:device type:device id” tuple is
-set as the currently active queue, <em>i.e.</em>, a subsequent call to
-<a class="reference internal" href="#dpctl.get_current_queue" title="dpctl.get_current_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code></a> inside the context returns the queue.
-The active queue is also returned by the context manager and can be
-directly used without having to call <a class="reference internal" href="#dpctl.get_current_queue" title="dpctl.get_current_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code></a>.</p>
-<p>If a the request queue is not found an exception is raised.</p>
+<dd><p>Yeilds a SYCL queue corresponding to the input filter string.</p>
+<p>This context manager “activates”, <em>i.e.</em>, sets as the currently usable
+queue, the SYCL queue defined by the “backend:device type:device id” tuple.
+The activated queue is yielded by the context manager and can also be
+accessed by any subsequent call to <a class="reference internal" href="#dpctl.get_current_queue" title="dpctl.get_current_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code></a> inside
+the context manager’s scope. The yielded queue is removed as the currently
+usable queue on exiting the context manager.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>queue_str</strong> (<em>str</em>) – A string corresponding to the DPC++ filter spec         that should be a three tuple specified as         “backend:device-type:device-id”, defaults to “opencl:gpu:0”.</p>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><em>SyclQueue</em> – A SYCL queue corresponding to the specified filter string.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the filter string is malformed.</p></li>
+<li><p><strong>UnsupportedDeviceError</strong> – If the device type value is invalid.</p></li>
+<li><p><strong>UnsupportedBackendError</strong> – If the backend value is invalid.</p></li>
+<li><p><strong>SyclQueueCreationError</strong> – If the SYCL queue creation failed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Example</dt>
+<dd class="field-even"><p>To create a scope within which the Level Zero GPU number 0 is active,
+a programmer needs to do the following.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="k">with</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">device_context</span><span class="p">(</span><span class="s2">&quot;level0:gpu:0&quot;</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt id="dpctl.device_type">
 <em class="property">class </em><code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">device_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.device_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Automatically numbers SYCL device types with values starting from 1.</p>
+<dd><p>An enumeration of supported SYCL device types.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 60%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Device type</p></th>
+<th class="head"><p>Enum value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GPU</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>CPU</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Accelerator</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Host</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpctl.dump">
 <code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">dump</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.dump" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints information about the Runtime object.</p>
+<dd><p>Prints information about the SYCL environment.</p>
+<p>Currently, this function prints a list of all SYCL platforms that
+are available on the system and the list of devices for each platform.</p>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p>On a system with an OpenCL CPU driver, OpenCL GPU driver,
+Level Zero GPU driver, running the command.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">$python</span> <span class="o">-</span><span class="n">c</span> <span class="s">&quot;import dpctl; dpctl.dump()&quot;</span>
+</pre></div>
+</div>
+<p>returns</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span>---Platform 0::
+    Name        Intel(R) OpenCL
+    Version     OpenCL 2.1 LINUX
+    Vendor      Intel(R) Corporation
+    Profile     FULL_PROFILE
+    Backend     opencl
+    Devices     1
+---Device 0::
+    Name                Intel(R) Core(TM) i7-9700 CPU @ 3.00GHz
+    Driver version      2020.11.11.0.13_160000
+    Device type         cpu
+---Platform 1::
+    Name        Intel(R) OpenCL HD Graphics
+    Version     OpenCL 3.0
+    Vendor      Intel(R) Corporation
+    Profile     FULL_PROFILE
+    Backend     opencl
+    Devices     1
+---Device 0::
+    Name                Intel(R) Graphics Gen9 [0x3e98]
+    Driver version      20.47.18513
+    Device type         gpu
+---Platform 2::
+    Name        Intel(R) Level-Zero
+    Version     1.0
+    Vendor      Intel(R) Corporation
+    Profile     FULL_PROFILE
+    Backend     level_zero
+    Devices     1
+---Device 0::
+    Name                Intel(R) Graphics Gen9 [0x3e98]
+    Driver version      1.0.18513
+    Device type         gpu
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpctl.get_current_backend">
 <code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_current_backend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_current_backend" title="Permalink to this definition">¶</a></dt>
-<dd><p>Obtain current backend type from Data Parallel Control package.</p>
+<dd><p>Returns the backend for the current queue as a <cite>backend_type</cite> enum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The SYCL backend for the currently selected queue.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type">backend_type</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpctl.get_current_device_type">
 <code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_current_device_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_current_device_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Obtain current device type from Data Parallel Control package.</p>
+<dd><p>Returns current device type as a <cite>device_type</cite> enum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The SYCL device type for the currently selected queue.
+Possible values can be gpu, cpu, accelerator, or host.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type">device_type</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -431,12 +571,159 @@ is garbage collected.</p>
 <dt id="dpctl.get_num_activated_queues">
 <code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_num_activated_queues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_activated_queues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of currently activated queues for this thread.</p>
+<p>Whenever a program’s control enters a <a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a>
+scope, either a new SYCL queue is created or a previously created
+queue is retrieved from a cache and yielded. The queue yielded by the
+context manager is termed to be “activated”. If a program creates
+multiple nested <a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scopes then multiple
+queues can be activated at the same time, although only the latest
+activated queue is usable directly via calling
+<a class="reference internal" href="#dpctl.get_current_queue" title="dpctl.get_current_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code></a>. This function returns the number of
+currently activated queues.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of currently activated queues.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpctl.get_num_platforms">
 <code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_num_platforms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_platforms" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the number of available non-host SYCL platforms.</p>
+<dd><p>Returns the number of available non-host SYCL platforms.
+<em>WARNING: To be depracated in the near future.</em></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of non-host SYCL backends.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpctl.get_num_queues">
+<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">get_num_queues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_queues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of devices for the input backend and device type
+combination. <em>WARNING: To be depracated in the near future.</em></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>backend_ty</strong> (<a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><em>backend_type</em></a>) – Enum value specifying a SYCL backend.</p></li>
+<li><p><strong>device_ty</strong> (<a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><em>device_type</em></a>) – Enum value specifying a SYCL device type.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Number of devices for the input backend and device type
+combination.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>UnsupportedDeviceError</strong> – If the device type value is invalid.</p></li>
+<li><p><strong>UnsupportedBackendError</strong> – If the backend value is invalid.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpctl.has_cpu_queues">
+<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">has_cpu_queues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.has_cpu_queues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the system has a CPU device for the specified SYCL backend
+type. <em>WARNING: To be depracated in the near future.</em></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>backend_ty</strong> (<a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><em>backend_type</em></a>) – Enum value specifying a SYCL backend             defaults to <cite>backend_type.opencl</cite>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the backend has a CPU device else False.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>UnsupportedBackendError</strong> – If the backend value is invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpctl.has_gpu_queues">
+<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">has_gpu_queues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.has_gpu_queues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the system has a GPU device for the specified SYCL backend
+type. <em>WARNING: To be depracated in the near future.</em></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>backend_ty</strong> (<a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><em>backend_type</em></a>) – Enum value specifying a SYCL backend             defaults to <cite>backend_type.opencl</cite>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the backend has a GPU device else False.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>UnsupportedBackendError</strong> – If the backend value is invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpctl.has_sycl_platforms">
+<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">has_sycl_platforms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.has_sycl_platforms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the system has any non-host SYCL platforms. <em>WARNING: The            behavior of the function may change in the future to include the host          platform.</em></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns True if there is at least one non-host SYCL,             platform, otherwise returns False.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpctl.is_in_device_context">
+<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">is_in_device_context</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.is_in_device_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the control is inside a <a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the control is within a             <a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scope, otherwise False.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpctl.set_default_queue">
+<code class="sig-prename descclassname">dpctl.</code><code class="sig-name descname">set_default_queue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.set_default_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the global (default) queue to the SYCL queue specified using the
+backend, device type, and relative device id parameters. <em>WARNING: To         be depracated in the near future.</em></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>backend_ty</strong> (<a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><em>backend_type</em></a>) – Enum value specifying a SYCL backend.</p></li>
+<li><p><strong>device_ty</strong> (<a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><em>device_type</em></a>) – Enum value specifying a SYCL device type.</p></li>
+<li><p><strong>device_id</strong> (<em>int</em>) – A relative device number. The relative device             id is based on the ordering of the devices in the list returned             by SYCL’s <cite>platform::get_platforms().get_devices()</cite> function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>SyclQueueCreationError</strong> – If a SYCL queue could not be created.</p></li>
+<li><p><strong>UnsupportedDeviceError</strong> – If the device type is invalid.</p></li>
+<li><p><strong>UnsupportedBackendError</strong> – If the backend type is invalid.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
