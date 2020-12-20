@@ -34,6 +34,15 @@ Enumerations
 .. autoclass:: dpctl.device_type
     :members:
 
+Exceptions
+----------
+
+.. autoexception:: dpctl.SyclKernelInvalidRangeError
+.. autoexception:: dpctl.SyclKernelSubmitError
+.. autoexception:: dpctl.SyclQueueCreationError
+.. autoexception:: dpctl.UnsupportedBackendError
+.. autoexception:: dpctl.UnsupportedDeviceError
+
 Functions
 ---------
 

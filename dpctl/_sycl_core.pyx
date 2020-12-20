@@ -52,7 +52,12 @@ __all__ = [
     "SyclContext",
     "SyclDevice",
     "SyclEvent",
-    "SyclQueue"
+    "SyclQueue",
+    "SyclKernelInvalidRangeError",
+    "SyclKernelSubmitError",
+    "SyclQueueCreationError",
+    "UnsupportedBackendError",
+    "UnsupportedDeviceError",
 ]
 
 _logger = logging.getLogger(__name__)
@@ -65,10 +70,10 @@ class device_type(Enum):
     ==================   ============
     Device type          Enum value
     ==================   ============
-    GPU                  1
-    CPU                  2
-    Accelerator          3
-    Host                 4
+    gpu                  1
+    cpu                  2
+    accelerator          3
+    host_device          4
     ==================   ============
 
     """
@@ -84,10 +89,10 @@ class backend_type(Enum):
     ==================   ============
     Name of backend      Enum value
     ==================   ============
-    OpenCL               1
-    Level Zero           2
-    Cuda                 3
-    Host                 4
+    opencl               1
+    level_zero           2
+    cuda                 3
+    host                 4
     ==================   ============
 
     """
@@ -96,38 +101,50 @@ class backend_type(Enum):
     cuda = auto()
     host = auto()
 
-cdef class UnsupportedBackendError (Exception):
-    """This exception is raised when a device type other than CPU or GPU is
-       encountered.
+cdef class UnsupportedBackendError(Exception):
+    """
+    An UnsupportedBackendError exception is raised when a backend value
+    is other than `backend_type.opencl` or `backend_type.level_zero` is
+    encountered. All other backends are currently not supported.
+
     """
     pass
 
-cdef class UnsupportedDeviceError (Exception):
-    """This exception is raised when a device type other than CPU or GPU is
-       encountered.
+cdef class UnsupportedDeviceError(Exception):
+    """
+    An UnsupportedDeviceError exception is raised when a device type value
+    other than `device_type.cpu` or `device_type.gpu` is encountered.
+
     """
     pass
 
-cdef class SyclKernelSubmitError (Exception):
-    """This exception is raised when a SYCL program could not be built from
-       either a SPIR-V binary file or a string source.
+cdef class SyclKernelSubmitError(Exception):
+    """
+    A SyclKernelSubmitError exception is raised when the provided
+    :class:`.SyclKernel` could not be submitted to the :class:`.SyclQueue`.
+
     """
     pass
 
-cdef class SyclKernelInvalidRangeError (Exception):
-    """This exception is raised when a range that has more than three
-       dimensions or less than one dimension.
+cdef class SyclKernelInvalidRangeError(Exception):
+    """
+    A SyclKernelInvalidRangeError is raised when the provided range has less
+    than one or more than three dimensions.
     """
     pass
 
-cdef class SyclQueueCreationError (Exception):
-    """This exception is raised when a range that has more than three
-       dimensions or less than one dimension.
+cdef class SyclQueueCreationError(Exception):
+    """
+    A SyclQueueCreationError exception is raised when a :class:`.SyclQueue`
+    could not be created. :class:`.SyclQueue` creation can fail if the filter
+    string is invalid, or the backend or device type values are not supported.
+
     """
     pass
 
 cdef class SyclContext:
-
+    """ Python wrapper class for cl::sycl::context.
+    """
     @staticmethod
     cdef SyclContext _create (DPCTLSyclContextRef ctxt):
         cdef SyclContext ret = SyclContext.__new__(SyclContext)
@@ -157,7 +174,7 @@ cdef class SyclContext:
         return int(<size_t>self._ctx_ref)
 
 cdef class SyclDevice:
-    """ Wrapper class for SYCL device.
+    """ Python wrapper class for cl::sycl::device.
     """
 
     @staticmethod
@@ -284,7 +301,7 @@ cdef class SyclDevice:
         return int(<size_t>self._device_ref)
 
 cdef class SyclEvent:
-    """ Wrapper class for a Sycl Event
+    """ Python wrapper class for cl::sycl::event.
     """
 
     @staticmethod
@@ -319,7 +336,7 @@ cdef class SyclEvent:
 import ctypes
 
 cdef class SyclQueue:
-    """ Wrapper class for a Sycl queue.
+    """ Python wrapper class for cl::sycl::queue.
     """
 
     @staticmethod
@@ -619,7 +636,7 @@ cdef class SyclQueue:
 
 
 cdef class _SyclRTManager:
-    """ Wrapper for the C API's sycl queue manager interface.
+    """ Provides a wrapper for dpCtl's SYCL queue manager interface.
     """
     cdef dict _backend_str_ty_dict
     cdef dict _device_str_ty_dict
@@ -1011,7 +1028,7 @@ from contextlib import contextmanager
 @contextmanager
 def device_context(str queue_str="opencl:gpu:0"):
     """
-    Yeilds a SYCL queue corresponding to the input filter string.
+    Yields a SYCL queue corresponding to the input filter string.
 
     This context manager "activates", *i.e.*, sets as the currently usable
     queue, the SYCL queue defined by the "backend:device type:device id" tuple.
@@ -1026,7 +1043,8 @@ def device_context(str queue_str="opencl:gpu:0"):
         "backend:device-type:device-id", defaults to "opencl:gpu:0".
 
     Yields:
-        SyclQueue: A SYCL queue corresponding to the specified filter string.
+        :class:`.SyclQueue`: A SYCL queue corresponding to the specified \
+        filter string.
 
     Raises:
         ValueError: If the filter string is malformed.

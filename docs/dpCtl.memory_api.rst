@@ -11,14 +11,17 @@ Classes
 
 .. autoclass:: dpctl.memory.MemoryUSMDevice
     :members:
+    :inherited-members:
     :undoc-members:
 
 .. autoclass:: dpctl.memory.MemoryUSMHost
     :members:
+    :inherited-members:
     :undoc-members:
 
 .. autoclass:: dpctl.memory.MemoryUSMShared
     :members:
+    :inherited-members:
     :undoc-members:
 
 Comparison with Rapids Memory Manager (RMM)
