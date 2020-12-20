@@ -744,7 +744,7 @@ cdef class _SyclRTManager:
 
     cpdef SyclQueue get_current_queue(self):
         """
-        Returns the currently activate SYCL queue as a new SyclQueue object.
+        Returns the currently activated SYCL queue as a new SyclQueue object.
 
         Returns:
             SyclQueue: If there is a currently active SYCL queue that queue
