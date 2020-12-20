@@ -5,11 +5,24 @@ dpCtl Memory Python API
 #######################
 
 .. automodule:: dpctl.memory
+
+Classes
+-------
+
+.. autoclass:: dpctl.memory.MemoryUSMDevice
     :members:
+    :undoc-members:
 
-....
+.. autoclass:: dpctl.memory.MemoryUSMHost
+    :members:
+    :undoc-members:
 
-**Comparing dpctl.memory to Rapids Memory Manager (RMM)**
+.. autoclass:: dpctl.memory.MemoryUSMShared
+    :members:
+    :undoc-members:
+
+Comparison with Rapids Memory Manager (RMM)
+-------------------------------------------
 
 RMM implements DeviceBuffer which is Cython native class wrapping around something similar to ``std::vector<unsigned char, custom_cuda_allocator (calls resource manager)>`` which is called device_buffer.
 

@@ -147,17 +147,17 @@ cdef class SyclContext:
         return self._ctxt_ref
 
     def addressof_ref (self):
-        """Returns the address of the DPCTLSyclContextRef pointer as a
-        long.
+        """
+        Returns the address of the DPCTLSyclContextRef pointer as a size_t.
 
         Returns:
             The address of the DPCTLSyclContextRef object used to create this
-            SyclContext cast to a long.
+            SyclContext cast to a size_t.
         """
         return int(<size_t>self._ctx_ref)
 
 cdef class SyclDevice:
-    """ Wrapper class for a Sycl Device
+    """ Wrapper class for SYCL device.
     """
 
     @staticmethod
@@ -274,12 +274,12 @@ cdef class SyclDevice:
         return self._device_ref
 
     def addressof_ref (self):
-        """Returns the address of the DPCTLSyclDeviceRef pointer as a
-        long.
+        """
+        Returns the address of the DPCTLSyclDeviceRef pointer as a size_t.
 
         Returns:
             The address of the DPCTLSyclDeviceRef object used to create this
-            SyclDevice cast to a long.
+            SyclDevice cast to a size_t.
         """
         return int(<size_t>self._device_ref)
 
@@ -308,11 +308,11 @@ cdef class SyclEvent:
 
     def addressof_ref (self):
         """ Returns the address of the C API DPCTLSyclEventRef pointer as
-        a long.
+        a size_t.
 
         Returns:
             The address of the DPCTLSyclEventRef object used to create this
-            SyclEvent cast to a long.
+            SyclEvent cast to a size_t.
         """
         return int(<size_t>self._event_ref)
 
@@ -464,11 +464,12 @@ cdef class SyclQueue:
         return self._queue_ref
 
     def addressof_ref (self):
-        """ Returns the address of the C API DPCTLSyclQueueRef pointer as a long.
+        """
+        Returns the address of the C API DPCTLSyclQueueRef pointer as a size_t.
 
         Returns:
             The address of the DPCTLSyclQueueRef object used to create this
-            SyclQueue cast to a long.
+            SyclQueue cast to a size_t.
         """
         return int(<size_t>self._queue_ref)
 
