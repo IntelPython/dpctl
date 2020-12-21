@@ -40,9 +40,9 @@ __all__ = [
     "SyclProgramCompilationError",
 ]
 
-cdef class SyclProgramCompilationError (Exception):
-    """This exception is raised when a sycl program could not be built from
-       either a spirv binary file or a string source.
+cdef class SyclProgramCompilationError(Exception):
+    """This exception is raised when a SYCL program could not be built from
+       either a SPIR-V binary file or a string source.
     """
     pass
 
@@ -50,13 +50,13 @@ cdef class SyclKernel:
     """
     """
     @staticmethod
-    cdef SyclKernel _create (DPCTLSyclKernelRef kref):
+    cdef SyclKernel _create(DPCTLSyclKernelRef kref):
         cdef SyclKernel ret = SyclKernel.__new__(SyclKernel)
         ret._kernel_ref = kref
         ret._function_name = DPCTLKernel_GetFunctionName(kref)
         return ret
 
-    def __dealloc__ (self):
+    def __dealloc__(self):
         DPCTLKernel_Delete(self._kernel_ref)
         DPCTLCString_Delete(self._function_name)
 
@@ -65,7 +65,7 @@ cdef class SyclKernel:
         """
         return self._function_name.decode()
 
-    def get_num_args (self):
+    def get_num_args(self):
         """ Returns the number of arguments for this kernel function.
         """
         return DPCTLKernel_GetNumArgs(self._kernel_ref)
@@ -75,13 +75,13 @@ cdef class SyclKernel:
         """
         return self._kernel_ref
 
-    def addressof_ref (self):
+    def addressof_ref(self):
         """ Returns the address of the C API DPCTLSyclKernelRef pointer
-        as a long.
+        as a size_t.
 
         Returns:
             The address of the DPCTLSyclKernelRef object used to create this
-            SyclKernel cast to a long.
+            SyclKernel cast to a size_t.
         """
         return int(<size_t>self._kernel_ref)
 
@@ -100,7 +100,7 @@ cdef class SyclProgram:
         ret._program_ref = pref
         return ret
 
-    def __dealloc__ (self):
+    def __dealloc__(self):
         DPCTLProgram_Delete(self._program_ref)
 
     cdef DPCTLSyclProgramRef get_program_ref (self):
@@ -115,7 +115,7 @@ cdef class SyclProgram:
         name = kernel_name.encode('utf8')
         return DPCTLProgram_HasKernel(self._program_ref, name)
 
-    def addressof_ref (self):
+    def addressof_ref(self):
         """Returns the address of the C API DPCTLSyclProgramRef pointer
         as a long.
 
@@ -125,13 +125,13 @@ cdef class SyclProgram:
         """
         return int(<size_t>self._program_ref)
 
-cpdef create_program_from_source (SyclQueue q, unicode src, unicode copts=""):
+cpdef create_program_from_source(SyclQueue q, unicode src, unicode copts=""):
     """
         Creates a Sycl interoperability program from an OpenCL source string.
 
         We use the DPCTLProgram_CreateFromOCLSource() C API function to create
         a Sycl progrma from an OpenCL source program that can contain multiple
-        kernels.
+        kernels. Note currently only supported for OpenCL.
 
         Parameters:
             q (SyclQueue)   : The :class:`SyclQueue` for which the
@@ -142,6 +142,9 @@ cpdef create_program_from_source (SyclQueue q, unicode src, unicode copts=""):
 
         Returns:
             program (SyclProgram): A :class:`SyclProgram` object wrapping the  sycl::program returned by the C API.
+
+        Raises:
+            SyclProgramCompilationError: If a SYCL program could not be created.
     """
 
     cdef DPCTLSyclProgramRef Pref
@@ -159,7 +162,7 @@ cpdef create_program_from_source (SyclQueue q, unicode src, unicode copts=""):
 
 cimport cython.array
 
-cpdef create_program_from_spirv (SyclQueue q, const unsigned char[:] IL):
+cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL):
     """
         Creates a Sycl interoperability program from an SPIR-V binary.
 
@@ -173,6 +176,9 @@ cpdef create_program_from_spirv (SyclQueue q, const unsigned char[:] IL):
 
         Returns:
             program (SyclProgram): A :class:`SyclProgram` object wrapping the  sycl::program returned by the C API.
+
+        Raises:
+            SyclProgramCompilationError: If a SYCL program could not be created.
     """
 
     cdef DPCTLSyclProgramRef Pref

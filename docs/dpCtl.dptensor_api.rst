@@ -6,3 +6,4 @@ dpCtl dptensor Python API
 
 .. automodule:: dpctl.dptensor
     :members:
+    :undoc-members:
