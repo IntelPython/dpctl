@@ -30,10 +30,8 @@
 
     * A SYCL queue manager exposed directly inside the top-level `dpctl`
       module.
-    * A USM memory manager (`dpctl.memory`) that provides Python objects
-      implementing the Python buffer protocol using USM shared and USM host
-      allocators. The memory manager also exposes various utility functions
-      to wrap SYCL's USM allocators, deallocators, `memcpy` functions, *etc.*
+    * Python wrapper classes for the main SYCL runtime classes mentioned in
+      Section 4.6 of SYCL provisional 2020 spec (https://bit.ly/3asQx07).
 """
 __author__ = "Intel Corp."
 
