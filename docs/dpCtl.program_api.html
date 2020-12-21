@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="dpCtl C API" href="api/dpCtl-CAPI_root.html" />
-    <link rel="prev" title="dpCtl dptensor Python API" href="dpCtl.dptensor_api.html" /> 
+    <link rel="prev" title="dpCtl Memory Python API" href="dpCtl.memory_api.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -89,12 +89,16 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to Data-parallel Control (dpCtl)’s documentation!</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="toc_pyapi.html">Python API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="dpCtl_api.html">dpctl - SYCL runtime wrapper classes and queue manager</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpCtl.memory_api.html">dpctl.memory - USM memory manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dpCtl.dptensor_api.html">dpctl.dptensor - Data-parallel tensor containers</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">dpctl.program - Program manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpCtl.memory_api.html">dpctl.memory - USM memory manager</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">dpctl.program - Program manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exceptions">Exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/dpCtl-CAPI_root.html">dpCtl C API</a></li>
@@ -169,6 +173,8 @@
 <p><strong>Data Parallel Control Program</strong></p>
 <p><cite>dpctl.program</cite> module provides a way to create a SYCL kernel from either a
 source string or SPIR-V binary file.</p>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="dpctl.program.SyclKernel">
 <em class="property">class </em><code class="sig-prename descclassname">dpctl.program.</code><code class="sig-name descname">SyclKernel</code><a class="headerlink" href="#dpctl.program.SyclKernel" title="Permalink to this definition">¶</a></dt>
@@ -176,11 +182,11 @@ source string or SPIR-V binary file.</p>
 <dt id="dpctl.program.SyclKernel.addressof_ref">
 <code class="sig-name descname">addressof_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclKernel.addressof_ref" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the address of the C API DPCTLSyclKernelRef pointer
-as a long.</p>
+as a size_t.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>The address of the DPCTLSyclKernelRef object used to create this
-SyclKernel cast to a long.</p>
+SyclKernel cast to a size_t.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -220,22 +226,38 @@ SyclProgram cast to a long.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt id="dpctl.program.SyclProgram.get_sycl_kernel">
+<code class="sig-name descname">get_sycl_kernel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclProgram.get_sycl_kernel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.program.SyclProgram.has_sycl_kernel">
+<code class="sig-name descname">has_sycl_kernel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclProgram.has_sycl_kernel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
+</div>
+<div class="section" id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
 <dl class="py exception">
 <dt id="dpctl.program.SyclProgramCompilationError">
 <em class="property">exception </em><code class="sig-prename descclassname">dpctl.program.</code><code class="sig-name descname">SyclProgramCompilationError</code><a class="headerlink" href="#dpctl.program.SyclProgramCompilationError" title="Permalink to this definition">¶</a></dt>
-<dd><p>This exception is raised when a sycl program could not be built from
-either a spirv binary file or a string source.</p>
+<dd><p>This exception is raised when a SYCL program could not be built from
+either a SPIR-V binary file or a string source.</p>
 </dd></dl>
 
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="dpctl.program.create_program_from_source">
 <code class="sig-prename descclassname">dpctl.program.</code><code class="sig-name descname">create_program_from_source</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.create_program_from_source" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Sycl interoperability program from an OpenCL source string.</p>
 <p>We use the DPCTLProgram_CreateFromOCLSource() C API function to create
 a Sycl progrma from an OpenCL source program that can contain multiple
-kernels.</p>
+kernels. Note currently only supported for OpenCL.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -251,6 +273,9 @@ when compiling the program.</p></li>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>program (<a class="reference internal" href="#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram">SyclProgram</a>)</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#dpctl.program.SyclProgramCompilationError" title="dpctl.program.SyclProgramCompilationError"><strong>SyclProgramCompilationError</strong></a> – If a SYCL program could not be created.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -275,9 +300,13 @@ a Sycl progrma from an compiled SPIR-V binary file.</p>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>program (<a class="reference internal" href="#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram">SyclProgram</a>)</p>
 </dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#dpctl.program.SyclProgramCompilationError" title="dpctl.program.SyclProgramCompilationError"><strong>SyclProgramCompilationError</strong></a> – If a SYCL program could not be created.</p>
+</dd>
 </dl>
 </dd></dl>
 
+</div>
 </div>
 
 
@@ -291,7 +320,7 @@ a Sycl progrma from an compiled SPIR-V binary file.</p>
         <a href="api/dpCtl-CAPI_root.html" class="btn btn-neutral float-right" title="dpCtl C API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpCtl.dptensor_api.html" class="btn btn-neutral float-left" title="dpCtl dptensor Python API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpCtl.memory_api.html" class="btn btn-neutral float-left" title="dpCtl Memory Python API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
