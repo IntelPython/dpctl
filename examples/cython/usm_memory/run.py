@@ -1,5 +1,5 @@
 # coding: utf-8
-import dpctl._memory as dpctl_mem
+import dpctl.memory as dpctl_mem
 import blackscholes_usm as bs
 import numpy as np, dpctl
 from reference_black_scholes import ref_python_black_scholes
