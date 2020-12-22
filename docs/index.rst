@@ -22,6 +22,5 @@ Indices and tables
     :maxdepth: 3
     :caption: Contents:
 
-    self
     toc_pyapi
     api/dpCtl-CAPI_root

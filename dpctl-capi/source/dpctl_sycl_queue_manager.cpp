@@ -236,7 +236,8 @@ QMgrHelper::getQueue (DPCTLSyclBackendType BETy,
         QRef = new queue(gpuQs[DNum]);
         break;
     }
-    case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO | DPCTLSyclDeviceType::DPCTL_GPU:
+    case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO |
+         DPCTLSyclDeviceType::DPCTL_GPU:
     {
         auto l0GpuQs = get_level0_gpu_queues();
         if (DNum >= l0GpuQs.size()) {
@@ -316,7 +317,8 @@ QMgrHelper::setAsDefaultQueue (DPCTLSyclBackendType BETy,
         activeQ[0] = oclgpu_q[DNum];
         break;
     }
-    case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO | DPCTLSyclDeviceType::DPCTL_GPU:
+    case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO |
+         DPCTLSyclDeviceType::DPCTL_GPU:
     {
         auto l0gpu_q = get_level0_gpu_queues();
         if (DNum >= l0gpu_q.size()) {
@@ -342,8 +344,8 @@ QMgrHelper::setAsDefaultQueue (DPCTLSyclBackendType BETy,
 /*!
  * Allocates a new sycl::queue by copying from the cached {cpu|gpu}_queues
  * vector. The pointer returned is now owned by the caller and must be properly
- * cleaned up. The helper function DPCTLDeleteSyclQueue() can be used is for that
- * purpose.
+ * cleaned up. The helper function DPCTLDeleteSyclQueue() can be used is for
+ * that purpose.
  */
 __dpctl_give DPCTLSyclQueueRef
 QMgrHelper::pushSyclQueue (DPCTLSyclBackendType BETy,
@@ -383,7 +385,8 @@ QMgrHelper::pushSyclQueue (DPCTLSyclBackendType BETy,
         QRef = new queue(activeQ[get_active_queues().size()-1]);
         break;
     }
-    case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO | DPCTLSyclDeviceType::DPCTL_GPU:
+    case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO |
+         DPCTLSyclDeviceType::DPCTL_GPU:
     {
         if (DNum >= get_level0_gpu_queues().size()) {
             // \todo handle error
@@ -447,7 +450,7 @@ size_t DPCTLQueueMgr_GetNumActivatedQueues ()
  * type combination.
  */
 size_t DPCTLQueueMgr_GetNumQueues (DPCTLSyclBackendType BETy,
-                                  DPCTLSyclDeviceType DeviceTy)
+                                   DPCTLSyclDeviceType DeviceTy)
 {
     switch (BETy|DeviceTy)
     {
@@ -459,7 +462,8 @@ size_t DPCTLQueueMgr_GetNumQueues (DPCTLSyclBackendType BETy,
     {
         return QMgrHelper::get_opencl_gpu_queues().size();
     }
-    case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO | DPCTLSyclDeviceType::DPCTL_GPU:
+    case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO |
+         DPCTLSyclDeviceType::DPCTL_GPU:
     {
         return QMgrHelper::get_level0_gpu_queues().size();
     }
@@ -485,8 +489,8 @@ DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue ()
  * and device number. A runtime_error gets thrown if no such device exists.
  */
 DPCTLSyclQueueRef DPCTLQueueMgr_GetQueue (DPCTLSyclBackendType BETy,
-                                        DPCTLSyclDeviceType DeviceTy,
-                                        size_t DNum)
+                                          DPCTLSyclDeviceType DeviceTy,
+                                          size_t DNum)
 {
     return QMgrHelper::getQueue(BETy, DeviceTy, DNum);
 }
@@ -506,8 +510,8 @@ bool DPCTLQueueMgr_IsCurrentQueue (__dpctl_keep const DPCTLSyclQueueRef QRef)
  */
 __dpctl_give DPCTLSyclQueueRef
 DPCTLQueueMgr_SetAsDefaultQueue (DPCTLSyclBackendType BETy,
-                                DPCTLSyclDeviceType DeviceTy,
-                                size_t DNum)
+                                 DPCTLSyclDeviceType DeviceTy,
+                                 size_t DNum)
 {
     return QMgrHelper::setAsDefaultQueue(BETy, DeviceTy, DNum);
 }
@@ -517,8 +521,8 @@ DPCTLQueueMgr_SetAsDefaultQueue (DPCTLSyclBackendType BETy,
  */
 __dpctl_give DPCTLSyclQueueRef
 DPCTLQueueMgr_PushQueue (DPCTLSyclBackendType BETy,
-                        DPCTLSyclDeviceType DeviceTy,
-                        size_t DNum)
+                         DPCTLSyclDeviceType DeviceTy,
+                         size_t DNum)
 {
     return QMgrHelper::pushSyclQueue(BETy, DeviceTy, DNum);
 }
@@ -536,8 +540,10 @@ void DPCTLQueueMgr_PopQueue ()
  * SYCL device.
  */
 DPCTLSyclQueueRef
-DPCTLQueueMgr_GetQueueFromContextAndDevice (__dpctl_keep DPCTLSyclContextRef CRef,
-                                           __dpctl_keep DPCTLSyclDeviceRef DRef)
+DPCTLQueueMgr_GetQueueFromContextAndDevice (
+    __dpctl_keep DPCTLSyclContextRef CRef,
+    __dpctl_keep DPCTLSyclDeviceRef DRef
+)
 {
     auto dev = unwrap(DRef);
     auto ctx = unwrap(CRef);

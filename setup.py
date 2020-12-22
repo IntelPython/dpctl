@@ -29,14 +29,11 @@ import subprocess
 
 import setuptools.command.install as orig_install
 import setuptools.command.develop as orig_develop
+
 from setuptools import setup, Extension, find_packages
 from Cython.Build import cythonize
 
 import numpy as np
-
-requirements = [
-    "cython",
-]
 
 IS_WIN = False
 IS_MAC = False
@@ -220,8 +217,8 @@ setup(
     packages=find_packages(include=["*"]),
     include_package_data=True,
     ext_modules=extensions(),
-    setup_requires=requirements,
-    install_requires=requirements,
+    zip_safe=False,
+    setup_requires=["Cython"],
     keywords="dpctl",
     classifiers=[
         "Development Status :: 3 - Alpha",
