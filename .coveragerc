@@ -1,0 +1,5 @@
+[run]
+plugins = Cython.Coverage
+branch = True
+source = dpctl
+omit = dpctl/tests/*, *__init__.py

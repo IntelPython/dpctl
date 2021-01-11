@@ -157,6 +157,7 @@ def extensions():
         "library_dirs": librarys,
         "runtime_library_dirs": runtime_library_dirs,
         "language": "c++",
+        "define_macros": [("CYTHON_TRACE", "1"),],
     }
 
     extensions = [
@@ -183,7 +184,7 @@ def extensions():
         ),
     ]
 
-    exts = cythonize(extensions)
+    exts = cythonize(extensions, compiler_directives = {"linetrace": True})
     return exts
 
 
