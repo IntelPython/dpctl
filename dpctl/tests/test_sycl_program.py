@@ -87,7 +87,6 @@ class TestProgramFromSPRIV(unittest.TestCase):
     "No Level0 GPU queues available",
 )
 class TestProgramForLevel0GPU(unittest.TestCase):
-    @unittest.expectedFailure
     def test_create_program_from_spirv(self):
 
         CURR_DIR = os.path.dirname(os.path.abspath(__file__))

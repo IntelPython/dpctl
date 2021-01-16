@@ -60,4 +60,5 @@ cdef class SyclProgram:
 
 
 cpdef create_program_from_source (SyclQueue q, unicode source, unicode copts=*)
-cpdef create_program_from_spirv (SyclQueue q, const unsigned char[:] IL)
+cpdef create_program_from_spirv (SyclQueue q, const unsigned char[:] IL,
+                                 unicode copts=*)

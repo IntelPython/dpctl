@@ -52,14 +52,17 @@ DPCTL_C_EXTERN_C_BEGIN
  * @param    Ctx            An opaque pointer to a sycl::context
  * @param    IL             SPIR-V binary
  * @param    Length         The size of the IL binary in bytes.
+ * @param    CompileOpts    Optional compiler flags used when compiling th 
+ *                          SPIR-V binary.
  * @return   A new SyclProgramRef pointer if the program creation succeeded,
  *           else returns NULL.
  */
 DPCTL_API
 __dpctl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromOCLSpirv (__dpctl_keep const DPCTLSyclContextRef Ctx,
-                                 __dpctl_keep const void *IL,
-                                 size_t Length);
+DPCTLProgram_CreateFromSpirv (__dpctl_keep const DPCTLSyclContextRef Ctx,
+                              __dpctl_keep const void *IL,
+                              size_t Length,
+                              const char *CompileOpts);
 
 /*!
  * @brief Create a Sycl program from an OpenCL kernel source string.
