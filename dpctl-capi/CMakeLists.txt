@@ -77,39 +77,32 @@ add_library(
   helper/source/dpctl_utils_helper.cpp
 )
 
-if(DPCTL_BUILD_WITH_LEVEL_ZERO AND UNIX)
-    target_include_directories(
-      DPCTLSyclInterface
-      PRIVATE
-      ${CMAKE_SOURCE_DIR}/include/
-      ${CMAKE_SOURCE_DIR}/helper/include/
-      ${LEVEL_ZERO_INCLUDE_DIR}
-    )
-else()
-    target_include_directories(
-      DPCTLSyclInterface
-      PRIVATE
-      ${CMAKE_SOURCE_DIR}/include/
-      ${CMAKE_SOURCE_DIR}/helper/include/
-    )
-endif()
+target_include_directories(DPCTLSyclInterface
+    PRIVATE
+    ${CMAKE_SOURCE_DIR}/include/
+    ${CMAKE_SOURCE_DIR}/helper/include/
+    ${DPCPP_SYCL_INCLUDE_DIR}
+)
+target_link_libraries(DPCTLSyclInterface
+    PRIVATE ${DPCPP_SYCL_LIBRARY}
+    PRIVATE ${DPCPP_OPENCL_LIBRARY}
+)
 
-if(WIN32)
-    message(
-        STATUS
-        "SYCL_INCLUDE_DIR: "
-        ${DPCPP_SYCL_INCLUDE_DIR}
-    )
-    target_include_directories(
-        DPCTLSyclInterface
-        PUBLIC
-        ${DPCPP_SYCL_INCLUDE_DIR}
-    )
-    target_link_libraries(
-        DPCTLSyclInterface
-        PRIVATE ${DPCPP_SYCL_LIBRARY}
-        PRIVATE ${DPCPP_OPENCL_LIBRARY}
-    )
+if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
+    if(UNIX)
+        target_include_directories(DPCTLSyclInterface
+            PRIVATE
+            ${LEVEL_ZERO_INCLUDE_DIR}
+        )
+        target_link_libraries(DPCTLSyclInterface
+            PRIVATE ${LEVEL_ZERO_LIBRARY}
+        )
+    else()
+        message(WARNING
+            "DPCTL support Level Zero program creation not supported "
+            "on this system."
+        )
+    endif()
 endif()
 
 install(
@@ -143,19 +136,18 @@ foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION include/Config)
 endforeach()
 
-# Add sub-directory to build the dpCtl C API test cases
-if(DPCTL_BUILD_CAPI_TESTS)
-    add_subdirectory(tests)
-endif()
-
 # Enable code coverage related settings
 if(DPCTL_GENERATE_COVERAGE)
     # check if llvm-cov and lcov are available
     find_package(Lcov REQUIRED)
+    # These flags are set inside FindDPCPP
     if(NOT (${LLVM_COV_FOUND} AND ${LLVM_PROFDATA_FOUND}))
-        message(FATAL_ERROR "llvm-cov and llvm-profdata are needed to generate coverage.")
+        message(FATAL_ERROR
+            "llvm-cov and llvm-profdata are needed to generate coverage."
+        )
     endif()
-    # Turn on DPCTL_BUILD_CAPI_TESTS
+    # Turn on DPCTL_BUILD_CAPI_TESTS as building tests is needed to generate
+    # coverage reports
     set(DPCTL_BUILD_CAPI_TESTS "ON")
     if(DPCTL_COVERAGE_REPORT_OUTPUT_DIR)
         set(COVERAGE_OUTPUT_DIR ${DPCTL_COVERAGE_REPORT_OUTPUT_DIR})
@@ -164,4 +156,9 @@ if(DPCTL_GENERATE_COVERAGE)
         set(COVERAGE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
         message(STATUS "Coverage reports to be saved at ${COVERAGE_OUTPUT_DIR}")
     endif()
+endif()
+
+# Add sub-directory to build the dpCtl C API test cases
+if(DPCTL_BUILD_CAPI_TESTS)
+    add_subdirectory(tests)
 endif()

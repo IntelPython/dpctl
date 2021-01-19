@@ -48,8 +48,8 @@ if(DPCTL_GENERATE_COVERAGE)
     )
     add_custom_target(lcov-genhtml
         COMMAND ${CMAKE_MAKE_PROGRAM} llvm-cov
-        COMMAND ${LLVM_PROFDATA_EXE} export -format=lcov ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests -instr-profile=dpctl.profdata ${dpctl_sources} > dpctl.lcov
-        COMMAND ${GENHTML_BIN} dpctl.lcov --output-directory ${COVERAGE_OUTPUT_DIR}/dpctl-c-api-coverage
+        COMMAND ${LLVM_COV_EXE} export -format=lcov ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests -instr-profile=dpctl.profdata ${dpctl_sources} > dpctl.lcov
+        COMMAND ${GENHTML_EXE} ${CMAKE_CURRENT_BINARY_DIR}/dpctl.lcov --output-directory ${COVERAGE_OUTPUT_DIR}/dpctl-c-api-coverage
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 else()

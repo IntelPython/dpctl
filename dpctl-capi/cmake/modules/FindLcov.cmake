@@ -21,13 +21,13 @@
 # find_package(Lcov)
 #
 # If successful, the following variables will be defined:
-# LCOV_BIN - The path to lcov executable
+# LCOV_EXE- The path to lcov executable
 # LCOV_FOUND
 
-find_program(LCOV_BIN lcov)
-find_program(GENHTML_BIN genhtml)
+find_program(LCOV_EXE lcov)
+find_program(GENHTML_EXE genhtml)
 
 find_package_handle_standard_args(Lcov DEFAULT_MSG
-    LCOV_BIN
-    GENHTML_BIN
+    LCOV_EXE
+    GENHTML_EXE
 )
