@@ -46,7 +46,7 @@ if IS_LIN:
         backends,
     ]
     subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=False)
-    subprocess.check_call(["make", "-j", "4"])
+    subprocess.check_call(["make", "V=1", "-j", "4"])
     subprocess.check_call(["make", "install"])
 
     os.chdir(dpctl_dir)
