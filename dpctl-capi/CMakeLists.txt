@@ -103,7 +103,7 @@ if(DPCTL_BUILD_WITH_LEVEL_ZERO AND UNIX)
       ${CMAKE_SOURCE_DIR}/helper/include/
       ${LEVEL_ZERO_INCLUDE_DIR}
     )
-elseif(UNIX)
+else()
     target_include_directories(
       DPCTLSyclInterface
       PRIVATE
