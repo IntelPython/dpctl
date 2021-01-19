@@ -61,7 +61,7 @@ if IS_WIN:
         "-DCMAKE_BUILD_TYPE=Release",
         "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
         "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
-        "-DDPCPP_ROOT=" + DPCPP_ROOT,
+        "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
         backends,
     ]
     subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=True)
