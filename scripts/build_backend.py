@@ -40,7 +40,7 @@ if IS_LIN:
         "-DCMAKE_BUILD_TYPE=Release",
         "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
         "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
-        "-DDPCPP_ROOT=" + DPCPP_ROOT,
+        "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
         "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
         "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang++"),
         backends,

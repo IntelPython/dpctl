@@ -18,10 +18,47 @@ foreach(tf ${spirv-test-files})
     file(COPY ${tf} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
 
-file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
-add_executable(dpctl_c_api_tests EXCLUDE_FROM_ALL ${sources})
-target_link_libraries(
-    dpctl_c_api_tests ${CMAKE_THREAD_LIBS_INIT} GTest::GTest DPCTLSyclInterface
-)
+if(DPCTL_GENERATE_COVERAGE)
+    file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+    file(GLOB_RECURSE dpctl_sources ${CMAKE_CURRENT_SOURCE_DIR}/../source/*.cpp)
+
+    # Add all dpctl sources into a single executable so that we can run coverage
+    # analysis and generate a report.
+    add_executable(dpctl_c_api_tests
+        EXCLUDE_FROM_ALL
+        ${sources}
+        ${dpctl_sources}
+    )
+    target_link_libraries(dpctl_c_api_tests
+        ${CMAKE_THREAD_LIBS_INIT}
+        GTest::GTest
+        DPCTLSyclInterface
+        ${LEVEL_ZERO_LIBRARY}
+        ${DPCPP_OPENCL_LIBRARY}
+    )
+    add_custom_target(llvm-cov
+        COMMAND ${CMAKE_MAKE_PROGRAM} dpctl_c_api_tests
+        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests
+        COMMAND ${LLVMProfdata_BIN} merge -sparse default.profraw -o dpctl.profdata
+        COMMAND ${LLVMCov_BIN} report ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests -instr-profile=dpctl.profdata ${dpctl_sources}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )
+    add_custom_target(genhtml
+        COMMAND ${CMAKE_MAKE_PROGRAM} llvm-cov
+        COMMAND ${LLVMCov_BIN} export -format=lcov ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests -instr-profile=dpctl.profdata ${dpctl_sources} > dpctl.lcov
+        COMMAND ${GENHTML_BIN} dpctl.lcov --output-directory ${COVERAGE_OUTPUT_DIR}/dpctl-c-api-coverage
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )
+else()
+    file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+    add_executable(dpctl_c_api_tests EXCLUDE_FROM_ALL ${sources})
+    target_link_libraries(dpctl_c_api_tests
+        ${CMAKE_THREAD_LIBS_INIT}
+        GTest::GTest
+        DPCTLSyclInterface
+        ${LEVEL_ZERO_LIBRARY}
+    )
+endif()
+
 gtest_discover_tests(dpctl_c_api_tests)
 add_dependencies(check dpctl_c_api_tests)
