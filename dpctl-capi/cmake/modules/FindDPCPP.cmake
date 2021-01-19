@@ -62,6 +62,31 @@ if(${dpcpp_result} MATCHES "0")
         message(STATUS "dpcpp ver[${dpcpp_result}]: ${X}")
     endforeach()
 
+    # check if llvm-cov and llvm-profdata are packaged as part of dpcpp
+    find_program(LLVM_COV_EXE
+        llvm-cov
+        PATHS ${DPCPP_INSTALL_DIR}/bin
+        NO_DEFAULT_PATH
+    )
+
+    if(LLVM_COV_EXE)
+        set(LLVM_COV_FOUND TRUE)
+    else()
+        set(LLVM_COV_FOUND FALSE)
+    endif()
+
+    find_program(LLVM_PROFDATA_EXE
+        llvm-profdata
+        PATHS ${DPCPP_INSTALL_DIR}/bin
+        NO_DEFAULT_PATH
+    )
+
+    if(LLVM_PROFDATA_EXE)
+        set(LLVM_PROFDATA_FOUND TRUE)
+    else()
+        set(LLVM_PROFDATA_FOUND FALSE)
+    endif()
+
     # set package-level variables
     set(DPCPP_ROOT ${DPCPP_INSTALL_DIR})
     list(POP_FRONT DPCPP_VERSION_LIST DPCPP_VERSION)

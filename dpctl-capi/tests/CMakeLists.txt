@@ -22,6 +22,9 @@ if(DPCTL_GENERATE_COVERAGE)
     file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
     file(GLOB_RECURSE dpctl_sources ${CMAKE_CURRENT_SOURCE_DIR}/../source/*.cpp)
 
+    # Add profiling flags
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
+
     # Add all dpctl sources into a single executable so that we can run coverage
     # analysis and generate a report.
     add_executable(dpctl_c_api_tests
@@ -39,13 +42,13 @@ if(DPCTL_GENERATE_COVERAGE)
     add_custom_target(llvm-cov
         COMMAND ${CMAKE_MAKE_PROGRAM} dpctl_c_api_tests
         COMMAND ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests
-        COMMAND ${LLVMProfdata_BIN} merge -sparse default.profraw -o dpctl.profdata
-        COMMAND ${LLVMCov_BIN} report ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests -instr-profile=dpctl.profdata ${dpctl_sources}
+        COMMAND ${LLVM_PROFDATA_EXE} merge -sparse default.profraw -o dpctl.profdata
+        COMMAND ${LLVM_COV_EXE} report ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests -instr-profile=dpctl.profdata ${dpctl_sources}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
     add_custom_target(lcov-genhtml
         COMMAND ${CMAKE_MAKE_PROGRAM} llvm-cov
-        COMMAND ${LLVMCov_BIN} export -format=lcov ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests -instr-profile=dpctl.profdata ${dpctl_sources} > dpctl.lcov
+        COMMAND ${LLVM_PROFDATA_EXE} export -format=lcov ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests -instr-profile=dpctl.profdata ${dpctl_sources} > dpctl.lcov
         COMMAND ${GENHTML_BIN} dpctl.lcov --output-directory ${COVERAGE_OUTPUT_DIR}/dpctl-c-api-coverage
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )

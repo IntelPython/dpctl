@@ -32,24 +32,6 @@ if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
     find_package(LevelZero REQUIRED)
 endif()
 
-# Add the profiling flags if code coverage is required
-if(DPCTL_GENERATE_COVERAGE)
-    # check if llvm-cov and lcov are available
-    find_package(Lcov REQUIRED)
-    find_package(LLVMCov REQUIRED)
-    # Turn on DPCTL_BUILD_CAPI_TESTS
-    set(DPCTL_BUILD_CAPI_TESTS "ON")
-    # Add profiling flags
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
-    if(DPCTL_COVERAGE_REPORT_OUTPUT_DIR)
-        set(COVERAGE_OUTPUT_DIR ${DPCTL_COVERAGE_REPORT_OUTPUT_DIR})
-        message(STATUS "Saving coverage report to ${COVERAGE_OUTPUT_DIR}")
-    else()
-        set(COVERAGE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
-        message(STATUS "Saving coverage report to ${COVERAGE_OUTPUT_DIR}")
-    endif()
-endif()
-
 configure_file(${CMAKE_SOURCE_DIR}/include/Config/dpctl_config.h.in
                ${CMAKE_SOURCE_DIR}/include/Config/dpctl_config.h)
 
@@ -161,7 +143,25 @@ foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION include/Config)
 endforeach()
 
-# Enable to build the dpCtl C API test cases
+# Add sub-directory to build the dpCtl C API test cases
 if(DPCTL_BUILD_CAPI_TESTS)
     add_subdirectory(tests)
+endif()
+
+# Enable code coverage related settings
+if(DPCTL_GENERATE_COVERAGE)
+    # check if llvm-cov and lcov are available
+    find_package(Lcov REQUIRED)
+    if(NOT (${LLVM_COV_FOUND} AND ${LLVM_PROFDATA_FOUND}))
+        message(FATAL_ERROR "llvm-cov and llvm-profdata are needed to generate coverage.")
+    endif()
+    # Turn on DPCTL_BUILD_CAPI_TESTS
+    set(DPCTL_BUILD_CAPI_TESTS "ON")
+    if(DPCTL_COVERAGE_REPORT_OUTPUT_DIR)
+        set(COVERAGE_OUTPUT_DIR ${DPCTL_COVERAGE_REPORT_OUTPUT_DIR})
+        message(STATUS "Saving coverage report to ${COVERAGE_OUTPUT_DIR}")
+    else()
+        set(COVERAGE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+        message(STATUS "Saving coverage report to ${COVERAGE_OUTPUT_DIR}")
+    endif()
 endif()
