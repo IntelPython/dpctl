@@ -23,7 +23,7 @@ cmake                                                                          \
 make V=1 -n -j 4 && make check && make install
 make llvm-cov
 # Turn on to generate coverage report html files
-# make genhtml
+# make lcov-genhtml
 
 # For more verbose tests use:
 # cd tests

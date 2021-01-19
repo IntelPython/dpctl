@@ -43,7 +43,7 @@ if(DPCTL_GENERATE_COVERAGE)
         COMMAND ${LLVMCov_BIN} report ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests -instr-profile=dpctl.profdata ${dpctl_sources}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
-    add_custom_target(genhtml
+    add_custom_target(lcov-genhtml
         COMMAND ${CMAKE_MAKE_PROGRAM} llvm-cov
         COMMAND ${LLVMCov_BIN} export -format=lcov ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests -instr-profile=dpctl.profdata ${dpctl_sources} > dpctl.lcov
         COMMAND ${GENHTML_BIN} dpctl.lcov --output-directory ${COVERAGE_OUTPUT_DIR}/dpctl-c-api-coverage
