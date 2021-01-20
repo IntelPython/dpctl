@@ -87,9 +87,10 @@ class TestProgramFromSPRIV(unittest.TestCase):
     "No Level0 GPU queues available",
 )
 class TestProgramForLevel0GPU(unittest.TestCase):
-    # Level zero proram creation from SPIR-V is only supported on Windows.
-    import sys
 
+    import sys
+    # Level zero program creation from a SPIR-V binary is not supported
+    # on Windows.
     @unittest.skipIf(
         sys.platform in ["win32", "cygwin"],
         "Level Zero module creation unsupported on Windows.",
