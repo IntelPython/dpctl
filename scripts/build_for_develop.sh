@@ -14,14 +14,22 @@ cmake                                                       \
     -DCMAKE_BUILD_TYPE=Debug                                \
     -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}                \
     -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX}                   \
-    -DDPCPP_ROOT=${DPCPP_ROOT}                              \
+    -DDPCPP_INSTALL_DIR=${DPCPP_ROOT}                       \
     -DCMAKE_C_COMPILER:PATH=${DPCPP_ROOT}/bin/clang         \
     -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/bin/dpcpp       \
-    -DBUILD_CAPI_TESTS=ON                                   \
+    -DDPCTL_BUILD_CAPI_TESTS=ON                             \
+    -DDPCTL_GENERATE_COVERAGE=ON                            \
     ../dpctl-capi
 
 make V=1 -n -j 4 && make check && make install
 
+if [ $? -ne 0 ]; then
+    echo "Building of libDPCTLSyclInterface failed. Abort!"
+    exit 1
+fi
+
+# To run code coverage for dpctl-c API
+make llvm-cov
 # For more verbose tests use:
 # cd tests
 # ctest -V --progress --output-on-failure -j 4
