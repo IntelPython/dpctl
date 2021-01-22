@@ -16,7 +16,7 @@ documents in the current source directory in a sub-directory called
 `generated_docs`.
 
 The `make Sphinx` command will generate standalone Doxygen documentation and
-a consolidated Sphix documentation for both dpCtl Python and C APIs.
+a consolidated Sphinx documentation for both dpCtl Python and C APIs.
 
 Prerequisite
 ============
