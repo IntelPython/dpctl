@@ -43,6 +43,7 @@ if IS_LIN:
         "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
         "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
         "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang++"),
+        "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON",
         backends,
     ]
     subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=False)

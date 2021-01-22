@@ -140,14 +140,15 @@ cdef extern from "dpctl_sycl_context_interface.h":
 
 
 cdef extern from "dpctl_sycl_program_interface.h":
-    cdef DPCTLSyclProgramRef DPCTLProgram_CreateFromOCLSpirv (
+    cdef DPCTLSyclProgramRef DPCTLProgram_CreateFromSpirv (
                                 const DPCTLSyclContextRef Ctx,
                                 const void *IL,
-                                size_t Length)
+                                size_t Length,
+                                const char *CompileOpts)
     cdef DPCTLSyclProgramRef DPCTLProgram_CreateFromOCLSource (
                                 const DPCTLSyclContextRef Ctx,
-                                const char* Source,
-                                const char* CompileOpts)
+                                const char *Source,
+                                const char *CompileOpts)
     cdef DPCTLSyclKernelRef DPCTLProgram_GetKernel (DPCTLSyclProgramRef PRef,
                                                   const char *KernelName)
     cdef bool DPCTLProgram_HasKernel (DPCTLSyclProgramRef PRef,
