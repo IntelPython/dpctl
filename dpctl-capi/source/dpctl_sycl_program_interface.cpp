@@ -33,12 +33,35 @@
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 #include <level_zero/zet_api.h> /* Level Zero headers */
 #include <CL/sycl/backend/level_zero.hpp>
+#include "../helper/include/dpctl_dynamic_lib_helper.h"
 #endif
 
 using namespace cl::sycl;
 
 namespace
 {
+#ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
+
+#ifdef __linux__
+static const char * zeLoaderName = "libze_loader.so";
+static const int libLoadFlags    = RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL;
+#else
+    #error "Level Zero program compilation is unavailable for this platform"
+#endif
+
+typedef ze_result_t (*zeModuleCreateFT)(ze_context_handle_t,
+                                        ze_device_handle_t,
+                                        const ze_module_desc_t *,
+                                        ze_module_handle_t *,
+                                        ze_module_build_log_handle_t *);
+
+typedef ze_result_t (*zeModuleDestroyFT)(ze_module_handle_t hModule);
+
+const char * zeModuleCreateFuncName  = "zeModuleCreate";
+const char * zeModuleDestroyFuncName = "zeModuleDestroy";
+
+#endif // #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
+
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(program, DPCTLSyclProgramRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
@@ -90,6 +113,35 @@ createOpenCLInterOpProgram (const context &SyclCtx,
 }
 
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
+
+static std::pair<zeModuleCreateFT, zeModuleDestroyFT>
+getZeModuleFns ()
+{
+    int64_t status = 0;
+    static dpctl::DynamicLibHelper zeLib(zeLoaderName, libLoadFlags, status);
+    if(status == -1) {
+        // TODO: handle error
+        std::cerr << "The level zero loader dynamic library could not "
+                     "be opened.\n";
+        return {nullptr, nullptr};
+    }
+    static auto stZeModuleCreateF = zeLib.getSymbol<zeModuleCreateFT>(
+                                        zeModuleCreateFuncName
+                                    );
+    static auto stZeModuleDestroyF = zeLib.getSymbol<zeModuleDestroyFT>(
+                                        zeModuleDestroyFuncName
+                                    );
+
+    if(!(stZeModuleCreateF && stZeModuleDestroyF))
+        return {nullptr, nullptr};
+
+    static std::pair<zeModuleCreateFT, zeModuleDestroyFT> stZeFns
+    {stZeModuleCreateF, stZeModuleDestroyF};
+
+    return stZeFns;
+}
+
+
 __dpctl_give DPCTLSyclProgramRef
 createLevelZeroInterOpProgram (const context &SyclCtx,
                                const void *IL,
@@ -99,8 +151,8 @@ createLevelZeroInterOpProgram (const context &SyclCtx,
     auto ZeCtx   = SyclCtx.get_native<backend::level_zero>();
     auto SyclDevices = SyclCtx.get_devices();
     if(SyclDevices.size() > 1) {
-        // We only support build to one device with Level Zero now.
-        // TODO: log error
+        std::cerr << "Level zero program can be created for only one device.\n";
+        // TODO: handle error
         return nullptr;
     }
 
@@ -119,8 +171,14 @@ createLevelZeroInterOpProgram (const context &SyclCtx,
 
     auto ZeDevice = SyclDevices[0].get_native<backend::level_zero>();
     ze_module_handle_t ZeModule;
-    auto ret = zeModuleCreate(ZeCtx, ZeDevice, &ZeModuleDesc, &ZeModule,
-                              nullptr);
+
+    auto stZeModuleCreateF = getZeModuleFns().first;
+
+    if(!stZeModuleCreateF)
+        return nullptr;
+
+    auto ret = stZeModuleCreateF(ZeCtx, ZeDevice, &ZeModuleDesc, &ZeModule,
+                                 nullptr);
     if(ret != ZE_RESULT_SUCCESS) {
         // TODO: handle error
         return nullptr;
@@ -138,7 +196,8 @@ createLevelZeroInterOpProgram (const context &SyclCtx,
         return nullptr;
     }
 }
-#endif
+#endif /* #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION */
+
 } /* end of anonymous namespace */
 
 __dpctl_give DPCTLSyclProgramRef
@@ -156,7 +215,7 @@ DPCTLProgram_CreateFromSpirv (__dpctl_keep const DPCTLSyclContextRef CtxRef,
     SyclCtx = unwrap(CtxRef);
     // get the backend type
     auto BE = SyclCtx->get_platform().get_backend();
-    switch (BE)
+    switch(BE)
     {
     case backend::opencl:
         Pref = createOpenCLInterOpProgram(*SyclCtx, IL, length, CompileOpts);

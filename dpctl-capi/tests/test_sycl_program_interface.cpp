@@ -184,7 +184,7 @@ TEST_F (TestDPCTLSyclProgramInterface, CheckCreateFromSpirvOCL)
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 TEST_F (TestDPCTLSyclProgramInterface, CheckCreateFromSpirvL0)
 {
-    auto nL0GpuQ = DPCTLQueueMgr_GetNumQueues(DPCTL_LEVEL_ZERO, DPCTL_GPU));
+    auto nL0GpuQ = DPCTLQueueMgr_GetNumQueues(DPCTL_LEVEL_ZERO, DPCTL_GPU);
     if(!nL0GpuQ)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 

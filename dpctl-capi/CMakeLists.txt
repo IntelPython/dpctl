@@ -94,9 +94,9 @@ if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
             PRIVATE
             ${LEVEL_ZERO_INCLUDE_DIR}
         )
-        target_link_libraries(DPCTLSyclInterface
-            PRIVATE ${LEVEL_ZERO_LIBRARY}
-        )
+        #target_link_libraries(DPCTLSyclInterface
+        #    PRIVATE ${LEVEL_ZERO_LIBRARY}
+        #)
     else()
         message(WARNING
             "DPCTL support Level Zero program creation not supported "
@@ -125,10 +125,10 @@ foreach(HEADER ${HEADERS})
 endforeach()
 
 # Install all headers in helper/include
-file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/helper/include/*.h")
-foreach(HEADER ${HEADERS})
-  install(FILES "${HEADER}" DESTINATION helper/include)
-endforeach()
+#file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/helper/include/*.h")
+#foreach(HEADER ${HEADERS})
+#  install(FILES "${HEADER}" DESTINATION helper/include)
+#endforeach()
 
 # Install all headers in include/Config
 file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/Config/*.h")
