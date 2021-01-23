@@ -43,11 +43,13 @@ if IS_LIN:
         "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
         "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
         "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang++"),
+        "-DDPCTL_BUILD_CAPI_TESTS=ON",
         "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON",
         backends,
     ]
     subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=False)
     subprocess.check_call(["make", "V=1", "-j", "4"])
+    subprocess.check_call(["make", "check"])
     subprocess.check_call(["make", "install"])
 
     os.chdir(dpctl_dir)
