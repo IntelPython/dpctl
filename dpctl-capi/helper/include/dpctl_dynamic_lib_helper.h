@@ -48,7 +48,7 @@ class DynamicLibHelper final
 public:
     DynamicLibHelper()                         = delete;
     DynamicLibHelper(const DynamicLibHelper &) = delete;
-    DynamicLibHelper(const char * libName, int flag, int64_t & status)
+    DynamicLibHelper(const char * libName, int flag)
     {
 
     #ifdef __linux__
@@ -56,11 +56,6 @@ public:
     #elif defined(_WIN32) || defined(_WIN64)
         _handle = LoadLibraryA(libName);
     #endif
-        if (!_handle)
-        {
-            status = -1;
-            return;
-        }
     }
 
     ~DynamicLibHelper()
@@ -95,8 +90,16 @@ public:
         return (T)sym;
     }
 
+    bool opened () const
+    {
+        if (!_handle)
+            return false;
+        else
+            return true;
+    }
+
 private:
-    void * _handle;
+    void * _handle = nullptr;
 };
 
 } // namespace dpctl

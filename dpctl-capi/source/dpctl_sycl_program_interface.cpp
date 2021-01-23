@@ -55,10 +55,7 @@ typedef ze_result_t (*zeModuleCreateFT)(ze_context_handle_t,
                                         ze_module_handle_t *,
                                         ze_module_build_log_handle_t *);
 
-typedef ze_result_t (*zeModuleDestroyFT)(ze_module_handle_t hModule);
-
 const char * zeModuleCreateFuncName  = "zeModuleCreate";
-const char * zeModuleDestroyFuncName = "zeModuleDestroy";
 
 #endif // #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 
@@ -114,33 +111,21 @@ createOpenCLInterOpProgram (const context &SyclCtx,
 
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 
-static std::pair<zeModuleCreateFT, zeModuleDestroyFT>
-getZeModuleFns ()
+zeModuleCreateFT getZeModuleCreateFn ()
 {
-    int64_t status = 0;
-    static dpctl::DynamicLibHelper zeLib(zeLoaderName, libLoadFlags, status);
-    if(status == -1) {
+    static dpctl::DynamicLibHelper zeLib(zeLoaderName, libLoadFlags);
+    if(!zeLib.opened()) {
         // TODO: handle error
         std::cerr << "The level zero loader dynamic library could not "
                      "be opened.\n";
-        return {nullptr, nullptr};
+        return nullptr;
     }
     static auto stZeModuleCreateF = zeLib.getSymbol<zeModuleCreateFT>(
                                         zeModuleCreateFuncName
                                     );
-    static auto stZeModuleDestroyF = zeLib.getSymbol<zeModuleDestroyFT>(
-                                        zeModuleDestroyFuncName
-                                    );
 
-    if(!(stZeModuleCreateF && stZeModuleDestroyF))
-        return {nullptr, nullptr};
-
-    static std::pair<zeModuleCreateFT, zeModuleDestroyFT> stZeFns
-    {stZeModuleCreateF, stZeModuleDestroyF};
-
-    return stZeFns;
+    return stZeModuleCreateF;
 }
-
 
 __dpctl_give DPCTLSyclProgramRef
 createLevelZeroInterOpProgram (const context &SyclCtx,
@@ -172,7 +157,7 @@ createLevelZeroInterOpProgram (const context &SyclCtx,
     auto ZeDevice = SyclDevices[0].get_native<backend::level_zero>();
     ze_module_handle_t ZeModule;
 
-    auto stZeModuleCreateF = getZeModuleFns().first;
+    auto stZeModuleCreateF = getZeModuleCreateFn();
 
     if(!stZeModuleCreateF)
         return nullptr;
