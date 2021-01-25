@@ -15,6 +15,7 @@ else:
     assert False, sys.platform + " not supported"
 
 ONEAPI_ROOT = os.environ.get("ONEAPI_ROOT")
+CODE_COVERAGE = os.environ.get("CODE_COVERAGE")
 
 if IS_LIN:
     DPCPP_ROOT = os.path.join(ONEAPI_ROOT, "compiler/latest/linux")
@@ -35,19 +36,39 @@ if os.path.exists(INSTALL_PREFIX):
 backends = os.path.join(dpctl_dir, "dpctl-capi")
 
 if IS_LIN:
-    cmake_args = [
-        "cmake",
-        "-DCMAKE_BUILD_TYPE=Release",
-        "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
-        "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
-        "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
-        "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
-        "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang++"),
-        backends,
-    ]
-    subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=False)
-    subprocess.check_call(["make", "V=1", "-j", "4"])
-    subprocess.check_call(["make", "install"])
+    if CODE_COVERAGE:
+        cmake_args = [
+            "cmake",
+            "-DCMAKE_BUILD_TYPE=Debug",
+            "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
+            "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
+            "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
+            "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
+            "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "dpcpp"),
+            "-DDPCTL_BUILD_CAPI_TESTS=ON",
+            "-DDPCTL_GENERATE_COVERAGE=ON",
+            "-DDPCTL_COVERAGE_REPORT_OUTPUT_DIR=" + dpctl_dir,
+            backends,
+        ]
+        subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=False)
+        subprocess.check_call(["make", "V=1", "-j", "4"])
+        subprocess.check_call(["make", "install"])
+        subprocess.check_call(["make", "lcov-genhtml"])
+
+    else:
+        cmake_args = [
+            "cmake",
+            "-DCMAKE_BUILD_TYPE=Release",
+            "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
+            "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
+            "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
+            "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
+            "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang++"),
+            backends,
+        ]
+        subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=False)
+        subprocess.check_call(["make", "V=1", "-j", "4"])
+        subprocess.check_call(["make", "install"])
 
     os.chdir(dpctl_dir)
     for file in glob.glob(os.path.join(dpctl_dir, "install", "lib", "*.so")):

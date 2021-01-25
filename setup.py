@@ -124,6 +124,7 @@ def extensions():
     ela = get_sdl_ldflags()
     libs = []
     librarys = []
+    CODE_COVERAGE = os.environ.get("CODE_COVERAGE")
 
     if IS_LIN:
         libs += ["rt", "DPCTLSyclInterface"]
@@ -157,8 +158,16 @@ def extensions():
         "library_dirs": librarys,
         "runtime_library_dirs": runtime_library_dirs,
         "language": "c++",
-        "define_macros": [("CYTHON_TRACE", "1"),],
     }
+
+    if CODE_COVERAGE:
+        extension_args.update(
+            {
+                "define_macros": [
+                    ("CYTHON_TRACE", "1"),
+                ]
+            }
+        )
 
     extensions = [
         Extension(
@@ -183,8 +192,10 @@ def extensions():
             **extension_args
         ),
     ]
-
-    exts = cythonize(extensions, compiler_directives = {"linetrace": True})
+    if CODE_COVERAGE:
+        exts = cythonize(extensions, compiler_directives={"linetrace": True})
+    else:
+        exts = cythonize(extensions)
     return exts
 
 
