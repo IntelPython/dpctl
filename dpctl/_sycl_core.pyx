@@ -678,7 +678,7 @@ cdef class _SyclRTManager:
                 raise UnsupportedDeviceError("Device can only be gpu or cpu")
         except KeyError:
             raise UnsupportedBackendError("Backend can only be opencl or "
-                                          "level-0")
+                                          "level0")
 
     def _remove_current_queue(self):
         DPCTLQueueMgr_PopQueue()
@@ -970,7 +970,7 @@ cdef class _SyclRTManager:
                 raise UnsupportedDeviceError("Device can only be gpu or cpu")
         except KeyError:
             raise UnsupportedBackendError("Backend can only be opencl or "
-                                          "level-0")
+                                          "level0")
 
 
 # This private instance of the _SyclQueueManager should not be directly

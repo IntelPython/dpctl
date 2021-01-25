@@ -162,7 +162,8 @@ cpdef create_program_from_source(SyclQueue q, unicode src, unicode copts=""):
 
 cimport cython.array
 
-cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL):
+cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
+                                unicode copts=""):
     """
         Creates a Sycl interoperability program from an SPIR-V binary.
 
@@ -173,6 +174,8 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL):
             q (SyclQueue): The :class:`SyclQueue` for which the
                            :class:`SyclProgram` is going to be built.
             IL (const char[:]) : SPIR-V binary IL file for an OpenCL program.
+            copts (unicode) : Optional compilation flags that will be used
+                              when compiling the program.
 
         Returns:
             program (SyclProgram): A :class:`SyclProgram` object wrapping the  sycl::program returned by the C API.
@@ -185,7 +188,9 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL):
     cdef const unsigned char *dIL = &IL[0]
     cdef DPCTLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
     cdef size_t length = IL.shape[0]
-    Pref = DPCTLProgram_CreateFromOCLSpirv(CRef, <const void*>dIL, length)
+    cdef bytes bCOpts = copts.encode('utf8')
+    cdef const char *COpts = <const char*>bCOpts
+    Pref = DPCTLProgram_CreateFromSpirv(CRef, <const void*>dIL, length, COpts)
     if Pref is NULL:
         raise SyclProgramCompilationError()
 
