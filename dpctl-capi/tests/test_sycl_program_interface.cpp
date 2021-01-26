@@ -127,16 +127,12 @@ struct TestDPCTLSyclProgramInterface : public ::testing::Test
     size_t spirvFileSize = 0;
     std::vector<char> spirvBuffer;
     size_t nOpenCLGpuQ = 0;
-#ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
-    size_t nL0GpuQ = 0;
-#endif
 
     TestDPCTLSyclProgramInterface () :
         spirvFile{"./multi_kernel.spv", std::ios::binary | std::ios::ate},
         spirvFileSize(std::filesystem::file_size("./multi_kernel.spv")),
         spirvBuffer(spirvFileSize),
-        nOpenCLGpuQ(DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_GPU)),
-        nL0GpuQ(DPCTLQueueMgr_GetNumQueues(DPCTL_LEVEL_ZERO, DPCTL_GPU))
+        nOpenCLGpuQ(DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_GPU))
     {
         spirvFile.seekg(0, std::ios::beg);
         spirvFile.read(spirvBuffer.data(), spirvFileSize);
@@ -188,6 +184,7 @@ TEST_F (TestDPCTLSyclProgramInterface, CheckCreateFromSpirvOCL)
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 TEST_F (TestDPCTLSyclProgramInterface, CheckCreateFromSpirvL0)
 {
+    auto nL0GpuQ = DPCTLQueueMgr_GetNumQueues(DPCTL_LEVEL_ZERO, DPCTL_GPU);
     if(!nL0GpuQ)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 
