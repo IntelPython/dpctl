@@ -39,9 +39,15 @@ def dprint(*args):
         print(*args)
         sys.stdout.flush()
 
+functions_list = []
+class_list = []
+for o in getmembers(np):
+    s = o[1]
+    if isfunction(s):
+        functions_list.append(o[0])
+    elif isclass(s):
+        class_list.append(o)
 
-functions_list = [o[0] for o in getmembers(np) if isfunction(o[1]) or isbuiltin(o[1])]
-class_list = [o for o in getmembers(np) if isclass(o[1])]
 
 array_interface_property = "__sycl_usm_array_interface__"
 
@@ -276,26 +282,27 @@ class ndarray(np.ndarray):
 
     def __array_function__(self, func, types, args, kwargs):
         fname = func.__name__
-        atypes = [type(x) for x in args]
-        has_func = isdef(fname)
-        dprint("__array_function__:", func, fname, type(func), types, atypes, has_func)
-        fargs = [x if not isinstance(x, ndarray) else np.ndarray(x.shape, x.dtype, x) for x in args]
-        fatypes = [type(x) for x in fargs]
+        has_func = _isdef(fname)
+        if debug:
+            atypes = [type(x) for x in args]
+            dprint("__array_function__:", func, fname, type(func), types, atypes, has_func)
         if has_func:
             cm = sys.modules[__name__]
             affunc = getattr(cm, fname)
+            fargs = [x.view(np.ndarray) if isinstance(x, ndarray) else x for x in args]
+            fatypes = [type(x) for x in fargs]
             return affunc(*fargs, **kwargs)
         return NotImplemented
 
 
-def isdef(x):
+def _isdef(x):
     cm = sys.modules[__name__]
     return hasattr(cm, x)
 
 
 for c in class_list:
     cname = c[0]
-    if isdef(cname):
+    if _isdef(cname):
         continue
     # For now we do the simple thing and copy the types from NumPy module
     # into numpy_usm_shared module.
@@ -312,7 +319,7 @@ for c in class_list:
 # instead.  This is a stop-gap.  We should eventually find a
 # way to do the allocation correct to start with.
 for fname in functions_list:
-    if isdef(fname):
+    if _isdef(fname):
         continue
     new_func = "def %s(*args, **kwargs):\n" % fname
     new_func += "    ret = np.%s(*args, **kwargs)\n" % fname
