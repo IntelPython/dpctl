@@ -285,15 +285,13 @@ class ndarray(np.ndarray):
         fname = func.__name__
         has_func = _isdef(fname)
         if debug:
-            atypes = [type(x) for x in args]
             dprint(
-                "__array_function__:", func, fname, type(func), types, atypes, has_func
+                "__array_function__:", func, fname, type(func), types, has_func
             )
         if has_func:
             cm = sys.modules[__name__]
             affunc = getattr(cm, fname)
             fargs = [x.view(np.ndarray) if isinstance(x, ndarray) else x for x in args]
-            fatypes = [type(x) for x in fargs]
             return affunc(*fargs, **kwargs)
         return NotImplemented
 
