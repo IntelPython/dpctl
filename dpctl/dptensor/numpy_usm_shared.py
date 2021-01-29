@@ -29,6 +29,7 @@ import sys
 import inspect
 import dpctl
 from dpctl.memory import MemoryUSMShared
+import builtins
 
 debug = False
 
@@ -84,7 +85,9 @@ class ndarray(np.ndarray):
             nelems = np.prod(shape)
             dt = np.dtype(dtype)
             isz = dt.itemsize
-            nbytes = int(isz * max(1, nelems))
+            # Have to use builtins.max explicitly since this module will
+            # import numpy's max function.
+            nbytes = int(isz * builtins.max(1, nelems))
             buf = MemoryUSMShared(nbytes)
             new_obj = np.ndarray.__new__(
                 subtype,
@@ -218,7 +221,7 @@ class ndarray(np.ndarray):
 
     # Convert to a NumPy ndarray.
     def as_ndarray(self):
-        return np.copy(self)
+        return np.copy(np.ndarray(self.shape, self.dtype, self))
 
     def __array__(self):
         return self
@@ -271,13 +274,23 @@ class ndarray(np.ndarray):
         else:
             return NotImplemented
 
+    def __array_function__(self, func, types, args, kwargs):
+        fname = func.__name__
+        atypes = [type(x) for x in args]
+        has_func = isdef(fname)
+        dprint("__array_function__:", func, fname, type(func), types, atypes, has_func)
+        fargs = [x if not isinstance(x, ndarray) else np.ndarray(x.shape, x.dtype, x) for x in args]
+        fatypes = [type(x) for x in fargs]
+        if has_func:
+            cm = sys.modules[__name__]
+            affunc = getattr(cm, fname)
+            return affunc(*fargs, **kwargs)
+        return NotImplemented
+
 
 def isdef(x):
-    try:
-        eval(x)
-        return True
-    except NameError:
-        return False
+    cm = sys.modules[__name__]
+    return hasattr(cm, x)
 
 
 for c in class_list:
@@ -315,4 +328,4 @@ def from_ndarray(x):
 
 
 def as_ndarray(x):
-    return np.copy(x)
+    return np.copy(np.ndarray(x.shape, x.dtype, x))

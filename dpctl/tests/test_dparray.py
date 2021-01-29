@@ -77,7 +77,6 @@ class Test_dparray(unittest.TestCase):
         res = numpy.ravel(self.X)
         self.assertEqual(res.shape, (1024,))
 
-    @unittest.expectedFailure
     def test_numpy_sum_with_dparray(self):
         res = numpy.sum(self.X)
         self.assertEqual(res, 1024.0)
