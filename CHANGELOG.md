@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation improvements
 - Cmake improvements and Coverage for C API
 - Add support for Level Zero
+- Code of conduct
 
 ### Fixed
 - Remove `cython` from `install_requires`. It allows use `dpCtl` in `numba` extensions.
