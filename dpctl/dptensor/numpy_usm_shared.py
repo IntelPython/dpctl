@@ -39,6 +39,7 @@ def dprint(*args):
         print(*args)
         sys.stdout.flush()
 
+
 functions_list = []
 class_list = []
 for o in getmembers(np):
@@ -285,7 +286,9 @@ class ndarray(np.ndarray):
         has_func = _isdef(fname)
         if debug:
             atypes = [type(x) for x in args]
-            dprint("__array_function__:", func, fname, type(func), types, atypes, has_func)
+            dprint(
+                "__array_function__:", func, fname, type(func), types, atypes, has_func
+            )
         if has_func:
             cm = sys.modules[__name__]
             affunc = getattr(cm, fname)
