@@ -284,8 +284,7 @@ class ndarray(np.ndarray):
     def __array_function__(self, func, types, args, kwargs):
         fname = func.__name__
         has_func = _isdef(fname)
-        if debug:
-            dprint("__array_function__:", func, fname, type(func), types, has_func)
+        dprint("__array_function__:", func, fname, type(func), types, has_func)
         if has_func:
             cm = sys.modules[__name__]
             affunc = getattr(cm, fname)
