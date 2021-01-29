@@ -44,7 +44,7 @@ functions_list = []
 class_list = []
 for o in getmembers(np):
     s = o[1]
-    if isfunction(s):
+    if isfunction(s) or isbuiltin(s):
         functions_list.append(o[0])
     elif isclass(s):
         class_list.append(o)
