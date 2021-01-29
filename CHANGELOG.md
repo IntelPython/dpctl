@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Documentation improvements
+- Cmake improvements and Coverage for C API
+- Add support for Level Zero
+- Code of conduct
+
+### Fixed
+- Remove `cython` from `install_requires`. It allows use `dpCtl` in `numba` extensions.
+- Incorrect import in example.
+
+
 ## [0.5.0] - 2020-12-17
 ### Added
 - `_Memory.get_pointer_type` static method which returns kind of USM pointer.

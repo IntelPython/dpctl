@@ -25,15 +25,40 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_program_interface.h"
+#include "Config/dpctl_config.h"
 #include "Support/CBindingWrapping.h"
 
-#include <CL/sycl.hpp> /* Sycl headers */
-#include <CL/cl.h>     /* OpenCL headers */
+#include <CL/sycl.hpp>          /* Sycl headers       */
+#include <CL/cl.h>              /* OpenCL headers     */
+#ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
+#include <level_zero/zet_api.h> /* Level Zero headers */
+#include <CL/sycl/backend/level_zero.hpp>
+#include "../helper/include/dpctl_dynamic_lib_helper.h"
+#endif
 
 using namespace cl::sycl;
 
 namespace
 {
+#ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
+
+#ifdef __linux__
+static const char * zeLoaderName = "libze_loader.so";
+static const int libLoadFlags    = RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL;
+#else
+    #error "Level Zero program compilation is unavailable for this platform"
+#endif
+
+typedef ze_result_t (*zeModuleCreateFT)(ze_context_handle_t,
+                                        ze_device_handle_t,
+                                        const ze_module_desc_t *,
+                                        ze_module_handle_t *,
+                                        ze_module_build_log_handle_t *);
+
+const char * zeModuleCreateFuncName  = "zeModuleCreate";
+
+#endif // #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
+
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(program, DPCTLSyclProgramRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
@@ -41,7 +66,8 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
 __dpctl_give DPCTLSyclProgramRef
 createOpenCLInterOpProgram (const context &SyclCtx,
                             __dpctl_keep const void *IL,
-                            size_t length)
+                            size_t length,
+                            const char * /* */)
 {
     cl_int err;
     auto CLCtx   = SyclCtx.get();
@@ -83,12 +109,87 @@ createOpenCLInterOpProgram (const context &SyclCtx,
     }
 }
 
+#ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
+
+zeModuleCreateFT getZeModuleCreateFn ()
+{
+    static dpctl::DynamicLibHelper zeLib(zeLoaderName, libLoadFlags);
+    if(!zeLib.opened()) {
+        // TODO: handle error
+        std::cerr << "The level zero loader dynamic library could not "
+                     "be opened.\n";
+        return nullptr;
+    }
+    static auto stZeModuleCreateF = zeLib.getSymbol<zeModuleCreateFT>(
+                                        zeModuleCreateFuncName
+                                    );
+
+    return stZeModuleCreateF;
+}
+
+__dpctl_give DPCTLSyclProgramRef
+createLevelZeroInterOpProgram (const context &SyclCtx,
+                               const void *IL,
+                               size_t length,
+                               const char *CompileOpts)
+{
+    auto ZeCtx   = SyclCtx.get_native<backend::level_zero>();
+    auto SyclDevices = SyclCtx.get_devices();
+    if(SyclDevices.size() > 1) {
+        std::cerr << "Level zero program can be created for only one device.\n";
+        // TODO: handle error
+        return nullptr;
+    }
+
+    // Specialization constants are not yet supported.
+    // Refer https://bit.ly/33UEDYN for details on specialization constants.
+    ze_module_constants_t ZeSpecConstants = {};
+    ZeSpecConstants.numConstants = 0;
+
+    // Populate the Level Zero module descriptions
+    ze_module_desc_t ZeModuleDesc = {};
+    ZeModuleDesc.format = ZE_MODULE_FORMAT_IL_SPIRV;
+    ZeModuleDesc.inputSize = length;
+    ZeModuleDesc.pInputModule = (uint8_t*)IL;
+    ZeModuleDesc.pBuildFlags = CompileOpts;
+    ZeModuleDesc.pConstants = &ZeSpecConstants;
+
+    auto ZeDevice = SyclDevices[0].get_native<backend::level_zero>();
+    ze_module_handle_t ZeModule;
+
+    auto stZeModuleCreateF = getZeModuleCreateFn();
+
+    if(!stZeModuleCreateF)
+        return nullptr;
+
+    auto ret = stZeModuleCreateF(ZeCtx, ZeDevice, &ZeModuleDesc, &ZeModule,
+                                 nullptr);
+    if(ret != ZE_RESULT_SUCCESS) {
+        // TODO: handle error
+        return nullptr;
+    }
+
+    // Create the Sycl program from the ZeModule
+    try {
+        auto ZeProgram = new program(sycl::level_zero::make_program(
+            SyclCtx, reinterpret_cast<uintptr_t>(ZeModule))
+        );
+        return wrap(ZeProgram);
+    } catch (invalid_object_error &e) {
+        // \todo record error
+        std::cerr << e.what() << '\n';
+        return nullptr;
+    }
+}
+#endif /* #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION */
+
 } /* end of anonymous namespace */
 
 __dpctl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromOCLSpirv (__dpctl_keep const DPCTLSyclContextRef CtxRef,
-                                 __dpctl_keep const void *IL,
-                                 size_t length)
+DPCTLProgram_CreateFromSpirv (__dpctl_keep const DPCTLSyclContextRef CtxRef,
+                              __dpctl_keep const void *IL,
+                              size_t length,
+                              const char *CompileOpts)
 {
     DPCTLSyclProgramRef Pref = nullptr;
     context *SyclCtx = nullptr;
@@ -96,21 +197,23 @@ DPCTLProgram_CreateFromOCLSpirv (__dpctl_keep const DPCTLSyclContextRef CtxRef,
         // \todo handle error
         return Pref;
     }
-
     SyclCtx = unwrap(CtxRef);
     // get the backend type
     auto BE = SyclCtx->get_platform().get_backend();
-    switch (BE)
+    switch(BE)
     {
     case backend::opencl:
-        Pref = createOpenCLInterOpProgram(*SyclCtx, IL, length);
+        Pref = createOpenCLInterOpProgram(*SyclCtx, IL, length, CompileOpts);
         break;
     case backend::level_zero:
+#ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
+        Pref = createLevelZeroInterOpProgram(*SyclCtx, IL, length,
+                                             CompileOpts);
+#endif
         break;
     default:
         break;
     }
-
     return Pref;
 }
 

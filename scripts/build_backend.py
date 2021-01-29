@@ -40,13 +40,14 @@ if IS_LIN:
         "-DCMAKE_BUILD_TYPE=Release",
         "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
         "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
-        "-DDPCPP_ROOT=" + DPCPP_ROOT,
+        "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
         "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
         "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang++"),
+        "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON",
         backends,
     ]
     subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=False)
-    subprocess.check_call(["make", "-j", "4"])
+    subprocess.check_call(["make", "V=1", "-j", "4"])
     subprocess.check_call(["make", "install"])
 
     os.chdir(dpctl_dir)
@@ -61,7 +62,7 @@ if IS_WIN:
         "-DCMAKE_BUILD_TYPE=Release",
         "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
         "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
-        "-DDPCPP_ROOT=" + DPCPP_ROOT,
+        "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
         backends,
     ]
     subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=True)

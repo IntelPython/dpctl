@@ -13,13 +13,18 @@ cmake                                                       \
     -DCMAKE_BUILD_TYPE=Debug                                \
     -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}                \
     -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX}                   \
-    -DDPCPP_ROOT=${DPCPP_ROOT}                              \
+    -DDPCPP_INSTALL_DIR=${DPCPP_ROOT}                       \
     -DCMAKE_C_COMPILER:PATH=${DPCPP_ROOT}/bin/clang         \
     -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/bin/dpcpp       \
-    -DBUILD_CAPI_TESTS=ON                                   \
+    -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON                   \
+    -DDPCTL_BUILD_CAPI_TESTS=ON                             \
+    -DDPCTL_GENERATE_COVERAGE=ON                            \
     ..
 
 make V=1 -n -j 4 && make check && make install
+
+# Turn on to generate coverage report html files
+make lcov-genhtml
 
 # For more verbose tests use:
 # cd tests
