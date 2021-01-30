@@ -52,11 +52,11 @@ Few things to note about this format:
 - Each comment line should be a max of 80 chars.
 - A Doxygen `\file` tag describing the contents of the file must be provided.
   Also note that the `\file` tag is inside a Doxygen comment block (defined by `///`
-  comment marker instead of the `//` comment marker used in the rest of the header. 
+  comment marker instead of the `//` comment marker used in the rest of the header.
 
 ### Python File Headers
 
-Every Python and Cython File should only include the following license header:
+Every Python and Cython file should only include the following license header:
 
 ```
 #                      Data Parallel Control (dpCtl)
