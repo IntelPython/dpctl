@@ -1,8 +1,8 @@
-//===----------- dpctl_sycl_kernel_interface.h - dpctl-C_API --*--C++ --*--===//
+//===--- dpctl_sycl_kernel_interface.h - C API for sycl::kernel  -*-C++-*- ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,11 +19,8 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This header declares a C API to create Sycl kernels from OpenCL kernels. In
-/// future, API to create interoperability kernels from other languages such as
-/// Level-0 driver API may be added here.
-///
-/// \todo Investigate what we should do when we add support for Level-0 API.
+/// This header declares a C API to create Sycl interoperability kernels for
+/// OpenCL and Level Zero driver API.
 ///
 //===----------------------------------------------------------------------===//
 

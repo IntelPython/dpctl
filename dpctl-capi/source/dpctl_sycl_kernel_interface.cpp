@@ -1,8 +1,8 @@
-//===----- dpctl_sycl_kernel_interface.cpp - dpctl-C_API  ---*--- C++ --*--===//
+//===--- dpctl_sycl_kernel_interface.cpp - Implements C API for sycl::kernel =//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

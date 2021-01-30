@@ -1,8 +1,8 @@
-//===---------- dpctl_sycl_queue_interface.h - dpctl-C_API ---*---C++ -*---===//
+//===----- dpctl_sycl_queue_interface.h - C API for sycl::queue  -*-C++-*- ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -218,7 +218,7 @@ void DPCTLQueue_Prefetch (__dpctl_keep DPCTLSyclQueueRef QRef,
  * @param    QRef           An opaque pointer to the sycl queue.
  * @param    Ptr            An USM pointer to memory.
  * @param    Count          A number of bytes to prefetch.
- * @param    Advice         Device-defined advice for the specified allocation. 
+ * @param    Advice         Device-defined advice for the specified allocation.
  *                           A value of 0 reverts the advice for Ptr to the default behavior.
  */
 DPCTL_API

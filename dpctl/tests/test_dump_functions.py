@@ -1,8 +1,6 @@
-# ===---------- test_sycl_queue_manager.py - dpctl  -------*- Python -*-----===#
-#
 #                      Data Parallel Control (dpCtl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,15 +13,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# ===-----------------------------------------------------------------------===#
-#
-# \file
-# A basic unit test to verify that dpctl and dpct.ocldrv exist.
-# ===-----------------------------------------------------------------------===#
+
+"""A basic canary unit test for the dpctl module.
+"""
+
 
 import unittest
-
 import dpctl
 
 
@@ -43,12 +38,6 @@ class TestDumpMethods(unittest.TestCase):
             q.get_sycl_device().dump_device_info()
         except Exception:
             self.fail("Encountered an exception inside dump_device_info().")
-
-    # def test_dpctl_ocldrv_dump (self):
-    #     try:
-    #         dpctl.ocldrv.runtime.dump()
-    #     except Exception:
-    #         self.fail("Encountered an exception inside dump_device_info().")
 
 
 if __name__ == "__main__":

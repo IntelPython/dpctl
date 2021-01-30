@@ -1,8 +1,8 @@
-//===---------- dpctl_sycl_context_interface.h - dpctl-C_API --*--C++ --*--===//
+//===-- dpctl_sycl_context_interface.h - C API for sycl::context -*-C++-*- ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ bool DPCTLContext_IsHost (__dpctl_keep const DPCTLSyclContextRef CtxRef);
  * @brief Returns the sycl backend for the DPCTLSyclContextRef pointer.
  *
  * @param    CtxRef         An opaque pointer to a sycl::context.
- * @return   The sycl backend for the DPCTLSyclContextRef returned as 
+ * @return   The sycl backend for the DPCTLSyclContextRef returned as
  * a DPCTLSyclBackendType enum type.
  */
 DPCTL_API
