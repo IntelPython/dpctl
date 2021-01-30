@@ -1,8 +1,8 @@
-//===---- Support/CBindingWrapping.h - DPCTL-SYCL interface --*-- C ---*---===//
+//===- CBindingWrapping.h - Wrappers for casting C pointers      -*-C++-*- ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file declares the wrapping macros for the DPCTL C interface.
+/// This file declares the wrapping macros for the dpCtl C interface.
 ///
 //===----------------------------------------------------------------------===//
 

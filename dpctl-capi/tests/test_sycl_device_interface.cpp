@@ -1,8 +1,8 @@
-//===--- test_sycl_device_interface.cpp - dpctl-C_API interface -*- C++ -*-===//
+//===--- test_sycl_device_interface.cpp - Test cases for device interface  ===//
 //
-//               Python Data Parallel Processing Library (PyDPCTL)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
 #include "dpctl_utils.h"
-
 #include <gtest/gtest.h>
 #include <CL/sycl.hpp>
 

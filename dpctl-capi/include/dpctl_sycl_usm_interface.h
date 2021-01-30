@@ -1,8 +1,8 @@
-//===------------ dpctl_sycl_usm_interface.h - dpctl-C_API ---*---C++ -*---===//
+//===---- dpctl_sycl_usm_interface.h - C API for USM allocators  -*-C++-*- ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -138,7 +138,7 @@ void DPCTLfree_with_context (__dpctl_take DPCTLSyclUSMRef MRef,
 /*!
  * @brief Get pointer type.
  *
- * @param    MRef      USM Memory 
+ * @param    MRef      USM Memory
  * @param    CRef      Sycl context reference associated with the pointer
  *
  * @return "host", "device", "shared" or "unknown"

@@ -1,8 +1,8 @@
-//===-------- test_sycl_program_interface.cpp - dpctl-C_API -*- C++ ---*---===//
+//===-- test_sycl_program_interface.cpp - Test cases for kernel interface ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
