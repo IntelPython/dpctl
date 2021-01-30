@@ -161,6 +161,13 @@ def extensions():
             **extension_args
         ),
         Extension(
+            "dpctl._sycl_queue_manager",
+            [
+                os.path.join("dpctl", "_sycl_queue_manager.pyx"),
+            ],
+            **extension_args
+        ),
+        Extension(
             "dpctl.memory._memory",
             [
                 os.path.join("dpctl", "memory", "_memory.pyx"),

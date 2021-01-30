@@ -108,8 +108,3 @@ cdef class SyclQueue:
     cpdef memcpy (self, dest, src, size_t count)
     cpdef prefetch (self, ptr, size_t count=*)
     cpdef mem_advise (self, ptr, size_t count, int mem)
-
-
-cpdef SyclQueue get_current_queue()
-cpdef get_current_device_type ()
-cpdef get_current_backend()

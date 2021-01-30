@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 """
     **Data Parallel Control (dpCtl)**
 
@@ -33,12 +32,16 @@
 """
 __author__ = "Intel Corp."
 
+from .enum_types import *
+from .enum_types import __all__ as _enum_types_all__
 from dpctl._sycl_core import *
 from dpctl._sycl_core import __all__ as _sycl_core__all__
+from dpctl._sycl_queue_manager import *
+from dpctl._sycl_queue_manager import __all__ as _sycl_qm__all__
 from ._version import get_versions
 
 
-__all__ = _sycl_core__all__
+__all__ = _sycl_core__all__ + _sycl_qm__all__ + _enum_types_all__
 
 
 def get_include():

@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpCtl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,14 +13,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-"""This file declares the extension types and functions for the Cython API
-implemented in sycl_core.pyx.
-"""
-
-
+#
 # distutils: language = c++
 # cython: language_level=3
 
-from dpctl._sycl_core cimport *
-from dpctl._sycl_queue_manager cimport *
+from ._sycl_core cimport SyclQueue
+
+
+cpdef SyclQueue get_current_queue()
+cpdef get_current_device_type ()
+cpdef get_current_backend()
