@@ -18,9 +18,10 @@
 implemented in sycl_core.pyx.
 """
 
-
 # distutils: language = c++
 # cython: language_level=3
 
 from dpctl._sycl_core cimport *
+from dpctl._sycl_device cimport *
+from dpctl._sycl_queue cimport *
 from dpctl._sycl_queue_manager cimport *

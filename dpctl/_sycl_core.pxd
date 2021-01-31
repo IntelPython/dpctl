@@ -22,8 +22,6 @@
 """
 
 from ._backend cimport *
-from .program._program cimport SyclKernel
-from libc.stdint cimport uint32_t
 
 
 cdef class SyclContext:
@@ -37,37 +35,6 @@ cdef class SyclContext:
     cdef DPCTLSyclContextRef get_context_ref (self)
 
 
-cdef class SyclDevice:
-    ''' Wrapper class for a Sycl Device
-    '''
-    cdef DPCTLSyclDeviceRef _device_ref
-    cdef const char *_vendor_name
-    cdef const char *_device_name
-    cdef const char *_driver_version
-    cdef uint32_t _max_compute_units
-    cdef uint32_t _max_work_item_dims
-    cdef size_t *_max_work_item_sizes
-    cdef size_t _max_work_group_size
-    cdef uint32_t _max_num_sub_groups
-    cdef bool _int64_base_atomics
-    cdef bool _int64_extended_atomics
-
-    @staticmethod
-    cdef SyclDevice _create (DPCTLSyclDeviceRef dref)
-    cdef DPCTLSyclDeviceRef get_device_ref (self)
-    cpdef get_device_name (self)
-    cpdef get_device_type (self)
-    cpdef get_vendor_name (self)
-    cpdef get_driver_version (self)
-    cpdef get_max_compute_units (self)
-    cpdef get_max_work_item_dims (self)
-    cpdef get_max_work_item_sizes (self)
-    cpdef get_max_work_group_size (self)
-    cpdef get_max_num_sub_groups (self)
-    cpdef has_int64_base_atomics (self)
-    cpdef has_int64_extended_atomics (self)
-
-
 cdef class SyclEvent:
     ''' Wrapper class for a Sycl Event
     '''
@@ -78,33 +45,3 @@ cdef class SyclEvent:
     cdef  SyclEvent _create (DPCTLSyclEventRef e, list args)
     cdef  DPCTLSyclEventRef get_event_ref (self)
     cpdef void wait (self)
-
-
-cdef class SyclQueue:
-    ''' Wrapper class for a Sycl queue.
-    '''
-    cdef DPCTLSyclQueueRef _queue_ref
-    cdef SyclContext _context
-    cdef SyclDevice _device
-
-    cdef _raise_queue_submit_error (self, fname, errcode)
-    cdef _raise_invalid_range_error (self, fname, ndims, errcode)
-    cdef int _populate_args (self, list args, void **kargs,
-                             DPCTLKernelArgType *kargty)
-    cdef int _populate_range (self, size_t Range[3], list gS, size_t nGS)
-
-    @staticmethod
-    cdef  SyclQueue _create (DPCTLSyclQueueRef qref)
-    @staticmethod
-    cdef  SyclQueue _create_from_context_and_device (SyclContext ctx, SyclDevice dev)
-    cpdef bool equals (self, SyclQueue q)
-    cpdef SyclContext get_sycl_context (self)
-    cpdef SyclDevice get_sycl_device (self)
-    cdef  DPCTLSyclQueueRef get_queue_ref (self)
-    cpdef SyclEvent submit (self, SyclKernel kernel, list args, list gS,
-                            list lS=*, list dEvents=*)
-    cpdef void wait (self)
-    cdef DPCTLSyclQueueRef get_queue_ref (self)
-    cpdef memcpy (self, dest, src, size_t count)
-    cpdef prefetch (self, ptr, size_t count=*)
-    cpdef mem_advise (self, ptr, size_t count, int mem)

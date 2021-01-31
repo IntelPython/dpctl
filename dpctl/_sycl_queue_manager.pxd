@@ -17,7 +17,7 @@
 # distutils: language = c++
 # cython: language_level=3
 
-from ._sycl_core cimport SyclQueue
+from ._sycl_queue cimport SyclQueue
 
 
 cpdef SyclQueue get_current_queue()

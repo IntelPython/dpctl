@@ -25,7 +25,9 @@ use in other Python modules.
 
 import dpctl
 from dpctl._backend cimport *
-from .._sycl_core cimport SyclContext, SyclQueue, SyclDevice
+from .._sycl_core cimport SyclContext
+from .._sycl_device cimport SyclDevice
+from .._sycl_queue cimport SyclQueue
 from .._sycl_queue_manager cimport get_current_queue
 
 from cpython cimport Py_buffer
