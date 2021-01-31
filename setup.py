@@ -154,9 +154,9 @@ def extensions():
 
     extensions = [
         Extension(
-            "dpctl._sycl_core",
+            "dpctl._sycl_context",
             [
-                os.path.join("dpctl", "_sycl_core.pyx"),
+                os.path.join("dpctl", "_sycl_context.pyx"),
             ],
             **extension_args
         ),
@@ -164,6 +164,13 @@ def extensions():
             "dpctl._sycl_device",
             [
                 os.path.join("dpctl", "_sycl_device.pyx"),
+            ],
+            **extension_args
+        ),
+        Extension(
+            "dpctl._sycl_event",
+            [
+                os.path.join("dpctl", "_sycl_event.pyx"),
             ],
             **extension_args
         ),

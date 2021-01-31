@@ -21,8 +21,20 @@ from __future__ import print_function
 from enum import Enum, auto
 import logging
 from . import backend_type, device_type
-from ._backend cimport *
-from ._sycl_core cimport *
+from ._backend cimport (
+    _backend_type,
+    _device_type,
+    DPCTLPlatform_DumpInfo,
+    DPCTLPlatform_GetNumNonHostPlatforms,
+    DPCTLQueueMgr_GetCurrentQueue,
+    DPCTLQueueMgr_GetNumActivatedQueues,
+    DPCTLQueueMgr_GetNumQueues,
+    DPCTLQueueMgr_PushQueue,
+    DPCTLQueueMgr_PopQueue,
+    DPCTLQueueMgr_SetAsDefaultQueue,
+    DPCTLSyclQueueRef,
+)
+from ._sycl_context cimport SyclContext
 
 
 __all__ = [

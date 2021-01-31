@@ -14,15 +14,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" This file declares the extension types and functions for the Cython API
-    implemented in _sycl_*.pyx files.
-"""
-
 # distutils: language = c++
 # cython: language_level=3
 
-from dpctl._sycl_context cimport *
-from dpctl._sycl_device cimport *
-from dpctl._sycl_event cimport *
-from dpctl._sycl_queue cimport *
-from dpctl._sycl_queue_manager cimport *
+""" This file declares the SyclEvent extension type.
+"""
+
+from ._backend cimport DPCTLSyclEventRef
+
+
+cdef class SyclEvent:
+    ''' Wrapper class for a Sycl Event
+    '''
+    cdef  DPCTLSyclEventRef _event_ref
+    cdef list _args
+
+    @staticmethod
+    cdef  SyclEvent _create (DPCTLSyclEventRef e, list args)
+    cdef  DPCTLSyclEventRef get_event_ref (self)
+    cpdef void wait (self)

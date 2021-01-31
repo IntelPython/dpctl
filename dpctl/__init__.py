@@ -34,10 +34,12 @@ __author__ = "Intel Corp."
 
 from .enum_types import *
 from .enum_types import __all__ as _enum_types_all__
-from dpctl._sycl_core import *
-from dpctl._sycl_core import __all__ as _sycl_core__all__
+from dpctl._sycl_context import *
+from dpctl._sycl_context import __all__ as _sycl_context__all__
 from dpctl._sycl_device import *
 from dpctl._sycl_device import __all__ as _sycl_device__all__
+from dpctl._sycl_event import *
+from dpctl._sycl_event import __all__ as _sycl_event__all__
 from dpctl._sycl_queue import *
 from dpctl._sycl_queue import __all__ as _sycl_queue__all__
 from dpctl._sycl_queue_manager import *
@@ -46,10 +48,11 @@ from ._version import get_versions
 
 
 __all__ = (
-    _sycl_core__all__
-    + _sycl_qm__all__
+    _sycl_context__all__
     + _sycl_device__all__
+    + _sycl_event__all__
     + _sycl_queue__all__
+    + _sycl_qm__all__
     + _enum_types_all__
 )
 

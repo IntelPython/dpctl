@@ -21,7 +21,8 @@
 """
 
 from ._backend cimport *
-from ._sycl_core cimport SyclContext, SyclEvent
+from ._sycl_context cimport SyclContext
+from ._sycl_event cimport SyclEvent
 from ._sycl_device cimport SyclDevice
 from .program._program cimport SyclKernel
 

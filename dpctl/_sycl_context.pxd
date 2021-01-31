@@ -17,11 +17,11 @@
 # distutils: language = c++
 # cython: language_level=3
 
-""" This file declares the extension types and functions for the Cython API
-    implemented in sycl_core.pyx.
+""" This file declares the SyclContext extension type.
 """
 
-from ._backend cimport *
+from ._backend cimport DPCTLSyclContextRef
+from libcpp cimport bool
 
 
 cdef class SyclContext:
@@ -33,15 +33,3 @@ cdef class SyclContext:
     cdef SyclContext _create (DPCTLSyclContextRef ctxt)
     cpdef bool equals (self, SyclContext ctxt)
     cdef DPCTLSyclContextRef get_context_ref (self)
-
-
-cdef class SyclEvent:
-    ''' Wrapper class for a Sycl Event
-    '''
-    cdef  DPCTLSyclEventRef _event_ref
-    cdef list _args
-
-    @staticmethod
-    cdef  SyclEvent _create (DPCTLSyclEventRef e, list args)
-    cdef  DPCTLSyclEventRef get_event_ref (self)
-    cpdef void wait (self)

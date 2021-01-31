@@ -23,7 +23,7 @@
 
 
 from .._backend cimport DPCTLSyclKernelRef, DPCTLSyclProgramRef
-from .._sycl_core cimport SyclContext
+from .._sycl_context cimport SyclContext
 from .._sycl_device cimport SyclDevice
 from .._sycl_queue cimport SyclQueue
 
