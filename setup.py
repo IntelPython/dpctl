@@ -66,6 +66,9 @@ dpctl_sycl_interface_lib = os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"]
 dpctl_sycl_interface_include = os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"]
 sycl_lib = os.environ["ONEAPI_ROOT"] + "\compiler\latest\windows\lib"
 
+# Get long description
+with open("README.md", "r", encoding="utf-8") as file:
+    long_description = file.read()
 
 def get_sdl_cflags():
     if IS_LIN or IS_MAC:
@@ -211,6 +214,8 @@ setup(
     version=versioneer.get_version(),
     cmdclass=_get_cmdclass(),
     description="A lightweight Python wrapper for a subset of OpenCL and SYCL.",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     license="Apache 2.0",
     author="Intel Corporation",
     url="https://github.com/IntelPython/dpCtl",
@@ -219,6 +224,10 @@ setup(
     ext_modules=extensions(),
     zip_safe=False,
     setup_requires=["Cython"],
+    install_requires=[
+        'numpy',
+        'dpcpp_cpp_rt'
+    ],
     keywords="dpctl",
     classifiers=[
         "Development Status :: 3 - Alpha",
