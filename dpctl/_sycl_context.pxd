@@ -14,15 +14,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" This file declares the extension types and functions for the Cython API
-    implemented in _sycl_*.pyx files.
-"""
-
 # distutils: language = c++
 # cython: language_level=3
 
-from dpctl._sycl_context cimport *
-from dpctl._sycl_device cimport *
-from dpctl._sycl_event cimport *
-from dpctl._sycl_queue cimport *
-from dpctl._sycl_queue_manager cimport *
+""" This file declares the SyclContext extension type.
+"""
+
+from ._backend cimport DPCTLSyclContextRef
+from libcpp cimport bool
+
+
+cdef class SyclContext:
+    ''' Wrapper class for a Sycl Context
+    '''
+    cdef DPCTLSyclContextRef _ctxt_ref
+
+    @staticmethod
+    cdef SyclContext _create (DPCTLSyclContextRef ctxt)
+    cpdef bool equals (self, SyclContext ctxt)
+    cdef DPCTLSyclContextRef get_context_ref (self)

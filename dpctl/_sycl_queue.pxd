@@ -17,72 +17,20 @@
 # distutils: language = c++
 # cython: language_level=3
 
-""" This file declares the extension types and functions for the Cython API
-    implemented in sycl_core.pyx.
+""" This file declares the SyclQueue extension type.
 """
 
 from ._backend cimport *
+from ._sycl_context cimport SyclContext
+from ._sycl_event cimport SyclEvent
+from ._sycl_device cimport SyclDevice
 from .program._program cimport SyclKernel
-from libc.stdint cimport uint32_t
-
-
-cdef class SyclContext:
-    ''' Wrapper class for a Sycl Context
-    '''
-    cdef DPCTLSyclContextRef _ctxt_ref
-
-    @staticmethod
-    cdef SyclContext _create (DPCTLSyclContextRef ctxt)
-    cpdef bool equals (self, SyclContext ctxt)
-    cdef DPCTLSyclContextRef get_context_ref (self)
-
-
-cdef class SyclDevice:
-    ''' Wrapper class for a Sycl Device
-    '''
-    cdef DPCTLSyclDeviceRef _device_ref
-    cdef const char *_vendor_name
-    cdef const char *_device_name
-    cdef const char *_driver_version
-    cdef uint32_t _max_compute_units
-    cdef uint32_t _max_work_item_dims
-    cdef size_t *_max_work_item_sizes
-    cdef size_t _max_work_group_size
-    cdef uint32_t _max_num_sub_groups
-    cdef bool _int64_base_atomics
-    cdef bool _int64_extended_atomics
-
-    @staticmethod
-    cdef SyclDevice _create (DPCTLSyclDeviceRef dref)
-    cdef DPCTLSyclDeviceRef get_device_ref (self)
-    cpdef get_device_name (self)
-    cpdef get_device_type (self)
-    cpdef get_vendor_name (self)
-    cpdef get_driver_version (self)
-    cpdef get_max_compute_units (self)
-    cpdef get_max_work_item_dims (self)
-    cpdef get_max_work_item_sizes (self)
-    cpdef get_max_work_group_size (self)
-    cpdef get_max_num_sub_groups (self)
-    cpdef has_int64_base_atomics (self)
-    cpdef has_int64_extended_atomics (self)
-
-
-cdef class SyclEvent:
-    ''' Wrapper class for a Sycl Event
-    '''
-    cdef  DPCTLSyclEventRef _event_ref
-    cdef list _args
-
-    @staticmethod
-    cdef  SyclEvent _create (DPCTLSyclEventRef e, list args)
-    cdef  DPCTLSyclEventRef get_event_ref (self)
-    cpdef void wait (self)
 
 
 cdef class SyclQueue:
-    ''' Wrapper class for a Sycl queue.
-    '''
+    """ Python wrapper class for a sycl::queue.
+    """
+
     cdef DPCTLSyclQueueRef _queue_ref
     cdef SyclContext _context
     cdef SyclDevice _device
@@ -108,8 +56,3 @@ cdef class SyclQueue:
     cpdef memcpy (self, dest, src, size_t count)
     cpdef prefetch (self, ptr, size_t count=*)
     cpdef mem_advise (self, ptr, size_t count, int mem)
-
-
-cpdef SyclQueue get_current_queue()
-cpdef get_current_device_type ()
-cpdef get_current_backend()
