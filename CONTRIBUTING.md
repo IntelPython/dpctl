@@ -76,3 +76,61 @@ Every Python and Cython file should only include the following license header:
 # limitations under the License.
 ```
 The copyright year should be updated every calendar year.
+
+## Code Coverage¶
+
+Implement python, cython and c++ file coverage using `coverage` and `llvm-cov` packages on Linux.
+
+### Using Code Coverage
+You need to install additional packages and add an environment variable to cover:
+- conda install cmake
+- conda install coverage
+- conda install conda-forge::lcov
+- conda install conda-forge::gtest
+- export CODE_COVERAGE=ON
+
+CODE_COVERAGE allows you to build a debug version of dpctl and enable string tracing, which allows you to analyze strings to create a coverage report.
+It was added for the convenience of configuring the CI in the future.
+
+Installing the dpctl package:
+- python setup.py develop
+
+It is important that there are no files of the old build in the folder.
+Use `git clean -xdf` to clean up the working tree.
+
+The coverage report will appear during the build in the console. This report contains information about c++ file coverage.
+The `dpctl-c-api-coverage` folder will appear in the root folder after installation.
+The folder contains a report on the coverage of c++ files in html format.
+
+You need to run tests to cover the cython and python files:
+- coverage run -m unittest dpctl.tests
+
+The required flags for the command coverage run are contained in the file `.coveragerc`.
+
+The simplest reporting is a textual summary produced with report:
+- coverage report
+
+For each module executed, the report shows the count of executable statements, the number of those statements missed, and the resulting coverage, expressed as a percentage.
+
+The `-m` flag also shows the line numbers of missing statements:
+- coverage report -m
+
+To create an annotated HTML listings with coverage results:
+- coverage html
+
+The `htmlcov` folder will appear in the root folder of the project. It contains reports on the coverage of python and cython files in html format.
+
+Erase previously collected coverage data:
+- coverage erase
+
+### Error in the build process
+
+An error occurs during the dcptl build with the CODE_COVERAGE environment variable:
+```
+error: '../compat/unistd.h' file not found, did you mean 'compat/unistd.h'?
+#   include "../compat/unistd.h"
+            ^
+1 error generated.
+```
+The error is related to the `tcl` package.
+You need to remove the tcl package to resolve this error.
