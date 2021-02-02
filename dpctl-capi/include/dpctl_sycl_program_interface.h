@@ -1,8 +1,8 @@
-//===---------- dpctl_sycl_program_interface.h - dpctl-C_API --*--C++ --*--===//
+//===- dpctl_sycl_program_interface.h - C API for sycl::program  -*-C++-*- ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,11 +19,8 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This header declares a C API to create Sycl program an interoperability
-/// program defined in OpenCL. In future, API to create interoperability
-/// kernels from other languages such as Level-0 driver API may be added here.
-///
-/// \todo Investigate what we should do when we add support for Level-0 API.
+/// This header declares a C API to create Sycl interoperability programs for
+/// OpenCL and Level Zero driver API.
 ///
 //===----------------------------------------------------------------------===//
 
@@ -52,7 +49,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * @param    Ctx            An opaque pointer to a sycl::context
  * @param    IL             SPIR-V binary
  * @param    Length         The size of the IL binary in bytes.
- * @param    CompileOpts    Optional compiler flags used when compiling th 
+ * @param    CompileOpts    Optional compiler flags used when compiling the
  *                          SPIR-V binary.
  * @return   A new SyclProgramRef pointer if the program creation succeeded,
  *           else returns NULL.

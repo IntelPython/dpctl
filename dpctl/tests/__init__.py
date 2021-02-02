@@ -1,8 +1,6 @@
-# ===-------- tests/dpctl_tests/__init__.py - dpctl  ------*- Python -*-----===#
-#
 #                      Data Parallel Control (dpCtl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,12 +13,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# ===-----------------------------------------------------------------------===#
-#
-# \file
-# Top-level module of all dpctl Python unit test cases.
-# ===-----------------------------------------------------------------------===#
+
+"""Top-level module of all dpCtl Python unit test cases.
+"""
 
 from .test_dparray import *
 from .test_dump_functions import *

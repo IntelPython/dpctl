@@ -1,8 +1,6 @@
-# ===------------- test_sycl_kernel_submit.py - dpctl  -----*- Python -*---===##
-#
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,12 +13,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# ===-----------------------------------------------------------------------===#
-#
-# \file
-# Defines unit test cases for kernel submission to a sycl::queue.
-# ===-----------------------------------------------------------------------===#
+
+"""Defines unit test cases for kernel submission to a sycl::queue.
+"""
+
 import ctypes
 import dpctl
 import unittest

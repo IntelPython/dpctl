@@ -1,8 +1,6 @@
-# ===------- _program.pyx - dpctl.program module ---*--- Cython ------*-----===#
-#
 #                      Data Parallel Control (dpCtl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,19 +13,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# ===-----------------------------------------------------------------------===#
-#
-# \file
-# This file implements a a Python interface for SYCL's program and kernel
-# runtime classes. Convenience functions to create a SYCL program for either
-# a OpenCL source file or a SPIR-V binary file are also included in the
-# module.
-#
-# ===-----------------------------------------------------------------------===#
 
 # distutils: language = c++
 # cython: language_level=3
+
+"""Implements a Python interface for SYCL's program and kernel runtime classes.
+
+The module also provides functions to create a SYCL program from either
+a OpenCL source string or a SPIR-V binary file.
+
+"""
+
 
 from __future__ import print_function
 from dpctl._backend cimport *

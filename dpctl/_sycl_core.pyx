@@ -1,8 +1,6 @@
-# ===------------ sycl_core.pyx - dpctl module -------*- Cython -*----------===#
-#
 #                      Data Parallel Control (dpCtl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,16 +13,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# ===-----------------------------------------------------------------------===#
-#
-# \file
-# This file implements a sub-set of Sycl's interface using dpctl's CAPI.
-#
-# ===-----------------------------------------------------------------------===#
 
 # distutils: language = c++
 # cython: language_level=3
+
+""" Implements Python wrappers for a limited subset of SYCL runtime classes.
+"""
+
 
 from __future__ import print_function
 from enum import Enum, auto

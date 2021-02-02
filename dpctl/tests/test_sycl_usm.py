@@ -1,8 +1,6 @@
-# ===---------- test_sycl_queue_manager.py - dpctl  -------*- Python -*-----===#
-#
 #                      Data Parallel Control (dpCtl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,12 +13,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# ===-----------------------------------------------------------------------===#
-#
-# \file
-# Defines unit test cases for the Memory classes in _memory.pyx.
-# ===-----------------------------------------------------------------------===#
+
+"""Defines unit test cases for the Memory classes in _memory.pyx.
+"""
 
 import unittest
 import dpctl
