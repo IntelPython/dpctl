@@ -43,15 +43,11 @@ else:
 
 if IS_LIN:
     DPCPP_ROOT = os.environ["ONEAPI_ROOT"] + "/compiler/latest/linux"
-    os.environ["CC"] = DPCPP_ROOT + "/bin/clang"
-    os.environ["CXX"] = DPCPP_ROOT + "/bin/clang++"
     os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
     os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
     os.environ["CFLAGS"] = "-fPIC"
 
 elif IS_WIN:
-    os.environ["CC"] = "clang-cl.exe"
-    os.environ["CXX"] = "dpcpp.exe"
     os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
     os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl\include"
 
@@ -86,7 +82,7 @@ def get_sdl_ldflags():
 
 def get_other_cxxflags():
     if IS_LIN:
-        return ["-O3", "-fsycl", "-std=c++17"]
+        return ["-O3", "-std=c++17"]
     elif IS_MAC:
         return []
     elif IS_WIN:

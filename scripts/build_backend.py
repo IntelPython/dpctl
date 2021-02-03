@@ -62,7 +62,7 @@ if IS_LIN:
         "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
         "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
         "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
-        "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang++"),
+        "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "dpcpp"),
         "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON",
         backends,
     ]
