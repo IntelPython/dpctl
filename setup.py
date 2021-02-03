@@ -211,7 +211,7 @@ def _get_cmdclass():
 
 setup(
     name="dpctl",
-    version=versioneer.get_version(),
+    version=versioneer.get_version()['version'].split('+')[0],
     cmdclass=_get_cmdclass(),
     description="A lightweight Python wrapper for a subset of OpenCL and SYCL.",
     long_description=long_description,
