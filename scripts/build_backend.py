@@ -83,6 +83,8 @@ if IS_WIN:
         "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
         "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
         "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
+        "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang-cl.exe"),
+        "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "dpcpp.exe"),        
         backends,
     ]
     subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=True)
