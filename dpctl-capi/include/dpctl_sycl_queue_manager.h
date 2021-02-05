@@ -56,19 +56,15 @@ __dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue();
 /*!
  * @brief Get a sycl::queue object of the specified type and device id.
  *
- * @param    BETy           A valid Sycl backend value.
- * @param    DeviceTy       The type of Sycl device (sycl_device_type)
- * @param    DNum           Device id for the device (defaults to 0)
+ * @param    DRef           An opaque pointer to a sycl::device.
  *
  * @return A copy of the sycl::queue corresponding to the device is returned
- * wrapped inside a DPCTLSyclDeviceType pointer. A runtime_error exception is
- * raised if no such device exists.
+ * wrapped inside a DPCTLSyclDeviceType pointer. A nullptr is returned if
+ * the DPCTLSyclDeviceRef argument is invalid.
  */
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_GetQueue(DPCTLSyclBackendType BETy,
-                       DPCTLSyclDeviceType DeviceTy,
-                       size_t DNum);
+DPCTLQueueMgr_GetQueue (DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Get the number of activated queues not including the global or
@@ -80,7 +76,7 @@ DPCTL_API
 size_t DPCTLQueueMgr_GetNumActivatedQueues();
 
 /*!
- * @brief Get the number of available queues for given backend and device type
+ * @brief Get the number of available devices for given backend and device type
  * combination.
  *
  * @param    BETy           Type of Sycl backend.
@@ -88,8 +84,8 @@ size_t DPCTLQueueMgr_GetNumActivatedQueues();
  * @return   The number of available queues.
  */
 DPCTL_API
-size_t DPCTLQueueMgr_GetNumQueues(DPCTLSyclBackendType BETy,
-                                  DPCTLSyclDeviceType DeviceTy);
+size_t DPCTLQueueMgr_GetNumDevices (DPCTLSyclBackendType BETy,
+                                    DPCTLSyclDeviceType DeviceTy);
 
 /*!
  * @brief Returns True if the passed in queue and the current queue are the
@@ -103,25 +99,23 @@ DPCTL_API
 bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
- * @brief Set the default DPCTL queue to the sycl::queue for the given backend
- * and device type combination and return a DPCTLSyclQueueRef for that queue.
- * If no queue was created Null is returned to caller.
- *
- * @param    BETy           Type of Sycl backend.
- * @param    DeviceTy       The type of Sycl device (sycl_device_type)
- * @param    DNum           Device id for the device
- * @return A copy of the sycl::queue that was set as the new default queue. If
- * no queue could be created then returns Null.
- */
+* @brief Sets the default DPCTL queue to a sycl::queue for the passed in
+* DPCTLSyclDeviceRef and returns a DPCTLSyclQueueRef for that queue. If no
+* queue was created Null is returned to caller.
+*
+* @param    DRef           An opaque reference to a sycl::device.
+*
+* @return A copy of the sycl::queue that was set as the new default queue. If no
+* queue could be created then returns Null.
+*/
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_SetAsDefaultQueue(DPCTLSyclBackendType BETy,
-                                DPCTLSyclDeviceType DeviceTy,
-                                size_t DNum);
+DPCTLQueueMgr_SetAsDefaultQueue (__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
- * @brief Pushes a new sycl::queue object to the top of DPCTL's thread-local
- * stack of a "activated" queues, and returns a copy of the queue to caller.
+ * @brief Pushes a new sycl::queue object to the top of DPCTL's stack of
+ * "activated" queues and returns a copy of the queue to caller. Frees the
+ * passed in DPCTLSyclDeviceRef object.
  *
  * The DPCTL queue manager maintains a thread-local stack of sycl::queue objects
  * to facilitate nested parallelism. The sycl::queue at the top of the stack is
@@ -132,18 +126,14 @@ DPCTLQueueMgr_SetAsDefaultQueue(DPCTLSyclBackendType BETy,
  * inside the opaque DPCTLSyclQueueRef pointer. A runtime_error exception is
  * thrown when a new sycl::queue could not be created for the specified device.
  *
- * @param    BETy           Type of Sycl backend.
- * @param    DeviceTy       The type of Sycl device (sycl_device_type)
- * @param    DNum           Device id for the device (defaults to 0)
+ * @param    DRef           An opaque reference to a syc::device.
  *
  * @return A copy of the sycl::queue that was pushed to the top of DPCTL's
  * stack of sycl::queue objects. Nullptr is returned if no such device exists.
  */
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_PushQueue(DPCTLSyclBackendType BETy,
-                        DPCTLSyclDeviceType DeviceTy,
-                        size_t DNum);
+DPCTLQueueMgr_PushQueue (__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Pops the top of stack element from DPCTL's stack of activated

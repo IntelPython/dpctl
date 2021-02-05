@@ -58,9 +58,9 @@ std::string DPCTL_DeviceTypeToStr(info::device_type devTy)
 }
 
 /*!
- * Transforms string to enum info::device_type.
- */
-info::device_type DPCTL_StrToDeviceType(std::string devTyStr)
+* Transforms string to enum info::device_type.
+*/
+info::device_type DPCTL_StrToDeviceType(const std::string & devTyStr)
 {
     info::device_type devTy;
     if (devTyStr == "cpu") {
@@ -83,4 +83,45 @@ info::device_type DPCTL_StrToDeviceType(std::string devTyStr)
         throw std::runtime_error("Unknown device type.");
     }
     return devTy;
+}
+
+backend DPCTL_DPCTLBackendTypeToSyclBackend(const DPCTLSyclBackendType & BeTy)
+{
+    switch(BeTy)
+    {
+        case DPCTLSyclBackendType::DPCTL_CUDA:
+            return backend::cuda;
+        case DPCTLSyclBackendType::DPCTL_HOST:
+            return backend::host;
+        case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO:
+            return backend::level_zero;
+        case DPCTLSyclBackendType::DPCTL_OPENCL:
+            return backend::opencl;
+        default:
+            throw runtime_error("Unsupported backend type", -1);
+    }
+}
+
+info::device_type DPCTL_DPCTLDeviceTypeToSyclDeviceType (
+    const DPCTLSyclDeviceType & DTy)
+{
+    switch(DTy)
+    {
+        case DPCTLSyclDeviceType::DPCTL_ACCELERATOR:
+            return info::device_type::accelerator;
+        case DPCTLSyclDeviceType::DPCTL_ALL:
+            return info::device_type::all;
+        case DPCTLSyclDeviceType::DPCTL_AUTOMATIC:
+            return info::device_type::automatic;
+        case DPCTLSyclDeviceType::DPCTL_CPU:
+            return info::device_type::cpu;
+        case DPCTLSyclDeviceType::DPCTL_CUSTOM:
+            return info::device_type::custom;
+        case DPCTLSyclDeviceType::DPCTL_GPU:
+            return info::device_type::gpu;
+        case DPCTLSyclDeviceType::DPCTL_HOST_DEVICE:
+            return info::device_type::host;
+        default:
+            throw runtime_error("Unsupported device type", -1);
+    }
 }
