@@ -33,13 +33,13 @@
 
 #pragma once
 
-#include "dpctl_data_types.h"
-#include "dpctl_sycl_types.h"
-#include "dpctl_sycl_context_interface.h"
-#include "dpctl_sycl_device_interface.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dpctl_data_types.h"
+#include "dpctl_sycl_context_interface.h"
+#include "dpctl_sycl_device_interface.h"
+#include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
 
@@ -51,7 +51,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * wrapped inside an opaque DPCTLSyclQueueRef pointer.
  */
 DPCTL_API
-__dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue ();
+__dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue();
 
 /*!
  * @brief Get a sycl::queue object of the specified type and device id.
@@ -66,9 +66,9 @@ __dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue ();
  */
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_GetQueue (DPCTLSyclBackendType BETy,
-                        DPCTLSyclDeviceType DeviceTy,
-                        size_t DNum);
+DPCTLQueueMgr_GetQueue(DPCTLSyclBackendType BETy,
+                       DPCTLSyclDeviceType DeviceTy,
+                       size_t DNum);
 
 /*!
  * @brief Get the number of activated queues not including the global or
@@ -77,7 +77,7 @@ DPCTLQueueMgr_GetQueue (DPCTLSyclBackendType BETy,
  * @return The number of activated queues.
  */
 DPCTL_API
-size_t DPCTLQueueMgr_GetNumActivatedQueues ();
+size_t DPCTLQueueMgr_GetNumActivatedQueues();
 
 /*!
  * @brief Get the number of available queues for given backend and device type
@@ -88,8 +88,8 @@ size_t DPCTLQueueMgr_GetNumActivatedQueues ();
  * @return   The number of available queues.
  */
 DPCTL_API
-size_t DPCTLQueueMgr_GetNumQueues (DPCTLSyclBackendType BETy,
-                                   DPCTLSyclDeviceType DeviceTy);
+size_t DPCTLQueueMgr_GetNumQueues(DPCTLSyclBackendType BETy,
+                                  DPCTLSyclDeviceType DeviceTy);
 
 /*!
  * @brief Returns True if the passed in queue and the current queue are the
@@ -100,24 +100,24 @@ size_t DPCTLQueueMgr_GetNumQueues (DPCTLSyclBackendType BETy,
  * the currently activated queue.
  */
 DPCTL_API
-bool DPCTLQueueMgr_IsCurrentQueue (__dpctl_keep const DPCTLSyclQueueRef QRef);
+bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
-* @brief Set the default DPCTL queue to the sycl::queue for the given backend
-* and device type combination and return a DPCTLSyclQueueRef for that queue.
-* If no queue was created Null is returned to caller.
-*
-* @param    BETy           Type of Sycl backend.
-* @param    DeviceTy       The type of Sycl device (sycl_device_type)
-* @param    DNum           Device id for the device
-* @return A copy of the sycl::queue that was set as the new default queue. If no
-* queue could be created then returns Null.
-*/
+ * @brief Set the default DPCTL queue to the sycl::queue for the given backend
+ * and device type combination and return a DPCTLSyclQueueRef for that queue.
+ * If no queue was created Null is returned to caller.
+ *
+ * @param    BETy           Type of Sycl backend.
+ * @param    DeviceTy       The type of Sycl device (sycl_device_type)
+ * @param    DNum           Device id for the device
+ * @return A copy of the sycl::queue that was set as the new default queue. If
+ * no queue could be created then returns Null.
+ */
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_SetAsDefaultQueue (DPCTLSyclBackendType BETy,
-                                 DPCTLSyclDeviceType DeviceTy,
-                                 size_t DNum);
+DPCTLQueueMgr_SetAsDefaultQueue(DPCTLSyclBackendType BETy,
+                                DPCTLSyclDeviceType DeviceTy,
+                                size_t DNum);
 
 /*!
  * @brief Pushes a new sycl::queue object to the top of DPCTL's thread-local
@@ -141,9 +141,9 @@ DPCTLQueueMgr_SetAsDefaultQueue (DPCTLSyclBackendType BETy,
  */
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_PushQueue (DPCTLSyclBackendType BETy,
-                         DPCTLSyclDeviceType DeviceTy,
-                         size_t DNum);
+DPCTLQueueMgr_PushQueue(DPCTLSyclBackendType BETy,
+                        DPCTLSyclDeviceType DeviceTy,
+                        size_t DNum);
 
 /*!
  * @brief Pops the top of stack element from DPCTL's stack of activated
@@ -157,8 +157,7 @@ DPCTLQueueMgr_PushQueue (DPCTLSyclBackendType BETy,
  *
  */
 DPCTL_API
-void DPCTLQueueMgr_PopQueue ();
-
+void DPCTLQueueMgr_PopQueue();
 
 /*!
  * @brief Creates a new instance of SYCL queue from SYCL context and
@@ -175,9 +174,8 @@ void DPCTLQueueMgr_PopQueue ();
  * references.
  */
 DPCTL_API
-__dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_GetQueueFromContextAndDevice(__dpctl_keep DPCTLSyclContextRef CRef,
-                                           __dpctl_keep DPCTLSyclDeviceRef DRef);
-
+__dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetQueueFromContextAndDevice(
+    __dpctl_keep DPCTLSyclContextRef CRef,
+    __dpctl_keep DPCTLSyclDeviceRef DRef);
 
 DPCTL_C_EXTERN_C_END

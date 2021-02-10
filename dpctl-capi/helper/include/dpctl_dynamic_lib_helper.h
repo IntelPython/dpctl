@@ -27,16 +27,16 @@
 
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64)
 
-    #ifdef __linux__
+#ifdef __linux__
 
-        #include <dlfcn.h>
+#include <dlfcn.h>
 
-    #elif defined(_WIN32) || defined(_WIN64)
+#elif defined(_WIN32) || defined(_WIN64)
 
-        #define NOMINMAX
-        #include <windows.h>
+#define NOMINMAX
+#include <windows.h>
 
-    #endif // __linux__
+#endif // __linux__
 
 #include <cstdint>
 
@@ -46,51 +46,48 @@ namespace dpctl
 class DynamicLibHelper final
 {
 public:
-    DynamicLibHelper()                         = delete;
+    DynamicLibHelper() = delete;
     DynamicLibHelper(const DynamicLibHelper &) = delete;
-    DynamicLibHelper(const char * libName, int flag)
+    DynamicLibHelper(const char *libName, int flag)
     {
 
-    #ifdef __linux__
+#ifdef __linux__
         _handle = dlopen(libName, flag);
-    #elif defined(_WIN32) || defined(_WIN64)
+#elif defined(_WIN32) || defined(_WIN64)
         _handle = LoadLibraryA(libName);
-    #endif
+#endif
     }
 
     ~DynamicLibHelper()
     {
-    #ifdef __linux__
+#ifdef __linux__
         dlclose(_handle);
-    #elif defined(_WIN32) || defined(_WIN64)
+#elif defined(_WIN32) || defined(_WIN64)
         FreeLibrary((HMODULE)_handle);
-    #endif
+#endif
     };
 
-    template <typename T>
-    T getSymbol(const char * symName)
+    template <typename T> T getSymbol(const char *symName)
     {
-    #ifdef __linux__
-        void * sym   = dlsym(_handle, symName);
-        char * error = dlerror();
+#ifdef __linux__
+        void *sym = dlsym(_handle, symName);
+        char *error = dlerror();
 
-        if (NULL != error)
-        {
+        if (NULL != error) {
             return nullptr;
         }
-    #elif defined(_WIN32) || defined(_WIN64)
-        void * sym = (void *)GetProcAddress((HMODULE)_handle, symName);
+#elif defined(_WIN32) || defined(_WIN64)
+        void *sym = (void *)GetProcAddress((HMODULE)_handle, symName);
 
-        if (NULL == sym)
-        {
+        if (NULL == sym) {
             return nullptr;
         }
-    #endif
+#endif
 
         return (T)sym;
     }
 
-    bool opened () const
+    bool opened() const
     {
         if (!_handle)
             return false;
@@ -99,7 +96,7 @@ public:
     }
 
 private:
-    void * _handle = nullptr;
+    void *_handle = nullptr;
 };
 
 } // namespace dpctl

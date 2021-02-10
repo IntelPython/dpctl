@@ -1,4 +1,4 @@
-//===----------- ExternC.h - Defines a extern C helper macro     -*-C++-*- ===//
+//===----------- ExternC.h - Defines an extern C helper macro    -*-C++-*- ===//
 //
 //                      Data Parallel Control (dpCtl)
 //
@@ -26,8 +26,10 @@
 #pragma once
 
 #ifdef __cplusplus
-#define DPCTL_C_EXTERN_C_BEGIN  extern "C" {
-#define DPCTL_C_EXTERN_C_END    }
+#define DPCTL_C_EXTERN_C_BEGIN                                                 \
+    extern "C"                                                                 \
+    {
+#define DPCTL_C_EXTERN_C_END }
 #else
 #define DPCTL_C_EXTERN_C_BEGIN
 #define DPCTL_C_EXTERN_C_END

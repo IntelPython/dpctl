@@ -37,11 +37,13 @@ DPCTL_C_EXTERN_C_BEGIN
  */
 enum DPCTLSyclBackendType
 {
+    // clang-format off
     DPCTL_UNKNOWN_BACKEND = 0x0,
     DPCTL_OPENCL          = 1 << 16,
     DPCTL_HOST            = 1 << 15,
     DPCTL_LEVEL_ZERO      = 1 << 14,
     DPCTL_CUDA            = 1 << 13
+    // clang-format on
 };
 
 /*!
@@ -50,6 +52,7 @@ enum DPCTLSyclBackendType
  */
 enum DPCTLSyclDeviceType
 {
+    // clang-format off
     DPCTL_CPU         = 1 << 0,
     DPCTL_GPU         = 1 << 1,
     DPCTL_ACCELERATOR = 1 << 2,
@@ -59,6 +62,7 @@ enum DPCTLSyclDeviceType
     DPCTL_ALL         = 1 << 6
     // IMP: before adding new values here look at DPCTLSyclBackendType enum. The
     // values should not overlap.
+    // clang-format on
 };
 
 /*!

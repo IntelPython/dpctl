@@ -26,11 +26,11 @@
 #pragma once
 
 #ifdef _WIN32
-#    ifdef DPCTLSyclInterface_EXPORTS
-#        define DPCTL_API __declspec(dllexport)
-#    else
-#        define DPCTL_API __declspec(dllimport)
-#    endif
+#ifdef DPCTLSyclInterface_EXPORTS
+#define DPCTL_API __declspec(dllexport)
 #else
-#    define DPCTL_API
+#define DPCTL_API __declspec(dllimport)
+#endif
+#else
+#define DPCTL_API
 #endif
