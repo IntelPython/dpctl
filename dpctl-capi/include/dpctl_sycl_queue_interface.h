@@ -36,6 +36,24 @@
 
 DPCTL_C_EXTERN_C_BEGIN
 
+typedef void error_handler_callback(int err_code);
+
+/*!
+ * @brief
+ *
+ * @param    CRef           My Param doc
+ * @param    DRef           My Param doc
+ * @param    error_handler  My Param doc
+ * @param    properties     My Param doc
+ * @return   {return}       My Param doc
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclQueueRef
+DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
+                  __dpctl_keep const DPCTLSyclDeviceRef DRef,
+                  error_handler_callback *error_handler,
+                  int properties);
+
 /*!
  * @brief Delete the pointer after casting it to sycl::queue.
  *

@@ -113,7 +113,108 @@ bool set_kernel_arg(handler &cgh,
     return arg_set;
 }
 
+std::unique_ptr<property_list> create_property_list(int properties)
+{
+    std::unique_ptr<property_list> propList;
+    if (properties & (DPCTL_ENABLE_PROFILING | DPCTL_IN_ORDER)) {
+        propList = std::make_unique<property_list>(
+            sycl::property::queue::enable_profiling(),
+            sycl::property::queue::in_order());
+    }
+    else if (properties & DPCTL_ENABLE_PROFILING) {
+        propList = std::make_unique<property_list>(
+            sycl::property::queue::enable_profiling());
+    }
+    else if (properties & DPCTL_IN_ORDER) {
+        propList =
+            std::make_unique<property_list>(sycl::property::queue::in_order());
+    }
+
+    return propList;
+}
+
+struct DPCTL_AsycErrorHandler
+{
+    error_handler_callback *handler = nullptr;
+
+    DPCTL_AsycErrorHandler(error_handler_callback *err_handler)
+        : handler(err_handler)
+    {
+    }
+
+    void operator()(const exception_list &exceptions)
+    {
+        for (std::exception_ptr const &e : exceptions) {
+            try {
+                std::rethrow_exception(e);
+            } catch (cl::sycl::exception const &e) {
+                std::cerr << "Caught asynchronous SYCL exception:\n"
+                          << e.what() << std::endl;
+                // FIXME: In the SYCL 2020 spec but not supported yet.
+                // auto err_code = e.code().value();
+                auto err_code = -1;
+                handler(err_code);
+            }
+        }
+    }
+};
+
 } /* end of anonymous namespace */
+
+DPCTL_API
+__dpctl_give DPCTLSyclQueueRef
+DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
+                  __dpctl_keep const DPCTLSyclDeviceRef DRef,
+                  error_handler_callback *error_handler,
+                  int properties)
+{
+    DPCTLSyclQueueRef q = nullptr;
+    auto dev = unwrap(DRef);
+    auto ctx = unwrap(CRef);
+
+    if (!(dev && ctx)) {
+        /* \todo handle error */
+        return q;
+    }
+    auto propList = create_property_list(properties);
+
+    if (propList && error_handler) {
+        try {
+            auto Queue = new queue(
+                *ctx, *dev, DPCTL_AsycErrorHandler(error_handler), *propList);
+            q = wrap(Queue);
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        }
+    }
+    else if (properties) {
+        try {
+            auto Queue = new queue(*ctx, *dev, *propList);
+            q = wrap(Queue);
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        }
+    }
+    else if (error_handler) {
+        try {
+            auto Queue =
+                new queue(*ctx, *dev, DPCTL_AsycErrorHandler(error_handler));
+            q = wrap(Queue);
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        }
+    }
+    else {
+        try {
+            auto Queue = new queue(*ctx, *dev);
+            q = wrap(Queue);
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        }
+    }
+
+    return q;
+}
 
 /*!
  * Delete the passed in pointer after verifying it points to a sycl::queue.

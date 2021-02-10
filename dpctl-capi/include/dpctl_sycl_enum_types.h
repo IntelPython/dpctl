@@ -93,4 +93,17 @@ typedef enum
     DPCTL_VOID_PTR
 } DPCTLKernelArgType;
 
+/*!
+ * @brief Enums to depict the properties that can be passed to a sycl::queue
+ * constructor.
+ *
+ */
+typedef enum
+{
+    // clang-format off
+    DPCTL_ENABLE_PROFILING = 1 << 1,
+    DPCTL_IN_ORDER         = 1 << 2
+    // clang-format on
+} DPCTLQueuePropertyType;
+
 DPCTL_C_EXTERN_C_END
