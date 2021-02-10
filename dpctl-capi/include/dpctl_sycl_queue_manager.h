@@ -63,8 +63,7 @@ __dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue();
  * the DPCTLSyclDeviceRef argument is invalid.
  */
 DPCTL_API
-__dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_GetQueue (DPCTLSyclDeviceRef DRef);
+__dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetQueue(DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Get the number of activated queues not including the global or
@@ -84,8 +83,8 @@ size_t DPCTLQueueMgr_GetNumActivatedQueues();
  * @return   The number of available queues.
  */
 DPCTL_API
-size_t DPCTLQueueMgr_GetNumDevices (DPCTLSyclBackendType BETy,
-                                    DPCTLSyclDeviceType DeviceTy);
+size_t DPCTLQueueMgr_GetNumDevices(DPCTLSyclBackendType BETy,
+                                   DPCTLSyclDeviceType DeviceTy);
 
 /*!
  * @brief Returns True if the passed in queue and the current queue are the
@@ -99,18 +98,18 @@ DPCTL_API
 bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
-* @brief Sets the default DPCTL queue to a sycl::queue for the passed in
-* DPCTLSyclDeviceRef and returns a DPCTLSyclQueueRef for that queue. If no
-* queue was created Null is returned to caller.
-*
-* @param    DRef           An opaque reference to a sycl::device.
-*
-* @return A copy of the sycl::queue that was set as the new default queue. If no
-* queue could be created then returns Null.
-*/
+ * @brief Sets the default DPCTL queue to a sycl::queue for the passed in
+ * DPCTLSyclDeviceRef and returns a DPCTLSyclQueueRef for that queue. If no
+ * queue was created Null is returned to caller.
+ *
+ * @param    DRef           An opaque reference to a sycl::device.
+ *
+ * @return A copy of the sycl::queue that was set as the new default queue. If
+ * no queue could be created then returns Null.
+ */
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_SetAsDefaultQueue (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+DPCTLQueueMgr_SetAsDefaultQueue(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Pushes a new sycl::queue object to the top of DPCTL's stack of
@@ -133,7 +132,7 @@ DPCTLQueueMgr_SetAsDefaultQueue (__dpctl_keep const DPCTLSyclDeviceRef DRef);
  */
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_PushQueue (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+DPCTLQueueMgr_PushQueue(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Pops the top of stack element from DPCTL's stack of activated
