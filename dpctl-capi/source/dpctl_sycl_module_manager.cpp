@@ -1,4 +1,4 @@
-//===- dpctl_sycl_program_interface.cpp - Implements C API for sycl::program =//
+//===- dpctl_sycl_module_manager.cpp - Implements module constructors      --=//
 //
 //                      Data Parallel Control (dpCtl)
 //
@@ -19,12 +19,10 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file implements the functions declared in
-/// dpctl_sycl_program_interface.h.
+/// Implementation of functions declared in dpctl_sycl_module_manager.h.
 ///
 //===----------------------------------------------------------------------===//
-
-#include "dpctl_sycl_program_interface.h"
+#include "dpctl_sycl_module_manager.h"
 #include "Config/dpctl_config.h"
 #include "Support/CBindingWrapping.h"
 #include <CL/cl.h>     /* OpenCL headers     */
@@ -42,6 +40,10 @@ using namespace cl::sycl;
 
 namespace
 {
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(program, DPCTLSyclProgramRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
+
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 
 #ifdef __linux__
@@ -60,10 +62,6 @@ typedef ze_result_t (*zeModuleCreateFT)(ze_context_handle_t,
 const char *zeModuleCreateFuncName = "zeModuleCreate";
 
 #endif // #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
-
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(program, DPCTLSyclProgramRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
 
 __dpctl_give DPCTLSyclProgramRef
 createOpenCLInterOpProgram(const context &SyclCtx,
@@ -274,50 +272,4 @@ DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
         std::cerr << "CreateFromSource is not supported in unknown backend.\n";
         return nullptr;
     }
-}
-
-__dpctl_give DPCTLSyclKernelRef
-DPCTLProgram_GetKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
-                       __dpctl_keep const char *KernelName)
-{
-    if (!PRef) {
-        // \todo record error
-        return nullptr;
-    }
-    auto SyclProgram = unwrap(PRef);
-    if (!KernelName) {
-        // \todo record error
-        return nullptr;
-    }
-    std::string name = KernelName;
-    try {
-        auto SyclKernel = new kernel(SyclProgram->get_kernel(name));
-        return wrap(SyclKernel);
-    } catch (invalid_object_error &e) {
-        // \todo record error
-        std::cerr << e.what() << '\n';
-        return nullptr;
-    }
-}
-
-bool DPCTLProgram_HasKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
-                            __dpctl_keep const char *KernelName)
-{
-    if (!PRef) {
-        // \todo handle error
-        return false;
-    }
-
-    auto SyclProgram = unwrap(PRef);
-    try {
-        return SyclProgram->has_kernel(KernelName);
-    } catch (invalid_object_error &e) {
-        std::cerr << e.what() << '\n';
-        return false;
-    }
-}
-
-void DPCTLProgram_Delete(__dpctl_take DPCTLSyclProgramRef PRef)
-{
-    delete unwrap(PRef);
 }

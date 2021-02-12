@@ -1,4 +1,4 @@
-//===-- test_sycl_program_interface.cpp - Test cases for program interface ===//
+//===-- test_sycl_module_interface.cpp - Test cases for module interface --===//
 //
 //                      Data Parallel Control (dpCtl)
 //
@@ -20,7 +20,7 @@
 ///
 /// \file
 /// This file has unit test cases for functions defined in
-/// dpctl_sycl_program_interface.h.
+/// dpctl_sycl_module_interface.h.
 ///
 //===----------------------------------------------------------------------===//
 
@@ -29,7 +29,8 @@
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_kernel_interface.h"
-#include "dpctl_sycl_program_interface.h"
+#include "dpctl_sycl_module_interface.h"
+#include "dpctl_sycl_module_manager.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
 #include <CL/sycl.hpp>
