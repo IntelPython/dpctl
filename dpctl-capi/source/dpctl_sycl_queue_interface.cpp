@@ -185,6 +185,8 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
             q = wrap(Queue);
         } catch (std::bad_alloc const &ba) {
             std::cerr << ba.what() << '\n';
+        } catch (runtime_error &re) {
+            std::cerr << re.what() << '\n';
         }
     }
     else if (properties) {
@@ -193,6 +195,8 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
             q = wrap(Queue);
         } catch (std::bad_alloc const &ba) {
             std::cerr << ba.what() << '\n';
+        } catch (runtime_error &re) {
+            std::cerr << re.what() << '\n';
         }
     }
     else if (error_handler) {
@@ -202,6 +206,8 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
             q = wrap(Queue);
         } catch (std::bad_alloc const &ba) {
             std::cerr << ba.what() << '\n';
+        } catch (runtime_error &re) {
+            std::cerr << re.what() << '\n';
         }
     }
     else {
@@ -210,6 +216,8 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
             q = wrap(Queue);
         } catch (std::bad_alloc const &ba) {
             std::cerr << ba.what() << '\n';
+        } catch (runtime_error &re) {
+            std::cerr << re.what() << '\n';
         }
     }
 

@@ -47,8 +47,8 @@ void foo(size_t &num)
     auto DS2 = DPCTLFilterSelector_Create("opencl:cpu");
     auto D1 = DPCTLDevice_CreateFromSelector(DS1);
     auto D2 = DPCTLDevice_CreateFromSelector(DS2);
-    auto q1 = DPCTLQueueMgr_PushQueue(D2);
-    auto q2 = DPCTLQueueMgr_PushQueue(D1);
+    auto q1 = DPCTLQueueMgr_PushQueue(D2, nullptr, 0);
+    auto q2 = DPCTLQueueMgr_PushQueue(D1, nullptr, 0);
 
     // Capture the number of active queues in first
     num = DPCTLQueueMgr_GetNumActivatedQueues();
@@ -66,7 +66,7 @@ void bar(size_t &num)
 {
     auto DS1 = DPCTLFilterSelector_Create("opencl:gpu");
     auto D1 = DPCTLDevice_CreateFromSelector(DS1);
-    auto q1 = DPCTLQueueMgr_PushQueue(D1);
+    auto q1 = DPCTLQueueMgr_PushQueue(D1, nullptr, 0);
     // Capture the number of active queues in second
     num = DPCTLQueueMgr_GetNumActivatedQueues();
     DPCTLQueueMgr_PopQueue();
@@ -112,14 +112,14 @@ TEST_P(TestDPCTLSyclQueueManager, CheckDPCTLGetCurrentQueue)
 
 TEST_P(TestDPCTLSyclQueueManager, CheckDPCTLGetQueue)
 {
-    auto QRef = DPCTLQueueMgr_GetQueue(DRef);
+    auto QRef = DPCTLQueueMgr_GetQueue(DRef, nullptr, 0);
     EXPECT_TRUE(QRef != nullptr);
 }
 
 TEST_P(TestDPCTLSyclQueueManager, CheckDPCTLGetQueueFailure)
 {
     /* We are testing that we do not crash even when input is garbage. */
-    auto QRef = DPCTLQueueMgr_GetQueue(nullptr);
+    auto QRef = DPCTLQueueMgr_GetQueue(nullptr, nullptr, 0);
     ASSERT_TRUE(QRef == nullptr);
 }
 
@@ -134,7 +134,7 @@ TEST_P(TestDPCTLSyclQueueManager, CheckIsCurrentQueue)
 {
     auto Q0 = DPCTLQueueMgr_GetCurrentQueue();
     EXPECT_TRUE(DPCTLQueueMgr_IsCurrentQueue(Q0));
-    auto Q1 = DPCTLQueueMgr_PushQueue(DRef);
+    auto Q1 = DPCTLQueueMgr_PushQueue(DRef, nullptr, 0);
     EXPECT_TRUE(DPCTLQueueMgr_IsCurrentQueue(Q1));
     DPCTLQueue_Delete(Q1);
     DPCTLQueueMgr_PopQueue();
@@ -144,14 +144,14 @@ TEST_P(TestDPCTLSyclQueueManager, CheckIsCurrentQueue)
 
 TEST(TestDPCTLSyclQueueManager, CheckGetNumActivatedQueues)
 {
-    if (!(DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL, DPCTL_GPU) &&
-          DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL, DPCTL_CPU)))
+    if (!(DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU) &&
+          DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_CPU)))
         GTEST_SKIP_("Both OpenCL gpu and cpu drivers needed for this test.");
 
     size_t num0, num1, num2, num4;
     auto DS1 = DPCTLFilterSelector_Create("opencl:gpu");
     auto D1 = DPCTLDevice_CreateFromSelector(DS1);
-    auto q = DPCTLQueueMgr_PushQueue(D1);
+    auto q = DPCTLQueueMgr_PushQueue(D1, nullptr, 0);
 
     std::thread first(foo, std::ref(num1));
     std::thread second(bar, std::ref(num2));
@@ -179,8 +179,8 @@ TEST(TestDPCTLSyclQueueManager, CheckGetNumActivatedQueues)
 
 TEST(TestDPCTLSyclQueueManager, CheckIsCurrentQueue2)
 {
-    if (!(DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL, DPCTL_GPU) &&
-          DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL, DPCTL_CPU)))
+    if (!(DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU) &&
+          DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_CPU)))
         GTEST_SKIP_("Both OpenCL gpu and cpu drivers needed for this test.");
 
     auto DS1 = DPCTLFilterSelector_Create("opencl:gpu");
@@ -188,9 +188,9 @@ TEST(TestDPCTLSyclQueueManager, CheckIsCurrentQueue2)
     auto D1 = DPCTLDevice_CreateFromSelector(DS1);
     auto D2 = DPCTLDevice_CreateFromSelector(DS2);
 
-    auto Q1 = DPCTLQueueMgr_PushQueue(D1);
+    auto Q1 = DPCTLQueueMgr_PushQueue(D1, nullptr, 0);
     EXPECT_TRUE(DPCTLQueueMgr_IsCurrentQueue(Q1));
-    auto Q2 = DPCTLQueueMgr_PushQueue(D2);
+    auto Q2 = DPCTLQueueMgr_PushQueue(D2, nullptr, 0);
     EXPECT_TRUE(DPCTLQueueMgr_IsCurrentQueue(Q2));
     EXPECT_FALSE(DPCTLQueueMgr_IsCurrentQueue(Q1));
     DPCTLQueue_Delete(Q2);
@@ -202,23 +202,6 @@ TEST(TestDPCTLSyclQueueManager, CheckIsCurrentQueue2)
     DPCTLDeviceSelector_Delete(DS2);
     DPCTLDevice_Delete(D1);
     DPCTLDevice_Delete(D2);
-}
-
-TEST(TestDPCTLSyclQueueManager, CreateQueueFromDeviceAndContext)
-{
-    auto Q = DPCTLQueueMgr_GetCurrentQueue();
-    auto D = DPCTLQueue_GetDevice(Q);
-    auto C = DPCTLQueue_GetContext(Q);
-
-    auto Q2 = DPCTLQueueMgr_GetQueueFromContextAndDevice(C, D);
-    auto D2 = DPCTLQueue_GetDevice(Q2);
-    auto C2 = DPCTLQueue_GetContext(Q2);
-
-    EXPECT_TRUE(DPCTLDevice_AreEq(D, D2));
-    EXPECT_TRUE(DPCTLContext_AreEq(C, C2));
-
-    DPCTLQueue_Delete(Q2);
-    DPCTLQueue_Delete(Q);
 }
 
 INSTANTIATE_TEST_SUITE_P(QMgrMemberFunctions,

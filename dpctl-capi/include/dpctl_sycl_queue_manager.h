@@ -39,6 +39,7 @@
 #include "dpctl_data_types.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
+#include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
@@ -56,14 +57,18 @@ __dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue();
 /*!
  * @brief Get a sycl::queue object of the specified type and device id.
  *
- * @param    DRef           An opaque pointer to a sycl::device.
- *
+ * @param    dRef           An opaque pointer to a sycl::device.
+ * @param    handler
+ * @param    properties
  * @return A copy of the sycl::queue corresponding to the device is returned
  * wrapped inside a DPCTLSyclDeviceType pointer. A nullptr is returned if
  * the DPCTLSyclDeviceRef argument is invalid.
  */
 DPCTL_API
-__dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetQueue(DPCTLSyclDeviceRef DRef);
+__dpctl_give DPCTLSyclQueueRef
+DPCTLQueueMgr_GetQueue(__dpctl_keep const DPCTLSyclDeviceRef dRef,
+                       error_handler_callback *handler,
+                       int properties);
 
 /*!
  * @brief Get the number of activated queues not including the global or
@@ -78,13 +83,14 @@ size_t DPCTLQueueMgr_GetNumActivatedQueues();
  * @brief Get the number of available devices for given backend and device type
  * combination.
  *
- * @param    BETy           Type of Sycl backend.
- * @param    DeviceTy       Type of Sycl device.
+ * @param    device_identifier Identifies a device using a combination of
+ *                             DPCTLSyclBackendType and DPCTLSyclDeviceType
+ *                             enum values. The argument can be either one of
+ *                             the enum values or a bitwise OR-ed combination.
  * @return   The number of available queues.
  */
 DPCTL_API
-size_t DPCTLQueueMgr_GetNumDevices(DPCTLSyclBackendType BETy,
-                                   DPCTLSyclDeviceType DeviceTy);
+size_t DPCTLQueueMgr_GetNumDevices(int device_identifier);
 
 /*!
  * @brief Returns True if the passed in queue and the current queue are the
@@ -102,14 +108,17 @@ bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef);
  * DPCTLSyclDeviceRef and returns a DPCTLSyclQueueRef for that queue. If no
  * queue was created Null is returned to caller.
  *
- * @param    DRef           An opaque reference to a sycl::device.
- *
+ * @param    dRef           An opaque reference to a sycl::device.
+ * @param    handler
+ * @param    properties
  * @return A copy of the sycl::queue that was set as the new default queue. If
  * no queue could be created then returns Null.
  */
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_SetAsDefaultQueue(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+DPCTLQueueMgr_SetGlobalQueue(__dpctl_keep const DPCTLSyclDeviceRef dRef,
+                             error_handler_callback *handler,
+                             int properties);
 
 /*!
  * @brief Pushes a new sycl::queue object to the top of DPCTL's stack of
@@ -125,14 +134,17 @@ DPCTLQueueMgr_SetAsDefaultQueue(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * inside the opaque DPCTLSyclQueueRef pointer. A runtime_error exception is
  * thrown when a new sycl::queue could not be created for the specified device.
  *
- * @param    DRef           An opaque reference to a syc::device.
- *
+ * @param    dRef           An opaque reference to a syc::device.
+ * @param    handler
+ * @param    properties
  * @return A copy of the sycl::queue that was pushed to the top of DPCTL's
  * stack of sycl::queue objects. Nullptr is returned if no such device exists.
  */
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_PushQueue(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+DPCTLQueueMgr_PushQueue(__dpctl_keep const DPCTLSyclDeviceRef dRef,
+                        error_handler_callback *handler,
+                        int properties);
 
 /*!
  * @brief Pops the top of stack element from DPCTL's stack of activated
@@ -147,24 +159,5 @@ DPCTLQueueMgr_PushQueue(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  */
 DPCTL_API
 void DPCTLQueueMgr_PopQueue();
-
-/*!
- * @brief Creates a new instance of SYCL queue from SYCL context and
- * SYCL device.
- *
- * The instance is not placed into queue manager. The user assumes
- * ownership of the queue reference and should deallocate it using
- * DPCTLQueue_Delete.
- *
- * @param    CRef           Sycl context reference
- * @param    DRef           Sycl device reference
- *
- * @return A copy of the sycl::queue created from given context and device
- * references.
- */
-DPCTL_API
-__dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetQueueFromContextAndDevice(
-    __dpctl_keep DPCTLSyclContextRef CRef,
-    __dpctl_keep DPCTLSyclDeviceRef DRef);
 
 DPCTL_C_EXTERN_C_END

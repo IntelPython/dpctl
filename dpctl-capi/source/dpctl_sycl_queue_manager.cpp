@@ -28,6 +28,7 @@
 #include "Support/CBindingWrapping.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 using namespace cl::sycl;
@@ -38,220 +39,188 @@ using namespace cl::sycl;
 namespace
 {
 
+auto getDeviceHashValue(const device &d)
+{
+    if (d.is_host()) {
+        return std::hash<unsigned long long>{}(-1);
+    }
+    else {
+        return std::hash<decltype(d.get())>{}(d.get());
+    }
+}
+
+struct DeviceHasher
+{
+    size_t operator()(const device &d) const
+    {
+        return getDeviceHashValue(d);
+    }
+};
+
+struct DeviceEqPred
+{
+    bool operator()(device d1, device d2) const
+    {
+        return getDeviceHashValue(d1) == getDeviceHashValue(d2);
+    }
+};
+
+using DeviceCache =
+    std::unordered_map<device, context, DeviceHasher, DeviceEqPred>;
+using QueueStack = vector_class<queue>;
+
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPCTLSyclQueueRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 
-/*
- * Get the number of devices of given type for provided platform.
- */
-size_t get_num_devices(const platform &P, backend bty, info::device_type dty)
+template <backend Bty, info::device_type Dty> const size_t &getNumDevices()
 {
-    size_t ndevices = 0;
-    if (P.is_host()) {
-        if (dty == info::device_type::host)
-            ndevices = 1;
-    }
-    else {
-        auto be = P.get_backend();
-        if (be == bty) {
-            auto Devices = P.get_devices();
-            for (auto &Device : Devices) {
-                auto devty = Device.get_info<info::device::device_type>();
-                if (devty == dty)
-                    ++ndevices;
+    auto get_num_devices = [] {
+        size_t ndevices = 0ul;
+        auto Platforms = platform::get_platforms();
+        for (auto const &P : Platforms) {
+            if (P.is_host())
+                continue;
+            auto be = P.get_backend();
+            if (be == Bty) {
+                auto Devices = P.get_devices();
+                for (auto &Device : Devices) {
+                    auto devty = Device.get_info<info::device::device_type>();
+                    if (devty == Dty)
+                        ++ndevices;
+                }
             }
         }
-    }
+        return ndevices;
+    };
 
+    static size_t ndevices = get_num_devices();
     return ndevices;
 }
 
-/*!
- * @brief A helper class to support the DPCTLSyclQueuemanager.
- *
- * The QMgrHelper is needed so that sycl headers are not exposed at the
- * top-level DPCTL API.
- *
- */
-class QMgrHelper
+template <backend Bty,
+          info::device_type Dty,
+          typename std::enable_if<Bty != backend::host &&
+                                  Dty == info::device_type::all>::type>
+const size_t &getNumDevices()
 {
-public:
-    using QVec = vector_class<queue>;
-
-    static QVec *init_active_queues()
-    {
-        QVec *active_queues;
-        try {
-            queue def_queue{default_selector().select_device()};
-            active_queues = new QVec({def_queue});
-        } catch (runtime_error &re) {
-            // \todo Handle the error
-            active_queues = new QVec();
+    auto get_num_devices = [] {
+        size_t ndevices = 0ul;
+        auto Platforms = platform::get_platforms();
+        for (auto const &P : Platforms) {
+            if (P.is_host())
+                continue;
+            auto be = P.get_backend();
+            if (be == Bty)
+                ndevices = P.get_devices().size();
         }
+        return ndevices;
+    };
 
-        return active_queues;
-    }
-
-    static QVec &get_active_queues()
-    {
-        thread_local static QVec *active_queues = init_active_queues();
-        return *active_queues;
-    }
-
-    static __dpctl_give DPCTLSyclQueueRef
-    getQueue(__dpctl_keep const DPCTLSyclDeviceRef DRef);
-
-    static __dpctl_give DPCTLSyclQueueRef getCurrentQueue();
-
-    static bool isCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef);
-
-    static __dpctl_give DPCTLSyclQueueRef
-    setAsDefaultQueue(__dpctl_keep const DPCTLSyclDeviceRef DRef);
-
-    static __dpctl_give DPCTLSyclQueueRef
-    pushSyclQueue(__dpctl_keep const DPCTLSyclDeviceRef DRef);
-
-    static void popSyclQueue();
-};
-
-/*!
- * Allocates a new copy of the present top of stack queue, which can be the
- * default queue and returns to caller. The caller owns the pointer and is
- * responsible for deallocating it. The helper function DPCTLQueue_Delete should
- * be used for that purpose.
- */
-DPCTLSyclQueueRef QMgrHelper::getCurrentQueue()
-{
-    auto &activated_q = get_active_queues();
-    if (activated_q.empty()) {
-        // \todo handle error
-        std::cerr << "No currently active queues.\n";
-        return nullptr;
-    }
-    auto last = activated_q.size() - 1;
-    return wrap(new queue(activated_q[last]));
+    static size_t ndevices = get_num_devices();
+    return ndevices;
 }
 
-/*!
- * Allocates a sycl::queue by copying from the cached {cpu|gpu}_queues vector
- * and returns it to the caller. The caller owns the pointer and is responsible
- * for deallocating it. The helper function DPCTLQueue_Delete should
- * be used for that purpose.
+/* This function implements a workaround to the current lack of a default
+ * context per root device in DPC++. The map stores a "default" context for
+ * each root device, and the QMgrHelper uses the map whenever it creates a
+ * new queue for a root device. By doing so, we avoid the performance overhead
+ * of context creation for every queue.
+ *
+ * The singleton pattern implemented here ensures that the map is created once
+ * in a thread-safe manner. Since, the map is ony read post-creation we do not
+ * need any further protection to ensure thread-safety.
  */
-__dpctl_give DPCTLSyclQueueRef
-QMgrHelper::getQueue(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+const DeviceCache &getDeviceCache()
 {
-    auto Device = unwrap(DRef);
-    if (!Device)
-        return nullptr;
+    auto cache_init = [] {
+        DeviceCache cache_l;
+        auto Platforms = platform::get_platforms();
+        for (const auto &P : Platforms) {
+            auto Devices = P.get_devices();
+            for (const auto &D : Devices) {
+                auto Context = context(D);
+                cache_l.insert({D, Context});
+            }
+        }
+        return cache_l;
+    };
 
-    // TODO: Implement caching of queues
+    static DeviceCache cache = cache_init();
+    return cache;
+}
+
+QueueStack &getQueueStack()
+{
+    thread_local static QueueStack activeQueues =
+        QueueStack({default_selector()});
+    return activeQueues;
+}
+
+template <size_t N>
+void updateQueueStack(QueueStack &qs, __dpctl_keep const DPCTLSyclQueueRef qRef)
+{
+    qs.emplace_back(*unwrap(qRef));
+}
+
+template <>
+void updateQueueStack<0>(QueueStack &qs,
+                         __dpctl_keep const DPCTLSyclQueueRef qRef)
+{
+    qs[0] = *unwrap(qRef);
+}
+
+__dpctl_give DPCTLSyclQueueRef getQueueHelper(context Context,
+                                              device Device,
+                                              error_handler_callback *handler,
+                                              int properties)
+{
+    DPCTLSyclQueueRef qRef = nullptr;
     try {
-        auto QueuePtr = new queue(*Device);
-        return wrap(QueuePtr);
-    } catch (std::bad_alloc &ba) {
-        std::cerr << ba.what() << '\n';
-        return nullptr;
-    } catch (runtime_error &re) {
-        std::cerr << re.what() << '\n';
-        return nullptr;
+        auto cRef = wrap(new context(Context));
+        auto dRef = wrap(new device(Device));
+        qRef = DPCTLQueue_Create(cRef, dRef, handler, properties);
+        DPCTLContext_Delete(cRef);
+        DPCTLDevice_Delete(dRef);
+    } catch (std::bad_alloc const &ba) {
+        std::cerr << ba.what() << std::endl;
     }
+    return qRef;
 }
 
-/*!
- * Compares the context and device of the current queue to the context and
- * device of the queue passed as input. Return true if both queues have the
- * same context and device.
- */
-bool QMgrHelper::isCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef)
-{
-    auto &activated_q = get_active_queues();
-    if (activated_q.empty()) {
-        // \todo handle error
-        std::cerr << "No currently active queues.\n";
-        return false;
-    }
-    auto last = activated_q.size() - 1;
-    auto currQ = activated_q[last];
-    return (*unwrap(QRef) == currQ);
-}
-
-/*!
- * Changes the first entry into the stack, i.e., the default queue to a new
- * sycl::queue corresponding to the device type and device number.
- */
 __dpctl_give DPCTLSyclQueueRef
-QMgrHelper::setAsDefaultQueue(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+getQueue(__dpctl_keep const DPCTLSyclDeviceRef dRef,
+         error_handler_callback *handler,
+         int properties)
 {
-    auto &activeQ = get_active_queues();
-    auto Device = unwrap(DRef);
-    if (activeQ.empty() || Device) {
-        std::cerr << "active queue vector is corrupted.\n";
-        return nullptr;
-    }
+    DPCTLSyclQueueRef qRef = nullptr;
+    auto &qs = getQueueStack();
+    auto Device = unwrap(dRef);
 
-    // TODO: Implement caching of queues
-    try {
-        auto QueuePtr = new queue(*Device);
-        activeQ[0] = *QueuePtr;
-        return wrap(QueuePtr);
-    } catch (std::bad_alloc &ba) {
-        std::cerr << ba.what() << '\n';
-        return nullptr;
-    } catch (runtime_error &re) {
-        std::cerr << re.what() << '\n';
-        return nullptr;
-    }
-}
-
-/*!
- * Allocates a new sycl::queue by copying from the cached {cpu|gpu}_queues
- * vector. The pointer returned is now owned by the caller and must be properly
- * cleaned up. The helper function DPCTLDeleteSyclQueue() can be used is for
- * that purpose.
- */
-__dpctl_give DPCTLSyclQueueRef
-QMgrHelper::pushSyclQueue(DPCTLSyclDeviceRef DRef)
-{
-    auto Device = unwrap(DRef);
-    auto &activeQ = get_active_queues();
-    if (activeQ.empty() || !Device) {
+    if (qs.empty()) {
         std::cerr << "Why is there no previous global context?\n";
-        return nullptr;
+        return qRef;
+    }
+    if (!Device) {
+        std::cerr << "Cannot create queue from NULL device reference.\n";
+        return qRef;
     }
 
-    // TODO: Implement caching of queues
-    try {
-        auto QueuePtr = new queue(*Device);
-        activeQ.emplace_back(*QueuePtr);
-        return wrap(QueuePtr);
-    } catch (std::bad_alloc &ba) {
-        std::cerr << ba.what() << '\n';
-        return nullptr;
-    } catch (runtime_error &re) {
-        std::cerr << re.what() << '\n';
-        return nullptr;
+    auto &cache = getDeviceCache();
+    auto entry = cache.find(*Device);
+    if (entry != cache.end()) {
+        qRef = getQueueHelper(entry->second, entry->first, handler, properties);
     }
-}
+    // We only cache contexts for root devices. If the dRef argument points to
+    // a sub-device, then the queue manager allocates a new context and creates
+    // a new queue to retrun to caller. Note that the context is not cached.
+    else {
+        context Context(*Device);
+        qRef = getQueueHelper(Context, entry->first, handler, properties);
+    }
 
-/*!
- * If there were any sycl::queue that were activated and added to the stack of
- * activated queues then the top of the stack entry is popped. Note that since
- * the same std::vector is used to keep track of the activated queues and the
- * global queue a popSyclQueue call can never make the stack empty. Even
- * after all activated queues are popped, the global queue is still available as
- * the first element added to the stack.
- */
-void QMgrHelper::popSyclQueue()
-{
-    // The first queue which is the "default" queue can not be removed.
-    if (get_active_queues().size() <= 1) {
-        std::cerr << "No active contexts.\n";
-        return;
-    }
-    get_active_queues().pop_back();
+    return qRef;
 }
 
 } /* end of anonymous namespace */
@@ -264,57 +233,113 @@ void QMgrHelper::popSyclQueue()
  */
 size_t DPCTLQueueMgr_GetNumActivatedQueues()
 {
-    if (QMgrHelper::get_active_queues().empty()) {
+    auto &qs = getQueueStack();
+    if (qs.empty()) {
         // \todo handle error
         std::cerr << "No active contexts.\n";
         return 0;
     }
-    return QMgrHelper::get_active_queues().size() - 1;
+    // The first entry of teh QueueStack is always the global queue. The
+    // number of activated queues does not include the global count, that is why
+    // we return "size() -1".
+    return qs.size() - 1;
 }
 
 /*!
  * Returns the number of available devices for a specific backend and device
  * type combination.
  */
-size_t DPCTLQueueMgr_GetNumDevices(DPCTLSyclBackendType BETy,
-                                   DPCTLSyclDeviceType DeviceTy)
+size_t DPCTLQueueMgr_GetNumDevices(int device_identifier)
 {
-    auto Platforms = platform::get_platforms();
     size_t nDevices = 0;
 
-    try {
-        auto Backend = DPCTL_DPCTLBackendTypeToSyclBackend(BETy);
-        auto DevType = DPCTL_DPCTLDeviceTypeToSyclDeviceType(DeviceTy);
-        for (auto &P : Platforms) {
-            nDevices = get_num_devices(P, Backend, DevType);
-            if (nDevices)
-                break;
-        }
-        return nDevices;
-    } catch (runtime_error &re) {
-        // \todo log error
-        return 0;
+    if (device_identifier & DPCTL_CUDA ||
+        (device_identifier & (DPCTL_CUDA | DPCTL_ALL)))
+    {
+        nDevices = getNumDevices<backend::cuda, info::device_type::all>();
     }
+    else if (device_identifier & DPCTL_HOST ||
+             (device_identifier & (DPCTL_HOST | DPCTL_ALL)) ||
+             (device_identifier & (DPCTL_HOST | DPCTL_HOST_DEVICE)))
+    {
+        nDevices = 1;
+    }
+    else if (device_identifier & DPCTL_LEVEL_ZERO ||
+             (device_identifier & (DPCTL_LEVEL_ZERO | DPCTL_ALL)))
+    {
+        nDevices = getNumDevices<backend::level_zero, info::device_type::all>();
+    }
+    else if (device_identifier & DPCTL_OPENCL ||
+             (device_identifier & (DPCTL_OPENCL | DPCTL_ALL)))
+    {
+        nDevices = getNumDevices<backend::opencl, info::device_type::all>();
+    }
+    else if (device_identifier & (DPCTL_CUDA | DPCTL_GPU)) {
+        nDevices = getNumDevices<backend::cuda, info::device_type::gpu>();
+    }
+    else if (device_identifier & (DPCTL_LEVEL_ZERO | DPCTL_GPU)) {
+        nDevices = getNumDevices<backend::level_zero, info::device_type::gpu>();
+    }
+    else if (device_identifier & (DPCTL_OPENCL | DPCTL_GPU)) {
+        nDevices = getNumDevices<backend::opencl, info::device_type::gpu>();
+    }
+    else if (device_identifier & (DPCTL_OPENCL | DPCTL_CPU)) {
+        nDevices = getNumDevices<backend::opencl, info::device_type::cpu>();
+    }
+
+    return nDevices;
 }
 
 /*!
- * \see QMgrHelper::getCurrentQueue()
+ * Allocates a new copy of the present top of stack queue, which can be the
+ * default queue and returns to caller. The caller owns the pointer and is
+ * responsible for deallocating it. The helper function DPCTLQueue_Delete should
+ * be used for that purpose.
  */
 DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue()
 {
-    return QMgrHelper::getCurrentQueue();
+    auto &qs = getQueueStack();
+    if (qs.empty()) {
+        // \todo handle error
+        std::cerr << "No currently active queues.\n";
+        return nullptr;
+    }
+    auto last = qs.size() - 1;
+    return wrap(new queue(qs[last]));
 }
 
+/*!
+ * Allocates a sycl::queue by copying from the cached {cpu|gpu}_queues vector
+ * and returns it to the caller. The caller owns the pointer and is responsible
+ * for deallocating it. The helper function DPCTLQueue_Delete should
+ * be used for that purpose.
+ */
 DPCTLSyclQueueRef
-DPCTLQueueMgr_GetQueue(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+DPCTLQueueMgr_GetQueue(__dpctl_keep const DPCTLSyclDeviceRef dRef,
+                       error_handler_callback *handler,
+                       int properties)
 {
-    return QMgrHelper::getQueue(DRef);
+    return getQueue(dRef, handler, properties);
 }
 
+/*!
+ * Compares the context and device of the current queue to the context and
+ * device of the queue passed as input. Return true if both queues have the
+ * same context and device.
+ */
 bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
-    return QMgrHelper::isCurrentQueue(QRef);
+    auto &qs = getQueueStack();
+    if (qs.empty()) {
+        // \todo handle error
+        std::cerr << "No currently active queues.\n";
+        return false;
+    }
+    auto last = qs.size() - 1;
+    auto currQ = qs[last];
+    return (*unwrap(QRef) == currQ);
 }
+
 /*!
  * The function sets the global queue, i.e., the sycl::queue object at
  * QMgrHelper::active_queues[0] vector to the sycl::queue corresponding to the
@@ -322,38 +347,58 @@ bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef)
  * device, Null is returned.
  */
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_SetAsDefaultQueue(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+DPCTLQueueMgr_SetGlobalQueue(__dpctl_keep const DPCTLSyclDeviceRef dRef,
+                             error_handler_callback *handler,
+                             int properties)
 {
-    return QMgrHelper::setAsDefaultQueue(DRef);
+    auto qRef = getQueue(dRef, handler, properties);
+    auto qs = getQueueStack();
+    if (qRef)
+        updateQueueStack<0>(qs, qRef);
+
+    return qRef;
 }
 
 /*!
- * \see QMgrHelper::pushSyclQueue()
+ * Allocates a new sycl::queue by copying from the cached {cpu|gpu}_queues
+ * vector. The pointer returned is now owned by the caller and must be properly
+ * cleaned up. The helper function DPCTLDeleteSyclQueue() can be used is for
+ * that purpose.
  */
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_PushQueue(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+DPCTLQueueMgr_PushQueue(__dpctl_keep const DPCTLSyclDeviceRef dRef,
+                        error_handler_callback *handler,
+                        int properties)
 {
-    return QMgrHelper::pushSyclQueue(DRef);
+    auto qRef = getQueue(dRef, handler, properties);
+    auto &qs = getQueueStack();
+
+    if (qRef) {
+        updateQueueStack<1>(qs, qRef);
+    }
+    else {
+        std::cerr << "Failed to push the queue to QueueStack.\n";
+    }
+
+    return qRef;
 }
 
 /*!
- * \see QMgrHelper::popSyclQueue()
+ * If there were any sycl::queue that were activated and added to the stack of
+ * activated queues then the top of the stack entry is popped. Note that since
+ * the same std::vector is used to keep track of the activated queues and the
+ * global queue a popSyclQueue call can never make the stack empty. Even
+ * after all activated queues are popped, the global queue is still available as
+ * the first element added to the stack.
  */
 void DPCTLQueueMgr_PopQueue()
 {
-    QMgrHelper::popSyclQueue();
-}
-
-/*!
- * The function constructs a new SYCL queue instance from SYCL conext and
- * SYCL device.
- */
-DPCTLSyclQueueRef DPCTLQueueMgr_GetQueueFromContextAndDevice(
-    __dpctl_keep DPCTLSyclContextRef CRef,
-    __dpctl_keep DPCTLSyclDeviceRef DRef)
-{
-    auto dev = unwrap(DRef);
-    auto ctx = unwrap(CRef);
-
-    return wrap(new queue(*ctx, *dev));
+    auto &qs = getQueueStack();
+    // The first queue in the QueueStack is the global queue should not be
+    // removed.
+    if (qs.size() <= 1) {
+        std::cerr << "No queue to pop.\n";
+        return;
+    }
+    qs.pop_back();
 }

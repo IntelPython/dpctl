@@ -117,7 +117,7 @@ protected:
     {
         DSRef = DPCTLFilterSelector_Create(GetParam());
         DRef = DPCTLDevice_CreateFromSelector(DSRef);
-        QRef = DPCTLQueueMgr_PushQueue(DRef);
+        QRef = DPCTLQueueMgr_PushQueue(DRef, nullptr, 0);
     }
 
     void SetUp()
@@ -139,8 +139,7 @@ protected:
 
 TEST_F(TestDPCTLSyclQueueInterface, CheckAreEq)
 {
-    auto nOclGPU = DPCTLQueueMgr_GetNumDevices(
-        DPCTLSyclBackendType::DPCTL_OPENCL, DPCTLSyclDeviceType::DPCTL_GPU);
+    auto nOclGPU = DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU);
     if (!nOclGPU)
         GTEST_SKIP_("Skipping: No OpenCL GPUs available.\n");
 
@@ -149,12 +148,27 @@ TEST_F(TestDPCTLSyclQueueInterface, CheckAreEq)
     EXPECT_TRUE(DPCTLQueue_AreEq(Q1, Q2));
     auto FSRef = DPCTLFilterSelector_Create("opencl:gpu:0");
     auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
-    auto Def_Q = DPCTLQueueMgr_SetAsDefaultQueue(DRef);
-    auto OclGPU_Q0 = DPCTLQueueMgr_PushQueue(DRef);
-    auto OclGPU_Q1 = DPCTLQueueMgr_PushQueue(DRef);
-    EXPECT_TRUE(DPCTLQueue_AreEq(Def_Q, OclGPU_Q0));
-    EXPECT_TRUE(DPCTLQueue_AreEq(Def_Q, OclGPU_Q1));
-    EXPECT_TRUE(DPCTLQueue_AreEq(OclGPU_Q0, OclGPU_Q1));
+    auto Def_Q = DPCTLQueueMgr_SetGlobalQueue(DRef, nullptr, 0);
+    auto OclGPU_Q0 = DPCTLQueueMgr_PushQueue(DRef, nullptr, 0);
+    auto OclGPU_Q1 = DPCTLQueueMgr_PushQueue(DRef, nullptr, 0);
+    // All these are different queues
+    EXPECT_FALSE(DPCTLQueue_AreEq(Def_Q, OclGPU_Q0));
+    EXPECT_FALSE(DPCTLQueue_AreEq(Def_Q, OclGPU_Q1));
+    EXPECT_FALSE(DPCTLQueue_AreEq(OclGPU_Q0, OclGPU_Q1));
+
+    auto Def_C = DPCTLQueue_GetContext(Def_Q);
+    auto OclGPU_C0 = DPCTLQueue_GetContext(OclGPU_Q0);
+    auto OclGPU_C1 = DPCTLQueue_GetContext(OclGPU_Q1);
+
+    // All the queues should share the same context
+    EXPECT_TRUE(DPCTLContext_AreEq(Def_C, OclGPU_C0));
+    EXPECT_TRUE(DPCTLContext_AreEq(Def_C, OclGPU_C1));
+    EXPECT_TRUE(DPCTLContext_AreEq(OclGPU_C0, OclGPU_C1));
+
+    DPCTLContext_Delete(Def_C);
+    DPCTLContext_Delete(OclGPU_C0);
+    DPCTLContext_Delete(OclGPU_C1);
+
     DPCTLQueue_Delete(Def_Q);
     DPCTLDeviceSelector_Delete(FSRef);
     DPCTLDevice_Delete(DRef);
@@ -169,10 +183,9 @@ TEST_F(TestDPCTLSyclQueueInterface, CheckAreEq2)
     if (!has_devices())
         GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
-    auto nOclGPU = DPCTLQueueMgr_GetNumDevices(
-        DPCTLSyclBackendType::DPCTL_OPENCL, DPCTLSyclDeviceType::DPCTL_GPU);
+    auto nOclGPU = DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU);
     auto nOclCPU = DPCTLQueueMgr_GetNumDevices(
-        DPCTLSyclBackendType::DPCTL_OPENCL, DPCTLSyclDeviceType::DPCTL_CPU);
+        DPCTLSyclBackendType::DPCTL_OPENCL | DPCTL_CPU);
     if (!nOclGPU || !nOclCPU)
         GTEST_SKIP_("OpenCL GPUs and CPU not available.\n");
 
@@ -180,8 +193,8 @@ TEST_F(TestDPCTLSyclQueueInterface, CheckAreEq2)
     auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
     auto FSRef2 = DPCTLFilterSelector_Create("opencl:cpu:0");
     auto DRef2 = DPCTLDevice_CreateFromSelector(FSRef2);
-    auto GPU_Q = DPCTLQueueMgr_PushQueue(DRef);
-    auto CPU_Q = DPCTLQueueMgr_PushQueue(DRef2);
+    auto GPU_Q = DPCTLQueueMgr_PushQueue(DRef, nullptr, 0);
+    auto CPU_Q = DPCTLQueueMgr_PushQueue(DRef2, nullptr, 0);
     EXPECT_FALSE(DPCTLQueue_AreEq(GPU_Q, CPU_Q));
     DPCTLQueueMgr_PopQueue();
     DPCTLQueueMgr_PopQueue();
@@ -239,14 +252,14 @@ TEST_F(TestDPCTLSyclQueueInterface, CheckSubmit)
     if (!has_devices())
         GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
-    auto nOpenCLGpuQ = DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL, DPCTL_GPU);
+    auto nOpenCLGpuQ = DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU);
 
     if (!nOpenCLGpuQ)
         GTEST_SKIP_("Skipping: No OpenCL GPU device.\n");
 
     auto FSRef = DPCTLFilterSelector_Create("opencl:gpu:0");
     auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
-    auto Queue = DPCTLQueueMgr_GetQueue(DRef);
+    auto Queue = DPCTLQueueMgr_GetQueue(DRef, nullptr, 0);
     auto CtxRef = DPCTLQueue_GetContext(Queue);
     auto PRef =
         DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr, CompileOpts);

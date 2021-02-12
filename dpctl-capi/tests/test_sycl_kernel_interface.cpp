@@ -82,7 +82,7 @@ struct TestDPCTLSyclKernelInterface
 
 TEST_P(TestDPCTLSyclKernelInterface, CheckGetFunctionName)
 {
-    auto QueueRef = DPCTLQueueMgr_GetQueue(DRef);
+    auto QueueRef = DPCTLQueueMgr_GetQueue(DRef, nullptr, 0);
     auto CtxRef = DPCTLQueue_GetContext(QueueRef);
     auto PRef =
         DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr, CompileOpts);
@@ -107,7 +107,7 @@ TEST_P(TestDPCTLSyclKernelInterface, CheckGetFunctionName)
 
 TEST_P(TestDPCTLSyclKernelInterface, CheckGetNumArgs)
 {
-    auto QueueRef = DPCTLQueueMgr_GetQueue(DRef);
+    auto QueueRef = DPCTLQueueMgr_GetQueue(DRef, nullptr, 0);
     auto CtxRef = DPCTLQueue_GetContext(QueueRef);
     auto PRef =
         DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr, CompileOpts);

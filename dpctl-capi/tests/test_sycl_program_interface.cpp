@@ -133,7 +133,7 @@ struct TestDPCTLSyclProgramInterface : public ::testing::Test
         : spirvFile{"./multi_kernel.spv", std::ios::binary | std::ios::ate},
           spirvFileSize(std::filesystem::file_size("./multi_kernel.spv")),
           spirvBuffer(spirvFileSize),
-          nOpenCLGpuQ(DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL, DPCTL_GPU))
+          nOpenCLGpuQ(DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU))
     {
         spirvFile.seekg(0, std::ios::beg);
         spirvFile.read(spirvBuffer.data(), spirvFileSize);
@@ -151,7 +151,7 @@ TEST_F(TestDPCTLSyclProgramInterface, CheckCreateFromOCLSource)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
     auto FSRef = DPCTLFilterSelector_Create("opencl:gpu:0");
     auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
-    auto QueueRef = DPCTLQueueMgr_GetQueue(DRef);
+    auto QueueRef = DPCTLQueueMgr_GetQueue(DRef, nullptr, 0);
     auto CtxRef = DPCTLQueue_GetContext(QueueRef);
     auto PRef =
         DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr, CompileOpts);
@@ -172,7 +172,7 @@ TEST_F(TestDPCTLSyclProgramInterface, CheckCreateFromSpirvOCL)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
     auto FSRef = DPCTLFilterSelector_Create("opencl:gpu:0");
     auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
-    auto QueueRef = DPCTLQueueMgr_GetQueue(DRef);
+    auto QueueRef = DPCTLQueueMgr_GetQueue(DRef, nullptr, 0);
     auto CtxRef = DPCTLQueue_GetContext(QueueRef);
     auto PRef = DPCTLProgram_CreateFromSpirv(CtxRef, spirvBuffer.data(),
                                              spirvFileSize, nullptr);
@@ -190,12 +190,12 @@ TEST_F(TestDPCTLSyclProgramInterface, CheckCreateFromSpirvOCL)
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 TEST_F(TestDPCTLSyclProgramInterface, CheckCreateFromSpirvL0)
 {
-    auto nL0GpuQ = DPCTLQueueMgr_GetNumDevices(DPCTL_LEVEL_ZERO, DPCTL_GPU);
+    auto nL0GpuQ = DPCTLQueueMgr_GetNumDevices(DPCTL_LEVEL_ZERO | DPCTL_GPU);
     if (!nL0GpuQ)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
     auto FSRef = DPCTLFilterSelector_Create("level_zero:gpu:0");
     auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
-    auto QueueRef = DPCTLQueueMgr_GetQueue(DRef);
+    auto QueueRef = DPCTLQueueMgr_GetQueue(DRef, nullptr, 0);
     auto CtxRef = DPCTLQueue_GetContext(QueueRef);
     auto PRef = DPCTLProgram_CreateFromSpirv(CtxRef, spirvBuffer.data(),
                                              spirvFileSize, nullptr);
@@ -217,7 +217,7 @@ TEST_F(TestDPCTLSyclProgramInterface, CheckGetKernelOCLSource)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
     auto FSRef = DPCTLFilterSelector_Create("opencl:gpu:0");
     auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
-    auto QueueRef = DPCTLQueueMgr_GetQueue(DRef);
+    auto QueueRef = DPCTLQueueMgr_GetQueue(DRef, nullptr, 0);
     auto CtxRef = DPCTLQueue_GetContext(QueueRef);
     auto PRef =
         DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr, CompileOpts);
@@ -247,7 +247,7 @@ TEST_F(TestDPCTLSyclProgramInterface, CheckGetKernelSpirv)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
     auto FSRef = DPCTLFilterSelector_Create("opencl:gpu:0");
     auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
-    auto QueueRef = DPCTLQueueMgr_GetQueue(DRef);
+    auto QueueRef = DPCTLQueueMgr_GetQueue(DRef, nullptr, 0);
     auto CtxRef = DPCTLQueue_GetContext(QueueRef);
     auto PRef = DPCTLProgram_CreateFromSpirv(CtxRef, spirvBuffer.data(),
                                              spirvFileSize, nullptr);
