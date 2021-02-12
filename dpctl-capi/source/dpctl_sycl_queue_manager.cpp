@@ -24,10 +24,8 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "dpctl_sycl_queue_manager.h"
-#include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
-#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -38,6 +36,10 @@ using namespace cl::sycl;
 // Anonymous namespace for private helpers
 namespace
 {
+// Create wrappers for C Binding types (see CBindingWrapping.h).
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPCTLSyclQueueRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 
 auto getDeviceHashValue(const device &d)
 {
@@ -68,59 +70,6 @@ struct DeviceEqPred
 using DeviceCache =
     std::unordered_map<device, context, DeviceHasher, DeviceEqPred>;
 using QueueStack = vector_class<queue>;
-
-// Create wrappers for C Binding types (see CBindingWrapping.h).
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPCTLSyclQueueRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
-
-template <backend Bty, info::device_type Dty> const size_t &getNumDevices()
-{
-    auto get_num_devices = [] {
-        size_t ndevices = 0ul;
-        auto Platforms = platform::get_platforms();
-        for (auto const &P : Platforms) {
-            if (P.is_host())
-                continue;
-            auto be = P.get_backend();
-            if (be == Bty) {
-                auto Devices = P.get_devices();
-                for (auto &Device : Devices) {
-                    auto devty = Device.get_info<info::device::device_type>();
-                    if (devty == Dty)
-                        ++ndevices;
-                }
-            }
-        }
-        return ndevices;
-    };
-
-    static size_t ndevices = get_num_devices();
-    return ndevices;
-}
-
-template <backend Bty,
-          info::device_type Dty,
-          typename std::enable_if<Bty != backend::host &&
-                                  Dty == info::device_type::all>::type>
-const size_t &getNumDevices()
-{
-    auto get_num_devices = [] {
-        size_t ndevices = 0ul;
-        auto Platforms = platform::get_platforms();
-        for (auto const &P : Platforms) {
-            if (P.is_host())
-                continue;
-            auto be = P.get_backend();
-            if (be == Bty)
-                ndevices = P.get_devices().size();
-        }
-        return ndevices;
-    };
-
-    static size_t ndevices = get_num_devices();
-    return ndevices;
-}
 
 /* This function implements a workaround to the current lack of a default
  * context per root device in DPC++. The map stores a "default" context for
@@ -243,51 +192,6 @@ size_t DPCTLQueueMgr_GetNumActivatedQueues()
     // number of activated queues does not include the global count, that is why
     // we return "size() -1".
     return qs.size() - 1;
-}
-
-/*!
- * Returns the number of available devices for a specific backend and device
- * type combination.
- */
-size_t DPCTLQueueMgr_GetNumDevices(int device_identifier)
-{
-    size_t nDevices = 0;
-
-    if (device_identifier & DPCTL_CUDA ||
-        (device_identifier & (DPCTL_CUDA | DPCTL_ALL)))
-    {
-        nDevices = getNumDevices<backend::cuda, info::device_type::all>();
-    }
-    else if (device_identifier & DPCTL_HOST ||
-             (device_identifier & (DPCTL_HOST | DPCTL_ALL)) ||
-             (device_identifier & (DPCTL_HOST | DPCTL_HOST_DEVICE)))
-    {
-        nDevices = 1;
-    }
-    else if (device_identifier & DPCTL_LEVEL_ZERO ||
-             (device_identifier & (DPCTL_LEVEL_ZERO | DPCTL_ALL)))
-    {
-        nDevices = getNumDevices<backend::level_zero, info::device_type::all>();
-    }
-    else if (device_identifier & DPCTL_OPENCL ||
-             (device_identifier & (DPCTL_OPENCL | DPCTL_ALL)))
-    {
-        nDevices = getNumDevices<backend::opencl, info::device_type::all>();
-    }
-    else if (device_identifier & (DPCTL_CUDA | DPCTL_GPU)) {
-        nDevices = getNumDevices<backend::cuda, info::device_type::gpu>();
-    }
-    else if (device_identifier & (DPCTL_LEVEL_ZERO | DPCTL_GPU)) {
-        nDevices = getNumDevices<backend::level_zero, info::device_type::gpu>();
-    }
-    else if (device_identifier & (DPCTL_OPENCL | DPCTL_GPU)) {
-        nDevices = getNumDevices<backend::opencl, info::device_type::gpu>();
-    }
-    else if (device_identifier & (DPCTL_OPENCL | DPCTL_CPU)) {
-        nDevices = getNumDevices<backend::opencl, info::device_type::cpu>();
-    }
-
-    return nDevices;
 }
 
 /*!

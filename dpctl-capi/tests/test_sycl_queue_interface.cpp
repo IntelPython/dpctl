@@ -26,6 +26,7 @@
 
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_context_interface.h"
+#include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_event_interface.h"
 #include "dpctl_sycl_kernel_interface.h"
@@ -139,7 +140,7 @@ protected:
 
 TEST_F(TestDPCTLSyclQueueInterface, CheckAreEq)
 {
-    auto nOclGPU = DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU);
+    auto nOclGPU = DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU);
     if (!nOclGPU)
         GTEST_SKIP_("Skipping: No OpenCL GPUs available.\n");
 
@@ -183,8 +184,8 @@ TEST_F(TestDPCTLSyclQueueInterface, CheckAreEq2)
     if (!has_devices())
         GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
-    auto nOclGPU = DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU);
-    auto nOclCPU = DPCTLQueueMgr_GetNumDevices(
+    auto nOclGPU = DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU);
+    auto nOclCPU = DPCTLDeviceMgr_GetNumDevices(
         DPCTLSyclBackendType::DPCTL_OPENCL | DPCTL_CPU);
     if (!nOclGPU || !nOclCPU)
         GTEST_SKIP_("OpenCL GPUs and CPU not available.\n");
@@ -252,7 +253,7 @@ TEST_F(TestDPCTLSyclQueueInterface, CheckSubmit)
     if (!has_devices())
         GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
-    auto nOpenCLGpuQ = DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU);
+    auto nOpenCLGpuQ = DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU);
 
     if (!nOpenCLGpuQ)
         GTEST_SKIP_("Skipping: No OpenCL GPU device.\n");

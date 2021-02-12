@@ -80,19 +80,6 @@ DPCTL_API
 size_t DPCTLQueueMgr_GetNumActivatedQueues();
 
 /*!
- * @brief Get the number of available devices for given backend and device type
- * combination.
- *
- * @param    device_identifier Identifies a device using a combination of
- *                             DPCTLSyclBackendType and DPCTLSyclDeviceType
- *                             enum values. The argument can be either one of
- *                             the enum values or a bitwise OR-ed combination.
- * @return   The number of available queues.
- */
-DPCTL_API
-size_t DPCTLQueueMgr_GetNumDevices(int device_identifier);
-
-/*!
  * @brief Returns True if the passed in queue and the current queue are the
  * same, else returns False.
  *

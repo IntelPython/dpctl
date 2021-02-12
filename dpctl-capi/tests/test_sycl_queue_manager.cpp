@@ -26,6 +26,7 @@
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
+#include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
@@ -123,13 +124,6 @@ TEST_P(TestDPCTLSyclQueueManager, CheckDPCTLGetQueueFailure)
     ASSERT_TRUE(QRef == nullptr);
 }
 
-TEST_P(TestDPCTLSyclQueueManager, CheckDPCTLDumpDeviceInfo)
-{
-    auto q = DPCTLQueueMgr_GetCurrentQueue();
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_DumpInfo(DPCTLQueue_GetDevice(q)));
-    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(q));
-}
-
 TEST_P(TestDPCTLSyclQueueManager, CheckIsCurrentQueue)
 {
     auto Q0 = DPCTLQueueMgr_GetCurrentQueue();
@@ -144,8 +138,8 @@ TEST_P(TestDPCTLSyclQueueManager, CheckIsCurrentQueue)
 
 TEST(TestDPCTLSyclQueueManager, CheckGetNumActivatedQueues)
 {
-    if (!(DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU) &&
-          DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_CPU)))
+    if (!(DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU) &&
+          DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_CPU)))
         GTEST_SKIP_("Both OpenCL gpu and cpu drivers needed for this test.");
 
     size_t num0, num1, num2, num4;
@@ -179,8 +173,8 @@ TEST(TestDPCTLSyclQueueManager, CheckGetNumActivatedQueues)
 
 TEST(TestDPCTLSyclQueueManager, CheckIsCurrentQueue2)
 {
-    if (!(DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU) &&
-          DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_CPU)))
+    if (!(DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU) &&
+          DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_CPU)))
         GTEST_SKIP_("Both OpenCL gpu and cpu drivers needed for this test.");
 
     auto DS1 = DPCTLFilterSelector_Create("opencl:gpu");
@@ -204,7 +198,7 @@ TEST(TestDPCTLSyclQueueManager, CheckIsCurrentQueue2)
     DPCTLDevice_Delete(D2);
 }
 
-INSTANTIATE_TEST_SUITE_P(QMgrMemberFunctions,
+INSTANTIATE_TEST_SUITE_P(QueueMgrFunctions,
                          TestDPCTLSyclQueueManager,
                          ::testing::Values("opencl:gpu:0",
                                            "opencl:cpu:0",

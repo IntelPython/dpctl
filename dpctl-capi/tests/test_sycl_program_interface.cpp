@@ -26,6 +26,7 @@
 
 #include "Config/dpctl_config.h"
 #include "dpctl_sycl_context_interface.h"
+#include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_kernel_interface.h"
 #include "dpctl_sycl_program_interface.h"
@@ -133,7 +134,7 @@ struct TestDPCTLSyclProgramInterface : public ::testing::Test
         : spirvFile{"./multi_kernel.spv", std::ios::binary | std::ios::ate},
           spirvFileSize(std::filesystem::file_size("./multi_kernel.spv")),
           spirvBuffer(spirvFileSize),
-          nOpenCLGpuQ(DPCTLQueueMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU))
+          nOpenCLGpuQ(DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU))
     {
         spirvFile.seekg(0, std::ios::beg);
         spirvFile.read(spirvBuffer.data(), spirvFileSize);
@@ -190,7 +191,7 @@ TEST_F(TestDPCTLSyclProgramInterface, CheckCreateFromSpirvOCL)
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 TEST_F(TestDPCTLSyclProgramInterface, CheckCreateFromSpirvL0)
 {
-    auto nL0GpuQ = DPCTLQueueMgr_GetNumDevices(DPCTL_LEVEL_ZERO | DPCTL_GPU);
+    auto nL0GpuQ = DPCTLDeviceMgr_GetNumDevices(DPCTL_LEVEL_ZERO | DPCTL_GPU);
     if (!nL0GpuQ)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
     auto FSRef = DPCTLFilterSelector_Create("level_zero:gpu:0");
