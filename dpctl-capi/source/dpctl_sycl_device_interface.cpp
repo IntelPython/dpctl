@@ -26,6 +26,7 @@
 
 #include "dpctl_sycl_device_interface.h"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_sycl_device_manager.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <cstring>
 
@@ -345,13 +346,4 @@ bool DPCTLDevice_IsHostUnifiedMemory(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         }
     }
     return ret;
-}
-
-bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
-                       __dpctl_keep const DPCTLSyclDeviceRef DevRef2)
-{
-    if (!(DevRef1 && DevRef2))
-        // \todo handle error
-        return false;
-    return (*unwrap(DevRef1) == *unwrap(DevRef2));
 }

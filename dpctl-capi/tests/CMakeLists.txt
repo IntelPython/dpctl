@@ -21,6 +21,7 @@ endforeach()
 if(DPCTL_GENERATE_COVERAGE)
     file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
     file(GLOB_RECURSE dpctl_sources ${CMAKE_CURRENT_SOURCE_DIR}/../source/*.cpp)
+    file(GLOB_RECURSE helper_sources ${CMAKE_CURRENT_SOURCE_DIR}/../helper/source/*.cpp)
 
     # Add profiling flags
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
@@ -31,7 +32,15 @@ if(DPCTL_GENERATE_COVERAGE)
         EXCLUDE_FROM_ALL
         ${sources}
         ${dpctl_sources}
+        ${helper_sources}
     )
+
+    target_include_directories(dpctl_c_api_tests
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR/..}/include/
+        ${CMAKE_CURRENT_SOURCE_DIR}/../helper/include/
+    )
+
     target_link_libraries(dpctl_c_api_tests
         ${CMAKE_THREAD_LIBS_INIT}
         GTest::GTest
@@ -43,12 +52,12 @@ if(DPCTL_GENERATE_COVERAGE)
         COMMAND ${CMAKE_MAKE_PROGRAM} dpctl_c_api_tests
         COMMAND ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests
         COMMAND ${LLVM_PROFDATA_EXE} merge -sparse default.profraw -o dpctl.profdata
-        COMMAND ${LLVM_COV_EXE} report ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests -instr-profile=dpctl.profdata ${dpctl_sources}
+        COMMAND ${LLVM_COV_EXE} report ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests -instr-profile=dpctl.profdata ${dpctl_sources} ${helper_sources}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
     add_custom_target(lcov-genhtml
         COMMAND ${CMAKE_MAKE_PROGRAM} llvm-cov
-        COMMAND ${LLVM_COV_EXE} export -format=lcov ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests -instr-profile=dpctl.profdata ${dpctl_sources} > dpctl.lcov
+        COMMAND ${LLVM_COV_EXE} export -format=lcov ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests -instr-profile=dpctl.profdata ${dpctl_sources} ${helper_sources} > dpctl.lcov
         COMMAND ${GENHTML_EXE} ${CMAKE_CURRENT_BINARY_DIR}/dpctl.lcov --output-directory ${COVERAGE_OUTPUT_DIR}/dpctl-c-api-coverage
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )

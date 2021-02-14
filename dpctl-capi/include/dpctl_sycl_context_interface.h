@@ -28,12 +28,41 @@
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dpctl_async_error_handler.h"
 #include "dpctl_data_types.h"
 #include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_types.h"
 #include <stdbool.h>
 
 DPCTL_C_EXTERN_C_BEGIN
+
+/*!
+ * @brief
+ *
+ * @param    DRef           My Param doc
+ * @param    error_handler  My Param doc
+ * @param    properties     My Param doc
+ * @return   {return}       My Param doc
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclContextRef
+DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                    error_handler_callback *error_handler,
+                    int properties);
+
+/*!
+ * @brief
+ *
+ * @param    DVRef          My Param doc
+ * @param    error_handler  My Param doc
+ * @param    properties     My Param doc
+ * @return   {return}       My Param doc
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclContextRef DPCTLContext_CreateFromDeviceVector(
+    __dpctl_keep const DPCTLDeviceVectorRef DVRef,
+    error_handler_callback *error_handler,
+    int properties);
 
 /*!
  * @brief Checks if two DPCTLSyclContextRef objects point to the same

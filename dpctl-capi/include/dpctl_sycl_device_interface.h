@@ -50,6 +50,20 @@ DPCTLDevice_Copy(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 /*!
  * @brief Returns a new DPCTLSyclDeviceRef opaque object wrapping a SYCL device
  * instance as a host device.
+ * @brief Checks if two DPCTLSyclDeviceRef objects point to the same
+ * sycl::device.
+ *
+ * @param    DevRef1       First opaque pointer to the sycl device.
+ * @param    DevRef2       Second opaque pointer to the sycl device.
+ * @return   True if the underlying sycl::device are same, false otherwise.
+ */
+DPCTL_API
+bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
+                       __dpctl_keep const DPCTLSyclDeviceRef DevRef2);
+
+/*!
+ * @brief Returns a new DPCTLSyclDeviceRef opaque object wrapping a SYCL device
+ * instance as a host device.
  *
  * @return   An opaque pointer to the host SYCL device.
  */
@@ -231,17 +245,5 @@ DPCTLDevice_GetVendorName(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 DPCTL_API
 bool DPCTLDevice_IsHostUnifiedMemory(
     __dpctl_keep const DPCTLSyclDeviceRef DRef);
-
-/*!
- * @brief Checks if two DPCTLSyclDeviceRef objects point to the same
- * sycl::device.
- *
- * @param    DevRef1       First opaque pointer to the sycl device.
- * @param    DevRef2       Second opaque pointer to the sycl device.
- * @return   True if the underlying sycl::device are same, false otherwise.
- */
-DPCTL_API
-bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
-                       __dpctl_keep const DPCTLSyclDeviceRef DevRef2);
 
 DPCTL_C_EXTERN_C_END

@@ -27,15 +27,13 @@
 #include "../include/dpctl_sycl_enum_types.h"
 #include <CL/sycl.hpp>
 
-using namespace cl::sycl;
-
 /*!
  * @brief
  *
  * @param    devTy          My Param doc
  * @return   {return}       My Param doc
  */
-std::string DPCTL_DeviceTypeToStr(info::device_type devTy);
+std::string DPCTL_DeviceTypeToStr(sycl::info::device_type devTy);
 
 /*!
  * @brief
@@ -43,7 +41,7 @@ std::string DPCTL_DeviceTypeToStr(info::device_type devTy);
  * @param    devTyStr       My Param doc
  * @return   {return}       My Param doc
  */
-info::device_type DPCTL_StrToDeviceType(const std::string &devTyStr);
+sycl::info::device_type DPCTL_StrToDeviceType(const std::string &devTyStr);
 
 /*!
  * @brief
@@ -51,7 +49,7 @@ info::device_type DPCTL_StrToDeviceType(const std::string &devTyStr);
  * @param    BeTy           My Param doc
  * @return   {return}       My Param doc
  */
-backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy);
+sycl::backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy);
 
 /*!
  * @brief
@@ -59,7 +57,7 @@ backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy);
  * @param    B           My Param doc
  * @return   {return}    My Param doc
  */
-DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(backend B);
+DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(sycl::backend B);
 
 /*!
  * @brief
@@ -67,7 +65,7 @@ DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(backend B);
  * @param    DTy           My Param doc
  * @return   {return}      My Param doc
  */
-info::device_type
+sycl::info::device_type
 DPCTL_DPCTLDeviceTypeToSyclDeviceType(DPCTLSyclDeviceType DTy);
 
 /*!
@@ -76,4 +74,5 @@ DPCTL_DPCTLDeviceTypeToSyclDeviceType(DPCTLSyclDeviceType DTy);
  * @param    D           My Param doc
  * @return   {return}    My Param doc
  */
-DPCTLSyclDeviceType DPCTL_SyclDeviceTypeToDPCTLDeviceType(info::device_type D);
+DPCTLSyclDeviceType
+DPCTL_SyclDeviceTypeToDPCTLDeviceType(sycl::info::device_type D);

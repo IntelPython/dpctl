@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_queue_interface.h"
+#include "../helper/include/dpctl_async_error_handler.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_context_interface.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
@@ -132,32 +133,6 @@ std::unique_ptr<property_list> create_property_list(int properties)
 
     return propList;
 }
-
-struct DPCTL_AsycErrorHandler
-{
-    error_handler_callback *handler = nullptr;
-
-    DPCTL_AsycErrorHandler(error_handler_callback *err_handler)
-        : handler(err_handler)
-    {
-    }
-
-    void operator()(const exception_list &exceptions)
-    {
-        for (std::exception_ptr const &e : exceptions) {
-            try {
-                std::rethrow_exception(e);
-            } catch (cl::sycl::exception const &e) {
-                std::cerr << "Caught asynchronous SYCL exception:\n"
-                          << e.what() << std::endl;
-                // FIXME: In the SYCL 2020 spec but not supported yet.
-                // auto err_code = e.code().value();
-                auto err_code = -1;
-                handler(err_code);
-            }
-        }
-    }
-};
 
 } /* end of anonymous namespace */
 

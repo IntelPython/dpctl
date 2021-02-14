@@ -157,6 +157,25 @@ const DeviceCache &getDeviceCache()
 
 } // namespace
 
+bool DPCTLDeviceMgr_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
+                          __dpctl_keep const DPCTLSyclDeviceRef DRef2)
+{
+    DeviceWrapper DW1(*unwrap(DRef1));
+    DeviceWrapper DW2(*unwrap(DRef2));
+    DeviceEqPred pred;
+    return pred(DW1, DW2);
+}
+
+__dpctl_give DPCTLDeviceVectorRef DPCTLDeviceMgr_CreateDeviceVector()
+{
+    try {
+        auto Devices = new vector_class<DPCTLSyclDeviceRef>();
+        return wrap(Devices);
+    } catch (std::bad_alloc const &ba) {
+        return nullptr;
+    }
+}
+
 void DPCTLDeviceMgr_DeleteBackendVector(
     __dpctl_take DPCTLBackendVectorRef BVRef)
 {

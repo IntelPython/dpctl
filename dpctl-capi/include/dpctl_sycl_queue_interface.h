@@ -31,12 +31,11 @@
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_data_types.h"
+#include "dpctl_error_handler_type.h"
 #include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
-
-typedef void error_handler_callback(int err_code);
 
 /*!
  * @brief

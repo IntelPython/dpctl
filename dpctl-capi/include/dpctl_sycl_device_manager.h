@@ -46,6 +46,25 @@ typedef struct DeviceAndContextPair
 /*!
  * @brief
  *
+ * @param    DRef1          My Param doc
+ * @param    DRef2          My Param doc
+ * @return   {return}       My Param doc
+ * @return   {return}       My Param doc
+ */
+bool DPCTLDeviceMgr_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
+                          __dpctl_keep const DPCTLSyclDeviceRef DRef2);
+
+/*!
+ * @brief
+ *
+ * @return   {return}       My Param doc
+ */
+DPCTL_API
+__dpctl_give DPCTLDeviceVectorRef DPCTLDeviceMgr_CreateDeviceVector();
+
+/*!
+ * @brief
+ *
  * @param    BVRef          My Param doc
  * @return   {return}       My Param doc
  */
