@@ -61,20 +61,17 @@ else()
     message(FATAL_ERROR "Unsupported system.")
 endif()
 
-add_library(
-  DPCTLSyclInterface
-  SHARED
-  source/dpctl_sycl_context_interface.cpp
-  source/dpctl_sycl_device_interface.cpp
-  source/dpctl_sycl_event_interface.cpp
-  source/dpctl_sycl_kernel_interface.cpp
-  source/dpctl_sycl_platform_interface.cpp
-  source/dpctl_sycl_program_interface.cpp
-  source/dpctl_sycl_queue_interface.cpp
-  source/dpctl_sycl_queue_manager.cpp
-  source/dpctl_sycl_usm_interface.cpp
-  source/dpctl_utils.cpp
-  helper/source/dpctl_utils_helper.cpp
+file(GLOB_RECURSE sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp
+)
+file(GLOB_RECURSE helper_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/source/*.cpp
+)
+
+add_library(DPCTLSyclInterface
+    SHARED
+    ${sources}
+    ${helper_sources}
 )
 
 target_include_directories(DPCTLSyclInterface
@@ -83,6 +80,7 @@ target_include_directories(DPCTLSyclInterface
     ${CMAKE_SOURCE_DIR}/helper/include/
     ${DPCPP_SYCL_INCLUDE_DIR}
 )
+
 target_link_libraries(DPCTLSyclInterface
     PRIVATE ${DPCPP_SYCL_LIBRARY}
     PRIVATE ${DPCPP_OPENCL_LIBRARY}
