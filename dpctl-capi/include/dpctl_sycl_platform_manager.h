@@ -34,46 +34,10 @@
 DPCTL_C_EXTERN_C_BEGIN
 
 /*!
- * @brief Returns the number of non-host type sycl::platform available on the
- * system.
- *
- * @return The number of available sycl::platforms.
- */
-DPCTL_API
-size_t DPCTLPlatform_GetNumNonHostPlatforms();
-
-/*!
- * @brief Returns the number of unique non-host sycl backends on the system.
- *
- * @return   The number of unique sycl backends.
- */
-DPCTL_API
-size_t DPCTLPlatform_GetNumNonHostBackends();
-
-/*!
- * @brief Returns an array of the unique non-host DPCTLSyclBackendType values on
- * the system.
- *
- * @return   An array of DPCTLSyclBackendType enum values.
- */
-DPCTL_API
-__dpctl_give DPCTLSyclBackendType *DPCTLPlatform_GetListOfNonHostBackends();
-
-/*!
- * @brief Frees an array of DPCTLSyclBackendType enum values.
- *
- * @param    BEArr      An array of DPCTLSyclBackendType enum values to be
- *                      freed.
- */
-DPCTL_API
-void DPCTLPlatform_DeleteListOfBackends(
-    __dpctl_take DPCTLSyclBackendType *BEArr);
-
-/*!
  * @brief Prints out some selected info about all sycl::platform on the system.
  *
  */
 DPCTL_API
-void DPCTLPlatform_DumpInfo();
+void DPCTLPlatformMgr_PrintPlatformInfo();
 
 DPCTL_C_EXTERN_C_END

@@ -43,7 +43,7 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclDeviceRef>,
                                    DPCTLDeviceVectorRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclBackendType>,
-DPCTLBackendVectorRef)
+                                   DPCTLBackendVectorRef)
 
 /*!
  * @brief Helper function to print the metadata for a sycl::device.
@@ -157,23 +157,22 @@ const DeviceCache &getDeviceCache()
 
 } // namespace
 
-void
-DPCTLDeviceMgr_DeleteBackendVector(__dpctl_take DPCTLBackendVectorRef BVRef)
+void DPCTLDeviceMgr_DeleteBackendVector(
+    __dpctl_take DPCTLBackendVectorRef BVRef)
 {
     delete unwrap(BVRef);
 }
 
-void
-DPCTLDeviceMgr_DeleteDeviceVector(__dpctl_take DPCTLDeviceVectorRef DVRef)
+void DPCTLDeviceMgr_DeleteDeviceVector(__dpctl_take DPCTLDeviceVectorRef DVRef)
 {
     delete unwrap(DVRef);
 }
 
-void
-DPCTLDeviceMgr_DeleteDeviceVectorAll(__dpctl_take DPCTLDeviceVectorRef DVRef)
+void DPCTLDeviceMgr_DeleteDeviceVectorAll(
+    __dpctl_take DPCTLDeviceVectorRef DVRef)
 {
     auto DeviceVec = unwrap(DVRef);
-    for(auto i = 0ul; i < DeviceVec->size(); ++i) {
+    for (auto i = 0ul; i < DeviceVec->size(); ++i) {
         auto D = unwrap((*DeviceVec)[i]);
         delete D;
     }
@@ -187,7 +186,7 @@ __dpctl_give DPCTLBackendVectorRef DPCTLDeviceMgr_GetBackends()
 
     try {
         Backends = new vector_class<DPCTLSyclBackendType>();
-    } catch(std::bad_alloc const &ba) {
+    } catch (std::bad_alloc const &ba) {
         return nullptr;
     }
 
@@ -195,12 +194,14 @@ __dpctl_give DPCTLBackendVectorRef DPCTLDeviceMgr_GetBackends()
 
     for (const auto &entry : cache) {
         auto Bty = entry.first.Bty;
-        if(Backends->empty() || [&Backends, &Bty] {
-            for(auto &B : *Backends)
-                if(Bty == B)
-                    return false;;
-            return true;
-        }()) {
+        if (Backends->empty() || [&Backends, &Bty] {
+                for (auto &B : *Backends)
+                    if (Bty == B)
+                        return false;
+                ;
+                return true;
+            }())
+        {
             Backends->emplace_back(Bty);
         }
     }
@@ -240,7 +241,7 @@ DPCTLDeviceMgr_GetDevices(int device_identifier)
 
     try {
         Devices = new vector_class<DPCTLSyclDeviceRef>();
-    } catch(std::bad_alloc const &ba) {
+    } catch (std::bad_alloc const &ba) {
         return nullptr;
     }
 
@@ -261,12 +262,14 @@ size_t DPCTLDeviceMgr_GetNumBackends()
 
     for (const auto &entry : cache) {
         auto Bty = entry.first.Bty;
-        if(Backends.empty() || [&Backends, &Bty] {
-            for(auto &B : Backends)
-                if(Bty == B)
-                    return false;;
-            return true;
-        }()) {
+        if (Backends.empty() || [&Backends, &Bty] {
+                for (auto &B : Backends)
+                    if (Bty == B)
+                        return false;
+                ;
+                return true;
+            }())
+        {
             Backends.emplace_back(Bty);
         }
     }

@@ -24,7 +24,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "dpctl_sycl_platform_interface.h"
+#include "dpctl_sycl_platform_manager.h"
 #include "../helper/include/dpctl_utils_helper.h"
 #include <CL/sycl.hpp>
 #include <iomanip>
@@ -33,36 +33,6 @@
 #include <sstream>
 
 using namespace cl::sycl;
-
-namespace
-{
-std::set<DPCTLSyclBackendType> get_set_of_non_hostbackends()
-{
-    std::set<DPCTLSyclBackendType> be_set;
-    for (auto p : platform::get_platforms()) {
-        if (p.is_host())
-            continue;
-        auto be = p.get_backend();
-        switch (be) {
-        case backend::host:
-            break;
-        case backend::cuda:
-            be_set.insert(DPCTLSyclBackendType::DPCTL_CUDA);
-            break;
-        case backend::level_zero:
-            be_set.insert(DPCTLSyclBackendType::DPCTL_LEVEL_ZERO);
-            break;
-        case backend::opencl:
-            be_set.insert(DPCTLSyclBackendType::DPCTL_OPENCL);
-            break;
-        default:
-            break;
-        }
-    }
-    return be_set;
-}
-
-} // namespace
 
 /*!
  * Prints out the following sycl::info::platform attributes for each platform
@@ -79,7 +49,7 @@ std::set<DPCTLSyclBackendType> get_set_of_non_hostbackends()
  *      - info::device::driver_version
  *      - type of the device based on the aspects cpu, gpu, accelerator.
  */
-void DPCTLPlatform_DumpInfo()
+void DPCTLPlatformMgr_PrintPlatformInfo()
 {
     size_t i = 0;
 
@@ -127,52 +97,4 @@ void DPCTLPlatform_DumpInfo()
         std::cout << ss.str();
         ++i;
     }
-}
-
-/*!
- * Returns the number of sycl::platform on the system.
- */
-size_t DPCTLPlatform_GetNumNonHostPlatforms()
-{
-    auto nNonHostPlatforms = 0ul;
-    for (auto &p : platform::get_platforms()) {
-        if (p.is_host())
-            continue;
-        ++nNonHostPlatforms;
-    }
-    return nNonHostPlatforms;
-}
-
-size_t DPCTLPlatform_GetNumNonHostBackends()
-{
-    auto be_set = get_set_of_non_hostbackends();
-
-    if (be_set.empty())
-        return 0;
-
-    return be_set.size();
-}
-
-__dpctl_give DPCTLSyclBackendType *DPCTLPlatform_GetListOfNonHostBackends()
-{
-    auto be_set = get_set_of_non_hostbackends();
-
-    if (be_set.empty())
-        return nullptr;
-
-    DPCTLSyclBackendType *BEArr = new DPCTLSyclBackendType[be_set.size()];
-
-    auto i = 0ul;
-    for (auto be : be_set) {
-        BEArr[i] = be;
-        ++i;
-    }
-
-    return BEArr;
-}
-
-void DPCTLPlatform_DeleteListOfBackends(
-    __dpctl_take DPCTLSyclBackendType *BEArr)
-{
-    delete[] BEArr;
 }

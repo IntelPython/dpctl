@@ -60,8 +60,8 @@ typedef struct DPCTLDeviceVector *DPCTLDeviceVectorRef;
  * @return   {return}       My Param doc
  */
 DPCTL_API
-void
-DPCTLDeviceMgr_DeleteBackendVector(__dpctl_take DPCTLBackendVectorRef BVRef);
+void DPCTLDeviceMgr_DeleteBackendVector(
+    __dpctl_take DPCTLBackendVectorRef BVRef);
 
 /*!
  * @brief
@@ -70,8 +70,7 @@ DPCTLDeviceMgr_DeleteBackendVector(__dpctl_take DPCTLBackendVectorRef BVRef);
  * @return   {return}       My Param doc
  */
 DPCTL_API
-void
-DPCTLDeviceMgr_DeleteDeviceVector(__dpctl_take DPCTLDeviceVectorRef DVRef);
+void DPCTLDeviceMgr_DeleteDeviceVector(__dpctl_take DPCTLDeviceVectorRef DVRef);
 
 /*!
  * @brief
@@ -80,8 +79,8 @@ DPCTLDeviceMgr_DeleteDeviceVector(__dpctl_take DPCTLDeviceVectorRef DVRef);
  * @return   {return}       My Param doc
  */
 DPCTL_API
-void
-DPCTLDeviceMgr_DeleteDeviceVectorAll(__dpctl_take DPCTLDeviceVectorRef DVRef);
+void DPCTLDeviceMgr_DeleteDeviceVectorAll(
+    __dpctl_take DPCTLDeviceVectorRef DVRef);
 
 /*!
  * @brief

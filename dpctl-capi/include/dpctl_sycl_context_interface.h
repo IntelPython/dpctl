@@ -29,7 +29,7 @@
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_data_types.h"
-#include "dpctl_sycl_platform_interface.h"
+#include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_types.h"
 #include <stdbool.h>
 
