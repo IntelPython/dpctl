@@ -51,13 +51,29 @@ info::device_type DPCTL_StrToDeviceType(const std::string &devTyStr);
  * @param    BeTy           My Param doc
  * @return   {return}       My Param doc
  */
-backend DPCTL_DPCTLBackendTypeToSyclBackend(const DPCTLSyclBackendType &BeTy);
+backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy);
 
 /*!
  * @brief
  *
- * @param    BeTy           My Param doc
- * @return   {return}       My Param doc
+ * @param    B           My Param doc
+ * @return   {return}    My Param doc
+ */
+DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(backend B);
+
+/*!
+ * @brief
+ *
+ * @param    DTy           My Param doc
+ * @return   {return}      My Param doc
  */
 info::device_type
-DPCTL_DPCTLDeviceTypeToSyclDeviceType(const DPCTLSyclDeviceType &DTy);
+DPCTL_DPCTLDeviceTypeToSyclDeviceType(DPCTLSyclDeviceType DTy);
+
+/*!
+ * @brief
+ *
+ * @param    D           My Param doc
+ * @return   {return}    My Param doc
+ */
+DPCTLSyclDeviceType DPCTL_SyclDeviceTypeToDPCTLDeviceType(info::device_type D);

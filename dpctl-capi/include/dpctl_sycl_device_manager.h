@@ -33,12 +33,89 @@
 
 DPCTL_C_EXTERN_C_BEGIN
 
-DPCTL_API
-size_t DPCTLDeviceMgr_GetBackends();
+/*!
+ * @brief
+ *
+ */
+typedef struct DeviceAndContextPair
+{
+    DPCTLSyclDeviceRef DRef;
+    DPCTLSyclContextRef CRef;
+} DPCTL_DeviceAndContextPair;
 
-DPCTL_API
-size_t DPCTLDeviceMgr_GetDevices(int device_identifier);
+/*!
+ * @brief Opaque pointer to a vector of DPCTLSyclBackendType enums.
+ */
+typedef struct DPCTLBackendVector *DPCTLBackendVectorRef;
 
+/*!
+ * @brief Opaque pointer to a vector of DPCTLSyclDeviceRefs.
+ */
+typedef struct DPCTLDeviceVector *DPCTLDeviceVectorRef;
+
+/*!
+ * @brief
+ *
+ * @param    BVRef          My Param doc
+ * @return   {return}       My Param doc
+ */
+DPCTL_API
+void
+DPCTLDeviceMgr_DeleteBackendVector(__dpctl_take DPCTLBackendVectorRef BVRef);
+
+/*!
+ * @brief
+ *
+ * @param    DVRef          My Param doc
+ * @return   {return}       My Param doc
+ */
+DPCTL_API
+void
+DPCTLDeviceMgr_DeleteDeviceVector(__dpctl_take DPCTLDeviceVectorRef DVRef);
+
+/*!
+ * @brief
+ *
+ * @param    DVRef          My Param doc
+ * @return   {return}       My Param doc
+ */
+DPCTL_API
+void
+DPCTLDeviceMgr_DeleteDeviceVectorAll(__dpctl_take DPCTLDeviceVectorRef DVRef);
+
+/*!
+ * @brief
+ *
+ * @return   {return}       My Param doc
+ */
+DPCTL_API
+__dpctl_give DPCTLBackendVectorRef DPCTLDeviceMgr_GetBackends();
+
+/*!
+ * @brief
+ *
+ * @param    device_identifier My Param doc
+ * @return   {return}       My Param doc
+ */
+DPCTL_API
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLDeviceMgr_GetDevices(int device_identifier);
+
+/*!
+ * @brief
+ *
+ * @param    DRef           My Param doc
+ * @return   {return}       My Param doc
+ */
+DPCTL_API
+DPCTL_DeviceAndContextPair DPCTLDeviceMgr_GetDeviceAndContextPair(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief
+ *
+ * @return   {return}       My Param doc
+ */
 DPCTL_API
 size_t DPCTLDeviceMgr_GetNumBackends();
 

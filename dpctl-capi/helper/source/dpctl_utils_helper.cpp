@@ -85,7 +85,7 @@ info::device_type DPCTL_StrToDeviceType(const std::string &devTyStr)
     return devTy;
 }
 
-backend DPCTL_DPCTLBackendTypeToSyclBackend(const DPCTLSyclBackendType &BeTy)
+backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy)
 {
     switch (BeTy) {
     case DPCTLSyclBackendType::DPCTL_CUDA:
@@ -101,8 +101,23 @@ backend DPCTL_DPCTLBackendTypeToSyclBackend(const DPCTLSyclBackendType &BeTy)
     }
 }
 
-info::device_type
-DPCTL_DPCTLDeviceTypeToSyclDeviceType(const DPCTLSyclDeviceType &DTy)
+DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(backend B)
+{
+    switch (B) {
+    case backend::cuda:
+        return DPCTLSyclBackendType::DPCTL_CUDA;
+    case backend::host:
+        return DPCTLSyclBackendType::DPCTL_HOST;
+    case backend::level_zero:
+        return DPCTLSyclBackendType::DPCTL_LEVEL_ZERO;
+    case backend::opencl:
+        return DPCTLSyclBackendType::DPCTL_OPENCL;
+    default:
+        return DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
+    }
+}
+
+info::device_type DPCTL_DPCTLDeviceTypeToSyclDeviceType(DPCTLSyclDeviceType DTy)
 {
     switch (DTy) {
     case DPCTLSyclDeviceType::DPCTL_ACCELERATOR:
@@ -121,5 +136,27 @@ DPCTL_DPCTLDeviceTypeToSyclDeviceType(const DPCTLSyclDeviceType &DTy)
         return info::device_type::host;
     default:
         throw runtime_error("Unsupported device type", -1);
+    }
+}
+
+DPCTLSyclDeviceType DPCTL_SyclDeviceTypeToDPCTLDeviceType(info::device_type D)
+{
+    switch (D) {
+    case info::device_type::accelerator:
+        return DPCTLSyclDeviceType::DPCTL_ACCELERATOR;
+    case info::device_type::all:
+        return DPCTLSyclDeviceType::DPCTL_ALL;
+    case info::device_type::automatic:
+        return DPCTLSyclDeviceType::DPCTL_AUTOMATIC;
+    case info::device_type::cpu:
+        return DPCTLSyclDeviceType::DPCTL_CPU;
+    case info::device_type::custom:
+        return DPCTLSyclDeviceType::DPCTL_CUSTOM;
+    case info::device_type::gpu:
+        return DPCTLSyclDeviceType::DPCTL_GPU;
+    case info::device_type::host:
+        return DPCTLSyclDeviceType::DPCTL_HOST_DEVICE;
+    default:
+        return DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE;
     }
 }

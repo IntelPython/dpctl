@@ -36,7 +36,6 @@
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
-#include "dpctl_data_types.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_queue_interface.h"

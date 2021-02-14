@@ -56,13 +56,14 @@ enum DPCTLSyclDeviceType
     // The values should not overlap.
 
     // clang-format off
-    DPCTL_ALL         = 1 << 0,
-    DPCTL_ACCELERATOR = 1 << 1,
-    DPCTL_AUTOMATIC   = 1 << 2,
-    DPCTL_CPU         = 1 << 3,
-    DPCTL_CUSTOM      = 1 << 4,
-    DPCTL_GPU         = 1 << 5,
-    DPCTL_HOST_DEVICE = 1 << 6
+    DPCTL_ALL            = 1 << 0,
+    DPCTL_ACCELERATOR    = 1 << 1,
+    DPCTL_AUTOMATIC      = 1 << 2,
+    DPCTL_CPU            = 1 << 3,
+    DPCTL_CUSTOM         = 1 << 4,
+    DPCTL_GPU            = 1 << 5,
+    DPCTL_HOST_DEVICE    = 1 << 6,
+    DPCTL_UNKNOWN_DEVICE = -1
     // clang-format on
 };
 

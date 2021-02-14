@@ -25,8 +25,8 @@
 //===----------------------------------------------------------------------===//
 #include "dpctl_sycl_queue_manager.h"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_sycl_device_manager.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
-#include <unordered_map>
 #include <vector>
 
 using namespace cl::sycl;
@@ -41,64 +41,7 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPCTLSyclQueueRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 
-auto getDeviceHashValue(const device &d)
-{
-    if (d.is_host()) {
-        return std::hash<unsigned long long>{}(-1);
-    }
-    else {
-        return std::hash<decltype(d.get())>{}(d.get());
-    }
-}
-
-struct DeviceHasher
-{
-    size_t operator()(const device &d) const
-    {
-        return getDeviceHashValue(d);
-    }
-};
-
-struct DeviceEqPred
-{
-    bool operator()(device d1, device d2) const
-    {
-        return getDeviceHashValue(d1) == getDeviceHashValue(d2);
-    }
-};
-
-using DeviceCache =
-    std::unordered_map<device, context, DeviceHasher, DeviceEqPred>;
 using QueueStack = vector_class<queue>;
-
-/* This function implements a workaround to the current lack of a default
- * context per root device in DPC++. The map stores a "default" context for
- * each root device, and the QMgrHelper uses the map whenever it creates a
- * new queue for a root device. By doing so, we avoid the performance overhead
- * of context creation for every queue.
- *
- * The singleton pattern implemented here ensures that the map is created once
- * in a thread-safe manner. Since, the map is ony read post-creation we do not
- * need any further protection to ensure thread-safety.
- */
-const DeviceCache &getDeviceCache()
-{
-    auto cache_init = [] {
-        DeviceCache cache_l;
-        auto Platforms = platform::get_platforms();
-        for (const auto &P : Platforms) {
-            auto Devices = P.get_devices();
-            for (const auto &D : Devices) {
-                auto Context = context(D);
-                cache_l.insert({D, Context});
-            }
-        }
-        return cache_l;
-    };
-
-    static DeviceCache cache = cache_init();
-    return cache;
-}
 
 QueueStack &getQueueStack()
 {
@@ -120,21 +63,17 @@ void updateQueueStack<0>(QueueStack &qs,
     qs[0] = *unwrap(qRef);
 }
 
-__dpctl_give DPCTLSyclQueueRef getQueueHelper(context Context,
-                                              device Device,
-                                              error_handler_callback *handler,
-                                              int properties)
+__dpctl_give DPCTLSyclQueueRef
+getQueueImpl(__dpctl_take DPCTLSyclContextRef cRef,
+             __dpctl_take DPCTLSyclDeviceRef dRef,
+             error_handler_callback *handler,
+             int properties)
 {
     DPCTLSyclQueueRef qRef = nullptr;
-    try {
-        auto cRef = wrap(new context(Context));
-        auto dRef = wrap(new device(Device));
-        qRef = DPCTLQueue_Create(cRef, dRef, handler, properties);
-        DPCTLContext_Delete(cRef);
-        DPCTLDevice_Delete(dRef);
-    } catch (std::bad_alloc const &ba) {
-        std::cerr << ba.what() << std::endl;
-    }
+    qRef = DPCTLQueue_Create(cRef, dRef, handler, properties);
+    DPCTLContext_Delete(cRef);
+    DPCTLDevice_Delete(dRef);
+
     return qRef;
 }
 
@@ -155,18 +94,21 @@ getQueue(__dpctl_keep const DPCTLSyclDeviceRef dRef,
         std::cerr << "Cannot create queue from NULL device reference.\n";
         return qRef;
     }
-
-    auto &cache = getDeviceCache();
-    auto entry = cache.find(*Device);
-    if (entry != cache.end()) {
-        qRef = getQueueHelper(entry->second, entry->first, handler, properties);
+    auto cached = DPCTLDeviceMgr_GetDeviceAndContextPair(dRef);
+    if (cached.CRef) {
+        qRef = getQueueImpl(cached.CRef, cached.DRef, handler, properties);
     }
     // We only cache contexts for root devices. If the dRef argument points to
     // a sub-device, then the queue manager allocates a new context and creates
     // a new queue to retrun to caller. Note that the context is not cached.
     else {
-        context Context(*Device);
-        qRef = getQueueHelper(Context, entry->first, handler, properties);
+        try {
+            auto CRef = wrap(new context(*Device));
+            auto DRef_copy = wrap(new device(*Device));
+            qRef = getQueueImpl(CRef, DRef_copy, handler, properties);
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << std::endl;
+        }
     }
 
     return qRef;
