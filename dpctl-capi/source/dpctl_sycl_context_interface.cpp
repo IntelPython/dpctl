@@ -69,11 +69,11 @@ __dpctl_give DPCTLSyclContextRef DPCTLContext_CreateFromDeviceVector(
     DPCTLSyclContextRef CRef = nullptr;
     vector_class<device> Devices;
     auto DeviceRefs = unwrap(DVRef);
-    if(!DeviceRefs)
+    if (!DeviceRefs)
         return CRef;
     Devices.reserve(DeviceRefs->size());
 
-    for(auto const &DRef: *DeviceRefs) {
+    for (auto const &DRef : *DeviceRefs) {
         Devices.emplace_back(*unwrap(DRef));
     }
 
