@@ -2,6 +2,17 @@
 
 ## Source Code Formatting¶
 
+### C/C++ code style
+
+We use [clang-format](https://clang.llvm.org/docs/ClangFormat.html) code formatter.
+
+Install: `pip install clang`
+
+- Revision: `10.0.1`
+- See the default configuration used by dpCtl in `.clang-format`.
+
+Run before each commit: `clang-format -style=file -i dpctl-capi/include/*.h dpctl-capi/include/Support/*.h dpctl-capi/source/*.cpp dpctl-capi/tests/*.cpp dpctl-capi/helper/include/*.h dpctl-capi/helper/source/*.cpp`
+
 ### Python code style
 
 

@@ -36,16 +36,16 @@ namespace
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 } /* end of anonymous namespace */
 
-bool DPCTLContext_AreEq (__dpctl_keep const DPCTLSyclContextRef CtxRef1,
+bool DPCTLContext_AreEq(__dpctl_keep const DPCTLSyclContextRef CtxRef1,
                         __dpctl_keep const DPCTLSyclContextRef CtxRef2)
 {
-    if(!(CtxRef1 && CtxRef2))
+    if (!(CtxRef1 && CtxRef2))
         // \todo handle error
         return false;
     return (*unwrap(CtxRef1) == *unwrap(CtxRef2));
 }
 
-bool DPCTLContext_IsHost (__dpctl_keep const DPCTLSyclContextRef CtxRef)
+bool DPCTLContext_IsHost(__dpctl_keep const DPCTLSyclContextRef CtxRef)
 {
     auto Ctx = unwrap(CtxRef);
     if (Ctx) {
@@ -54,27 +54,26 @@ bool DPCTLContext_IsHost (__dpctl_keep const DPCTLSyclContextRef CtxRef)
     return false;
 }
 
-void DPCTLContext_Delete (__dpctl_take DPCTLSyclContextRef CtxRef)
+void DPCTLContext_Delete(__dpctl_take DPCTLSyclContextRef CtxRef)
 {
     delete unwrap(CtxRef);
 }
 
 DPCTLSyclBackendType
-DPCTLContext_GetBackend (__dpctl_keep const DPCTLSyclContextRef CtxRef)
+DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef)
 {
     auto BE = unwrap(CtxRef)->get_platform().get_backend();
 
-    switch(BE)
-    {
-        case backend::host:
-            return DPCTL_HOST;
-        case backend::opencl:
-            return DPCTL_OPENCL;
-        case backend::level_zero:
-            return DPCTL_LEVEL_ZERO;
-        case backend::cuda:
-            return DPCTL_CUDA;
-        default:
-            return DPCTL_UNKNOWN_BACKEND;
+    switch (BE) {
+    case backend::host:
+        return DPCTL_HOST;
+    case backend::opencl:
+        return DPCTL_OPENCL;
+    case backend::level_zero:
+        return DPCTL_LEVEL_ZERO;
+    case backend::cuda:
+        return DPCTL_CUDA;
+    default:
+        return DPCTL_UNKNOWN_BACKEND;
     }
 }

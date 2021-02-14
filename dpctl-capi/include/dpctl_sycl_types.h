@@ -65,11 +65,11 @@ typedef struct DPCTLOpaqueSyclPlatform *DPCTLSyclPlatformRef;
  */
 typedef struct DPCTLOpaqueSyclProgram *DPCTLSyclProgramRef;
 
- /*!
-  * @brief Opaque pointer to a sycl::queue
-  *
-  * @see sycl::queue
-  */
+/*!
+ * @brief Opaque pointer to a sycl::queue
+ *
+ * @see sycl::queue
+ */
 typedef struct DPCTLOpaqueSyclQueue *DPCTLSyclQueueRef;
 
 /*!

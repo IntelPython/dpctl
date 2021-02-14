@@ -25,10 +25,9 @@
 //===----------------------------------------------------------------------===//
 #include "dpctl_sycl_queue_manager.h"
 #include "Support/CBindingWrapping.h"
+#include <CL/sycl.hpp> /* SYCL headers   */
 #include <string>
 #include <vector>
-
-#include <CL/sycl.hpp>                /* SYCL headers   */
 
 using namespace cl::sycl;
 
@@ -55,19 +54,20 @@ class QMgrHelper
 public:
     using QVec = vector_class<queue>;
 
-    static QVec* init_queues (backend BE, info::device_type DTy)
+    static QVec *init_queues(backend BE, info::device_type DTy)
     {
         QVec *queues = new QVec();
         auto Platforms = platform::get_platforms();
         for (auto &p : Platforms) {
-            if (p.is_host()) continue;
+            if (p.is_host())
+                continue;
             auto be = p.get_backend();
             auto Devices = p.get_devices();
 
             if (Devices.size() == 1) {
                 auto d = Devices[0];
                 auto devty = d.get_info<info::device::device_type>();
-                if(devty == DTy && be == BE) {
+                if (devty == DTy && be == BE) {
                     auto Ctx = context(d);
                     queues->emplace_back(Ctx, d);
                     break;
@@ -75,9 +75,9 @@ public:
             }
             else {
                 vector_class<device> SelectedDevices;
-                for(auto &d : Devices) {
+                for (auto &d : Devices) {
                     auto devty = d.get_info<info::device::device_type>();
-                    if(devty == DTy && be == BE) {
+                    if (devty == DTy && be == BE) {
                         SelectedDevices.push_back(d);
                     }
                 }
@@ -91,11 +91,11 @@ public:
         return queues;
     }
 
-    static QVec* init_active_queues ()
+    static QVec *init_active_queues()
     {
         QVec *active_queues;
         try {
-            auto def_device { default_selector().select_device() };
+            auto def_device{default_selector().select_device()};
             auto BE = def_device.get_platform().get_backend();
             auto DevTy = def_device.get_info<info::device::device_type>();
 
@@ -103,23 +103,20 @@ public:
             // to what SYCL returns based on the same scoring logic. Just
             // storing the first device is not correct when we will have
             // multiple devices of same type.
-            if(BE == backend::opencl &&
-                DevTy == info::device_type::cpu) {
+            if (BE == backend::opencl && DevTy == info::device_type::cpu) {
                 active_queues = new QVec({get_opencl_cpu_queues()[0]});
             }
-            else if(BE == backend::opencl &&
-                DevTy == info::device_type::gpu) {
+            else if (BE == backend::opencl && DevTy == info::device_type::gpu) {
                 active_queues = new QVec({get_opencl_gpu_queues()[0]});
             }
-            else if(BE == backend::level_zero &&
-                DevTy == info::device_type::gpu) {
-                active_queues =  new QVec({get_level0_gpu_queues()[0]});
+            else if (BE == backend::level_zero &&
+                     DevTy == info::device_type::gpu) {
+                active_queues = new QVec({get_level0_gpu_queues()[0]});
             }
             else {
-                active_queues =  new QVec();
+                active_queues = new QVec();
             }
-        }
-        catch (runtime_error &re) {
+        } catch (runtime_error &re) {
             // \todo Handle the error
             active_queues = new QVec();
         }
@@ -127,56 +124,52 @@ public:
         return active_queues;
     }
 
-    static QVec& get_opencl_cpu_queues ()
+    static QVec &get_opencl_cpu_queues()
     {
-        static QVec* queues = init_queues(backend::opencl,
-                                          info::device_type::cpu);
+        static QVec *queues =
+            init_queues(backend::opencl, info::device_type::cpu);
         return *queues;
     }
 
-    static QVec& get_opencl_gpu_queues ()
+    static QVec &get_opencl_gpu_queues()
     {
-        static QVec* queues = init_queues(backend::opencl,
-                                          info::device_type::gpu);
+        static QVec *queues =
+            init_queues(backend::opencl, info::device_type::gpu);
         return *queues;
     }
 
-    static QVec get_level0_gpu_queues ()
+    static QVec get_level0_gpu_queues()
     {
-        static QVec* queues = init_queues(backend::level_zero,
-                                          info::device_type::gpu);
+        static QVec *queues =
+            init_queues(backend::level_zero, info::device_type::gpu);
         return *queues;
     }
 
-    static QVec& get_active_queues ()
+    static QVec &get_active_queues()
     {
         thread_local static QVec *active_queues = init_active_queues();
         return *active_queues;
     }
 
-    static __dpctl_give DPCTLSyclQueueRef
-    getQueue (DPCTLSyclBackendType BETy,
-              DPCTLSyclDeviceType DeviceTy,
-              size_t DNum);
+    static __dpctl_give DPCTLSyclQueueRef getQueue(DPCTLSyclBackendType BETy,
+                                                   DPCTLSyclDeviceType DeviceTy,
+                                                   size_t DNum);
+
+    static __dpctl_give DPCTLSyclQueueRef getCurrentQueue();
+
+    static bool isCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
     static __dpctl_give DPCTLSyclQueueRef
-    getCurrentQueue ();
-
-    static bool isCurrentQueue (__dpctl_keep const DPCTLSyclQueueRef QRef);
-
-    static __dpctl_give DPCTLSyclQueueRef
-    setAsDefaultQueue (DPCTLSyclBackendType BETy,
-                       DPCTLSyclDeviceType DeviceTy,
-                       size_t DNum);
+    setAsDefaultQueue(DPCTLSyclBackendType BETy,
+                      DPCTLSyclDeviceType DeviceTy,
+                      size_t DNum);
 
     static __dpctl_give DPCTLSyclQueueRef
-    pushSyclQueue (DPCTLSyclBackendType BETy,
-                   DPCTLSyclDeviceType DeviceTy,
-                   size_t DNum);
+    pushSyclQueue(DPCTLSyclBackendType BETy,
+                  DPCTLSyclDeviceType DeviceTy,
+                  size_t DNum);
 
-    static void
-    popSyclQueue ();
-
+    static void popSyclQueue();
 };
 
 /*!
@@ -185,10 +178,10 @@ public:
  * responsible for deallocating it. The helper function DPCTLQueue_Delete should
  * be used for that purpose.
  */
-DPCTLSyclQueueRef QMgrHelper::getCurrentQueue ()
+DPCTLSyclQueueRef QMgrHelper::getCurrentQueue()
 {
     auto &activated_q = get_active_queues();
-    if(activated_q.empty()) {
+    if (activated_q.empty()) {
         // \todo handle error
         std::cerr << "No currently active queues.\n";
         return nullptr;
@@ -204,14 +197,13 @@ DPCTLSyclQueueRef QMgrHelper::getCurrentQueue ()
  * be used for that purpose.
  */
 __dpctl_give DPCTLSyclQueueRef
-QMgrHelper::getQueue (DPCTLSyclBackendType BETy,
-                      DPCTLSyclDeviceType DeviceTy,
-                      size_t DNum)
+QMgrHelper::getQueue(DPCTLSyclBackendType BETy,
+                     DPCTLSyclDeviceType DeviceTy,
+                     size_t DNum)
 {
     queue *QRef = nullptr;
 
-    switch (BETy|DeviceTy)
-    {
+    switch (BETy | DeviceTy) {
     case DPCTLSyclBackendType::DPCTL_OPENCL | DPCTLSyclDeviceType::DPCTL_CPU:
     {
         auto cpuQs = get_opencl_cpu_queues();
@@ -237,7 +229,7 @@ QMgrHelper::getQueue (DPCTLSyclBackendType BETy,
         break;
     }
     case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO |
-         DPCTLSyclDeviceType::DPCTL_GPU:
+        DPCTLSyclDeviceType::DPCTL_GPU:
     {
         auto l0GpuQs = get_level0_gpu_queues();
         if (DNum >= l0GpuQs.size()) {
@@ -262,10 +254,10 @@ QMgrHelper::getQueue (DPCTLSyclBackendType BETy,
  * device of the queue passed as input. Return true if both queues have the
  * same context and device.
  */
-bool QMgrHelper::isCurrentQueue (__dpctl_keep const DPCTLSyclQueueRef QRef)
+bool QMgrHelper::isCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     auto &activated_q = get_active_queues();
-    if(activated_q.empty()) {
+    if (activated_q.empty()) {
         // \todo handle error
         std::cerr << "No currently active queues.\n";
         return false;
@@ -280,19 +272,18 @@ bool QMgrHelper::isCurrentQueue (__dpctl_keep const DPCTLSyclQueueRef QRef)
  * sycl::queue corresponding to the device type and device number.
  */
 __dpctl_give DPCTLSyclQueueRef
-QMgrHelper::setAsDefaultQueue (DPCTLSyclBackendType BETy,
-                               DPCTLSyclDeviceType DeviceTy,
-                               size_t DNum)
+QMgrHelper::setAsDefaultQueue(DPCTLSyclBackendType BETy,
+                              DPCTLSyclDeviceType DeviceTy,
+                              size_t DNum)
 {
     queue *QRef = nullptr;
     auto &activeQ = get_active_queues();
-    if(activeQ.empty()) {
+    if (activeQ.empty()) {
         std::cerr << "active queue vector is corrupted.\n";
         return nullptr;
     }
 
-    switch (BETy|DeviceTy)
-    {
+    switch (BETy | DeviceTy) {
     case DPCTLSyclBackendType::DPCTL_OPENCL | DPCTLSyclDeviceType::DPCTL_CPU:
     {
         auto oclcpu_q = get_opencl_cpu_queues();
@@ -305,7 +296,7 @@ QMgrHelper::setAsDefaultQueue (DPCTLSyclBackendType BETy,
         activeQ[0] = oclcpu_q[DNum];
         break;
     }
-   case DPCTLSyclBackendType::DPCTL_OPENCL | DPCTLSyclDeviceType::DPCTL_GPU:
+    case DPCTLSyclBackendType::DPCTL_OPENCL | DPCTLSyclDeviceType::DPCTL_GPU:
     {
         auto oclgpu_q = get_opencl_gpu_queues();
         if (DNum >= oclgpu_q.size()) {
@@ -318,7 +309,7 @@ QMgrHelper::setAsDefaultQueue (DPCTLSyclBackendType BETy,
         break;
     }
     case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO |
-         DPCTLSyclDeviceType::DPCTL_GPU:
+        DPCTLSyclDeviceType::DPCTL_GPU:
     {
         auto l0gpu_q = get_level0_gpu_queues();
         if (DNum >= l0gpu_q.size()) {
@@ -348,19 +339,18 @@ QMgrHelper::setAsDefaultQueue (DPCTLSyclBackendType BETy,
  * that purpose.
  */
 __dpctl_give DPCTLSyclQueueRef
-QMgrHelper::pushSyclQueue (DPCTLSyclBackendType BETy,
-                           DPCTLSyclDeviceType DeviceTy,
-                           size_t DNum)
+QMgrHelper::pushSyclQueue(DPCTLSyclBackendType BETy,
+                          DPCTLSyclDeviceType DeviceTy,
+                          size_t DNum)
 {
     queue *QRef = nullptr;
     auto &activeQ = get_active_queues();
-    if(activeQ.empty()) {
+    if (activeQ.empty()) {
         std::cerr << "Why is there no previous global context?\n";
         return nullptr;
     }
 
-    switch (BETy|DeviceTy)
-    {
+    switch (BETy | DeviceTy) {
     case DPCTLSyclBackendType::DPCTL_OPENCL | DPCTLSyclDeviceType::DPCTL_CPU:
     {
         if (DNum >= get_opencl_cpu_queues().size()) {
@@ -370,7 +360,7 @@ QMgrHelper::pushSyclQueue (DPCTLSyclBackendType BETy,
             return nullptr;
         }
         activeQ.emplace_back(get_opencl_cpu_queues()[DNum]);
-        QRef = new queue(activeQ[activeQ.size()-1]);
+        QRef = new queue(activeQ[activeQ.size() - 1]);
         break;
     }
     case DPCTLSyclBackendType::DPCTL_OPENCL | DPCTLSyclDeviceType::DPCTL_GPU:
@@ -382,11 +372,11 @@ QMgrHelper::pushSyclQueue (DPCTLSyclBackendType BETy,
             return nullptr;
         }
         activeQ.emplace_back(get_opencl_gpu_queues()[DNum]);
-        QRef = new queue(activeQ[get_active_queues().size()-1]);
+        QRef = new queue(activeQ[get_active_queues().size() - 1]);
         break;
     }
     case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO |
-         DPCTLSyclDeviceType::DPCTL_GPU:
+        DPCTLSyclDeviceType::DPCTL_GPU:
     {
         if (DNum >= get_level0_gpu_queues().size()) {
             // \todo handle error
@@ -395,7 +385,7 @@ QMgrHelper::pushSyclQueue (DPCTLSyclBackendType BETy,
             return nullptr;
         }
         activeQ.emplace_back(get_level0_gpu_queues()[DNum]);
-        QRef = new queue(activeQ[get_active_queues().size()-1]);
+        QRef = new queue(activeQ[get_active_queues().size() - 1]);
         break;
     }
     default:
@@ -416,11 +406,10 @@ QMgrHelper::pushSyclQueue (DPCTLSyclBackendType BETy,
  * after all activated queues are popped, the global queue is still available as
  * the first element added to the stack.
  */
-void
-QMgrHelper::popSyclQueue ()
+void QMgrHelper::popSyclQueue()
 {
     // The first queue which is the "default" queue can not be removed.
-    if(get_active_queues().size() <= 1 ) {
+    if (get_active_queues().size() <= 1) {
         std::cerr << "No active contexts.\n";
         return;
     }
@@ -435,7 +424,7 @@ QMgrHelper::popSyclQueue ()
  * Returns inside the number of activated queues not including the global queue
  * (QMgrHelper::active_queues[0]).
  */
-size_t DPCTLQueueMgr_GetNumActivatedQueues ()
+size_t DPCTLQueueMgr_GetNumActivatedQueues()
 {
     if (QMgrHelper::get_active_queues().empty()) {
         // \todo handle error
@@ -449,11 +438,10 @@ size_t DPCTLQueueMgr_GetNumActivatedQueues ()
  * Returns the number of available queues for a specific backend and device
  * type combination.
  */
-size_t DPCTLQueueMgr_GetNumQueues (DPCTLSyclBackendType BETy,
-                                   DPCTLSyclDeviceType DeviceTy)
+size_t DPCTLQueueMgr_GetNumQueues(DPCTLSyclBackendType BETy,
+                                  DPCTLSyclDeviceType DeviceTy)
 {
-    switch (BETy|DeviceTy)
-    {
+    switch (BETy | DeviceTy) {
     case DPCTLSyclBackendType::DPCTL_OPENCL | DPCTLSyclDeviceType::DPCTL_CPU:
     {
         return QMgrHelper::get_opencl_cpu_queues().size();
@@ -463,7 +451,7 @@ size_t DPCTLQueueMgr_GetNumQueues (DPCTLSyclBackendType BETy,
         return QMgrHelper::get_opencl_gpu_queues().size();
     }
     case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO |
-         DPCTLSyclDeviceType::DPCTL_GPU:
+        DPCTLSyclDeviceType::DPCTL_GPU:
     {
         return QMgrHelper::get_level0_gpu_queues().size();
     }
@@ -479,7 +467,7 @@ size_t DPCTLQueueMgr_GetNumQueues (DPCTLSyclBackendType BETy,
 /*!
  * \see QMgrHelper::getCurrentQueue()
  */
-DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue ()
+DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue()
 {
     return QMgrHelper::getCurrentQueue();
 }
@@ -488,9 +476,9 @@ DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue ()
  * Returns a copy of a sycl::queue corresponding to the specified device type
  * and device number. A runtime_error gets thrown if no such device exists.
  */
-DPCTLSyclQueueRef DPCTLQueueMgr_GetQueue (DPCTLSyclBackendType BETy,
-                                          DPCTLSyclDeviceType DeviceTy,
-                                          size_t DNum)
+DPCTLSyclQueueRef DPCTLQueueMgr_GetQueue(DPCTLSyclBackendType BETy,
+                                         DPCTLSyclDeviceType DeviceTy,
+                                         size_t DNum)
 {
     return QMgrHelper::getQueue(BETy, DeviceTy, DNum);
 }
@@ -498,7 +486,7 @@ DPCTLSyclQueueRef DPCTLQueueMgr_GetQueue (DPCTLSyclBackendType BETy,
 /*!
 
 * */
-bool DPCTLQueueMgr_IsCurrentQueue (__dpctl_keep const DPCTLSyclQueueRef QRef)
+bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     return QMgrHelper::isCurrentQueue(QRef);
 }
@@ -509,9 +497,9 @@ bool DPCTLQueueMgr_IsCurrentQueue (__dpctl_keep const DPCTLSyclQueueRef QRef)
  * device, Null is returned.
  */
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_SetAsDefaultQueue (DPCTLSyclBackendType BETy,
-                                 DPCTLSyclDeviceType DeviceTy,
-                                 size_t DNum)
+DPCTLQueueMgr_SetAsDefaultQueue(DPCTLSyclBackendType BETy,
+                                DPCTLSyclDeviceType DeviceTy,
+                                size_t DNum)
 {
     return QMgrHelper::setAsDefaultQueue(BETy, DeviceTy, DNum);
 }
@@ -520,9 +508,9 @@ DPCTLQueueMgr_SetAsDefaultQueue (DPCTLSyclBackendType BETy,
  * \see QMgrHelper::pushSyclQueue()
  */
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_PushQueue (DPCTLSyclBackendType BETy,
-                         DPCTLSyclDeviceType DeviceTy,
-                         size_t DNum)
+DPCTLQueueMgr_PushQueue(DPCTLSyclBackendType BETy,
+                        DPCTLSyclDeviceType DeviceTy,
+                        size_t DNum)
 {
     return QMgrHelper::pushSyclQueue(BETy, DeviceTy, DNum);
 }
@@ -530,7 +518,7 @@ DPCTLQueueMgr_PushQueue (DPCTLSyclBackendType BETy,
 /*!
  * \see QMgrHelper::popSyclQueue()
  */
-void DPCTLQueueMgr_PopQueue ()
+void DPCTLQueueMgr_PopQueue()
 {
     QMgrHelper::popSyclQueue();
 }
@@ -539,11 +527,9 @@ void DPCTLQueueMgr_PopQueue ()
  * The function constructs a new SYCL queue instance from SYCL conext and
  * SYCL device.
  */
-DPCTLSyclQueueRef
-DPCTLQueueMgr_GetQueueFromContextAndDevice (
+DPCTLSyclQueueRef DPCTLQueueMgr_GetQueueFromContextAndDevice(
     __dpctl_keep DPCTLSyclContextRef CRef,
-    __dpctl_keep DPCTLSyclDeviceRef DRef
-)
+    __dpctl_keep DPCTLSyclDeviceRef DRef)
 {
     auto dev = unwrap(DRef);
     auto ctx = unwrap(CRef);

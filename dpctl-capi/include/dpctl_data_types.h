@@ -40,12 +40,12 @@
 #ifndef _MSC_VER
 
 #if !defined(UINT32_MAX)
-# error "The standard header <cstdint> is not C++11 compliant. Must #define "\
+#error "The standard header <cstdint> is not C++11 compliant. Must #define "\
         "__STDC_LIMIT_MACROS before #including llvm-c/DataTypes.h"
 #endif
 
 #if !defined(UINT32_C)
-# error "The standard header <cstdint> is not C++11 compliant. Must #define "\
+#error "The standard header <cstdint> is not C++11 compliant. Must #define "\
         "__STDC_CONSTANT_MACROS before #including llvm-c/DataTypes.h"
 #endif
 
@@ -80,21 +80,21 @@ typedef signed int ssize_t;
     @brief Represents tha largest possible value of a 64 bit signed integer.
 */
 #if !defined(INT64_MAX)
-# define INT64_MAX 9223372036854775807LL
+#define INT64_MAX 9223372036854775807LL
 #endif
 
 /*!
     @brief Represents tha smallest possible value of a 64 bit signed integer.
 */
 #if !defined(INT64_MIN)
-# define INT64_MIN ((-INT64_MAX)-1)
+#define INT64_MIN ((-INT64_MAX) - 1)
 #endif
 
 /*!
     @brief Represents tha largest possible value of a 64bit unsigned integer.
 */
 #if !defined(UINT64_MAX)
-# define UINT64_MAX 0xffffffffffffffffULL
+#define UINT64_MAX 0xffffffffffffffffULL
 #endif
 
 /*!

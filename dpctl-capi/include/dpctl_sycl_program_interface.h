@@ -26,11 +26,11 @@
 
 #pragma once
 
-#include "dpctl_data_types.h"
-#include "dpctl_sycl_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dpctl_data_types.h"
+#include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
 
@@ -56,10 +56,10 @@ DPCTL_C_EXTERN_C_BEGIN
  */
 DPCTL_API
 __dpctl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromSpirv (__dpctl_keep const DPCTLSyclContextRef Ctx,
-                              __dpctl_keep const void *IL,
-                              size_t Length,
-                              const char *CompileOpts);
+DPCTLProgram_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef Ctx,
+                             __dpctl_keep const void *IL,
+                             size_t Length,
+                             const char *CompileOpts);
 
 /*!
  * @brief Create a Sycl program from an OpenCL kernel source string.
@@ -72,9 +72,9 @@ DPCTLProgram_CreateFromSpirv (__dpctl_keep const DPCTLSyclContextRef Ctx,
  */
 DPCTL_API
 __dpctl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromOCLSource (__dpctl_keep const DPCTLSyclContextRef Ctx,
-                                  __dpctl_keep const char *Source,
-                                  __dpctl_keep const char *CompileOpts);
+DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
+                                 __dpctl_keep const char *Source,
+                                 __dpctl_keep const char *CompileOpts);
 
 /*!
  * @brief Returns the SyclKernel with given name from the program, if not found
@@ -86,8 +86,8 @@ DPCTLProgram_CreateFromOCLSource (__dpctl_keep const DPCTLSyclContextRef Ctx,
  */
 DPCTL_API
 __dpctl_give DPCTLSyclKernelRef
-DPCTLProgram_GetKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
-                        __dpctl_keep const char *KernelName);
+DPCTLProgram_GetKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
+                       __dpctl_keep const char *KernelName);
 
 /*!
  * @brief Return True if a SyclKernel with given name exists in the program, if
@@ -98,9 +98,8 @@ DPCTLProgram_GetKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
  * @return   True if the kernel exists, else False
  */
 DPCTL_API
-bool
-DPCTLProgram_HasKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
-                        __dpctl_keep const char *KernelName);
+bool DPCTLProgram_HasKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
+                            __dpctl_keep const char *KernelName);
 
 /*!
  * @brief Frees the DPCTLSyclProgramRef pointer.
@@ -108,7 +107,6 @@ DPCTLProgram_HasKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
  * @param    PRef           Opaque pointer to a sycl::program
  */
 DPCTL_API
-void
-DPCTLProgram_Delete (__dpctl_take DPCTLSyclProgramRef PRef);
+void DPCTLProgram_Delete(__dpctl_take DPCTLSyclProgramRef PRef);
 
 DPCTL_C_EXTERN_C_END

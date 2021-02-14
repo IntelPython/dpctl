@@ -24,10 +24,10 @@
 
 #pragma once
 
-#include "dpctl_data_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dpctl_data_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
 
@@ -37,7 +37,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * @param    str            C string to be deleted
  */
 DPCTL_API
-void DPCTLCString_Delete (__dpctl_take const char* str);
+void DPCTLCString_Delete(__dpctl_take const char *str);
 
 /*!
  * @brief Deletes an array of size_t elements.
@@ -45,6 +45,6 @@ void DPCTLCString_Delete (__dpctl_take const char* str);
  * @param    arr            Array to be deleted.
  */
 DPCTL_API
-void DPCTLSize_t_Array_Delete (__dpctl_take size_t* arr);
+void DPCTLSize_t_Array_Delete(__dpctl_take size_t *arr);
 
 DPCTL_C_EXTERN_C_END

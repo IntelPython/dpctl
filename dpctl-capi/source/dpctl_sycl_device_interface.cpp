@@ -25,12 +25,12 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_interface.h"
+#include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
+#include <CL/sycl.hpp> /* SYCL headers   */
+#include <cstring>
 #include <iomanip>
 #include <iostream>
-#include <cstring>
-#include <CL/sycl.hpp>                /* SYCL headers   */
-#include "../helper/include/dpctl_utils_helper.h"
 
 using namespace cl::sycl;
 
@@ -39,12 +39,12 @@ namespace
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
 
- /*!
+/*!
  * @brief Helper function to print the metadata for a sycl::device.
  *
  * @param    Device         My Param doc
  */
-void dump_device_info (const device & Device)
+void dump_device_info(const device &Device)
 {
     std::stringstream ss;
 
@@ -72,19 +72,18 @@ void dump_device_info (const device & Device)
  * vendor, and device profile are printed out. More attributed may be added
  * later.
  */
-void DPCTLDevice_DumpInfo (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+void DPCTLDevice_DumpInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto Device = unwrap(DRef);
     dump_device_info(*Device);
 }
 
-
-void DPCTLDevice_Delete (__dpctl_take DPCTLSyclDeviceRef DRef)
+void DPCTLDevice_Delete(__dpctl_take DPCTLSyclDeviceRef DRef)
 {
     delete unwrap(DRef);
 }
 
-bool DPCTLDevice_IsAccelerator (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+bool DPCTLDevice_IsAccelerator(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
@@ -93,7 +92,7 @@ bool DPCTLDevice_IsAccelerator (__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return false;
 }
 
-bool DPCTLDevice_IsCPU (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+bool DPCTLDevice_IsCPU(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
@@ -102,7 +101,7 @@ bool DPCTLDevice_IsCPU (__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return false;
 }
 
-bool DPCTLDevice_IsGPU (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+bool DPCTLDevice_IsGPU(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
@@ -111,8 +110,7 @@ bool DPCTLDevice_IsGPU (__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return false;
 }
 
-
-bool DPCTLDevice_IsHost (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
@@ -121,9 +119,8 @@ bool DPCTLDevice_IsHost (__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return false;
 }
 
-
 uint32_t
-DPCTLDevice_GetMaxComputeUnits (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+DPCTLDevice_GetMaxComputeUnits(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
@@ -133,7 +130,7 @@ DPCTLDevice_GetMaxComputeUnits (__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 uint32_t
-DPCTLDevice_GetMaxWorkItemDims (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+DPCTLDevice_GetMaxWorkItemDims(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
@@ -142,15 +139,15 @@ DPCTLDevice_GetMaxWorkItemDims (__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return 0;
 }
 
-__dpctl_keep size_t*
-DPCTLDevice_GetMaxWorkItemSizes (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+__dpctl_keep size_t *
+DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     size_t *sizes = nullptr;
     auto D = unwrap(DRef);
     if (D) {
         auto id_sizes = D->get_info<info::device::max_work_item_sizes>();
         sizes = new size_t[3];
-        for(auto i = 0ul; i < 3; ++i) {
+        for (auto i = 0ul; i < 3; ++i) {
             sizes[i] = id_sizes[i];
         }
     }
@@ -158,7 +155,7 @@ DPCTLDevice_GetMaxWorkItemSizes (__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 size_t
-DPCTLDevice_GetMaxWorkGroupSize (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+DPCTLDevice_GetMaxWorkGroupSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
@@ -168,7 +165,7 @@ DPCTLDevice_GetMaxWorkGroupSize (__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 uint32_t
-DPCTLDevice_GetMaxNumSubGroups (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+DPCTLDevice_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
@@ -177,8 +174,7 @@ DPCTLDevice_GetMaxNumSubGroups (__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return 0;
 }
 
-bool
-DPCTLDevice_HasInt64BaseAtomics (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+bool DPCTLDevice_HasInt64BaseAtomics(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
@@ -187,8 +183,8 @@ DPCTLDevice_HasInt64BaseAtomics (__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return false;
 }
 
-bool
-DPCTLDevice_HasInt64ExtendedAtomics (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+bool DPCTLDevice_HasInt64ExtendedAtomics(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
@@ -197,13 +193,13 @@ DPCTLDevice_HasInt64ExtendedAtomics (__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return false;
 }
 
-__dpctl_give const char*
-DPCTLDevice_GetName (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+__dpctl_give const char *
+DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
         auto name = D->get_info<info::device::name>();
-        auto cstr_len = name.length()+1;
+        auto cstr_len = name.length() + 1;
         auto cstr_name = new char[cstr_len];
 #ifdef _WIN32
         strncpy_s(cstr_name, cstr_len, name.c_str(), cstr_len);
@@ -215,13 +211,13 @@ DPCTLDevice_GetName (__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return nullptr;
 }
 
-__dpctl_give const char*
-DPCTLDevice_GetVendorName (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+__dpctl_give const char *
+DPCTLDevice_GetVendorName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
         auto vendor = D->get_info<info::device::vendor>();
-        auto cstr_len = vendor.length()+1;
+        auto cstr_len = vendor.length() + 1;
         auto cstr_vendor = new char[cstr_len];
 #ifdef _WIN32
         strncpy_s(cstr_vendor, cstr_len, vendor.c_str(), cstr_len);
@@ -233,13 +229,13 @@ DPCTLDevice_GetVendorName (__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return nullptr;
 }
 
-__dpctl_give const char*
-DPCTLDevice_GetDriverInfo (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+__dpctl_give const char *
+DPCTLDevice_GetDriverInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
         auto driver = D->get_info<info::device::driver_version>();
-        auto cstr_len = driver.length()+1;
+        auto cstr_len = driver.length() + 1;
         auto cstr_driver = new char[cstr_len];
 #ifdef _WIN32
         strncpy_s(cstr_driver, cstr_len, driver.c_str(), cstr_len);
@@ -251,7 +247,7 @@ DPCTLDevice_GetDriverInfo (__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return nullptr;
 }
 
-bool DPCTLDevice_IsHostUnifiedMemory (__dpctl_keep const DPCTLSyclDeviceRef DRef)
+bool DPCTLDevice_IsHostUnifiedMemory(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
     if (D) {
@@ -261,9 +257,9 @@ bool DPCTLDevice_IsHostUnifiedMemory (__dpctl_keep const DPCTLSyclDeviceRef DRef
 }
 
 bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
-                      __dpctl_keep const DPCTLSyclDeviceRef DevRef2)
+                       __dpctl_keep const DPCTLSyclDeviceRef DevRef2)
 {
-    if(!(DevRef1 && DevRef2))
+    if (!(DevRef1 && DevRef2))
         // \todo handle error
         return false;
     return (*unwrap(DevRef1) == *unwrap(DevRef2));

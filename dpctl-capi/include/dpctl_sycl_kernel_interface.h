@@ -26,11 +26,11 @@
 
 #pragma once
 
-#include "dpctl_data_types.h"
-#include "dpctl_sycl_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dpctl_data_types.h"
+#include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
 
@@ -43,8 +43,8 @@ DPCTL_C_EXTERN_C_BEGIN
  *           returns a nullptr.
  */
 DPCTL_API
-__dpctl_give const char*
-DPCTLKernel_GetFunctionName (__dpctl_keep const DPCTLSyclKernelRef KRef);
+__dpctl_give const char *
+DPCTLKernel_GetFunctionName(__dpctl_keep const DPCTLSyclKernelRef KRef);
 
 /*!
  * @brief Returns the number of arguments for the OpenCL kernel.
@@ -55,8 +55,7 @@ DPCTLKernel_GetFunctionName (__dpctl_keep const DPCTLSyclKernelRef KRef);
  *           kernel.
  */
 DPCTL_API
-size_t
-DPCTLKernel_GetNumArgs (__dpctl_keep const DPCTLSyclKernelRef KRef);
+size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef KRef);
 
 /*!
  * @brief Deletes the DPCTLSyclKernelRef after casting it to a sycl::kernel.
@@ -65,7 +64,6 @@ DPCTLKernel_GetNumArgs (__dpctl_keep const DPCTLSyclKernelRef KRef);
  *                          interoperability kernel.
  */
 DPCTL_API
-void
-DPCTLKernel_Delete (__dpctl_take DPCTLSyclKernelRef KRef);
+void DPCTLKernel_Delete(__dpctl_take DPCTLSyclKernelRef KRef);
 
 DPCTL_C_EXTERN_C_END
