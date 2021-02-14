@@ -44,16 +44,6 @@ typedef struct DeviceAndContextPair
 } DPCTL_DeviceAndContextPair;
 
 /*!
- * @brief Opaque pointer to a vector of DPCTLSyclBackendType enums.
- */
-typedef struct DPCTLBackendVector *DPCTLBackendVectorRef;
-
-/*!
- * @brief Opaque pointer to a vector of DPCTLSyclDeviceRefs.
- */
-typedef struct DPCTLDeviceVector *DPCTLDeviceVectorRef;
-
-/*!
  * @brief
  *
  * @param    BVRef          My Param doc
