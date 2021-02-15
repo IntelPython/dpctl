@@ -38,6 +38,7 @@ namespace
 {
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef)
 
 /*!
  * @brief Helper function to print the metadata for a sycl::device.
@@ -65,6 +66,43 @@ void dump_device_info(const device &Device)
 }
 
 } /* end of anonymous namespace */
+
+__dpctl_give DPCTLSyclDeviceRef DPCTLDevice_Create()
+{
+    try {
+        auto Device = new device();
+        return wrap(Device);
+    } catch (std::bad_alloc const &ba) {
+        // \todo log error
+        std::cerr << ba.what() << '\n';
+        return nullptr;
+    } catch (runtime_error const &re) {
+        // \todo log error
+        std::cerr << re.what() << '\n';
+        return nullptr;
+    }
+}
+
+__dpctl_give DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
+    __dpctl_keep const DPCTLSyclDeviceSelectorRef DSRef)
+{
+    auto Selector = unwrap(DSRef);
+    if (!Selector)
+        // \todo : Log error
+        return nullptr;
+    try {
+        auto Device = new device(*Selector);
+        return wrap(Device);
+    } catch (std::bad_alloc const &ba) {
+        // \todo log error
+        std::cerr << ba.what() << '\n';
+        return nullptr;
+    } catch (runtime_error const &re) {
+        // \todo log error
+        std::cerr << re.what() << '\n';
+        return nullptr;
+    }
+}
 
 /*!
  * Prints some of the device info metadata for the device corresponding to the

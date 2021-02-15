@@ -72,6 +72,7 @@ cdef extern from "dpctl_sycl_enum_types.h":
 cdef extern from "dpctl_sycl_types.h":
     cdef struct DPCTLOpaqueSyclContext
     cdef struct DPCTLOpaqueSyclDevice
+    cdef struct DPCTLOpaqueSyclDeviceSelector
     cdef struct DPCTLOpaqueSyclEvent
     cdef struct DPCTLOpaqueSyclKernel
     cdef struct DPCTLOpaqueSyclProgram
@@ -80,6 +81,7 @@ cdef extern from "dpctl_sycl_types.h":
 
     ctypedef DPCTLOpaqueSyclContext        *DPCTLSyclContextRef
     ctypedef DPCTLOpaqueSyclDevice         *DPCTLSyclDeviceRef
+    ctypedef DPCTLOpaqueSyclDeviceSelector *DPCTLSyclDeviceSelectorRef
     ctypedef DPCTLOpaqueSyclEvent          *DPCTLSyclEventRef
     ctypedef DPCTLOpaqueSyclKernel         *DPCTLSyclKernelRef
     ctypedef DPCTLOpaqueSyclProgram        *DPCTLSyclProgramRef
@@ -88,6 +90,9 @@ cdef extern from "dpctl_sycl_types.h":
 
 
 cdef extern from "dpctl_sycl_device_interface.h":
+    cdef DPCTLSyclDeviceRef DPCTLDevice_Create()
+    cdef DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
+        const DPCTLSyclDeviceSelectorRef DSRef)
     cdef void DPCTLDevice_DumpInfo(const DPCTLSyclDeviceRef DRef)
     cdef void DPCTLDevice_Delete(DPCTLSyclDeviceRef DRef)
     cdef void DPCTLDevice_DumpInfo(const DPCTLSyclDeviceRef DRef)
@@ -107,6 +112,17 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cpdef bool DPCTLDevice_HasInt64BaseAtomics(const DPCTLSyclDeviceRef DRef)
     cpdef bool DPCTLDevice_HasInt64ExtendedAtomics(
         const DPCTLSyclDeviceRef DRef)
+
+
+cdef extern from "dpctl_sycl_device_selector_interface.h":
+    DPCTLSyclDeviceSelectorRef DPCTLAcceleratorSelector_Create()
+    DPCTLSyclDeviceSelectorRef DPCTLDefaultSelector_Create()
+    DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create()
+    DPCTLSyclDeviceSelectorRef DPCTLFilterSelector_Create(
+        const char *filter_str)
+    DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create()
+    DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create()
+    void DPCTLDeviceSelector_Delete(DPCTLSyclDeviceSelectorRef DSRef)
 
 
 cdef extern from "dpctl_sycl_event_interface.h":
