@@ -18,88 +18,133 @@
 """
 
 import dpctl
-import unittest
+import pytest
+
+list_of_standard_selectors = [
+    dpctl.select_accelerator_device,
+    dpctl.select_cpu_device,
+    dpctl.select_default_device,
+    dpctl.select_gpu_device,
+    dpctl.select_host_device,
+]
+
+list_of_valid_filter_selectors = [
+    "opencl",
+    "opencl:gpu",
+    "opencl:cpu",
+    "opencl:gpu:0",
+    "gpu",
+    "cpu",
+    "level_zero",
+    "level_zero:gpu",
+    "opencl:cpu:0",
+    "level_zero:gpu:0",
+    "gpu:0",
+    "gpu:1",
+    "1",
+]
+
+list_of_invalid_filter_selectors = [
+    "host",
+    "0",
+    "-1",
+    "opencl:gpu:1",
+    "level_zero:cpu:0",
+]
 
 
-@unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
-class TestSyclDevice(unittest.TestCase):
-    def test_get_max_compute_units(self):
-        try:
-            q = dpctl.get_current_queue()
-        except Exception:
-            self.fail("Encountered an exception inside get_current_queue().")
-        try:
-            max_compute_units = q.get_sycl_device().get_max_compute_units()
-        except Exception:
-            self.fail("Encountered an exception inside get_max_compute_units().")
-        self.assertTrue(max_compute_units > 0)
-
-    def test_get_max_work_item_dims(self):
-        try:
-            q = dpctl.get_current_queue()
-        except Exception:
-            self.fail("Encountered an exception inside get_current_queue().")
-        try:
-            max_work_item_dims = q.get_sycl_device().get_max_work_item_dims()
-        except Exception:
-            self.fail("Encountered an exception inside get_max_work_item_dims().")
-        self.assertTrue(max_work_item_dims > 0)
-
-    def test_get_max_work_item_sizes(self):
-        try:
-            q = dpctl.get_current_queue()
-        except Exception:
-            self.fail("Encountered an exception inside get_current_queue().")
-        try:
-            max_work_item_sizes = q.get_sycl_device().get_max_work_item_sizes()
-        except Exception:
-            self.fail("Encountered an exception inside get_max_work_item_sizes().")
-        self.assertNotEqual(max_work_item_sizes, (None, None, None))
-
-    def test_get_max_work_group_size(self):
-        try:
-            q = dpctl.get_current_queue()
-        except Exception:
-            self.fail("Encountered an exception inside get_current_queue().")
-        try:
-            max_work_group_size = q.get_sycl_device().get_max_work_group_size()
-        except Exception:
-            self.fail("Encountered an exception inside get_max_work_group_size().")
-        self.assertTrue(max_work_group_size > 0)
-
-    def test_get_max_num_sub_groups(self):
-        try:
-            q = dpctl.get_current_queue()
-        except Exception:
-            self.fail("Encountered an exception inside get_current_queue().")
-        try:
-            max_num_sub_groups = q.get_sycl_device().get_max_num_sub_groups()
-        except Exception:
-            self.fail("Encountered an exception inside get_max_num_sub_groups().")
-        self.assertTrue(max_num_sub_groups > 0)
-
-    def test_has_int64_base_atomics(self):
-        try:
-            q = dpctl.get_current_queue()
-        except Exception:
-            self.fail("Encountered an exception inside get_current_queue().")
-        try:
-            aspects_base_atomics = q.get_sycl_device().has_int64_base_atomics()
-        except Exception:
-            self.fail("Encountered an exception inside has_int64_base_atomics().")
-        self.assertNotEqual(aspects_base_atomics, False)
-
-    def test_has_int64_extended_atomics(self):
-        try:
-            q = dpctl.get_current_queue()
-        except Exception:
-            self.fail("Encountered an exception inside get_current_queue().")
-        try:
-            aspects_extended_atomics = q.get_sycl_device().has_int64_extended_atomics()
-        except Exception:
-            self.fail("Encountered an exception inside has_int64_extended_atomics().")
-        self.assertNotEqual(aspects_extended_atomics, False)
+@pytest.fixture(params=list_of_valid_filter_selectors)
+def valid_filter(request):
+    return request.param
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.fixture(params=list_of_invalid_filter_selectors)
+def invalid_filter(request):
+    return request.param
+
+
+@pytest.fixture(params=list_of_standard_selectors)
+def device_selector(request):
+    return request.param
+
+
+class DeviceTestFunctions:
+    def __init__(self, device):
+        self.check_get_max_compute_units(device)
+        self.check_get_max_work_item_dims(device)
+        self.check_get_max_work_item_sizes(device)
+        self.check_get_max_work_group_size(device)
+        self.check_get_max_num_sub_groups(device)
+        self.check_has_int64_base_atomics(device)
+        self.check_has_int64_extended_atomics(device)
+
+    def check_get_max_compute_units(self, device):
+        max_compute_units = device.get_max_compute_units()
+        assert max_compute_units > 0
+
+    def check_get_max_work_item_dims(self, device):
+        max_work_item_dims = device.get_max_work_item_dims()
+        assert max_work_item_dims > 0
+
+    def check_get_max_work_item_sizes(self, device):
+        max_work_item_sizes = device.get_max_work_item_sizes()
+        for size in max_work_item_sizes:
+            assert size is not None
+
+    def check_get_max_work_group_size(self, device):
+        max_work_group_size = device.get_max_work_group_size()
+        assert max_work_group_size > 0
+
+    def check_get_max_num_sub_groups(self, device):
+        max_num_sub_groups = device.get_max_num_sub_groups()
+        assert max_num_sub_groups > 0
+
+    def check_has_int64_base_atomics(self, device):
+        try:
+            device.has_int64_base_atomics()
+        except Exception:
+            pytest.fail("has_int64_base_atomics call failed")
+
+    def check_has_int64_extended_atomics(self, device):
+        try:
+            device.has_int64_extended_atomics()
+        except Exception:
+            pytest.fail("has_int64_extended_atomics call failed")
+
+
+def test_standard_selectors(device_selector):
+    """Tests if the standard SYCL device_selectors are able to select a
+    device.
+    """
+    try:
+        device = device_selector()
+        DeviceTestFunctions(device)
+    except ValueError:
+        pytest.skip()
+
+
+def test_current_device():
+    """Test is the device for the current queue is valid."""
+    try:
+        q = dpctl.get_current_queue()
+    except Exception:
+        pytest.fail("Encountered an exception inside get_current_queue().")
+    device = q.get_sycl_device()
+    DeviceTestFunctions(device)
+
+
+def test_valid_filter_selectors(valid_filter):
+    """Tests if we can create a SyclDevice using a supported filter selector string."""
+    try:
+        device = dpctl.SyclDevice(valid_filter)
+        DeviceTestFunctions(device)
+    except ValueError:
+        pytest.fail("Failed to create device with supported filter")
+
+
+def test_invalid_filter_selectors(invalid_filter):
+    """An invalid filter string should always be caught and a ValueError
+    raised.
+    """
+    with pytest.raises(ValueError):
+        device = dpctl.SyclDevice(invalid_filter)

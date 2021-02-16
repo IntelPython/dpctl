@@ -27,7 +27,7 @@ from ._backend cimport (
 )
 
 
-cdef class SyclDevice:
+cdef class _SyclDevice:
     ''' Wrapper class for a Sycl Device
     '''
     cdef DPCTLSyclDeviceRef _device_ref
@@ -41,21 +41,25 @@ cdef class SyclDevice:
     cdef uint32_t _max_num_sub_groups
     cdef bool _int64_base_atomics
     cdef bool _int64_extended_atomics
+    cdef DPCTLSyclDeviceRef get_device_ref(self)
+    cpdef get_device_name(self)
+    cpdef get_device_type(self)
+    cpdef get_vendor_name(self)
+    cpdef get_driver_version(self)
+    cpdef get_max_compute_units(self)
+    cpdef get_max_work_item_dims(self)
+    cpdef get_max_work_item_sizes(self)
+    cpdef get_max_work_group_size(self)
+    cpdef get_max_num_sub_groups(self)
+    cpdef has_int64_base_atomics(self)
+    cpdef has_int64_extended_atomics(self)
 
+
+cdef class SyclDevice(_SyclDevice):
     @staticmethod
-    cdef SyclDevice _create (DPCTLSyclDeviceRef dref)
-    cdef DPCTLSyclDeviceRef get_device_ref (self)
-    cpdef get_device_name (self)
-    cpdef get_device_type (self)
-    cpdef get_vendor_name (self)
-    cpdef get_driver_version (self)
-    cpdef get_max_compute_units (self)
-    cpdef get_max_work_item_dims (self)
-    cpdef get_max_work_item_sizes (self)
-    cpdef get_max_work_group_size (self)
-    cpdef get_max_num_sub_groups (self)
-    cpdef has_int64_base_atomics (self)
-    cpdef has_int64_extended_atomics (self)
+    cdef SyclDevice _create(DPCTLSyclDeviceRef dref)
+    @staticmethod
+    cdef void _init_helper(SyclDevice device, DPCTLSyclDeviceRef DRef)
 
 
 cpdef select_accelerator_device()

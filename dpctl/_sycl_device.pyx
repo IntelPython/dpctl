@@ -42,6 +42,7 @@ from ._backend cimport (
     DPCTLDevice_HasInt64ExtendedAtomics,
     DPCTLDevice_IsGPU,
     DPCTLDevice_IsCPU,
+    DPCTLFilterSelector_Create,
     DPCTLDeviceSelector_Delete,
     DPCTLSize_t_Array_Delete,
     DPCTLSyclDeviceRef,
@@ -59,25 +60,9 @@ __all__ = [
 ]
 
 
-cdef class SyclDevice:
-    """ Python wrapper class for cl::sycl::device.
+cdef class _SyclDevice:
+    """ A helper metaclass to abstract a cl::sycl::device instance.
     """
-
-    @staticmethod
-    cdef SyclDevice _create(DPCTLSyclDeviceRef dref):
-        cdef SyclDevice ret = SyclDevice.__new__(SyclDevice)
-        ret._device_ref = dref
-        ret._vendor_name = DPCTLDevice_GetVendorName(dref)
-        ret._device_name = DPCTLDevice_GetName(dref)
-        ret._driver_version = DPCTLDevice_GetDriverInfo(dref)
-        ret._max_compute_units = DPCTLDevice_GetMaxComputeUnits(dref)
-        ret._max_work_item_dims = DPCTLDevice_GetMaxWorkItemDims(dref)
-        ret._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes(dref)
-        ret._max_work_group_size = DPCTLDevice_GetMaxWorkGroupSize(dref)
-        ret._max_num_sub_groups = DPCTLDevice_GetMaxNumSubGroups(dref)
-        ret._int64_base_atomics = DPCTLDevice_HasInt64BaseAtomics(dref)
-        ret._int64_extended_atomics = DPCTLDevice_HasInt64ExtendedAtomics(dref)
-        return ret
 
 
     def __dealloc__(self):
@@ -200,6 +185,81 @@ cdef class SyclDevice:
             SyclDevice cast to a size_t.
         """
         return int(<size_t>self._device_ref)
+
+
+cdef class SyclDevice(_SyclDevice):
+    """ Python equivalent for cl::sycl::device class.
+
+    There are two ways of creating a SyclDevice instance:
+        - by directly passing in a string to the class constructor.
+
+        :Example:
+
+            .. code-block:: python
+
+            import dpctl
+
+            l0gpu = dpctl.SyclDevice("level0:gpu:0"):
+            l0gpu.dump_device_info()
+
+        - by calling one of the device selector helper functions:
+          :py:meth:`~dpctl.select_accelerator_device`,
+          :py:meth:`~dpctl.select_cpu_device`,
+          :py:meth:`~dpctl.select_default_device`,
+          :py:meth:`~dpctl.select_gpu_device`,
+          :py:meth:`~dpctl.select_host_device`.
+
+        :Example:
+
+            .. code-block:: python
+
+            import dpctl
+
+            gpu = dpctl.select_gpu_device():
+            gpu.dump_device_info()
+    """
+
+    @staticmethod
+    cdef void _init_helper(SyclDevice device, DPCTLSyclDeviceRef DRef):
+        device._device_ref = DRef
+        device._vendor_name = DPCTLDevice_GetVendorName(DRef)
+        device._device_name = DPCTLDevice_GetName(DRef)
+        device._driver_version = DPCTLDevice_GetDriverInfo(DRef)
+        device._max_compute_units = DPCTLDevice_GetMaxComputeUnits(DRef)
+        device._max_work_item_dims = DPCTLDevice_GetMaxWorkItemDims(DRef)
+        device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes(DRef)
+        device._max_work_group_size = DPCTLDevice_GetMaxWorkGroupSize(DRef)
+        device._max_num_sub_groups = DPCTLDevice_GetMaxNumSubGroups(DRef)
+        device._int64_base_atomics = DPCTLDevice_HasInt64BaseAtomics(DRef)
+        device._int64_extended_atomics = (
+            DPCTLDevice_HasInt64ExtendedAtomics(DRef)
+        )
+
+    def __cinit__(self, filter_str):
+        cdef const char *filter_c_str = NULL
+        if type(filter_str) is unicode:
+            string = bytes(<unicode>filter_str, "utf-8")
+            filter_c_str = string
+        elif isinstance(filter_str, unicode):
+            string = bytes(unicode(filter_str), "utf-8")
+            filter_c_str = <unicode>string
+        cdef DPCTLSyclDeviceSelectorRef DSRef = (
+            DPCTLFilterSelector_Create(filter_c_str)
+        )
+        cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
+        if DRef is NULL:
+            raise ValueError("Device could not be created from provided filter")
+        # Initialize the attributes of the SyclDevice object
+        SyclDevice._init_helper(self, DRef)
+        # Free up the device selector
+        DPCTLDeviceSelector_Delete(DSRef)
+
+    @staticmethod
+    cdef SyclDevice _create(DPCTLSyclDeviceRef dref):
+        cdef SyclDevice ret = <SyclDevice>_SyclDevice.__new__(_SyclDevice)
+        # Initialize the attributes of the SyclDevice object
+        SyclDevice._init_helper(ret, dref)
+        return ret
 
 
 cpdef select_accelerator_device():
