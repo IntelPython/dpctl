@@ -46,6 +46,18 @@ cdef class _SyclDevice:
     cdef uint32_t _max_num_sub_groups
     cdef bool _int64_base_atomics
     cdef bool _int64_extended_atomics
+    cdef DPCTLSyclDeviceRef get_device_ref(self)
+    cpdef get_device_name(self)
+    cpdef get_device_type(self)
+    cpdef get_vendor_name(self)
+    cpdef get_driver_version(self)
+    cpdef get_max_compute_units(self)
+    cpdef get_max_work_item_dims(self)
+    cpdef get_max_work_item_sizes(self)
+    cpdef get_max_work_group_size(self)
+    cpdef get_max_num_sub_groups(self)
+    cpdef has_int64_base_atomics(self)
+    cpdef has_int64_extended_atomics(self)
 
 
     cdef DPCTLSyclDeviceRef get_device_ref(self)
