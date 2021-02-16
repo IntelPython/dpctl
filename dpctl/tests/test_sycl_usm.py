@@ -168,8 +168,6 @@ class _TestMemoryUSMBase:
     """ Base tests for MemoryUSM* """
 
     def setUp(self):
-        # self.MemoryUSMClass = None
-        # self.usm_type = None
         pass
 
     @unittest.skipUnless(
