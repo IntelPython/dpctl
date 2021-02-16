@@ -123,8 +123,8 @@ def build_backend():
 
 def extensions():
     # Security flags
-    eca = get_sdl_cflags()
-    ela = get_sdl_ldflags()
+    eca = get_sdl_cflags().append(os.getenv('CFLAGS', ''))
+    ela = get_sdl_ldflags().append(os.getenv('LDFLAGS', ''))
     libs = []
     librarys = []
 
