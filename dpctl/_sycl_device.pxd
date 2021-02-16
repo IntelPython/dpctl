@@ -20,7 +20,11 @@
 """ This file declares the SyclDevice extension type.
 """
 
-from ._backend cimport *
+from libcpp cimport bool
+from libc.stdint cimport uint32_t
+from ._backend cimport (
+    DPCTLSyclDeviceRef
+)
 
 
 cdef class SyclDevice:
@@ -52,3 +56,10 @@ cdef class SyclDevice:
     cpdef get_max_num_sub_groups (self)
     cpdef has_int64_base_atomics (self)
     cpdef has_int64_extended_atomics (self)
+
+
+cpdef select_accelerator_device()
+cpdef select_cpu_device()
+cpdef select_default_device()
+cpdef select_gpu_device()
+cpdef select_host_device()

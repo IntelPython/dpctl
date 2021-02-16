@@ -45,6 +45,7 @@ from ._backend cimport (
     DPCTLDeviceSelector_Delete,
     DPCTLSize_t_Array_Delete,
     DPCTLSyclDeviceRef,
+    DPCTLSyclDeviceSelectorRef,
 )
 from . import device_type
 
