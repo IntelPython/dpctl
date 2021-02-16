@@ -164,11 +164,13 @@ class TestMemory(unittest.TestCase):
         )
 
 
-class TestMemoryUSMBase:
+class _TestMemoryUSMBase:
     """ Base tests for MemoryUSM* """
 
-    MemoryUSMClass = None
-    usm_type = None
+    def setUp(self):
+        #self.MemoryUSMClass = None
+        #self.usm_type = None
+        pass
 
     @unittest.skipUnless(
         dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
@@ -217,25 +219,28 @@ class TestMemoryUSMBase:
         self.assertTrue(np.array_equal(m.copy_to_host(), hb))
 
 
-class TestMemoryUSMShared(TestMemoryUSMBase, unittest.TestCase):
+class TestMemoryUSMShared(_TestMemoryUSMBase, unittest.TestCase):
     """ Tests for MemoryUSMShared """
 
-    MemoryUSMClass = MemoryUSMShared
-    usm_type = "shared"
+    def setUp(self):
+        self.MemoryUSMClass = MemoryUSMShared
+        self.usm_type = "shared"
 
 
-class TestMemoryUSMHost(TestMemoryUSMBase, unittest.TestCase):
+class TestMemoryUSMHost(_TestMemoryUSMBase, unittest.TestCase):
     """ Tests for MemoryUSMHost """
 
-    MemoryUSMClass = MemoryUSMHost
-    usm_type = "host"
+    def setUp(self):
+        self.MemoryUSMClass = MemoryUSMHost
+        self.usm_type = "host"
 
 
-class TestMemoryUSMDevice(TestMemoryUSMBase, unittest.TestCase):
+class TestMemoryUSMDevice(_TestMemoryUSMBase, unittest.TestCase):
     """ Tests for MemoryUSMDevice """
 
-    MemoryUSMClass = MemoryUSMDevice
-    usm_type = "device"
+    def setUp(self):
+        self.MemoryUSMClass = MemoryUSMDevice
+        self.usm_type = "device"
 
 
 if __name__ == "__main__":
