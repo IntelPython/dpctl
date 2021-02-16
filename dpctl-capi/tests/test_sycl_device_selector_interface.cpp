@@ -26,6 +26,7 @@
 
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_device_interface.h"
+#include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
@@ -98,7 +99,7 @@ TEST_F(TestDeviceSelectorInterface, Chk_DPCTLAcceleratorSelector_Create)
         DPCTLSyclDeviceRef DRef = nullptr;
         EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
         ASSERT_TRUE(DRef != nullptr);
-        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_DumpInfo(DRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
         EXPECT_TRUE(DPCTLDevice_IsAccelerator(DRef));
         EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     }
@@ -113,7 +114,7 @@ TEST_F(TestDeviceSelectorInterface, Chk_DPCTLDefaultSelector_Create)
         DPCTLSyclDeviceRef DRef = nullptr;
         EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
         ASSERT_TRUE(DRef != nullptr);
-        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_DumpInfo(DRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
         EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     }
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
@@ -127,7 +128,7 @@ TEST_F(TestDeviceSelectorInterface, Chk_DPCTLCPUSelector_Create)
         DPCTLSyclDeviceRef DRef = nullptr;
         EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
         ASSERT_TRUE(DRef != nullptr);
-        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_DumpInfo(DRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
         EXPECT_TRUE(DPCTLDevice_IsCPU(DRef));
         EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     }
@@ -142,7 +143,7 @@ TEST_F(TestDeviceSelectorInterface, Chk_DPCTLGPUSelector_Create)
         DPCTLSyclDeviceRef DRef = nullptr;
         EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
         ASSERT_TRUE(DRef != nullptr);
-        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_DumpInfo(DRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
         EXPECT_TRUE(DPCTLDevice_IsGPU(DRef));
         EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     }
@@ -157,7 +158,7 @@ TEST_F(TestDeviceSelectorInterface, Chk_DPCTLHostSelector_Create)
         DPCTLSyclDeviceRef DRef = nullptr;
         EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
         ASSERT_TRUE(DRef != nullptr);
-        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_DumpInfo(DRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
         // FIXME: DPCPP's host_selector returns a CPU device for some reason.
         // EXPECT_TRUE(DPCTLDevice_IsHost(DRef));
         EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
