@@ -71,27 +71,31 @@ with open("README.md", "r", encoding="utf-8") as file:
     long_description = file.read()
 
 def get_sdl_cflags():
+    cflags = []
     if IS_LIN or IS_MAC:
-        return [
+        cflags = [
             "-fstack-protector",
             "-fPIC",
             "-D_FORTIFY_SOURCE=2",
             "-Wformat",
             "-Wformat-security",
         ]
-    elif IS_WIN:
-        return []
+    # Add cflags from environment
+    cflags.append(os.getenv('CFLAGS', ''))
+
+    return cflags
 
 
 def get_sdl_ldflags():
+    ldflags = []
     if IS_LIN:
-        return [
-            "-Wl,-z,noexecstack,-z,relro,-z,now",
-        ]
-    elif IS_MAC:
-        return []
+        ldflags = ["-Wl,-z,noexecstack,-z,relro,-z,now"]
     elif IS_WIN:
-        return ["/NXCompat", "/DynamicBase"]
+        ldflags = ["/NXCompat", "/DynamicBase"]
+    # Add ldflags from environment
+    ldflags.append(os.getenv('LDFLAGS', ''))
+
+    return ldflags
 
 
 def get_other_cxxflags():
@@ -123,8 +127,8 @@ def build_backend():
 
 def extensions():
     # Security flags
-    eca = get_sdl_cflags().append(os.getenv('CFLAGS', ''))
-    ela = get_sdl_ldflags().append(os.getenv('LDFLAGS', ''))
+    eca = get_sdl_cflags()
+    ela = get_sdl_ldflags()
     libs = []
     librarys = []
 
