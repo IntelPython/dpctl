@@ -24,11 +24,15 @@ requirements:
         - make  # [unix]
         - ninja  # [win]
         - numpy >=1.17
+        - pytest
+        - pytest-cov
         - wheel
     run:
         - python
         - numpy >=1.17
         - dpcpp_cpp_rt
+        - pytest
+        - pytest-cov
 
 about:
     home: https://github.com/IntelPython/dpCtl.git
