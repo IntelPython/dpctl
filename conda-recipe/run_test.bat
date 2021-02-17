@@ -11,5 +11,5 @@ set ERRORLEVEL=
 "%PYTHON%" -c "import dpctl"
 IF %ERRORLEVEL% NEQ 0 exit /b 1
 
-pytest --pyargs dpctl -v
+pytest -ra --pyargs dpctl -vv
 IF %ERRORLEVEL% NEQ 0 exit /b 1
