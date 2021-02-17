@@ -347,3 +347,12 @@ bool DPCTLDevice_IsHostUnifiedMemory(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     }
     return ret;
 }
+
+bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
+                       __dpctl_keep const DPCTLSyclDeviceRef DRef2)
+{
+    // Note: DPCPP does not yet support device equality of the form:
+    // *unwrap(DevRef1) == *unwrap(DevRef2). Till DPCPP is fixed we use the
+    // custom equality checker implemented inside DPCTLDeviceMgr.
+    return DPCTLDeviceMgr_AreEq(DRef1, DRef2);
+}
