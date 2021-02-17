@@ -57,14 +57,17 @@ def check_get_max_compute_units(device):
     max_compute_units = device.get_max_compute_units()
     assert max_compute_units > 0
 
+
 def check_get_max_work_item_dims(device):
     max_work_item_dims = device.get_max_work_item_dims()
     assert max_work_item_dims > 0
+
 
 def check_get_max_work_item_sizes(device):
     max_work_item_sizes = device.get_max_work_item_sizes()
     for size in max_work_item_sizes:
         assert size is not None
+
 
 def check_get_max_work_group_size(device):
     max_work_group_size = device.get_max_work_group_size()
@@ -74,6 +77,7 @@ def check_get_max_work_group_size(device):
     else:
         assert max_work_group_size > 0
 
+
 def check_get_max_num_sub_groups(device):
     max_num_sub_groups = device.get_max_num_sub_groups()
     # Special case for FPGA simulator
@@ -82,11 +86,13 @@ def check_get_max_num_sub_groups(device):
     else:
         assert max_num_sub_groups > 0
 
+
 def check_has_int64_base_atomics(device):
     try:
         device.has_int64_base_atomics()
     except Exception:
         pytest.fail("has_int64_base_atomics call failed")
+
 
 def check_has_int64_extended_atomics(device):
     try:
@@ -94,11 +100,13 @@ def check_has_int64_extended_atomics(device):
     except Exception:
         pytest.fail("has_int64_extended_atomics call failed")
 
+
 def check_is_accelerator(device):
     try:
         device.is_accelerator()
     except Exception:
         pytest.fail("is_accelerator call failed")
+
 
 def check_is_cpu(device):
     try:
@@ -106,11 +114,13 @@ def check_is_cpu(device):
     except Exception:
         pytest.fail("is_cpu call failed")
 
+
 def check_is_gpu(device):
     try:
         device.is_gpu()
     except Exception:
         pytest.fail("is_gpu call failed")
+
 
 def check_is_host(device):
     try:
@@ -118,19 +128,21 @@ def check_is_host(device):
     except Exception:
         pytest.fail("is_hostcall failed")
 
+
 list_of_checks = [
-check_get_max_compute_units,
-check_get_max_work_item_dims,
-check_get_max_work_item_sizes,
-check_get_max_work_group_size,
-check_get_max_num_sub_groups,
-check_has_int64_base_atomics,
-check_has_int64_extended_atomics,
-check_is_accelerator,
-check_is_cpu,
-check_is_gpu,
-check_is_host,
+    check_get_max_compute_units,
+    check_get_max_work_item_dims,
+    check_get_max_work_item_sizes,
+    check_get_max_work_group_size,
+    check_get_max_num_sub_groups,
+    check_has_int64_base_atomics,
+    check_has_int64_extended_atomics,
+    check_is_accelerator,
+    check_is_cpu,
+    check_is_gpu,
+    check_is_host,
 ]
+
 
 @pytest.fixture(params=list_of_valid_filter_selectors)
 def valid_filter(request):
@@ -145,6 +157,7 @@ def invalid_filter(request):
 @pytest.fixture(params=list_of_standard_selectors)
 def device_selector(request):
     return request.param
+
 
 @pytest.fixture(params=list_of_checks)
 def check(request):
