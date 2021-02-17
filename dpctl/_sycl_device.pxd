@@ -31,6 +31,10 @@ cdef class _SyclDevice:
     ''' Wrapper class for a Sycl Device
     '''
     cdef DPCTLSyclDeviceRef _device_ref
+    cdef bool _accelerator_device
+    cdef bool _cpu_device
+    cdef bool _gpu_device
+    cdef bool _host_device
     cdef const char *_vendor_name
     cdef const char *_device_name
     cdef const char *_driver_version
@@ -41,6 +45,8 @@ cdef class _SyclDevice:
     cdef uint32_t _max_num_sub_groups
     cdef bool _int64_base_atomics
     cdef bool _int64_extended_atomics
+
+
     cdef DPCTLSyclDeviceRef get_device_ref(self)
     cpdef get_device_name(self)
     cpdef get_device_type(self)
@@ -53,6 +59,10 @@ cdef class _SyclDevice:
     cpdef get_max_num_sub_groups(self)
     cpdef has_int64_base_atomics(self)
     cpdef has_int64_extended_atomics(self)
+    cpdef is_accelerator(self)
+    cpdef is_cpu(self)
+    cpdef is_gpu(self)
+    cpdef is_host(self)
 
 
 cdef class SyclDevice(_SyclDevice):

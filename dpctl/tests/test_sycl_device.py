@@ -93,11 +93,19 @@ class DeviceTestFunctions:
 
     def check_get_max_work_group_size(self, device):
         max_work_group_size = device.get_max_work_group_size()
-        assert max_work_group_size > 0
+        # Special case for FPGA simulator
+        if device.is_accelerator():
+            assert max_work_group_size >= 0
+        else:
+            assert max_work_group_size > 0
 
     def check_get_max_num_sub_groups(self, device):
         max_num_sub_groups = device.get_max_num_sub_groups()
-        assert max_num_sub_groups > 0
+        # Special case for FPGA simulator
+        if device.is_accelerator():
+            assert max_num_sub_groups >= 0
+        else:
+            assert max_num_sub_groups > 0
 
     def check_has_int64_base_atomics(self, device):
         try:
@@ -110,6 +118,30 @@ class DeviceTestFunctions:
             device.has_int64_extended_atomics()
         except Exception:
             pytest.fail("has_int64_extended_atomics call failed")
+
+    def check_is_accelerator(self, device):
+        try:
+            device.is_accelerator()
+        except Exception:
+            pytest.fail("is_accelerator call failed")
+
+    def check_is_cpu(self, device):
+        try:
+            device.is_cpu()
+        except Exception:
+            pytest.fail("is_cpu call failed")
+
+    def check_is_gpu(self, device):
+        try:
+            device.is_gpu()
+        except Exception:
+            pytest.fail("is_gpu call failed")
+
+    def check_is_host(self, device):
+        try:
+            device.is_host()
+        except Exception:
+            pytest.fail("is_hostcall failed")
 
 
 def test_standard_selectors(device_selector):
