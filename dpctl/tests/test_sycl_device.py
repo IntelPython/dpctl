@@ -162,6 +162,30 @@ def device_selector(request):
 def check(request):
     return request.param
 
+    def check_is_accelerator(self, device):
+        try:
+            device.is_accelerator()
+        except Exception:
+            pytest.fail("is_accelerator call failed")
+
+    def check_is_cpu(self, device):
+        try:
+            device.is_cpu()
+        except Exception:
+            pytest.fail("is_cpu call failed")
+
+    def check_is_gpu(self, device):
+        try:
+            device.is_gpu()
+        except Exception:
+            pytest.fail("is_gpu call failed")
+
+    def check_is_host(self, device):
+        try:
+            device.is_host()
+        except Exception:
+            pytest.fail("is_hostcall failed")
+
 
 def test_standard_selectors(device_selector, check):
     """Tests if the standard SYCL device_selectors are able to select a

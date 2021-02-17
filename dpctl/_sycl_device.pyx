@@ -197,6 +197,45 @@ cdef class _SyclDevice:
         """
         return self._host_device
 
+    cpdef is_accelerator(self):
+        """ Returns True if the SyclDevice instance is a SYCL accelerator
+        device.
+
+        Returns:
+            bool: True if the SyclDevice is a SYCL accelerator device,
+            else False.
+        """
+        return self._accelerator_device
+
+
+    cpdef is_cpu(self):
+        """ Returns True if the SyclDevice instance is a SYCL CPU device.
+
+        Returns:
+            bool: True if the SyclDevice is a SYCL CPU device, else False.
+        """
+        return self._cpu_device
+
+
+    cpdef is_gpu(self):
+        """ Returns True if the SyclDevice instance is a SYCL GPU device.
+
+        Returns:
+            bool: True if the SyclDevice is a SYCL GPU device, else False.
+        """
+        return self._gpu_device
+
+
+    cpdef is_host(self):
+        """ Returns True if the SyclDevice instance is a SYCL host device.
+
+        Returns:
+            bool: True if the SyclDevice is a SYCL host device, else False.
+        """
+        return self._host_device
+
+
+
     cdef DPCTLSyclDeviceRef get_device_ref (self):
         """ Returns the DPCTLSyclDeviceRef pointer for this class.
         """
@@ -391,18 +430,23 @@ cdef class SyclDevice(_SyclDevice):
     @staticmethod
     cdef void _init_helper(SyclDevice device, DPCTLSyclDeviceRef DRef):
         device._device_ref = DRef
-        device._vendor_name = DPCTLDevice_GetVendorName(DRef)
         device._device_name = DPCTLDevice_GetName(DRef)
         device._driver_version = DPCTLDevice_GetDriverInfo(DRef)
-        device._max_compute_units = DPCTLDevice_GetMaxComputeUnits(DRef)
-        device._max_work_item_dims = DPCTLDevice_GetMaxWorkItemDims(DRef)
-        device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes(DRef)
-        device._max_work_group_size = DPCTLDevice_GetMaxWorkGroupSize(DRef)
-        device._max_num_sub_groups = DPCTLDevice_GetMaxNumSubGroups(DRef)
         device._int64_base_atomics = DPCTLDevice_HasInt64BaseAtomics(DRef)
         device._int64_extended_atomics = (
             DPCTLDevice_HasInt64ExtendedAtomics(DRef)
         )
+        device._max_compute_units = DPCTLDevice_GetMaxComputeUnits(DRef)
+        device._max_num_sub_groups = DPCTLDevice_GetMaxNumSubGroups(DRef)
+        device._max_work_group_size = DPCTLDevice_GetMaxWorkGroupSize(DRef)
+        device._max_work_item_dims = DPCTLDevice_GetMaxWorkItemDims(DRef)
+        device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes(DRef)
+        device._vendor_name = DPCTLDevice_GetVendorName(DRef)
+        device._accelerator_device = DPCTLDevice_IsAccelerator(DRef)
+        device._cpu_device = DPCTLDevice_IsCPU(DRef)
+        device._gpu_device = DPCTLDevice_IsGPU(DRef)
+        device._host_device = DPCTLDevice_IsHost(DRef)
+
 
     def __cinit__(self, filter_str):
         cdef const char *filter_c_str = NULL
