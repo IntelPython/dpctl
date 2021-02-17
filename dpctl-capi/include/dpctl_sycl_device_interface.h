@@ -236,8 +236,8 @@ bool DPCTLDevice_IsHostUnifiedMemory(
  * @brief Checks if two DPCTLSyclDeviceRef objects point to the same
  * sycl::device.
  *
- * @param    DevRef1       First opaque pointer to the sycl device.
- * @param    DevRef2       Second opaque pointer to the sycl device.
+ * @param    DevRef1       First opaque pointer to a sycl device.
+ * @param    DevRef2       Second opaque pointer to a sycl device.
  * @return   True if the underlying sycl::device are same, false otherwise.
  */
 DPCTL_API
