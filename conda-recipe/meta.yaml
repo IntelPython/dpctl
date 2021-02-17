@@ -24,8 +24,6 @@ requirements:
         - make  # [unix]
         - ninja  # [win]
         - numpy >=1.17
-        - pytest
-        - pytest-cov
         - wheel
     run:
         - python
