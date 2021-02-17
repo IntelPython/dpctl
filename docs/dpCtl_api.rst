@@ -15,6 +15,7 @@ Classes
 
 .. autoclass:: dpctl.SyclDevice
     :members:
+    :inherited-members:
     :undoc-members:
 
 .. autoclass:: dpctl.SyclEvent

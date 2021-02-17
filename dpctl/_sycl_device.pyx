@@ -232,32 +232,40 @@ cdef class SyclDevice(_SyclDevice):
     """ Python equivalent for cl::sycl::device class.
 
     There are two ways of creating a SyclDevice instance:
-        - by directly passing in a string to the class constructor.
+
+        - by directly passing in a filter string to the class constructor. The
+        filter string needs to conform to the the `DPC++ filter selector SYCL
+        extension <https://bit.ly/37kqANT>`_.
 
         :Example:
-
             .. code-block:: python
 
-            import dpctl
+                import dpctl
 
-            l0gpu = dpctl.SyclDevice("level0:gpu:0"):
-            l0gpu.dump_device_info()
+                # Create a SyclDevice with an explicit filter string, in
+                # this case the first level_zero gpu device.
+                level_zero_gpu = dpctl.SyclDevice("level_zero:gpu:0"):
+                level_zero_gpu.dump_device_info()
 
         - by calling one of the device selector helper functions:
-          :py:meth:`~dpctl.select_accelerator_device`,
-          :py:meth:`~dpctl.select_cpu_device`,
-          :py:meth:`~dpctl.select_default_device`,
-          :py:meth:`~dpctl.select_gpu_device`,
-          :py:meth:`~dpctl.select_host_device`.
+
+          :func:`dpctl.select_accelerator_device()`,
+          :func:`dpctl.select_cpu_device()`,
+          :func:`dpctl.select_default_device()`,
+          :func:`dpctl.select_gpu_device()`,
+          :func:`dpctl.select_host_device()`.
+
 
         :Example:
-
             .. code-block:: python
 
-            import dpctl
+                import dpctl
 
-            gpu = dpctl.select_gpu_device():
-            gpu.dump_device_info()
+                # Create a SyclDevice of type GPU based on whatever is returned
+                # by the SYCL `gpu_selector` device selector class.
+                gpu = dpctl.select_gpu_device():
+                gpu.dump_device_info()
+
     """
 
     @staticmethod
