@@ -23,7 +23,8 @@
 from libcpp cimport bool
 from libc.stdint cimport uint32_t
 from ._backend cimport (
-    DPCTLSyclDeviceRef
+    DPCTLSyclDeviceRef,
+    DPCTLSyclDeviceSelectorRef,
 )
 
 
@@ -70,7 +71,8 @@ cdef class SyclDevice(_SyclDevice):
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref)
     @staticmethod
     cdef void _init_helper(SyclDevice device, DPCTLSyclDeviceRef DRef)
-
+    cdef void _init_from__SyclDevice(self, _SyclDevice other)
+    cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef)
 
 cpdef select_accelerator_device()
 cpdef select_cpu_device()

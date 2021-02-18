@@ -90,6 +90,7 @@ cdef extern from "dpctl_sycl_types.h":
 
 
 cdef extern from "dpctl_sycl_device_interface.h":
+    cdef DPCTLSyclDeviceRef DPCTLDevice_Copy(const DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclDeviceRef DPCTLDevice_Create()
     cdef DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
         const DPCTLSyclDeviceSelectorRef DSRef)

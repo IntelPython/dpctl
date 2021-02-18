@@ -27,6 +27,7 @@ from ._backend cimport (
     DPCTLGPUSelector_Create,
     DPCTLHostSelector_Create,
     DPCTLCString_Delete,
+    DPCTLDevice_Copy,
     DPCTLDevice_CreateFromSelector,
     DPCTLDevice_Delete,
     DPCTLDevice_DumpInfo,
@@ -65,7 +66,6 @@ __all__ = [
 cdef class _SyclDevice:
     """ A helper metaclass to abstract a cl::sycl::device instance.
     """
-
 
     def __dealloc__(self):
         DPCTLDevice_Delete(self._device_ref)
@@ -228,6 +228,11 @@ cdef class _SyclDevice:
         return int(<size_t>self._device_ref)
 
 
+    @property
+    def __name__:
+        return "SyclDevice"
+
+
 cdef class SyclDevice(_SyclDevice):
     """ Python equivalent for cl::sycl::device class.
 
@@ -267,7 +272,6 @@ cdef class SyclDevice(_SyclDevice):
                 gpu.dump_device_info()
 
     """
-
     @staticmethod
     cdef void _init_helper(SyclDevice device, DPCTLSyclDeviceRef DRef):
         device._device_ref = DRef
@@ -288,32 +292,83 @@ cdef class SyclDevice(_SyclDevice):
         device._gpu_device = DPCTLDevice_IsGPU(DRef)
         device._host_device = DPCTLDevice_IsHost(DRef)
 
-
-    def __cinit__(self, filter_str):
-        cdef const char *filter_c_str = NULL
-        if type(filter_str) is unicode:
-            string = bytes(<unicode>filter_str, "utf-8")
-            filter_c_str = string
-        elif isinstance(filter_str, unicode):
-            string = bytes(unicode(filter_str), "utf-8")
-            filter_c_str = <unicode>string
-        cdef DPCTLSyclDeviceSelectorRef DSRef = (
-            DPCTLFilterSelector_Create(filter_c_str)
-        )
-        cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
-        if DRef is NULL:
-            raise ValueError("Device could not be created from provided filter")
-        # Initialize the attributes of the SyclDevice object
-        SyclDevice._init_helper(self, DRef)
-        # Free up the device selector
-        DPCTLDeviceSelector_Delete(DSRef)
-
     @staticmethod
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref):
         cdef SyclDevice ret = <SyclDevice>_SyclDevice.__new__(_SyclDevice)
         # Initialize the attributes of the SyclDevice object
         SyclDevice._init_helper(ret, dref)
-        return ret
+        return SyclDevice(ret)
+
+    cdef void _init_from__SyclDevice(self, _SyclDevice other):
+        self._device_ref = DPCTLDevice_Copy(other._device_ref)
+        self._device_name = DPCTLDevice_GetName(self._device_ref)
+        self._driver_version = DPCTLDevice_GetDriverInfo(self._device_ref)
+        self._int64_base_atomics = other._int64_base_atomics
+        self._int64_extended_atomics = other._int64_extended_atomics
+        self._max_compute_units = other._max_compute_units
+        self._max_num_sub_groups = other._max_num_sub_groups
+        self._max_work_group_size = other._max_work_group_size
+        self._max_work_item_dims = other._max_work_item_dims
+        self._max_work_item_sizes =  (
+            DPCTLDevice_GetMaxWorkItemSizes(self._device_ref)
+        )
+        self._vendor_name = DPCTLDevice_GetVendorName(self._device_ref)
+        self._accelerator_device = other._accelerator_device
+        self._cpu_device = other._cpu_device
+        self._gpu_device = other._gpu_device
+        self._host_device = other._host_device
+
+    cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef):
+        # Initialize the attributes of the SyclDevice object
+        DRef = DPCTLDevice_CreateFromSelector(DSRef)
+        if DRef is NULL:
+            return -1
+        else:
+            SyclDevice._init_helper(self, DRef)
+            return 0
+
+    def __cinit__(self, arg=None):
+        cdef DPCTLSyclDeviceSelectorRef DSRef = NULL
+        cdef DPCTLSyclDeviceRef DRef = NULL
+        cdef const char *filter_c_str = NULL
+        cdef int ret = 0
+
+        if type(arg) is unicode:
+            string = bytes(<unicode>arg, "utf-8")
+            filter_c_str = string
+            DSRef = DPCTLFilterSelector_Create(filter_c_str)
+            ret = self._init_from_selector(DSRef)
+            if ret == -1:
+                raise ValueError("Could not create a Device with the selector")
+            # Free up the device selector
+            DPCTLDeviceSelector_Delete(DSRef)
+        elif isinstance(arg, unicode):
+            string = bytes(unicode(arg), "utf-8")
+            filter_c_str = <unicode>string
+            DSRef = DPCTLFilterSelector_Create(filter_c_str)
+            if ret == -1:
+                raise ValueError("Could not create a Device with the selector")
+            # Free up the device selector
+            DPCTLDeviceSelector_Delete(DSRef)
+        elif isinstance(arg, _SyclDevice):
+            self._init_from__SyclDevice(arg)
+        elif arg is None:
+            DSRef = DPCTLDefaultSelector_Create()
+            self._init_from_selector(DSRef)
+        else:
+            raise ValueError(
+                "Invalid argument. Argument should be a str object specifying "
+                "a SYCL filter selector string."
+            )
+
+
+    @property
+    def __name__(self):
+        return "SyclDevice"
+
+
+    def __repr__(self):
+        return "<dpctl." + self.__name__ + " at {}>".format(hex(id(self)))
 
 
 cpdef select_accelerator_device():
@@ -328,9 +383,11 @@ cpdef select_accelerator_device():
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLAcceleratorSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
+    # Free up the device selector
     DPCTLDeviceSelector_Delete(DSRef)
     if DRef is NULL:
         raise ValueError("Device unavailable.")
+    # The _create call frees DSRef and DRef
     Device = SyclDevice._create(DRef)
     return Device
 
@@ -347,9 +404,11 @@ cpdef select_cpu_device():
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLCPUSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
+    # Free up the device selector
     DPCTLDeviceSelector_Delete(DSRef)
     if DRef is NULL:
         raise ValueError("Device unavailable.")
+    # The _create call frees DSRef and DRef
     Device = SyclDevice._create(DRef)
     return Device
 
@@ -366,9 +425,11 @@ cpdef select_default_device():
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
+    # Free up the device selector
     DPCTLDeviceSelector_Delete(DSRef)
     if DRef is NULL:
         raise ValueError("Device unavailable.")
+    # The _create call frees DSRef and DRef
     Device = SyclDevice._create(DRef)
     return Device
 
@@ -385,9 +446,11 @@ cpdef select_gpu_device():
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLGPUSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
+    # Free up the device selector
     DPCTLDeviceSelector_Delete(DSRef)
     if DRef is NULL:
         raise ValueError("Device unavailable.")
+    # The _create call frees DSRef and DRef
     Device = SyclDevice._create(DRef)
     return Device
 
@@ -404,8 +467,10 @@ cpdef select_host_device():
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLHostSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
+    # Free up the device selector
     DPCTLDeviceSelector_Delete(DSRef)
     if DRef is NULL:
         raise ValueError("Device unavailable.")
+    # The _create call frees DSRef and DRef
     Device = SyclDevice._create(DRef)
     return Device

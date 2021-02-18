@@ -67,6 +67,24 @@ void dump_device_info(const device &Device)
 
 } /* end of anonymous namespace */
 
+__dpctl_give DPCTLSyclDeviceRef
+DPCTLDevice_Copy(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    auto Device = unwrap(DRef);
+    if (!Device) {
+        std::cerr << "Cannot copy DPCTLSyclDeviceRef as input is a nullptr\n";
+        return nullptr;
+    }
+    try {
+        auto CopiedDevice = new device(*Device);
+        return wrap(CopiedDevice);
+    } catch (std::bad_alloc const &ba) {
+        // \todo log error
+        std::cerr << ba.what() << '\n';
+        return nullptr;
+    }
+}
+
 __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_Create()
 {
     try {

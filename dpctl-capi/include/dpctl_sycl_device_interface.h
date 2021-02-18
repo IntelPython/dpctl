@@ -37,6 +37,17 @@
 DPCTL_C_EXTERN_C_BEGIN
 
 /*!
+ * @brief Returns a copy of the DPCTLSyclDeviceRef object.
+ *
+ * @param    DRef           DPCTLSyclDeviceRef object to be copied.
+ * @return   A new DPCTLSyclDeviceRef created by copying the passed in
+ * DPCTLSyclDeviceRef object.
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclDeviceRef
+DPCTLDevice_Copy(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
  * @brief Returns a new DPCTLSyclDeviceRef opaque object wrapping a SYCL device
  * instance as a host device.
  *
