@@ -103,7 +103,6 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef DPCTLSyclDeviceRef DPCTLDevice_Create()
     cdef DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
         const DPCTLSyclDeviceSelectorRef DSRef)
-    cdef void DPCTLDevice_DumpInfo(const DPCTLSyclDeviceRef DRef)
     cdef void DPCTLDevice_Delete(DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclBackendType DPCTLDevice_GetBackend(
         const DPCTLSyclDeviceRef DRef)
@@ -126,6 +125,21 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsHost(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsHostUnifiedMemory(const DPCTLSyclDeviceRef DRef)
+
+
+cdef extern from "dpctl_sycl_device_manager.h":
+    cdef struct DPCTLDeviceVector
+    ctypedef DPCTLDeviceVector *DPCTLDeviceVectorRef
+
+    cdef void DPCTLDeviceVector_Delete(DPCTLDeviceVectorRef DVRef)
+    cdef void DPCTLDeviceVector_Clear(DPCTLDeviceVectorRef DVRef)
+    cdef size_t DPCTLDeviceVector_Size(DPCTLDeviceVectorRef DVRef)
+    cdef DPCTLSyclDeviceRef DPCTLDeviceVector_GetAt(
+        DPCTLDeviceVectorRef DVRef,
+        size_t index)
+    cdef DPCTLDeviceVectorRef DPCTLDeviceMgr_GetDevices(int device_identifier)
+    cdef size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier)
+    cdef void DPCTLDeviceMgr_PrintDeviceInfo(const DPCTLSyclDeviceRef DRef)
 
 
 cdef extern from "dpctl_sycl_device_selector_interface.h":
