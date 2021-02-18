@@ -70,14 +70,6 @@ __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
     __dpctl_keep const DPCTLSyclDeviceSelectorRef DSRef);
 
 /*!
- * @brief Prints out some of the info::deivice attributes for the device.
- *
- * @param    DRef           A DPCTLSyclDeviceRef pointer.
- */
-DPCTL_API
-void DPCTLDevice_DumpInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef);
-
-/*!
  * @brief Deletes a DPCTLSyclDeviceRef pointer after casting to to sycl::device.
  *
  * @param    DRef           The DPCTLSyclDeviceRef pointer to be freed.
@@ -244,11 +236,12 @@ bool DPCTLDevice_IsHostUnifiedMemory(
  * @brief Checks if two DPCTLSyclDeviceRef objects point to the same
  * sycl::device.
  *
- * @param    DevRef1       First opaque pointer to the sycl device.
- * @param    DevRef2       Second opaque pointer to the sycl device.
+ * @param    DevRef1       First opaque pointer to a sycl device.
+ * @param    DevRef2       Second opaque pointer to a sycl device.
  * @return   True if the underlying sycl::device are same, false otherwise.
  */
 DPCTL_API
 bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
                        __dpctl_keep const DPCTLSyclDeviceRef DevRef2);
+
 DPCTL_C_EXTERN_C_END

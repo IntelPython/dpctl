@@ -34,7 +34,7 @@
 DPCTL_C_EXTERN_C_BEGIN
 
 /**
- * \defgroup DeviceSelectors C API for SYCL Device Selectors
+ * @defgroup DeviceSelectors C API for sycl::device_selector classess.
  */
 
 /*!

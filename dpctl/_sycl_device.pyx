@@ -30,7 +30,6 @@ from ._backend cimport (
     DPCTLDevice_Copy,
     DPCTLDevice_CreateFromSelector,
     DPCTLDevice_Delete,
-    DPCTLDevice_DumpInfo,
     DPCTLDevice_GetVendorName,
     DPCTLDevice_GetName,
     DPCTLDevice_GetDriverInfo,
@@ -45,6 +44,7 @@ from ._backend cimport (
     DPCTLDevice_IsCPU,
     DPCTLDevice_IsGPU,
     DPCTLDevice_IsHost,
+    DPCTLDeviceMgr_PrintDeviceInfo,
     DPCTLFilterSelector_Create,
     DPCTLDeviceSelector_Delete,
     DPCTLSize_t_Array_Delete,
@@ -52,6 +52,7 @@ from ._backend cimport (
     DPCTLSyclDeviceSelectorRef,
 )
 from . import device_type
+import warnings
 
 __all__ = [
     "SyclDevice",
@@ -77,7 +78,17 @@ cdef class _SyclDevice:
     def dump_device_info(self):
         """ Print information about the SYCL device.
         """
-        DPCTLDevice_DumpInfo(self._device_ref)
+        warnings.warn(
+            "WARNING: dump_device_info is depracated and will be removed in "
+            "a future release of dpctl. Use print_device_info instead."
+        )
+        DPCTLDeviceMgr_PrintDeviceInfo(self._device_ref)
+
+
+    def print_device_info(self):
+        """ Print information about the SYCL device.
+        """
+        DPCTLDeviceMgr_PrintDeviceInfo(self._device_ref)
 
     cpdef get_device_name(self):
         """ Returns the name of the device as a string

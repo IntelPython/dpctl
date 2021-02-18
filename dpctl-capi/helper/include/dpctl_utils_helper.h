@@ -24,8 +24,55 @@
 
 #pragma once
 
+#include "../include/dpctl_sycl_enum_types.h"
 #include <CL/sycl.hpp>
-using namespace cl::sycl;
 
-std::string DPCTL_DeviceTypeToStr(info::device_type devTy);
-info::device_type DPCTL_StrToDeviceType(std::string devTyStr);
+/*!
+ * @brief
+ *
+ * @param    devTy          My Param doc
+ * @return   {return}       My Param doc
+ */
+std::string DPCTL_DeviceTypeToStr(sycl::info::device_type devTy);
+
+/*!
+ * @brief
+ *
+ * @param    devTyStr       My Param doc
+ * @return   {return}       My Param doc
+ */
+sycl::info::device_type DPCTL_StrToDeviceType(const std::string &devTyStr);
+
+/*!
+ * @brief
+ *
+ * @param    BeTy           My Param doc
+ * @return   {return}       My Param doc
+ */
+sycl::backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy);
+
+/*!
+ * @brief
+ *
+ * @param    B           My Param doc
+ * @return   {return}    My Param doc
+ */
+DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(sycl::backend B);
+
+/*!
+ * @brief
+ *
+ * @param    DTy           My Param doc
+ * @return   {return}      My Param doc
+ */
+sycl::info::device_type
+DPCTL_DPCTLDeviceTypeToSyclDeviceType(DPCTLSyclDeviceType DTy);
+
+/*!
+ * @brief
+ *
+ * @param    D           My Param doc
+ * @return   {return}    My Param doc
+ */
+DPCTLSyclDeviceType
+DPCTL_SyclDeviceTypeToDPCTLDeviceType(sycl::info::device_type D);

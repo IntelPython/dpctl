@@ -85,4 +85,14 @@ typedef struct DPCTLOpaqueSyclQueue *DPCTLSyclQueueRef;
  */
 typedef struct DPCTLOpaqueSyclUSM *DPCTLSyclUSMRef;
 
+/*!
+ * @brief Opaque pointer to a vector of DPCTLSyclBackendType enums.
+ */
+typedef struct DPCTLBackendVector *DPCTLBackendVectorRef;
+
+/*!
+ * @brief Opaque pointer to a vector of DPCTLSyclDeviceRefs.
+ */
+typedef struct DPCTLDeviceVector *DPCTLDeviceVectorRef;
+
 DPCTL_C_EXTERN_C_END
