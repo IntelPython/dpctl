@@ -74,18 +74,15 @@ cdef class _SyclDevice:
         DPCTLCString_Delete(self._driver_version)
         DPCTLSize_t_Array_Delete(self._max_work_item_sizes)
 
-
     def dump_device_info(self):
         """ Print information about the SYCL device.
         """
         DPCTLDevice_DumpInfo(self._device_ref)
 
-
     cpdef get_device_name(self):
         """ Returns the name of the device as a string
         """
         return self._device_name.decode()
-
 
     cpdef get_device_type(self):
         """ Returns the type of the device as a `device_type` enum
@@ -97,12 +94,10 @@ cdef class _SyclDevice:
         else:
             raise ValueError("Unknown device type.")
 
-
     cpdef get_vendor_name(self):
         """ Returns the device vendor name as a string
         """
         return self._vendor_name.decode()
-
 
     cpdef get_driver_version(self):
         """ Returns the OpenCL software driver version as a string
@@ -112,25 +107,21 @@ cdef class _SyclDevice:
         """
         return self._driver_version.decode()
 
-
     cpdef has_int64_base_atomics(self):
         """ Returns true if device has int64_base_atomics else returns false.
         """
         return self._int64_base_atomics
-
 
     cpdef has_int64_extended_atomics(self):
         """ Returns true if device has int64_extended_atomics else returns false.
         """
         return self._int64_extended_atomics
 
-
     cpdef get_max_compute_units(self):
         """ Returns the number of parallel compute units
             available to the device. The minimum value is 1.
         """
         return self._max_compute_units
-
 
     cpdef get_max_work_item_dims(self):
         """ Returns the maximum dimensions that specify
@@ -140,7 +131,6 @@ cdef class _SyclDevice:
             type ``info::device_type::custom``.
         """
         return self._max_work_item_dims
-
 
     cpdef get_max_work_item_sizes(self):
         """ Returns the maximum number of work-items
@@ -154,7 +144,6 @@ cdef class _SyclDevice:
             max_work_item_sizes.append(self._max_work_item_sizes[n])
         return tuple(max_work_item_sizes)
 
-
     cpdef get_max_work_group_size(self):
         """ Returns the maximum number of work-items
             that are permitted in a work-group executing a
@@ -163,14 +152,12 @@ cdef class _SyclDevice:
         """
         return self._max_work_group_size
 
-
     cpdef get_max_num_sub_groups(self):
         """ Returns the maximum number of sub-groups
             in a work-group for any kernel executed on the
             device. The minimum value is 1.
         """
         return self._max_num_sub_groups
-
 
     cpdef is_accelerator(self):
         """ Returns True if the SyclDevice instance is a SYCL accelerator
@@ -182,7 +169,6 @@ cdef class _SyclDevice:
         """
         return self._accelerator_device
 
-
     cpdef is_cpu(self):
         """ Returns True if the SyclDevice instance is a SYCL CPU device.
 
@@ -190,7 +176,6 @@ cdef class _SyclDevice:
             bool: True if the SyclDevice is a SYCL CPU device, else False.
         """
         return self._cpu_device
-
 
     cpdef is_gpu(self):
         """ Returns True if the SyclDevice instance is a SYCL GPU device.
@@ -200,7 +185,6 @@ cdef class _SyclDevice:
         """
         return self._gpu_device
 
-
     cpdef is_host(self):
         """ Returns True if the SyclDevice instance is a SYCL host device.
 
@@ -209,13 +193,10 @@ cdef class _SyclDevice:
         """
         return self._host_device
 
-
-
     cdef DPCTLSyclDeviceRef get_device_ref (self):
         """ Returns the DPCTLSyclDeviceRef pointer for this class.
         """
         return self._device_ref
-
 
     def addressof_ref(self):
         """
@@ -227,9 +208,8 @@ cdef class _SyclDevice:
         """
         return int(<size_t>self._device_ref)
 
-
     @property
-    def __name__:
+    def __name__():
         return "SyclDevice"
 
 
@@ -361,11 +341,9 @@ cdef class SyclDevice(_SyclDevice):
                 "a SYCL filter selector string."
             )
 
-
     @property
     def __name__(self):
         return "SyclDevice"
-
 
     def __repr__(self):
         return "<dpctl." + self.__name__ + " at {}>".format(hex(id(self)))
