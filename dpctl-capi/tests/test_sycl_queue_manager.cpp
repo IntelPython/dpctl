@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
+#include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
 #include <gtest/gtest.h>
@@ -203,7 +204,8 @@ TEST_F(TestDPCTLSyclQueueManager, CheckDPCTLDumpDeviceInfo)
     if (!has_devices())
         GTEST_SKIP_("Skipping: No Sycl devices.\n");
     auto q = DPCTLQueueMgr_GetCurrentQueue();
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_DumpInfo(DPCTLQueue_GetDevice(q)));
+    EXPECT_NO_FATAL_FAILURE(
+        DPCTLDeviceMgr_PrintDeviceInfo(DPCTLQueue_GetDevice(q)));
     EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(q));
 }
 

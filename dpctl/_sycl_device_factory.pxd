@@ -14,16 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" This file declares the extension types and functions for the Cython API
-    implemented in _sycl_*.pyx files.
-"""
-
 # distutils: language = c++
 # cython: language_level=3
 
-from dpctl._sycl_context cimport *
-from dpctl._sycl_device cimport *
-from dpctl._sycl_device_factory cimport *
-from dpctl._sycl_event cimport *
-from dpctl._sycl_queue cimport *
-from dpctl._sycl_queue_manager cimport *
+""" The file declares several helper functions to create SyclDevice objects
+from SYCL standard device_selectors, to get a list of SyclDevices for a
+specific backend or device_type.
+"""
+
+
+cpdef select_accelerator_device()
+cpdef select_cpu_device()
+cpdef select_default_device()
+cpdef select_gpu_device()
+cpdef select_host_device()
+cpdef list get_devices(backend=*, device_type=*)

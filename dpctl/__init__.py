@@ -38,6 +38,8 @@ from dpctl._sycl_context import *
 from dpctl._sycl_context import __all__ as _sycl_context__all__
 from dpctl._sycl_device import *
 from dpctl._sycl_device import __all__ as _sycl_device__all__
+from dpctl._sycl_device_factory import *
+from dpctl._sycl_device_factory import __all__ as _sycl_device_factory__all__
 from dpctl._sycl_event import *
 from dpctl._sycl_event import __all__ as _sycl_event__all__
 from dpctl._sycl_queue import *
@@ -50,6 +52,7 @@ from ._version import get_versions
 __all__ = (
     _sycl_context__all__
     + _sycl_device__all__
+    + _sycl_device_factory__all__
     + _sycl_event__all__
     + _sycl_queue__all__
     + _sycl_qm__all__
@@ -71,3 +74,10 @@ def get_include():
 
 __version__ = get_versions()["version"]
 del get_versions
+del _sycl_context__all__
+del _sycl_device__all__
+del _sycl_device_factory__all__
+del _sycl_event__all__
+del _sycl_queue__all__
+del _sycl_qm__all__
+del _enum_types_all__
