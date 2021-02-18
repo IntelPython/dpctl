@@ -25,7 +25,6 @@
 //===----------------------------------------------------------------------===//
 #include "dpctl_sycl_queue_manager.h"
 #include "Support/CBindingWrapping.h"
-#include "dpctl_sycl_enum_types.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <string>
 #include <vector>

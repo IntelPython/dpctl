@@ -55,10 +55,11 @@ __dpctl_give VECTOR(EL) FN(EL, Create)()
 void FN(EL, Delete)(__dpctl_take VECTOR(EL) VRef)
 {
     auto Vec = unwrap(VRef);
-
-    for (auto i = 0ul; i < Vec->size(); ++i) {
-        auto D = unwrap((*Vec)[i]);
-        delete D;
+    if (Vec) {
+        for (auto i = 0ul; i < Vec->size(); ++i) {
+            auto D = unwrap((*Vec)[i]);
+            delete D;
+        }
     }
     delete Vec;
 }
@@ -70,12 +71,13 @@ void FN(EL, Delete)(__dpctl_take VECTOR(EL) VRef)
 void FN(EL, Clear)(__dpctl_keep VECTOR(EL) VRef)
 {
     auto Vec = unwrap(VRef);
-
-    for (auto i = 0ul; i < Vec->size(); ++i) {
-        auto D = unwrap((*Vec)[i]);
-        delete D;
+    if (Vec) {
+        for (auto i = 0ul; i < Vec->size(); ++i) {
+            auto D = unwrap((*Vec)[i]);
+            delete D;
+        }
+        Vec->clear();
     }
-    Vec->clear();
 }
 
 /*!
@@ -84,7 +86,11 @@ void FN(EL, Clear)(__dpctl_keep VECTOR(EL) VRef)
  */
 size_t FN(EL, Size)(__dpctl_keep VECTOR(EL) VRef)
 {
-    return unwrap(VRef)->size();
+    auto V = unwrap(VRef);
+    if (V)
+        return V->size();
+    else
+        return 0;
 }
 
 /*!
@@ -95,18 +101,19 @@ size_t FN(EL, Size)(__dpctl_keep VECTOR(EL) VRef)
 SYCLREF(EL) FN(EL, GetAt)(__dpctl_keep VECTOR(EL) VRef, size_t index)
 {
     auto Vec = unwrap(VRef);
-    SYCLREF(EL) ret, copy = nullptr;
-    try {
-        ret = Vec->at(index);
-        auto Ref = unwrap(ret);
-        copy = wrap(new std::remove_pointer<decltype(Ref)>::type(*Ref));
-    } catch (std::out_of_range const &oor) {
-        std::cerr << oor.what() << '\n';
-    } catch (std::bad_alloc const &ba) {
-        // \todo log error
-        std::cerr << ba.what() << '\n';
-        return nullptr;
+    SYCLREF(EL) copy = nullptr;
+    if (Vec) {
+        try {
+            auto ret = Vec->at(index);
+            auto Ref = unwrap(ret);
+            copy = wrap(new std::remove_pointer<decltype(Ref)>::type(*Ref));
+        } catch (std::out_of_range const &oor) {
+            std::cerr << oor.what() << '\n';
+        } catch (std::bad_alloc const &ba) {
+            // \todo log error
+            std::cerr << ba.what() << '\n';
+            return nullptr;
+        }
     }
-
     return copy;
 }
