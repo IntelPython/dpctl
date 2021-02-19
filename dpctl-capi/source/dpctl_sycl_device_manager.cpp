@@ -187,15 +187,16 @@ void DPCTLDeviceMgr_DeleteDeviceVector(__dpctl_take DPCTLDeviceVectorRef DVRef)
     delete unwrap(DVRef);
 }
 
-void DPCTLDeviceMgr_DeleteDeviceVectorAll(
+void DPCTLDeviceMgr_DeviceVector_Clear(
     __dpctl_take DPCTLDeviceVectorRef DVRef)
 {
     auto DeviceVec = unwrap(DVRef);
+
     for (auto i = 0ul; i < DeviceVec->size(); ++i) {
         auto D = unwrap((*DeviceVec)[i]);
         delete D;
     }
-    delete unwrap(DVRef);
+    DeviceVec->clear();
 }
 
 __dpctl_give DPCTLBackendVectorRef DPCTLDeviceMgr_GetBackends()

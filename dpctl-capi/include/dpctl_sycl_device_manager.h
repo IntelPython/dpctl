@@ -96,9 +96,10 @@ DPCTL_API
 __dpctl_give DPCTLDeviceVectorRef DPCTLDeviceMgr_CreateDeviceVector();
 
 /*!
- * @brief Frees a pointer to a std::vector<sycl::backend>.
+ * @brief Frees a pointer to a std::vector<DPCTLSyclBackendType>.
  *
- * @param    BVRef          The std::vector<sycl::backend>* that is to be freed.
+ * @param    BVRef          The std::vector<DPCTLSyclBackendType>* that is to
+ *                          be freed.
  * @ingroup DeviceManager
  */
 DPCTL_API
@@ -106,11 +107,11 @@ void DPCTLDeviceMgr_DeleteBackendVector(
     __dpctl_take DPCTLBackendVectorRef BVRef);
 
 /*!
- * @brief Frees a pointer to a std::vector<sycl::DPCTLSyclDeviceRef> but does
+ * @brief Frees a pointer to a std::vector<DPCTLSyclDeviceRef> but does
  * not free the elements of the vector.
  *
  * @param    DVRef          Opaque pointer to a
- *                          std::vector<sycl::DPCTLSyclDeviceRef>.
+ *                          std::vector<DPCTLSyclDeviceRef>.
  * @ingroup DeviceManager
  */
 DPCTL_API
@@ -125,7 +126,7 @@ void DPCTLDeviceMgr_DeleteDeviceVector(__dpctl_take DPCTLDeviceVectorRef DVRef);
  * @ingroup DeviceManager
  */
 DPCTL_API
-void DPCTLDeviceMgr_DeleteDeviceVectorAll(
+void DPCTLDeviceMgr_DeviceVector_Clear(
     __dpctl_take DPCTLDeviceVectorRef DVRef);
 
 /*!
