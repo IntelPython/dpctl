@@ -126,8 +126,7 @@ void DPCTLDeviceMgr_DeleteDeviceVector(__dpctl_take DPCTLDeviceVectorRef DVRef);
  * @ingroup DeviceManager
  */
 DPCTL_API
-void DPCTLDeviceMgr_DeviceVector_Clear(
-    __dpctl_take DPCTLDeviceVectorRef DVRef);
+void DPCTLDeviceMgr_DeviceVector_Clear(__dpctl_take DPCTLDeviceVectorRef DVRef);
 
 /*!
  * @brief Returns an opaque pointer wrapping a std::vector<syc::backend>

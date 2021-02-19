@@ -187,8 +187,7 @@ void DPCTLDeviceMgr_DeleteDeviceVector(__dpctl_take DPCTLDeviceVectorRef DVRef)
     delete unwrap(DVRef);
 }
 
-void DPCTLDeviceMgr_DeviceVector_Clear(
-    __dpctl_take DPCTLDeviceVectorRef DVRef)
+void DPCTLDeviceMgr_DeviceVector_Clear(__dpctl_take DPCTLDeviceVectorRef DVRef)
 {
     auto DeviceVec = unwrap(DVRef);
 
