@@ -209,8 +209,11 @@ cdef class _SyclDevice:
         return int(<size_t>self._device_ref)
 
     @property
-    def __name__():
+    def __name__(self):
         return "SyclDevice"
+
+    def __repr__(self):
+        return "<dpctl." + self.__name__ + " at {}>".format(hex(id(self)))
 
 
 cdef class SyclDevice(_SyclDevice):
