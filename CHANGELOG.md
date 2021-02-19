@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Documentation improvements
 - Cmake improvements and Coverage for C API, Cython and Python
-- Add support for Level Zero
+- Added support for Level Zero devices and queues
+- Added support for SYCL standard device_selector classes
+- SyclDevice instances can now be constructed using filter selector strings
 - Code of conduct
 
 ### Fixed
