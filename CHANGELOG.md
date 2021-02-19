@@ -65,7 +65,6 @@ supports USM.
   - Fix Gtests configuration.
 
 ## [0.3.7] - 2020-10-08
-
 ### Fixed
 - A crash on Windows due a Level Zero driver problem. Each device was getting enumerated twice. To handle the issue, we added a temporary fix to use only first device for each device type and backend (#118).
 

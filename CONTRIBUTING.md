@@ -1,6 +1,6 @@
-# Mechanical Source Issues¶
+# Mechanical Source Issues
 
-## Source Code Formatting¶
+## Source Code Formatting
 
 ### C/C++ code style
 
@@ -88,11 +88,12 @@ Every Python and Cython file should only include the following license header:
 ```
 The copyright year should be updated every calendar year.
 
-## Code Coverage¶
+## Code Coverage
 
 Implement python, cython and c++ file coverage using `coverage` and `llvm-cov` packages on Linux.
 
 ### Using Code Coverage
+
 You need to install additional packages and add an environment variable to cover:
 - conda install cmake
 - conda install coverage
