@@ -42,6 +42,12 @@ typedef struct DPCTLOpaqueSyclContext *DPCTLSyclContextRef;
 typedef struct DPCTLOpaqueSyclDevice *DPCTLSyclDeviceRef;
 
 /*!
+ * @brief Opaque pointer to a sycl::device_selector
+ *
+ */
+typedef struct DPCTLOpaqueSyclDeviceSelector *DPCTLSyclDeviceSelectorRef;
+
+/*!
  * @brief Opaque pointer to a sycl::event
  *
  */
