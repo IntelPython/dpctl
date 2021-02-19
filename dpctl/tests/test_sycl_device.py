@@ -45,11 +45,10 @@ list_of_valid_filter_selectors = [
 ]
 
 list_of_invalid_filter_selectors = [
-    "host",
-    "0",
     "-1",
-    "opencl:gpu:1",
+    "opencl:gpu:-1",
     "level_zero:cpu:0",
+    "abc",
 ]
 
 # Unit test cases that will be run for every device

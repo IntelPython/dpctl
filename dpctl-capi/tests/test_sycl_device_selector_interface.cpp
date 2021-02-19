@@ -200,4 +200,4 @@ INSTANTIATE_TEST_SUITE_P(FilterSelectorCreation,
 INSTANTIATE_TEST_SUITE_P(
     NegativeFilterSelectorCreation,
     TestUnsupportedFilters,
-    ::testing::Values("host", "0", "-1", "opencl:gpu:1", "level_zero:cpu:0"));
+    ::testing::Values("abc", "-1", "opencl:gpu:1", "level_zero:cpu:0"));
