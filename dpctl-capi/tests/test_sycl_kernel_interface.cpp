@@ -30,13 +30,11 @@
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
 #include "dpctl_utils.h"
-
+#include <CL/sycl.hpp>
 #include <array>
 #include <gtest/gtest.h>
-#include <CL/sycl.hpp>
 
 using namespace cl::sycl;
-
 
 struct TestDPCTLSyclKernelInterface : public ::testing::Test
 {
@@ -51,23 +49,24 @@ struct TestDPCTLSyclKernelInterface : public ::testing::Test
             c[index] = a[index] + d*b[index];
         }
     )CLC";
-    const char *CompileOpts ="-cl-fast-relaxed-math";
+    const char *CompileOpts = "-cl-fast-relaxed-math";
 
     size_t nOpenCLGpuQ = 0;
-    TestDPCTLSyclKernelInterface ()
+    TestDPCTLSyclKernelInterface()
         : nOpenCLGpuQ(DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_GPU))
-    {  }
+    {
+    }
 };
 
-TEST_F (TestDPCTLSyclKernelInterface, CheckGetFunctionName)
+TEST_F(TestDPCTLSyclKernelInterface, CheckGetFunctionName)
 {
-    if(!nOpenCLGpuQ)
+    if (!nOpenCLGpuQ)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 
     auto QueueRef = DPCTLQueueMgr_GetQueue(DPCTL_OPENCL, DPCTL_GPU, 0);
-    auto CtxRef   = DPCTLQueue_GetContext(QueueRef);
-    auto PRef = DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr,
-                                                CompileOpts);
+    auto CtxRef = DPCTLQueue_GetContext(QueueRef);
+    auto PRef =
+        DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr, CompileOpts);
     auto AddKernel = DPCTLProgram_GetKernel(PRef, "add");
     auto AxpyKernel = DPCTLProgram_GetKernel(PRef, "axpy");
 
@@ -87,15 +86,15 @@ TEST_F (TestDPCTLSyclKernelInterface, CheckGetFunctionName)
     DPCTLKernel_Delete(AxpyKernel);
 }
 
-TEST_F (TestDPCTLSyclKernelInterface, CheckGetNumArgs)
+TEST_F(TestDPCTLSyclKernelInterface, CheckGetNumArgs)
 {
-    if(!nOpenCLGpuQ)
+    if (!nOpenCLGpuQ)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 
     auto QueueRef = DPCTLQueueMgr_GetQueue(DPCTL_OPENCL, DPCTL_GPU, 0);
-    auto CtxRef   = DPCTLQueue_GetContext(QueueRef);
-    auto PRef = DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr,
-                                                CompileOpts);
+    auto CtxRef = DPCTLQueue_GetContext(QueueRef);
+    auto PRef =
+        DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr, CompileOpts);
     auto AddKernel = DPCTLProgram_GetKernel(PRef, "add");
     auto AxpyKernel = DPCTLProgram_GetKernel(PRef, "axpy");
 
@@ -108,4 +107,3 @@ TEST_F (TestDPCTLSyclKernelInterface, CheckGetNumArgs)
     DPCTLKernel_Delete(AddKernel);
     DPCTLKernel_Delete(AxpyKernel);
 }
-

@@ -32,12 +32,12 @@
 #define DEFINE_SIMPLE_CONVERSION_FUNCTIONS(ty, ref)                            \
     __attribute__((unused)) inline ty *unwrap(ref P)                           \
     {                                                                          \
-        return reinterpret_cast<ty*>(P);                                       \
+        return reinterpret_cast<ty *>(P);                                      \
     }                                                                          \
                                                                                \
     __attribute__((unused)) inline ref wrap(const ty *P)                       \
     {                                                                          \
-            return reinterpret_cast<ref>(const_cast<ty*>(P));                  \
+        return reinterpret_cast<ref>(const_cast<ty *>(P));                     \
     }
 
 /*!
@@ -47,10 +47,9 @@
 #define DEFINE_STDCXX_CONVERSION_FUNCTIONS(ty, ref)                            \
     DEFINE_SIMPLE_CONVERSION_FUNCTIONS(ty, ref)                                \
                                                                                \
-    template<typename T>                                                       \
-    __attribute__((unused)) inline T *unwrap(ref P)                            \
+    template <typename T> __attribute__((unused)) inline T *unwrap(ref P)      \
     {                                                                          \
-        T *Q = (T*)unwrap(P);                                                  \
+        T *Q = (T *)unwrap(P);                                                 \
         assert(Q && "Invalid cast!");                                          \
         return Q;                                                              \
     }

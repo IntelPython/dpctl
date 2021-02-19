@@ -51,9 +51,9 @@
 #endif
 /*!
  * @def __dpctl_take
- * @brief The __dpctl_take attribute indicates that the function "takes" over the
- * ownership of the object and the user must not use the object as an argument
- * to another function.
+ * @brief The __dpctl_take attribute indicates that the function "takes" over
+ * the ownership of the object and the user must not use the object as an
+ * argument to another function.
  *
  * The __dpctl_take attribute mens that the function destroys it before the
  * function returns, and the caller must not use the object again in any other

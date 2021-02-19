@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Defines unit test cases for the SyclDevice class defined in sycl_core.pyx.
+""" Defines unit test cases for the SyclDevice class.
 """
 
 import dpctl

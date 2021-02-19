@@ -25,12 +25,12 @@
 
 #pragma once
 
-#include "dpctl_data_types.h"
-#include "dpctl_sycl_types.h"
-#include "dpctl_sycl_platform_interface.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dpctl_data_types.h"
+#include "dpctl_sycl_platform_interface.h"
+#include "dpctl_sycl_types.h"
 #include <stdbool.h>
 
 DPCTL_C_EXTERN_C_BEGIN
@@ -44,8 +44,8 @@ DPCTL_C_EXTERN_C_BEGIN
  * @return   True if the underlying sycl::context are same, false otherwise.
  */
 DPCTL_API
-bool DPCTLContext_AreEq (__dpctl_keep const DPCTLSyclContextRef CtxRef1,
-                         __dpctl_keep const DPCTLSyclContextRef CtxRef2);
+bool DPCTLContext_AreEq(__dpctl_keep const DPCTLSyclContextRef CtxRef1,
+                        __dpctl_keep const DPCTLSyclContextRef CtxRef2);
 
 /*!
  * @brief Returns true if this SYCL context is a host context.
@@ -54,7 +54,7 @@ bool DPCTLContext_AreEq (__dpctl_keep const DPCTLSyclContextRef CtxRef1,
  * @return   True if the SYCL context is a host context, else False.
  */
 DPCTL_API
-bool DPCTLContext_IsHost (__dpctl_keep const DPCTLSyclContextRef CtxRef);
+bool DPCTLContext_IsHost(__dpctl_keep const DPCTLSyclContextRef CtxRef);
 
 /*!
  * @brief Returns the sycl backend for the DPCTLSyclContextRef pointer.
@@ -65,7 +65,7 @@ bool DPCTLContext_IsHost (__dpctl_keep const DPCTLSyclContextRef CtxRef);
  */
 DPCTL_API
 DPCTLSyclBackendType
-DPCTLContext_GetBackend (__dpctl_keep const DPCTLSyclContextRef CtxRef);
+DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef);
 
 /*!
  * @brief Delete the pointer after casting it to sycl::context
@@ -73,6 +73,6 @@ DPCTLContext_GetBackend (__dpctl_keep const DPCTLSyclContextRef CtxRef);
  * @param    CtxRef        The DPCTLSyclContextRef pointer to be deleted.
  */
 DPCTL_API
-void DPCTLContext_Delete (__dpctl_take DPCTLSyclContextRef CtxRef);
+void DPCTLContext_Delete(__dpctl_take DPCTLSyclContextRef CtxRef);
 
 DPCTL_C_EXTERN_C_END

@@ -35,6 +35,7 @@ import sys
 import inspect
 import dpctl
 from dpctl.memory import MemoryUSMShared
+import builtins
 
 debug = False
 
@@ -45,8 +46,15 @@ def dprint(*args):
         sys.stdout.flush()
 
 
-functions_list = [o[0] for o in getmembers(np) if isfunction(o[1]) or isbuiltin(o[1])]
-class_list = [o for o in getmembers(np) if isclass(o[1])]
+functions_list = []
+class_list = []
+for o in getmembers(np):
+    s = o[1]
+    if isfunction(s) or isbuiltin(s):
+        functions_list.append(o[0])
+    elif isclass(s):
+        class_list.append(o)
+
 
 array_interface_property = "__sycl_usm_array_interface__"
 
@@ -90,7 +98,9 @@ class ndarray(np.ndarray):
             nelems = np.prod(shape)
             dt = np.dtype(dtype)
             isz = dt.itemsize
-            nbytes = int(isz * max(1, nelems))
+            # Have to use builtins.max explicitly since this module will
+            # import numpy's max function.
+            nbytes = int(isz * builtins.max(1, nelems))
             buf = MemoryUSMShared(nbytes)
             new_obj = np.ndarray.__new__(
                 subtype,
@@ -224,7 +234,7 @@ class ndarray(np.ndarray):
 
     # Convert to a NumPy ndarray.
     def as_ndarray(self):
-        return np.copy(self)
+        return np.copy(np.ndarray(self.shape, self.dtype, self))
 
     def __array__(self):
         return self
@@ -277,18 +287,26 @@ class ndarray(np.ndarray):
         else:
             return NotImplemented
 
+    def __array_function__(self, func, types, args, kwargs):
+        fname = func.__name__
+        has_func = _isdef(fname)
+        dprint("__array_function__:", func, fname, type(func), types, has_func)
+        if has_func:
+            cm = sys.modules[__name__]
+            affunc = getattr(cm, fname)
+            fargs = [x.view(np.ndarray) if isinstance(x, ndarray) else x for x in args]
+            return affunc(*fargs, **kwargs)
+        return NotImplemented
 
-def isdef(x):
-    try:
-        eval(x)
-        return True
-    except NameError:
-        return False
+
+def _isdef(x):
+    cm = sys.modules[__name__]
+    return hasattr(cm, x)
 
 
 for c in class_list:
     cname = c[0]
-    if isdef(cname):
+    if _isdef(cname):
         continue
     # For now we do the simple thing and copy the types from NumPy module
     # into numpy_usm_shared module.
@@ -305,7 +323,7 @@ for c in class_list:
 # instead.  This is a stop-gap.  We should eventually find a
 # way to do the allocation correct to start with.
 for fname in functions_list:
-    if isdef(fname):
+    if _isdef(fname):
         continue
     new_func = "def %s(*args, **kwargs):\n" % fname
     new_func += "    ret = np.%s(*args, **kwargs)\n" % fname
@@ -321,4 +339,4 @@ def from_ndarray(x):
 
 
 def as_ndarray(x):
-    return np.copy(x)
+    return np.copy(np.ndarray(x.shape, x.dtype, x))

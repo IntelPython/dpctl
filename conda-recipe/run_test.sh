@@ -6,4 +6,4 @@ set -e
 source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh || true
 
 ${PYTHON} -c "import dpctl"
-${PYTHON} -m unittest -v dpctl.tests
+pytest -q -ra --disable-warnings --pyargs dpctl -vv
