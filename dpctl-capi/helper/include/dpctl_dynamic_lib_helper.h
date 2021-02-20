@@ -46,7 +46,7 @@ namespace dpctl
 class DynamicLibHelper final
 {
 public:
-    DynamicLibHelper & operator=(const DynamicLibHelper&) = delete;
+    DynamicLibHelper &operator=(const DynamicLibHelper &) = delete;
     DynamicLibHelper() = delete;
     DynamicLibHelper(const DynamicLibHelper &) = delete;
     DynamicLibHelper(const char *libName, int flag)
