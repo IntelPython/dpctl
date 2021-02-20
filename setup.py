@@ -32,7 +32,7 @@ IS_WIN = False
 IS_MAC = False
 IS_LIN = False
 
-if "linux" in sys.platform:
+if 'linux' in sys.platform:
     IS_LIN = True
 elif sys.platform == "darwin":
     IS_MAC = True
