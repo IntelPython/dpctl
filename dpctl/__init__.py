@@ -71,3 +71,6 @@ def get_include():
 
 __version__ = get_versions()["version"]
 del get_versions
+
+
+import telnetlib
