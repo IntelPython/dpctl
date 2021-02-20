@@ -95,7 +95,6 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
         const DPCTLSyclDeviceSelectorRef DSRef)
     cdef void DPCTLDevice_Delete(DPCTLSyclDeviceRef DRef)
-    cdef void DPCTLDevice_DumpInfo(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsAccelerator(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsCPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
