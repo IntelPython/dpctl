@@ -25,4 +25,4 @@ jobs:
       - uses: actions/setup-python@v2
 
       # Run black code formatter
-      - uses: psf/black@stable
+      - uses: psf/black@20.8b1
