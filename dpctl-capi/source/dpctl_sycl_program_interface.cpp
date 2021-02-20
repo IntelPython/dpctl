@@ -269,9 +269,11 @@ DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
         break;
     case backend::level_zero:
         std::cerr << "CreateFromSource is not supported in Level Zero.\n";
+        delete SyclProgram;
         return nullptr;
     default:
         std::cerr << "CreateFromSource is not supported in unknown backend.\n";
+        delete SyclProgram;
         return nullptr;
     }
 }

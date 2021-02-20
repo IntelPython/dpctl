@@ -6,7 +6,7 @@
 
 We use [clang-format](https://clang.llvm.org/docs/ClangFormat.html) code formatter.
 
-Install: `pip install clang`
+Install: `conda install clang-tools`
 
 - Revision: `10.0.1`
 - See the default configuration used by dpCtl in `.clang-format`.
