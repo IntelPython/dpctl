@@ -70,39 +70,6 @@ __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
     __dpctl_keep const DPCTLSyclDeviceSelectorRef DSRef);
 
 /*!
- * @brief Prints out some of the info::deivice attributes for the device.
- *
- * @param    DRef           DPCTLSyclDeviceRef object to be copied.
- * @return   A new DPCTLSyclDeviceRef created by copying the passed in
- * DPCTLSyclDeviceRef object.
- */
-DPCTL_API
-__dpctl_give DPCTLSyclDeviceRef
-DPCTLDevice_Copy(__dpctl_keep const DPCTLSyclDeviceRef DRef);
-
-/*!
- * @brief Returns a new DPCTLSyclDeviceRef opaque object wrapping a SYCL device
- * instance as a host device.
- *
- * @return   An opaque pointer to the host SYCL device.
- */
-DPCTL_API
-__dpctl_give DPCTLSyclDeviceRef DPCTLDevice_Create();
-
-/*!
- * @brief Returns a new DPCTLSyclDeviceRef opaque object created using the
- * provided device_selector.
- *
- * @param    DSRef          An opaque pointer to a SYCL device_selector.
- * @return   Returns an opaque pointer to a SYCL device created using the
- *           device_selector, if the requested device could not be created a
- *           nullptr is returned.
- */
-DPCTL_API
-__dpctl_give DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
-    __dpctl_keep const DPCTLSyclDeviceSelectorRef DSRef);
-
-/*!
  * @brief Deletes a DPCTLSyclDeviceRef pointer after casting to to sycl::device.
  *
  * @param    DRef           The DPCTLSyclDeviceRef pointer to be freed.
