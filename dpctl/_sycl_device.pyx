@@ -379,7 +379,6 @@ cpdef select_accelerator_device():
     DPCTLDeviceSelector_Delete(DSRef)
     if DRef is NULL:
         raise ValueError("Device unavailable.")
-    # The _create call frees DSRef and DRef
     Device = SyclDevice._create(DRef)
     return Device
 
@@ -400,7 +399,6 @@ cpdef select_cpu_device():
     DPCTLDeviceSelector_Delete(DSRef)
     if DRef is NULL:
         raise ValueError("Device unavailable.")
-    # The _create call frees DSRef and DRef
     Device = SyclDevice._create(DRef)
     return Device
 
@@ -421,7 +419,6 @@ cpdef select_default_device():
     DPCTLDeviceSelector_Delete(DSRef)
     if DRef is NULL:
         raise ValueError("Device unavailable.")
-    # The _create call frees DSRef and DRef
     Device = SyclDevice._create(DRef)
     return Device
 
@@ -442,7 +439,6 @@ cpdef select_gpu_device():
     DPCTLDeviceSelector_Delete(DSRef)
     if DRef is NULL:
         raise ValueError("Device unavailable.")
-    # The _create call frees DSRef and DRef
     Device = SyclDevice._create(DRef)
     return Device
 
@@ -463,6 +459,5 @@ cpdef select_host_device():
     DPCTLDeviceSelector_Delete(DSRef)
     if DRef is NULL:
         raise ValueError("Device unavailable.")
-    # The _create call frees DSRef and DRef
     Device = SyclDevice._create(DRef)
     return Device
