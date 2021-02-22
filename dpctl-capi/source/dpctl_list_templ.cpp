@@ -1,5 +1,4 @@
 
-#include <vector>
 
 __dpctl_give VECTOR(EL) FN(EL, _Create)() {}
 
