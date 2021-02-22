@@ -15,7 +15,6 @@ Run before each commit: `clang-format -style=file -i dpctl-capi/include/*.h dpct
 
 ### Python code style
 
-
 We use [black](https://black.readthedocs.io/en/stable/) code formatter.
 
 - Revision: `20.8b1` or branch `stable`.
@@ -87,6 +86,18 @@ Every Python and Cython file should only include the following license header:
 # limitations under the License.
 ```
 The copyright year should be updated every calendar year.
+
+## Security
+
+### Bandit
+
+We use [Bandit](https://github.com/PyCQA/bandit) to find common security issues in Python code.
+
+Install: `pip install bandit`
+
+- Revision: `1.7.0`
+
+Run before each commit: `bandit -r dpctl -lll`
 
 ## Code Coverage
 
