@@ -48,13 +48,19 @@ __dpctl_give VECTOR(EL) FN(EL, Create)()
 }
 
 /*!
- * @brief Frees the passed in std::vector pointer. Elements of the vector are
- * not freed by this function.
+ * @brief Frees all the elements of the passed in std::vector and then frees the
+ * std::vector pointer.
  *
  */
 void FN(EL, Delete)(__dpctl_take VECTOR(EL) VRef)
 {
-    delete unwrap(VRef);
+    auto Vec = unwrap(VRef);
+
+    for (auto i = 0ul; i < Vec->size(); ++i) {
+        auto D = unwrap((*Vec)[i]);
+        delete D;
+    }
+    delete Vec;
 }
 
 /*!
