@@ -21,11 +21,7 @@
 """
 
 from ._backend cimport (
-    DPCTLAcceleratorSelector_Create,
-    DPCTLCPUSelector_Create,
     DPCTLDefaultSelector_Create,
-    DPCTLGPUSelector_Create,
-    DPCTLHostSelector_Create,
     DPCTLCString_Delete,
     DPCTLDevice_Copy,
     DPCTLDevice_CreateFromSelector,
@@ -56,11 +52,6 @@ import warnings
 
 __all__ = [
     "SyclDevice",
-    "select_accelerator_device",
-    "select_cpu_device",
-    "select_default_device",
-    "select_gpu_device",
-    "select_host_device",
 ]
 
 
@@ -362,102 +353,3 @@ cdef class SyclDevice(_SyclDevice):
     def __repr__(self):
         return "<dpctl." + self.__name__ + " at {}>".format(hex(id(self)))
 
-
-cpdef select_accelerator_device():
-    """ A wrapper for SYCL's `accelerator_selector` device_selector class.
-
-    Returns:
-        A new SyclDevice object containing the SYCL device returned by the
-        `accelerator_selector`.
-    Raises:
-        A ValueError is raised if the SYCL `accelerator_selector` is unable to
-        select a device.
-    """
-    cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLAcceleratorSelector_Create()
-    cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
-    # Free up the device selector
-    DPCTLDeviceSelector_Delete(DSRef)
-    if DRef is NULL:
-        raise ValueError("Device unavailable.")
-    Device = SyclDevice._create(DRef)
-    return Device
-
-
-cpdef select_cpu_device():
-    """ A wrapper for SYCL's `cpu_selector` device_selector class.
-
-    Returns:
-        A new SyclDevice object containing the SYCL device returned by the
-        `cpu_selector`.
-    Raises:
-        A ValueError is raised if the SYCL `cpu_seector` is unable to select a
-        device.
-    """
-    cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLCPUSelector_Create()
-    cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
-    # Free up the device selector
-    DPCTLDeviceSelector_Delete(DSRef)
-    if DRef is NULL:
-        raise ValueError("Device unavailable.")
-    Device = SyclDevice._create(DRef)
-    return Device
-
-
-cpdef select_default_device():
-    """ A wrapper for SYCL's `default_selector` device_selector class.
-
-    Returns:
-        A new SyclDevice object containing the SYCL device returned by the
-        `default_selector`.
-    Raises:
-        A ValueError is raised if the SYCL `default_seector` is unable to
-        select a device.
-    """
-    cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create()
-    cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
-    # Free up the device selector
-    DPCTLDeviceSelector_Delete(DSRef)
-    if DRef is NULL:
-        raise ValueError("Device unavailable.")
-    Device = SyclDevice._create(DRef)
-    return Device
-
-
-cpdef select_gpu_device():
-    """ A wrapper for SYCL's `gpu_selector` device_selector class.
-
-    Returns:
-        A new SyclDevice object containing the SYCL device returned by the
-        `gpu_selector`.
-    Raises:
-        A ValueError is raised if the SYCL `gpu_seector` is unable to select a
-        device.
-    """
-    cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLGPUSelector_Create()
-    cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
-    # Free up the device selector
-    DPCTLDeviceSelector_Delete(DSRef)
-    if DRef is NULL:
-        raise ValueError("Device unavailable.")
-    Device = SyclDevice._create(DRef)
-    return Device
-
-
-cpdef select_host_device():
-    """ A wrapper for SYCL's `host_selector` device_selector class.
-
-    Returns:
-        A new SyclDevice object containing the SYCL device returned by the
-        `host_selector`.
-    Raises:
-        A ValueError is raised if the SYCL `host_seector` is unable to select a
-        device.
-    """
-    cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLHostSelector_Create()
-    cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
-    # Free up the device selector
-    DPCTLDeviceSelector_Delete(DSRef)
-    if DRef is NULL:
-        raise ValueError("Device unavailable.")
-    Device = SyclDevice._create(DRef)
-    return Device

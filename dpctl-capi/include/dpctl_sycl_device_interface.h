@@ -241,7 +241,7 @@ bool DPCTLDevice_IsHostUnifiedMemory(
  * @return   True if the underlying sycl::device are same, false otherwise.
  */
 DPCTL_API
-bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
-                       __dpctl_keep const DPCTLSyclDeviceRef DevRef2);
+bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
+                       __dpctl_keep const DPCTLSyclDeviceRef DRef2);
 
 DPCTL_C_EXTERN_C_END
