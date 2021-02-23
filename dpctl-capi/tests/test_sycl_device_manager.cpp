@@ -36,8 +36,8 @@ struct TestDPCTLDeviceManager : public ::testing::TestWithParam<const char *>
 
     TestDPCTLDeviceManager()
     {
-        DSRef = DPCTLFilterSelector_Create(GetParam());
-        DRef = DPCTLDevice_CreateFromSelector(DSRef);
+        EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLFilterSelector_Create(GetParam()));
+        EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
     }
 
     void SetUp()
@@ -55,6 +55,14 @@ struct TestDPCTLDeviceManager : public ::testing::TestWithParam<const char *>
         EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     }
 };
+
+TEST_P(TestDPCTLDeviceManager, Chk_AreEq)
+{
+    auto DRef2 = DPCTLDevice_CreateFromSelector(DSRef);
+    bool compare = false;
+    EXPECT_NO_FATAL_FAILURE(compare = DPCTLDeviceMgr_AreEq(DRef, DRef2));
+    EXPECT_TRUE(compare);
+}
 
 TEST_P(TestDPCTLDeviceManager, Chk_PrintDeviceInfo)
 {
@@ -76,12 +84,12 @@ INSTANTIATE_TEST_SUITE_P(DeviceMgrFunctions,
                                            "opencl:cpu:0",
                                            "level_zero:gpu:0"));
 
-struct TestGetDevices : public ::testing::TestWithParam<int>
+struct TestDPCTLDeviceVector : public ::testing::TestWithParam<int>
 {
     DPCTLDeviceVectorRef DV = nullptr;
     size_t nDevices = 0;
 
-    TestGetDevices()
+    TestDPCTLDeviceVector()
     {
         EXPECT_NO_FATAL_FAILURE(DV = DPCTLDeviceMgr_GetDevices(GetParam()));
         EXPECT_TRUE(DV != nullptr);
@@ -95,14 +103,14 @@ struct TestGetDevices : public ::testing::TestWithParam<int>
         }
     }
 
-    ~TestGetDevices()
+    ~TestDPCTLDeviceVector()
     {
         EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Clear(DV));
         EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DV));
     }
 };
 
-TEST_P(TestGetDevices, Chk_DPCTLDeviceVector_GetAt)
+TEST_P(TestDPCTLDeviceVector, Chk_GetAt)
 {
     for (auto i = 0ul; i < nDevices; ++i) {
         DPCTLSyclDeviceRef DRef = nullptr;
@@ -113,14 +121,14 @@ TEST_P(TestGetDevices, Chk_DPCTLDeviceVector_GetAt)
 
 INSTANTIATE_TEST_SUITE_P(
     GetDevices,
-    TestGetDevices,
+    TestDPCTLDeviceVector,
     ::testing::Values(DPCTLSyclBackendType::DPCTL_HOST,
                       DPCTLSyclBackendType::DPCTL_LEVEL_ZERO,
                       DPCTLSyclBackendType::DPCTL_OPENCL,
                       DPCTLSyclBackendType::DPCTL_OPENCL |
                           DPCTLSyclDeviceType::DPCTL_GPU));
 
-TEST(TestDPCTLDeviceManager, Chk_DPCTLDeviceVector_Create)
+TEST(TestDPCTLDeviceVector, Chk_DPCTLDeviceVector_Create)
 {
     DPCTLDeviceVectorRef DVRef = nullptr;
     size_t nDevices = 0;

@@ -1,4 +1,4 @@
-//===-- dpctl_list.h - Defines macros for opaque vector types      -*-C++-*- =//
+//===-- dpctl_vector.h - Defines macros for opaque vector types    -*-C++-*- =//
 //
 //                      Data Parallel Control (dpCtl)
 //
