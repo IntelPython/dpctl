@@ -133,10 +133,13 @@ const DeviceCache &getDeviceCache()
 {
     static DeviceCache cache = [] {
         DeviceCache cache_l;
+        default_selector mRanker;
         auto Platforms = platform::get_platforms();
         for (const auto &P : Platforms) {
             auto Devices = P.get_devices();
             for (const auto &D : Devices) {
+                if (mRanker(D) < 0)
+                    continue;
                 auto entry = cache_l.emplace(D, D);
                 if (!entry.second) {
                     std::cerr
