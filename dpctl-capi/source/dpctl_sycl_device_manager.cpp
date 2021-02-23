@@ -40,10 +40,6 @@ namespace
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclDeviceRef>,
-                                   DPCTLDeviceVectorRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclBackendType>,
-                                   DPCTLBackendVectorRef)
 
 /*!
  * @brief Helper function to print the metadata for a sycl::device.
@@ -157,6 +153,11 @@ const DeviceCache &getDeviceCache()
 
 } // namespace
 
+#undef EL
+#define EL Device
+#include "dpctl_vector_templ.cpp"
+#undef EL
+
 bool DPCTLDeviceMgr_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
                           __dpctl_keep const DPCTLSyclDeviceRef DRef2)
 {
@@ -164,67 +165,6 @@ bool DPCTLDeviceMgr_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
     DeviceWrapper DW2(*unwrap(DRef2));
     DeviceEqPred pred;
     return pred(DW1, DW2);
-}
-
-__dpctl_give DPCTLDeviceVectorRef DPCTLDeviceMgr_CreateDeviceVector()
-{
-    try {
-        auto Devices = new vector_class<DPCTLSyclDeviceRef>();
-        return wrap(Devices);
-    } catch (std::bad_alloc const &ba) {
-        return nullptr;
-    }
-}
-
-void DPCTLDeviceMgr_DeleteBackendVector(
-    __dpctl_take DPCTLBackendVectorRef BVRef)
-{
-    delete unwrap(BVRef);
-}
-
-void DPCTLDeviceMgr_DeleteDeviceVector(__dpctl_take DPCTLDeviceVectorRef DVRef)
-{
-    delete unwrap(DVRef);
-}
-
-void DPCTLDeviceMgr_DeviceVector_Clear(__dpctl_take DPCTLDeviceVectorRef DVRef)
-{
-    auto DeviceVec = unwrap(DVRef);
-
-    for (auto i = 0ul; i < DeviceVec->size(); ++i) {
-        auto D = unwrap((*DeviceVec)[i]);
-        delete D;
-    }
-    DeviceVec->clear();
-}
-
-__dpctl_give DPCTLBackendVectorRef DPCTLDeviceMgr_GetBackends()
-{
-    vector_class<DPCTLSyclBackendType> *Backends = nullptr;
-    auto &cache = getDeviceCache();
-
-    try {
-        Backends = new vector_class<DPCTLSyclBackendType>();
-    } catch (std::bad_alloc const &ba) {
-        return nullptr;
-    }
-
-    Backends->reserve(cache.size());
-
-    for (const auto &entry : cache) {
-        auto Bty = entry.first.Bty;
-        if (Backends->empty() || [&Backends, &Bty] {
-                for (auto &B : *Backends)
-                    if (Bty == B)
-                        return false;
-                ;
-                return true;
-            }())
-        {
-            Backends->emplace_back(Bty);
-        }
-    }
-    return wrap(Backends);
 }
 
 DPCTL_DeviceAndContextPair DPCTLDeviceMgr_GetDeviceAndContextPair(
@@ -270,29 +210,8 @@ DPCTLDeviceMgr_GetDevices(int device_identifier)
             Devices->emplace_back(wrap(new device(entry.first.SyclDevice)));
         }
     }
+    // the wrap function is defined inside dpctl_vector_templ.cpp
     return wrap(Devices);
-}
-
-size_t DPCTLDeviceMgr_GetNumBackends()
-{
-    vector_class<DPCTLSyclBackendType> Backends;
-    auto &cache = getDeviceCache();
-    Backends.reserve(cache.size());
-
-    for (const auto &entry : cache) {
-        auto Bty = entry.first.Bty;
-        if (Backends.empty() || [&Backends, &Bty] {
-                for (auto &B : Backends)
-                    if (Bty == B)
-                        return false;
-                ;
-                return true;
-            }())
-        {
-            Backends.emplace_back(Bty);
-        }
-    }
-    return Backends.size();
 }
 
 /*!

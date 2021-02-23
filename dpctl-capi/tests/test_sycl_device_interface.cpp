@@ -196,7 +196,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_HasInt64ExtendedAtomics)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Check_IsAccelerator)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsAccelerator)
 {
     DPCTLSyclDeviceRef DRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
@@ -206,7 +206,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Check_IsAccelerator)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Check_IsCPU)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsCPU)
 {
     DPCTLSyclDeviceRef DRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
@@ -216,7 +216,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Check_IsCPU)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Check_IsGPU)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsGPU)
 {
     DPCTLSyclDeviceRef DRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
@@ -226,7 +226,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Check_IsGPU)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Check_IsHost)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsHost)
 {
     DPCTLSyclDeviceRef DRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));

@@ -50,8 +50,8 @@ DPCTL_C_EXTERN_C_BEGIN
     size_t DPCTL##EL##Vector_Size(__dpctl_keep DPCTL##EL##VectorRef Ref);      \
                                                                                \
     DPCTL_API                                                                  \
-    size_t DPCTL##EL##Vector_GetAt(__dpctl_keep DPCTL##EL##VectorRef Ref,      \
-                                   size_t index);
+    __dpctl_give DPCTLSycl##EL##Ref DPCTL##EL##Vector_GetAt(                   \
+        __dpctl_keep DPCTL##EL##VectorRef Ref, size_t index);
 
 #define DPCTL_DECLARE_VECTOR(EL)                                               \
     DPCTL_DECLARE_VECTOR_TYPE(EL)                                              \

@@ -66,7 +66,10 @@ file(GLOB_RECURSE sources
 )
 
 # Exclude from sources
-list(REMOVE_ITEM sources "dpctl_vector_templ.cpp")
+list(REMOVE_ITEM
+    sources
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/dpctl_vector_templ.cpp"
+)
 
 file(GLOB_RECURSE helper_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/source/*.cpp

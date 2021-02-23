@@ -2,22 +2,26 @@
 #include "../helper/include/dpctl_vector_macros.h"
 #include "Support/MemOwnershipAttrs.h"
 
-__dpctl_give VECTOR(EL) FN(EL, _Create)()
+namespace
+{
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<SYCLREF(EL)>, VECTOR(EL))
+}
+__dpctl_give VECTOR(EL) FN(EL, Create)()
 {
     try {
-        auto Vec = new vector_class<VECTOR(EL)>();
+        auto Vec = new vector_class<SYCLREF(EL)>();
         return wrap(Vec);
     } catch (std::bad_alloc const &ba) {
         return nullptr;
     }
 }
 
-void FN(EL, _Delete)(__dpctl_take VECTOR(EL) VRef)
+void FN(EL, Delete)(__dpctl_take VECTOR(EL) VRef)
 {
     delete unwrap(VRef);
 }
 
-void FN(EL, _Clear)(__dpctl_keep VECTOR(EL) VRef)
+void FN(EL, Clear)(__dpctl_keep VECTOR(EL) VRef)
 {
     auto Vec = unwrap(VRef);
 
@@ -28,15 +32,15 @@ void FN(EL, _Clear)(__dpctl_keep VECTOR(EL) VRef)
     Vec->clear();
 }
 
-size_t FN(EL, _Size)(__dpctl_keep VECTOR(EL) VRef)
+size_t FN(EL, Size)(__dpctl_keep VECTOR(EL) VRef)
 {
     return unwrap(VRef)->size();
 }
 
-size_t FN(EL, _GetAt)(__dpctl_keep VECTOR(EL) VRef, size_t index)
+SYCLREF(EL) FN(EL, GetAt)(__dpctl_keep VECTOR(EL) VRef, size_t index)
 {
     auto Vec = unwrap(VRef);
-    EL ret = nullptr;
+    SYCLREF(EL) ret = nullptr;
     try {
         ret = Vec->at(index);
     } catch (std::out_of_range const &oor) {
