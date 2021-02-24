@@ -46,7 +46,7 @@ from ._backend cimport (
     DPCTLSyclDeviceType,
 )
 from ._sycl_device cimport SyclDevice
-from . import backend_type, device_type
+from . import backend_type, device_type as device_type_t
 
 __all__ = [
     "get_devices",
@@ -110,19 +110,19 @@ cdef _backend_type _enum_to_dpctl_sycl_backend_ty(BTy):
 
 
 cdef _device_type _enum_to_dpctl_sycl_device_ty(DTy):
-    if DTy == device_type.all:
+    if DTy == device_type_t.all:
         return _device_type._ALL_DEVICES
-    elif DTy == device_type.accelerator:
+    elif DTy == device_type_t.accelerator:
         return _device_type._ACCELERATOR
-    elif DTy == device_type.automatic:
+    elif DTy == device_type_t.automatic:
         return _device_type._AUTOMATIC
-    elif DTy == device_type.cpu:
+    elif DTy == device_type_t.cpu:
         return _device_type._CPU
-    elif DTy == device_type.custom:
+    elif DTy == device_type_t.custom:
         return _device_type._CUSTOM
-    elif DTy == device_type.gpu:
+    elif DTy == device_type_t.gpu:
         return _device_type._GPU
-    elif DTy == device_type.host_device:
+    elif DTy == device_type_t.host_device:
         return _device_type._HOST_DEVICE
     else:
         return _device_type._UNKNOWN_DEVICE
@@ -141,7 +141,7 @@ cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
     return devices
 
 
-cpdef list get_devices(backend=backend_type.all, device_ty=device_type.all):
+cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
     cdef DPCTLSyclBackendType BTy = _backend_type._ALL_BACKENDS
     cdef DPCTLSyclDeviceType DTy = _device_type._ALL_DEVICES
     cdef DPCTLDeviceVectorRef DVRef = NULL
@@ -157,10 +157,10 @@ cpdef list get_devices(backend=backend_type.all, device_ty=device_type.all):
             "enum_types.backend_type"
         )
 
-    if isinstance(device_ty, str):
-        DTy = _string_to_dpctl_sycl_device_ty(device_ty)
-    elif isinstance(device_ty, device_type):
-        DTy = _enum_to_dpctl_sycl_device_ty(device_ty)
+    if isinstance(device_type, str):
+        DTy = _string_to_dpctl_sycl_device_ty(device_type)
+    elif isinstance(device_type, device_type_t):
+        DTy = _enum_to_dpctl_sycl_device_ty(device_type)
     else:
         raise TypeError(
             "device type should be specified as a str or an "

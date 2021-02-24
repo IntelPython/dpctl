@@ -209,7 +209,9 @@ DPCTLDeviceMgr_GetDevices(int device_identifier)
 
     Devices->reserve(cache.size());
     for (const auto &entry : cache) {
-        if (device_identifier & (entry.first.Bty | entry.first.Dty)) {
+        if ((device_identifier & entry.first.Bty) &&
+            (device_identifier & entry.first.Dty))
+        {
             Devices->emplace_back(wrap(new device(entry.first.SyclDevice)));
         }
     }
