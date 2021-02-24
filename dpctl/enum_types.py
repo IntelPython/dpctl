@@ -41,12 +41,14 @@ class device_type(Enum):
     accelerator          3
     host_device          4
     ==================   ============
-
     """
 
-    gpu = auto()
-    cpu = auto()
+    all = auto()
     accelerator = auto()
+    automatic = auto()
+    cpu = auto()
+    custom = auto()
+    gpu = auto()
     host_device = auto()
 
 
@@ -65,7 +67,8 @@ class backend_type(Enum):
 
     """
 
-    opencl = auto()
-    level_zero = auto()
+    all = auto()
     cuda = auto()
     host = auto()
+    level_zero = auto()
+    opencl = auto()

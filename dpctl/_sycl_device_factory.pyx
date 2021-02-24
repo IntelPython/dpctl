@@ -26,25 +26,152 @@
 """
 
 from ._backend cimport (
+    _backend_type,
+    _device_type,
     DPCTLAcceleratorSelector_Create,
     DPCTLCPUSelector_Create,
     DPCTLDefaultSelector_Create,
     DPCTLDevice_CreateFromSelector,
+    DPCTLDeviceMgr_GetDevices,
     DPCTLDeviceSelector_Delete,
+    DPCTLDeviceVectorRef,
+    DPCTLDeviceVector_Delete,
+    DPCTLDeviceVector_GetAt,
+    DPCTLDeviceVector_Size,
     DPCTLGPUSelector_Create,
     DPCTLHostSelector_Create,
+    DPCTLSyclBackendType,
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
+    DPCTLSyclDeviceType,
 )
 from ._sycl_device cimport SyclDevice
+from . import backend_type, device_type
 
 __all__ = [
+    "get_devices",
     "select_accelerator_device",
     "select_cpu_device",
     "select_default_device",
     "select_gpu_device",
     "select_host_device",
 ]
+
+
+cdef _backend_type _string_to_dpctl_sycl_backend_ty(str backend_str):
+    backend_str = backend_str.strip().lower()
+    if backend_str == "all":
+        return _backend_type._ALL_BACKENDS
+    elif backend_str == "cuda":
+        return _backend_type._CUDA
+    elif backend_str == "host":
+        return _backend_type._HOST
+    elif backend_str == "level_zero":
+        return _backend_type._LEVEL_ZERO
+    elif backend_str == "opencl":
+        return _backend_type._OPENCL
+    else:
+        return _backend_type._UNKNOWN_BACKEND
+
+
+cdef _device_type _string_to_dpctl_sycl_device_ty(str dty_str):
+    dty_str = dty_str.strip().lower()
+    if dty_str == "accelerator":
+        return _device_type._ACCELERATOR
+    elif dty_str == "all":
+        return _device_type._ALL_DEVICES
+    elif dty_str == "automatic":
+        return _device_type._AUTOMATIC
+    elif dty_str == "cpu":
+        return _device_type._CPU
+    elif dty_str == "custom":
+        return _device_type._CUSTOM
+    elif dty_str == "gpu":
+        return _device_type._GPU
+    elif dty_str == "host":
+        return _device_type._HOST_DEVICE
+    else:
+        return _device_type._UNKNOWN_DEVICE
+
+
+cdef _backend_type _enum_to_dpctl_sycl_backend_ty(BTy):
+    if BTy == backend_type.all:
+        return _backend_type._ALL_BACKENDS
+    elif BTy == backend_type.cuda:
+        return _backend_type._CUDA
+    elif BTy == backend_type.host:
+        return _backend_type._HOST
+    elif BTy == backend_type.level_zero:
+        return _backend_type._LEVEL_ZERO
+    elif BTy == backend_type.opencl:
+        return _backend_type._OPENCL
+    else:
+        return _backend_type._UNKNOWN_BACKEND
+
+
+cdef _device_type _enum_to_dpctl_sycl_device_ty(DTy):
+    if DTy == device_type.all:
+        return _device_type._ALL_DEVICES
+    elif DTy == device_type.accelerator:
+        return _device_type._ACCELERATOR
+    elif DTy == device_type.automatic:
+        return _device_type._AUTOMATIC
+    elif DTy == device_type.cpu:
+        return _device_type._CPU
+    elif DTy == device_type.custom:
+        return _device_type._CUSTOM
+    elif DTy == device_type.gpu:
+        return _device_type._GPU
+    elif DTy == device_type.host_device:
+        return _device_type._HOST_DEVICE
+    else:
+        return _device_type._UNKNOWN_DEVICE
+
+
+cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
+    cdef list devices = []
+    cdef size_t nelems = 0
+
+    nelems = DPCTLDeviceVector_Size(DVRef)
+    for i in range(0, nelems):
+        DRef = DPCTLDeviceVector_GetAt(DVRef, i)
+        D = SyclDevice._create(DRef)
+        devices.append(D)
+
+    return devices
+
+
+cpdef list get_devices(backend=backend_type.all, device_ty=device_type.all):
+    cdef DPCTLSyclBackendType BTy = _backend_type._ALL_BACKENDS
+    cdef DPCTLSyclDeviceType DTy = _device_type._ALL_DEVICES
+    cdef DPCTLDeviceVectorRef DVRef = NULL
+    cdef list devices
+
+    if isinstance(backend, str):
+        BTy = _string_to_dpctl_sycl_backend_ty(backend)
+    elif isinstance(backend, backend_type):
+        BTy = _enum_to_dpctl_sycl_backend_ty(backend)
+    else:
+        raise TypeError(
+            "backend should be specified as a str or an "
+            "enum_types.backend_type"
+        )
+
+    if isinstance(device_ty, str):
+        DTy = _string_to_dpctl_sycl_device_ty(device_ty)
+    elif isinstance(device_ty, device_type):
+        DTy = _enum_to_dpctl_sycl_device_ty(device_ty)
+    else:
+        raise TypeError(
+            "device type should be specified as a str or an "
+            "enum_types.device_type"
+        )
+
+    DVRef = DPCTLDeviceMgr_GetDevices(BTy | DTy)
+    devices = _get_devices(DVRef)
+    DPCTLDeviceVector_Delete(DVRef)
+
+    return devices
 
 
 cpdef select_accelerator_device():

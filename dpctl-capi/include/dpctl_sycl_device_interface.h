@@ -117,6 +117,17 @@ DPCTL_API
 bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
+ * @brief Returns the DPCTLSyclDeviceType enum value for the DPCTLSyclDeviceRef
+ * argument.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   The DPCTLSyclDeviceType value corresponding to the device.
+ */
+DPCTL_API
+DPCTLSyclDeviceType
+DPCTLDevice_GetDeviceType(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
  * @brief Returns the OpenCL software driver version as a C string.
  *
  * @param    DRef           Opaque pointer to a sycl::device

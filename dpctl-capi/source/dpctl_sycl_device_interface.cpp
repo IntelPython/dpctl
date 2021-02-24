@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_interface.h"
+#include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_device_manager.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
@@ -98,6 +99,23 @@ __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
 void DPCTLDevice_Delete(__dpctl_take DPCTLSyclDeviceRef DRef)
 {
     delete unwrap(DRef);
+}
+
+DPCTLSyclDeviceType
+DPCTLDevice_GetDeviceType(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    DPCTLSyclDeviceType DTy = DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            auto SyclDTy = D->get_info<info::device::device_type>();
+            DTy = DPCTL_SyclDeviceTypeToDPCTLDeviceType(SyclDTy);
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return DTy;
 }
 
 bool DPCTLDevice_IsAccelerator(__dpctl_keep const DPCTLSyclDeviceRef DRef)

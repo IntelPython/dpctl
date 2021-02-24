@@ -22,8 +22,11 @@ from SYCL standard device_selectors, to get a list of SyclDevices for a
 specific backend or device_type.
 """
 
+from . import backend_type, device_type
+
 cpdef select_accelerator_device()
 cpdef select_cpu_device()
 cpdef select_default_device()
 cpdef select_gpu_device()
 cpdef select_host_device()
+cpdef list get_devices(backend=*, device_ty=*)

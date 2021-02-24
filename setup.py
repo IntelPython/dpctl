@@ -174,9 +174,9 @@ def extensions():
             **extension_args
         ),
         Extension(
-            "dpctl._sycl_device_manager",
+            "dpctl._sycl_device_factory",
             [
-                os.path.join("dpctl", "_sycl_device_manager.pyx"),
+                os.path.join("dpctl", "_sycl_device_factory.pyx"),
             ],
             **extension_args
         ),

@@ -21,19 +21,21 @@
 """
 
 from ._backend cimport (
+    _device_type,
     DPCTLDefaultSelector_Create,
     DPCTLCString_Delete,
     DPCTLDevice_Copy,
     DPCTLDevice_CreateFromSelector,
     DPCTLDevice_Delete,
-    DPCTLDevice_GetVendorName,
-    DPCTLDevice_GetName,
+    DPCTLDevice_GetDeviceType,
     DPCTLDevice_GetDriverInfo,
     DPCTLDevice_GetMaxComputeUnits,
+    DPCTLDevice_GetMaxNumSubGroups,
+    DPCTLDevice_GetMaxWorkGroupSize,
     DPCTLDevice_GetMaxWorkItemDims,
     DPCTLDevice_GetMaxWorkItemSizes,
-    DPCTLDevice_GetMaxWorkGroupSize,
-    DPCTLDevice_GetMaxNumSubGroups,
+    DPCTLDevice_GetVendorName,
+    DPCTLDevice_GetName,
     DPCTLDevice_HasInt64BaseAtomics,
     DPCTLDevice_HasInt64ExtendedAtomics,
     DPCTLDevice_IsAccelerator,
@@ -46,6 +48,7 @@ from ._backend cimport (
     DPCTLSize_t_Array_Delete,
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
+    DPCTLSyclDeviceType,
 )
 from . import device_type
 import warnings
@@ -87,12 +90,26 @@ cdef class _SyclDevice:
         return self._device_name.decode()
 
     cpdef get_device_type(self):
-        """ Returns the type of the device as a `device_type` enum
+        """ Returns the type of the device as a `device_type` enum.
+
+        Returns:
+            device_type: The type of device encoded as a device_type enum.
+        Raises:
+            A ValueError is raised if the device type is not recognized.
         """
-        if DPCTLDevice_IsGPU(self._device_ref):
-            return device_type.gpu
-        elif DPCTLDevice_IsCPU(self._device_ref):
+        cdef DPCTLSyclDeviceType DTy = (
+            DPCTLDevice_GetDeviceType(self._device_ref)
+        )
+        if DTy == _device_type._ACCELERATOR:
+            return device_type.accelerator
+        elif DTy == _device_type._AUTOMATIC:
+            return device_type.automatic
+        elif DTy == _device_type._CPU:
             return device_type.cpu
+        elif DTy == _device_type._GPU:
+            return device_type.gpu
+        elif DTy == _device_type._HOST_DEVICE:
+            return device_type.host_device
         else:
             raise ValueError("Unknown device type.")
 

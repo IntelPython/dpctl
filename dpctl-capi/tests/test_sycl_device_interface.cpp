@@ -59,6 +59,19 @@ struct TestDPCTLSyclDeviceInterface
     }
 };
 
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetDeviceType)
+{
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclDeviceType DTy = DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(DTy = DPCTLDevice_GetDeviceType(DRef));
+    EXPECT_TRUE(DTy != DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE);
+    EXPECT_TRUE(DTy != DPCTLSyclDeviceType::DPCTL_ALL);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+}
+
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetDriverInfo)
 {
     DPCTLSyclDeviceRef DRef = nullptr;
