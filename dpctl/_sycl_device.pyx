@@ -21,12 +21,14 @@
 """
 
 from ._backend cimport (
+    _backend_type,
     _device_type,
     DPCTLDefaultSelector_Create,
     DPCTLCString_Delete,
     DPCTLDevice_Copy,
     DPCTLDevice_CreateFromSelector,
     DPCTLDevice_Delete,
+    DPCTLDevice_GetBackend,
     DPCTLDevice_GetDeviceType,
     DPCTLDevice_GetDriverInfo,
     DPCTLDevice_GetMaxComputeUnits,
@@ -46,11 +48,12 @@ from ._backend cimport (
     DPCTLFilterSelector_Create,
     DPCTLDeviceSelector_Delete,
     DPCTLSize_t_Array_Delete,
+    DPCTLSyclBackendType,
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclDeviceType,
 )
-from . import device_type
+from . import backend_type, device_type
 import warnings
 
 __all__ = [
@@ -83,6 +86,26 @@ cdef class _SyclDevice:
         """ Print information about the SYCL device.
         """
         DPCTLDeviceMgr_PrintDeviceInfo(self._device_ref)
+
+    cpdef get_backend(self):
+        """Returns the backend_type enum value for this device
+
+        Returns:
+            backend_type: The backend for the device.
+        """
+        cdef DPCTLSyclBackendType BTy = (
+            DPCTLDevice_GetBackend(self._device_ref)
+        )
+        if BTy == _backend_type._CUDA:
+            return backend_type.cuda
+        elif BTy == _backend_type._HOST:
+            return backend_type.host
+        elif BTy == _backend_type._LEVEL_ZERO:
+            return backend_type.level_zero
+        elif BTy == _backend_type._OPENCL:
+            return backend_type.opencl
+        else:
+            raise ValueError("Unknown backend type.")
 
     cpdef get_device_name(self):
         """ Returns the name of the device as a string

@@ -47,6 +47,7 @@ cdef class _SyclDevice:
     cdef bool _int64_base_atomics
     cdef bool _int64_extended_atomics
     cdef DPCTLSyclDeviceRef get_device_ref(self)
+    cpdef get_backend(self)
     cpdef get_device_name(self)
     cpdef get_device_type(self)
     cpdef get_vendor_name(self)

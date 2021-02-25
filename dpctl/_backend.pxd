@@ -80,6 +80,7 @@ cdef extern from "dpctl_sycl_types.h":
     cdef struct DPCTLOpaqueSyclDeviceSelector
     cdef struct DPCTLOpaqueSyclEvent
     cdef struct DPCTLOpaqueSyclKernel
+    cdef struct DPCTLOpaqueSyclPlatform
     cdef struct DPCTLOpaqueSyclProgram
     cdef struct DPCTLOpaqueSyclQueue
     cdef struct DPCTLOpaqueSyclUSM
@@ -89,6 +90,7 @@ cdef extern from "dpctl_sycl_types.h":
     ctypedef DPCTLOpaqueSyclDeviceSelector *DPCTLSyclDeviceSelectorRef
     ctypedef DPCTLOpaqueSyclEvent          *DPCTLSyclEventRef
     ctypedef DPCTLOpaqueSyclKernel         *DPCTLSyclKernelRef
+    ctypedef DPCTLOpaqueSyclPlatform       *DPCTLSyclPlatformRef
     ctypedef DPCTLOpaqueSyclProgram        *DPCTLSyclProgramRef
     ctypedef DPCTLOpaqueSyclQueue          *DPCTLSyclQueueRef
     ctypedef DPCTLOpaqueSyclUSM            *DPCTLSyclUSMRef
@@ -102,6 +104,8 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
         const DPCTLSyclDeviceSelectorRef DSRef)
     cdef void DPCTLDevice_Delete(DPCTLSyclDeviceRef DRef)
+    cdef DPCTLSyclBackendType DPCTLDevice_GetBackend(
+        const DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclDeviceType DPCTLDevice_GetDeviceType(
         const DPCTLSyclDeviceRef DRef)
     cdef const char *DPCTLDevice_GetDriverInfo(const DPCTLSyclDeviceRef DRef)
@@ -111,6 +115,8 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef uint32_t DPCTLDevice_GetMaxWorkItemDims(const DPCTLSyclDeviceRef DRef)
     cdef size_t *DPCTLDevice_GetMaxWorkItemSizes(const DPCTLSyclDeviceRef DRef)
     cdef const char *DPCTLDevice_GetName(const DPCTLSyclDeviceRef DRef)
+    cdef DPCTLSyclPlatformRef DPCTLDevice_GetPlatform(
+        const DPCTLSyclDeviceRef DRef)
     cdef const char *DPCTLDevice_GetVendorName(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_HasInt64BaseAtomics(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_HasInt64ExtendedAtomics(const DPCTLSyclDeviceRef DRef)
@@ -119,7 +125,6 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsHost(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsHostUnifiedMemory(const DPCTLSyclDeviceRef DRef)
-
 
 
 cdef extern from "dpctl_sycl_device_manager.h":
@@ -160,6 +165,7 @@ cdef extern from "dpctl_sycl_kernel_interface.h":
 
 
 cdef extern from "dpctl_sycl_platform_interface.h":
+    cdef void DPCTLPlatform_Delete()
     cdef size_t DPCTLPlatform_GetNumNonHostPlatforms()
     cdef void DPCTLPlatform_DumpInfo()
     cdef size_t DPCTLPlatform_GetNumNonHostBackends()

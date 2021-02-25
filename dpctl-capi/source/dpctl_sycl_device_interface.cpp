@@ -38,6 +38,7 @@ namespace
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef)
 
 } /* end of anonymous namespace */
 
@@ -154,6 +155,18 @@ bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return false;
 }
 
+DPCTLSyclBackendType
+DPCTLDevice_GetBackend(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
+    auto D = unwrap(DRef);
+    if (D) {
+        BTy = DPCTL_SyclBackendToDPCTLBackendType(
+            D->get_platform().get_backend());
+    }
+    return BTy;
+}
+
 uint32_t
 DPCTLDevice_GetMaxComputeUnits(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
@@ -240,6 +253,21 @@ DPCTLDevice_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         }
     }
     return max_nsubgroups;
+}
+
+__dpctl_give DPCTLSyclPlatformRef
+DPCTLDevice_GetPlatform(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    DPCTLSyclPlatformRef PRef = nullptr;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            PRef = wrap(new platform(D->get_platform()));
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        }
+    }
+    return PRef;
 }
 
 bool DPCTLDevice_HasInt64BaseAtomics(__dpctl_keep const DPCTLSyclDeviceRef DRef)

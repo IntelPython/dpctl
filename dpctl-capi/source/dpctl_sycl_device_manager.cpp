@@ -228,7 +228,8 @@ size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier)
     size_t nDevices = 0;
     auto &cache = getDeviceCache();
     for (const auto &entry : cache)
-        if (device_identifier & (entry.first.Bty | entry.first.Dty))
+        if ((device_identifier & entry.first.Bty) &&
+            (device_identifier & entry.first.Dty))
             ++nDevices;
 
     return nDevices;

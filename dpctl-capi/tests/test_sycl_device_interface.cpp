@@ -26,6 +26,7 @@
 
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
+#include "dpctl_sycl_platform_interface.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
 #include "dpctl_utils.h"
@@ -58,6 +59,31 @@ struct TestDPCTLSyclDeviceInterface
         EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
     }
 };
+
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetBackend)
+{
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(BTy = DPCTLDevice_GetBackend(DRef));
+    EXPECT_TRUE([BTy] {
+        switch (BTy) {
+        case DPCTLSyclBackendType::DPCTL_CUDA:
+            return true;
+        case DPCTLSyclBackendType::DPCTL_HOST:
+            return true;
+        case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO:
+            return true;
+        case DPCTLSyclBackendType::DPCTL_OPENCL:
+            return true;
+        default:
+            return false;
+        }
+    }());
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+}
 
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetDeviceType)
 {
@@ -176,6 +202,19 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxNumSubGroups)
     else
         EXPECT_TRUE(n > 0);
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPlatform)
+{
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclPlatformRef PRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(PRef = DPCTLDevice_GetPlatform(DRef));
+    ASSERT_TRUE(PRef);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_Delete(PRef));
 }
 
 // TODO: Update when DPC++ properly supports aspects

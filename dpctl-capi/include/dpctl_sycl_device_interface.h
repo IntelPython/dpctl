@@ -117,6 +117,17 @@ DPCTL_API
 bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
+ * @brief Returns the backend for the device.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   A DPCTLSyclBackendType enum value representing the sycl::backend
+ * for the device.
+ */
+DPCTL_API
+DPCTLSyclBackendType
+DPCTLDevice_GetBackend(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
  * @brief Returns the DPCTLSyclDeviceType enum value for the DPCTLSyclDeviceRef
  * argument.
  *
@@ -187,6 +198,17 @@ DPCTLDevice_GetMaxWorkGroupSize(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 DPCTL_API
 uint32_t
 DPCTLDevice_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Returns the sycl::platform for the device as DPCTLSyclPlatformRef
+ * opaque pointer.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   An opaque pointer to the sycl::platform for the device.
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclPlatformRef
+DPCTLDevice_GetPlatform(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Wrapper over
