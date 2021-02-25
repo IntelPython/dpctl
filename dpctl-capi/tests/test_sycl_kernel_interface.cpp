@@ -25,6 +25,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_context_interface.h"
+#include "dpctl_sycl_device_interface.h"
+#include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_kernel_interface.h"
 #include "dpctl_sycl_program_interface.h"
 #include "dpctl_sycl_queue_interface.h"
@@ -36,7 +38,10 @@
 
 using namespace cl::sycl;
 
-struct TestDPCTLSyclKernelInterface : public ::testing::Test
+namespace
+{
+struct TestDPCTLSyclKernelInterface
+    : public ::testing::TestWithParam<const char *>
 {
     const char *CLProgramStr = R"CLC(
         kernel void add(global int* a, global int* b, global int* c) {
@@ -50,20 +55,35 @@ struct TestDPCTLSyclKernelInterface : public ::testing::Test
         }
     )CLC";
     const char *CompileOpts = "-cl-fast-relaxed-math";
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
 
-    size_t nOpenCLGpuQ = 0;
     TestDPCTLSyclKernelInterface()
-        : nOpenCLGpuQ(DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_GPU))
     {
+        DSRef = DPCTLFilterSelector_Create(GetParam());
+        DRef = DPCTLDevice_CreateFromSelector(DSRef);
+    }
+
+    ~TestDPCTLSyclKernelInterface()
+    {
+        DPCTLDeviceSelector_Delete(DSRef);
+        DPCTLDevice_Delete(DRef);
+    }
+
+    void SetUp()
+    {
+        if (!DRef) {
+            auto message = "Skipping as no device of type " +
+                           std::string(GetParam()) + ".";
+            GTEST_SKIP_(message.c_str());
+        }
     }
 };
+} // namespace
 
-TEST_F(TestDPCTLSyclKernelInterface, CheckGetFunctionName)
+TEST_P(TestDPCTLSyclKernelInterface, CheckGetFunctionName)
 {
-    if (!nOpenCLGpuQ)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
-
-    auto QueueRef = DPCTLQueueMgr_GetQueue(DPCTL_OPENCL, DPCTL_GPU, 0);
+    auto QueueRef = DPCTLQueue_CreateForDevice(DRef, nullptr, 0);
     auto CtxRef = DPCTLQueue_GetContext(QueueRef);
     auto PRef =
         DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr, CompileOpts);
@@ -86,12 +106,9 @@ TEST_F(TestDPCTLSyclKernelInterface, CheckGetFunctionName)
     DPCTLKernel_Delete(AxpyKernel);
 }
 
-TEST_F(TestDPCTLSyclKernelInterface, CheckGetNumArgs)
+TEST_P(TestDPCTLSyclKernelInterface, CheckGetNumArgs)
 {
-    if (!nOpenCLGpuQ)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
-
-    auto QueueRef = DPCTLQueueMgr_GetQueue(DPCTL_OPENCL, DPCTL_GPU, 0);
+    auto QueueRef = DPCTLQueue_CreateForDevice(DRef, nullptr, 0);
     auto CtxRef = DPCTLQueue_GetContext(QueueRef);
     auto PRef =
         DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr, CompileOpts);
@@ -107,3 +124,7 @@ TEST_F(TestDPCTLSyclKernelInterface, CheckGetNumArgs)
     DPCTLKernel_Delete(AddKernel);
     DPCTLKernel_Delete(AxpyKernel);
 }
+
+INSTANTIATE_TEST_SUITE_P(TestKernelInterfaceFunctions,
+                         TestDPCTLSyclKernelInterface,
+                         ::testing::Values("opencl:gpu:0", "opencl:cpu:0"));

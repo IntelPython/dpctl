@@ -103,6 +103,7 @@ typedef enum
 typedef enum
 {
     // clang-format off
+    DPCTL_DEFAULT_PROPERTY = 0,
     DPCTL_ENABLE_PROFILING = 1 << 1,
     DPCTL_IN_ORDER         = 1 << 2
     // clang-format on
