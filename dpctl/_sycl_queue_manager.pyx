@@ -27,11 +27,10 @@ from ._backend cimport (
     DPCTLPlatform_DumpInfo,
     DPCTLPlatform_GetNumNonHostPlatforms,
     DPCTLQueueMgr_GetCurrentQueue,
-    DPCTLQueueMgr_GetNumActivatedQueues,
-    DPCTLQueueMgr_GetNumQueues,
+    DPCTLQueueMgr_GlobalQueueIsCurrent,
     DPCTLQueueMgr_PushQueue,
     DPCTLQueueMgr_PopQueue,
-    DPCTLQueueMgr_SetAsDefaultQueue,
+    DPCTLQueueMgr_SetGlobalQueue,
     DPCTLSyclQueueRef,
 )
 from ._sycl_context cimport SyclContext
@@ -236,7 +235,7 @@ cdef class _SyclQueueManager:
             int: The number of currently activated queues.
 
         """
-        return DPCTLQueueMgr_GetNumActivatedQueues()
+        return DPCTLQueueMgr_GetQueueStackSize()
 
     def get_num_platforms(self):
         """
@@ -365,11 +364,8 @@ cdef class _SyclQueueManager:
             bool: True if the control is within a \
             :func:`dpctl.device_context()` scope, otherwise False.
         """
-        cdef size_t num = DPCTLQueueMgr_GetNumActivatedQueues()
-        if num:
-            return True
-        else:
-            return False
+        cdef bool inCtx = not DPCTLQueueMgr_GlobalQueueIsCurrent()
+        return inCtx
 
     def set_default_queue(self, backend_ty, device_ty, device_id):
         """

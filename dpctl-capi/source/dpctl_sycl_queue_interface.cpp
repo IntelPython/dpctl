@@ -25,8 +25,11 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_queue_interface.h"
+#include "../helper/include/dpctl_async_error_handler.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_context_interface.h"
+#include "dpctl_sycl_device_interface.h"
+#include "dpctl_sycl_device_manager.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <exception>
 #include <stdexcept>
@@ -113,7 +116,137 @@ bool set_kernel_arg(handler &cgh,
     return arg_set;
 }
 
+std::unique_ptr<property_list> create_property_list(int properties)
+{
+    std::unique_ptr<property_list> propList;
+    if (properties & (DPCTL_ENABLE_PROFILING | DPCTL_IN_ORDER)) {
+        propList = std::make_unique<property_list>(
+            sycl::property::queue::enable_profiling(),
+            sycl::property::queue::in_order());
+    }
+    else if (properties & DPCTL_ENABLE_PROFILING) {
+        propList = std::make_unique<property_list>(
+            sycl::property::queue::enable_profiling());
+    }
+    else if (properties & DPCTL_IN_ORDER) {
+        propList =
+            std::make_unique<property_list>(sycl::property::queue::in_order());
+    }
+
+    return propList;
+}
+
+__dpctl_give DPCTLSyclQueueRef
+getQueueImpl(__dpctl_take DPCTLSyclContextRef cRef,
+             __dpctl_take DPCTLSyclDeviceRef dRef,
+             error_handler_callback *handler,
+             int properties)
+{
+    DPCTLSyclQueueRef qRef = nullptr;
+    qRef = DPCTLQueue_Create(cRef, dRef, handler, properties);
+    DPCTLContext_Delete(cRef);
+    DPCTLDevice_Delete(dRef);
+
+    return qRef;
+}
+
 } /* end of anonymous namespace */
+
+DPCTL_API
+__dpctl_give DPCTLSyclQueueRef
+DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
+                  __dpctl_keep const DPCTLSyclDeviceRef DRef,
+                  error_handler_callback *error_handler,
+                  int properties)
+{
+    DPCTLSyclQueueRef q = nullptr;
+    auto dev = unwrap(DRef);
+    auto ctx = unwrap(CRef);
+
+    if (!(dev && ctx)) {
+        /* \todo handle error */
+        return q;
+    }
+    auto propList = create_property_list(properties);
+
+    if (propList && error_handler) {
+        try {
+            auto Queue = new queue(
+                *ctx, *dev, DPCTL_AsycErrorHandler(error_handler), *propList);
+            q = wrap(Queue);
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        } catch (runtime_error &re) {
+            std::cerr << re.what() << '\n';
+        }
+    }
+    else if (properties) {
+        try {
+            auto Queue = new queue(*ctx, *dev, *propList);
+            q = wrap(Queue);
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        } catch (runtime_error &re) {
+            std::cerr << re.what() << '\n';
+        }
+    }
+    else if (error_handler) {
+        try {
+            auto Queue =
+                new queue(*ctx, *dev, DPCTL_AsycErrorHandler(error_handler));
+            q = wrap(Queue);
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        } catch (runtime_error &re) {
+            std::cerr << re.what() << '\n';
+        }
+    }
+    else {
+        try {
+            auto Queue = new queue(*ctx, *dev);
+            q = wrap(Queue);
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        } catch (runtime_error &re) {
+            std::cerr << re.what() << '\n';
+        }
+    }
+
+    return q;
+}
+
+__dpctl_give DPCTLSyclQueueRef
+DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef dRef,
+                           error_handler_callback *handler,
+                           int properties)
+{
+    DPCTLSyclQueueRef qRef = nullptr;
+    auto Device = unwrap(dRef);
+
+    if (!Device) {
+        std::cerr << "Cannot create queue from NULL device reference.\n";
+        return qRef;
+    }
+    auto cached = DPCTLDeviceMgr_GetDeviceAndContextPair(dRef);
+    if (cached.CRef) {
+        qRef = getQueueImpl(cached.CRef, cached.DRef, handler, properties);
+    }
+    // We only cache contexts for root devices. If the dRef argument points to
+    // a sub-device, then the queue manager allocates a new context and creates
+    // a new queue to retrun to caller. Note that any context for a sub-device
+    // is not cached.
+    else {
+        try {
+            auto CRef = wrap(new context(*Device));
+            auto DRef_copy = wrap(new device(*Device));
+            qRef = getQueueImpl(CRef, DRef_copy, handler, properties);
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << std::endl;
+        }
+    }
+
+    return qRef;
+}
 
 /*!
  * Delete the passed in pointer after verifying it points to a sycl::queue.
