@@ -19,15 +19,8 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This header declares a C interface to DPCTL's sycl::queue manager to
-/// maintain a thread local stack of sycl::queues objects for use inside
-/// Python programs. The C interface is designed in a way to not have to
-/// include the Sycl headers inside a Python extension module, since that would
-/// require the extension to be compiled using dpc++ or another Sycl compiler.
-/// Compiling the extension with a compiler different from what was used to
-/// compile the Python interpreter can cause run-time problems especially on MS
-/// Windows. Additionally, the C interface makes it easier to interoperate with
-/// Numba without having to deal with C++ name mangling.
+/// This header declares a set of functions to support a concept of current
+/// queue for applications using dpCtl.
 ///
 //===----------------------------------------------------------------------===//
 
@@ -37,145 +30,107 @@
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_data_types.h"
-#include "dpctl_sycl_context_interface.h"
-#include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
 
+/**
+ * @defgroup QueueManager Queue management helper functions
+ */
+
 /*!
- * @brief Get the sycl::queue object that is currently activated for this
- * thread.
+ * @brief Get the current sycl::queue for the thread of execution.
  *
- * @return A copy of the current (top of the stack) sycl::queue is returned
- * wrapped inside an opaque DPCTLSyclQueueRef pointer.
+ * DpCtl lets an application access a "current queue" as soon as the application
+ * loads dpCtl. The initial current queue also termed the global queue is a
+ * queue created using SYCL's default_selector. The current queue is set per
+ * thread and can be changed for a specific execution scope using the PushQueue
+ * and PopQueue functions in this module. The global queue can also be changed
+ * by using SetGlobalQueue.
+ *
+ * The DPCTLQueueMgr_GetCurrentQueue function returns the current queue in the
+ * current scope from where the function was called.
+ *
+ * @return An opaque DPCTLSyclQueueRef pointer wrapping a sycl::queue*.
+ * @ingroup QueueManager
  */
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue();
 
 /*!
- * @brief Get a sycl::queue object of the specified type and device id.
+ * @brief Returns true if the global queue set for the queue manager is also the
+ * current queue.
  *
- * @param    BETy           A valid Sycl backend value.
- * @param    DeviceTy       The type of Sycl device (sycl_device_type)
- * @param    DNum           Device id for the device (defaults to 0)
+ * The default current queue provided by the queue manager is termed as the
+ * global queue. If DPCTLQueueMgr_PushQueue is used to make another queue the
+ * current queue, then the global queue no longer remains the current queue till
+ * all pushed queues are popped using DPCTLQueueMgr_PopQueue. The
+ * DPCTLQueueMgr_GlobalQueueIsCurrent checks if the global queue is also the
+ * current queue, i.e., no queues have been pushed and are yet to be popped.
  *
- * @return A copy of the sycl::queue corresponding to the device is returned
- * wrapped inside a DPCTLSyclDeviceType pointer. A runtime_error exception is
- * raised if no such device exists.
+ * @return True if the global queue is the current queue, else false.
+ * @ingroup QueueManager
  */
 DPCTL_API
-__dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_GetQueue(DPCTLSyclBackendType BETy,
-                       DPCTLSyclDeviceType DeviceTy,
-                       size_t DNum);
+bool DPCTLQueueMgr_GlobalQueueIsCurrent();
 
 /*!
- * @brief Get the number of activated queues not including the global or
- * default queue.
- *
- * @return The number of activated queues.
- */
-DPCTL_API
-size_t DPCTLQueueMgr_GetNumActivatedQueues();
-
-/*!
- * @brief Get the number of available queues for given backend and device type
- * combination.
- *
- * @param    BETy           Type of Sycl backend.
- * @param    DeviceTy       Type of Sycl device.
- * @return   The number of available queues.
- */
-DPCTL_API
-size_t DPCTLQueueMgr_GetNumQueues(DPCTLSyclBackendType BETy,
-                                  DPCTLSyclDeviceType DeviceTy);
-
-/*!
- * @brief Returns True if the passed in queue and the current queue are the
- * same, else returns False.
+ * @brief Check if the queue argument is also the current queue.
  *
  * @param    QRef           An opaque pointer to a sycl::queue.
- * @return   True or False depending on whether the QRef argument is the same as
- * the currently activated queue.
+ * @return   True if QRef argument is the the current queue, else False.
+ * @ingroup QueueManager
  */
 DPCTL_API
 bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
- * @brief Set the default DPCTL queue to the sycl::queue for the given backend
- * and device type combination and return a DPCTLSyclQueueRef for that queue.
- * If no queue was created Null is returned to caller.
+ * @brief Resets the global queue using the passed in DPCTLSyclQueueRef the
+ * previous global queue is deleted.
  *
- * @param    BETy           Type of Sycl backend.
- * @param    DeviceTy       The type of Sycl device (sycl_device_type)
- * @param    DNum           Device id for the device
- * @return A copy of the sycl::queue that was set as the new default queue. If
- * no queue could be created then returns Null.
+ * @param    QRef           An opaque reference to a sycl::device.
+ * @ingroup QueueManager
  */
 DPCTL_API
-__dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_SetAsDefaultQueue(DPCTLSyclBackendType BETy,
-                                DPCTLSyclDeviceType DeviceTy,
-                                size_t DNum);
+void DPCTLQueueMgr_SetGlobalQueue(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
- * @brief Pushes a new sycl::queue object to the top of DPCTL's thread-local
- * stack of a "activated" queues, and returns a copy of the queue to caller.
+ * @brief Pushes the passed in sycl::queue object to the queue manager's
+ * internal stack of queues and makes the queue the current queue.
  *
- * The DPCTL queue manager maintains a thread-local stack of sycl::queue objects
- * to facilitate nested parallelism. The sycl::queue at the top of the stack is
- * termed as the currently activated queue, and is always the one returned by
- * DPCTLQueueMgr_GetCurrentQueue(). DPCTLPushSyclQueueToStack creates a new
- * sycl::queue corresponding to the specified device and pushes it to the top
- * of the stack. A copy of the sycl::queue is returned to the caller wrapped
- * inside the opaque DPCTLSyclQueueRef pointer. A runtime_error exception is
- * thrown when a new sycl::queue could not be created for the specified device.
+ * The queue manager maintains a thread-local stack of sycl::queue
+ * objects. The DPCTLQueueMgr_PushQueue() function pushes to the stack and sets
+ * the passed in DPCTLSyclQueueRef object as the current queue. The
+ * current queue is the queue returned by the DPCTLQueueMgr_GetCurrentQueue()
+ * function.
  *
- * @param    BETy           Type of Sycl backend.
- * @param    DeviceTy       The type of Sycl device (sycl_device_type)
- * @param    DNum           Device id for the device (defaults to 0)
- *
- * @return A copy of the sycl::queue that was pushed to the top of DPCTL's
- * stack of sycl::queue objects. Nullptr is returned if no such device exists.
+ * @param    QRef           An opaque reference to a syc::queue.
+ * @ingroup QueueManager
  */
 DPCTL_API
-__dpctl_give DPCTLSyclQueueRef
-DPCTLQueueMgr_PushQueue(DPCTLSyclBackendType BETy,
-                        DPCTLSyclDeviceType DeviceTy,
-                        size_t DNum);
+void DPCTLQueueMgr_PushQueue(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
- * @brief Pops the top of stack element from DPCTL's stack of activated
- * sycl::queue objects.
+ * @brief Pops the top of stack sycl::queue object from the queue manager's   *
+ * internal stack of queues and makes the next queue in the stack the current
+ * queue.
  *
- * DPCTLPopSyclQueue only removes the reference from the DPCTL stack of
- * sycl::queue objects. Any instance of the popped queue that were previously
- * acquired by calling DPCTLPushSyclQueue() or DPCTLQueueMgr_GetCurrentQueue()
- * needs to be freed separately. In addition, a runtime_error is thrown when
- * the stack contains only one sycl::queue, i.e., the default queue.
- *
+ * DPCTLPopSyclQueue removes the top of stack queue and changes the
+ * current queue. If no queue was previously pushed, then a
+ * DPCTLQueueMgr_PopQueue call is a no-op.
+ * @ingroup QueueManager
  */
 DPCTL_API
 void DPCTLQueueMgr_PopQueue();
 
 /*!
- * @brief Creates a new instance of SYCL queue from SYCL context and
- * SYCL device.
+ * @brief A helper function meant for unit testing. Returns the current number
+ * of queues pushed to the queue manager's internal stack of sycl::queue
+ * objects.
  *
- * The instance is not placed into queue manager. The user assumes
- * ownership of the queue reference and should deallocate it using
- * DPCTLQueue_Delete.
- *
- * @param    CRef           Sycl context reference
- * @param    DRef           Sycl device reference
- *
- * @return A copy of the sycl::queue created from given context and device
- * references.
+ * @return   The current size of the queue manager's stack of queues.
  */
 DPCTL_API
-__dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetQueueFromContextAndDevice(
-    __dpctl_keep DPCTLSyclContextRef CRef,
-    __dpctl_keep DPCTLSyclDeviceRef DRef);
+size_t DPCTLQueueMgr_GetQueueStackSize();
 
 DPCTL_C_EXTERN_C_END
