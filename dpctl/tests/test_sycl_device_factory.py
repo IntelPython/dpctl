@@ -21,28 +21,31 @@ import dpctl
 from dpctl import backend_type as bty, device_type as dty
 import pytest
 
-list_of_backends = [
-    bty.host,
-    bty.level_zero,
-    bty.opencl,
+argument_list_1 = [
+    (bty.level_zero, dty.gpu),
+    (bty.opencl, dty.gpu),
+    (bty.opencl, dty.cpu),
+    (bty.host, dty.host_device),
 ]
 
-list_of_device_types = [
-    dty.cpu,
-    dty.host_device,
-    dty.gpu,
+argument_list_2 = [
+    ("host", "host_device"),
+    ("level_zero", "gpu"),
+    ("opencl", "gpu"),
+    ("opencl", "cpu"),
 ]
 
-list_of_backend_strs = [
+list_of_backend_str = [
     "host",
     "level_zero",
     "opencl",
+    "opencl",
 ]
 
-list_of_device_type_strs = [
-    "cpu",
+list_of_device_type_str = [
     "host_device",
     "gpu",
+    "cpu",
 ]
 
 
@@ -51,8 +54,8 @@ def string_to_device_type(dty_str):
         return dty.accelerator
     elif dty_str == "cpu":
         return dty.cpu
-    elif dty_str == "host":
-        return dty.host
+    elif dty_str == "host_device":
+        return dty.host_device
     elif dty_str == "gpu":
         return dty.gpu
 
@@ -68,24 +71,44 @@ def string_to_backend_type(bty_str):
         return bty.opencl
 
 
-@pytest.fixture(params=list_of_backends)
+@pytest.fixture(params=argument_list_1)
+def enum_args(request):
+    return request.param
+
+
+@pytest.fixture(params=argument_list_2)
+def str_args(request):
+    return request.param
+
+
+@pytest.fixture(params=[item for item in bty])
 def backend(request):
     return request.param
 
 
-@pytest.fixture(params=list_of_backend_strs)
-def bty_str(request):
+@pytest.fixture(params=list_of_backend_str)
+def backend_str(request):
     return request.param
 
 
-@pytest.fixture(params=list_of_device_types)
+@pytest.fixture(params=[item for item in dty])
 def device_type(request):
     return request.param
 
 
-@pytest.fixture(params=list_of_device_type_strs)
-def dty_str(request):
+@pytest.fixture(params=list_of_device_type_str)
+def device_type_str(request):
     return request.param
+
+
+def check_if_device_type_is_valid(devices):
+    for d in devices:
+        assert d.get_device_type() in set(item for item in dty)
+
+
+def check_if_backend_is_valid(devices):
+    for d in devices:
+        assert d.get_backend() in set(item for item in bty)
 
 
 def check_if_backend_matches(devices, backend):
@@ -98,21 +121,60 @@ def check_if_device_type_matches(devices, device_type):
         assert d.get_device_type() == device_type
 
 
-def test_get_devices_with_string_args(bty_str, dty_str):
-    devices = dpctl.get_devices(backend=bty_str, device_type=dty_str)
+def test_get_devices_with_string_args(str_args):
+    devices = dpctl.get_devices(backend=str_args[0], device_type=str_args[1])
     if len(devices):
-        d = string_to_device_type(dty_str)
-        b = string_to_backend_type(bty_str)
+        d = string_to_device_type(str_args[1])
+        b = string_to_backend_type(str_args[0])
         check_if_backend_matches(devices, b)
         check_if_device_type_matches(devices, d)
     else:
         pytest.skip()
 
 
-def test_get_devices_with_enum_args(backend, device_type):
-    devices = dpctl.get_devices(backend=backend, device_type=device_type)
+def test_get_devices_with_enum_args(enum_args):
+    devices = dpctl.get_devices(backend=enum_args[0], device_type=enum_args[1])
+    if len(devices):
+        check_if_backend_matches(devices, enum_args[0])
+        check_if_device_type_matches(devices, enum_args[1])
+    else:
+        pytest.skip()
+
+
+def test_get_devices_with_backend_enum(backend):
+    devices = dpctl.get_devices(backend=backend)
     if len(devices):
         check_if_backend_matches(devices, backend)
+        check_if_device_type_is_valid(devices)
+    else:
+        pytest.skip()
+
+
+def test_get_devices_with_backend_str(backend_str):
+    print(backend_str)
+    devices = dpctl.get_devices(backend=backend_str)
+    if len(devices):
+        b = string_to_backend_type(backend_str)
+        check_if_backend_matches(devices, b)
+        check_if_device_type_is_valid(devices)
+    else:
+        pytest.skip()
+
+
+def test_get_devices_with_device_type_enum(device_type):
+    devices = dpctl.get_devices(device_type=device_type)
+    if len(devices):
         check_if_device_type_matches(devices, device_type)
+        check_if_device_type_is_valid(devices)
+    else:
+        pytest.skip()
+
+
+def test_get_devices_with_device_type_str(device_type_str):
+    devices = dpctl.get_devices(device_type=device_type_str)
+    if len(devices):
+        d = string_to_device_type(device_type_str)
+        check_if_device_type_matches(devices, d)
+        check_if_device_type_is_valid(devices)
     else:
         pytest.skip()

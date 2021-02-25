@@ -88,7 +88,7 @@ cdef _device_type _string_to_dpctl_sycl_device_ty(str dty_str):
         return _device_type._CUSTOM
     elif dty_str == "gpu":
         return _device_type._GPU
-    elif dty_str == "host":
+    elif dty_str == "host_device":
         return _device_type._HOST_DEVICE
     else:
         return _device_type._UNKNOWN_DEVICE
