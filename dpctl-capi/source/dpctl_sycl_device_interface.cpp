@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_interface.h"
+#include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_device_manager.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
@@ -37,6 +38,7 @@ namespace
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef)
 
 } /* end of anonymous namespace */
 
@@ -100,6 +102,23 @@ void DPCTLDevice_Delete(__dpctl_take DPCTLSyclDeviceRef DRef)
     delete unwrap(DRef);
 }
 
+DPCTLSyclDeviceType
+DPCTLDevice_GetDeviceType(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    DPCTLSyclDeviceType DTy = DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            auto SyclDTy = D->get_info<info::device::device_type>();
+            DTy = DPCTL_SyclDeviceTypeToDPCTLDeviceType(SyclDTy);
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return DTy;
+}
+
 bool DPCTLDevice_IsAccelerator(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap(DRef);
@@ -134,6 +153,18 @@ bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         return D->is_host();
     }
     return false;
+}
+
+DPCTLSyclBackendType
+DPCTLDevice_GetBackend(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
+    auto D = unwrap(DRef);
+    if (D) {
+        BTy = DPCTL_SyclBackendToDPCTLBackendType(
+            D->get_platform().get_backend());
+    }
+    return BTy;
 }
 
 uint32_t
@@ -222,6 +253,21 @@ DPCTLDevice_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         }
     }
     return max_nsubgroups;
+}
+
+__dpctl_give DPCTLSyclPlatformRef
+DPCTLDevice_GetPlatform(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    DPCTLSyclPlatformRef PRef = nullptr;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            PRef = wrap(new platform(D->get_platform()));
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        }
+    }
+    return PRef;
 }
 
 bool DPCTLDevice_HasInt64BaseAtomics(__dpctl_keep const DPCTLSyclDeviceRef DRef)

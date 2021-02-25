@@ -23,6 +23,12 @@ if(DPCTL_GENERATE_COVERAGE)
     file(GLOB_RECURSE dpctl_sources ${CMAKE_CURRENT_SOURCE_DIR}/../source/*.cpp)
     file(GLOB_RECURSE helper_sources ${CMAKE_CURRENT_SOURCE_DIR}/../helper/source/*.cpp)
 
+    # Exclude from sources
+    list(REMOVE_ITEM
+        dpctl_sources
+        "${CMAKE_CURRENT_SOURCE_DIR}/../source/dpctl_vector_templ.cpp"
+    )
+
     # Add profiling flags
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
 

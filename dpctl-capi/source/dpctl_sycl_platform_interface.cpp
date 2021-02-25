@@ -24,8 +24,10 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "dpctl_sycl_platform_manager.h"
+#include "dpctl_sycl_platform_interface.h"
 #include "../helper/include/dpctl_utils_helper.h"
+#include "Support/CBindingWrapping.h"
+#include "dpctl_sycl_types.h"
 #include <CL/sycl.hpp>
 #include <iomanip>
 #include <iostream>
@@ -33,6 +35,19 @@
 #include <sstream>
 
 using namespace cl::sycl;
+
+namespace
+{
+
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef);
+
+} // namespace
+
+void DPCTLPlatform_Delete(__dpctl_take DPCTLSyclPlatformRef PRef)
+{
+    auto P = unwrap(PRef);
+    delete P;
+}
 
 /*!
  * Prints out the following sycl::info::platform attributes for each platform

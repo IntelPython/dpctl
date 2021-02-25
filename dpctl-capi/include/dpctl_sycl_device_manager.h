@@ -31,6 +31,7 @@
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_data_types.h"
 #include "dpctl_sycl_types.h"
+#include "dpctl_vector.h"
 
 DPCTL_C_EXTERN_C_BEGIN
 
@@ -47,6 +48,10 @@ typedef struct DeviceAndContextPair
     DPCTLSyclDeviceRef DRef;
     DPCTLSyclContextRef CRef;
 } DPCTL_DeviceAndContextPair;
+
+// Declares a set of types abd functions to deal with vectors of
+// DPCTLSyclDeviceRef. Refer dpctl_vector_macros.h
+DPCTL_DECLARE_VECTOR(Device)
 
 /*!
  * @brief Checks if two ::DPCTLSyclDeviceRef objects point to the same
@@ -70,75 +75,6 @@ typedef struct DeviceAndContextPair
  */
 bool DPCTLDeviceMgr_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
                           __dpctl_keep const DPCTLSyclDeviceRef DRef2);
-
-/*!
- * @brief Returns an opaque pointer to an empty std::vector<DPCTLSyclDeviceRef>
- * object.
- *
- * The function is useful whenever we want to create a std::vector of
- * sycl::device objects in the C API and then pass the vector to another
- * function. An example is the constructor of sycl::context class that creates a
- * sycl context for a std::vector of sycl::device objects. Using an opaque
- * pointer to an std::vector<DPCTLSyclDeviceRef> object makes it easy to use the
- * container in languages such as Cython that can access C++ types. It allows us
- * to pass through the collection of device objects without having to create a
- * specialized list or array. The DPCTLDeviceVectorRef needs to be only
- * reinterpret_cast into a std::vector and accessed. The
- * DPCTLDeviceMgr_DeleteDeviceVector() or DPCTLDeviceMgr_DeleteDeviceVectorAll()
- * functions should be used to free the ::DPCTLDeviceVectorRef.
- *
- * @return   An opaque pointer to a std::vector<DPCTLSyclDeviceRef> container.
- * The ownership of both the vector and the ::DPCTLSyclDeviceRef elements of the
- * vector are passed to the caller.
- * @ingroup DeviceManager
- */
-DPCTL_API
-__dpctl_give DPCTLDeviceVectorRef DPCTLDeviceMgr_CreateDeviceVector();
-
-/*!
- * @brief Frees a pointer to a std::vector<sycl::backend>.
- *
- * @param    BVRef          The std::vector<sycl::backend>* that is to be freed.
- * @ingroup DeviceManager
- */
-DPCTL_API
-void DPCTLDeviceMgr_DeleteBackendVector(
-    __dpctl_take DPCTLBackendVectorRef BVRef);
-
-/*!
- * @brief Frees a pointer to a std::vector<sycl::DPCTLSyclDeviceRef> but does
- * not free the elements of the vector.
- *
- * @param    DVRef          Opaque pointer to a
- *                          std::vector<sycl::DPCTLSyclDeviceRef>.
- * @ingroup DeviceManager
- */
-DPCTL_API
-void DPCTLDeviceMgr_DeleteDeviceVector(__dpctl_take DPCTLDeviceVectorRef DVRef);
-
-/*!
- * @brief Frees a pointer to a std::vector<sycl::DPCTLSyclDeviceRef> and all
- * the elements of the vector.
- *
- * @param    DVRef          Opaque pointer to a
- *                          std::vector<sycl::DPCTLSyclDeviceRef>.
- * @ingroup DeviceManager
- */
-DPCTL_API
-void DPCTLDeviceMgr_DeleteDeviceVectorAll(
-    __dpctl_take DPCTLDeviceVectorRef DVRef);
-
-/*!
- * @brief Returns an opaque pointer wrapping a std::vector<syc::backend>
- * container that has a list of all the unique backends available on the system.
- *
- * @return   A pointer to a std::vector<syc::backend> storing the list of unique
- * sycl::backend available on the system. Note that a single backend can contain
- * multiple types of devices, *e.g.* the opencl backend.
- * @ingroup DeviceManager
- */
-DPCTL_API
-__dpctl_give DPCTLBackendVectorRef DPCTLDeviceMgr_GetBackends();
 
 /*!
  * @brief Returns a pointer to a std::vector<sycl::DPCTLSyclDeviceRef>
@@ -192,16 +128,6 @@ DPCTLDeviceMgr_GetDevices(int device_identifier);
 DPCTL_API
 DPCTL_DeviceAndContextPair DPCTLDeviceMgr_GetDeviceAndContextPair(
     __dpctl_keep const DPCTLSyclDeviceRef DRef);
-
-/*!
- * @brief Returns the number of unique sycl::backend available on the system
- *
- * @return   The number of unique sycl::backend on the system. Note
- * that a single backend can have multiple type of devices (e.g. OpenCL).
- * @ingroup DeviceManager
- */
-DPCTL_API
-size_t DPCTLDeviceMgr_GetNumBackends();
 
 /*!
  * @brief Get the number of available devices for given backend and device type

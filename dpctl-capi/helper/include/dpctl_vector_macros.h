@@ -1,4 +1,4 @@
-//===-- dpctl_sycl_platform_interface.h - C API for sycl::platform -*-C++-*- =//
+//=== dpctl_vector_macros.h - Macros to help build function sig.    -*-C++-*- //
 //
 //                      Data Parallel Control (dpCtl)
 //
@@ -18,26 +18,16 @@
 //
 //===----------------------------------------------------------------------===//
 ///
-/// \file
-/// This header declares a C interface to sycl::platform interface functions.
+/// \file These macros are used in dpctl_vector_templ.cpp. They help build the
+/// function signatures for the functions defined in dpctl_vector_templ.cpp.
 ///
 //===----------------------------------------------------------------------===//
 
 #pragma once
 
-#include "Support/DllExport.h"
-#include "Support/ExternC.h"
-#include "Support/MemOwnershipAttrs.h"
-#include "dpctl_data_types.h"
-#include "dpctl_sycl_enum_types.h"
-
-DPCTL_C_EXTERN_C_BEGIN
-
-/*!
- * @brief Prints out some selected info about all sycl::platform on the system.
- *
- */
-DPCTL_API
-void DPCTLPlatformMgr_PrintPlatformInfo();
-
-DPCTL_C_EXTERN_C_END
+#define xFN(TYPE, NAME) DPCTL##TYPE##Vector##_##NAME
+#define FN(TYPE, NAME) xFN(TYPE, NAME)
+#define xVECTOR(EL) DPCTL##EL##VectorRef
+#define VECTOR(EL) xVECTOR(EL)
+#define xSYCLREF(EL) DPCTLSycl##EL##Ref
+#define SYCLREF(EL) xSYCLREF(EL)

@@ -23,7 +23,7 @@
 /// dpctl_sycl_platform_interface.h.
 ///
 //===----------------------------------------------------------------------===//
-#include "dpctl_sycl_platform_manager.h"
+#include "dpctl_sycl_platform_interface.h"
 #include <gtest/gtest.h>
 
 struct TestDPCTLSyclPlatformInterface : public ::testing::Test

@@ -83,3 +83,6 @@ target/
 
 # generated Cython files
 _dpctl_bindings*
+
+# generated C API coverage reports
+dpctl-c-api-coverage
