@@ -395,3 +395,37 @@ bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
         return false;
     return (*unwrap(DevRef1) == *unwrap(DevRef2));
 }
+
+bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    bool SubGroupProgress = false;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            SubGroupProgress = D->get_info<
+                info::device::sub_group_independent_forward_progress>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return SubGroupProgress;
+}
+
+uint32_t DPCTLDevice_GetPreferredVectorWidthChar(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t vector_width_char = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            vector_width_char =
+                D->get_info<info::device::preferred_vector_width_char>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return vector_width_char;
+}

@@ -391,3 +391,73 @@ TEST_F(TestDPCTLSyclDeviceInterface, CheckLevel0GPU_IsGPU)
 
     EXPECT_TRUE(DPCTLDevice_IsGPU(OpenCL_Level0_gpu));
 }
+
+TEST_F(TestDPCTLSyclDeviceInterface,
+       CheckOCLCPU_GetSubGroupIndependentForwardProgress)
+{
+    if (!OpenCL_cpu)
+        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
+
+    auto sub_group_progress =
+        DPCTLDevice_GetSubGroupIndependentForwardProgress(OpenCL_cpu);
+    auto D = reinterpret_cast<device *>(OpenCL_cpu);
+    auto get_sub_group_progress =
+        D->get_info<info::device::sub_group_independent_forward_progress>();
+    EXPECT_TRUE(get_sub_group_progress == sub_group_progress);
+}
+
+TEST_F(TestDPCTLSyclDeviceInterface,
+       CheckOCLGPU_GetSubGroupIndependentForwardProgress)
+{
+    if (!OpenCL_gpu)
+        GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
+
+    auto sub_group_progress =
+        DPCTLDevice_GetSubGroupIndependentForwardProgress(OpenCL_gpu);
+    auto D = reinterpret_cast<device *>(OpenCL_gpu);
+    auto get_sub_group_progress =
+        D->get_info<info::device::sub_group_independent_forward_progress>();
+    EXPECT_TRUE(get_sub_group_progress == sub_group_progress);
+}
+
+TEST_F(TestDPCTLSyclDeviceInterface,
+       CheckLevel0GPU_GetSubGroupIndependentForwardProgress)
+{
+    if (!OpenCL_Level0_gpu)
+        GTEST_SKIP_("Skipping as no Level0 GPU device found.");
+
+    auto sub_group_progress =
+        DPCTLDevice_GetSubGroupIndependentForwardProgress(OpenCL_Level0_gpu);
+    auto D = reinterpret_cast<device *>(OpenCL_Level0_gpu);
+    auto get_sub_group_progress =
+        D->get_info<info::device::sub_group_independent_forward_progress>();
+    EXPECT_TRUE(get_sub_group_progress == sub_group_progress);
+}
+
+TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLCPU_GetPreferredVectorWidthChar)
+{
+    if (!OpenCL_cpu)
+        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
+
+    auto VectorWidthChar = DPCTLDevice_GetPreferredVectorWidthChar(OpenCL_cpu);
+    EXPECT_TRUE(VectorWidthChar != 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLGPU_GetPreferredVectorWidthChar)
+{
+    if (!OpenCL_gpu)
+        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
+
+    auto VectorWidthChar = DPCTLDevice_GetPreferredVectorWidthChar(OpenCL_gpu);
+    EXPECT_TRUE(VectorWidthChar != 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceInterface, CheckLevel0GPU_GetPreferredVectorWidthChar)
+{
+    if (!OpenCL_Level0_gpu)
+        GTEST_SKIP_("Skipping as no Level0 GPU device found.");
+
+    auto VectorWidthChar =
+        DPCTLDevice_GetPreferredVectorWidthChar(OpenCL_Level0_gpu);
+    EXPECT_TRUE(VectorWidthChar != 0);
+}
