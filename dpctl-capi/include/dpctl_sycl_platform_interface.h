@@ -30,8 +30,17 @@
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_data_types.h"
 #include "dpctl_sycl_enum_types.h"
+#include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
+
+/*!
+ * @brief Deletes the DPCTLSyclProgramRef pointer.
+ *
+ * @param    PRef           An opaque pointer to a sycl::platform.
+ */
+DPCTL_API
+void DPCTLPlatform_Delete(__dpctl_take DPCTLSyclPlatformRef PRef);
 
 /*!
  * @brief Returns the number of non-host type sycl::platform available on the
