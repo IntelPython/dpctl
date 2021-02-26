@@ -81,7 +81,7 @@ def get_sdl_cflags():
             "-Wformat-security",
         ]
     # Add cflags from environment
-    cflags.append(os.getenv('CFLAGS', ''))
+    cflags += os.getenv('CFLAGS', '').split(' ')
 
     return cflags
 
@@ -93,7 +93,7 @@ def get_sdl_ldflags():
     elif IS_WIN:
         ldflags = ["/NXCompat", "/DynamicBase"]
     # Add ldflags from environment
-    ldflags.append(os.getenv('LDFLAGS', ''))
+    ldflags += os.getenv('LDFLAGS', '').split(' ')
 
     return ldflags
 
