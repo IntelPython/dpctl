@@ -64,6 +64,13 @@ endif()
 file(GLOB_RECURSE sources
     ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp
 )
+
+# Exclude from sources
+list(REMOVE_ITEM
+    sources
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/dpctl_vector_templ.cpp"
+)
+
 file(GLOB_RECURSE helper_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/source/*.cpp
 )
