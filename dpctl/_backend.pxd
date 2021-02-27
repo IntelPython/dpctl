@@ -32,19 +32,24 @@ cdef extern from "dpctl_utils.h":
 
 cdef extern from "dpctl_sycl_enum_types.h":
     cdef enum _backend_type 'DPCTLSyclBackendType':
-        _OPENCL          'DPCTL_OPENCL'
+        _ALL_BACKENDS    'DPCTL_ALL_BACKENDS'
+        _CUDA            'DPCTL_CUDA'
         _HOST            'DPCTL_HOST'
         _LEVEL_ZERO      'DPCTL_LEVEL_ZERO'
-        _CUDA            'DPCTL_CUDA'
+        _OPENCL          'DPCTL_OPENCL'
         _UNKNOWN_BACKEND 'DPCTL_UNKNOWN_BACKEND'
 
     ctypedef _backend_type DPCTLSyclBackendType
 
     cdef enum _device_type 'DPCTLSyclDeviceType':
-        _GPU         'DPCTL_GPU'
-        _CPU         'DPCTL_CPU'
-        _ACCELERATOR 'DPCTL_ACCELERATOR'
-        _HOST_DEVICE 'DPCTL_HOST_DEVICE'
+        _ACCELERATOR    'DPCTL_ACCELERATOR'
+        _ALL_DEVICES    'DPCTL_ALL'
+        _AUTOMATIC      'DPCTL_AUTOMATIC'
+        _CPU            'DPCTL_CPU'
+        _CUSTOM         'DPCTL_CUSTOM'
+        _GPU            'DPCTL_GPU'
+        _HOST_DEVICE    'DPCTL_HOST_DEVICE'
+        _UNKNOWN_DEVICE 'DPCTL_UNKNOWN_DEVICE'
 
     ctypedef _device_type DPCTLSyclDeviceType
 
@@ -92,29 +97,35 @@ cdef extern from "dpctl_sycl_types.h":
 
 
 cdef extern from "dpctl_sycl_device_interface.h":
+    cdef bool DPCTLDevice_AreEq(const DPCTLSyclDeviceRef DRef1,
+                                const DPCTLSyclDeviceRef DRef2)
     cdef DPCTLSyclDeviceRef DPCTLDevice_Copy(const DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclDeviceRef DPCTLDevice_Create()
     cdef DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
         const DPCTLSyclDeviceSelectorRef DSRef)
     cdef void DPCTLDevice_DumpInfo(const DPCTLSyclDeviceRef DRef)
     cdef void DPCTLDevice_Delete(DPCTLSyclDeviceRef DRef)
-    cdef void DPCTLDevice_DumpInfo(const DPCTLSyclDeviceRef DRef)
+    cdef DPCTLSyclBackendType DPCTLDevice_GetBackend(
+        const DPCTLSyclDeviceRef DRef)
+    cdef DPCTLSyclDeviceType DPCTLDevice_GetDeviceType(
+        const DPCTLSyclDeviceRef DRef)
+    cdef const char *DPCTLDevice_GetDriverInfo(const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetMaxComputeUnits(const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetMaxNumSubGroups(const DPCTLSyclDeviceRef DRef)
+    cdef size_t DPCTLDevice_GetMaxWorkGroupSize(const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetMaxWorkItemDims(const DPCTLSyclDeviceRef DRef)
+    cdef size_t *DPCTLDevice_GetMaxWorkItemSizes(const DPCTLSyclDeviceRef DRef)
+    cdef const char *DPCTLDevice_GetName(const DPCTLSyclDeviceRef DRef)
+    cdef DPCTLSyclPlatformRef DPCTLDevice_GetPlatform(
+        const DPCTLSyclDeviceRef DRef)
+    cdef const char *DPCTLDevice_GetVendorName(const DPCTLSyclDeviceRef DRef)
+    cdef bool DPCTLDevice_HasInt64BaseAtomics(const DPCTLSyclDeviceRef DRef)
+    cdef bool DPCTLDevice_HasInt64ExtendedAtomics(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsAccelerator(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsCPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsHost(const DPCTLSyclDeviceRef DRef)
-    cpdef const char *DPCTLDevice_GetDriverInfo(const DPCTLSyclDeviceRef DRef)
-    cpdef const char *DPCTLDevice_GetName(const DPCTLSyclDeviceRef DRef)
-    cpdef const char *DPCTLDevice_GetVendorName(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsHostUnifiedMemory(const DPCTLSyclDeviceRef DRef)
-    cpdef uint32_t DPCTLDevice_GetMaxComputeUnits(const DPCTLSyclDeviceRef DRef)
-    cpdef uint32_t DPCTLDevice_GetMaxWorkItemDims(const DPCTLSyclDeviceRef DRef)
-    cpdef size_t *DPCTLDevice_GetMaxWorkItemSizes(const DPCTLSyclDeviceRef DRef)
-    cpdef size_t DPCTLDevice_GetMaxWorkGroupSize(const DPCTLSyclDeviceRef DRef)
-    cpdef uint32_t DPCTLDevice_GetMaxNumSubGroups(const DPCTLSyclDeviceRef DRef)
-    cpdef bool DPCTLDevice_HasInt64BaseAtomics(const DPCTLSyclDeviceRef DRef)
-    cpdef bool DPCTLDevice_HasInt64ExtendedAtomics(
-        const DPCTLSyclDeviceRef DRef)
 
 
 cdef extern from "dpctl_sycl_device_selector_interface.h":
