@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project("dpCtl C API - A C wrapper for a subset of SYCL")
 
 # Option to turn on support for creating Level Zero interoperability programs
