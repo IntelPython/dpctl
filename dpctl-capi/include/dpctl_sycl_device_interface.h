@@ -125,6 +125,28 @@ DPCTL_API
 bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
+ * @brief Returns the backend for the device.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   A DPCTLSyclBackendType enum value representing the sycl::backend
+ * for the device.
+ */
+DPCTL_API
+DPCTLSyclBackendType
+DPCTLDevice_GetBackend(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Returns the DPCTLSyclDeviceType enum value for the DPCTLSyclDeviceRef
+ * argument.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   The DPCTLSyclDeviceType value corresponding to the device.
+ */
+DPCTL_API
+DPCTLSyclDeviceType
+DPCTLDevice_GetDeviceType(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
  * @brief Returns the OpenCL software driver version as a C string.
  *
  * @param    DRef           Opaque pointer to a sycl::device
@@ -186,6 +208,17 @@ uint32_t
 DPCTLDevice_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
+ * @brief Returns the sycl::platform for the device as DPCTLSyclPlatformRef
+ * opaque pointer.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   An opaque pointer to the sycl::platform for the device.
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclPlatformRef
+DPCTLDevice_GetPlatform(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
  * @brief Wrapper over
  * device.get_info<info::device::aspect::int64_base_atomics>.
  *
@@ -244,11 +277,12 @@ bool DPCTLDevice_IsHostUnifiedMemory(
  * @brief Checks if two DPCTLSyclDeviceRef objects point to the same
  * sycl::device.
  *
- * @param    DevRef1       First opaque pointer to the sycl device.
- * @param    DevRef2       Second opaque pointer to the sycl device.
+ * @param    DRef1         First opaque pointer to a sycl device.
+ * @param    DRef2         Second opaque pointer to a sycl device.
  * @return   True if the underlying sycl::device are same, false otherwise.
  */
 DPCTL_API
-bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
-                       __dpctl_keep const DPCTLSyclDeviceRef DevRef2);
+bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
+                       __dpctl_keep const DPCTLSyclDeviceRef DRef2);
+
 DPCTL_C_EXTERN_C_END
