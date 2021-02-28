@@ -39,7 +39,6 @@ list_of_backend_str = [
     "host",
     "level_zero",
     "opencl",
-    "opencl",
 ]
 
 list_of_device_type_str = [
