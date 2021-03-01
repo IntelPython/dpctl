@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1] - 2021-03-01
+### Fixed
+- Do not use POP_FRONT in FindDPCPP.cmake so that we can use a cmake version older that 3.15.
+
 ## [0.6.0] - 2021-03-01
 ### Added
 - Documentation improvements.
