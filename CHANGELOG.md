@@ -8,16 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.0] - 2021-03-01
 ### Added
-- Documentation improvements
-- Cmake improvements and Coverage for C API, Cython and Python
-- Added support for Level Zero devices and queues
-- Added support for SYCL standard device_selector classes
-- SyclDevice instances can now be constructed using filter selector strings
-- Code of conduct
+- Documentation improvements.
+- Cmake improvements and Coverage for C API, Cython and Python.
+- Added support for Level Zero devices and queues.
+- Added support for SYCL standard device_selector classes.
+- SyclDevice instances can now be constructed using filter selector strings.
+- Code of conduct.
+- Building wheels.
+- Queue manager improvements.
+- Adding `__array_function__` so that Numpy calls with dparrays work.
+- Using clang-format for C/C++ code formatting.
+- Using pytest for running tests.
+- Add python and cython file coverage.
+- Using Bandit for finding common security issues in Python code.
+- Add instructions about file headers formats.
+
+### Changed
+- Changed compiler name usage from clang++ to dpcpp.
+- Reformat backend.pxd to be closer to black style.
 
 ### Fixed
 - Remove `cython` from `install_requires`. It allows use `dpCtl` in `numba` extensions.
 - Incorrect import in example.
+- Consistency of file headers.
+- Klocwork issues.
 
 ## [0.5.0] - 2020-12-17
 ### Added
