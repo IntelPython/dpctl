@@ -38,11 +38,12 @@ DPCTL_C_EXTERN_C_BEGIN
 enum DPCTLSyclBackendType
 {
     // clang-format off
-    DPCTL_UNKNOWN_BACKEND = 0x0,
+    DPCTL_CUDA            = 1 << 13,
+    DPCTL_HOST            = 1 << 14,
+    DPCTL_LEVEL_ZERO      = 1 << 15,
     DPCTL_OPENCL          = 1 << 16,
-    DPCTL_HOST            = 1 << 15,
-    DPCTL_LEVEL_ZERO      = 1 << 14,
-    DPCTL_CUDA            = 1 << 13
+    DPCTL_UNKNOWN_BACKEND = 0,
+    DPCTL_ALL_BACKENDS    = ((1<<10)-1) << 7
     // clang-format on
 };
 
@@ -52,16 +53,18 @@ enum DPCTLSyclBackendType
  */
 enum DPCTLSyclDeviceType
 {
+    // Note: before adding new values here look at DPCTLSyclBackendType enum.
+    // The values should not overlap.
+
     // clang-format off
-    DPCTL_CPU         = 1 << 0,
-    DPCTL_GPU         = 1 << 1,
-    DPCTL_ACCELERATOR = 1 << 2,
-    DPCTL_CUSTOM      = 1 << 3,
-    DPCTL_AUTOMATIC   = 1 << 4,
-    DPCTL_HOST_DEVICE = 1 << 5,
-    DPCTL_ALL         = 1 << 6
-    // IMP: before adding new values here look at DPCTLSyclBackendType enum. The
-    // values should not overlap.
+    DPCTL_ACCELERATOR    = 1 << 1,
+    DPCTL_AUTOMATIC      = 1 << 2,
+    DPCTL_CPU            = 1 << 3,
+    DPCTL_CUSTOM         = 1 << 4,
+    DPCTL_GPU            = 1 << 5,
+    DPCTL_HOST_DEVICE    = 1 << 6,
+    DPCTL_ALL            = (1 << 7) -1 ,
+    DPCTL_UNKNOWN_DEVICE = 0
     // clang-format on
 };
 
@@ -91,5 +94,18 @@ typedef enum
     DPCTL_LONG_DOUBLE,
     DPCTL_VOID_PTR
 } DPCTLKernelArgType;
+
+/*!
+ * @brief Enums to depict the properties that can be passed to a sycl::queue
+ * constructor.
+ *
+ */
+typedef enum
+{
+    // clang-format off
+    DPCTL_ENABLE_PROFILING = 1 << 1,
+    DPCTL_IN_ORDER         = 1 << 2
+    // clang-format on
+} DPCTLQueuePropertyType;
 
 DPCTL_C_EXTERN_C_END
