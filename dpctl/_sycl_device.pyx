@@ -56,7 +56,7 @@ from ._backend cimport (
     DPCTLSyclBackendType,
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
-    DPCTLDevice_HasAspect
+    DPCTLDevice_HasAspect,
     DPCTLSyclDeviceType,
 )
 from . import backend_type, device_type
