@@ -63,6 +63,8 @@ cdef class _SyclDevice:
     cpdef is_cpu(self)
     cpdef is_gpu(self)
     cpdef is_host(self)
+    cpdef get_sub_group_independent_forward_progress(self)
+    cpdef get_preferred_vector_width_char(self)
 
 
 cdef class SyclDevice(_SyclDevice):

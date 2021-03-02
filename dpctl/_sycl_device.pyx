@@ -56,6 +56,8 @@ from ._backend cimport (
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclDeviceType,
+    DPCTLDevice_GetSubGroupIndependentForwardProgress,
+    DPCTLDevice_GetPreferredVectorWidthChar
 )
 from . import backend_type, device_type
 import warnings
@@ -259,6 +261,18 @@ cdef class _SyclDevice:
         """
         return int(<size_t>self._device_ref)
 
+    cpdef get_sub_group_independent_forward_progress(self):
+        """ Returns true if the device supports independent forward progress of
+            sub-groups with respect to other sub-groups in the same work-group.
+        """
+        return self._get_sub_group_independent_forward_progress
+
+    cpdef get_preferred_vector_width_char(self):
+        """ Returns the preferred native vector width size for built-in scalar
+            types that can be put into vectors.
+        """
+        return self._get_preferred_vector_width_char
+
     @property
     def __name__(self):
         return "SyclDevice"
@@ -325,6 +339,12 @@ cdef class SyclDevice(_SyclDevice):
         device._cpu_device = DPCTLDevice_IsCPU(DRef)
         device._gpu_device = DPCTLDevice_IsGPU(DRef)
         device._host_device = DPCTLDevice_IsHost(DRef)
+        device._get_sub_group_independent_forward_progress = (
+            DPCTLDevice_GetSubGroupIndependentForwardProgress(DRef)
+        )
+        device._get_preferred_vector_width_char = (
+            DPCTLDevice_GetPreferredVectorWidthChar(DRef)
+        )
 
     @staticmethod
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref):
@@ -351,6 +371,12 @@ cdef class SyclDevice(_SyclDevice):
         self._cpu_device = other._cpu_device
         self._gpu_device = other._gpu_device
         self._host_device = other._host_device
+        self._get_sub_group_independent_forward_progress = (
+            other._get_sub_group_independent_forward_progress
+        )
+        self._get_preferred_vector_width_char = (
+            other._get_preferred_vector_width_char
+        )
 
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef):
         # Initialize the attributes of the SyclDevice object

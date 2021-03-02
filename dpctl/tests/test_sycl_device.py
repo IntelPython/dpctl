@@ -128,6 +128,20 @@ def check_is_host(device):
         pytest.fail("is_hostcall failed")
 
 
+def check_get_sub_group_independent_forward_progress(device):
+    try:
+        device.get_sub_group_independent_forward_progress()
+    except Exception:
+        pytest.fail("get_sub_group_independent_forward_progress call failed")
+
+
+def check_get_preferred_vector_width_char(device):
+    try:
+        device.get_preferred_vector_width_char()
+    except Exception:
+        pytest.fail("get_preferred_vector_width_char call failed")
+
+
 list_of_checks = [
     check_get_max_compute_units,
     check_get_max_work_item_dims,
