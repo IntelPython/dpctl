@@ -288,6 +288,36 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsHost)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetSubGroupIndependentForwardProgress)
+{
+    DPCTLSyclDeviceRef DRef = nullptr;
+    bool sub_group_progress = 0;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(
+        sub_group_progress =
+            DPCTLDevice_GetSubGroupIndependentForwardProgress(DRef));
+    auto D = reinterpret_cast<device *>(DRef);
+    auto get_sub_group_progress =
+        D->get_info<info::device::sub_group_independent_forward_progress>();
+    EXPECT_TRUE(get_sub_group_progress == sub_group_progress);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthChar)
+{
+    DPCTLSyclDeviceRef DRef = nullptr;
+    size_t vector_width_char = 0;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(vector_width_char =
+                                DPCTLDevice_GetPreferredVectorWidthChar(DRef));
+    EXPECT_TRUE(vector_width_char != 0);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+}
+
 INSTANTIATE_TEST_SUITE_P(DPCTLDevice_Fns,
                          TestDPCTLSyclDeviceInterface,
                          ::testing::Values("opencl",
