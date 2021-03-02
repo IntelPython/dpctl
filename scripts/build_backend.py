@@ -109,7 +109,7 @@ if IS_WIN:
         "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "dpcpp.exe"),
         backends,
     ]
-    subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=True)
+    subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=False)
     subprocess.check_call(["ninja", "-n"])
     subprocess.check_call(["ninja", "install"])
 
