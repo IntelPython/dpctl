@@ -251,4 +251,16 @@ bool DPCTLDevice_IsHostUnifiedMemory(
 DPCTL_API
 bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
                        __dpctl_keep const DPCTLSyclDeviceRef DevRef2);
+
+/*!
+ * @brief Checks if device has aspect.
+ *
+ * @param    DRef       Opaque pointer to a sycl::device
+ * @param    AT         DPCTLSyclAspectType of device::aspect.
+ * @return   True if sycl::device has device::aspect, else false.
+ */
+DPCTL_API
+bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                           __dpctl_keep const DPCTLSyclAspectType AT);
+
 DPCTL_C_EXTERN_C_END

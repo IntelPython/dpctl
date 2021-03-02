@@ -395,3 +395,15 @@ bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
         return false;
     return (*unwrap(DevRef1) == *unwrap(DevRef2));
 }
+
+bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                           __dpctl_keep const DPCTLSyclAspectType AT)
+{
+    auto D = unwrap(DRef);
+    if (!D) {
+        std::cerr << "Aspect does not exist\n";
+        return false;
+    }
+
+    return D->has(cl::sycl::aspect(AT));
+}

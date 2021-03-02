@@ -21,6 +21,7 @@
 """
 
 from ._backend cimport (
+    _aspect_type,
     DPCTLAcceleratorSelector_Create,
     DPCTLCPUSelector_Create,
     DPCTLDefaultSelector_Create,
@@ -50,6 +51,7 @@ from ._backend cimport (
     DPCTLSize_t_Array_Delete,
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
+    DPCTLDevice_HasAspect
 )
 from . import device_type
 
@@ -343,6 +345,101 @@ cdef class SyclDevice(_SyclDevice):
                 "Invalid argument. Argument should be a str object specifying "
                 "a SYCL filter selector string."
             )
+
+    @property
+    def aspect_cpu(self):
+        cdef _aspect_type AT = _aspect_type._cpu
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_gpu(self):
+        cdef _aspect_type AT = _aspect_type._gpu
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_accelerator(self):
+        cdef _aspect_type AT = _aspect_type._accelerator
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_custom(self):
+        cdef _aspect_type AT = _aspect_type._custom
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_emulated(self):
+        cdef _aspect_type AT = _aspect_type._emulated
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_host_debuggable(self):
+        cdef _aspect_type AT = _aspect_type._host_debuggable
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_fp16(self):
+        cdef _aspect_type AT = _aspect_type._fp16
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_fp64(self):
+        cdef _aspect_type AT = _aspect_type._fp64
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_atomic64(self):
+        cdef _aspect_type AT = _aspect_type._atomic64
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_image(self):
+        cdef _aspect_type AT = _aspect_type._image
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_online_compiler(self):
+        cdef _aspect_type AT = _aspect_type._online_compiler
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_online_linker(self):
+        cdef _aspect_type AT = _aspect_type._online_linker
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_queue_profiling(self):
+        cdef _aspect_type AT = _aspect_type._queue_profiling
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_usm_device_allocations(self):
+        cdef _aspect_type AT = _aspect_type._usm_device_allocations
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_usm_host_allocations(self):
+        cdef _aspect_type AT = _aspect_type._usm_host_allocations
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_usm_atomic_host_allocations(self):
+        cdef _aspect_type AT = _aspect_type._usm_atomic_host_allocations
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_usm_shared_allocations(self):
+        cdef _aspect_type AT = _aspect_type._usm_shared_allocations
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_usm_atomic_shared_allocations(self):
+        cdef _aspect_type AT = _aspect_type._usm_atomic_shared_allocations
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def aspect_usm_system_allocations(self):
+        cdef _aspect_type AT = _aspect_type._usm_system_allocations
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def __name__(self):

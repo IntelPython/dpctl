@@ -68,6 +68,29 @@ cdef extern from "dpctl_sycl_enum_types.h":
 
     ctypedef _arg_data_type DPCTLKernelArgType
 
+    cdef enum _aspect_type 'DPCTLSyclAspectType':
+        _cpu                            'cpu',
+        _gpu                            'gpu',
+        _accelerator                    'accelerator',
+        _custom                         'custom',
+        _emulated                       'emulated',
+        _host_debuggable                'host_debuggable',
+        _fp16                           'fp16',
+        _fp64                           'fp64',
+        _atomic64                       'atomic64',
+        _image                          'image',
+        _online_compiler                'online_compiler',
+        _online_linker                  'online_linker',
+        _queue_profiling                'queue_profiling',
+        _usm_device_allocations         'usm_device_allocations',
+        _usm_host_allocations           'usm_host_allocations',
+        _usm_atomic_host_allocations    'usm_atomic_host_allocations',
+        _usm_shared_allocations         'usm_shared_allocations',
+        _usm_atomic_shared_allocations  'usm_atomic_shared_allocations',
+        _usm_system_allocations         'usm_system_allocations'
+
+    ctypedef _aspect_type DPCTLSyclAspectType
+
 
 cdef extern from "dpctl_sycl_types.h":
     cdef struct DPCTLOpaqueSyclContext
@@ -113,6 +136,8 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cpdef bool DPCTLDevice_HasInt64BaseAtomics(const DPCTLSyclDeviceRef DRef)
     cpdef bool DPCTLDevice_HasInt64ExtendedAtomics(
         const DPCTLSyclDeviceRef DRef)
+    cpdef bool DPCTLDevice_HasAspect(
+        const DPCTLSyclDeviceRef DRef, const DPCTLSyclAspectType AT)
 
 
 cdef extern from "dpctl_sycl_device_selector_interface.h":

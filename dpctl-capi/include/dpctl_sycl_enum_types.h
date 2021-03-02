@@ -92,4 +92,32 @@ typedef enum
     DPCTL_VOID_PTR
 } DPCTLKernelArgType;
 
+/*!
+ * @brief DPCTL device has an associated set of aspects which identify
+ * characteristics of the device.
+ *
+ */
+enum DPCTLSyclAspectType
+{
+    cpu,
+    gpu,
+    accelerator,
+    custom,
+    emulated,
+    host_debuggable,
+    fp16,
+    fp64,
+    atomic64,
+    image,
+    online_compiler,
+    online_linker,
+    queue_profiling,
+    usm_device_allocations,
+    usm_host_allocations,
+    usm_atomic_host_allocations,
+    usm_shared_allocations,
+    usm_atomic_shared_allocations,
+    usm_system_allocations
+};
+
 DPCTL_C_EXTERN_C_END
