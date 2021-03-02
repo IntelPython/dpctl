@@ -80,7 +80,7 @@ def check_get_max_work_group_size(device):
 def check_get_max_num_sub_groups(device):
     max_num_sub_groups = device.get_max_num_sub_groups()
     # Special case for FPGA simulator
-    if device.is_accelerator():
+    if device.is_accelerator() or device.is_host():
         assert max_num_sub_groups >= 0
     else:
         assert max_num_sub_groups > 0

@@ -22,38 +22,45 @@
 
 from ._backend cimport (
     _aspect_type,
+    _backend_type,
+    _device_type,
     DPCTLAcceleratorSelector_Create,
     DPCTLCPUSelector_Create,
     DPCTLDefaultSelector_Create,
-    DPCTLGPUSelector_Create,
-    DPCTLHostSelector_Create,
     DPCTLCString_Delete,
     DPCTLDevice_Copy,
     DPCTLDevice_CreateFromSelector,
     DPCTLDevice_Delete,
     DPCTLDevice_DumpInfo,
-    DPCTLDevice_GetVendorName,
-    DPCTLDevice_GetName,
+    DPCTLDevice_GetBackend,
+    DPCTLDevice_GetDeviceType,
     DPCTLDevice_GetDriverInfo,
     DPCTLDevice_GetMaxComputeUnits,
+    DPCTLDevice_GetMaxNumSubGroups,
+    DPCTLDevice_GetMaxWorkGroupSize,
     DPCTLDevice_GetMaxWorkItemDims,
     DPCTLDevice_GetMaxWorkItemSizes,
-    DPCTLDevice_GetMaxWorkGroupSize,
-    DPCTLDevice_GetMaxNumSubGroups,
+    DPCTLDevice_GetVendorName,
+    DPCTLDevice_GetName,
     DPCTLDevice_HasInt64BaseAtomics,
     DPCTLDevice_HasInt64ExtendedAtomics,
     DPCTLDevice_IsAccelerator,
     DPCTLDevice_IsCPU,
     DPCTLDevice_IsGPU,
     DPCTLDevice_IsHost,
-    DPCTLFilterSelector_Create,
     DPCTLDeviceSelector_Delete,
+    DPCTLFilterSelector_Create,
+    DPCTLGPUSelector_Create,
+    DPCTLHostSelector_Create,
     DPCTLSize_t_Array_Delete,
+    DPCTLSyclBackendType,
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
     DPCTLDevice_HasAspect
+    DPCTLSyclDeviceType,
 )
-from . import device_type
+from . import backend_type, device_type
+import warnings
 
 __all__ = [
     "SyclDevice",
@@ -79,7 +86,37 @@ cdef class _SyclDevice:
     def dump_device_info(self):
         """ Print information about the SYCL device.
         """
+        warnings.warn(
+            "WARNING: dump_device_info is depracated and will be removed in "
+            "a future release of dpctl. Use print_device_info instead."
+        )
         DPCTLDevice_DumpInfo(self._device_ref)
+
+
+    def print_device_info(self):
+        """ Print information about the SYCL device.
+        """
+        DPCTLDevice_DumpInfo(self._device_ref)
+
+    cpdef get_backend(self):
+        """Returns the backend_type enum value for this device
+
+        Returns:
+            backend_type: The backend for the device.
+        """
+        cdef DPCTLSyclBackendType BTy = (
+            DPCTLDevice_GetBackend(self._device_ref)
+        )
+        if BTy == _backend_type._CUDA:
+            return backend_type.cuda
+        elif BTy == _backend_type._HOST:
+            return backend_type.host
+        elif BTy == _backend_type._LEVEL_ZERO:
+            return backend_type.level_zero
+        elif BTy == _backend_type._OPENCL:
+            return backend_type.opencl
+        else:
+            raise ValueError("Unknown backend type.")
 
     cpdef get_device_name(self):
         """ Returns the name of the device as a string
@@ -87,12 +124,26 @@ cdef class _SyclDevice:
         return self._device_name.decode()
 
     cpdef get_device_type(self):
-        """ Returns the type of the device as a `device_type` enum
+        """ Returns the type of the device as a `device_type` enum.
+
+        Returns:
+            device_type: The type of device encoded as a device_type enum.
+        Raises:
+            A ValueError is raised if the device type is not recognized.
         """
-        if DPCTLDevice_IsGPU(self._device_ref):
-            return device_type.gpu
-        elif DPCTLDevice_IsCPU(self._device_ref):
+        cdef DPCTLSyclDeviceType DTy = (
+            DPCTLDevice_GetDeviceType(self._device_ref)
+        )
+        if DTy == _device_type._ACCELERATOR:
+            return device_type.accelerator
+        elif DTy == _device_type._AUTOMATIC:
+            return device_type.automatic
+        elif DTy == _device_type._CPU:
             return device_type.cpu
+        elif DTy == _device_type._GPU:
+            return device_type.gpu
+        elif DTy == _device_type._HOST_DEVICE:
+            return device_type.host_device
         else:
             raise ValueError("Unknown device type.")
 

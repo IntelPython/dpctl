@@ -25,7 +25,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_interface.h"
+#include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_enum_types.h"
+#include "dpctl_sycl_platform_interface.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
 #include "dpctl_utils.h"
@@ -34,38 +36,28 @@
 
 using namespace cl::sycl;
 
-struct TestDPCTLSyclDeviceInterface : public ::testing::Test
+struct TestDPCTLSyclDeviceInterface
+    : public ::testing::TestWithParam<const char *>
 {
-    DPCTLSyclDeviceRef OpenCL_cpu = nullptr;
-    DPCTLSyclDeviceRef OpenCL_gpu = nullptr;
-    DPCTLSyclDeviceRef OpenCL_Level0_gpu = nullptr;
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
 
     TestDPCTLSyclDeviceInterface()
     {
-        if (DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_CPU)) {
-            auto Q = DPCTLQueueMgr_GetQueue(DPCTL_OPENCL, DPCTL_CPU, 0);
-            OpenCL_cpu = DPCTLQueue_GetDevice(Q);
-            DPCTLQueue_Delete(Q);
-        }
+        EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLFilterSelector_Create(GetParam()));
+    }
 
-        if (DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_GPU)) {
-            auto Q = DPCTLQueueMgr_GetQueue(DPCTL_OPENCL, DPCTL_GPU, 0);
-            OpenCL_gpu = DPCTLQueue_GetDevice(Q);
-            DPCTLQueue_Delete(Q);
-        }
-
-        if (DPCTLQueueMgr_GetNumQueues(DPCTL_LEVEL_ZERO, DPCTL_GPU)) {
-            auto Q = DPCTLQueueMgr_GetQueue(DPCTL_LEVEL_ZERO, DPCTL_GPU, 0);
-            OpenCL_Level0_gpu = DPCTLQueue_GetDevice(Q);
-            DPCTLQueue_Delete(Q);
+    void SetUp()
+    {
+        if (!DSRef) {
+            auto message = "Skipping as no device of type " +
+                           std::string(GetParam()) + ".";
+            GTEST_SKIP_(message.c_str());
         }
     }
 
     ~TestDPCTLSyclDeviceInterface()
     {
-        DPCTLDevice_Delete(OpenCL_cpu);
-        DPCTLDevice_Delete(OpenCL_gpu);
-        DPCTLDevice_Delete(OpenCL_Level0_gpu);
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
     }
 };
 
@@ -105,329 +97,249 @@ struct TestDPCTLSyclDeviceInterfaceAspects
     }
 };
 
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLCPU_GetDriverInfo)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetBackend)
 {
-    if (!OpenCL_cpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(BTy = DPCTLDevice_GetBackend(DRef));
+    EXPECT_TRUE([BTy] {
+        switch (BTy) {
+        case DPCTLSyclBackendType::DPCTL_CUDA:
+            return true;
+        case DPCTLSyclBackendType::DPCTL_HOST:
+            return true;
+        case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO:
+            return true;
+        case DPCTLSyclBackendType::DPCTL_OPENCL:
+            return true;
+        default:
+            return false;
+        }
+    }());
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+}
 
-    auto DriverInfo = DPCTLDevice_GetDriverInfo(OpenCL_cpu);
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetDeviceType)
+{
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclDeviceType DTy = DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(DTy = DPCTLDevice_GetDeviceType(DRef));
+    EXPECT_TRUE(DTy != DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE);
+    EXPECT_TRUE(DTy != DPCTLSyclDeviceType::DPCTL_ALL);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetDriverInfo)
+{
+    DPCTLSyclDeviceRef DRef = nullptr;
+    const char *DriverInfo = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(DriverInfo = DPCTLDevice_GetDriverInfo(DRef));
     EXPECT_TRUE(DriverInfo != nullptr);
-    DPCTLCString_Delete(DriverInfo);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(DriverInfo));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLGPU_GetDriverInfo)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetName)
 {
-    if (!OpenCL_gpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    auto DriverInfo = DPCTLDevice_GetDriverInfo(OpenCL_gpu);
-    EXPECT_TRUE(DriverInfo != nullptr);
-    DPCTLCString_Delete(DriverInfo);
+    DPCTLSyclDeviceRef DRef = nullptr;
+    const char *Name = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(Name = DPCTLDevice_GetName(DRef));
+    EXPECT_TRUE(Name != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(Name));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDPCTLSyclDeviceInterface, CheckLevel0GPU_GetDriverInfo)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetVendorName)
 {
-    if (!OpenCL_Level0_gpu)
-        GTEST_SKIP_("Skipping as no Level0 GPU device found.");
-
-    auto DriverInfo = DPCTLDevice_GetDriverInfo(OpenCL_Level0_gpu);
-    EXPECT_TRUE(DriverInfo != nullptr);
-    DPCTLCString_Delete(DriverInfo);
+    DPCTLSyclDeviceRef DRef = nullptr;
+    const char *VendorName = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(VendorName = DPCTLDevice_GetVendorName(DRef));
+    EXPECT_TRUE(VendorName != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(VendorName));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLCPU_GetMaxComputeUnits)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxComputeUnits)
 {
-    if (!OpenCL_cpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    auto n = DPCTLDevice_GetMaxComputeUnits(OpenCL_cpu);
+    DPCTLSyclDeviceRef DRef = nullptr;
+    size_t n = 0;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(n = DPCTLDevice_GetMaxComputeUnits(DRef));
     EXPECT_TRUE(n > 0);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLGPU_GetMaxComputeUnits)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxWorkItemDims)
 {
-    if (!OpenCL_gpu)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
-
-    auto n = DPCTLDevice_GetMaxComputeUnits(OpenCL_gpu);
+    DPCTLSyclDeviceRef DRef = nullptr;
+    size_t n = 0;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(n = DPCTLDevice_GetMaxWorkItemDims(DRef));
     EXPECT_TRUE(n > 0);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDPCTLSyclDeviceInterface, CheckLevel0GPU_GetMaxComputeUnits)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxWorkItemSizes)
 {
-    if (!OpenCL_Level0_gpu)
-        GTEST_SKIP_("Skipping as no Level0 GPU device found.");
-
-    auto n = DPCTLDevice_GetMaxComputeUnits(OpenCL_Level0_gpu);
-    EXPECT_TRUE(n > 0);
+    DPCTLSyclDeviceRef DRef = nullptr;
+    size_t *sizes = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(sizes = DPCTLDevice_GetMaxWorkItemSizes(DRef));
+    EXPECT_TRUE(sizes != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLSize_t_Array_Delete(sizes));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLCPU_GetMaxWorkItemDims)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxWorkGroupSize)
 {
-    if (!OpenCL_cpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    auto n = DPCTLDevice_GetMaxWorkItemDims(OpenCL_cpu);
-    EXPECT_TRUE(n > 0);
+    DPCTLSyclDeviceRef DRef = nullptr;
+    size_t n = 0;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(n = DPCTLDevice_GetMaxWorkGroupSize(DRef));
+    if (DPCTLDevice_IsAccelerator(DRef))
+        EXPECT_TRUE(n >= 0);
+    else
+        EXPECT_TRUE(n > 0);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLGPU_GetMaxWorkItemDims)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxNumSubGroups)
 {
-    if (!OpenCL_gpu)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
-
-    auto n = DPCTLDevice_GetMaxWorkItemDims(OpenCL_gpu);
-    EXPECT_TRUE(n > 0);
+    DPCTLSyclDeviceRef DRef = nullptr;
+    size_t n = 0;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(n = DPCTLDevice_GetMaxNumSubGroups(DRef));
+    if (DPCTLDevice_IsAccelerator(DRef))
+        EXPECT_TRUE(n >= 0);
+    else
+        EXPECT_TRUE(n > 0);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDPCTLSyclDeviceInterface, CheckLevel0GPU_GetMaxWorkItemDims)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPlatform)
 {
-    if (!OpenCL_Level0_gpu)
-        GTEST_SKIP_("Skipping as no Level0 GPU device found.");
-
-    auto n = DPCTLDevice_GetMaxWorkItemDims(OpenCL_Level0_gpu);
-    EXPECT_TRUE(n > 0);
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLCPU_GetMaxWorkItemSizes)
-{
-    if (!OpenCL_cpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    auto item_sizes = DPCTLDevice_GetMaxWorkItemSizes(OpenCL_cpu);
-    EXPECT_TRUE(item_sizes != nullptr);
-    DPCTLSize_t_Array_Delete(item_sizes);
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLGPU_GetMaxWorkItemSizes)
-{
-    if (!OpenCL_gpu)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
-
-    auto item_sizes = DPCTLDevice_GetMaxWorkItemSizes(OpenCL_gpu);
-    EXPECT_TRUE(item_sizes != nullptr);
-    DPCTLSize_t_Array_Delete(item_sizes);
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckLevel0GPU_GetMaxWorkItemSizes)
-{
-    if (!OpenCL_Level0_gpu)
-        GTEST_SKIP_("Skipping as no Level0 GPU device found.");
-
-    auto item_sizes = DPCTLDevice_GetMaxWorkItemSizes(OpenCL_Level0_gpu);
-    EXPECT_TRUE(item_sizes != nullptr);
-    DPCTLSize_t_Array_Delete(item_sizes);
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLCPU_GetMaxWorkGroupSize)
-{
-    if (!OpenCL_cpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    auto n = DPCTLDevice_GetMaxWorkGroupSize(OpenCL_cpu);
-    EXPECT_TRUE(n > 0);
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLGPU_GetMaxWorkGroupSize)
-{
-    if (!OpenCL_gpu)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
-
-    auto n = DPCTLDevice_GetMaxWorkGroupSize(OpenCL_gpu);
-    EXPECT_TRUE(n > 0);
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckLevel0GPU_GetMaxWorkGroupSize)
-{
-    if (!OpenCL_Level0_gpu)
-        GTEST_SKIP_("Skipping as no Level0 GPU device found.");
-
-    auto n = DPCTLDevice_GetMaxWorkGroupSize(OpenCL_Level0_gpu);
-    EXPECT_TRUE(n > 0);
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLCPU_GetMaxNumSubGroups)
-{
-    if (!OpenCL_cpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    auto n = DPCTLDevice_GetMaxNumSubGroups(OpenCL_cpu);
-    EXPECT_TRUE(n > 0);
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLGPU_GetMaxNumSubGroups)
-{
-    if (!OpenCL_gpu)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
-
-    auto n = DPCTLDevice_GetMaxNumSubGroups(OpenCL_gpu);
-    EXPECT_TRUE(n > 0);
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckLevel0GPU_GetMaxNumSubGroups)
-{
-    if (!OpenCL_Level0_gpu)
-        GTEST_SKIP_("Skipping as no Level0 GPU device found.");
-
-    auto n = DPCTLDevice_GetMaxNumSubGroups(OpenCL_Level0_gpu);
-    EXPECT_TRUE(n > 0);
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclPlatformRef PRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(PRef = DPCTLDevice_GetPlatform(DRef));
+    ASSERT_TRUE(PRef);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_Delete(PRef));
 }
 
 // TODO: Update when DPC++ properly supports aspects
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLCPU_HasInt64BaseAtomics)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_HasInt64BaseAtomics)
 {
-    if (!OpenCL_cpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    auto atomics = DPCTLDevice_HasInt64BaseAtomics(OpenCL_cpu);
-    auto D = reinterpret_cast<device *>(OpenCL_cpu);
+    DPCTLSyclDeviceRef DRef = nullptr;
+    bool atomics = 0;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(atomics = DPCTLDevice_HasInt64BaseAtomics(DRef));
+    auto D = reinterpret_cast<device *>(DRef);
     auto has_atomics = D->has(aspect::int64_base_atomics);
     EXPECT_TRUE(has_atomics == atomics);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 // TODO: Update when DPC++ properly supports aspects
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLGPU_HasInt64BaseAtomics)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_HasInt64ExtendedAtomics)
 {
-    if (!OpenCL_gpu)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
-
-    auto atomics = DPCTLDevice_HasInt64BaseAtomics(OpenCL_gpu);
-    auto D = reinterpret_cast<device *>(OpenCL_gpu);
-    auto has_atomics = D->has(aspect::int64_base_atomics);
-    EXPECT_TRUE(has_atomics == atomics);
-}
-
-// TODO: Update when DPC++ properly supports aspects
-TEST_F(TestDPCTLSyclDeviceInterface, CheckLevel0GPU_HasInt64BaseAtomics)
-{
-    if (!OpenCL_Level0_gpu)
-        GTEST_SKIP_("Skipping as no Level0 GPU device found.");
-
-    auto atomics = DPCTLDevice_HasInt64BaseAtomics(OpenCL_Level0_gpu);
-    auto D = reinterpret_cast<device *>(OpenCL_Level0_gpu);
-    auto has_atomics = D->has(aspect::int64_base_atomics);
-    EXPECT_TRUE(has_atomics == atomics);
-}
-
-// TODO: Update when DPC++ properly supports aspects
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLCPU_HasInt64ExtendedAtomics)
-{
-    if (!OpenCL_cpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    auto atomics = DPCTLDevice_HasInt64ExtendedAtomics(OpenCL_cpu);
-    auto D = reinterpret_cast<device *>(OpenCL_cpu);
+    DPCTLSyclDeviceRef DRef = nullptr;
+    bool atomics = 0;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(atomics =
+                                DPCTLDevice_HasInt64ExtendedAtomics(DRef));
+    auto D = reinterpret_cast<device *>(DRef);
     auto has_atomics = D->has(aspect::int64_extended_atomics);
     EXPECT_TRUE(has_atomics == atomics);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-// TODO: Update when DPC++ properly supports aspects
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLGPU_HasInt64ExtendedAtomics)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsAccelerator)
 {
-    if (!OpenCL_gpu)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.");
-
-    auto atomics = DPCTLDevice_HasInt64ExtendedAtomics(OpenCL_gpu);
-    auto D = reinterpret_cast<device *>(OpenCL_gpu);
-    auto has_atomics = D->has(aspect::int64_extended_atomics);
-    EXPECT_TRUE(has_atomics == atomics);
+    DPCTLSyclDeviceRef DRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_IsAccelerator(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-// TODO: Update when DPC++ properly supports aspects
-TEST_F(TestDPCTLSyclDeviceInterface, CheckLevel0GPU_HasInt64ExtendedAtomics)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsCPU)
 {
-    if (!OpenCL_Level0_gpu)
-        GTEST_SKIP_("Skipping as no Level0 GPU device found.");
-
-    auto atomics = DPCTLDevice_HasInt64ExtendedAtomics(OpenCL_Level0_gpu);
-    auto D = reinterpret_cast<device *>(OpenCL_Level0_gpu);
-    auto has_atomics = D->has(aspect::int64_extended_atomics);
-    EXPECT_TRUE(has_atomics == atomics);
+    DPCTLSyclDeviceRef DRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_IsCPU(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLCPU_GetName)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsGPU)
 {
-    if (!OpenCL_cpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    auto DevName = DPCTLDevice_GetName(OpenCL_cpu);
-    EXPECT_TRUE(DevName != nullptr);
-    DPCTLCString_Delete(DevName);
+    DPCTLSyclDeviceRef DRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_IsGPU(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLGPU_GetName)
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsHost)
 {
-    if (!OpenCL_gpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    auto DevName = DPCTLDevice_GetName(OpenCL_gpu);
-    EXPECT_TRUE(DevName != nullptr);
-    DPCTLCString_Delete(DevName);
+    DPCTLSyclDeviceRef DRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_IsHost(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDPCTLSyclDeviceInterface, CheckLevel0GPU_GetName)
-{
-    if (!OpenCL_Level0_gpu)
-        GTEST_SKIP_("Skipping as no Level0 GPU device found.");
-
-    auto DevName = DPCTLDevice_GetName(OpenCL_Level0_gpu);
-    EXPECT_TRUE(DevName != nullptr);
-    DPCTLCString_Delete(DevName);
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLCPU_GetVendorName)
-{
-    if (!OpenCL_cpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    auto VendorName = DPCTLDevice_GetVendorName(OpenCL_cpu);
-    EXPECT_TRUE(VendorName != nullptr);
-    DPCTLCString_Delete(VendorName);
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLGPU_GetVendorName)
-{
-    if (!OpenCL_gpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    auto VendorName = DPCTLDevice_GetVendorName(OpenCL_gpu);
-    EXPECT_TRUE(VendorName != nullptr);
-    DPCTLCString_Delete(VendorName);
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckLevel0GPU_GetVendorName)
-{
-    if (!OpenCL_Level0_gpu)
-        GTEST_SKIP_("Skipping as no Level0 GPU device found.");
-
-    auto VendorName = DPCTLDevice_GetVendorName(OpenCL_Level0_gpu);
-    EXPECT_TRUE(VendorName != nullptr);
-    DPCTLCString_Delete(VendorName);
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLCPU_IsCPU)
-{
-    if (!OpenCL_cpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    EXPECT_TRUE(DPCTLDevice_IsCPU(OpenCL_cpu));
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckOCLGPU_IsGPU)
-{
-    if (!OpenCL_gpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    EXPECT_TRUE(DPCTLDevice_IsGPU(OpenCL_gpu));
-}
-
-TEST_F(TestDPCTLSyclDeviceInterface, CheckLevel0GPU_IsGPU)
-{
-    if (!OpenCL_Level0_gpu)
-        GTEST_SKIP_("Skipping as no Level0 GPU device found.");
-
-    EXPECT_TRUE(DPCTLDevice_IsGPU(OpenCL_Level0_gpu));
-}
+INSTANTIATE_TEST_SUITE_P(DPCTLDevice_Fns,
+                         TestDPCTLSyclDeviceInterface,
+                         ::testing::Values("opencl",
+                                           "opencl:gpu",
+                                           "opencl:cpu",
+                                           "opencl:gpu:0",
+                                           "gpu",
+                                           "cpu",
+                                           "level_zero",
+                                           "level_zero:gpu",
+                                           "opencl:cpu:0",
+                                           "level_zero:gpu:0",
+                                           "gpu:0",
+                                           "gpu:1",
+                                           "1"));
 
 TEST_P(TestDPCTLSyclDeviceInterfaceAspects, CheckOCLCPU_HasAspect)
 {
