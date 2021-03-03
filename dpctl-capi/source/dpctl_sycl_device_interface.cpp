@@ -308,37 +308,6 @@ DPCTLDevice_GetPlatform(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return PRef;
 }
 
-bool DPCTLDevice_HasInt64BaseAtomics(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    bool hasBaseAtomics = false;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            hasBaseAtomics = D->has(aspect::int64_base_atomics);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
-        }
-    }
-    return hasBaseAtomics;
-}
-
-bool DPCTLDevice_HasInt64ExtendedAtomics(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    bool hasExtendedAtomics = false;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            hasExtendedAtomics = D->has(aspect::int64_extended_atomics);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
-        }
-    }
-    return hasExtendedAtomics;
-}
-
 __dpctl_give const char *
 DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {

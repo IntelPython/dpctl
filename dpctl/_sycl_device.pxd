@@ -57,8 +57,6 @@ cdef class _SyclDevice:
     cpdef get_max_work_item_sizes(self)
     cpdef get_max_work_group_size(self)
     cpdef get_max_num_sub_groups(self)
-    cpdef has_int64_base_atomics(self)
-    cpdef has_int64_extended_atomics(self)
     cpdef is_accelerator(self)
     cpdef is_cpu(self)
     cpdef is_gpu(self)

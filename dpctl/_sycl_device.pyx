@@ -42,8 +42,6 @@ from ._backend cimport (
     DPCTLDevice_GetMaxWorkItemSizes,
     DPCTLDevice_GetVendorName,
     DPCTLDevice_GetName,
-    DPCTLDevice_HasInt64BaseAtomics,
-    DPCTLDevice_HasInt64ExtendedAtomics,
     DPCTLDevice_IsAccelerator,
     DPCTLDevice_IsCPU,
     DPCTLDevice_IsGPU,
@@ -159,16 +157,6 @@ cdef class _SyclDevice:
             with the value "1.2" if this SYCL device is a host device.
         """
         return self._driver_version.decode()
-
-    cpdef has_int64_base_atomics(self):
-        """ Returns true if device has int64_base_atomics else returns false.
-        """
-        return self._int64_base_atomics
-
-    cpdef has_int64_extended_atomics(self):
-        """ Returns true if device has int64_extended_atomics else returns false.
-        """
-        return self._int64_extended_atomics
 
     cpdef get_max_compute_units(self):
         """ Returns the number of parallel compute units
@@ -313,10 +301,6 @@ cdef class SyclDevice(_SyclDevice):
         device._device_ref = DRef
         device._device_name = DPCTLDevice_GetName(DRef)
         device._driver_version = DPCTLDevice_GetDriverInfo(DRef)
-        device._int64_base_atomics = DPCTLDevice_HasInt64BaseAtomics(DRef)
-        device._int64_extended_atomics = (
-            DPCTLDevice_HasInt64ExtendedAtomics(DRef)
-        )
         device._max_compute_units = DPCTLDevice_GetMaxComputeUnits(DRef)
         device._max_num_sub_groups = DPCTLDevice_GetMaxNumSubGroups(DRef)
         device._max_work_group_size = DPCTLDevice_GetMaxWorkGroupSize(DRef)
@@ -339,8 +323,6 @@ cdef class SyclDevice(_SyclDevice):
         self._device_ref = DPCTLDevice_Copy(other._device_ref)
         self._device_name = DPCTLDevice_GetName(self._device_ref)
         self._driver_version = DPCTLDevice_GetDriverInfo(self._device_ref)
-        self._int64_base_atomics = other._int64_base_atomics
-        self._int64_extended_atomics = other._int64_extended_atomics
         self._max_compute_units = other._max_compute_units
         self._max_num_sub_groups = other._max_num_sub_groups
         self._max_work_group_size = other._max_work_group_size

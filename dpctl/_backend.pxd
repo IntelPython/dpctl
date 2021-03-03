@@ -142,8 +142,6 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef DPCTLSyclPlatformRef DPCTLDevice_GetPlatform(
         const DPCTLSyclDeviceRef DRef)
     cdef const char *DPCTLDevice_GetVendorName(const DPCTLSyclDeviceRef DRef)
-    cdef bool DPCTLDevice_HasInt64BaseAtomics(const DPCTLSyclDeviceRef DRef)
-    cdef bool DPCTLDevice_HasInt64ExtendedAtomics(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsAccelerator(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsCPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)

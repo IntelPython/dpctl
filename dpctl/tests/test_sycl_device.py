@@ -86,20 +86,6 @@ def check_get_max_num_sub_groups(device):
         assert max_num_sub_groups > 0
 
 
-def check_has_int64_base_atomics(device):
-    try:
-        device.has_int64_base_atomics()
-    except Exception:
-        pytest.fail("has_int64_base_atomics call failed")
-
-
-def check_has_int64_extended_atomics(device):
-    try:
-        device.has_int64_extended_atomics()
-    except Exception:
-        pytest.fail("has_int64_extended_atomics call failed")
-
-
 def check_has_aspect_cpu(device):
     try:
         device.aspect_cpu()
