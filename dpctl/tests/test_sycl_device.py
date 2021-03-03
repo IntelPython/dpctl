@@ -154,6 +154,8 @@ list_of_checks = [
     check_is_cpu,
     check_is_gpu,
     check_is_host,
+    check_get_sub_group_independent_forward_progress,
+    check_get_preferred_vector_width_char,
 ]
 
 
