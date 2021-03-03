@@ -100,12 +100,14 @@ if(${dpcpp_result} MATCHES "0")
         set(DPCPP_SYCL_LIBRARY ${DPCPP_INSTALL_DIR}/lib/libsycl.so)
         set(DPCPP_OPENCL_LIBRARY ${DPCPP_INSTALL_DIR}/lib/libOpenCL.so)
     endif()
+	set(DPCPP_FOUND TRUE)
 else()
     message(STATUS "DPCPP needed to build dpctl_sycl_interface")
     return()
 endif()
 
 find_package_handle_standard_args(DPCPP DEFAULT_MSG
+    DPCPP_FOUND
     DPCPP_VERSION
     DPCPP_INCLUDE_DIR
     DPCPP_SYCL_INCLUDE_DIR

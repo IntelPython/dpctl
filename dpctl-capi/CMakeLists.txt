@@ -41,7 +41,7 @@ if(WIN32)
     set(CMAKE_LINKER:PATH "${DPCPP_ROOT}/bin/lld-link")
     message(STATUS "Resetting CXX compiler to: " ${CMAKE_CXX_COMPILER})
     message(STATUS "Resetting C compiler to: " ${CMAKE_C_COMPILER})
-    message(STATUS "Resetting Linker to: " ${CMAKE_LINK})
+    message(STATUS "Resetting Linker to: " ${CMAKE_LINKER})
     set(WARNING_FLAGS "-Wall -Wextra -Winit-self -Wunused-function -Wuninitialized -Wmissing-declarations")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WARNING_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS} -Qstd=c++17")
@@ -108,10 +108,8 @@ if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
 endif()
 
 install(
-  TARGETS
-  DPCTLSyclInterface
-  LIBRARY DESTINATION
-  "${CMAKE_INSTALL_PREFIX}/lib/"
+  TARGETS DPCTLSyclInterface
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
 )
 
 # Install all headers
