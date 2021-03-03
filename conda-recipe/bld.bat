@@ -1,7 +1,7 @@
 call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
 if errorlevel 1 (
-	echo "oneAPI compiler activation failed"
-	exit /b 1
+    echo "oneAPI compiler activation failed"
+    exit /b 1
 )
 
 "%PYTHON%" setup.py clean --all
