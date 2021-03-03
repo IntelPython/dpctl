@@ -26,10 +26,7 @@
 
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
-#include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_platform_interface.h"
-#include "dpctl_sycl_queue_interface.h"
-#include "dpctl_sycl_queue_manager.h"
 #include "dpctl_utils.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
@@ -58,42 +55,6 @@ struct TestDPCTLSyclDeviceInterface
     ~TestDPCTLSyclDeviceInterface()
     {
         EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
-    }
-};
-
-struct TestDPCTLSyclDeviceInterfaceAspects
-    : public ::testing::TestWithParam<DPCTLSyclAspectType>
-{
-    DPCTLSyclDeviceRef OpenCL_cpu = nullptr;
-    DPCTLSyclDeviceRef OpenCL_gpu = nullptr;
-    DPCTLSyclDeviceRef OpenCL_Level0_gpu = nullptr;
-
-    TestDPCTLSyclDeviceInterfaceAspects()
-    {
-        if (DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_CPU)) {
-            auto Q = DPCTLQueueMgr_GetQueue(DPCTL_OPENCL, DPCTL_CPU, 0);
-            OpenCL_cpu = DPCTLQueue_GetDevice(Q);
-            DPCTLQueue_Delete(Q);
-        }
-
-        if (DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_GPU)) {
-            auto Q = DPCTLQueueMgr_GetQueue(DPCTL_OPENCL, DPCTL_GPU, 0);
-            OpenCL_gpu = DPCTLQueue_GetDevice(Q);
-            DPCTLQueue_Delete(Q);
-        }
-
-        if (DPCTLQueueMgr_GetNumQueues(DPCTL_LEVEL_ZERO, DPCTL_GPU)) {
-            auto Q = DPCTLQueueMgr_GetQueue(DPCTL_LEVEL_ZERO, DPCTL_GPU, 0);
-            OpenCL_Level0_gpu = DPCTLQueue_GetDevice(Q);
-            DPCTLQueue_Delete(Q);
-        }
-    }
-
-    ~TestDPCTLSyclDeviceInterfaceAspects()
-    {
-        DPCTLDevice_Delete(OpenCL_cpu);
-        DPCTLDevice_Delete(OpenCL_gpu);
-        DPCTLDevice_Delete(OpenCL_Level0_gpu);
     }
 };
 
@@ -340,94 +301,3 @@ INSTANTIATE_TEST_SUITE_P(DPCTLDevice_Fns,
                                            "gpu:0",
                                            "gpu:1",
                                            "1"));
-
-TEST_P(TestDPCTLSyclDeviceInterfaceAspects, CheckOCLCPU_HasAspect)
-{
-    if (!OpenCL_cpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    DPCTLSyclAspectType GetAspect = GetParam();
-
-    if (GetAspect == emulated ||
-        // GetAspect == image ||
-        GetAspect == usm_device_allocations ||
-        GetAspect == usm_host_allocations ||
-        GetAspect == usm_atomic_host_allocations ||
-        GetAspect == usm_shared_allocations ||
-        GetAspect == usm_atomic_shared_allocations ||
-        GetAspect == usm_system_allocations)
-        GTEST_SKIP_("This device aspect has not been implemented yet.");
-
-    auto Aspect = DPCTLDevice_HasAspect(OpenCL_cpu, GetAspect);
-    auto D = reinterpret_cast<device *>(OpenCL_cpu);
-    auto HasAspect = D->has(cl::sycl::aspect(GetAspect));
-    EXPECT_TRUE(Aspect == HasAspect);
-}
-
-TEST_P(TestDPCTLSyclDeviceInterfaceAspects, CheckOCLGPU_HasAspect)
-{
-    if (!OpenCL_gpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    DPCTLSyclAspectType GetAspect = GetParam();
-
-    if (GetAspect == emulated ||
-        // GetAspect == image ||
-        GetAspect == usm_device_allocations ||
-        GetAspect == usm_host_allocations ||
-        GetAspect == usm_atomic_host_allocations ||
-        GetAspect == usm_shared_allocations ||
-        GetAspect == usm_atomic_shared_allocations ||
-        GetAspect == usm_system_allocations)
-        GTEST_SKIP_("This device aspect has not been implemented yet.");
-
-    auto Aspect = DPCTLDevice_HasAspect(OpenCL_gpu, GetAspect);
-    auto D = reinterpret_cast<device *>(OpenCL_gpu);
-    auto HasAspect = D->has(cl::sycl::aspect(GetAspect));
-    EXPECT_TRUE(Aspect == HasAspect);
-}
-
-TEST_P(TestDPCTLSyclDeviceInterfaceAspects, CheckLevel0GPU_HasAspect)
-{
-    if (!OpenCL_Level0_gpu)
-        GTEST_SKIP_("Skipping as no OpenCL CPU device found.");
-
-    DPCTLSyclAspectType GetAspect = GetParam();
-
-    if (GetAspect == emulated ||
-        // GetAspect == image ||
-        GetAspect == usm_device_allocations ||
-        GetAspect == usm_host_allocations ||
-        GetAspect == usm_atomic_host_allocations ||
-        GetAspect == usm_shared_allocations ||
-        GetAspect == usm_atomic_shared_allocations ||
-        GetAspect == usm_system_allocations)
-        GTEST_SKIP_("This device aspect has not been implemented yet.");
-
-    auto Aspect = DPCTLDevice_HasAspect(OpenCL_Level0_gpu, GetAspect);
-    auto D = reinterpret_cast<device *>(OpenCL_Level0_gpu);
-    auto HasAspect = D->has(cl::sycl::aspect(GetAspect));
-    EXPECT_TRUE(Aspect == HasAspect);
-}
-
-INSTANTIATE_TEST_SUITE_P(DPCTLSyclDeviceInterfaceAspects,
-                         TestDPCTLSyclDeviceInterfaceAspects,
-                         ::testing::Values(cpu,
-                                           gpu,
-                                           accelerator,
-                                           custom,
-                                           emulated,
-                                           host_debuggable,
-                                           fp16,
-                                           fp64,
-                                           atomic64,
-                                           //    image,
-                                           online_compiler,
-                                           online_linker,
-                                           queue_profiling,
-                                           usm_device_allocations,
-                                           usm_host_allocations,
-                                           usm_atomic_host_allocations,
-                                           usm_shared_allocations,
-                                           usm_atomic_shared_allocations,
-                                           usm_system_allocations));
