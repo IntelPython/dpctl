@@ -76,7 +76,7 @@ cdef class _SyclDevice:
         """ Print information about the SYCL device.
         """
         warnings.warn(
-            "WARNING: dump_device_info is depracated and will be removed in "
+            "WARNING: dump_device_info is deprecated and will be removed in "
             "a future release of dpctl. Use print_device_info instead."
         )
         DPCTLDeviceMgr_PrintDeviceInfo(self._device_ref)
