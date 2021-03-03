@@ -44,8 +44,6 @@ cdef class _SyclDevice:
     cdef size_t *_max_work_item_sizes
     cdef size_t _max_work_group_size
     cdef uint32_t _max_num_sub_groups
-    cdef bool _int64_base_atomics
-    cdef bool _int64_extended_atomics
     cdef DPCTLSyclDeviceRef get_device_ref(self)
     cpdef get_backend(self)
     cpdef get_device_name(self)
