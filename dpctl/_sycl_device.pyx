@@ -329,7 +329,7 @@ cdef class SyclDevice(_SyclDevice):
 
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef):
         # Initialize the attributes of the SyclDevice object
-        DRef = DPCTLDevice_CreateFromSelector(DSRef)
+        cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
         if DRef is NULL:
             return -1
         else:
