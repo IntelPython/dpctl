@@ -74,25 +74,24 @@ cdef extern from "dpctl_sycl_enum_types.h":
     ctypedef _arg_data_type DPCTLKernelArgType
 
     cdef enum _aspect_type 'DPCTLSyclAspectType':
-        _cpu                            'cpu',
-        _gpu                            'gpu',
-        _accelerator                    'accelerator',
-        _custom                         'custom',
-        _emulated                       'emulated',
-        _host_debuggable                'host_debuggable',
-        _fp16                           'fp16',
-        _fp64                           'fp64',
-        _atomic64                       'atomic64',
-        _image                          'image',
-        _online_compiler                'online_compiler',
-        _online_linker                  'online_linker',
-        _queue_profiling                'queue_profiling',
-        _usm_device_allocations         'usm_device_allocations',
-        _usm_host_allocations           'usm_host_allocations',
-        _usm_atomic_host_allocations    'usm_atomic_host_allocations',
-        _usm_shared_allocations         'usm_shared_allocations',
-        _usm_atomic_shared_allocations  'usm_atomic_shared_allocations',
-        _usm_system_allocations         'usm_system_allocations'
+        _host                               'host',
+        _cpu                                'cpu',
+        _gpu                                'gpu',
+        _accelerator                        'accelerator',
+        _custom                             'custom',
+        _fp16                               'fp16',
+        _fp64                               'fp64',
+        _int64_base_atomics                 'int64_base_atomics',
+        _int64_extended_atomics             'int64_extended_atomics',
+        _image                              'image',
+        _online_compiler                    'online_compiler',
+        _online_linker                      'online_linker',
+        _queue_profiling                    'queue_profiling',
+        _usm_device_allocations             'usm_device_allocations',
+        _usm_host_allocations               'usm_host_allocations',
+        _usm_shared_allocations             'usm_shared_allocations',
+        _usm_restricted_shared_allocations  'usm_restricted_shared_allocations',
+        _usm_system_allocator               'usm_system_allocator'
 
     ctypedef _aspect_type DPCTLSyclAspectType
 

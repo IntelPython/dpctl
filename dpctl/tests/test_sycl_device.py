@@ -86,6 +86,13 @@ def check_get_max_num_sub_groups(device):
         assert max_num_sub_groups > 0
 
 
+def check_has_aspect_host(device):
+    try:
+        device.aspect_host
+    except Exception:
+        pytest.fail("aspect_host call failed")
+
+
 def check_has_aspect_cpu(device):
     try:
         device.aspect_cpu
@@ -114,20 +121,6 @@ def check_has_aspect_custom(device):
         pytest.fail("aspect_custom call failed")
 
 
-def check_has_aspect_emulated(device):
-    try:
-        device.aspect_emulated
-    except Exception:
-        pytest.fail("aspect_emulated call failed")
-
-
-def check_has_aspect_host_debuggable(device):
-    try:
-        device.aspect_host_debuggable
-    except Exception:
-        pytest.fail("aspect_host_debuggable call failed")
-
-
 def check_has_aspect_fp16(device):
     try:
         device.aspect_fp16
@@ -142,11 +135,18 @@ def check_has_aspect_fp64(device):
         pytest.fail("aspect_fp64 call failed")
 
 
-def check_has_aspect_atomic64(device):
+def check_has_aspect_int64_base_atomics(device):
     try:
-        device.aspect_atomic64
+        device.aspect_int64_base_atomics
     except Exception:
-        pytest.fail("aspect_atomic64 call failed")
+        pytest.fail("aspect_int64_base_atomics call failed")
+
+
+def check_has_aspect_int64_extended_atomics(device):
+    try:
+        device.aspect_int64_extended_atomics
+    except Exception:
+        pytest.fail("aspect_int64_extended_atomics call failed")
 
 
 def check_has_aspect_image(device):
@@ -191,13 +191,6 @@ def check_has_aspect_usm_host_allocations(device):
         pytest.fail("aspect_usm_host_allocations call failed")
 
 
-def check_has_aspect_usm_atomic_host_allocations(device):
-    try:
-        device.aspect_usm_atomic_host_allocations
-    except Exception:
-        pytest.fail("aspect_usm_atomic_host_allocations call failed")
-
-
 def check_has_aspect_usm_shared_allocations(device):
     try:
         device.aspect_usm_shared_allocations
@@ -205,18 +198,18 @@ def check_has_aspect_usm_shared_allocations(device):
         pytest.fail("aspect_usm_shared_allocations call failed")
 
 
-def check_has_aspect_usm_atomic_shared_allocations(device):
+def check_has_aspect_usm_restricted_shared_allocations(device):
     try:
-        device.aspect_usm_atomic_shared_allocations
+        device.aspect_usm_restricted_shared_allocations
     except Exception:
-        pytest.fail("aspect_usm_atomic_shared_allocations call failed")
+        pytest.fail("aspect_usm_restricted_shared_allocations call failed")
 
 
-def check_has_aspect_usm_system_allocations(device):
+def check_has_aspect_usm_system_allocator(device):
     try:
-        device.aspect_usm_system_allocations
+        device.aspect_usm_system_allocator
     except Exception:
-        pytest.fail("aspect_usm_system_allocations call failed")
+        pytest.fail("aspect_usm_system_allocator call failed")
 
 
 def check_is_accelerator(device):
@@ -257,25 +250,24 @@ list_of_checks = [
     check_is_cpu,
     check_is_gpu,
     check_is_host,
+    check_has_aspect_host,
     check_has_aspect_cpu,
     check_has_aspect_gpu,
     check_has_aspect_accelerator,
     check_has_aspect_custom,
-    check_has_aspect_emulated,
-    check_has_aspect_host_debuggable,
     check_has_aspect_fp16,
     check_has_aspect_fp64,
-    check_has_aspect_atomic64,
+    check_has_aspect_int64_base_atomics,
+    check_has_aspect_int64_extended_atomics,
     check_has_aspect_image,
     check_has_aspect_online_compiler,
     check_has_aspect_online_linker,
     check_has_aspect_queue_profiling,
     check_has_aspect_usm_device_allocations,
     check_has_aspect_usm_host_allocations,
-    check_has_aspect_usm_atomic_host_allocations,
     check_has_aspect_usm_shared_allocations,
-    check_has_aspect_usm_atomic_shared_allocations,
-    check_has_aspect_usm_system_allocations,
+    check_has_aspect_usm_restricted_shared_allocations,
+    check_has_aspect_usm_system_allocator,
 ]
 
 

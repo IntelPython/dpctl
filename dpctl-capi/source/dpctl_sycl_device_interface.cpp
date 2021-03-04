@@ -417,7 +417,7 @@ bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     auto D = unwrap(DRef);
     if (D) {
         try {
-            hasAspect = D->has(cl::sycl::aspect(AT));
+            hasAspect = D->has(DPCTL_DPCTLAspectTypeToSyclAspectType(AT));
         } catch (runtime_error const &re) {
             // \todo log error
             std::cerr << re.what() << '\n';

@@ -102,25 +102,24 @@ typedef enum
  */
 enum DPCTLSyclAspectType
 {
+    host,
     cpu,
     gpu,
     accelerator,
     custom,
-    emulated,
-    host_debuggable,
     fp16,
     fp64,
-    atomic64,
+    int64_base_atomics,
+    int64_extended_atomics,
     image,
     online_compiler,
     online_linker,
     queue_profiling,
     usm_device_allocations,
     usm_host_allocations,
-    usm_atomic_host_allocations,
     usm_shared_allocations,
-    usm_atomic_shared_allocations,
-    usm_system_allocations
+    usm_restricted_shared_allocations,
+    usm_system_allocator
 };
 
 /*!

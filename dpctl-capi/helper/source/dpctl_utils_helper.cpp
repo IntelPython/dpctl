@@ -160,3 +160,225 @@ DPCTLSyclDeviceType DPCTL_SyclDeviceTypeToDPCTLDeviceType(info::device_type D)
         return DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE;
     }
 }
+
+/*!
+ * Transforms cl::sycl::aspect to string.
+ */
+std::string DPCTL_AspectToStr(aspect aspectTy)
+{
+    std::stringstream ss;
+    switch (aspectTy) {
+    case aspect::host:
+        ss << "host" << '\n';
+        break;
+    case aspect::cpu:
+        ss << "cpu" << '\n';
+        break;
+    case aspect::gpu:
+        ss << "gpu" << '\n';
+        break;
+    case aspect::accelerator:
+        ss << "accelerator" << '\n';
+        break;
+    case aspect::custom:
+        ss << "custom" << '\n';
+        break;
+    case aspect::fp16:
+        ss << "fp16" << '\n';
+        break;
+    case aspect::fp64:
+        ss << "fp64" << '\n';
+        break;
+    case aspect::int64_base_atomics:
+        ss << "int64_base_atomics" << '\n';
+        break;
+    case aspect::int64_extended_atomics:
+        ss << "int64_extended_atomics" << '\n';
+        break;
+    case aspect::image:
+        ss << "image" << '\n';
+        break;
+    case aspect::online_compiler:
+        ss << "online_compiler" << '\n';
+        break;
+    case aspect::online_linker:
+        ss << "online_linker" << '\n';
+        break;
+    case aspect::queue_profiling:
+        ss << "queue_profiling" << '\n';
+        break;
+    case aspect::usm_device_allocations:
+        ss << "usm_device_allocations" << '\n';
+        break;
+    case aspect::usm_host_allocations:
+        ss << "usm_host_allocations" << '\n';
+        break;
+    case aspect::usm_shared_allocations:
+        ss << "usm_shared_allocations" << '\n';
+        break;
+    case aspect::usm_restricted_shared_allocations:
+        ss << "usm_restricted_shared_allocations" << '\n';
+        break;
+    case aspect::usm_system_allocator:
+        ss << "usm_system_allocator" << '\n';
+        break;
+    default:
+        ss << "unknown" << '\n';
+    }
+    return ss.str();
+}
+
+/*!
+ * Transforms string to cl::sycl::aspect.
+ */
+aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
+{
+    aspect aspectTy;
+    if (aspectTyStr == "host") {
+        aspectTy = aspect::host;
+    }
+    else if (aspectTyStr == "cpu") {
+        aspectTy = aspect::cpu;
+    }
+    else if (aspectTyStr == "gpu") {
+        aspectTy = aspect::gpu;
+    }
+    else if (aspectTyStr == "accelerator") {
+        aspectTy = aspect::accelerator;
+    }
+    else if (aspectTyStr == "custom") {
+        aspectTy = aspect::custom;
+    }
+    else if (aspectTyStr == "fp16") {
+        aspectTy = aspect::fp16;
+    }
+    else if (aspectTyStr == "fp64") {
+        aspectTy = aspect::fp64;
+    }
+    else if (aspectTyStr == "int64_base_atomics") {
+        aspectTy = aspect::int64_base_atomics;
+    }
+    else if (aspectTyStr == "int64_extended_atomics") {
+        aspectTy = aspect::int64_extended_atomics;
+    }
+    else if (aspectTyStr == "image") {
+        aspectTy = aspect::image;
+    }
+    else if (aspectTyStr == "online_compiler") {
+        aspectTy = aspect::online_compiler;
+    }
+    else if (aspectTyStr == "online_linker") {
+        aspectTy = aspect::online_linker;
+    }
+    else if (aspectTyStr == "queue_profiling") {
+        aspectTy = aspect::queue_profiling;
+    }
+    else if (aspectTyStr == "usm_device_allocations") {
+        aspectTy = aspect::usm_device_allocations;
+    }
+    else if (aspectTyStr == "usm_host_allocations") {
+        aspectTy = aspect::usm_host_allocations;
+    }
+    else if (aspectTyStr == "usm_shared_allocations") {
+        aspectTy = aspect::usm_shared_allocations;
+    }
+    else if (aspectTyStr == "usm_restricted_shared_allocations") {
+        aspectTy = aspect::usm_restricted_shared_allocations;
+    }
+    else if (aspectTyStr == "usm_system_allocator") {
+        aspectTy = aspect::usm_system_allocator;
+    }
+    else {
+        // \todo handle the error
+        throw std::runtime_error("Unknown aspect.");
+    }
+    return aspectTy;
+}
+
+aspect DPCTL_DPCTLAspectTypeToSyclAspectType(DPCTLSyclAspectType AspectTy)
+{
+    switch (AspectTy) {
+    case DPCTLSyclAspectType::host:
+        return aspect::host;
+    case DPCTLSyclAspectType::cpu:
+        return aspect::cpu;
+    case DPCTLSyclAspectType::gpu:
+        return aspect::gpu;
+    case DPCTLSyclAspectType::accelerator:
+        return aspect::accelerator;
+    case DPCTLSyclAspectType::custom:
+        return aspect::custom;
+    case DPCTLSyclAspectType::fp16:
+        return aspect::fp16;
+    case DPCTLSyclAspectType::fp64:
+        return aspect::fp64;
+    case DPCTLSyclAspectType::int64_base_atomics:
+        return aspect::int64_base_atomics;
+    case DPCTLSyclAspectType::int64_extended_atomics:
+        return aspect::int64_extended_atomics;
+    case DPCTLSyclAspectType::image:
+        return aspect::image;
+    case DPCTLSyclAspectType::online_compiler:
+        return aspect::online_compiler;
+    case DPCTLSyclAspectType::online_linker:
+        return aspect::online_linker;
+    case DPCTLSyclAspectType::queue_profiling:
+        return aspect::queue_profiling;
+    case DPCTLSyclAspectType::usm_device_allocations:
+        return aspect::usm_device_allocations;
+    case DPCTLSyclAspectType::usm_host_allocations:
+        return aspect::usm_host_allocations;
+    case DPCTLSyclAspectType::usm_shared_allocations:
+        return aspect::usm_shared_allocations;
+    case DPCTLSyclAspectType::usm_restricted_shared_allocations:
+        return aspect::usm_restricted_shared_allocations;
+    case DPCTLSyclAspectType::usm_system_allocator:
+        return aspect::usm_system_allocator;
+    default:
+        throw runtime_error("Unsupported aspect type", -1);
+    }
+}
+
+DPCTLSyclAspectType DPCTL_SyclAspectTypeToDPCTLAspectType(aspect Aspect)
+{
+    switch (Aspect) {
+    case aspect::host:
+        return DPCTLSyclAspectType::host;
+    case aspect::cpu:
+        return DPCTLSyclAspectType::cpu;
+    case aspect::gpu:
+        return DPCTLSyclAspectType::gpu;
+    case aspect::accelerator:
+        return DPCTLSyclAspectType::accelerator;
+    case aspect::custom:
+        return DPCTLSyclAspectType::custom;
+    case aspect::fp16:
+        return DPCTLSyclAspectType::fp16;
+    case aspect::fp64:
+        return DPCTLSyclAspectType::fp64;
+    case aspect::int64_base_atomics:
+        return DPCTLSyclAspectType::int64_base_atomics;
+    case aspect::int64_extended_atomics:
+        return DPCTLSyclAspectType::int64_extended_atomics;
+    case aspect::image:
+        return DPCTLSyclAspectType::image;
+    case aspect::online_compiler:
+        return DPCTLSyclAspectType::online_compiler;
+    case aspect::online_linker:
+        return DPCTLSyclAspectType::online_linker;
+    case aspect::queue_profiling:
+        return DPCTLSyclAspectType::queue_profiling;
+    case aspect::usm_device_allocations:
+        return DPCTLSyclAspectType::usm_device_allocations;
+    case aspect::usm_host_allocations:
+        return DPCTLSyclAspectType::usm_host_allocations;
+    case aspect::usm_shared_allocations:
+        return DPCTLSyclAspectType::usm_shared_allocations;
+    case aspect::usm_restricted_shared_allocations:
+        return DPCTLSyclAspectType::usm_restricted_shared_allocations;
+    case aspect::usm_system_allocator:
+        return DPCTLSyclAspectType::usm_system_allocator;
+    default:
+        throw runtime_error("Unsupported aspect type", -1);
+    }
+}

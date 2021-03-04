@@ -1,3 +1,4 @@
+#include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
@@ -72,11 +73,10 @@ auto build_params()
     constexpr auto param_1 = get_param_list<const char *>(
         "opencl:gpu", "opencl:cpu", "level_zero:gpu", "host");
     constexpr auto param_2 = get_param_list<DPCTLSyclAspectType>(
-        cpu, gpu, accelerator, custom, emulated, host_debuggable, fp16, fp64,
-        atomic64, online_compiler, online_linker, queue_profiling,
-        usm_device_allocations, usm_host_allocations,
-        usm_atomic_host_allocations, usm_shared_allocations,
-        usm_atomic_shared_allocations, usm_system_allocations);
+        host, cpu, gpu, accelerator, custom, fp16, fp64, int64_base_atomics,
+        int64_extended_atomics, online_compiler, online_linker, queue_profiling,
+        usm_device_allocations, usm_host_allocations, usm_shared_allocations,
+        usm_restricted_shared_allocations, usm_system_allocator);
 
     auto pairs =
         build_param_pairs<const char *, DPCTLSyclAspectType, param_1.size(),
@@ -92,6 +92,7 @@ struct TestDPCTLSyclDeviceInterfaceAspects
           std::pair<const char *, DPCTLSyclAspectType>>
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    bool actual = false;
 
     TestDPCTLSyclDeviceInterfaceAspects()
     {
@@ -107,16 +108,17 @@ struct TestDPCTLSyclDeviceInterfaceAspects
                            std::string(GetParam().first) + ".";
             GTEST_SKIP_(message.c_str());
         }
-        auto aspectTy = GetParam().second;
-        if (aspectTy == emulated || aspectTy == usm_device_allocations ||
-            aspectTy == usm_host_allocations ||
-            aspectTy == usm_atomic_host_allocations ||
-            aspectTy == usm_shared_allocations ||
-            aspectTy == usm_atomic_shared_allocations ||
-            aspectTy == usm_system_allocations)
-        {
-            GTEST_SKIP_("This device aspect has not been implemented yet.");
+        DPCTLSyclDeviceRef DRef = nullptr;
+        EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+        if (!DRef)
+            GTEST_SKIP_("Device not found");
+        auto D = unwrap(DRef);
+        try {
+            actual = D->has(
+                DPCTL_DPCTLAspectTypeToSyclAspectType(GetParam().second));
+        } catch (...) {
         }
+        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     }
 
     ~TestDPCTLSyclDeviceInterfaceAspects()
@@ -127,20 +129,13 @@ struct TestDPCTLSyclDeviceInterfaceAspects
 
 TEST_P(TestDPCTLSyclDeviceInterfaceAspects, Chk_HasAspect)
 {
-
-    bool expected = false, actual = false;
+    bool expected = false;
     auto aspectTy = GetParam().second;
     DPCTLSyclDeviceRef DRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
     if (!DRef)
         GTEST_SKIP_("Device not found");
     EXPECT_NO_FATAL_FAILURE(expected = DPCTLDevice_HasAspect(DRef, aspectTy));
-    auto D = unwrap(DRef);
-    try {
-        actual = D->has(cl::sycl::aspect(aspectTy));
-    } catch (...) {
-        GTEST_SKIP_("Aspect not supported");
-    }
     EXPECT_TRUE(expected == actual);
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
