@@ -256,6 +256,27 @@ void DPCTLQueue_Delete(__dpctl_take DPCTLSyclQueueRef QRef)
     delete unwrap(QRef);
 }
 
+/*!
+ * Make copy of sycl::queue referenced by passed pointer
+ */
+__dpctl_give DPCTLSyclQueueRef
+DPCTLQueue_Copy(__dpctl_keep const DPCTLSyclQueueRef QRef) {
+    auto Queue = unwrap(QRef);
+    if (Queue) {
+	try {
+	    auto CopiedQueue = new queue(*Queue);
+	    return wrap(CopiedQueue);
+	} catch (std::bad_alloc &ba) {
+	    std::cerr << ba.what() << std::endl;
+	    return nullptr;
+	}
+    } else {
+	std::cerr << "Can not copy DPCTLSyclQueueRef as input is a nullptr" << std::endl;
+	return nullptr;
+    }
+}
+
+
 bool DPCTLQueue_AreEq(__dpctl_keep const DPCTLSyclQueueRef QRef1,
                       __dpctl_keep const DPCTLSyclQueueRef QRef2)
 {
