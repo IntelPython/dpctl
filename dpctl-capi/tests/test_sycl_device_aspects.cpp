@@ -134,7 +134,7 @@ struct TestDPCTLSyclDeviceInterfaceAspects
         auto syclAspect = GetParam().second.second;
         try {
             hasAspect = D->has(syclAspect);
-        } catch (std::runtime_error const &re) {
+        } catch (cl::sycl::runtime_error const &re) {
         }
     }
 
