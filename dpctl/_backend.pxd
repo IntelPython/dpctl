@@ -155,6 +155,9 @@ cdef extern from "dpctl_sycl_device_interface.h":
 cdef extern from "dpctl_sycl_device_manager.h":
     cdef struct DPCTLDeviceVector
     ctypedef DPCTLDeviceVector *DPCTLDeviceVectorRef
+    ctypedef struct DPCTL_DeviceAndContextPair:
+        DPCTLSyclDeviceRef DRef
+        DPCTLSyclContextRef CRef
 
     cdef void DPCTLDeviceVector_Delete(DPCTLDeviceVectorRef DVRef)
     cdef void DPCTLDeviceVector_Clear(DPCTLDeviceVectorRef DVRef)
@@ -165,6 +168,8 @@ cdef extern from "dpctl_sycl_device_manager.h":
     cdef DPCTLDeviceVectorRef DPCTLDeviceMgr_GetDevices(int device_identifier)
     cdef size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier)
     cdef void DPCTLDeviceMgr_PrintDeviceInfo(const DPCTLSyclDeviceRef DRef)
+    cdef DPCTL_DeviceAndContextPair DPCTLDeviceMgr_GetDeviceAndContextPair(
+        const DPCTLSyclDeviceRef DRef)
 
 
 cdef extern from "dpctl_sycl_device_selector_interface.h":
@@ -237,6 +242,7 @@ cdef extern from "dpctl_sycl_queue_interface.h":
         error_handler_callback *handler,
         int properties)
     cdef void DPCTLQueue_Delete(DPCTLSyclQueueRef QRef)
+    cdef DPCTLSyclQueueRef DPCTLQueue_Copy(DPCTLSyclQueueRef QRef)
     cdef DPCTLSyclBackendType DPCTLQueue_GetBackend(const DPCTLSyclQueueRef Q)
     cdef DPCTLSyclContextRef DPCTLQueue_GetContext(const DPCTLSyclQueueRef Q)
     cdef DPCTLSyclDeviceRef DPCTLQueue_GetDevice(const DPCTLSyclQueueRef Q)
