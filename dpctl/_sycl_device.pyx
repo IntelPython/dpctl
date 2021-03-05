@@ -352,8 +352,8 @@ cdef class SyclDevice(_SyclDevice):
             # Free up the device selector
             DPCTLDeviceSelector_Delete(DSRef)
         elif isinstance(arg, unicode):
-            string = bytes(unicode(arg), "utf-8")
-            filter_c_str = <unicode>string
+            string = bytes(<unicode>unicode(arg), "utf-8")
+            filter_c_str = string
             DSRef = DPCTLFilterSelector_Create(filter_c_str)
             if ret == -1:
                 raise ValueError("Could not create a Device with the selector")
