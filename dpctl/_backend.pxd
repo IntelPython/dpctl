@@ -76,6 +76,11 @@ cdef extern from "dpctl_sycl_enum_types.h":
 
     ctypedef _arg_data_type DPCTLKernelArgType
 
+    ctypedef enum _queue_property_type 'DPCTLQueuePropertyType':
+        _DEFAULT_PROPERTY   'DPCTL_DEFAULT_PROPERTY'
+        _ENABLE_PROFILING   'DPCLT_ENABLE_PROFILING'
+        _IN_ORDER           'DPCTL_IN_ORDER'
+
 
 cdef extern from "dpctl_sycl_types.h":
     cdef struct DPCTLOpaqueSyclContext
