@@ -32,6 +32,7 @@ from ._backend cimport (
     DPCTLQueueMgr_PopQueue,
     DPCTLQueueMgr_SetGlobalQueue,
     DPCTLSyclQueueRef,
+    DPCTLQueueMgr_GetQueueStackSize,
 )
 from ._sycl_context cimport SyclContext
 
@@ -44,82 +45,32 @@ __all__ = [
     "get_current_queue",
     "get_num_activated_queues",
     "get_num_platforms",
-    "get_num_queues",
-    "has_cpu_queues",
-    "has_gpu_queues",
     "has_sycl_platforms",
     "is_in_device_context",
-    "set_default_queue",
-    "UnsupportedBackendError",
-    "UnsupportedDeviceError",
+    "set_global_queue",
 ]
 
 _logger = logging.getLogger(__name__)
 
 
-cdef class UnsupportedBackendError(Exception):
-    """
-    An UnsupportedBackendError exception is raised when a backend value
-    is other than `backend_type.opencl` or `backend_type.level_zero` is
-    encountered. All other backends are currently not supported.
-
-    """
-    pass
-
-
-cdef class UnsupportedDeviceError(Exception):
-    """
-    An UnsupportedDeviceError exception is raised when a device type value
-    other than `device_type.cpu` or `device_type.gpu` is encountered.
-
-    """
-    pass
-
-
 cdef class _SyclQueueManager:
     """ Provides a SYCL queue manager interface for Python.
     """
-    cdef dict _backend_str_ty_dict
-    cdef dict _device_str_ty_dict
-    cdef dict _backend_enum_ty_dict
-    cdef dict _device_enum_ty_dict
 
-    def __cinit__(self):
+    def _set_as_current_queue(self, arg):
+        cdef SyclQueue q
+        cdef DPCTLSyclQueueRef queue_ref = NULL
 
-        self._backend_str_ty_dict = {
-            "opencl" : _backend_type._OPENCL,
-            "level0" : _backend_type._LEVEL_ZERO,
-        }
+        if isinstance(arg, SyclQueue):
+            q_obj = arg
+        else:
+            q_obj = SyclQueue(arg)
 
-        self._device_str_ty_dict = {
-            "gpu" : _device_type._GPU,
-            "cpu" : _device_type._CPU,
-        }
+        q = <SyclQueue> q_obj
+        queue_ref = q.get_queue_ref()
+        DPCTLQueueMgr_PushQueue(queue_ref)
 
-        self._backend_enum_ty_dict = {
-            backend_type.opencl : _backend_type._OPENCL,
-            backend_type.level_zero : _backend_type._LEVEL_ZERO,
-        }
-
-        self._device_enum_ty_dict = {
-            device_type.cpu : _device_type._CPU,
-            device_type.gpu : _device_type._GPU,
-        }
-
-    def _set_as_current_queue(self, backend_ty, device_ty, device_id):
-        cdef DPCTLSyclQueueRef queue_ref
-
-        try :
-            beTy = self._backend_str_ty_dict[backend_ty]
-            try :
-                devTy = self._device_str_ty_dict[device_ty]
-                queue_ref = DPCTLQueueMgr_PushQueue(beTy, devTy, device_id)
-                return SyclQueue._create(queue_ref)
-            except KeyError:
-                raise UnsupportedDeviceError("Device can only be gpu or cpu")
-        except KeyError:
-            raise UnsupportedBackendError("Backend can only be opencl or "
-                                          "level0")
+        return q_obj
 
     def _remove_current_queue(self):
         DPCTLQueueMgr_PopQueue()
@@ -175,12 +126,6 @@ cdef class _SyclQueueManager:
 
         """
         DPCTLPlatform_DumpInfo()
-
-    def print_available_backends(self):
-        """
-        Prints the list of available SYCL backends.
-        """
-        print(self._backend_str_ty_dict.keys())
 
     cpdef get_current_backend(self):
         """
@@ -247,98 +192,6 @@ cdef class _SyclQueueManager:
         """
         return DPCTLPlatform_GetNumNonHostPlatforms()
 
-    def get_num_queues(self, backend_ty, device_ty):
-        """
-        Returns the number of devices for the input backend and device type
-        combination. *WARNING: To be depracated in the near future.*
-
-        Args:
-            backend_ty (backend_type): Enum value specifying a SYCL backend.
-            device_ty (device_type): Enum value specifying a SYCL device type.
-
-        Returns:
-            int: Number of devices for the input backend and device type
-            combination.
-        Raises:
-            UnsupportedDeviceError: If the device type value is invalid.
-            UnsupportedBackendError: If the backend value is invalid.
-        """
-        cdef size_t num = 0
-        try :
-            beTy = self._backend_enum_ty_dict[backend_ty]
-            try :
-                devTy = self._device_enum_ty_dict[device_ty]
-                num = DPCTLQueueMgr_GetNumQueues(beTy, devTy)
-            except KeyError:
-                raise UnsupportedDeviceError(
-                        "Device can only be device_type.gpu or device_type.cpu"
-                      )
-        except KeyError:
-            raise UnsupportedBackendError(
-                      "Backend can only be backend_type.opencl or "
-                      "backend_type.level_zero"
-                  )
-
-        return num
-
-    def has_gpu_queues(self, backend_ty=backend_type.opencl):
-        """
-        Checks if the system has a GPU device for the specified SYCL backend
-        type. *WARNING: To be depracated in the near future.*
-
-        Args:
-            backend_ty (backend_type) : Enum value specifying a SYCL backend \
-            defaults to `backend_type.opencl`.
-
-        Returns:
-            bool:True if the backend has a GPU device else False.
-
-        Raises:
-            UnsupportedBackendError: If the backend value is invalid.
-        """
-        cdef size_t num = 0
-        try :
-            beTy = self._backend_enum_ty_dict[backend_ty]
-            num = DPCTLQueueMgr_GetNumQueues(beTy, _device_type._GPU)
-        except KeyError:
-            raise UnsupportedBackendError(
-                      "Backend can only be backend_type.opencl or "
-                      "backend_type.level_zero"
-                  )
-        if num:
-            return True
-        else:
-            return False
-
-    def has_cpu_queues(self, backend_ty=backend_type.opencl):
-        """
-        Checks if the system has a CPU device for the specified SYCL backend
-        type. *WARNING: To be depracated in the near future.*
-
-        Args:
-            backend_ty (backend_type) : Enum value specifying a SYCL backend \
-            defaults to `backend_type.opencl`.
-
-        Returns:
-            bool:True if the backend has a CPU device else False.
-
-        Raises:
-            UnsupportedBackendError: If the backend value is invalid.
-        """
-        cdef size_t num = 0
-        try :
-            beTy = self._backend_enum_ty_dict[backend_ty]
-            num = DPCTLQueueMgr_GetNumQueues(beTy, _device_type._CPU)
-        except KeyError:
-            raise UnsupportedBackendError(
-                      "Backend can only be backend_type.opencl or "
-                      "backend_type.level_zero"
-                  )
-        if num:
-            return True
-        else:
-            return False
-
     def has_sycl_platforms(self):
         """
         Checks if the system has any non-host SYCL platforms. *WARNING: The    \
@@ -356,6 +209,7 @@ cdef class _SyclQueueManager:
         else:
             return False
 
+
     def is_in_device_context(self):
         """
         Checks if the control is inside a :func:`dpctl.device_context()` scope.
@@ -364,51 +218,33 @@ cdef class _SyclQueueManager:
             bool: True if the control is within a \
             :func:`dpctl.device_context()` scope, otherwise False.
         """
-        cdef bool inCtx = not DPCTLQueueMgr_GlobalQueueIsCurrent()
-        return inCtx
+        cdef int inCtx = DPCTLQueueMgr_GlobalQueueIsCurrent()
+        return not bool(inCtx)
 
-    def set_default_queue(self, backend_ty, device_ty, device_id):
+    def set_global_queue(self, arg):
         """
-        Sets the global (default) queue to the SYCL queue specified using the
-        backend, device type, and relative device id parameters. *WARNING: To \
-        be depracated in the near future.*
+        Sets the global queue to the SYCL queue specified explicitly,
+        or created from given arguments.
 
         Args:
-            backend_ty (backend_type) : Enum value specifying a SYCL backend.
-            device_ty (device_type) : Enum value specifying a SYCL device type.
-            device_id (int) : A relative device number. The relative device \
-            id is based on the ordering of the devices in the list returned \
-            by SYCL's `platform::get_platforms().get_devices()` function.
+            A SyclQueue instance to be used as a global queue.
+            Alternatively, a filter selector string, or a SyclDevice
+            instance to be used to construct SyclQueue.
 
         Raises:
             SyclQueueCreationError: If a SYCL queue could not be created.
-            UnsupportedDeviceError: If the device type is invalid.
-            UnsupportedBackendError: If the backend type is invalid.
-
         """
-        cdef DPCTLSyclQueueRef ret
-        try :
-            if isinstance(backend_ty, str):
-                beTy = self._backend_str_ty_dict[backend_ty]
-            else:
-                beTy = self._backend_enum_ty_dict[backend_ty]
-            try :
-                if isinstance(device_ty, str):
-                    devTy = self._device_str_ty_dict[device_ty]
-                else:
-                    devTyp = self._device_enum_ty_dist[device_ty]
-                ret = DPCTLQueueMgr_SetAsDefaultQueue(beTy, devTy, device_id)
-                if ret is NULL:
-                    self._raise_queue_creation_error(
-                        backend_ty, device_ty, device_id,
-                        "DPCTLQueueMgr_PushQueue"
-                    )
+        cdef SyclQueue q
+        cdef DPCTLSyclQueueRef queue_ref = NULL
 
-            except KeyError:
-                raise UnsupportedDeviceError("Device can only be gpu or cpu")
-        except KeyError:
-            raise UnsupportedBackendError("Backend can only be opencl or "
-                                          "level0")
+        if type(arg) is SyclQueue:
+            q = <SyclQueue> arg
+        else:
+            q_obj = SyclQueue(arg)
+            q = <SyclQueue> q_obj
+
+        queue_ref = q.get_queue_ref()
+        DPCTLQueueMgr_SetGlobalQueue(queue_ref)
 
 
 # This private instance of the _SyclQueueManager should not be directly
@@ -419,11 +255,8 @@ _mgr = _SyclQueueManager()
 dump                     = _mgr.dump
 get_num_platforms        = _mgr.get_num_platforms
 get_num_activated_queues = _mgr.get_num_activated_queues
-get_num_queues           = _mgr.get_num_queues
-has_cpu_queues           = _mgr.has_cpu_queues
-has_gpu_queues           = _mgr.has_gpu_queues
 has_sycl_platforms       = _mgr.has_sycl_platforms
-set_default_queue        = _mgr.set_default_queue
+set_global_queue         = _mgr.set_global_queue
 is_in_device_context     = _mgr.is_in_device_context
 
 cpdef SyclQueue get_current_queue():
@@ -463,19 +296,21 @@ cpdef get_current_backend():
 
 from contextlib import contextmanager
 
+
 @contextmanager
-def device_context(str queue_str="opencl:gpu:0"):
+def device_context(arg):
     """
     Yields a SYCL queue corresponding to the input filter string.
 
     This context manager "activates", *i.e.*, sets as the currently usable
-    queue, the SYCL queue defined by the "backend:device type:device id" tuple.
+    queue, the SYCL queue defined by the argument `arg`.
     The activated queue is yielded by the context manager and can also be
     accessed by any subsequent call to :func:`dpctl.get_current_queue()` inside
     the context manager's scope. The yielded queue is removed as the currently
     usable queue on exiting the context manager.
 
     Args:
+
         queue_str (str) : A string corresponding to the DPC++ filter spec \
         that should be a three tuple specified as \
         "backend:device-type:device-id", defaults to "opencl:gpu:0".
@@ -485,9 +320,6 @@ def device_context(str queue_str="opencl:gpu:0"):
         filter string.
 
     Raises:
-        ValueError: If the filter string is malformed.
-        UnsupportedDeviceError: If the device type value is invalid.
-        UnsupportedBackendError: If the backend value is invalid.
         SyclQueueCreationError: If the SYCL queue creation failed.
 
     :Example:
@@ -503,16 +335,7 @@ def device_context(str queue_str="opencl:gpu:0"):
     """
     ctxt = None
     try:
-        attrs = queue_str.split(':')
-        nattrs = len(attrs)
-        if (nattrs < 2 or nattrs > 3):
-            raise ValueError("Invalid queue filter string. Should be "
-                             "backend:device:device_number or "
-                             "backend:device. In the later case the "
-                             "device_number defaults to 0")
-        if nattrs == 2:
-            attrs.append("0")
-        ctxt = _mgr._set_as_current_queue(attrs[0], attrs[1], int(attrs[2]))
+        ctxt = _mgr._set_as_current_queue(arg)
         yield ctxt
     finally:
         # Code to release resource
