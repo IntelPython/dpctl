@@ -96,7 +96,7 @@ class TestProgramForLevel0GPU(unittest.TestCase):
         spirv_file = os.path.join(CURR_DIR, "input_files/multi_kernel.spv")
         with open(spirv_file, "rb") as fin:
             spirv = fin.read()
-            with dpctl.device_context("level0:gpu:0"):
+            with dpctl.device_context("level_zero:gpu:0"):
                 q = dpctl.get_current_queue()
                 prog = dpctl_prog.create_program_from_spirv(q, spirv)
 
@@ -111,7 +111,7 @@ class TestProgramForLevel0GPU(unittest.TestCase):
             size_t index = get_global_id(0);                                   \
             c[index] = a[index] + d*b[index];                                  \
         }"
-        with dpctl.device_context("level0:gpu:0"):
+        with dpctl.device_context("level_zero:gpu:0"):
             q = dpctl.get_current_queue()
             prog = dpctl_prog.create_program_from_source(q, oclSrc)
 

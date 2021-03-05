@@ -124,7 +124,7 @@ cdef class SyclDevice(_SyclDevice):
         device._host_device = DPCTLDevice_IsHost(DRef)
         device._max_compute_units = DPCTLDevice_GetMaxComputeUnits(DRef)
         if (device._host_device):
-            device._max_num_sub_groups = 0
+            device._max_num_sub_groups = -1
         else:
             device._max_num_sub_groups = DPCTLDevice_GetMaxNumSubGroups(DRef)
         device._max_work_group_size = DPCTLDevice_GetMaxWorkGroupSize(DRef)
