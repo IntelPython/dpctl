@@ -21,9 +21,9 @@ import dpctl
 import dpctl.program as dpctl_prog
 import unittest
 import os
+from ._helper import (has_cpu, has_gpu)
 
-
-@unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
+@unittest.skipUnless(has_gpu(), "No OpenCL GPU queues available")
 class TestProgramFromOCLSource(unittest.TestCase):
     def test_create_program_from_source(self):
         oclSrc = "                                                             \
@@ -52,7 +52,7 @@ class TestProgramFromOCLSource(unittest.TestCase):
             self.assertEqual(axpyKernel.get_num_args(), 4)
 
 
-@unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
+@unittest.skipUnless(has_gpu(), "No OpenCL GPU queues available")
 class TestProgramFromSPRIV(unittest.TestCase):
     def test_create_program_from_spirv(self):
 
@@ -77,7 +77,7 @@ class TestProgramFromSPRIV(unittest.TestCase):
 
 
 @unittest.skipUnless(
-    dpctl.has_gpu_queues(backend_ty=dpctl.backend_type.level_zero),
+    has_gpu(backend=dpctl.backend_type.level_zero),
     "No Level0 GPU queues available",
 )
 class TestProgramForLevel0GPU(unittest.TestCase):
@@ -95,7 +95,7 @@ class TestProgramForLevel0GPU(unittest.TestCase):
         spirv_file = os.path.join(CURR_DIR, "input_files/multi_kernel.spv")
         with open(spirv_file, "rb") as fin:
             spirv = fin.read()
-            with dpctl.device_context("level0:gpu:0"):
+            with dpctl.device_context("level_zero:gpu:0"):
                 q = dpctl.get_current_queue()
                 prog = dpctl_prog.create_program_from_spirv(q, spirv)
 
@@ -110,7 +110,7 @@ class TestProgramForLevel0GPU(unittest.TestCase):
             size_t index = get_global_id(0);                                   \
             c[index] = a[index] + d*b[index];                                  \
         }"
-        with dpctl.device_context("level0:gpu:0"):
+        with dpctl.device_context("level_zero:gpu:0"):
             q = dpctl.get_current_queue()
             prog = dpctl_prog.create_program_from_source(q, oclSrc)
 

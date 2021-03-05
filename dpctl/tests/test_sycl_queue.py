@@ -19,21 +19,25 @@
 
 import dpctl
 import unittest
-
+from ._helper import (has_cpu, has_gpu)
 
 class TestSyclQueue(unittest.TestCase):
-    @unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
-    @unittest.skipUnless(dpctl.has_cpu_queues(), "No OpenCL CPU queues available")
+    @unittest.skipUnless(has_gpu(), "No OpenCL GPU queues available")
+    @unittest.skipUnless(has_cpu(), "No OpenCL CPU queues available")
     def test_queue_not_equals(self):
-        with dpctl.device_context("opencl:gpu") as gpuQ0:
+        with dpctl.device_context("opencl:gpu") as gpuQ:
+            ctx_gpu = gpuQ.get_sycl_context()
             with dpctl.device_context("opencl:cpu") as cpuQ:
-                self.assertFalse(cpuQ.equals(gpuQ0))
+                ctx_cpu = cpuQ.get_sycl_context()
+                self.assertFalse(ctx_cpu.equals(ctx_gpu))
 
-    @unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
+    @unittest.skipUnless(has_gpu(), "No OpenCL GPU queues available")
     def test_queue_equals(self):
         with dpctl.device_context("opencl:gpu") as gpuQ0:
+            ctx0 = gpuQ0.get_sycl_context()
             with dpctl.device_context("opencl:gpu") as gpuQ1:
-                self.assertTrue(gpuQ0.equals(gpuQ1))
+                ctx1 = gpuQ1.get_sycl_context()
+                self.assertTrue(ctx0.equals(ctx1))
 
 
 if __name__ == "__main__":
