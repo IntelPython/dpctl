@@ -27,13 +27,24 @@ from ._sycl_device cimport SyclDevice
 from .program._program cimport SyclKernel
 
 
-cdef class SyclQueue:
+cdef class _SyclQueue:
     """ Python wrapper class for a sycl::queue.
     """
 
     cdef DPCTLSyclQueueRef _queue_ref
     cdef SyclContext _context
     cdef SyclDevice _device
+
+
+cdef class SyclQueue (_SyclQueue):
+    """ Python wrapper class for a sycl::queue.
+    """
+    cdef int _init_queue_default(self, int)
+    cdef int _init_queue_from__SyclQueue(self, _SyclQueue)
+    cdef int _init_queue_from_DPCTLSyclDeviceRef(self, DPCTLSyclDeviceRef, int)
+    cdef int _init_queue_from_device(self, SyclDevice, int)
+    cdef int _init_queue_from_filter_string(self, const char *, int)
+    cdef int _init_queue_from_context_and_device(self, SyclContext, SyclDevice, int)
 
     cdef _raise_queue_submit_error (self, fname, errcode)
     cdef _raise_invalid_range_error (self, fname, ndims, errcode)
