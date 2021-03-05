@@ -66,38 +66,222 @@ cdef class SyclQueueCreationError(Exception):
     """
     pass
 
+cdef class SyclAsynchronousError(Exception):
+    """
+    A SyclAsynchronousError exception is raised when SYCL operation submission
+    or execution encounters an error.
+    """
+
+
+cdef void default_async_error_handler(int err) nogil:
+    with gil:
+        raise SyclAsynchronousError(err)
+
+
+cdef class _SyclQueue:
+    """ Internal helper metaclass to abstract `cl::sycl::queue` instance.
+    """
+
+    def __dealloc__ (self):
+        if (self._queue_ref):
+            DPCTLQueue_Delete(self._queue_ref)
+        # self._context is a Python object and will be GC-ed
+        # self._device is a Python object
+        
 
 cdef class SyclQueue:
     """ Python wrapper class for cl::sycl::queue.
     """
 
+    def __cinit__(self, *args, **kwargs):
+        """
+           SyclQueue(*, /, property=None)
+               create SyclQueue from default selector
+           SyclQueue(filter_string, *, /, propery=None)
+               create SyclQueue from filter selector string
+           SyclQueue(SyclDevice, *, / property=None)
+               create SyclQueue from give SyclDevice automatically finding/creating SyclContext.
+           SyclQueue(SyclContext, SyclDevice, *, /, property=None)
+               create SyclQueue from give SyclContext, SyclDevice
+        """
+        cdef int len_args
+        cdef int status = 0
+        cdef const char *filter_c_str = NULL
+        if len(args) > 2:
+            raise TypeError(
+                "SyclQueue constructor takes 0, 1, or 2 positinal arguments, but {} were given.".format(len(args)))
+        # _IN_ORDER, _DEFAULT_PROPERTY, _ENABLE_PROFILING or strings, or tuple of those
+        props = int(kwargs.pop('property', _DEFAULT_PROPERTY))
+        #TODO: validate props
+        len_args = len(args)
+        if (len_args == 0):
+            status = self._init_queue_default(props)
+        elif (len_args == 1):
+            arg = args[0]
+            if type(arg) is unicode:
+                string = bytes(<unicode>arg, "utf-8")
+                filter_c_str = string
+                status = self._init_queue_from_filter_string(filter_c_str, props)
+            elif type(arg) is _SyclQueue:
+                status = self._init_queue_from__SyclQueue(<_SyclQueue>arg)
+            elif isinstance(arg, unicode):
+                string = bytes(<unicode>unicode(arg), "utf-8")
+                filter_c_str = string
+                status = self._init_queue_from_filter_string(filter_c_str, props)
+            elif isinstance(arg, SyclDevice):
+                status = self._init_queue_from_device(<SyclDevice> arg, props)
+            else:
+                raise TypeError("Positional argument {} is not a filter string or a SyclDevice".format(arg))
+        else:
+            ctx, dev = args
+            if not isinstance(ctx, SyclContext):
+                raise TypeError("SyclQueue constructor with two positional arguments expected "
+                                "SyclContext as its first argument, but got {}.".format(type(ctx)))
+            if not isinstance(dev, SyclDevice):
+                raise TypeError("SyclQueue constructor with two positional arguments expected "
+                                "SyclDevice as its second argument, but got {}.".format(type(dev)))
+            status = self._init_queue_from_context_and_device(<SyclContext>ctx, <SyclDevice>dev, props)
+        if status < 0:
+            if status == -1:
+                raise SyclQueueCreationError("Device filter selector string '{}' is not understood.".format(arg))
+            elif status == -2:
+                raise SyclQueueCreationError("SYCL Device '{}' could not be created.".format(arg))
+            elif status == -3:
+                raise SyclQueueCreationError("SYCL Context could not be created from '{}'.".format(arg))
+            elif status == -4:
+                if len_args == 2:
+                    arg = args
+                raise SyclQueueCreationError("SYCL Queue failed to be created from '{}'.".format(arg))
+
+    cdef int _init_queue_from__SyclQueue(self, _SyclQueue other):
+        """ Copy data container _SyclQueue fields over.
+        """
+        cdef DPCTLSyclQueueRef QRef = DPCTLQueue_Copy(other._queue_ref)
+        # TODO: validate `other`
+        if (QRef is NULL):
+            return -4
+        self._queue_ref = QRef
+        self._context = other._context
+        self._device = other._device
+        
+    cdef int _init_queue_from_DPCTLSyclDeviceRef(self, DPCTLSyclDeviceRef DRef, int props):
+        """ Initializes self by creating SyclQueue with specified error handler and
+            specified properties from the given device instance. SyclContext is looked-up
+            by DPCTL from a cache to avoid repeated construction of new context for performance reasons.
+
+            Returns: 0 : normal execution
+                    -3 : Context creation/look-up failed
+                    -4 : queue could not be created from context,device, error handler and properties
+        """
+        cdef DPCTLSyclContextRef CRef
+        cdef DPCTLSyclQueueRef QRef
+        cdef DPCTL_DeviceAndContextPair dev_ctx
+
+        dev_ctx = DPCTLDeviceMgr_GetDeviceAndContextPair(DRef)
+        if (dev_ctx.CRef is NULL) or (dev_ctx.DRef is NULL):
+            return -3
+        DRef = dev_ctx.DRef
+        CRef = dev_ctx.CRef
+        QRef = DPCTLQueue_Create(CRef, DRef, <error_handler_callback *>&default_async_error_handler, props)
+        if (QRef is NULL):
+            DPCTLDevice_Delete(DRef)
+            DPCTLContext_Delete(CRef)
+            return -4
+        _dev = SyclDevice._create(DRef)
+        _ctxt = SyclContext._create(CRef)
+        self._device = _dev
+        self._context = _ctxt
+        self._queue_ref = QRef
+        return 0 # normal return
+        
+    cdef int _init_queue_from_filter_string(self, const char *c_str, int props):
+        """ Initializes self from filter string, error handler and properties.
+            Creates device from device selector, then calls helper function above.
+
+            Returns:
+               0 : normal execution
+              -1 : filter selector could not be created (malformed?)
+              -2 : Device could not be created from filter selector
+              -3 : Context creation/look-up failed
+              -4 : queue could not be created from context,device, error handler and properties
+        """
+        cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLFilterSelector_Create(c_str)
+        cdef DPCTLSyclDeviceRef DRef
+        cdef int ret = 0
+
+        if (DSRef is NULL):
+            ret = -1 # Filter selector failed to be created
+        else:
+            DRef = DPCTLDevice_CreateFromSelector(DSRef)
+            DPCTLDeviceSelector_Delete(DSRef)
+            if (DRef is NULL):
+                ret = -2 # Device could not be created
+            else:
+                ret = self._init_queue_from_DPCTLSyclDeviceRef(DRef, props)
+                DPCTLDevice_Delete(DRef)
+        return ret
+
+    cdef int _init_queue_from_device(self, SyclDevice dev, int props):
+        cdef DPCTLSyclDeviceRef DRef = dev.get_device_ref()
+
+        if (DRef is NULL):
+            return -2 # Device could not be created
+        else:
+            return self._init_queue_from_DPCTLSyclDeviceRef(DRef, props)
+
+    cdef int _init_queue_default(self, int props):
+        cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create()
+        cdef int ret = 0
+
+        DRef = DPCTLDevice_CreateFromSelector(DSRef)
+        DPCTLDeviceSelector_Delete(DSRef)
+        if (DRef is NULL):
+            ret = -2 # Device could not be created
+        else:
+            ret = self._init_queue_from_DPCTLSyclDeviceRef(DRef, props)
+            DPCTLDevice_Delete(DRef)
+        return ret
+
+    cdef int _init_queue_from_context_and_device(self, SyclContext ctxt, SyclDevice dev, int props):
+        """ 
+        """
+        cdef DPCTLSyclContextRef CRef
+        cdef DPCTLSyclDeviceRef DRef
+        cdef DPCTLSyclQueueRef QRef
+        CRef = ctxt.get_context_ref()
+        DRef = dev.get_device_ref()
+        QRef = DPCTLQueue_Create(CRef, DRef,
+                                 <error_handler_callback *>&default_async_error_handler, props)
+        if (QRef is NULL):
+            return -4
+        self._device = dev
+        self._context = ctxt
+        self._queue_ref = QRef
+        return 0 # normal return
+        
     @staticmethod
     cdef SyclQueue _create(DPCTLSyclQueueRef qref):
         if qref is NULL:
             raise SyclQueueCreationError("Queue creation failed.")
-        cdef SyclQueue ret = SyclQueue.__new__(SyclQueue)
+        cdef _SyclQueue ret = _SyclQueue.__new__(_SyclQueue)
         ret._context = SyclContext._create(DPCTLQueue_GetContext(qref))
         ret._device = SyclDevice._create(DPCTLQueue_GetDevice(qref))
         ret._queue_ref = qref
-        return ret
+        return SyclQueue(ret)
 
     @staticmethod
     cdef SyclQueue _create_from_context_and_device(SyclContext ctx, SyclDevice dev):
-        cdef SyclQueue ret = SyclQueue.__new__(SyclQueue)
+        cdef _SyclQueue ret = _SyclQueue.__new__(_SyclQueue)
         cdef DPCTLSyclContextRef cref = ctx.get_context_ref()
         cdef DPCTLSyclDeviceRef dref = dev.get_device_ref()
-        cdef DPCTLSyclQueueRef qref = DPCTLQueueMgr_GetQueueFromContextAndDevice(
-            cref, dref)
+        cdef DPCTLSyclQueueRef qref = DPCTLQueue_Create(cref, dref, NULL, 0)
 
         if qref is NULL:
             raise SyclQueueCreationError("Queue creation failed.")
         ret._queue_ref = qref
         ret._context = ctx
         ret._device = dev
-        return ret
-
-    def __dealloc__ (self):
-        DPCTLQueue_Delete(self._queue_ref)
+        return SyclQueue(ret)
 
     cdef _raise_queue_submit_error (self, fname, errcode):
         e = SyclKernelSubmitError("Kernel submission to Sycl queue failed.")
@@ -203,6 +387,14 @@ cdef class SyclQueue:
         else:
             raise ValueError("Unknown backend type.")
 
+    @property
+    def sycl_context(self):
+        return self._context
+
+    @property
+    def sycl_device(self):
+        return self._device
+    
     cpdef SyclContext get_sycl_context (self):
         return self._context
 
@@ -365,3 +557,10 @@ cdef class SyclQueue:
            count = self.nbytes
 
        DPCTLQueue_MemAdvise(self._queue_ref, ptr, count, advice)
+
+    @property
+    def __name__(self):
+        return "SyclQueue"
+
+    def __repr__(self):
+        return "<dpctl." + self.__name__ + " at {}>".format(hex(id(self)))
