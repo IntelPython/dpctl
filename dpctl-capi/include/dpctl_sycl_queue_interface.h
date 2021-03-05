@@ -106,6 +106,17 @@ DPCTL_API
 void DPCTLQueue_Delete(__dpctl_take DPCTLSyclQueueRef QRef);
 
 /*!
+ * @brief Returns a copy of the DPCTLSyclQueueRef object.
+ *
+ * @param    DRef           DPCTLSyclQueueRef object to be copied.
+ * @return   A new DPCTLSyclQueueRef created by copying the passed in
+ * DPCTLSyclQueueRef object.
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclQueueRef
+DPCTLQueue_Copy(__dpctl_keep const DPCTLSyclQueueRef QRef);
+
+/*!
  * @brief Checks if two DPCTLSyclQueueRef objects point to the same sycl::queue.
  *
  * @param    QRef1          First opaque pointer to the sycl queue.
