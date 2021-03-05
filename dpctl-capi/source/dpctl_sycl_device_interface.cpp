@@ -411,13 +411,13 @@ bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
 }
 
 bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
-                           __dpctl_keep const DPCTLSyclAspectType AT)
+                           DPCTLSyclAspectType AT)
 {
     bool hasAspect = false;
     auto D = unwrap(DRef);
     if (D) {
         try {
-            hasAspect = D->has(DPCTL_DPCTLAspectTypeToSyclAspectType(AT));
+            hasAspect = D->has(DPCTL_DPCTLAspectTypeToSyclAspect(AT));
         } catch (runtime_error const &re) {
             // \todo log error
             std::cerr << re.what() << '\n';

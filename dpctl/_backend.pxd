@@ -147,7 +147,7 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef bool DPCTLDevice_IsHost(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsHostUnifiedMemory(const DPCTLSyclDeviceRef DRef)
     cpdef bool DPCTLDevice_HasAspect(
-        const DPCTLSyclDeviceRef DRef, const DPCTLSyclAspectType AT)
+        const DPCTLSyclDeviceRef DRef, DPCTLSyclAspectType AT)
 
 
 cdef extern from "dpctl_sycl_device_selector_interface.h":

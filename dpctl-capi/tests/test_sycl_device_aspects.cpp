@@ -72,11 +72,28 @@ auto build_params()
 {
     constexpr auto param_1 = get_param_list<const char *>(
         "opencl:gpu", "opencl:cpu", "level_zero:gpu", "host");
-    constexpr auto param_2 = get_param_list<DPCTLSyclAspectType>(
-        host, cpu, gpu, accelerator, custom, fp16, fp64, int64_base_atomics,
-        int64_extended_atomics, online_compiler, online_linker, queue_profiling,
-        usm_device_allocations, usm_host_allocations, usm_shared_allocations,
-        usm_restricted_shared_allocations, usm_system_allocator);
+
+    constexpr auto param_2 =
+        get_param_list<std::pair<const char *, cl::sycl::aspect>>(
+            {"host", cl::sycl::aspect::host}, {"cpu", cl::sycl::aspect::cpu},
+            {"gpu", cl::sycl::aspect::gpu},
+            {"accelerator", cl::sycl::aspect::accelerator},
+            {"custom", cl::sycl::aspect::custom},
+            {"fp16", cl::sycl::aspect::fp16}, {"fp64", cl::sycl::aspect::fp64},
+            {"int64_base_atomics", cl::sycl::aspect::int64_base_atomics},
+            {"int64_extended_atomics",
+             cl::sycl::aspect::int64_extended_atomics},
+            {"online_compiler", cl::sycl::aspect::online_compiler},
+            {"online_linker", cl::sycl::aspect::online_linker},
+            {"queue_profiling", cl::sycl::aspect::queue_profiling},
+            {"usm_device_allocations",
+             cl::sycl::aspect::usm_device_allocations},
+            {"usm_host_allocations", cl::sycl::aspect::usm_host_allocations},
+            {"usm_shared_allocations",
+             cl::sycl::aspect::usm_shared_allocations},
+            {"usm_restricted_shared_allocations",
+             cl::sycl::aspect::usm_restricted_shared_allocations},
+            {"usm_system_allocator", cl::sycl::aspect::usm_system_allocator});
 
     auto pairs =
         build_param_pairs<const char *, DPCTLSyclAspectType, param_1.size(),
@@ -92,12 +109,12 @@ struct TestDPCTLSyclDeviceInterfaceAspects
           std::pair<const char *, DPCTLSyclAspectType>>
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
-    bool actual = false;
+    DPCTLSyclDeviceRef DRef = nullptr;
+    bool hasAspect = false;
 
     TestDPCTLSyclDeviceInterfaceAspects()
     {
-        auto params = GetParam();
-        auto filterstr = params.first;
+        auto filterstr = GetParam().first;
         EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLFilterSelector_Create(filterstr));
     }
 
@@ -108,36 +125,31 @@ struct TestDPCTLSyclDeviceInterfaceAspects
                            std::string(GetParam().first) + ".";
             GTEST_SKIP_(message.c_str());
         }
-        DPCTLSyclDeviceRef DRef = nullptr;
+
         EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
         if (!DRef)
             GTEST_SKIP_("Device not found");
         auto D = unwrap(DRef);
+        auto syclAspect = GetParam().second.second;
         try {
-            actual = D->has(
-                DPCTL_DPCTLAspectTypeToSyclAspectType(GetParam().second));
-        } catch (...) {
+            hasAspect = D->has(syclAspect);
+        } catch (std::runtime_error const &re) {
         }
-        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     }
 
     ~TestDPCTLSyclDeviceInterfaceAspects()
     {
         EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     }
 };
 
 TEST_P(TestDPCTLSyclDeviceInterfaceAspects, Chk_HasAspect)
 {
-    bool expected = false;
-    auto aspectTy = GetParam().second;
-    DPCTLSyclDeviceRef DRef = nullptr;
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
-    EXPECT_NO_FATAL_FAILURE(expected = DPCTLDevice_HasAspect(DRef, aspectTy));
-    EXPECT_TRUE(expected == actual);
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    bool actual = false;
+    auto dpctlAspect = DPCTL_StrToAspect(GetParam().second.first);
+    EXPECT_NO_FATAL_FAILURE(actual = DPCTLDevice_HasAspect(DRef, dpctlAspect));
+    EXPECT_TRUE(hasAspect == actual);
 }
 
 INSTANTIATE_TEST_SUITE_P(DPCTLSyclDeviceInterfaceAspects,

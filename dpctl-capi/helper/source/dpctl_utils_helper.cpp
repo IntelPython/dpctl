@@ -223,7 +223,7 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
         ss << "usm_system_allocator" << '\n';
         break;
     default:
-        ss << "unknown" << '\n';
+        throw runtime_error("Unsupported aspect type", -1);
     }
     return ss.str();
 }
@@ -290,12 +290,12 @@ aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
     }
     else {
         // \todo handle the error
-        throw std::runtime_error("Unknown aspect.");
+        throw runtime_error("Unsupported aspect type", -1);
     }
     return aspectTy;
 }
 
-aspect DPCTL_DPCTLAspectTypeToSyclAspectType(DPCTLSyclAspectType AspectTy)
+aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy)
 {
     switch (AspectTy) {
     case DPCTLSyclAspectType::host:
@@ -339,7 +339,7 @@ aspect DPCTL_DPCTLAspectTypeToSyclAspectType(DPCTLSyclAspectType AspectTy)
     }
 }
 
-DPCTLSyclAspectType DPCTL_SyclAspectTypeToDPCTLAspectType(aspect Aspect)
+DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(aspect Aspect)
 {
     switch (Aspect) {
     case aspect::host:

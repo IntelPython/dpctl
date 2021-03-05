@@ -271,6 +271,6 @@ bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
  */
 DPCTL_API
 bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
-                           __dpctl_keep const DPCTLSyclAspectType AT);
+                           DPCTLSyclAspectType AT);
 
 DPCTL_C_EXTERN_C_END

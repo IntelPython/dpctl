@@ -101,15 +101,12 @@ DPCTL_SyclDeviceTypeToDPCTLDeviceType(sycl::info::device_type D);
  *
  * @param    aspectTy          A sycl::aspect value.
  * @return   A string representation of a sycl::aspect.
+ * @throws runtime_error
  */
 std::string DPCTL_AspectToStr(sycl::aspect aspectTy);
 
 /*!
  * @brief Converts a string to sycl::aspect value.
- *
- * Tries to interpret the input string a return a corresponding device_type.
- If
- * no conversion is possible, then a runtime_error is thrown.
  *
  * @param    aspectTyStr       Input string for which we search a
  *                             sycl::aspect value.
@@ -128,8 +125,7 @@ sycl::aspect DPCTL_StrToAspectType(const std::string &aspectTyStr);
  * DPCTLSyclAspectType enum value.
  * @throws runtime_error
  */
-sycl::aspect
-DPCTL_DPCTLAspectTypeToSyclAspectType(DPCTLSyclAspectType AspectTy);
+sycl::aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy);
 
 /*!
  * @brief Converts a sycl::aspect enum value to corresponding
@@ -139,5 +135,6 @@ DPCTL_DPCTLAspectTypeToSyclAspectType(DPCTLSyclAspectType AspectTy);
  *                            DPCTLSyclAspectType enum.
  * @return   A DPCTLSyclAspectType enum value for the input
  * sycl::aspect enum value.
+ * @throws runtime_error
  */
-DPCTLSyclAspectType DPCTL_SyclAspectTypeToDPCTLAspectType(sycl::aspect Aspect);
+DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(sycl::aspect Aspect);
