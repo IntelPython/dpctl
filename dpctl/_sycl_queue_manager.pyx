@@ -21,7 +21,7 @@ from __future__ import print_function
 from enum import Enum, auto
 import logging
 from . import backend_type, device_type
-from ._backend cimport (
+from ._backend cimport(
     _backend_type,
     _device_type,
     DPCTLPlatform_DumpInfo,
@@ -194,12 +194,12 @@ cdef class _SyclQueueManager:
 
     def has_sycl_platforms(self):
         """
-        Checks if the system has any non-host SYCL platforms. *WARNING: The    \
-        behavior of the function may change in the future to include the host  \
+        Checks if the system has any non-host SYCL platforms. *WARNING: The
+        behavior of the function may change in the future to include the host
         platform.*
 
         Returns:
-            bool: Returns True if there is at least one non-host SYCL, \
+            bool: Returns True if there is at least one non-host SYCL,
             platform, otherwise returns False.
 
         """
@@ -215,7 +215,7 @@ cdef class _SyclQueueManager:
         Checks if the control is inside a :func:`dpctl.device_context()` scope.
 
         Returns:
-            bool: True if the control is within a \
+            bool: True if the control is within a
             :func:`dpctl.device_context()` scope, otherwise False.
         """
         cdef int inCtx = DPCTLQueueMgr_GlobalQueueIsCurrent()
@@ -259,6 +259,7 @@ has_sycl_platforms       = _mgr.has_sycl_platforms
 set_global_queue         = _mgr.set_global_queue
 is_in_device_context     = _mgr.is_in_device_context
 
+
 cpdef SyclQueue get_current_queue():
     """
     Returns the currently activate SYCL queue as a new SyclQueue object.
@@ -275,6 +276,7 @@ cpdef SyclQueue get_current_queue():
     """
     return _mgr.get_current_queue()
 
+
 cpdef get_current_device_type():
     """
     Returns current device type as a `device_type` enum.
@@ -285,6 +287,7 @@ cpdef get_current_device_type():
     """
     return _mgr.get_current_device_type()
 
+
 cpdef get_current_backend():
     """
     Returns the backend for the current queue as a `backend_type` enum.
@@ -293,6 +296,7 @@ cpdef get_current_backend():
         backend_type: The SYCL backend for the currently selected queue.
     """
     return _mgr.get_current_backend()
+
 
 from contextlib import contextmanager
 
@@ -311,12 +315,10 @@ def device_context(arg):
 
     Args:
 
-        queue_str (str) : A string corresponding to the DPC++ filter spec \
-        that should be a three tuple specified as \
-        "backend:device-type:device-id", defaults to "opencl:gpu:0".
+        queue_str (str) : A string corresponding to the DPC++ filter selector.
 
     Yields:
-        :class:`.SyclQueue`: A SYCL queue corresponding to the specified \
+        :class:`.SyclQueue`: A SYCL queue corresponding to the specified
         filter string.
 
     Raises:
