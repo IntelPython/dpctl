@@ -194,12 +194,12 @@ cdef class _SyclQueueManager:
 
     def has_sycl_platforms(self):
         """
-        Checks if the system has any non-host SYCL platforms. *WARNING: The    \
-        behavior of the function may change in the future to include the host  \
+        Checks if the system has any non-host SYCL platforms. *WARNING: The
+        behavior of the function may change in the future to include the host
         platform.*
 
         Returns:
-            bool: Returns True if there is at least one non-host SYCL, \
+            bool: Returns True if there is at least one non-host SYCL,
             platform, otherwise returns False.
 
         """
@@ -215,7 +215,7 @@ cdef class _SyclQueueManager:
         Checks if the control is inside a :func:`dpctl.device_context()` scope.
 
         Returns:
-            bool: True if the control is within a \
+            bool: True if the control is within a
             :func:`dpctl.device_context()` scope, otherwise False.
         """
         cdef int inCtx = DPCTLQueueMgr_GlobalQueueIsCurrent()
@@ -318,7 +318,7 @@ def device_context(arg):
         queue_str (str) : A string corresponding to the DPC++ filter selector.
 
     Yields:
-        :class:`.SyclQueue`: A SYCL queue corresponding to the specified \
+        :class:`.SyclQueue`: A SYCL queue corresponding to the specified
         filter string.
 
     Raises:
