@@ -66,6 +66,7 @@ cdef class SyclQueueCreationError(Exception):
     """
     pass
 
+
 cdef class SyclAsynchronousError(Exception):
     """
     A SyclAsynchronousError exception is raised when SYCL operation submission
@@ -81,18 +82,16 @@ cdef void default_async_error_handler(int err) nogil:
 cdef class _SyclQueue:
     """ Internal helper metaclass to abstract `cl::sycl::queue` instance.
     """
-
-    def __dealloc__ (self):
+    def __dealloc__(self):
         if (self._queue_ref):
             DPCTLQueue_Delete(self._queue_ref)
         # self._context is a Python object and will be GC-ed
         # self._device is a Python object
-        
+
 
 cdef class SyclQueue:
     """ Python wrapper class for cl::sycl::queue.
     """
-
     def __cinit__(self, *args, **kwargs):
         """
            SyclQueue(*, /, property=None)
@@ -100,7 +99,8 @@ cdef class SyclQueue:
            SyclQueue(filter_string, *, /, propery=None)
                create SyclQueue from filter selector string
            SyclQueue(SyclDevice, *, / property=None)
-               create SyclQueue from give SyclDevice automatically finding/creating SyclContext.
+               create SyclQueue from give SyclDevice automatically
+               finding/creating SyclContext.
            SyclQueue(SyclContext, SyclDevice, *, /, property=None)
                create SyclQueue from give SyclContext, SyclDevice
         """
@@ -109,49 +109,74 @@ cdef class SyclQueue:
         cdef const char *filter_c_str = NULL
         if len(args) > 2:
             raise TypeError(
-                "SyclQueue constructor takes 0, 1, or 2 positinal arguments, but {} were given.".format(len(args)))
-        # _IN_ORDER, _DEFAULT_PROPERTY, _ENABLE_PROFILING or strings, or tuple of those
+                "SyclQueue constructor takes 0, 1, or 2 positinal arguments, "
+                "but {} were given.".format(len(args))
+            )
+        # _IN_ORDER, _DEFAULT_PROPERTY, _ENABLE_PROFILING or strings, or tuple
+        # of those enum values.
         props = int(kwargs.pop('property', _DEFAULT_PROPERTY))
         #TODO: validate props
         len_args = len(args)
-        if (len_args == 0):
+        if len_args == 0:
             status = self._init_queue_default(props)
-        elif (len_args == 1):
+        elif len_args == 1:
             arg = args[0]
             if type(arg) is unicode:
                 string = bytes(<unicode>arg, "utf-8")
                 filter_c_str = string
-                status = self._init_queue_from_filter_string(filter_c_str, props)
+                status = self._init_queue_from_filter_string(
+                    filter_c_str, props)
             elif type(arg) is _SyclQueue:
                 status = self._init_queue_from__SyclQueue(<_SyclQueue>arg)
             elif isinstance(arg, unicode):
                 string = bytes(<unicode>unicode(arg), "utf-8")
                 filter_c_str = string
-                status = self._init_queue_from_filter_string(filter_c_str, props)
+                status = self._init_queue_from_filter_string(
+                    filter_c_str, props)
             elif isinstance(arg, SyclDevice):
                 status = self._init_queue_from_device(<SyclDevice> arg, props)
             else:
-                raise TypeError("Positional argument {} is not a filter string or a SyclDevice".format(arg))
+                raise TypeError(
+                    "Positional argument {} is not a filter string or a "
+                    "SyclDevice".format(arg)
+                )
         else:
             ctx, dev = args
             if not isinstance(ctx, SyclContext):
-                raise TypeError("SyclQueue constructor with two positional arguments expected "
-                                "SyclContext as its first argument, but got {}.".format(type(ctx)))
+                raise TypeError(
+                    "SyclQueue constructor with two positional arguments "
+                    "expected SyclContext as its first argument, but got {}."
+                    .format(type(ctx))
+                )
             if not isinstance(dev, SyclDevice):
-                raise TypeError("SyclQueue constructor with two positional arguments expected "
-                                "SyclDevice as its second argument, but got {}.".format(type(dev)))
-            status = self._init_queue_from_context_and_device(<SyclContext>ctx, <SyclDevice>dev, props)
+                raise TypeError(
+                    "SyclQueue constructor with two positional arguments "
+                    "expected SyclDevice as its second argument, but got {}."
+                    .format(type(dev))
+                )
+            status = self._init_queue_from_context_and_device(
+                <SyclContext>ctx, <SyclDevice>dev, props
+            )
         if status < 0:
             if status == -1:
-                raise SyclQueueCreationError("Device filter selector string '{}' is not understood.".format(arg))
+                raise SyclQueueCreationError(
+                    "Device filter selector string '{}' is not understood."
+                    .format(arg)
+                )
             elif status == -2:
-                raise SyclQueueCreationError("SYCL Device '{}' could not be created.".format(arg))
+                raise SyclQueueCreationError(
+                    "SYCL Device '{}' could not be created.".format(arg)
+                )
             elif status == -3:
-                raise SyclQueueCreationError("SYCL Context could not be created from '{}'.".format(arg))
+                raise SyclQueueCreationError(
+                    "SYCL Context could not be created from '{}'.".format(arg)
+                )
             elif status == -4:
                 if len_args == 2:
                     arg = args
-                raise SyclQueueCreationError("SYCL Queue failed to be created from '{}'.".format(arg))
+                raise SyclQueueCreationError(
+                    "SYCL Queue failed to be created from '{}'.".format(arg)
+                )
 
     cdef int _init_queue_from__SyclQueue(self, _SyclQueue other):
         """ Copy data container _SyclQueue fields over.
@@ -163,15 +188,20 @@ cdef class SyclQueue:
         self._queue_ref = QRef
         self._context = other._context
         self._device = other._device
-        
-    cdef int _init_queue_from_DPCTLSyclDeviceRef(self, DPCTLSyclDeviceRef DRef, int props):
-        """ Initializes self by creating SyclQueue with specified error handler and
-            specified properties from the given device instance. SyclContext is looked-up
-            by DPCTL from a cache to avoid repeated construction of new context for performance reasons.
 
-            Returns: 0 : normal execution
-                    -3 : Context creation/look-up failed
-                    -4 : queue could not be created from context,device, error handler and properties
+    cdef int _init_queue_from_DPCTLSyclDeviceRef(
+        self, DPCTLSyclDeviceRef DRef, int props
+    ):
+        """
+        Initializes self by creating SyclQueue with specified error handler and
+        specified properties from the given device instance. SyclContext is
+        looked-up by DPCTL from a cache to avoid repeated construction of new
+        context for performance reasons.
+
+        Returns: 0 : normal execution
+                -3 : Context creation/look-up failed
+                -4 : queue could not be created from context,device, error
+                     handler and properties
         """
         cdef DPCTLSyclContextRef CRef
         cdef DPCTLSyclQueueRef QRef
@@ -182,8 +212,13 @@ cdef class SyclQueue:
             return -3
         DRef = dev_ctx.DRef
         CRef = dev_ctx.CRef
-        QRef = DPCTLQueue_Create(CRef, DRef, <error_handler_callback *>&default_async_error_handler, props)
-        if (QRef is NULL):
+        QRef = DPCTLQueue_Create(
+            CRef,
+            DRef,
+            <error_handler_callback *>&default_async_error_handler,
+            props
+        )
+        if QRef is NULL:
             DPCTLDevice_Delete(DRef)
             DPCTLContext_Delete(CRef)
             return -4
@@ -193,23 +228,25 @@ cdef class SyclQueue:
         self._context = _ctxt
         self._queue_ref = QRef
         return 0 # normal return
-        
-    cdef int _init_queue_from_filter_string(self, const char *c_str, int props):
-        """ Initializes self from filter string, error handler and properties.
-            Creates device from device selector, then calls helper function above.
 
-            Returns:
-               0 : normal execution
-              -1 : filter selector could not be created (malformed?)
-              -2 : Device could not be created from filter selector
-              -3 : Context creation/look-up failed
-              -4 : queue could not be created from context,device, error handler and properties
+    cdef int _init_queue_from_filter_string(self, const char *c_str, int props):
+        """
+        Initializes self from filter string, error handler and properties.
+        Creates device from device selector, then calls helper function above.
+
+        Returns:
+            0 : normal execution
+            -1 : filter selector could not be created (malformed?)
+            -2 : Device could not be created from filter selector
+            -3 : Context creation/look-up failed
+            -4 : queue could not be created from context,device, error handler
+                 and properties
         """
         cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLFilterSelector_Create(c_str)
         cdef DPCTLSyclDeviceRef DRef
         cdef int ret = 0
 
-        if (DSRef is NULL):
+        if DSRef is NULL:
             ret = -1 # Filter selector failed to be created
         else:
             DRef = DPCTLDevice_CreateFromSelector(DSRef)
@@ -242,23 +279,29 @@ cdef class SyclQueue:
             DPCTLDevice_Delete(DRef)
         return ret
 
-    cdef int _init_queue_from_context_and_device(self, SyclContext ctxt, SyclDevice dev, int props):
-        """ 
+    cdef int _init_queue_from_context_and_device(
+        self, SyclContext ctxt, SyclDevice dev, int props
+    ):
+        """
         """
         cdef DPCTLSyclContextRef CRef
         cdef DPCTLSyclDeviceRef DRef
         cdef DPCTLSyclQueueRef QRef
         CRef = ctxt.get_context_ref()
         DRef = dev.get_device_ref()
-        QRef = DPCTLQueue_Create(CRef, DRef,
-                                 <error_handler_callback *>&default_async_error_handler, props)
+        QRef = DPCTLQueue_Create(
+            CRef,
+            DRef,
+            <error_handler_callback *>&default_async_error_handler,
+            props
+        )
         if (QRef is NULL):
             return -4
         self._device = dev
         self._context = ctxt
         self._queue_ref = QRef
         return 0 # normal return
-        
+
     @staticmethod
     cdef SyclQueue _create(DPCTLSyclQueueRef qref):
         if qref is NULL:
@@ -270,7 +313,9 @@ cdef class SyclQueue:
         return SyclQueue(ret)
 
     @staticmethod
-    cdef SyclQueue _create_from_context_and_device(SyclContext ctx, SyclDevice dev):
+    cdef SyclQueue _create_from_context_and_device(
+        SyclContext ctx, SyclDevice dev
+    ):
         cdef _SyclQueue ret = _SyclQueue.__new__(_SyclQueue)
         cdef DPCTLSyclContextRef cref = ctx.get_context_ref()
         cdef DPCTLSyclDeviceRef dref = dev.get_device_ref()
@@ -283,22 +328,27 @@ cdef class SyclQueue:
         ret._device = dev
         return SyclQueue(ret)
 
-    cdef _raise_queue_submit_error (self, fname, errcode):
+    cdef _raise_queue_submit_error(self, fname, errcode):
         e = SyclKernelSubmitError("Kernel submission to Sycl queue failed.")
         e.fname = fname
         e.code = errcode
         raise e
 
-    cdef _raise_invalid_range_error (self, fname, ndims, errcode):
-        e = SyclKernelInvalidRangeError("Range with ", ndims, " not allowed. "
-                                        "Range should have between one and "
-                                        "three dimensions.")
+    cdef _raise_invalid_range_error(self, fname, ndims, errcode):
+        e = SyclKernelInvalidRangeError(
+            "Range with ", ndims, " not allowed. Range should have between "
+            " one and three dimensions."
+        )
         e.fname = fname
         e.code = errcode
         raise e
 
-    cdef int _populate_args (self, list args, void **kargs,                    \
-                             DPCTLKernelArgType *kargty):
+    cdef int _populate_args(
+        self,
+        list args,
+        void **kargs,
+        DPCTLKernelArgType *kargty
+    ):
         cdef int ret = 0
         for idx, arg in enumerate(args):
             if isinstance(arg, ctypes.c_char):
@@ -344,8 +394,7 @@ cdef class SyclQueue:
                 ret = -1
         return ret
 
-
-    cdef int _populate_range (self, size_t Range[3], list S, size_t nS):
+    cdef int _populate_range(self, size_t Range[3], list S, size_t nS):
 
         cdef int ret = 0
 
@@ -366,7 +415,7 @@ cdef class SyclQueue:
 
         return ret
 
-    cpdef bool equals (self, SyclQueue q):
+    cpdef bool equals(self, SyclQueue q):
         """ Returns true if the SyclQueue argument has the same _queue_ref
             as this SycleQueue.
         """
@@ -394,17 +443,17 @@ cdef class SyclQueue:
     @property
     def sycl_device(self):
         return self._device
-    
-    cpdef SyclContext get_sycl_context (self):
+
+    cpdef SyclContext get_sycl_context(self):
         return self._context
 
-    cpdef SyclDevice get_sycl_device (self):
+    cpdef SyclDevice get_sycl_device(self):
         return self._device
 
-    cdef DPCTLSyclQueueRef get_queue_ref (self):
+    cdef DPCTLSyclQueueRef get_queue_ref(self):
         return self._queue_ref
 
-    def addressof_ref (self):
+    def addressof_ref(self):
         """
         Returns the address of the C API DPCTLSyclQueueRef pointer as a size_t.
 
@@ -414,9 +463,14 @@ cdef class SyclQueue:
         """
         return int(<size_t>self._queue_ref)
 
-    cpdef SyclEvent submit (self, SyclKernel kernel, list args, list gS,       \
-                            list lS = None, list dEvents = None):
-
+    cpdef SyclEvent submit(
+        self,
+        SyclKernel kernel,
+        list args,
+        list gS,
+        list lS = None,
+        list dEvents = None
+    ):
         cdef void **kargs = NULL
         cdef DPCTLKernelArgType *kargty = NULL
         cdef DPCTLSyclEventRef *depEvents = NULL
@@ -456,22 +510,23 @@ cdef class SyclQueue:
             raise TypeError("Unsupported type for a kernel argument")
 
         if lS is None:
-            ret = self._populate_range (gRange, gS, nGS)
+            ret = self._populate_range(gRange, gS, nGS)
             if ret == -1:
                 free(kargs)
                 free(kargty)
                 free(depEvents)
                 self._raise_invalid_range_error("SyclQueue.submit", nGS, -1)
-
-            Eref = DPCTLQueue_SubmitRange(kernel.get_kernel_ref(),
-                                         self.get_queue_ref(),
-                                         kargs,
-                                         kargty,
-                                         len(args),
-                                         gRange,
-                                         nGS,
-                                         depEvents,
-                                         nDE)
+            Eref = DPCTLQueue_SubmitRange(
+                kernel.get_kernel_ref(),
+                self.get_queue_ref(),
+                kargs,
+                kargty,
+                len(args),
+                gRange,
+                nGS,
+                depEvents,
+                nDE
+            )
         else:
             ret = self._populate_range (gRange, gS, nGS)
             if ret == -1:
@@ -485,38 +540,39 @@ cdef class SyclQueue:
                 free(kargty)
                 free(depEvents)
                 self._raise_invalid_range_error("SyclQueue.submit", nLS, -1)
-
             if nGS != nLS:
                 free(kargs)
                 free(kargty)
                 free(depEvents)
-                raise ValueError("Local and global ranges need to have same "
-                                 "number of dimensions.")
-
-            Eref = DPCTLQueue_SubmitNDRange(kernel.get_kernel_ref(),
-                                           self.get_queue_ref(),
-                                           kargs,
-                                           kargty,
-                                           len(args),
-                                           gRange,
-                                           lRange,
-                                           nGS,
-                                           depEvents,
-                                           nDE)
+                raise ValueError(
+                    "Local and global ranges need to have same "
+                    "number of dimensions."
+                )
+            Eref = DPCTLQueue_SubmitNDRange(
+                kernel.get_kernel_ref(),
+                self.get_queue_ref(),
+                kargs,
+                kargty,
+                len(args),
+                gRange,
+                lRange,
+                nGS,
+                depEvents,
+                nDE
+            )
         free(kargs)
         free(kargty)
         free(depEvents)
 
         if Eref is NULL:
-            # \todo get the error number from dpctl-capi
             self._raise_queue_submit_error("DPCTLQueue_Submit", -1)
 
         return SyclEvent._create(Eref, args)
 
-    cpdef void wait (self):
+    cpdef void wait(self):
         DPCTLQueue_Wait(self._queue_ref)
 
-    cpdef memcpy (self, dest, src, size_t count):
+    cpdef memcpy(self, dest, src, size_t count):
         cdef void *c_dest
         cdef void *c_src
 
@@ -532,7 +588,7 @@ cdef class SyclQueue:
 
         DPCTLQueue_Memcpy(self._queue_ref, c_dest, c_src, count)
 
-    cpdef prefetch (self, mem, size_t count=0):
+    cpdef prefetch(self, mem, size_t count=0):
        cdef void *ptr
 
        if isinstance(mem, _Memory):
@@ -545,7 +601,7 @@ cdef class SyclQueue:
 
        DPCTLQueue_Prefetch(self._queue_ref, ptr, count)
 
-    cpdef mem_advise (self, mem, size_t count, int advice):
+    cpdef mem_advise(self, mem, size_t count, int advice):
        cdef void *ptr
 
        if isinstance(mem, _Memory):

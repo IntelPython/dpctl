@@ -30,7 +30,6 @@ from .program._program cimport SyclKernel
 cdef class _SyclQueue:
     """ Python wrapper class for a sycl::queue.
     """
-
     cdef DPCTLSyclQueueRef _queue_ref
     cdef SyclContext _context
     cdef SyclDevice _device
@@ -44,26 +43,38 @@ cdef class SyclQueue (_SyclQueue):
     cdef int _init_queue_from_DPCTLSyclDeviceRef(self, DPCTLSyclDeviceRef, int)
     cdef int _init_queue_from_device(self, SyclDevice, int)
     cdef int _init_queue_from_filter_string(self, const char *, int)
-    cdef int _init_queue_from_context_and_device(self, SyclContext, SyclDevice, int)
-
-    cdef _raise_queue_submit_error (self, fname, errcode)
-    cdef _raise_invalid_range_error (self, fname, ndims, errcode)
-    cdef int _populate_args (self, list args, void **kargs,
-                             DPCTLKernelArgType *kargty)
-    cdef int _populate_range (self, size_t Range[3], list gS, size_t nGS)
-
+    cdef int _init_queue_from_context_and_device(
+        self, SyclContext, SyclDevice, int
+    )
+    cdef _raise_queue_submit_error(self, fname, errcode)
+    cdef _raise_invalid_range_error(self, fname, ndims, errcode)
+    cdef int _populate_args(
+        self,
+        list args,
+        void **kargs,
+        DPCTLKernelArgType *kargty
+    )
+    cdef int _populate_range(self, size_t Range[3], list gS, size_t nGS)
     @staticmethod
-    cdef  SyclQueue _create (DPCTLSyclQueueRef qref)
+    cdef  SyclQueue _create(DPCTLSyclQueueRef qref)
     @staticmethod
-    cdef  SyclQueue _create_from_context_and_device (SyclContext ctx, SyclDevice dev)
-    cpdef bool equals (self, SyclQueue q)
-    cpdef SyclContext get_sycl_context (self)
-    cpdef SyclDevice get_sycl_device (self)
-    cdef  DPCTLSyclQueueRef get_queue_ref (self)
-    cpdef SyclEvent submit (self, SyclKernel kernel, list args, list gS,
-                            list lS=*, list dEvents=*)
-    cpdef void wait (self)
-    cdef DPCTLSyclQueueRef get_queue_ref (self)
-    cpdef memcpy (self, dest, src, size_t count)
-    cpdef prefetch (self, ptr, size_t count=*)
-    cpdef mem_advise (self, ptr, size_t count, int mem)
+    cdef  SyclQueue _create_from_context_and_device(
+        SyclContext ctx, SyclDevice dev
+    )
+    cpdef bool equals(self, SyclQueue q)
+    cpdef SyclContext get_sycl_context(self)
+    cpdef SyclDevice get_sycl_device(self)
+    cdef  DPCTLSyclQueueRef get_queue_ref(self)
+    cpdef SyclEvent submit(
+        self,
+        SyclKernel kernel,
+        list args,
+        list gS,
+        list lS=*,
+        list dEvents=*
+    )
+    cpdef void wait(self)
+    cdef DPCTLSyclQueueRef get_queue_ref(self)
+    cpdef memcpy(self, dest, src, size_t count)
+    cpdef prefetch(self, ptr, size_t count=*)
+    cpdef mem_advise(self, ptr, size_t count, int mem)
