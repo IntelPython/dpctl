@@ -72,4 +72,3 @@ cdef class SyclDevice(_SyclDevice):
     cdef void _init_helper(SyclDevice device, DPCTLSyclDeviceRef DRef)
     cdef void _init_from__SyclDevice(self, _SyclDevice other)
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef)
-
