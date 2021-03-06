@@ -21,7 +21,37 @@
 """
 
 from __future__ import print_function
-from ._backend cimport *
+from ._backend cimport (
+    _arg_data_type,
+    _backend_type,
+    _queue_property_type,
+    DPCTL_DeviceAndContextPair,
+    DPCTLContext_Delete,
+    DPCTLDefaultSelector_Create,
+    DPCTLDevice_CreateFromSelector,
+    DPCTLDeviceMgr_GetDeviceAndContextPair,
+    DPCTLDeviceSelector_Delete,
+    DPCTLDevice_Delete,
+    DPCTLFilterSelector_Create,
+    DPCTLQueue_AreEq,
+    DPCTLQueue_Copy,
+    DPCTLQueue_Create,
+    DPCTLQueue_Delete,
+    DPCTLQueue_GetBackend,
+    DPCTLQueue_GetContext,
+    DPCTLQueue_GetDevice,
+    DPCTLQueue_MemAdvise,
+    DPCTLQueue_Memcpy,
+    DPCTLQueue_Prefetch,
+    DPCTLQueue_SubmitNDRange,
+    DPCTLQueue_SubmitRange,
+    DPCTLQueue_Wait,
+    DPCTLSyclBackendType,
+    DPCTLSyclContextRef,
+    DPCTLSyclDeviceSelectorRef,
+    DPCTLSyclEventRef,
+    error_handler_callback,
+)
 from .memory._memory cimport _Memory
 from . import backend_type
 import ctypes
@@ -114,7 +144,9 @@ cdef class SyclQueue:
             )
         # _IN_ORDER, _DEFAULT_PROPERTY, _ENABLE_PROFILING or strings, or tuple
         # of those enum values.
-        props = int(kwargs.pop('property', _DEFAULT_PROPERTY))
+        props = int(
+            kwargs.pop('property', _queue_property_type._DEFAULT_PROPERTY)
+        )
         #TODO: validate props
         len_args = len(args)
         if len_args == 0:
@@ -415,7 +447,7 @@ cdef class SyclQueue:
 
         return ret
 
-    cpdef bool equals(self, SyclQueue q):
+    cpdef cpp_bool equals(self, SyclQueue q):
         """ Returns true if the SyclQueue argument has the same _queue_ref
             as this SycleQueue.
         """
