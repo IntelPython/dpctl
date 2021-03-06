@@ -41,36 +41,38 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPCTLSyclQueueRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 
-using QueueStack = vector_class<queue>;
-
-QueueStack &getQueueStack()
+struct QueueManager
 {
-    thread_local static QueueStack activeQueues = [] {
-        QueueStack qs;
-        auto DS = default_selector();
-        try {
-            auto DRef = wrap(new device(DS.select_device()));
-            auto cached = DPCTLDeviceMgr_GetDeviceAndContextPair(DRef);
-            if (cached.CRef) {
-                qs.emplace_back(*unwrap(cached.CRef), *unwrap(cached.DRef));
+    using QueueStack = vector_class<queue>;
+    static QueueStack &getQueueStack()
+    {
+        thread_local static QueueStack *activeQueues = new QueueStack([] {
+            QueueStack qs;
+            auto DS = default_selector();
+            try {
+                auto DRef = wrap(new device(DS.select_device()));
+                auto cached = DPCTLDeviceMgr_GetDeviceAndContextPair(DRef);
+                if (cached.CRef) {
+                    qs.emplace_back(*unwrap(cached.CRef), *unwrap(cached.DRef));
+                }
+                else {
+                    std::cerr << "Fatal Error: No cached context for default "
+                                 "device.\n";
+                    std::terminate();
+                }
+                delete unwrap(DRef);
+                delete unwrap(cached.DRef);
+                delete unwrap(cached.CRef);
+            } catch (std::bad_alloc const &ba) {
+                std::cerr << ba.what() << '\n';
             }
-            else {
-                std::cerr
-                    << "Fatal Error: No cached context for default device.\n";
-                std::terminate();
-            }
-            delete unwrap(DRef);
-            delete unwrap(cached.DRef);
-            delete unwrap(cached.CRef);
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << '\n';
-        }
 
-        return qs;
-    }();
+            return qs;
+        }());
 
-    return activeQueues;
-}
+        return *activeQueues;
+    }
+};
 
 } /* end of anonymous namespace */
 
@@ -80,7 +82,7 @@ QueueStack &getQueueStack()
 // true, else return false.
 bool DPCTLQueueMgr_GlobalQueueIsCurrent()
 {
-    auto &qs = getQueueStack();
+    auto &qs = QueueManager::getQueueStack();
     if (qs.empty()) {
         // \todo handle error
         std::cerr << "Error: No global queue found.\n";
@@ -99,7 +101,7 @@ bool DPCTLQueueMgr_GlobalQueueIsCurrent()
  */
 DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue()
 {
-    auto &qs = getQueueStack();
+    auto &qs = QueueManager::getQueueStack();
     if (qs.empty()) {
         // \todo handle error
         std::cerr << "No currently active queues.\n";
@@ -112,7 +114,7 @@ DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue()
 // Relies on sycl::queue class' operator= to check for equivalent of queues.
 bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
-    auto &qs = getQueueStack();
+    auto &qs = QueueManager::getQueueStack();
     if (qs.empty()) {
         // \todo handle error
         std::cerr << "No currently active queues.\n";
@@ -127,7 +129,7 @@ bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef)
 // getQueueStack()[0] to the passed in sycl::queue.
 void DPCTLQueueMgr_SetGlobalQueue(__dpctl_keep const DPCTLSyclQueueRef qRef)
 {
-    auto &qs = getQueueStack();
+    auto &qs = QueueManager::getQueueStack();
     if (qRef) {
         qs[0] = *unwrap(qRef);
     }
@@ -140,7 +142,7 @@ void DPCTLQueueMgr_SetGlobalQueue(__dpctl_keep const DPCTLSyclQueueRef qRef)
 // Push the passed in queue to the QueueStack
 void DPCTLQueueMgr_PushQueue(__dpctl_keep const DPCTLSyclQueueRef qRef)
 {
-    auto &qs = getQueueStack();
+    auto &qs = QueueManager::getQueueStack();
     if (qRef) {
         qs.emplace_back(*unwrap(qRef));
     }
@@ -155,7 +157,7 @@ void DPCTLQueueMgr_PushQueue(__dpctl_keep const DPCTLSyclQueueRef qRef)
 // the QueueStack is >=1 before popping.
 void DPCTLQueueMgr_PopQueue()
 {
-    auto &qs = getQueueStack();
+    auto &qs = QueueManager::getQueueStack();
     // The first entry in the QueueStack is the global queue, and should not be
     // removed.
     if (qs.size() <= 1) {
@@ -167,7 +169,7 @@ void DPCTLQueueMgr_PopQueue()
 
 size_t DPCTLQueueMgr_GetQueueStackSize()
 {
-    auto &qs = getQueueStack();
+    auto &qs = QueueManager::getQueueStack();
     if (qs.empty()) {
         // \todo handle error
         std::cerr << "Error: No global queue found.\n";
