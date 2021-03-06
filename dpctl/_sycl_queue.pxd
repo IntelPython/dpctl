@@ -20,11 +20,16 @@
 """ This file declares the SyclQueue extension type.
 """
 
-from ._backend cimport *
+from ._backend cimport (
+    DPCTLSyclDeviceRef,
+    DPCTLKernelArgType,
+    DPCTLSyclQueueRef,
+)
 from ._sycl_context cimport SyclContext
 from ._sycl_event cimport SyclEvent
 from ._sycl_device cimport SyclDevice
 from .program._program cimport SyclKernel
+from libcpp cimport bool as cpp_bool
 
 
 cdef class _SyclQueue:
@@ -61,7 +66,7 @@ cdef class SyclQueue (_SyclQueue):
     cdef  SyclQueue _create_from_context_and_device(
         SyclContext ctx, SyclDevice dev
     )
-    cpdef bool equals(self, SyclQueue q)
+    cpdef cpp_bool equals(self, SyclQueue q)
     cpdef SyclContext get_sycl_context(self)
     cpdef SyclDevice get_sycl_device(self)
     cdef  DPCTLSyclQueueRef get_queue_ref(self)
