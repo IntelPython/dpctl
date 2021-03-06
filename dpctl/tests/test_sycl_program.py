@@ -21,7 +21,8 @@ import dpctl
 import dpctl.program as dpctl_prog
 import unittest
 import os
-from ._helper import (has_cpu, has_gpu)
+from ._helper import has_cpu, has_gpu
+
 
 @unittest.skipUnless(has_gpu(), "No OpenCL GPU queues available")
 class TestProgramFromOCLSource(unittest.TestCase):

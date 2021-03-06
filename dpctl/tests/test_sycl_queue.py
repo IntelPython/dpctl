@@ -19,7 +19,8 @@
 
 import dpctl
 import unittest
-from ._helper import (has_cpu, has_gpu)
+from ._helper import has_cpu, has_gpu
+
 
 class TestSyclQueue(unittest.TestCase):
     @unittest.skipUnless(has_gpu(), "No OpenCL GPU queues available")

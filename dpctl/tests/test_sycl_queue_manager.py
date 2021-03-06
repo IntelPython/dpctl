@@ -19,7 +19,7 @@
 
 import dpctl
 import unittest
-from ._helper import (has_cpu, has_gpu)
+from ._helper import has_cpu, has_gpu
 
 
 class TestGetNumPlatforms(unittest.TestCase):

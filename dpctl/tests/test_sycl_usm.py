@@ -21,7 +21,8 @@ import unittest
 import dpctl
 from dpctl.memory import MemoryUSMShared, MemoryUSMHost, MemoryUSMDevice
 import numpy as np
-from ._helper import (has_cpu, has_gpu)
+from ._helper import has_cpu, has_gpu
+
 
 class Dummy(MemoryUSMShared):
     """
