@@ -153,11 +153,11 @@ TEST_F(TestDPCTLSyclQueueInterface, Check_CreateForDevice)
 TEST_F(TestDPCTLSyclQueueInterface, Check_Copy)
 {
     DPCTLSyclQueueRef Q1 = nullptr;
-    DPCTLSyclQueueRef Q2 = nullptr;    
+    DPCTLSyclQueueRef Q2 = nullptr;
     EXPECT_NO_FATAL_FAILURE(Q1 = DPCTLQueueMgr_GetCurrentQueue());
     EXPECT_NO_FATAL_FAILURE(Q2 = DPCTLQueue_Copy(Q1));
     EXPECT_TRUE(bool(Q2));
-    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q1));    
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q1));
     EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q2));
 }
 
