@@ -1,5 +1,5 @@
 call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
-IF %ERRORLEVEL% NEQ 0 (
+if errorlevel 1 (
 	echo "oneAPI compiler activation failed%"
 	exit /b 1
 )
@@ -9,7 +9,7 @@ set ERRORLEVEL=
 @echo on
 
 "%PYTHON%" -c "import dpctl"
-IF %ERRORLEVEL% NEQ 0 exit /b 1
+if errorlevel 1 exit 1
 
 pytest -q -ra --disable-warnings --pyargs dpctl -vv
-IF %ERRORLEVEL% NEQ 0 exit /b 1
+if errorlevel 1 exit 1

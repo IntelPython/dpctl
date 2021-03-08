@@ -174,6 +174,13 @@ def extensions():
             **extension_args
         ),
         Extension(
+            "dpctl._sycl_device_factory",
+            [
+                os.path.join("dpctl", "_sycl_device_factory.pyx"),
+            ],
+            **extension_args
+        ),
+        Extension(
             "dpctl._sycl_event",
             [
                 os.path.join("dpctl", "_sycl_event.pyx"),
