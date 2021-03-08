@@ -142,8 +142,10 @@ cdef class SyclDevice(_SyclDevice):
         SyclDevice._init_helper(ret, dref)
         return SyclDevice(ret)
 
-    cdef void _init_from__SyclDevice(self, _SyclDevice other):
+    cdef int _init_from__SyclDevice(self, _SyclDevice other):
         self._device_ref = DPCTLDevice_Copy(other._device_ref)
+        if (self._device_ref is NULL):
+            return -1
         self._device_name = DPCTLDevice_GetName(self._device_ref)
         self._driver_version = DPCTLDevice_GetDriverInfo(self._device_ref)
         self._int64_base_atomics = other._int64_base_atomics
@@ -189,15 +191,20 @@ cdef class SyclDevice(_SyclDevice):
             string = bytes(<unicode>unicode(arg), "utf-8")
             filter_c_str = string
             DSRef = DPCTLFilterSelector_Create(filter_c_str)
+            ret = self._init_from_selector(DSRef)
             if ret == -1:
                 raise ValueError("Could not create a Device with the selector")
             # Free up the device selector
             DPCTLDeviceSelector_Delete(DSRef)
         elif isinstance(arg, _SyclDevice):
-            self._init_from__SyclDevice(arg)
+            ret = self._init_from__SyclDevice(arg)
+            if ret == -1:
+                raise ValueError("Could not create a Device from _SyclDevice instance")
         elif arg is None:
             DSRef = DPCTLDefaultSelector_Create()
-            self._init_from_selector(DSRef)
+            ret = self._init_from_selector(DSRef)
+            if ret == -1:
+                raise ValueError("Could not create a Device from default selector")
         else:
             raise ValueError(
                 "Invalid argument. Argument should be a str object specifying "
