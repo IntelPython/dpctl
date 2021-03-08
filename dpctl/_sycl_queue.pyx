@@ -109,6 +109,32 @@ cdef void default_async_error_handler(int err) nogil:
         raise SyclAsynchronousError(err)
 
 
+cdef int _parse_queue_properties(object prop) except *:
+    cdef int res = 0
+    cdef object props
+    if isinstance(prop, int):
+        return <int>prop
+    if not isinstance(prop, (tuple, list)):
+        props = (prop, )
+    else:
+        props = prop
+    for p in props:
+        if isinstance(p, int):
+            res = res | <int> p
+        elif isinstance(p, str):
+            if (p == "in_order"):
+                res = res | _queue_property_type._IN_ORDER
+            elif (p == "enable_profiling"):
+                res = res | _queue_property_type._ENABLE_PROFILING
+            elif (p == "default"):
+                res = res | _queue_property_type._DEFAULT_PROPERTY
+            else:
+                raise ValueError("queue property '{}' is not understood.".format(prop))
+        else:
+            raise ValueError("queue property '{}' is not understood.".format(prop))
+    return res
+
+
 cdef class _SyclQueue:
     """ Internal helper metaclass to abstract `cl::sycl::queue` instance.
     """
@@ -142,12 +168,9 @@ cdef class SyclQueue:
                 "SyclQueue constructor takes 0, 1, or 2 positinal arguments, "
                 "but {} were given.".format(len(args))
             )
-        # _IN_ORDER, _DEFAULT_PROPERTY, _ENABLE_PROFILING or strings, or tuple
-        # of those enum values.
-        props = int(
+        props = _parse_queue_properties(
             kwargs.pop('property', _queue_property_type._DEFAULT_PROPERTY)
         )
-        #TODO: validate props
         len_args = len(args)
         if len_args == 0:
             status = self._init_queue_default(props)
@@ -214,7 +237,6 @@ cdef class SyclQueue:
         """ Copy data container _SyclQueue fields over.
         """
         cdef DPCTLSyclQueueRef QRef = DPCTLQueue_Copy(other._queue_ref)
-        # TODO: validate `other`
         if (QRef is NULL):
             return -4
         self._queue_ref = QRef
