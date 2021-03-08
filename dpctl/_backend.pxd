@@ -78,7 +78,7 @@ cdef extern from "dpctl_sycl_enum_types.h":
 
     ctypedef enum _queue_property_type 'DPCTLQueuePropertyType':
         _DEFAULT_PROPERTY   'DPCTL_DEFAULT_PROPERTY'
-        _ENABLE_PROFILING   'DPCLT_ENABLE_PROFILING'
+        _ENABLE_PROFILING   'DPCTL_ENABLE_PROFILING'
         _IN_ORDER           'DPCTL_IN_ORDER'
 
 
