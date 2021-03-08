@@ -46,6 +46,15 @@ cdef class _SyclDevice:
     cdef uint32_t _max_num_sub_groups
     cdef bool _int64_base_atomics
     cdef bool _int64_extended_atomics
+
+
+cdef class SyclDevice(_SyclDevice):
+    @staticmethod
+    cdef SyclDevice _create(DPCTLSyclDeviceRef dref)
+    @staticmethod
+    cdef void _init_helper(SyclDevice device, DPCTLSyclDeviceRef DRef)
+    cdef void _init_from__SyclDevice(self, _SyclDevice other)
+    cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef)
     cdef DPCTLSyclDeviceRef get_device_ref(self)
     cpdef get_backend(self)
     cpdef get_device_name(self)
@@ -63,12 +72,3 @@ cdef class _SyclDevice:
     cpdef is_cpu(self)
     cpdef is_gpu(self)
     cpdef is_host(self)
-
-
-cdef class SyclDevice(_SyclDevice):
-    @staticmethod
-    cdef SyclDevice _create(DPCTLSyclDeviceRef dref)
-    @staticmethod
-    cdef void _init_helper(SyclDevice device, DPCTLSyclDeviceRef DRef)
-    cdef void _init_from__SyclDevice(self, _SyclDevice other)
-    cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef)
