@@ -56,7 +56,7 @@ import timeit
 
 for _ in range(3):
 
-    dpctl.set_default_queue("opencl", "cpu", 0)
+    dpctl.set_global_queue("opencl:cpu:0")
     print(
         "Using : {}".format(
             dpctl.get_current_queue().get_sycl_device().get_device_name()
@@ -73,7 +73,7 @@ for _ in range(3):
     print("Elapsed: {}".format(t1 - t0))
 
     # compute on GPU sycl device
-    dpctl.set_default_queue("level0", "gpu", 0)
+    dpctl.set_global_queue("level_zero:gpu:0")
     print(
         "Using : {}".format(
             dpctl.get_current_queue().get_sycl_device().get_device_name()
