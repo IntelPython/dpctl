@@ -96,6 +96,33 @@ typedef enum
 } DPCTLKernelArgType;
 
 /*!
+ * @brief DPCTL device has an associated set of aspects which identify
+ * characteristics of the device.
+ *
+ */
+enum DPCTLSyclAspectType
+{
+    host,
+    cpu,
+    gpu,
+    accelerator,
+    custom,
+    fp16,
+    fp64,
+    int64_base_atomics,
+    int64_extended_atomics,
+    image,
+    online_compiler,
+    online_linker,
+    queue_profiling,
+    usm_device_allocations,
+    usm_host_allocations,
+    usm_shared_allocations,
+    usm_restricted_shared_allocations,
+    usm_system_allocator
+};
+
+/*!
  * @brief Enums to depict the properties that can be passed to a sycl::queue
  * constructor.
  *

@@ -211,29 +211,6 @@ __dpctl_give DPCTLSyclPlatformRef
 DPCTLDevice_GetPlatform(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
- * @brief Wrapper over
- * device.get_info<info::device::aspect::int64_base_atomics>.
- *
- * @param    DRef           Opaque pointer to a sycl::device
- * @return   Returns true if device has int64_base_atomics else returns false.
- */
-DPCTL_API
-bool DPCTLDevice_HasInt64BaseAtomics(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef);
-
-/*!
- * @brief Wrapper over
- * device.get_info<info::device::aspect::int64_extended_atomics>.
- *
- * @param    DRef           Opaque pointer to a sycl::device
- * @return   Returns true if device has int64_extended_atomics else returns
- * false.
- */
-DPCTL_API
-bool DPCTLDevice_HasInt64ExtendedAtomics(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef);
-
-/*!
  * @brief Returns a C string for the device name.
  *
  * @param    DRef           Opaque pointer to a sycl::device
@@ -274,7 +251,18 @@ bool DPCTLDevice_IsHostUnifiedMemory(
  * @return   True if the underlying sycl::device are same, false otherwise.
  */
 DPCTL_API
-bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
-                       __dpctl_keep const DPCTLSyclDeviceRef DRef2);
+bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
+                       __dpctl_keep const DPCTLSyclDeviceRef DevRef2);
+
+/*!
+ * @brief Checks if device has aspect.
+ *
+ * @param    DRef       Opaque pointer to a sycl::device
+ * @param    AT         DPCTLSyclAspectType of device::aspect.
+ * @return   True if sycl::device has device::aspect, else false.
+ */
+DPCTL_API
+bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                           DPCTLSyclAspectType AT);
 
 DPCTL_C_EXTERN_C_END
