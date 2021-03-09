@@ -270,37 +270,6 @@ DPCTLDevice_GetPlatform(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return PRef;
 }
 
-bool DPCTLDevice_HasInt64BaseAtomics(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    bool hasBaseAtomics = false;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            hasBaseAtomics = D->has(aspect::int64_base_atomics);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
-        }
-    }
-    return hasBaseAtomics;
-}
-
-bool DPCTLDevice_HasInt64ExtendedAtomics(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    bool hasExtendedAtomics = false;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            hasExtendedAtomics = D->has(aspect::int64_extended_atomics);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
-        }
-    }
-    return hasExtendedAtomics;
-}
-
 __dpctl_give const char *
 DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
@@ -401,4 +370,20 @@ bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
     // *unwrap(DevRef1) == *unwrap(DevRef2). Till DPCPP is fixed we use the
     // custom equality checker implemented inside DPCTLDeviceMgr.
     return DPCTLDeviceMgr_AreEq(DRef1, DRef2);
+}
+
+bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                           DPCTLSyclAspectType AT)
+{
+    bool hasAspect = false;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            hasAspect = D->has(DPCTL_DPCTLAspectTypeToSyclAspect(AT));
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return hasAspect;
 }
