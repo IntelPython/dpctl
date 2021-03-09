@@ -26,7 +26,7 @@ from libc.stdint cimport uint32_t
 
 
 cdef extern from "dpctl_error_handler_type.h":
-    ctypedef void (*error_handler_callback)(int err_code)
+    ctypedef void error_handler_callback(int err_code)
 
 cdef extern from "dpctl_utils.h":
     cdef void DPCTLCString_Delete(const char *str)
