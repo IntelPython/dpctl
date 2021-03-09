@@ -172,7 +172,7 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
     if (propList && error_handler) {
         try {
             auto Queue = new queue(
-                *ctx, *dev, DPCTL_AsycErrorHandler(error_handler), *propList);
+                *ctx, *dev, DPCTL_AsyncErrorHandler(error_handler), *propList);
             q = wrap(Queue);
         } catch (std::bad_alloc const &ba) {
             std::cerr << ba.what() << '\n';
@@ -193,7 +193,7 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
     else if (error_handler) {
         try {
             auto Queue =
-                new queue(*ctx, *dev, DPCTL_AsycErrorHandler(error_handler));
+                new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(error_handler));
             q = wrap(Queue);
         } catch (std::bad_alloc const &ba) {
             std::cerr << ba.what() << '\n';

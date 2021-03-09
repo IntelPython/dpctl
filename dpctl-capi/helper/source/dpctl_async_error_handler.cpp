@@ -25,7 +25,7 @@
 
 #include "dpctl_async_error_handler.h"
 
-void DPCTL_AsycErrorHandler::operator()(
+void DPCTL_AsyncErrorHandler::operator()(
     const cl::sycl::exception_list &exceptions)
 {
     for (std::exception_ptr const &e : exceptions) {

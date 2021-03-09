@@ -28,12 +28,12 @@
 #include "dpctl_error_handler_type.h"
 #include <CL/sycl.hpp>
 
-class DPCTL_AsycErrorHandler
+class DPCTL_AsyncErrorHandler
 {
     error_handler_callback *handler_ = nullptr;
 
 public:
-    DPCTL_AsycErrorHandler(error_handler_callback *err_handler)
+    DPCTL_AsyncErrorHandler(error_handler_callback *err_handler)
         : handler_(err_handler)
     {
     }
