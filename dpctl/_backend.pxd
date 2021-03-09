@@ -81,6 +81,28 @@ cdef extern from "dpctl_sycl_enum_types.h":
         _ENABLE_PROFILING   'DPCTL_ENABLE_PROFILING'
         _IN_ORDER           'DPCTL_IN_ORDER'
 
+    cdef enum _aspect_type 'DPCTLSyclAspectType':
+        _host                               'host',
+        _cpu                                'cpu',
+        _gpu                                'gpu',
+        _accelerator                        'accelerator',
+        _custom                             'custom',
+        _fp16                               'fp16',
+        _fp64                               'fp64',
+        _int64_base_atomics                 'int64_base_atomics',
+        _int64_extended_atomics             'int64_extended_atomics',
+        _image                              'image',
+        _online_compiler                    'online_compiler',
+        _online_linker                      'online_linker',
+        _queue_profiling                    'queue_profiling',
+        _usm_device_allocations             'usm_device_allocations',
+        _usm_host_allocations               'usm_host_allocations',
+        _usm_shared_allocations             'usm_shared_allocations',
+        _usm_restricted_shared_allocations  'usm_restricted_shared_allocations',
+        _usm_system_allocator               'usm_system_allocator'
+
+    ctypedef _aspect_type DPCTLSyclAspectType
+
 
 cdef extern from "dpctl_sycl_types.h":
     cdef struct DPCTLOpaqueSyclContext
@@ -126,13 +148,13 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef DPCTLSyclPlatformRef DPCTLDevice_GetPlatform(
         const DPCTLSyclDeviceRef DRef)
     cdef const char *DPCTLDevice_GetVendorName(const DPCTLSyclDeviceRef DRef)
-    cdef bool DPCTLDevice_HasInt64BaseAtomics(const DPCTLSyclDeviceRef DRef)
-    cdef bool DPCTLDevice_HasInt64ExtendedAtomics(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsAccelerator(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsCPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsHost(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsHostUnifiedMemory(const DPCTLSyclDeviceRef DRef)
+    cpdef bool DPCTLDevice_HasAspect(
+        const DPCTLSyclDeviceRef DRef, DPCTLSyclAspectType AT)
 
 
 cdef extern from "dpctl_sycl_device_manager.h":

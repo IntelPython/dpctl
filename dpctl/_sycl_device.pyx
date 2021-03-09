@@ -21,6 +21,7 @@
 """
 
 from ._backend cimport (
+    _aspect_type,
     _backend_type,
     _device_type,
     DPCTLDefaultSelector_Create,
@@ -38,8 +39,6 @@ from ._backend cimport (
     DPCTLDevice_GetMaxWorkItemSizes,
     DPCTLDevice_GetVendorName,
     DPCTLDevice_GetName,
-    DPCTLDevice_HasInt64BaseAtomics,
-    DPCTLDevice_HasInt64ExtendedAtomics,
     DPCTLDevice_IsAccelerator,
     DPCTLDevice_IsCPU,
     DPCTLDevice_IsGPU,
@@ -51,6 +50,7 @@ from ._backend cimport (
     DPCTLSyclBackendType,
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
+    DPCTLDevice_HasAspect,
     DPCTLSyclDeviceType,
 )
 from . import backend_type, device_type
@@ -122,13 +122,9 @@ cdef class SyclDevice(_SyclDevice):
         device._cpu_device = DPCTLDevice_IsCPU(DRef)
         device._gpu_device = DPCTLDevice_IsGPU(DRef)
         device._host_device = DPCTLDevice_IsHost(DRef)
-        device._int64_base_atomics = DPCTLDevice_HasInt64BaseAtomics(DRef)
-        device._int64_extended_atomics = (
-            DPCTLDevice_HasInt64ExtendedAtomics(DRef)
-        )
         device._max_compute_units = DPCTLDevice_GetMaxComputeUnits(DRef)
         if (device._host_device):
-            device._max_num_sub_groups = 0
+            device._max_num_sub_groups = -1
         else:
             device._max_num_sub_groups = DPCTLDevice_GetMaxNumSubGroups(DRef)
         device._max_work_group_size = DPCTLDevice_GetMaxWorkGroupSize(DRef)
@@ -148,8 +144,6 @@ cdef class SyclDevice(_SyclDevice):
             return -1
         self._device_name = DPCTLDevice_GetName(self._device_ref)
         self._driver_version = DPCTLDevice_GetDriverInfo(self._device_ref)
-        self._int64_base_atomics = other._int64_base_atomics
-        self._int64_extended_atomics = other._int64_extended_atomics
         self._max_compute_units = other._max_compute_units
         self._max_num_sub_groups = other._max_num_sub_groups
         self._max_work_group_size = other._max_work_group_size
@@ -288,16 +282,6 @@ cdef class SyclDevice(_SyclDevice):
         """
         return self._driver_version.decode()
 
-    cpdef has_int64_base_atomics(self):
-        """ Returns true if device has int64_base_atomics else returns false.
-        """
-        return self._int64_base_atomics
-
-    cpdef has_int64_extended_atomics(self):
-        """ Returns true if device has int64_extended_atomics else returns false.
-        """
-        return self._int64_extended_atomics
-
     cpdef get_max_compute_units(self):
         """ Returns the number of parallel compute units
             available to the device. The minimum value is 1.
@@ -390,6 +374,96 @@ cdef class SyclDevice(_SyclDevice):
         return int(<size_t>self._device_ref)
 
     @property
+    def has_aspect_host(self):
+        cdef _aspect_type AT = _aspect_type._host
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_cpu(self):
+        cdef _aspect_type AT = _aspect_type._cpu
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_gpu(self):
+        cdef _aspect_type AT = _aspect_type._gpu
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_accelerator(self):
+        cdef _aspect_type AT = _aspect_type._accelerator
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_custom(self):
+        cdef _aspect_type AT = _aspect_type._custom
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_fp16(self):
+        cdef _aspect_type AT = _aspect_type._fp16
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_fp64(self):
+        cdef _aspect_type AT = _aspect_type._fp64
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_int64_base_atomics(self):
+        cdef _aspect_type AT = _aspect_type._int64_base_atomics
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_int64_extended_atomics(self):
+        cdef _aspect_type AT = _aspect_type._int64_extended_atomics
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_image(self):
+        cdef _aspect_type AT = _aspect_type._image
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_online_compiler(self):
+        cdef _aspect_type AT = _aspect_type._online_compiler
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_online_linker(self):
+        cdef _aspect_type AT = _aspect_type._online_linker
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_queue_profiling(self):
+        cdef _aspect_type AT = _aspect_type._queue_profiling
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_usm_device_allocations(self):
+        cdef _aspect_type AT = _aspect_type._usm_device_allocations
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_usm_host_allocations(self):
+        cdef _aspect_type AT = _aspect_type._usm_host_allocations
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_usm_shared_allocations(self):
+        cdef _aspect_type AT = _aspect_type._usm_shared_allocations
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_usm_restricted_shared_allocations(self):
+        cdef _aspect_type AT = _aspect_type._usm_restricted_shared_allocations
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_usm_system_allocator(self):
+        cdef _aspect_type AT = _aspect_type._usm_system_allocator
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
     def __name__(self):
         return "SyclDevice"
 
@@ -397,3 +471,5 @@ cdef class SyclDevice(_SyclDevice):
         return ("<dpctl." + self.__name__ + " [" +
                 str(self.get_backend()) + ", " + str(self.get_device_type()) +", " +
                 " " + self.get_device_name() + "] at {}>".format(hex(id(self))) )
+
+
