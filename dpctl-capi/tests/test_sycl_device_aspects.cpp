@@ -75,25 +75,32 @@ auto build_params()
 
     constexpr auto param_2 =
         get_param_list<std::pair<const char *, cl::sycl::aspect>>(
-            // clang-format off
-            std::make_pair("host", cl::sycl::aspect::host), 
-            std::make_pair("cpu", cl::sycl::aspect::cpu), 
+            std::make_pair("host", cl::sycl::aspect::host),
+            std::make_pair("cpu", cl::sycl::aspect::cpu),
             std::make_pair("gpu", cl::sycl::aspect::gpu),
             std::make_pair("accelerator", cl::sycl::aspect::accelerator),
             std::make_pair("custom", cl::sycl::aspect::custom),
-            std::make_pair("fp16", cl::sycl::aspect::fp16), 
+            std::make_pair("fp16", cl::sycl::aspect::fp16),
             std::make_pair("fp64", cl::sycl::aspect::fp64),
-            std::make_pair("int64_base_atomics", cl::sycl::aspect::int64_base_atomics),
-            std::make_pair("int64_extended_atomics", cl::sycl::aspect::int64_extended_atomics),
-            std::make_pair("online_compiler", cl::sycl::aspect::online_compiler),
+            std::make_pair("int64_base_atomics",
+                           cl::sycl::aspect::int64_base_atomics),
+            std::make_pair("int64_extended_atomics",
+                           cl::sycl::aspect::int64_extended_atomics),
+            std::make_pair("online_compiler",
+                           cl::sycl::aspect::online_compiler),
             std::make_pair("online_linker", cl::sycl::aspect::online_linker),
-            std::make_pair("queue_profiling", cl::sycl::aspect::queue_profiling),
-            std::make_pair("usm_device_allocations", cl::sycl::aspect::usm_device_allocations),
-            std::make_pair("usm_host_allocations", cl::sycl::aspect::usm_host_allocations),
-            std::make_pair("usm_shared_allocations", cl::sycl::aspect::usm_shared_allocations),
-            std::make_pair("usm_restricted_shared_allocations", cl::sycl::aspect::usm_restricted_shared_allocations),
-            std::make_pair("usm_system_allocator", cl::sycl::aspect::usm_system_allocator));
-    // clang-format on
+            std::make_pair("queue_profiling",
+                           cl::sycl::aspect::queue_profiling),
+            std::make_pair("usm_device_allocations",
+                           cl::sycl::aspect::usm_device_allocations),
+            std::make_pair("usm_host_allocations",
+                           cl::sycl::aspect::usm_host_allocations),
+            std::make_pair("usm_shared_allocations",
+                           cl::sycl::aspect::usm_shared_allocations),
+            std::make_pair("usm_restricted_shared_allocations",
+                           cl::sycl::aspect::usm_restricted_shared_allocations),
+            std::make_pair("usm_system_allocator",
+                           cl::sycl::aspect::usm_system_allocator));
 
     auto pairs =
         build_param_pairs<const char *,
