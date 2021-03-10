@@ -44,8 +44,6 @@ cdef class _SyclDevice:
     cdef size_t *_max_work_item_sizes
     cdef size_t _max_work_group_size
     cdef uint32_t _max_num_sub_groups
-    cdef bool _int64_base_atomics
-    cdef bool _int64_extended_atomics
     cdef bool _sub_group_independent_forward_progress
     cdef uint32_t _preferred_vector_width_char
     cdef DPCTLSyclDeviceRef get_device_ref(self)
@@ -59,8 +57,6 @@ cdef class _SyclDevice:
     cpdef get_max_work_item_sizes(self)
     cpdef get_max_work_group_size(self)
     cpdef get_max_num_sub_groups(self)
-    cpdef has_int64_base_atomics(self)
-    cpdef has_int64_extended_atomics(self)
     cpdef is_accelerator(self)
     cpdef is_cpu(self)
     cpdef is_gpu(self)
@@ -77,9 +73,3 @@ cdef class SyclDevice(_SyclDevice):
     cdef void _init_from__SyclDevice(self, _SyclDevice other)
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef)
 
-
-cpdef select_accelerator_device()
-cpdef select_cpu_device()
-cpdef select_default_device()
-cpdef select_gpu_device()
-cpdef select_host_device()

@@ -8,6 +8,7 @@ __pycache__/
 *.so
 *.exe
 *.lib
+*.dll
 
 # CMake build and local install directory
 build

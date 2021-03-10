@@ -27,10 +27,9 @@
 #include "dpctl_sycl_device_interface.h"
 #include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_sycl_device_manager.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <cstring>
-#include <iomanip>
-#include <iostream>
 
 using namespace cl::sycl;
 
@@ -40,31 +39,6 @@ namespace
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef)
-
-/*!
- * @brief Helper function to print the metadata for a sycl::device.
- *
- * @param    Device         My Param doc
- */
-void dump_device_info(const device &Device)
-{
-    std::stringstream ss;
-
-    ss << std::setw(4) << " " << std::left << std::setw(16) << "Name"
-       << Device.get_info<info::device::name>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(16) << "Driver version"
-       << Device.get_info<info::device::driver_version>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(16) << "Vendor"
-       << Device.get_info<info::device::vendor>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(16) << "Profile"
-       << Device.get_info<info::device::profile>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(16) << "Device type";
-
-    auto devTy = Device.get_info<info::device::device_type>();
-    ss << DPCTL_DeviceTypeToStr(devTy);
-
-    std::cout << ss.str();
-}
 
 } /* end of anonymous namespace */
 
@@ -121,18 +95,6 @@ __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
         std::cerr << re.what() << '\n';
         return nullptr;
     }
-}
-
-/*!
- * Prints some of the device info metadata for the device corresponding to the
- * specified sycl::queue. Currently, device name, driver version, device
- * vendor, and device profile are printed out. More attributed may be added
- * later.
- */
-void DPCTLDevice_DumpInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    auto Device = unwrap(DRef);
-    dump_device_info(*Device);
 }
 
 void DPCTLDevice_Delete(__dpctl_take DPCTLSyclDeviceRef DRef)
@@ -308,37 +270,6 @@ DPCTLDevice_GetPlatform(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return PRef;
 }
 
-bool DPCTLDevice_HasInt64BaseAtomics(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    bool hasBaseAtomics = false;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            hasBaseAtomics = D->has(aspect::int64_base_atomics);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
-        }
-    }
-    return hasBaseAtomics;
-}
-
-bool DPCTLDevice_HasInt64ExtendedAtomics(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    bool hasExtendedAtomics = false;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            hasExtendedAtomics = D->has(aspect::int64_extended_atomics);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
-        }
-    }
-    return hasExtendedAtomics;
-}
-
 __dpctl_give const char *
 DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
@@ -432,13 +363,29 @@ bool DPCTLDevice_IsHostUnifiedMemory(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return ret;
 }
 
-bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
-                       __dpctl_keep const DPCTLSyclDeviceRef DevRef2)
+bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
+                       __dpctl_keep const DPCTLSyclDeviceRef DRef2)
 {
-    if (!(DevRef1 && DevRef2))
-        // \todo handle error
-        return false;
-    return (*unwrap(DevRef1) == *unwrap(DevRef2));
+    // Note: DPCPP does not yet support device equality of the form:
+    // *unwrap(DevRef1) == *unwrap(DevRef2). Till DPCPP is fixed we use the
+    // custom equality checker implemented inside DPCTLDeviceMgr.
+    return DPCTLDeviceMgr_AreEq(DRef1, DRef2);
+}
+
+bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                           DPCTLSyclAspectType AT)
+{
+    bool hasAspect = false;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            hasAspect = D->has(DPCTL_DPCTLAspectTypeToSyclAspect(AT));
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return hasAspect;
 }
 
 bool DPCTLDevice_GetSubGroupIndependentForwardProgress(

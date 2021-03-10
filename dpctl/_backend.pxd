@@ -73,6 +73,28 @@ cdef extern from "dpctl_sycl_enum_types.h":
 
     ctypedef _arg_data_type DPCTLKernelArgType
 
+    cdef enum _aspect_type 'DPCTLSyclAspectType':
+        _host                               'host',
+        _cpu                                'cpu',
+        _gpu                                'gpu',
+        _accelerator                        'accelerator',
+        _custom                             'custom',
+        _fp16                               'fp16',
+        _fp64                               'fp64',
+        _int64_base_atomics                 'int64_base_atomics',
+        _int64_extended_atomics             'int64_extended_atomics',
+        _image                              'image',
+        _online_compiler                    'online_compiler',
+        _online_linker                      'online_linker',
+        _queue_profiling                    'queue_profiling',
+        _usm_device_allocations             'usm_device_allocations',
+        _usm_host_allocations               'usm_host_allocations',
+        _usm_shared_allocations             'usm_shared_allocations',
+        _usm_restricted_shared_allocations  'usm_restricted_shared_allocations',
+        _usm_system_allocator               'usm_system_allocator'
+
+    ctypedef _aspect_type DPCTLSyclAspectType
+
 
 cdef extern from "dpctl_sycl_types.h":
     cdef struct DPCTLOpaqueSyclContext
@@ -103,7 +125,6 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef DPCTLSyclDeviceRef DPCTLDevice_Create()
     cdef DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
         const DPCTLSyclDeviceSelectorRef DSRef)
-    cdef void DPCTLDevice_DumpInfo(const DPCTLSyclDeviceRef DRef)
     cdef void DPCTLDevice_Delete(DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclBackendType DPCTLDevice_GetBackend(
         const DPCTLSyclDeviceRef DRef)
@@ -119,8 +140,6 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef DPCTLSyclPlatformRef DPCTLDevice_GetPlatform(
         const DPCTLSyclDeviceRef DRef)
     cdef const char *DPCTLDevice_GetVendorName(const DPCTLSyclDeviceRef DRef)
-    cdef bool DPCTLDevice_HasInt64BaseAtomics(const DPCTLSyclDeviceRef DRef)
-    cdef bool DPCTLDevice_HasInt64ExtendedAtomics(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsAccelerator(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsCPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
@@ -128,6 +147,23 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef bool DPCTLDevice_IsHostUnifiedMemory(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_GetSubGroupIndependentForwardProgress(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetPreferredVectorWidthChar(const DPCTLSyclDeviceRef DRef)
+    cpdef bool DPCTLDevice_HasAspect(
+        const DPCTLSyclDeviceRef DRef, DPCTLSyclAspectType AT)
+
+
+cdef extern from "dpctl_sycl_device_manager.h":
+    cdef struct DPCTLDeviceVector
+    ctypedef DPCTLDeviceVector *DPCTLDeviceVectorRef
+
+    cdef void DPCTLDeviceVector_Delete(DPCTLDeviceVectorRef DVRef)
+    cdef void DPCTLDeviceVector_Clear(DPCTLDeviceVectorRef DVRef)
+    cdef size_t DPCTLDeviceVector_Size(DPCTLDeviceVectorRef DVRef)
+    cdef DPCTLSyclDeviceRef DPCTLDeviceVector_GetAt(
+        DPCTLDeviceVectorRef DVRef,
+        size_t index)
+    cdef DPCTLDeviceVectorRef DPCTLDeviceMgr_GetDevices(int device_identifier)
+    cdef size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier)
+    cdef void DPCTLDeviceMgr_PrintDeviceInfo(const DPCTLSyclDeviceRef DRef)
 
 
 cdef extern from "dpctl_sycl_device_selector_interface.h":

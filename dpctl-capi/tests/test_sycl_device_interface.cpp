@@ -27,8 +27,6 @@
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_platform_interface.h"
-#include "dpctl_sycl_queue_interface.h"
-#include "dpctl_sycl_queue_manager.h"
 #include "dpctl_utils.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
@@ -215,37 +213,6 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPlatform)
     ASSERT_TRUE(PRef);
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_Delete(PRef));
-}
-
-// TODO: Update when DPC++ properly supports aspects
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_HasInt64BaseAtomics)
-{
-    DPCTLSyclDeviceRef DRef = nullptr;
-    bool atomics = 0;
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
-    EXPECT_NO_FATAL_FAILURE(atomics = DPCTLDevice_HasInt64BaseAtomics(DRef));
-    auto D = reinterpret_cast<device *>(DRef);
-    auto has_atomics = D->has(aspect::int64_base_atomics);
-    EXPECT_TRUE(has_atomics == atomics);
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
-}
-
-// TODO: Update when DPC++ properly supports aspects
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_HasInt64ExtendedAtomics)
-{
-    DPCTLSyclDeviceRef DRef = nullptr;
-    bool atomics = 0;
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
-    EXPECT_NO_FATAL_FAILURE(atomics =
-                                DPCTLDevice_HasInt64ExtendedAtomics(DRef));
-    auto D = reinterpret_cast<device *>(DRef);
-    auto has_atomics = D->has(aspect::int64_extended_atomics);
-    EXPECT_TRUE(has_atomics == atomics);
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsAccelerator)
