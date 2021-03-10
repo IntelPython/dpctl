@@ -59,6 +59,7 @@ sycl_lib = os.environ["ONEAPI_ROOT"] + "\compiler\latest\windows\lib"
 with open("README.md", "r", encoding="utf-8") as file:
     long_description = file.read()
 
+
 def get_sdl_cflags():
     cflags = []
     if IS_LIN or IS_MAC:
@@ -70,7 +71,7 @@ def get_sdl_cflags():
             "-Wformat-security",
         ]
     # Add cflags from environment
-    cflags += os.getenv('CFLAGS', '').split(' ')
+    cflags += os.getenv("CFLAGS", "").split(" ")
 
     return cflags
 
@@ -82,7 +83,7 @@ def get_sdl_ldflags():
     elif IS_WIN:
         ldflags = ["/NXCompat", "/DynamicBase"]
     # Add ldflags from environment
-    ldflags += os.getenv('LDFLAGS', '').split(' ')
+    ldflags += os.getenv("LDFLAGS", "").split(" ")
 
     return ldflags
 
@@ -244,7 +245,7 @@ def _get_cmdclass():
 
 setup(
     name="dpctl",
-    version=versioneer.get_version().split('+')[0],
+    version=versioneer.get_version().split("+")[0],
     cmdclass=_get_cmdclass(),
     description="A lightweight Python wrapper for a subset of OpenCL and SYCL.",
     long_description=long_description,
