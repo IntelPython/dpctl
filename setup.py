@@ -1,8 +1,6 @@
-# ===-------------------- setup.py - dpctl -----*----- Python -------*------===#
-#
 #               Data Parallel Control Library (dpCtl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,12 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# ===-----------------------------------------------------------------------===#
-#
-# \file
-# This file builds all the extension modules for dpctl.
-# ===-----------------------------------------------------------------------===#
+
 import os
 import os.path
 import sys
@@ -50,15 +43,11 @@ else:
 
 if IS_LIN:
     DPCPP_ROOT = os.environ["ONEAPI_ROOT"] + "/compiler/latest/linux"
-    os.environ["CC"] = DPCPP_ROOT + "/bin/clang"
-    os.environ["CXX"] = DPCPP_ROOT + "/bin/clang++"
     os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
     os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
     os.environ["CFLAGS"] = "-fPIC"
 
 elif IS_WIN:
-    os.environ["CC"] = "clang-cl.exe"
-    os.environ["CXX"] = "dpcpp.exe"
     os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
     os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl\include"
 
@@ -100,7 +89,7 @@ def get_sdl_ldflags():
 
 def get_other_cxxflags():
     if IS_LIN:
-        return ["-O3", "-fsycl", "-std=c++17"]
+        return ["-O3", "-std=c++17"]
     elif IS_MAC:
         return []
     elif IS_WIN:
@@ -131,6 +120,7 @@ def extensions():
     ela = get_sdl_ldflags()
     libs = []
     librarys = []
+    CODE_COVERAGE = os.environ.get("CODE_COVERAGE")
 
     if IS_LIN:
         libs += ["rt", "DPCTLSyclInterface"]
@@ -166,11 +156,48 @@ def extensions():
         "language": "c++",
     }
 
+    if CODE_COVERAGE:
+        extension_args.update(
+            {
+                "define_macros": [
+                    ("CYTHON_TRACE", "1"),
+                ]
+            }
+        )
+
     extensions = [
         Extension(
-            "dpctl._sycl_core",
+            "dpctl._sycl_context",
             [
-                os.path.join("dpctl", "_sycl_core.pyx"),
+                os.path.join("dpctl", "_sycl_context.pyx"),
+            ],
+            **extension_args
+        ),
+        Extension(
+            "dpctl._sycl_device",
+            [
+                os.path.join("dpctl", "_sycl_device.pyx"),
+            ],
+            **extension_args
+        ),
+        Extension(
+            "dpctl._sycl_event",
+            [
+                os.path.join("dpctl", "_sycl_event.pyx"),
+            ],
+            **extension_args
+        ),
+        Extension(
+            "dpctl._sycl_queue",
+            [
+                os.path.join("dpctl", "_sycl_queue.pyx"),
+            ],
+            **extension_args
+        ),
+        Extension(
+            "dpctl._sycl_queue_manager",
+            [
+                os.path.join("dpctl", "_sycl_queue_manager.pyx"),
             ],
             **extension_args
         ),
@@ -189,8 +216,10 @@ def extensions():
             **extension_args
         ),
     ]
-
-    exts = cythonize(extensions)
+    if CODE_COVERAGE:
+        exts = cythonize(extensions, compiler_directives={"linetrace": True})
+    else:
+        exts = cythonize(extensions)
     return exts
 
 

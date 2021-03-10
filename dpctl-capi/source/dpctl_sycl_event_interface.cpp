@@ -1,8 +1,8 @@
-//===----- dpctl_sycl_event_interface.cpp - dpctl-C_API  ---*--- C++ --*---===//
+//===----- dpctl_sycl_event_interface.cpp - Implements C API for sycl::event =//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@
 
 #include "dpctl_sycl_event_interface.h"
 #include "Support/CBindingWrapping.h"
-
-#include <CL/sycl.hpp>                /* SYCL headers   */
+#include <CL/sycl.hpp> /* SYCL headers   */
 
 using namespace cl::sycl;
 
@@ -37,16 +36,14 @@ namespace
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(event, DPCTLSyclEventRef)
 } /* end of anonymous namespace */
 
-
-void DPCTLEvent_Wait (__dpctl_keep DPCTLSyclEventRef ERef)
+void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef)
 {
     // \todo How to handle errors? E.g. when ERef is null or not a valid event.
     auto SyclEvent = unwrap(ERef);
     SyclEvent->wait();
 }
 
-void
-DPCTLEvent_Delete (__dpctl_take DPCTLSyclEventRef ERef)
+void DPCTLEvent_Delete(__dpctl_take DPCTLSyclEventRef ERef)
 {
     delete unwrap(ERef);
 }

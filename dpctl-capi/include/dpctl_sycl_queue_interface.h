@@ -1,8 +1,8 @@
-//===---------- dpctl_sycl_queue_interface.h - dpctl-C_API ---*---C++ -*---===//
+//===----- dpctl_sycl_queue_interface.h - C API for sycl::queue  -*-C++-*- ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,12 +27,12 @@
 
 #pragma once
 
-#include "dpctl_data_types.h"
-#include "dpctl_sycl_enum_types.h"
-#include "dpctl_sycl_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dpctl_data_types.h"
+#include "dpctl_sycl_enum_types.h"
+#include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
 
@@ -42,7 +42,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * @param    QRef           A DPCTLSyclQueueRef pointer that gets deleted.
  */
 DPCTL_API
-void DPCTLQueue_Delete (__dpctl_take DPCTLSyclQueueRef QRef);
+void DPCTLQueue_Delete(__dpctl_take DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Checks if two DPCTLSyclQueueRef objects point to the same sycl::queue.
@@ -52,8 +52,8 @@ void DPCTLQueue_Delete (__dpctl_take DPCTLSyclQueueRef QRef);
  * @return   True if the underlying sycl::queue are same, false otherwise.
  */
 DPCTL_API
-bool DPCTLQueue_AreEq (__dpctl_keep const DPCTLSyclQueueRef QRef1,
-                       __dpctl_keep const DPCTLSyclQueueRef QRef2);
+bool DPCTLQueue_AreEq(__dpctl_keep const DPCTLSyclQueueRef QRef1,
+                      __dpctl_keep const DPCTLSyclQueueRef QRef2);
 
 /*!
  * @brief Returns the Sycl backend for the provided sycl::queue.
@@ -63,7 +63,7 @@ bool DPCTLQueue_AreEq (__dpctl_keep const DPCTLSyclQueueRef QRef1,
  * queue.
  */
 DPCTL_API
-DPCTLSyclBackendType DPCTLQueue_GetBackend (__dpctl_keep DPCTLSyclQueueRef QRef);
+DPCTLSyclBackendType DPCTLQueue_GetBackend(__dpctl_keep DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Returns the Sycl context for the queue.
@@ -73,7 +73,7 @@ DPCTLSyclBackendType DPCTLQueue_GetBackend (__dpctl_keep DPCTLSyclQueueRef QRef)
  */
 DPCTL_API
 __dpctl_give DPCTLSyclContextRef
-DPCTLQueue_GetContext (__dpctl_keep const DPCTLSyclQueueRef QRef);
+DPCTLQueue_GetContext(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief returns the Sycl device for the queue.
@@ -83,7 +83,7 @@ DPCTLQueue_GetContext (__dpctl_keep const DPCTLSyclQueueRef QRef);
  */
 DPCTL_API
 __dpctl_give DPCTLSyclDeviceRef
-DPCTLQueue_GetDevice (__dpctl_keep const DPCTLSyclQueueRef QRef);
+DPCTLQueue_GetDevice(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Submits the kernel to the specified queue with the provided range
@@ -118,15 +118,15 @@ DPCTLQueue_GetDevice (__dpctl_keep const DPCTLSyclQueueRef QRef);
  */
 DPCTL_API
 DPCTLSyclEventRef
-DPCTLQueue_SubmitRange (__dpctl_keep const DPCTLSyclKernelRef KRef,
-                        __dpctl_keep const DPCTLSyclQueueRef QRef,
-                        __dpctl_keep void **Args,
-                        __dpctl_keep const DPCTLKernelArgType *ArgTypes,
-                        size_t NArgs,
-                        __dpctl_keep const size_t Range[3],
-                        size_t NRange,
-                        __dpctl_keep const DPCTLSyclEventRef *DepEvents,
-                        size_t NDepEvents);
+DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
+                       __dpctl_keep const DPCTLSyclQueueRef QRef,
+                       __dpctl_keep void **Args,
+                       __dpctl_keep const DPCTLKernelArgType *ArgTypes,
+                       size_t NArgs,
+                       __dpctl_keep const size_t Range[3],
+                       size_t NRange,
+                       __dpctl_keep const DPCTLSyclEventRef *DepEvents,
+                       size_t NDepEvents);
 
 /*!
  * @brief Submits the kernel to the specified queue with the provided nd_range
@@ -183,8 +183,7 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
  * @param    QRef           Opaque pointer to a sycl::queue.
  */
 DPCTL_API
-void
-DPCTLQueue_Wait (__dpctl_keep const DPCTLSyclQueueRef QRef);
+void DPCTLQueue_Wait(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief C-API wrapper for sycl::queue::memcpy, the function waits on an event
@@ -196,33 +195,39 @@ DPCTLQueue_Wait (__dpctl_keep const DPCTLSyclQueueRef QRef);
  * @param    Count          A number of bytes to copy.
  */
 DPCTL_API
-void DPCTLQueue_Memcpy (__dpctl_keep const DPCTLSyclQueueRef QRef,
-                        void *Dest, const void *Src, size_t Count);
+void DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                       void *Dest,
+                       const void *Src,
+                       size_t Count);
 
 /*!
- * @brief C-API wrapper for sycl::queue::prefetch, the function waits on an event
- * till the prefetch operation completes.
+ * @brief C-API wrapper for sycl::queue::prefetch, the function waits on an
+ * event till the prefetch operation completes.
  *
  * @param    QRef           An opaque pointer to the sycl queue.
  * @param    Ptr            An USM pointer to memory.
  * @param    Count          A number of bytes to prefetch.
  */
 DPCTL_API
-void DPCTLQueue_Prefetch (__dpctl_keep DPCTLSyclQueueRef QRef,
-                          const void *Ptr, size_t Count);
+void DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
+                         const void *Ptr,
+                         size_t Count);
 
 /*!
- * @brief C-API wrapper for sycl::queue::mem_advise, the function waits on an event
- * till the operation completes.
+ * @brief C-API wrapper for sycl::queue::mem_advise, the function waits on an
+ * event till the operation completes.
  *
  * @param    QRef           An opaque pointer to the sycl queue.
  * @param    Ptr            An USM pointer to memory.
  * @param    Count          A number of bytes to prefetch.
- * @param    Advice         Device-defined advice for the specified allocation. 
- *                           A value of 0 reverts the advice for Ptr to the default behavior.
+ * @param    Advice         Device-defined advice for the specified allocation.
+ *                          A value of 0 reverts the advice for Ptr to the
+ *                          default behavior.
  */
 DPCTL_API
-void DPCTLQueue_MemAdvise (__dpctl_keep DPCTLSyclQueueRef QRef,
-                           const void *Ptr, size_t Count, int Advice);
+void DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
+                          const void *Ptr,
+                          size_t Count,
+                          int Advice);
 
 DPCTL_C_EXTERN_C_END

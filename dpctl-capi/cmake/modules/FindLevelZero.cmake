@@ -1,6 +1,6 @@
-#               Data Parallel Control Library (dpCtl)
+#                       Data Parallel Control (dpCtl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@
 # LEVEL_ZERO_LIBRARY - the full path to the ze_loader library
 # TODO: Add a way to record the version of the level_zero library
 
-find_library(LEVEL_ZERO_LIBRARY ze_loader)
-find_path(LEVEL_ZERO_INCLUDE_DIR NAMES level_zero/zet_api.h)
+find_library(LEVEL_ZERO_LIBRARY ze_loader HINTS $ENV{L0_LIB_DIR})
+find_path(LEVEL_ZERO_INCLUDE_DIR NAMES level_zero/zet_api.h HINTS $ENV{L0_INCLUDE_DIR})
 
 find_package_handle_standard_args(LevelZero DEFAULT_MSG
     LEVEL_ZERO_INCLUDE_DIR

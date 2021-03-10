@@ -1,8 +1,8 @@
-//===----- dpctl_sycl_queue_interface.cpp - dpctl-C_API  ---*--- C++ --*---===//
+//===----- dpctl_sycl_queue_interface.cpp - Implements C API for sycl::queue =//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,12 +25,11 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_queue_interface.h"
-#include "dpctl_sycl_context_interface.h"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_sycl_context_interface.h"
+#include <CL/sycl.hpp> /* SYCL headers   */
 #include <exception>
 #include <stdexcept>
-
-#include <CL/sycl.hpp>                /* SYCL headers   */
 
 using namespace cl::sycl;
 
@@ -49,57 +48,58 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPCTLSyclQueueRef)
  * @param    cgh            My Param doc
  * @param    Arg            My Param doc
  */
-bool set_kernel_arg (handler &cgh, size_t idx, __dpctl_keep void *Arg,
-                     DPCTLKernelArgType ArgTy)
+bool set_kernel_arg(handler &cgh,
+                    size_t idx,
+                    __dpctl_keep void *Arg,
+                    DPCTLKernelArgType ArgTy)
 {
     bool arg_set = true;
 
-    switch (ArgTy)
-    {
+    switch (ArgTy) {
     case DPCTL_CHAR:
-        cgh.set_arg(idx, *(char*)Arg);
+        cgh.set_arg(idx, *(char *)Arg);
         break;
     case DPCTL_SIGNED_CHAR:
-        cgh.set_arg(idx, *(signed char*)Arg);
+        cgh.set_arg(idx, *(signed char *)Arg);
         break;
     case DPCTL_UNSIGNED_CHAR:
-        cgh.set_arg(idx, *(unsigned char*)Arg);
+        cgh.set_arg(idx, *(unsigned char *)Arg);
         break;
     case DPCTL_SHORT:
-        cgh.set_arg(idx, *(short*)Arg);
+        cgh.set_arg(idx, *(short *)Arg);
         break;
     case DPCTL_INT:
-        cgh.set_arg(idx, *(int*)Arg);
+        cgh.set_arg(idx, *(int *)Arg);
         break;
     case DPCTL_UNSIGNED_INT:
-        cgh.set_arg(idx, *(unsigned int*)Arg);
+        cgh.set_arg(idx, *(unsigned int *)Arg);
         break;
     case DPCTL_UNSIGNED_INT8:
-        cgh.set_arg(idx, *(uint8_t*)Arg);
+        cgh.set_arg(idx, *(uint8_t *)Arg);
         break;
     case DPCTL_LONG:
-        cgh.set_arg(idx, *(long*)Arg);
+        cgh.set_arg(idx, *(long *)Arg);
         break;
     case DPCTL_UNSIGNED_LONG:
-        cgh.set_arg(idx, *(unsigned long*)Arg);
+        cgh.set_arg(idx, *(unsigned long *)Arg);
         break;
     case DPCTL_LONG_LONG:
-        cgh.set_arg(idx, *(long long*)Arg);
+        cgh.set_arg(idx, *(long long *)Arg);
         break;
     case DPCTL_UNSIGNED_LONG_LONG:
-        cgh.set_arg(idx, *(unsigned long long*)Arg);
+        cgh.set_arg(idx, *(unsigned long long *)Arg);
         break;
     case DPCTL_SIZE_T:
-        cgh.set_arg(idx, *(size_t*)Arg);
+        cgh.set_arg(idx, *(size_t *)Arg);
         break;
     case DPCTL_FLOAT:
-        cgh.set_arg(idx, *(float*)Arg);
+        cgh.set_arg(idx, *(float *)Arg);
         break;
     case DPCTL_DOUBLE:
-        cgh.set_arg(idx, *(double*)Arg);
+        cgh.set_arg(idx, *(double *)Arg);
         break;
     case DPCTL_LONG_DOUBLE:
-        cgh.set_arg(idx, *(long double*)Arg);
+        cgh.set_arg(idx, *(long double *)Arg);
         break;
     case DPCTL_VOID_PTR:
         cgh.set_arg(idx, Arg);
@@ -118,29 +118,27 @@ bool set_kernel_arg (handler &cgh, size_t idx, __dpctl_keep void *Arg,
 /*!
  * Delete the passed in pointer after verifying it points to a sycl::queue.
  */
-void DPCTLQueue_Delete (__dpctl_take DPCTLSyclQueueRef QRef)
+void DPCTLQueue_Delete(__dpctl_take DPCTLSyclQueueRef QRef)
 {
     delete unwrap(QRef);
 }
 
-
-bool DPCTLQueue_AreEq (__dpctl_keep const DPCTLSyclQueueRef QRef1,
+bool DPCTLQueue_AreEq(__dpctl_keep const DPCTLSyclQueueRef QRef1,
                       __dpctl_keep const DPCTLSyclQueueRef QRef2)
 {
-    if(!(QRef1 && QRef2))
+    if (!(QRef1 && QRef2))
         // \todo handle error
         return false;
     return (*unwrap(QRef1) == *unwrap(QRef2));
 }
 
-DPCTLSyclBackendType DPCTLQueue_GetBackend (__dpctl_keep DPCTLSyclQueueRef QRef)
+DPCTLSyclBackendType DPCTLQueue_GetBackend(__dpctl_keep DPCTLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     try {
         auto C = Q->get_context();
         return DPCTLContext_GetBackend(wrap(&C));
-    }
-    catch (runtime_error &re) {
+    } catch (runtime_error &re) {
         std::cerr << re.what() << '\n';
         // store error message
         return DPCTL_UNKNOWN_BACKEND;
@@ -148,7 +146,7 @@ DPCTLSyclBackendType DPCTLQueue_GetBackend (__dpctl_keep DPCTLSyclQueueRef QRef)
 }
 
 __dpctl_give DPCTLSyclDeviceRef
-DPCTLQueue_GetDevice (__dpctl_keep const DPCTLSyclQueueRef QRef)
+DPCTLQueue_GetDevice(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Device = new device(Q->get_device());
@@ -156,7 +154,7 @@ DPCTLQueue_GetDevice (__dpctl_keep const DPCTLSyclQueueRef QRef)
 }
 
 __dpctl_give DPCTLSyclContextRef
-DPCTLQueue_GetContext (__dpctl_keep const DPCTLSyclQueueRef QRef)
+DPCTLQueue_GetContext(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Context = new context(Q->get_context());
@@ -164,7 +162,7 @@ DPCTLQueue_GetContext (__dpctl_keep const DPCTLSyclQueueRef QRef)
 }
 
 __dpctl_give DPCTLSyclEventRef
-DPCTLQueue_SubmitRange (__dpctl_keep const DPCTLSyclKernelRef KRef,
+DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                        __dpctl_keep const DPCTLSyclQueueRef QRef,
                        __dpctl_keep void **Args,
                        __dpctl_keep const DPCTLKernelArgType *ArgTypes,
@@ -175,24 +173,23 @@ DPCTLQueue_SubmitRange (__dpctl_keep const DPCTLSyclKernelRef KRef,
                        size_t NDepEvents)
 {
     auto Kernel = unwrap(KRef);
-    auto Queue  = unwrap(QRef);
+    auto Queue = unwrap(QRef);
     event e;
 
     try {
-        e = Queue->submit([&](handler& cgh) {
+        e = Queue->submit([&](handler &cgh) {
             // Depend on any event that was specified by the caller.
-            if(NDepEvents)
-                for(auto i = 0ul; i < NDepEvents; ++i)
+            if (NDepEvents)
+                for (auto i = 0ul; i < NDepEvents; ++i)
                     cgh.depends_on(*unwrap(DepEvents[i]));
 
             for (auto i = 0ul; i < NArgs; ++i) {
                 // \todo add support for Sycl buffers
                 // \todo handle errors properly
-                if(!set_kernel_arg(cgh, i, Args[i], ArgTypes[i]))
+                if (!set_kernel_arg(cgh, i, Args[i], ArgTypes[i]))
                     exit(1);
             }
-            switch(NDims)
-            {
+            switch (NDims) {
             case 1:
                 cgh.parallel_for(range<1>{Range[0]}, *Kernel);
                 break;
@@ -223,46 +220,47 @@ DPCTLQueue_SubmitRange (__dpctl_keep const DPCTLSyclKernelRef KRef,
 
 DPCTLSyclEventRef
 DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
-                        __dpctl_keep const DPCTLSyclQueueRef QRef,
-                        __dpctl_keep void **Args,
-                        __dpctl_keep const DPCTLKernelArgType *ArgTypes,
-                        size_t NArgs,
-                        __dpctl_keep const size_t gRange[3],
-                        __dpctl_keep const size_t lRange[3],
-                        size_t NDims,
-                        __dpctl_keep const DPCTLSyclEventRef *DepEvents,
-                        size_t NDepEvents)
+                         __dpctl_keep const DPCTLSyclQueueRef QRef,
+                         __dpctl_keep void **Args,
+                         __dpctl_keep const DPCTLKernelArgType *ArgTypes,
+                         size_t NArgs,
+                         __dpctl_keep const size_t gRange[3],
+                         __dpctl_keep const size_t lRange[3],
+                         size_t NDims,
+                         __dpctl_keep const DPCTLSyclEventRef *DepEvents,
+                         size_t NDepEvents)
 {
     auto Kernel = unwrap(KRef);
-    auto Queue  = unwrap(QRef);
+    auto Queue = unwrap(QRef);
     event e;
 
     try {
-        e = Queue->submit([&](handler& cgh) {
+        e = Queue->submit([&](handler &cgh) {
             // Depend on any event that was specified by the caller.
-            if(NDepEvents)
-                for(auto i = 0ul; i < NDepEvents; ++i)
+            if (NDepEvents)
+                for (auto i = 0ul; i < NDepEvents; ++i)
                     cgh.depends_on(*unwrap(DepEvents[i]));
 
             for (auto i = 0ul; i < NArgs; ++i) {
                 // \todo add support for Sycl buffers
                 // \todo handle errors properly
-                if(!set_kernel_arg(cgh, i, Args[i], ArgTypes[i]))
+                if (!set_kernel_arg(cgh, i, Args[i], ArgTypes[i]))
                     exit(1);
             }
-            switch(NDims)
-            {
+            switch (NDims) {
             case 1:
-                cgh.parallel_for(nd_range<1>{{gRange[0]},{lRange[0]}}, *Kernel);
+                cgh.parallel_for(nd_range<1>{{gRange[0]}, {lRange[0]}},
+                                 *Kernel);
                 break;
             case 2:
-                cgh.parallel_for(nd_range<2>{{gRange[0], gRange[1]},
-                                             {lRange[0], lRange[1]}}, *Kernel);
+                cgh.parallel_for(
+                    nd_range<2>{{gRange[0], gRange[1]}, {lRange[0], lRange[1]}},
+                    *Kernel);
                 break;
             case 3:
                 cgh.parallel_for(nd_range<3>{{gRange[0], gRange[1], gRange[2]},
                                              {lRange[0], lRange[1], lRange[2]}},
-                                             *Kernel);
+                                 *Kernel);
                 break;
             default:
                 // \todo handle the error
@@ -282,34 +280,36 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
     return wrap(new event(e));
 }
 
-void
-DPCTLQueue_Wait (__dpctl_keep DPCTLSyclQueueRef QRef)
+void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
 {
     // \todo what happens if the QRef is null or a pointer to a valid sycl queue
     auto SyclQueue = unwrap(QRef);
     SyclQueue->wait();
 }
 
-void DPCTLQueue_Memcpy (__dpctl_keep const DPCTLSyclQueueRef QRef,
-                       void *Dest, const void *Src, size_t Count)
+void DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                       void *Dest,
+                       const void *Src,
+                       size_t Count)
 {
     auto Q = unwrap(QRef);
     auto event = Q->memcpy(Dest, Src, Count);
     event.wait();
 }
 
-void
-DPCTLQueue_Prefetch (__dpctl_keep DPCTLSyclQueueRef QRef,
-                    const void *Ptr, size_t Count)
+void DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
+                         const void *Ptr,
+                         size_t Count)
 {
     auto Q = unwrap(QRef);
     auto event = Q->prefetch(Ptr, Count);
     event.wait();
 }
 
-void
-DPCTLQueue_MemAdvise (__dpctl_keep DPCTLSyclQueueRef QRef,
-                     const void *Ptr, size_t Count, int Advice)
+void DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
+                          const void *Ptr,
+                          size_t Count,
+                          int Advice)
 {
     auto Q = unwrap(QRef);
     auto event = Q->mem_advise(Ptr, Count, static_cast<pi_mem_advice>(Advice));

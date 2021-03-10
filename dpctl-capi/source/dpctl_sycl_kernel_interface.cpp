@@ -1,8 +1,8 @@
-//===----- dpctl_sycl_kernel_interface.cpp - dpctl-C_API  ---*--- C++ --*--===//
+//===--- dpctl_sycl_kernel_interface.cpp - Implements C API for sycl::kernel =//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@
 
 #include "dpctl_sycl_kernel_interface.h"
 #include "Support/CBindingWrapping.h"
-
 #include <CL/sycl.hpp> /* Sycl headers */
 
 using namespace cl::sycl;
@@ -38,32 +37,31 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
 
 } /* end of anonymous namespace */
 
-__dpctl_give const char*
-DPCTLKernel_GetFunctionName (__dpctl_keep const DPCTLSyclKernelRef Kernel)
+__dpctl_give const char *
+DPCTLKernel_GetFunctionName(__dpctl_keep const DPCTLSyclKernelRef Kernel)
 {
-    if(!Kernel) {
+    if (!Kernel) {
         // \todo record error
         return nullptr;
     }
 
     auto SyclKernel = unwrap(Kernel);
     auto kernel_name = SyclKernel->get_info<info::kernel::function_name>();
-    if(kernel_name.empty())
+    if (kernel_name.empty())
         return nullptr;
-    auto cstr_len = kernel_name.length()+1;
+    auto cstr_len = kernel_name.length() + 1;
     auto cstr_name = new char[cstr_len];
 #ifdef _WIN32
     strncpy_s(cstr_name, cstr_len, kernel_name.c_str(), cstr_len);
 #else
-    std::strncpy (cstr_name, kernel_name.c_str(), cstr_len);
+    std::strncpy(cstr_name, kernel_name.c_str(), cstr_len);
 #endif
     return cstr_name;
 }
 
-size_t
-DPCTLKernel_GetNumArgs (__dpctl_keep const DPCTLSyclKernelRef Kernel)
+size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef Kernel)
 {
-    if(!Kernel) {
+    if (!Kernel) {
         // \todo record error
         return -1;
     }
@@ -73,8 +71,7 @@ DPCTLKernel_GetNumArgs (__dpctl_keep const DPCTLSyclKernelRef Kernel)
     return (size_t)num_args;
 }
 
-void
-DPCTLKernel_Delete (__dpctl_take DPCTLSyclKernelRef Kernel)
+void DPCTLKernel_Delete(__dpctl_take DPCTLSyclKernelRef Kernel)
 {
     delete unwrap(Kernel);
 }

@@ -1,8 +1,8 @@
-//===- dpctl_sycl_enum_types.h - DPCTL-SYCL interface ---*---C++ -----*----===//
+//===- dpctl_sycl_enum_types.h - C API enums for few sycl enum   -*-C++-*- ===//
 //
-//               Python Data Parallel Processing Library (PyDPCTL)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This header defines DPCTL specficif enum types that wrap corresponding Sycl
+/// This header defines dpCtl specficif enum types that wrap corresponding Sycl
 /// enum classes. These enums are defined primarily so that Python extensions
 /// that use DPCTL do not have to include Sycl headers directly.
 ///
@@ -37,11 +37,13 @@ DPCTL_C_EXTERN_C_BEGIN
  */
 enum DPCTLSyclBackendType
 {
+    // clang-format off
     DPCTL_UNKNOWN_BACKEND = 0x0,
     DPCTL_OPENCL          = 1 << 16,
     DPCTL_HOST            = 1 << 15,
     DPCTL_LEVEL_ZERO      = 1 << 14,
     DPCTL_CUDA            = 1 << 13
+    // clang-format on
 };
 
 /*!
@@ -50,6 +52,7 @@ enum DPCTLSyclBackendType
  */
 enum DPCTLSyclDeviceType
 {
+    // clang-format off
     DPCTL_CPU         = 1 << 0,
     DPCTL_GPU         = 1 << 1,
     DPCTL_ACCELERATOR = 1 << 2,
@@ -59,6 +62,7 @@ enum DPCTLSyclDeviceType
     DPCTL_ALL         = 1 << 6
     // IMP: before adding new values here look at DPCTLSyclBackendType enum. The
     // values should not overlap.
+    // clang-format on
 };
 
 /*!

@@ -1,8 +1,8 @@
-//===---- dpctl_sycl_program_interface.cpp - dpctl-C_API  ---*--- C++ --*--===//
+//===- dpctl_sycl_program_interface.cpp - Implements C API for sycl::program =//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,13 +27,15 @@
 #include "dpctl_sycl_program_interface.h"
 #include "Config/dpctl_config.h"
 #include "Support/CBindingWrapping.h"
+#include <CL/cl.h>     /* OpenCL headers     */
+#include <CL/sycl.hpp> /* Sycl headers       */
 
-#include <CL/sycl.hpp>          /* Sycl headers       */
-#include <CL/cl.h>              /* OpenCL headers     */
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
-#include <level_zero/zet_api.h> /* Level Zero headers */
-#include <CL/sycl/backend/level_zero.hpp>
 #include "../helper/include/dpctl_dynamic_lib_helper.h"
+#include <level_zero/zet_api.h> /* Level Zero headers */
+// Note: include ze_api.h before level_zero.hpp. Make sure clang-format does
+// not reorder the includes.
+#include <CL/sycl/backend/level_zero.hpp>
 #endif
 
 using namespace cl::sycl;
@@ -43,10 +45,10 @@ namespace
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 
 #ifdef __linux__
-static const char * zeLoaderName = "libze_loader.so";
-static const int libLoadFlags    = RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL;
+static const char *zeLoaderName = "libze_loader.so";
+static const int libLoadFlags = RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL;
 #else
-    #error "Level Zero program compilation is unavailable for this platform"
+#error "Level Zero program compilation is unavailable for this platform"
 #endif
 
 typedef ze_result_t (*zeModuleCreateFT)(ze_context_handle_t,
@@ -55,7 +57,7 @@ typedef ze_result_t (*zeModuleCreateFT)(ze_context_handle_t,
                                         ze_module_handle_t *,
                                         ze_module_build_log_handle_t *);
 
-const char * zeModuleCreateFuncName  = "zeModuleCreate";
+const char *zeModuleCreateFuncName = "zeModuleCreate";
 
 #endif // #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 
@@ -64,18 +66,19 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(program, DPCTLSyclProgramRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
 
 __dpctl_give DPCTLSyclProgramRef
-createOpenCLInterOpProgram (const context &SyclCtx,
-                            __dpctl_keep const void *IL,
-                            size_t length,
-                            const char * /* */)
+createOpenCLInterOpProgram(const context &SyclCtx,
+                           __dpctl_keep const void *IL,
+                           size_t length,
+                           const char * /* */)
 {
     cl_int err;
-    auto CLCtx   = SyclCtx.get();
+    auto CLCtx = SyclCtx.get();
     auto CLProgram = clCreateProgramWithIL(CLCtx, IL, length, &err);
     if (err) {
         // \todo: record the error string and any other information.
         std::cerr << "OpenCL program could not be created from the SPIR-V "
-                     "binary. OpenCL Error " << err << ".\n";
+                     "binary. OpenCL Error "
+                  << err << ".\n";
         return nullptr;
     }
     auto SyclDevices = SyclCtx.get_devices();
@@ -93,8 +96,8 @@ createOpenCLInterOpProgram (const context &SyclCtx,
 
     if (err) {
         // \todo: record the error string and any other information.
-        std::cerr << "OpenCL program could not be built. OpenCL Error "
-                  << err << ".\n";
+        std::cerr << "OpenCL program could not be built. OpenCL Error " << err
+                  << ".\n";
         return nullptr;
     }
 
@@ -111,31 +114,30 @@ createOpenCLInterOpProgram (const context &SyclCtx,
 
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 
-zeModuleCreateFT getZeModuleCreateFn ()
+zeModuleCreateFT getZeModuleCreateFn()
 {
     static dpctl::DynamicLibHelper zeLib(zeLoaderName, libLoadFlags);
-    if(!zeLib.opened()) {
+    if (!zeLib.opened()) {
         // TODO: handle error
         std::cerr << "The level zero loader dynamic library could not "
                      "be opened.\n";
         return nullptr;
     }
-    static auto stZeModuleCreateF = zeLib.getSymbol<zeModuleCreateFT>(
-                                        zeModuleCreateFuncName
-                                    );
+    static auto stZeModuleCreateF =
+        zeLib.getSymbol<zeModuleCreateFT>(zeModuleCreateFuncName);
 
     return stZeModuleCreateF;
 }
 
 __dpctl_give DPCTLSyclProgramRef
-createLevelZeroInterOpProgram (const context &SyclCtx,
-                               const void *IL,
-                               size_t length,
-                               const char *CompileOpts)
+createLevelZeroInterOpProgram(const context &SyclCtx,
+                              const void *IL,
+                              size_t length,
+                              const char *CompileOpts)
 {
-    auto ZeCtx   = SyclCtx.get_native<backend::level_zero>();
+    auto ZeCtx = SyclCtx.get_native<backend::level_zero>();
     auto SyclDevices = SyclCtx.get_devices();
-    if(SyclDevices.size() > 1) {
+    if (SyclDevices.size() > 1) {
         std::cerr << "Level zero program can be created for only one device.\n";
         // TODO: handle error
         return nullptr;
@@ -150,7 +152,7 @@ createLevelZeroInterOpProgram (const context &SyclCtx,
     ze_module_desc_t ZeModuleDesc = {};
     ZeModuleDesc.format = ZE_MODULE_FORMAT_IL_SPIRV;
     ZeModuleDesc.inputSize = length;
-    ZeModuleDesc.pInputModule = (uint8_t*)IL;
+    ZeModuleDesc.pInputModule = (uint8_t *)IL;
     ZeModuleDesc.pBuildFlags = CompileOpts;
     ZeModuleDesc.pConstants = &ZeSpecConstants;
 
@@ -159,12 +161,12 @@ createLevelZeroInterOpProgram (const context &SyclCtx,
 
     auto stZeModuleCreateF = getZeModuleCreateFn();
 
-    if(!stZeModuleCreateF)
+    if (!stZeModuleCreateF)
         return nullptr;
 
-    auto ret = stZeModuleCreateF(ZeCtx, ZeDevice, &ZeModuleDesc, &ZeModule,
-                                 nullptr);
-    if(ret != ZE_RESULT_SUCCESS) {
+    auto ret =
+        stZeModuleCreateF(ZeCtx, ZeDevice, &ZeModuleDesc, &ZeModule, nullptr);
+    if (ret != ZE_RESULT_SUCCESS) {
         // TODO: handle error
         return nullptr;
     }
@@ -172,8 +174,7 @@ createLevelZeroInterOpProgram (const context &SyclCtx,
     // Create the Sycl program from the ZeModule
     try {
         auto ZeProgram = new program(sycl::level_zero::make_program(
-            SyclCtx, reinterpret_cast<uintptr_t>(ZeModule))
-        );
+            SyclCtx, reinterpret_cast<uintptr_t>(ZeModule)));
         return wrap(ZeProgram);
     } catch (invalid_object_error &e) {
         // \todo record error
@@ -186,29 +187,27 @@ createLevelZeroInterOpProgram (const context &SyclCtx,
 } /* end of anonymous namespace */
 
 __dpctl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromSpirv (__dpctl_keep const DPCTLSyclContextRef CtxRef,
-                              __dpctl_keep const void *IL,
-                              size_t length,
-                              const char *CompileOpts)
+DPCTLProgram_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
+                             __dpctl_keep const void *IL,
+                             size_t length,
+                             const char *CompileOpts)
 {
     DPCTLSyclProgramRef Pref = nullptr;
     context *SyclCtx = nullptr;
-    if(!CtxRef) {
+    if (!CtxRef) {
         // \todo handle error
         return Pref;
     }
     SyclCtx = unwrap(CtxRef);
     // get the backend type
     auto BE = SyclCtx->get_platform().get_backend();
-    switch(BE)
-    {
+    switch (BE) {
     case backend::opencl:
         Pref = createOpenCLInterOpProgram(*SyclCtx, IL, length, CompileOpts);
         break;
     case backend::level_zero:
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
-        Pref = createLevelZeroInterOpProgram(*SyclCtx, IL, length,
-                                             CompileOpts);
+        Pref = createLevelZeroInterOpProgram(*SyclCtx, IL, length, CompileOpts);
 #endif
         break;
     default:
@@ -218,20 +217,20 @@ DPCTLProgram_CreateFromSpirv (__dpctl_keep const DPCTLSyclContextRef CtxRef,
 }
 
 __dpctl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromOCLSource (__dpctl_keep const DPCTLSyclContextRef Ctx,
-                                  __dpctl_keep const char *Source,
-                                  __dpctl_keep const char *CompileOpts)
+DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
+                                 __dpctl_keep const char *Source,
+                                 __dpctl_keep const char *CompileOpts)
 {
     std::string compileOpts;
     context *SyclCtx = nullptr;
     program *SyclProgram = nullptr;
 
-    if(!Ctx) {
+    if (!Ctx) {
         // \todo handle error
         return nullptr;
     }
 
-    if(!Source) {
+    if (!Source) {
         // \todo handle error message
         return nullptr;
     }
@@ -240,14 +239,13 @@ DPCTLProgram_CreateFromOCLSource (__dpctl_keep const DPCTLSyclContextRef Ctx,
     SyclProgram = new program(*SyclCtx);
     std::string source = Source;
 
-    if(CompileOpts) {
+    if (CompileOpts) {
         compileOpts = CompileOpts;
     }
 
     // get the backend type
     auto BE = SyclCtx->get_platform().get_backend();
-    switch (BE)
-    {
+    switch (BE) {
     case backend::opencl:
         try {
             SyclProgram->build_with_source(source, compileOpts);
@@ -271,23 +269,25 @@ DPCTLProgram_CreateFromOCLSource (__dpctl_keep const DPCTLSyclContextRef Ctx,
         break;
     case backend::level_zero:
         std::cerr << "CreateFromSource is not supported in Level Zero.\n";
+        delete SyclProgram;
         return nullptr;
     default:
         std::cerr << "CreateFromSource is not supported in unknown backend.\n";
+        delete SyclProgram;
         return nullptr;
     }
 }
 
 __dpctl_give DPCTLSyclKernelRef
-DPCTLProgram_GetKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
-                        __dpctl_keep const char *KernelName)
+DPCTLProgram_GetKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
+                       __dpctl_keep const char *KernelName)
 {
-    if(!PRef) {
+    if (!PRef) {
         // \todo record error
         return nullptr;
     }
     auto SyclProgram = unwrap(PRef);
-    if(!KernelName) {
+    if (!KernelName) {
         // \todo record error
         return nullptr;
     }
@@ -302,11 +302,10 @@ DPCTLProgram_GetKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
     }
 }
 
-bool
-DPCTLProgram_HasKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
-                        __dpctl_keep const char *KernelName)
+bool DPCTLProgram_HasKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
+                            __dpctl_keep const char *KernelName)
 {
-    if(!PRef) {
+    if (!PRef) {
         // \todo handle error
         return false;
     }
@@ -320,8 +319,7 @@ DPCTLProgram_HasKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
     }
 }
 
-void
-DPCTLProgram_Delete (__dpctl_take DPCTLSyclProgramRef PRef)
+void DPCTLProgram_Delete(__dpctl_take DPCTLSyclProgramRef PRef)
 {
     delete unwrap(PRef);
 }

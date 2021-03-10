@@ -1,8 +1,8 @@
-//===---------- dpctl_sycl_event_interface.h - dpctl-C_API ---*---C++ -*---===//
+//===----- dpctl_sycl_event_interface.h - C API for sycl::event  -*-C++-*- ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,22 +25,22 @@
 
 #pragma once
 
-#include "dpctl_data_types.h"
-#include "dpctl_sycl_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
-
+#include "dpctl_data_types.h"
+#include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
 
 /*!
  * @brief C-API wrapper for sycl::event.wait.
  *
- * @param    ERef           An opaque DPCTLSyclEventRef pointer on which to wait.
+ * @param    ERef           An opaque DPCTLSyclEventRef pointer on which to
+ *                          wait.
  */
 DPCTL_API
-void DPCTLEvent_Wait (__dpctl_keep DPCTLSyclEventRef ERef);
+void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef);
 
 /*!
  * @brief Deletes the DPCTLSyclEventRef after casting it to a sycl::event.
@@ -49,7 +49,6 @@ void DPCTLEvent_Wait (__dpctl_keep DPCTLSyclEventRef ERef);
  *                          freed.
  */
 DPCTL_API
-void
-DPCTLEvent_Delete (__dpctl_take DPCTLSyclEventRef ERef);
+void DPCTLEvent_Delete(__dpctl_take DPCTLSyclEventRef ERef);
 
 DPCTL_C_EXTERN_C_END

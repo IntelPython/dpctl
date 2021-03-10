@@ -1,8 +1,8 @@
-//===------- test_sycl_platform_interface.cpp - dpctl-C_API --*-- C++ --*--===//
+//===-- test_sycl_platform_interface.cpp - Test cases for platform interface =//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,40 +27,39 @@
 #include <gtest/gtest.h>
 
 struct TestDPCTLSyclPlatformInterface : public ::testing::Test
-{ };
+{
+};
 
-TEST_F (TestDPCTLSyclPlatformInterface, CheckGetNumPlatforms)
+TEST_F(TestDPCTLSyclPlatformInterface, CheckGetNumPlatforms)
 {
     auto nplatforms = DPCTLPlatform_GetNumNonHostPlatforms();
     EXPECT_GE(nplatforms, 0ul);
 }
 
-TEST_F (TestDPCTLSyclPlatformInterface, GetNumBackends)
+TEST_F(TestDPCTLSyclPlatformInterface, GetNumBackends)
 {
     auto nbackends = DPCTLPlatform_GetNumNonHostBackends();
     EXPECT_GE(nbackends, 0ul);
 }
 
-TEST_F (TestDPCTLSyclPlatformInterface, GetListOfBackends)
+TEST_F(TestDPCTLSyclPlatformInterface, GetListOfBackends)
 {
     auto nbackends = DPCTLPlatform_GetNumNonHostBackends();
 
-    if(!nbackends)
-      GTEST_SKIP_("No non host backends available");
+    if (!nbackends)
+        GTEST_SKIP_("No non host backends available");
 
     auto backends = DPCTLPlatform_GetListOfNonHostBackends();
-	  EXPECT_TRUE(backends != nullptr);
-    for(auto i = 0ul; i < nbackends; ++i) {
-        EXPECT_TRUE(
-          backends[i] == DPCTLSyclBackendType::DPCTL_CUDA   ||
-          backends[i] == DPCTLSyclBackendType::DPCTL_OPENCL ||
-          backends[i] == DPCTLSyclBackendType::DPCTL_LEVEL_ZERO
-          );
+    EXPECT_TRUE(backends != nullptr);
+    for (auto i = 0ul; i < nbackends; ++i) {
+        EXPECT_TRUE(backends[i] == DPCTLSyclBackendType::DPCTL_CUDA ||
+                    backends[i] == DPCTLSyclBackendType::DPCTL_OPENCL ||
+                    backends[i] == DPCTLSyclBackendType::DPCTL_LEVEL_ZERO);
     }
-	DPCTLPlatform_DeleteListOfBackends(backends);
+    DPCTLPlatform_DeleteListOfBackends(backends);
 }
 
-TEST_F (TestDPCTLSyclPlatformInterface, CheckDPCTLPlatformDumpInfo)
+TEST_F(TestDPCTLSyclPlatformInterface, CheckDPCTLPlatformDumpInfo)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_DumpInfo());
 }

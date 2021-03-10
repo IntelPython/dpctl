@@ -1,8 +1,6 @@
-# ===-------------- _memory.pyx - dpctl module --------*- Cython -*---------===#
-#
 #                      Data Parallel Control (dpCtl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,23 +13,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# ===-----------------------------------------------------------------------===#
-#
-# \file
-# This file implements Python buffer protocol using Sycl USM shared and host
-# allocators. The USM device allocator is also exposed through this module for
-# use in other Python modules.
-#
-# ===-----------------------------------------------------------------------===#
 
 # distutils: language = c++
 # cython: language_level=3
 
+"""This file implements Python buffer protocol using Sycl USM shared and host
+allocators. The USM device allocator is also exposed through this module for
+use in other Python modules.
+"""
+
+
 import dpctl
 from dpctl._backend cimport *
-from .._sycl_core cimport SyclContext, SyclQueue, SyclDevice
-from .._sycl_core cimport get_current_queue
+from .._sycl_context cimport SyclContext
+from .._sycl_device cimport SyclDevice
+from .._sycl_queue cimport SyclQueue
+from .._sycl_queue_manager cimport get_current_queue
 
 from cpython cimport Py_buffer
 from cpython.bytes cimport PyBytes_AS_STRING, PyBytes_FromStringAndSize

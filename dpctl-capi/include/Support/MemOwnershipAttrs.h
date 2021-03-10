@@ -1,8 +1,8 @@
-//===--- dpctl_mem_ownership_attrs.h - DPCTL-SYCL interface --*-- C++ --*--===//
+//===- MemOwnershipAttrs.h - Defines memory ownership attributes -*-C++-*- ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,9 +22,10 @@
 /// This file defines a group of macros that serve as attributes indicating the
 /// type of ownership of a pointer. The macros are modeled after similar
 /// attributes defines in Integer Set Library (isl) and serve the purpose of
-/// helping a programmer understand the semantics of a DPCTL function.
+/// helping a programmer understand the semantics of a dpCtl function.
 ///
 //===----------------------------------------------------------------------===//
+
 #pragma once
 
 /**
@@ -50,9 +51,9 @@
 #endif
 /*!
  * @def __dpctl_take
- * @brief The __dpctl_take attribute indicates that the function "takes" over the
- * ownership of the object and the user must not use the object as an argument
- * to another function.
+ * @brief The __dpctl_take attribute indicates that the function "takes" over
+ * the ownership of the object and the user must not use the object as an
+ * argument to another function.
  *
  * The __dpctl_take attribute mens that the function destroys it before the
  * function returns, and the caller must not use the object again in any other

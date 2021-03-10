@@ -1,8 +1,8 @@
-//===-------------------- test_main.cpp - dpctl-C_API ---*--- C++ ----*----===//
+//===-------------------- test_main.cpp - Common test runner               ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,14 +19,13 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// A common test runner for all tests in dpctl C API.
+/// A common test runner for all tests in dpCtl C API.
 ///
 //===----------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
 
-int
-main (int argc, char** argv)
+int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
     int ret = RUN_ALL_TESTS();

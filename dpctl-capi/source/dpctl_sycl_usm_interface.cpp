@@ -1,8 +1,8 @@
-//===------ dpctl_sycl_usm_interface.cpp - dpctl-C_API  ---*--- C++ ---*---===//
+//===------ dpctl_sycl_usm_interface.cpp - Implements C API for USM ops    ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,10 +25,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_usm_interface.h"
-#include "dpctl_sycl_device_interface.h"
 #include "Support/CBindingWrapping.h"
-
-#include <CL/sycl.hpp>                /* SYCL headers   */
+#include "dpctl_sycl_device_interface.h"
+#include <CL/sycl.hpp> /* SYCL headers   */
 
 using namespace cl::sycl;
 
@@ -43,7 +42,7 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPCTLSyclUSMRef)
 } /* end of anonymous namespace */
 
 __dpctl_give DPCTLSyclUSMRef
-DPCTLmalloc_shared (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
+DPCTLmalloc_shared(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = malloc_shared(size, *Q);
@@ -51,7 +50,8 @@ DPCTLmalloc_shared (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
 }
 
 __dpctl_give DPCTLSyclUSMRef
-DPCTLaligned_alloc_shared (size_t alignment, size_t size,
+DPCTLaligned_alloc_shared(size_t alignment,
+                          size_t size,
                           __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
@@ -60,7 +60,7 @@ DPCTLaligned_alloc_shared (size_t alignment, size_t size,
 }
 
 __dpctl_give DPCTLSyclUSMRef
-DPCTLmalloc_host (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
+DPCTLmalloc_host(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = malloc_host(size, *Q);
@@ -68,7 +68,8 @@ DPCTLmalloc_host (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
 }
 
 __dpctl_give DPCTLSyclUSMRef
-DPCTLaligned_alloc_host (size_t alignment, size_t size,
+DPCTLaligned_alloc_host(size_t alignment,
+                        size_t size,
                         __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
@@ -77,7 +78,7 @@ DPCTLaligned_alloc_host (size_t alignment, size_t size,
 }
 
 __dpctl_give DPCTLSyclUSMRef
-DPCTLmalloc_device (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
+DPCTLmalloc_device(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
     auto Ptr = malloc_device(size, *Q);
@@ -85,7 +86,8 @@ DPCTLmalloc_device (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
 }
 
 __dpctl_give DPCTLSyclUSMRef
-DPCTLaligned_alloc_device (size_t alignment, size_t size,
+DPCTLaligned_alloc_device(size_t alignment,
+                          size_t size,
                           __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
@@ -93,7 +95,7 @@ DPCTLaligned_alloc_device (size_t alignment, size_t size,
     return wrap(Ptr);
 }
 
-void DPCTLfree_with_queue (__dpctl_take DPCTLSyclUSMRef MRef,
+void DPCTLfree_with_queue(__dpctl_take DPCTLSyclUSMRef MRef,
                           __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     auto Ptr = unwrap(MRef);
@@ -101,7 +103,7 @@ void DPCTLfree_with_queue (__dpctl_take DPCTLSyclUSMRef MRef,
     free(Ptr, *Q);
 }
 
-void DPCTLfree_with_context (__dpctl_take DPCTLSyclUSMRef MRef,
+void DPCTLfree_with_context(__dpctl_take DPCTLSyclUSMRef MRef,
                             __dpctl_keep const DPCTLSyclContextRef CRef)
 {
     auto Ptr = unwrap(MRef);
@@ -109,28 +111,27 @@ void DPCTLfree_with_context (__dpctl_take DPCTLSyclUSMRef MRef,
     free(Ptr, *C);
 }
 
-const char *
-DPCTLUSM_GetPointerType (__dpctl_keep const DPCTLSyclUSMRef MRef,
-                        __dpctl_keep const DPCTLSyclContextRef CRef)
+const char *DPCTLUSM_GetPointerType(__dpctl_keep const DPCTLSyclUSMRef MRef,
+                                    __dpctl_keep const DPCTLSyclContextRef CRef)
 {
     auto Ptr = unwrap(MRef);
     auto C = unwrap(CRef);
 
     auto kind = get_pointer_type(Ptr, *C);
-    switch(kind) {
-        case usm::alloc::host:
-            return "host";
-        case usm::alloc::device:
-            return "device";
-        case usm::alloc::shared:
-            return "shared";
-        default:
-            return "unknown";
+    switch (kind) {
+    case usm::alloc::host:
+        return "host";
+    case usm::alloc::device:
+        return "device";
+    case usm::alloc::shared:
+        return "shared";
+    default:
+        return "unknown";
     }
 }
 
 DPCTLSyclDeviceRef
-DPCTLUSM_GetPointerDevice (__dpctl_keep const DPCTLSyclUSMRef MRef,
+DPCTLUSM_GetPointerDevice(__dpctl_keep const DPCTLSyclUSMRef MRef,
                           __dpctl_keep const DPCTLSyclContextRef CRef)
 {
     auto Ptr = unwrap(MRef);

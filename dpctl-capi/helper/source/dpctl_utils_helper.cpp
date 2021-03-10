@@ -1,8 +1,8 @@
-//===------ dpctl_utils_helper.cpp - dpctl-C_API  ----*---- C++ -----*-----===//
+//===- dpctl_utils_helper.cpp - Implementation of enum to string helpers   ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,19 +24,18 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_utils_helper.h"
-#include <string>
 #include <sstream>
+#include <string>
 
 using namespace cl::sycl;
 
 /*!
-* Transforms enum info::device_type to string.
-*/
+ * Transforms enum info::device_type to string.
+ */
 std::string DPCTL_DeviceTypeToStr(info::device_type devTy)
 {
     std::stringstream ss;
-    switch (devTy)
-    {
+    switch (devTy) {
     case info::device_type::cpu:
         ss << "cpu" << '\n';
         break;
@@ -59,22 +58,27 @@ std::string DPCTL_DeviceTypeToStr(info::device_type devTy)
 }
 
 /*!
-* Transforms string to enum info::device_type.
-*/
+ * Transforms string to enum info::device_type.
+ */
 info::device_type DPCTL_StrToDeviceType(std::string devTyStr)
 {
     info::device_type devTy;
     if (devTyStr == "cpu") {
         devTy = info::device_type::cpu;
-    } else if(devTyStr == "gpu") {
+    }
+    else if (devTyStr == "gpu") {
         devTy = info::device_type::gpu;
-    } else if(devTyStr == "accelerator") {
+    }
+    else if (devTyStr == "accelerator") {
         devTy = info::device_type::accelerator;
-    } else if(devTyStr == "custom") {
+    }
+    else if (devTyStr == "custom") {
         devTy = info::device_type::custom;
-    } else if(devTyStr == "host") {
+    }
+    else if (devTyStr == "host") {
         devTy = info::device_type::host;
-    } else {
+    }
+    else {
         // \todo handle the error
         throw std::runtime_error("Unknown device type.");
     }

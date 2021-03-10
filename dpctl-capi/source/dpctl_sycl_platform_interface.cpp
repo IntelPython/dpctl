@@ -1,8 +1,8 @@
-//===----- dpctl_sycl_platform_interface.cpp - dpctl-C_API  --*-- C++ --*--===//
+//=== dpctl_sycl_platform_interface.cpp - Implements C API for sycl::platform //
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,28 +25,25 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_platform_interface.h"
+#include "../helper/include/dpctl_utils_helper.h"
+#include <CL/sycl.hpp>
 #include <iomanip>
 #include <iostream>
 #include <set>
 #include <sstream>
-#include "../helper/include/dpctl_utils_helper.h"
-
-#include <CL/sycl.hpp>
 
 using namespace cl::sycl;
 
 namespace
 {
-std::set<DPCTLSyclBackendType>
-get_set_of_non_hostbackends ()
+std::set<DPCTLSyclBackendType> get_set_of_non_hostbackends()
 {
     std::set<DPCTLSyclBackendType> be_set;
     for (auto p : platform::get_platforms()) {
-        if(p.is_host())
+        if (p.is_host())
             continue;
         auto be = p.get_backend();
-        switch (be)
-        {
+        switch (be) {
         case backend::host:
             break;
         case backend::cuda:
@@ -68,21 +65,21 @@ get_set_of_non_hostbackends ()
 } // namespace
 
 /*!
-* Prints out the following sycl::info::platform attributes for each platform
-* found on the system:
-*      - info::platform::name
-*      - info::platform::version
-*      - info::platform::vendor
-*      - info::platform::profile
-*      - backend (opencl, cuda, level-zero, host)
-*      - number of devices on the platform
-*
-* Additionally, for each device we print out:
-*      - info::device::name
-*      - info::device::driver_version
-*      - type of the device based on the aspects cpu, gpu, accelerator.
-*/
-void DPCTLPlatform_DumpInfo ()
+ * Prints out the following sycl::info::platform attributes for each platform
+ * found on the system:
+ *      - info::platform::name
+ *      - info::platform::version
+ *      - info::platform::vendor
+ *      - info::platform::profile
+ *      - backend (opencl, cuda, level-zero, host)
+ *      - number of devices on the platform
+ *
+ * Additionally, for each device we print out:
+ *      - info::device::name
+ *      - info::device::driver_version
+ *      - type of the device based on the aspects cpu, gpu, accelerator.
+ */
+void DPCTLPlatform_DumpInfo()
 {
     size_t i = 0;
 
@@ -116,8 +113,8 @@ void DPCTLPlatform_DumpInfo ()
         // Print some of the device information
         for (auto dn = 0ul; dn < devices.size(); ++dn) {
             ss << std::setw(4) << "---Device " << dn << '\n';
-            ss << std::setw(8) << " " << std::left << std::setw(20)
-               << "Name" << devices[dn].get_info<info::device::name>() << '\n';
+            ss << std::setw(8) << " " << std::left << std::setw(20) << "Name"
+               << devices[dn].get_info<info::device::name>() << '\n';
             ss << std::setw(8) << " " << std::left << std::setw(20)
                << "Driver version"
                << devices[dn].get_info<info::device::driver_version>() << '\n';
@@ -133,9 +130,9 @@ void DPCTLPlatform_DumpInfo ()
 }
 
 /*!
-* Returns the number of sycl::platform on the system.
-*/
-size_t DPCTLPlatform_GetNumNonHostPlatforms ()
+ * Returns the number of sycl::platform on the system.
+ */
+size_t DPCTLPlatform_GetNumNonHostPlatforms()
 {
     auto nNonHostPlatforms = 0ul;
     for (auto &p : platform::get_platforms()) {
@@ -146,7 +143,7 @@ size_t DPCTLPlatform_GetNumNonHostPlatforms ()
     return nNonHostPlatforms;
 }
 
-size_t DPCTLPlatform_GetNumNonHostBackends ()
+size_t DPCTLPlatform_GetNumNonHostBackends()
 {
     auto be_set = get_set_of_non_hostbackends();
 
@@ -156,7 +153,7 @@ size_t DPCTLPlatform_GetNumNonHostBackends ()
     return be_set.size();
 }
 
-__dpctl_give DPCTLSyclBackendType *DPCTLPlatform_GetListOfNonHostBackends ()
+__dpctl_give DPCTLSyclBackendType *DPCTLPlatform_GetListOfNonHostBackends()
 {
     auto be_set = get_set_of_non_hostbackends();
 
@@ -174,7 +171,8 @@ __dpctl_give DPCTLSyclBackendType *DPCTLPlatform_GetListOfNonHostBackends ()
     return BEArr;
 }
 
-void DPCTLPlatform_DeleteListOfBackends (__dpctl_take DPCTLSyclBackendType *BEArr)
+void DPCTLPlatform_DeleteListOfBackends(
+    __dpctl_take DPCTLSyclBackendType *BEArr)
 {
     delete[] BEArr;
 }

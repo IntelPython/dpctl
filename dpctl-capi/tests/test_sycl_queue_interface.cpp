@@ -1,8 +1,8 @@
-//===-------- test_sycl_queue_interface.cpp - dpctl-C_API ---*--- C++ --*--===//
+//===------ test_sycl_queue_interface.cpp - Test cases for queue interface ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_event_interface.h"
 #include "dpctl_sycl_kernel_interface.h"
@@ -31,7 +32,6 @@
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
 #include "dpctl_sycl_usm_interface.h"
-#include "Support/CBindingWrapping.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 
@@ -43,29 +43,31 @@ constexpr size_t SIZE = 1024;
 
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPCTLSyclUSMRef);
 
-void add_kernel_checker (const float *a, const float *b, const float *c)
+void add_kernel_checker(const float *a, const float *b, const float *c)
 {
     // Validate the data
-    for(auto i = 0ul; i < SIZE; ++i) {
+    for (auto i = 0ul; i < SIZE; ++i) {
         EXPECT_EQ(c[i], a[i] + b[i]);
     }
 }
 
-void axpy_kernel_checker (const float *a, const float *b, const float *c,
-                            float d)
+void axpy_kernel_checker(const float *a,
+                         const float *b,
+                         const float *c,
+                         float d)
 {
-    for(auto i = 0ul; i < SIZE; ++i) {
-        EXPECT_EQ(c[i], a[i] + d*b[i]);
+    for (auto i = 0ul; i < SIZE; ++i) {
+        EXPECT_EQ(c[i], a[i] + d * b[i]);
     }
 }
 
-bool has_devices ()
+bool has_devices()
 {
     bool ret = false;
     for (auto &p : platform::get_platforms()) {
         if (p.is_host())
             continue;
-        if(!p.get_devices().empty()) {
+        if (!p.get_devices().empty()) {
             ret = true;
             break;
         }
@@ -73,7 +75,7 @@ bool has_devices ()
     return ret;
 }
 
-}
+} // namespace
 
 struct TestDPCTLSyclQueueInterface : public ::testing::Test
 {
@@ -94,23 +96,21 @@ struct TestDPCTLSyclQueueInterface : public ::testing::Test
             c[index] = a[index] + d*b[index];
         }
     )CLC";
-    const char *CompileOpts ="-cl-fast-relaxed-math";
+    const char *CompileOpts = "-cl-fast-relaxed-math";
 
-    TestDPCTLSyclQueueInterface ()
-    {  }
+    TestDPCTLSyclQueueInterface() {}
 
-    ~TestDPCTLSyclQueueInterface ()
-    {  }
+    ~TestDPCTLSyclQueueInterface() {}
 };
 
-TEST_F (TestDPCTLSyclQueueInterface, CheckAreEq)
+TEST_F(TestDPCTLSyclQueueInterface, CheckAreEq)
 {
-    if(!has_devices())
+    if (!has_devices())
         GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
-    auto nOclGPU = DPCTLQueueMgr_GetNumQueues(DPCTLSyclBackendType::DPCTL_OPENCL,
-                                             DPCTLSyclDeviceType::DPCTL_GPU);
-    if(!nOclGPU)
+    auto nOclGPU = DPCTLQueueMgr_GetNumQueues(
+        DPCTLSyclBackendType::DPCTL_OPENCL, DPCTLSyclDeviceType::DPCTL_GPU);
+    if (!nOclGPU)
         GTEST_SKIP_("Skipping: No OpenCL GPUs available.\n");
 
     auto Q1 = DPCTLQueueMgr_GetCurrentQueue();
@@ -118,20 +118,11 @@ TEST_F (TestDPCTLSyclQueueInterface, CheckAreEq)
     EXPECT_TRUE(DPCTLQueue_AreEq(Q1, Q2));
 
     auto Def_Q = DPCTLQueueMgr_SetAsDefaultQueue(
-                    DPCTLSyclBackendType::DPCTL_OPENCL,
-                    DPCTLSyclDeviceType::DPCTL_GPU,
-                    0
-                 );
-    auto OclGPU_Q0 = DPCTLQueueMgr_PushQueue(
-                        DPCTLSyclBackendType::DPCTL_OPENCL,
-                        DPCTLSyclDeviceType::DPCTL_GPU,
-                        0
-                    );
-    auto OclGPU_Q1 = DPCTLQueueMgr_PushQueue(
-                        DPCTLSyclBackendType::DPCTL_OPENCL,
-                        DPCTLSyclDeviceType::DPCTL_GPU,
-                        0
-                    );
+        DPCTLSyclBackendType::DPCTL_OPENCL, DPCTLSyclDeviceType::DPCTL_GPU, 0);
+    auto OclGPU_Q0 = DPCTLQueueMgr_PushQueue(DPCTLSyclBackendType::DPCTL_OPENCL,
+                                             DPCTLSyclDeviceType::DPCTL_GPU, 0);
+    auto OclGPU_Q1 = DPCTLQueueMgr_PushQueue(DPCTLSyclBackendType::DPCTL_OPENCL,
+                                             DPCTLSyclDeviceType::DPCTL_GPU, 0);
     EXPECT_TRUE(DPCTLQueue_AreEq(Def_Q, OclGPU_Q0));
     EXPECT_TRUE(DPCTLQueue_AreEq(Def_Q, OclGPU_Q1));
     EXPECT_TRUE(DPCTLQueue_AreEq(OclGPU_Q0, OclGPU_Q1));
@@ -142,58 +133,49 @@ TEST_F (TestDPCTLSyclQueueInterface, CheckAreEq)
     DPCTLQueueMgr_PopQueue();
 }
 
-TEST_F (TestDPCTLSyclQueueInterface, CheckAreEq2)
+TEST_F(TestDPCTLSyclQueueInterface, CheckAreEq2)
 {
-    if(!has_devices())
+    if (!has_devices())
         GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
-    auto nOclGPU = DPCTLQueueMgr_GetNumQueues(DPCTLSyclBackendType::DPCTL_OPENCL,
-                                             DPCTLSyclDeviceType::DPCTL_GPU);
-    auto nOclCPU = DPCTLQueueMgr_GetNumQueues(DPCTLSyclBackendType::DPCTL_OPENCL,
-                                             DPCTLSyclDeviceType::DPCTL_CPU);
-    if(!nOclGPU || !nOclCPU)
+    auto nOclGPU = DPCTLQueueMgr_GetNumQueues(
+        DPCTLSyclBackendType::DPCTL_OPENCL, DPCTLSyclDeviceType::DPCTL_GPU);
+    auto nOclCPU = DPCTLQueueMgr_GetNumQueues(
+        DPCTLSyclBackendType::DPCTL_OPENCL, DPCTLSyclDeviceType::DPCTL_CPU);
+    if (!nOclGPU || !nOclCPU)
         GTEST_SKIP_("OpenCL GPUs and CPU not available.\n");
-    auto GPU_Q = DPCTLQueueMgr_PushQueue(
-                    DPCTLSyclBackendType::DPCTL_OPENCL,
-                    DPCTLSyclDeviceType::DPCTL_GPU,
-                    0
-                );
-    auto CPU_Q = DPCTLQueueMgr_PushQueue(
-                    DPCTLSyclBackendType::DPCTL_OPENCL,
-                    DPCTLSyclDeviceType::DPCTL_CPU,
-                    0
-                );
+    auto GPU_Q = DPCTLQueueMgr_PushQueue(DPCTLSyclBackendType::DPCTL_OPENCL,
+                                         DPCTLSyclDeviceType::DPCTL_GPU, 0);
+    auto CPU_Q = DPCTLQueueMgr_PushQueue(DPCTLSyclBackendType::DPCTL_OPENCL,
+                                         DPCTLSyclDeviceType::DPCTL_CPU, 0);
     EXPECT_FALSE(DPCTLQueue_AreEq(GPU_Q, CPU_Q));
     DPCTLQueueMgr_PopQueue();
     DPCTLQueueMgr_PopQueue();
 }
 
-TEST_F (TestDPCTLSyclQueueInterface, CheckGetBackend)
+TEST_F(TestDPCTLSyclQueueInterface, CheckGetBackend)
 {
-    if(!has_devices())
+    if (!has_devices())
         GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
     auto Q1 = DPCTLQueueMgr_GetCurrentQueue();
     auto BE = DPCTLQueue_GetBackend(Q1);
-    EXPECT_TRUE((BE == DPCTL_OPENCL) ||
-                (BE == DPCTL_LEVEL_ZERO) ||
-                (BE == DPCTL_CUDA) ||
-                (BE == DPCTL_HOST)
-    );
+    EXPECT_TRUE((BE == DPCTL_OPENCL) || (BE == DPCTL_LEVEL_ZERO) ||
+                (BE == DPCTL_CUDA) || (BE == DPCTL_HOST));
     DPCTLQueue_Delete(Q1);
-    if(DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_GPU)) {
+    if (DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_GPU)) {
         auto Q = DPCTLQueueMgr_PushQueue(DPCTL_OPENCL, DPCTL_GPU, 0);
         EXPECT_TRUE(DPCTLQueue_GetBackend(Q) == DPCTL_OPENCL);
         DPCTLQueue_Delete(Q);
         DPCTLQueueMgr_PopQueue();
     }
-    if(DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_CPU)) {
+    if (DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_CPU)) {
         auto Q = DPCTLQueueMgr_PushQueue(DPCTL_OPENCL, DPCTL_CPU, 0);
         EXPECT_TRUE(DPCTLQueue_GetBackend(Q) == DPCTL_OPENCL);
         DPCTLQueue_Delete(Q);
         DPCTLQueueMgr_PopQueue();
     }
-    if(DPCTLQueueMgr_GetNumQueues(DPCTL_LEVEL_ZERO, DPCTL_GPU)) {
+    if (DPCTLQueueMgr_GetNumQueues(DPCTL_LEVEL_ZERO, DPCTL_GPU)) {
         auto Q = DPCTLQueueMgr_PushQueue(DPCTL_LEVEL_ZERO, DPCTL_GPU, 0);
         EXPECT_TRUE(DPCTLQueue_GetBackend(Q) == DPCTL_LEVEL_ZERO);
         DPCTLQueue_Delete(Q);
@@ -201,9 +183,9 @@ TEST_F (TestDPCTLSyclQueueInterface, CheckGetBackend)
     }
 }
 
-TEST_F (TestDPCTLSyclQueueInterface, CheckGetContext)
+TEST_F(TestDPCTLSyclQueueInterface, CheckGetContext)
 {
-    if(!has_devices())
+    if (!has_devices())
         GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
     auto Q1 = DPCTLQueueMgr_GetCurrentQueue();
@@ -212,7 +194,7 @@ TEST_F (TestDPCTLSyclQueueInterface, CheckGetContext)
     DPCTLQueue_Delete(Q1);
     DPCTLContext_Delete(Ctx);
 
-    if(DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_GPU)) {
+    if (DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_GPU)) {
         auto Q = DPCTLQueueMgr_PushQueue(DPCTL_OPENCL, DPCTL_GPU, 0);
         auto OclGpuCtx = DPCTLQueue_GetContext(Q);
         ASSERT_TRUE(OclGpuCtx != nullptr);
@@ -220,7 +202,7 @@ TEST_F (TestDPCTLSyclQueueInterface, CheckGetContext)
         DPCTLContext_Delete(OclGpuCtx);
         DPCTLQueueMgr_PopQueue();
     }
-    if(DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_CPU)) {
+    if (DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_CPU)) {
         auto Q = DPCTLQueueMgr_PushQueue(DPCTL_OPENCL, DPCTL_CPU, 0);
         auto OclCpuCtx = DPCTLQueue_GetContext(Q);
         ASSERT_TRUE(OclCpuCtx != nullptr);
@@ -228,7 +210,7 @@ TEST_F (TestDPCTLSyclQueueInterface, CheckGetContext)
         DPCTLContext_Delete(OclCpuCtx);
         DPCTLQueueMgr_PopQueue();
     }
-    if(DPCTLQueueMgr_GetNumQueues(DPCTL_LEVEL_ZERO, DPCTL_GPU)) {
+    if (DPCTLQueueMgr_GetNumQueues(DPCTL_LEVEL_ZERO, DPCTL_GPU)) {
         auto Q = DPCTLQueueMgr_PushQueue(DPCTL_LEVEL_ZERO, DPCTL_GPU, 0);
         auto L0Ctx = DPCTLQueue_GetContext(Q);
         ASSERT_TRUE(Ctx != nullptr);
@@ -238,9 +220,9 @@ TEST_F (TestDPCTLSyclQueueInterface, CheckGetContext)
     }
 }
 
-TEST_F (TestDPCTLSyclQueueInterface, CheckGetDevice)
+TEST_F(TestDPCTLSyclQueueInterface, CheckGetDevice)
 {
-    if(!has_devices())
+    if (!has_devices())
         GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
     auto Q1 = DPCTLQueueMgr_GetCurrentQueue();
@@ -249,7 +231,7 @@ TEST_F (TestDPCTLSyclQueueInterface, CheckGetDevice)
     DPCTLQueue_Delete(Q1);
     DPCTLDevice_Delete(D);
 
-    if(DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_GPU)) {
+    if (DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_GPU)) {
         auto Q = DPCTLQueueMgr_PushQueue(DPCTL_OPENCL, DPCTL_GPU, 0);
         auto OCLGPU_D = DPCTLQueue_GetDevice(Q);
         ASSERT_TRUE(OCLGPU_D != nullptr);
@@ -258,7 +240,7 @@ TEST_F (TestDPCTLSyclQueueInterface, CheckGetDevice)
         DPCTLDevice_Delete(OCLGPU_D);
         DPCTLQueueMgr_PopQueue();
     }
-    if(DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_CPU)) {
+    if (DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_CPU)) {
         auto Q = DPCTLQueueMgr_PushQueue(DPCTL_OPENCL, DPCTL_CPU, 0);
         auto OCLCPU_D = DPCTLQueue_GetDevice(Q);
         ASSERT_TRUE(OCLCPU_D != nullptr);
@@ -267,7 +249,7 @@ TEST_F (TestDPCTLSyclQueueInterface, CheckGetDevice)
         DPCTLDevice_Delete(OCLCPU_D);
         DPCTLQueueMgr_PopQueue();
     }
-    if(DPCTLQueueMgr_GetNumQueues(DPCTL_LEVEL_ZERO, DPCTL_GPU)) {
+    if (DPCTLQueueMgr_GetNumQueues(DPCTL_LEVEL_ZERO, DPCTL_GPU)) {
         auto Q = DPCTLQueueMgr_PushQueue(DPCTL_LEVEL_ZERO, DPCTL_GPU, 0);
         auto L0GPU_D = DPCTLQueue_GetDevice(Q);
         ASSERT_TRUE(L0GPU_D != nullptr);
@@ -278,27 +260,27 @@ TEST_F (TestDPCTLSyclQueueInterface, CheckGetDevice)
     }
 }
 
-TEST_F (TestDPCTLSyclQueueInterface, CheckSubmit)
+TEST_F(TestDPCTLSyclQueueInterface, CheckSubmit)
 {
-    if(!has_devices())
+    if (!has_devices())
         GTEST_SKIP_("Skipping: No Sycl devices.\n");
 
     auto nOpenCLGpuQ = DPCTLQueueMgr_GetNumQueues(DPCTL_OPENCL, DPCTL_GPU);
 
-    if(!nOpenCLGpuQ)
+    if (!nOpenCLGpuQ)
         GTEST_SKIP_("Skipping: No OpenCL GPU device.\n");
 
-    auto Queue  = DPCTLQueueMgr_GetQueue(DPCTL_OPENCL, DPCTL_GPU, 0);
+    auto Queue = DPCTLQueueMgr_GetQueue(DPCTL_OPENCL, DPCTL_GPU, 0);
     auto CtxRef = DPCTLQueue_GetContext(Queue);
-    auto PRef   = DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr,
-                                                  CompileOpts);
+    auto PRef =
+        DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr, CompileOpts);
     ASSERT_TRUE(PRef != nullptr);
     ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "init_arr"));
     ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "add"));
     ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "axpy"));
 
     auto InitKernel = DPCTLProgram_GetKernel(PRef, "init_arr");
-    auto AddKernel  = DPCTLProgram_GetKernel(PRef, "add");
+    auto AddKernel = DPCTLProgram_GetKernel(PRef, "add");
     auto AxpyKernel = DPCTLProgram_GetKernel(PRef, "axpy");
 
     // Create the input args
@@ -312,51 +294,43 @@ TEST_F (TestDPCTLSyclQueueInterface, CheckSubmit)
     // Initialize a,b
     DPCTLKernelArgType argTypes[] = {DPCTL_VOID_PTR};
     size_t Range[] = {SIZE};
-    void *arg1[1] = { unwrap(a) };
-    void *arg2[1] = { unwrap(b) };
+    void *arg1[1] = {unwrap(a)};
+    void *arg2[1] = {unwrap(b)};
 
     auto E1 = DPCTLQueue_SubmitRange(InitKernel, Queue, arg1, argTypes, 1,
-                                    Range, 1, nullptr, 0);
+                                     Range, 1, nullptr, 0);
     auto E2 = DPCTLQueue_SubmitRange(InitKernel, Queue, arg2, argTypes, 1,
-                                    Range, 1, nullptr, 0);
+                                     Range, 1, nullptr, 0);
     ASSERT_TRUE(E1 != nullptr);
     ASSERT_TRUE(E2 != nullptr);
 
     DPCTLQueue_Wait(Queue);
 
     // Submit the add kernel
-    void *args[3] = { unwrap(a), unwrap(b), unwrap(c) };
-    DPCTLKernelArgType addKernelArgTypes[] = {
-                                              DPCTL_VOID_PTR,
-                                              DPCTL_VOID_PTR,
-                                              DPCTL_VOID_PTR
-                                            };
+    void *args[3] = {unwrap(a), unwrap(b), unwrap(c)};
+    DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR, DPCTL_VOID_PTR,
+                                              DPCTL_VOID_PTR};
 
-    auto E3 = DPCTLQueue_SubmitRange(AddKernel, Queue, args,
-                                    addKernelArgTypes, 3, Range, 1, nullptr, 0);
+    auto E3 = DPCTLQueue_SubmitRange(AddKernel, Queue, args, addKernelArgTypes,
+                                     3, Range, 1, nullptr, 0);
     ASSERT_TRUE(E3 != nullptr);
     DPCTLQueue_Wait(Queue);
 
     // Verify the result of "add"
-    add_kernel_checker((float*)a, (float*)b, (float*)c);
+    add_kernel_checker((float *)a, (float *)b, (float *)c);
 
     // Create kernel args for axpy
     float d = 10.0;
-    void *args2[4] = { unwrap(a), unwrap(b), unwrap(c) , (void*)&d };
-    DPCTLKernelArgType addKernelArgTypes2[] = {
-                                               DPCTL_VOID_PTR,
-                                               DPCTL_VOID_PTR,
-                                               DPCTL_VOID_PTR,
-                                               DPCTL_FLOAT
-                                             };
-    auto E4 = DPCTLQueue_SubmitRange(AxpyKernel, Queue, args2,
-                                    addKernelArgTypes2, 4, Range, 1,
-                                    nullptr, 0);
+    void *args2[4] = {unwrap(a), unwrap(b), unwrap(c), (void *)&d};
+    DPCTLKernelArgType addKernelArgTypes2[] = {DPCTL_VOID_PTR, DPCTL_VOID_PTR,
+                                               DPCTL_VOID_PTR, DPCTL_FLOAT};
+    auto E4 = DPCTLQueue_SubmitRange(
+        AxpyKernel, Queue, args2, addKernelArgTypes2, 4, Range, 1, nullptr, 0);
     ASSERT_TRUE(E4 != nullptr);
     DPCTLQueue_Wait(Queue);
 
     // Verify the result of "axpy"
-    axpy_kernel_checker((float*)a, (float*)b, (float*)c, d);
+    axpy_kernel_checker((float *)a, (float *)b, (float *)c, d);
 
     // clean ups
     DPCTLEvent_Delete(E1);
@@ -376,4 +350,3 @@ TEST_F (TestDPCTLSyclQueueInterface, CheckSubmit)
     DPCTLContext_Delete(CtxRef);
     DPCTLProgram_Delete(PRef);
 }
-

@@ -1,8 +1,8 @@
-//===---------- test_sycl_usm_interface.cpp - dpctl-C_API ---*--- C++ --*--===//
+//===---------- test_sycl_usm_interface.cpp - Test cases for USM interface ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,13 +24,13 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_event_interface.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
 #include "dpctl_sycl_usm_interface.h"
-#include "Support/CBindingWrapping.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 
@@ -42,13 +42,13 @@ constexpr size_t SIZE = 1024;
 
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPCTLSyclUSMRef);
 
-bool has_devices ()
+bool has_devices()
 {
     bool ret = false;
     for (auto &p : platform::get_platforms()) {
         if (p.is_host())
             continue;
-        if(!p.get_devices().empty()) {
+        if (!p.get_devices().empty()) {
             ret = true;
             break;
         }
@@ -56,9 +56,10 @@ bool has_devices ()
     return ret;
 }
 
-void
-common_test_body (size_t nbytes, const DPCTLSyclUSMRef Ptr,
-		  const DPCTLSyclQueueRef Q, const char *expected)
+void common_test_body(size_t nbytes,
+                      const DPCTLSyclUSMRef Ptr,
+                      const DPCTLSyclQueueRef Q,
+                      const char *expected)
 {
     auto Ctx = DPCTLQueue_GetContext(Q);
 
@@ -81,17 +82,15 @@ common_test_body (size_t nbytes, const DPCTLSyclUSMRef Ptr,
 struct TestDPCTLSyclUSMInterface : public ::testing::Test
 {
 
-    TestDPCTLSyclUSMInterface ()
-    {  }
+    TestDPCTLSyclUSMInterface() {}
 
-    ~TestDPCTLSyclUSMInterface ()
-    {  }
+    ~TestDPCTLSyclUSMInterface() {}
 };
 
-TEST_F (TestDPCTLSyclUSMInterface, MallocShared)
+TEST_F(TestDPCTLSyclUSMInterface, MallocShared)
 {
     if (!has_devices())
-	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
+        GTEST_SKIP_("Skipping: No Sycl Devices.\n");
 
     auto Q = DPCTLQueueMgr_GetCurrentQueue();
     const size_t nbytes = SIZE;
@@ -104,10 +103,10 @@ TEST_F (TestDPCTLSyclUSMInterface, MallocShared)
     DPCTLQueue_Delete(Q);
 }
 
-TEST_F (TestDPCTLSyclUSMInterface, MallocDevice)
+TEST_F(TestDPCTLSyclUSMInterface, MallocDevice)
 {
     if (!has_devices())
-	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
+        GTEST_SKIP_("Skipping: No Sycl Devices.\n");
 
     auto Q = DPCTLQueueMgr_GetCurrentQueue();
     const size_t nbytes = SIZE;
@@ -120,10 +119,10 @@ TEST_F (TestDPCTLSyclUSMInterface, MallocDevice)
     DPCTLQueue_Delete(Q);
 }
 
-TEST_F (TestDPCTLSyclUSMInterface, MallocHost)
+TEST_F(TestDPCTLSyclUSMInterface, MallocHost)
 {
     if (!has_devices())
-	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
+        GTEST_SKIP_("Skipping: No Sycl Devices.\n");
 
     auto Q = DPCTLQueueMgr_GetCurrentQueue();
     const size_t nbytes = SIZE;
@@ -136,10 +135,10 @@ TEST_F (TestDPCTLSyclUSMInterface, MallocHost)
     DPCTLQueue_Delete(Q);
 }
 
-TEST_F (TestDPCTLSyclUSMInterface, AlignedAllocShared)
+TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocShared)
 {
     if (!has_devices())
-	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
+        GTEST_SKIP_("Skipping: No Sycl Devices.\n");
 
     auto Q = DPCTLQueueMgr_GetCurrentQueue();
     const size_t nbytes = SIZE;
@@ -152,10 +151,10 @@ TEST_F (TestDPCTLSyclUSMInterface, AlignedAllocShared)
     DPCTLQueue_Delete(Q);
 }
 
-TEST_F (TestDPCTLSyclUSMInterface, AlignedAllocDevice)
+TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocDevice)
 {
     if (!has_devices())
-	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
+        GTEST_SKIP_("Skipping: No Sycl Devices.\n");
 
     auto Q = DPCTLQueueMgr_GetCurrentQueue();
     const size_t nbytes = SIZE;
@@ -168,10 +167,10 @@ TEST_F (TestDPCTLSyclUSMInterface, AlignedAllocDevice)
     DPCTLQueue_Delete(Q);
 }
 
-TEST_F (TestDPCTLSyclUSMInterface, AlignedAllocHost)
+TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocHost)
 {
     if (!has_devices())
-	GTEST_SKIP_("Skipping: No Sycl Devices.\n");
+        GTEST_SKIP_("Skipping: No Sycl Devices.\n");
 
     auto Q = DPCTLQueueMgr_GetCurrentQueue();
     const size_t nbytes = SIZE;
@@ -182,4 +181,3 @@ TEST_F (TestDPCTLSyclUSMInterface, AlignedAllocHost)
     common_test_body(nbytes, Ptr, Q, "host");
     DPCTLfree_with_queue(Ptr, Q);
 }
-

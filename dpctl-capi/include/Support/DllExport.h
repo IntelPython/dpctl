@@ -1,8 +1,8 @@
-//===--------- Support/DllExport.h - DPCTL-SYCL interface ---*--- C ---*---===//
+//===---------  DllExport.h - Decalres dllexport for Windows     -*-C++-*- ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@
 #pragma once
 
 #ifdef _WIN32
-#    ifdef DPCTLSyclInterface_EXPORTS
-#        define DPCTL_API __declspec(dllexport)
-#    else
-#        define DPCTL_API __declspec(dllimport)
-#    endif
+#ifdef DPCTLSyclInterface_EXPORTS
+#define DPCTL_API __declspec(dllexport)
 #else
-#    define DPCTL_API
+#define DPCTL_API __declspec(dllimport)
+#endif
+#else
+#define DPCTL_API
 #endif

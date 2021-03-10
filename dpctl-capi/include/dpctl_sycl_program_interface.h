@@ -1,8 +1,8 @@
-//===---------- dpctl_sycl_program_interface.h - dpctl-C_API --*--C++ --*--===//
+//===- dpctl_sycl_program_interface.h - C API for sycl::program  -*-C++-*- ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,21 +19,18 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This header declares a C API to create Sycl program an interoperability
-/// program defined in OpenCL. In future, API to create interoperability
-/// kernels from other languages such as Level-0 driver API may be added here.
-///
-/// \todo Investigate what we should do when we add support for Level-0 API.
+/// This header declares a C API to create Sycl interoperability programs for
+/// OpenCL and Level Zero driver API.
 ///
 //===----------------------------------------------------------------------===//
 
 #pragma once
 
-#include "dpctl_data_types.h"
-#include "dpctl_sycl_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dpctl_data_types.h"
+#include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
 
@@ -52,17 +49,17 @@ DPCTL_C_EXTERN_C_BEGIN
  * @param    Ctx            An opaque pointer to a sycl::context
  * @param    IL             SPIR-V binary
  * @param    Length         The size of the IL binary in bytes.
- * @param    CompileOpts    Optional compiler flags used when compiling th 
+ * @param    CompileOpts    Optional compiler flags used when compiling the
  *                          SPIR-V binary.
  * @return   A new SyclProgramRef pointer if the program creation succeeded,
  *           else returns NULL.
  */
 DPCTL_API
 __dpctl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromSpirv (__dpctl_keep const DPCTLSyclContextRef Ctx,
-                              __dpctl_keep const void *IL,
-                              size_t Length,
-                              const char *CompileOpts);
+DPCTLProgram_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef Ctx,
+                             __dpctl_keep const void *IL,
+                             size_t Length,
+                             const char *CompileOpts);
 
 /*!
  * @brief Create a Sycl program from an OpenCL kernel source string.
@@ -75,9 +72,9 @@ DPCTLProgram_CreateFromSpirv (__dpctl_keep const DPCTLSyclContextRef Ctx,
  */
 DPCTL_API
 __dpctl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromOCLSource (__dpctl_keep const DPCTLSyclContextRef Ctx,
-                                  __dpctl_keep const char *Source,
-                                  __dpctl_keep const char *CompileOpts);
+DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
+                                 __dpctl_keep const char *Source,
+                                 __dpctl_keep const char *CompileOpts);
 
 /*!
  * @brief Returns the SyclKernel with given name from the program, if not found
@@ -89,8 +86,8 @@ DPCTLProgram_CreateFromOCLSource (__dpctl_keep const DPCTLSyclContextRef Ctx,
  */
 DPCTL_API
 __dpctl_give DPCTLSyclKernelRef
-DPCTLProgram_GetKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
-                        __dpctl_keep const char *KernelName);
+DPCTLProgram_GetKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
+                       __dpctl_keep const char *KernelName);
 
 /*!
  * @brief Return True if a SyclKernel with given name exists in the program, if
@@ -101,9 +98,8 @@ DPCTLProgram_GetKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
  * @return   True if the kernel exists, else False
  */
 DPCTL_API
-bool
-DPCTLProgram_HasKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
-                        __dpctl_keep const char *KernelName);
+bool DPCTLProgram_HasKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
+                            __dpctl_keep const char *KernelName);
 
 /*!
  * @brief Frees the DPCTLSyclProgramRef pointer.
@@ -111,7 +107,6 @@ DPCTLProgram_HasKernel (__dpctl_keep DPCTLSyclProgramRef PRef,
  * @param    PRef           Opaque pointer to a sycl::program
  */
 DPCTL_API
-void
-DPCTLProgram_Delete (__dpctl_take DPCTLSyclProgramRef PRef);
+void DPCTLProgram_Delete(__dpctl_take DPCTLSyclProgramRef PRef);
 
 DPCTL_C_EXTERN_C_END

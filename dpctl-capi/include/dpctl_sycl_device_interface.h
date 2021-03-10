@@ -1,8 +1,8 @@
-//===--------- dpctl_sycl_device_interface.h - dpctl-C_API ---*---C++ -*---===//
+//===----- dpctl_sycl_device_interface.h - C API for sycl::device -*-C++-*- ==//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,14 +27,47 @@
 
 #pragma once
 
-#include "dpctl_data_types.h"
-#include "dpctl_sycl_enum_types.h"
-#include "dpctl_sycl_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dpctl_data_types.h"
+#include "dpctl_sycl_enum_types.h"
+#include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
+
+/*!
+ * @brief Returns a copy of the DPCTLSyclDeviceRef object.
+ *
+ * @param    DRef           DPCTLSyclDeviceRef object to be copied.
+ * @return   A new DPCTLSyclDeviceRef created by copying the passed in
+ * DPCTLSyclDeviceRef object.
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclDeviceRef
+DPCTLDevice_Copy(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Returns a new DPCTLSyclDeviceRef opaque object wrapping a SYCL device
+ * instance as a host device.
+ *
+ * @return   An opaque pointer to the host SYCL device.
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclDeviceRef DPCTLDevice_Create();
+
+/*!
+ * @brief Returns a new DPCTLSyclDeviceRef opaque object created using the
+ * provided device_selector.
+ *
+ * @param    DSRef          An opaque pointer to a SYCL device_selector.
+ * @return   Returns an opaque pointer to a SYCL device created using the
+ *           device_selector, if the requested device could not be created a
+ *           nullptr is returned.
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
+    __dpctl_keep const DPCTLSyclDeviceSelectorRef DSRef);
 
 /*!
  * @brief Prints out some of the info::deivice attributes for the device.
@@ -42,7 +75,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * @param    DRef           A DPCTLSyclDeviceRef pointer.
  */
 DPCTL_API
-void DPCTLDevice_DumpInfo (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+void DPCTLDevice_DumpInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Deletes a DPCTLSyclDeviceRef pointer after casting to to sycl::device.
@@ -50,7 +83,7 @@ void DPCTLDevice_DumpInfo (__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * @param    DRef           The DPCTLSyclDeviceRef pointer to be freed.
  */
 DPCTL_API
-void DPCTLDevice_Delete (__dpctl_take DPCTLSyclDeviceRef DRef);
+void DPCTLDevice_Delete(__dpctl_take DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns true if this SYCL device is an OpenCL device and the device
@@ -60,7 +93,7 @@ void DPCTLDevice_Delete (__dpctl_take DPCTLSyclDeviceRef DRef);
  * @return   True if the device type is an accelerator, else False.
  */
 DPCTL_API
-bool DPCTLDevice_IsAccelerator (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+bool DPCTLDevice_IsAccelerator(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns true if this SYCL device is an OpenCL device and the device
@@ -70,7 +103,7 @@ bool DPCTLDevice_IsAccelerator (__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * @return   True if the device type is a cpu, else False.
  */
 DPCTL_API
-bool DPCTLDevice_IsCPU (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+bool DPCTLDevice_IsCPU(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns true if this SYCL device is an OpenCL device and the device
@@ -80,7 +113,7 @@ bool DPCTLDevice_IsCPU (__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * @return    True if the device type is a gpu, else False.
  */
 DPCTL_API
-bool DPCTLDevice_IsGPU (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+bool DPCTLDevice_IsGPU(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns true if this SYCL device is a host device.
@@ -89,7 +122,7 @@ bool DPCTLDevice_IsGPU (__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * @return   True if the device is a host device, else False.
  */
 DPCTL_API
-bool DPCTLDevice_IsHost (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns the OpenCL software driver version as a C string.
@@ -99,8 +132,8 @@ bool DPCTLDevice_IsHost (__dpctl_keep const DPCTLSyclDeviceRef DRef);
  *           to the OpenCL driver version if this is a OpenCL device.
  */
 DPCTL_API
-__dpctl_give const char*
-DPCTLDevice_GetDriverInfo (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+__dpctl_give const char *
+DPCTLDevice_GetDriverInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Wrapper over device.get_info<info::device::max_compute_units>().
@@ -110,7 +143,7 @@ DPCTLDevice_GetDriverInfo (__dpctl_keep const DPCTLSyclDeviceRef DRef);
  */
 DPCTL_API
 uint32_t
-DPCTLDevice_GetMaxComputeUnits (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+DPCTLDevice_GetMaxComputeUnits(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Wrapper for get_info<info::device::max_work_item_dimensions>().
@@ -120,7 +153,7 @@ DPCTLDevice_GetMaxComputeUnits (__dpctl_keep const DPCTLSyclDeviceRef DRef);
  */
 DPCTL_API
 uint32_t
-DPCTLDevice_GetMaxWorkItemDims (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+DPCTLDevice_GetMaxWorkItemDims(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Wrapper for get_info<info::device::max_work_item_sizes>().
@@ -129,8 +162,8 @@ DPCTLDevice_GetMaxWorkItemDims (__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * @return   Returns the valid result if device exists else returns NULL.
  */
 DPCTL_API
-__dpctl_keep size_t*
-DPCTLDevice_GetMaxWorkItemSizes (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+__dpctl_keep size_t *
+DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Wrapper for get_info<info::device::max_work_group_size>().
@@ -140,7 +173,7 @@ DPCTLDevice_GetMaxWorkItemSizes (__dpctl_keep const DPCTLSyclDeviceRef DRef);
  */
 DPCTL_API
 size_t
-DPCTLDevice_GetMaxWorkGroupSize (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+DPCTLDevice_GetMaxWorkGroupSize(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Wrapper over device.get_info<info::device::max_num_sub_groups>.
@@ -150,27 +183,30 @@ DPCTLDevice_GetMaxWorkGroupSize (__dpctl_keep const DPCTLSyclDeviceRef DRef);
  */
 DPCTL_API
 uint32_t
-DPCTLDevice_GetMaxNumSubGroups (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+DPCTLDevice_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
- * @brief Wrapper over device.get_info<info::device::aspect::int64_base_atomics>.
+ * @brief Wrapper over
+ * device.get_info<info::device::aspect::int64_base_atomics>.
  *
  * @param    DRef           Opaque pointer to a sycl::device
  * @return   Returns true if device has int64_base_atomics else returns false.
  */
 DPCTL_API
-bool
-DPCTLDevice_HasInt64BaseAtomics (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+bool DPCTLDevice_HasInt64BaseAtomics(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
- * @brief Wrapper over device.get_info<info::device::aspect::int64_extended_atomics>.
+ * @brief Wrapper over
+ * device.get_info<info::device::aspect::int64_extended_atomics>.
  *
  * @param    DRef           Opaque pointer to a sycl::device
- * @return   Returns true if device has int64_extended_atomics else returns false.
+ * @return   Returns true if device has int64_extended_atomics else returns
+ * false.
  */
 DPCTL_API
-bool
-DPCTLDevice_HasInt64ExtendedAtomics (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+bool DPCTLDevice_HasInt64ExtendedAtomics(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns a C string for the device name.
@@ -179,8 +215,8 @@ DPCTLDevice_HasInt64ExtendedAtomics (__dpctl_keep const DPCTLSyclDeviceRef DRef)
  * @return   A C string containing the OpenCL device name.
  */
 DPCTL_API
-__dpctl_give const char*
-DPCTLDevice_GetName (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+__dpctl_give const char *
+DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns a C string corresponding to the vendor name.
@@ -189,8 +225,8 @@ DPCTLDevice_GetName (__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * @return    A C string containing the OpenCL device vendor name.
  */
 DPCTL_API
-__dpctl_give const char*
-DPCTLDevice_GetVendorName (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+__dpctl_give const char *
+DPCTLDevice_GetVendorName(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns True if the device and the host share a unified memory
@@ -201,7 +237,8 @@ DPCTLDevice_GetVendorName (__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * with the host.
  */
 DPCTL_API
-bool DPCTLDevice_IsHostUnifiedMemory (__dpctl_keep const DPCTLSyclDeviceRef DRef);
+bool DPCTLDevice_IsHostUnifiedMemory(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Checks if two DPCTLSyclDeviceRef objects point to the same
@@ -212,6 +249,6 @@ bool DPCTLDevice_IsHostUnifiedMemory (__dpctl_keep const DPCTLSyclDeviceRef DRef
  * @return   True if the underlying sycl::device are same, false otherwise.
  */
 DPCTL_API
-bool DPCTLDevice_AreEq (__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
-                        __dpctl_keep const DPCTLSyclDeviceRef DevRef2);
+bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
+                       __dpctl_keep const DPCTLSyclDeviceRef DevRef2);
 DPCTL_C_EXTERN_C_END

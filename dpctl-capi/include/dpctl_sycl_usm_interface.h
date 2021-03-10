@@ -1,8 +1,8 @@
-//===------------ dpctl_sycl_usm_interface.h - dpctl-C_API ---*---C++ -*---===//
+//===---- dpctl_sycl_usm_interface.h - C API for USM allocators  -*-C++-*- ===//
 //
-//               Data Parallel Control Library (dpCtl)
+//                      Data Parallel Control (dpCtl)
 //
-// Copyright 2020 Intel Corporation
+// Copyright 2020-2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@
 
 #pragma once
 
-#include "dpctl_data_types.h"
-#include "dpctl_sycl_types.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dpctl_data_types.h"
+#include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
 
@@ -43,7 +43,7 @@ DPCTL_C_EXTERN_C_BEGIN
  */
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
-DPCTLmalloc_shared (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
+DPCTLmalloc_shared(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Create USM shared memory.
@@ -57,8 +57,9 @@ DPCTLmalloc_shared (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
  */
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
-DPCTLaligned_alloc_shared (size_t alignment, size_t size,
-                           __dpctl_keep const DPCTLSyclQueueRef QRef);
+DPCTLaligned_alloc_shared(size_t alignment,
+                          size_t size,
+                          __dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Create USM host memory.
@@ -70,7 +71,7 @@ DPCTLaligned_alloc_shared (size_t alignment, size_t size,
  */
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
-DPCTLmalloc_host (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
+DPCTLmalloc_host(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Create USM host memory.
@@ -84,8 +85,9 @@ DPCTLmalloc_host (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
  */
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
-DPCTLaligned_alloc_host (size_t alignment, size_t size,
-                         __dpctl_keep const DPCTLSyclQueueRef QRef);
+DPCTLaligned_alloc_host(size_t alignment,
+                        size_t size,
+                        __dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Create USM device memory.
@@ -97,7 +99,7 @@ DPCTLaligned_alloc_host (size_t alignment, size_t size,
  */
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
-DPCTLmalloc_device (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
+DPCTLmalloc_device(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Create USM device memory.
@@ -111,8 +113,9 @@ DPCTLmalloc_device (size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
  */
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
-DPCTLaligned_alloc_device (size_t alignment, size_t size,
-                           __dpctl_keep const DPCTLSyclQueueRef QRef);
+DPCTLaligned_alloc_device(size_t alignment,
+                          size_t size,
+                          __dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Free USM memory.
@@ -124,29 +127,29 @@ DPCTLaligned_alloc_device (size_t alignment, size_t size,
  * used to construct the queue.
  */
 DPCTL_API
-void DPCTLfree_with_queue (__dpctl_take DPCTLSyclUSMRef MRef,
-                           __dpctl_keep const DPCTLSyclQueueRef QRef);
+void DPCTLfree_with_queue(__dpctl_take DPCTLSyclUSMRef MRef,
+                          __dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Free USM memory.
  *
  */
 DPCTL_API
-void DPCTLfree_with_context (__dpctl_take DPCTLSyclUSMRef MRef,
-                             __dpctl_keep const DPCTLSyclContextRef CRef);
+void DPCTLfree_with_context(__dpctl_take DPCTLSyclUSMRef MRef,
+                            __dpctl_keep const DPCTLSyclContextRef CRef);
 
 /*!
  * @brief Get pointer type.
  *
- * @param    MRef      USM Memory 
+ * @param    MRef      USM Memory
  * @param    CRef      Sycl context reference associated with the pointer
  *
  * @return "host", "device", "shared" or "unknown"
  */
 DPCTL_API
 const char *
-DPCTLUSM_GetPointerType (__dpctl_keep const DPCTLSyclUSMRef MRef,
-                         __dpctl_keep const DPCTLSyclContextRef CRef);
+DPCTLUSM_GetPointerType(__dpctl_keep const DPCTLSyclUSMRef MRef,
+                        __dpctl_keep const DPCTLSyclContextRef CRef);
 
 /*!
  * @brief Get the device associated with USM pointer.
@@ -158,6 +161,6 @@ DPCTLUSM_GetPointerType (__dpctl_keep const DPCTLSyclUSMRef MRef,
  */
 DPCTL_API
 DPCTLSyclDeviceRef
-DPCTLUSM_GetPointerDevice (__dpctl_keep const DPCTLSyclUSMRef MRef,
-                           __dpctl_keep const DPCTLSyclContextRef CRef);
+DPCTLUSM_GetPointerDevice(__dpctl_keep const DPCTLSyclUSMRef MRef,
+                          __dpctl_keep const DPCTLSyclContextRef CRef);
 DPCTL_C_EXTERN_C_END

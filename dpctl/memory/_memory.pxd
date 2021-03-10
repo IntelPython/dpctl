@@ -1,8 +1,6 @@
-# ===-------------- _memory.pxd - dpctl module --------*- Cython -*---------===#
-#
 #                      Data Parallel Control (dpCtl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,20 +13,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# ===-----------------------------------------------------------------------===#
-#
-# \file
-# This file has the Cython function declarations for the functions defined
-# in dpctl.memory._memory.pyx
-#
-# ===-----------------------------------------------------------------------===#
 
 # distutils: language = c++
 # cython: language_level=3
 
+""" This file has the Cython function declarations for the functions defined
+in dpctl.memory._memory.pyx.
+
+"""
+
 from .._backend cimport DPCTLSyclUSMRef
-from .._sycl_core cimport SyclQueue, SyclDevice, SyclContext
+from .._sycl_context cimport SyclContext
+from .._sycl_device cimport SyclDevice
+from .._sycl_queue cimport SyclQueue
 
 
 cdef class _Memory:

@@ -1,6 +1,6 @@
-#               Data Parallel Control Library (dpCtl)
+#                       Data Parallel Control (dpCtl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ execute_process(
     OUTPUT_VARIABLE dpcpp_ver
 )
 
-# If dpcpp is found then set then set the package variables
+# If dpcpp is found then set the package variables
 if(${dpcpp_result} MATCHES "0")
     string(REPLACE "\n" ";" DPCPP_VERSION_LIST "${dpcpp_ver}")
     list(GET DPCPP_VERSION_LIST 0 dpcpp_ver_line)
@@ -89,7 +89,7 @@ if(${dpcpp_result} MATCHES "0")
 
     # set package-level variables
     set(DPCPP_ROOT ${DPCPP_INSTALL_DIR})
-    list(POP_FRONT DPCPP_VERSION_LIST DPCPP_VERSION)
+    list(GET DPCPP_VERSION_LIST 0 DPCPP_VERSION)
     set(DPCPP_INCLUDE_DIR ${DPCPP_INSTALL_DIR}/include)
     set(DPCPP_SYCL_INCLUDE_DIR ${DPCPP_INSTALL_DIR}/include/sycl)
     set(DPCPP_LIBRARY_DIR ${DPCPP_INSTALL_DIR}/lib)
