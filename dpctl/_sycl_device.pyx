@@ -53,7 +53,13 @@ from ._backend cimport (
     DPCTLDevice_HasAspect,
     DPCTLSyclDeviceType,
     DPCTLDevice_GetSubGroupIndependentForwardProgress,
-    DPCTLDevice_GetPreferredVectorWidthChar
+    DPCTLDevice_GetPreferredVectorWidthChar,
+    DPCTLDevice_GetPreferredVectorWidthShort,
+    DPCTLDevice_GetPreferredVectorWidthInt,
+    DPCTLDevice_GetPreferredVectorWidthLong,
+    DPCTLDevice_GetPreferredVectorWidthFloat,
+    DPCTLDevice_GetPreferredVectorWidthDouble,
+    DPCTLDevice_GetPreferredVectorWidthHalf,
 )
 from . import backend_type, device_type
 import warnings
@@ -254,6 +260,42 @@ cdef class _SyclDevice:
         """
         return self._preferred_vector_width_char
 
+    cpdef get_preferred_vector_width_short(self):
+        """ Returns the preferred native vector width size for built-in scalar
+            types that can be put into vectors.
+        """
+        return self._preferred_vector_width_short
+
+    cpdef get_preferred_vector_width_int(self):
+        """ Returns the preferred native vector width size for built-in scalar
+            types that can be put into vectors.
+        """
+        return self._preferred_vector_width_int
+
+    cpdef get_preferred_vector_width_long(self):
+        """ Returns the preferred native vector width size for built-in scalar
+            types that can be put into vectors.
+        """
+        return self._preferred_vector_width_long
+
+    cpdef get_preferred_vector_width_float(self):
+        """ Returns the preferred native vector width size for built-in scalar
+            types that can be put into vectors.
+        """
+        return self._preferred_vector_width_float
+
+    cpdef get_preferred_vector_width_double(self):
+        """ Returns the preferred native vector width size for built-in scalar
+            types that can be put into vectors.
+        """
+        return self._preferred_vector_width_double
+
+    cpdef get_preferred_vector_width_half(self):
+        """ Returns the preferred native vector width size for built-in scalar
+            types that can be put into vectors.
+        """
+        return self._preferred_vector_width_half
+
     @property
     def __name__(self):
         return "SyclDevice"
@@ -322,6 +364,24 @@ cdef class SyclDevice(_SyclDevice):
         device._preferred_vector_width_char = (
             DPCTLDevice_GetPreferredVectorWidthChar(DRef)
         )
+        device._preferred_vector_width_short = (
+            DPCTLDevice_GetPreferredVectorWidthShort(DRef)
+        )
+        device._preferred_vector_width_int = (
+            DPCTLDevice_GetPreferredVectorWidthInt(DRef)
+        )
+        device._preferred_vector_width_long = (
+            DPCTLDevice_GetPreferredVectorWidthLong(DRef)
+        )
+        device._preferred_vector_width_float = (
+            DPCTLDevice_GetPreferredVectorWidthFloat(DRef)
+        )
+        device._preferred_vector_width_double = (
+            DPCTLDevice_GetPreferredVectorWidthDouble(DRef)
+        )
+        device._preferred_vector_width_half = (
+            DPCTLDevice_GetPreferredVectorWidthHalf(DRef)
+        )
 
     @staticmethod
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref):
@@ -348,6 +408,12 @@ cdef class SyclDevice(_SyclDevice):
         self._host_device = other._host_device
         self._sub_group_independent_forward_progress = other._sub_group_independent_forward_progress
         self._preferred_vector_width_char = other._preferred_vector_width_char
+        self._preferred_vector_width_short = other._preferred_vector_width_short
+        self._preferred_vector_width_int = other._preferred_vector_width_int
+        self._preferred_vector_width_long = other._preferred_vector_width_long
+        self._preferred_vector_width_float = other._preferred_vector_width_float
+        self._preferred_vector_width_double = other._preferred_vector_width_double
+        self._preferred_vector_width_half = other._preferred_vector_width_half
 
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef):
         # Initialize the attributes of the SyclDevice object

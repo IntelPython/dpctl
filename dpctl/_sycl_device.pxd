@@ -46,6 +46,12 @@ cdef class _SyclDevice:
     cdef uint32_t _max_num_sub_groups
     cdef bool _sub_group_independent_forward_progress
     cdef uint32_t _preferred_vector_width_char
+    cdef uint32_t _preferred_vector_width_short
+    cdef uint32_t _preferred_vector_width_int
+    cdef uint32_t _preferred_vector_width_long
+    cdef uint32_t _preferred_vector_width_float
+    cdef uint32_t _preferred_vector_width_double
+    cdef uint32_t _preferred_vector_width_half
     cdef DPCTLSyclDeviceRef get_device_ref(self)
     cpdef get_backend(self)
     cpdef get_device_name(self)
@@ -63,6 +69,12 @@ cdef class _SyclDevice:
     cpdef is_host(self)
     cpdef get_sub_group_independent_forward_progress(self)
     cpdef get_preferred_vector_width_char(self)
+    cpdef get_preferred_vector_width_short(self)
+    cpdef get_preferred_vector_width_int(self)
+    cpdef get_preferred_vector_width_long(self)
+    cpdef get_preferred_vector_width_float(self)
+    cpdef get_preferred_vector_width_double(self)
+    cpdef get_preferred_vector_width_half(self)
 
 
 cdef class SyclDevice(_SyclDevice):
