@@ -387,3 +387,19 @@ bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     }
     return hasAspect;
 }
+
+size_t
+DPCTLDevice_GetImage2dMaxWidth(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t image_2d_max_width = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            image_2d_max_width = D->get_info<info::device::image2d_max_width>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return image_2d_max_width;
+}

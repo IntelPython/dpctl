@@ -24,6 +24,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#include "../helper/include/dpctl_utils_helper.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_platform_interface.h"
@@ -252,6 +253,22 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsHost)
     if (!DRef)
         GTEST_SKIP_("Device not found");
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_IsHost(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage2dMaxWidth)
+{
+    DPCTLSyclDeviceRef DRef = nullptr;
+    size_t image_2d_max_width = 0;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(image_2d_max_width =
+                                DPCTLDevice_GetImage2dMaxWidth(DRef));
+    size_t min_val = 8192;
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("image"))))
+        EXPECT_TRUE(image_2d_max_width >= min_val);
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 

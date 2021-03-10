@@ -52,6 +52,7 @@ from ._backend cimport (
     DPCTLSyclDeviceSelectorRef,
     DPCTLDevice_HasAspect,
     DPCTLSyclDeviceType,
+    DPCTLDevice_GetImage2dMaxWidth,
 )
 from . import backend_type, device_type
 import warnings
@@ -191,6 +192,12 @@ cdef class _SyclDevice:
         """
         return self._max_num_sub_groups
 
+    cpdef get_image_2d_max_width(self):
+        """ Returns the maximum width of a 2D image or 1D image in pixels.
+            The minimum value is 8192 if the SYCL device has aspect::image.
+        """
+        return self._image_2d_max_width
+
     cpdef is_accelerator(self):
         """ Returns True if the SyclDevice instance is a SYCL accelerator
         device.
@@ -302,6 +309,7 @@ cdef class SyclDevice(_SyclDevice):
         device._cpu_device = DPCTLDevice_IsCPU(DRef)
         device._gpu_device = DPCTLDevice_IsGPU(DRef)
         device._host_device = DPCTLDevice_IsHost(DRef)
+        device._image_2d_max_width = DPCTLDevice_GetImage2dMaxWidth(DRef)
 
     @staticmethod
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref):
@@ -326,6 +334,7 @@ cdef class SyclDevice(_SyclDevice):
         self._cpu_device = other._cpu_device
         self._gpu_device = other._gpu_device
         self._host_device = other._host_device
+        self._image_2d_max_width = other._image_2d_max_width
 
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef):
         # Initialize the attributes of the SyclDevice object

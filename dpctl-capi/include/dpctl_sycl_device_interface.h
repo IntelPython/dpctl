@@ -265,4 +265,17 @@ DPCTL_API
 bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                            DPCTLSyclAspectType AT);
 
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::image2d_max_width>().
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the maximum width of a 2D image
+ * or 1D image in pixels. The minimum value is
+ * 8192 if the SYCL device has aspect::image.
+ */
+DPCTL_API
+size_t
+DPCTLDevice_GetImage2dMaxWidth(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
 DPCTL_C_EXTERN_C_END

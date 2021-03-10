@@ -240,6 +240,13 @@ def check_is_host(device):
         pytest.fail("is_hostcall failed")
 
 
+def check_get_image_2d_max_width(device):
+    try:
+        device.get_image_2d_max_width()
+    except Exception:
+        pytest.fail("get_image_2d_max_width call failed")
+
+
 list_of_checks = [
     check_get_max_compute_units,
     check_get_max_work_item_dims,
@@ -268,6 +275,7 @@ list_of_checks = [
     check_has_aspect_usm_shared_allocations,
     check_has_aspect_usm_restricted_shared_allocations,
     check_has_aspect_usm_system_allocator,
+    check_get_image_2d_max_width,
 ]
 
 
