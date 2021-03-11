@@ -471,5 +471,3 @@ cdef class SyclDevice(_SyclDevice):
         return ("<dpctl." + self.__name__ + " [" +
                 str(self.get_backend()) + ", " + str(self.get_device_type()) +", " +
                 " " + self.get_device_name() + "] at {}>".format(hex(id(self))) )
-
-
