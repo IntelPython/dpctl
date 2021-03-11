@@ -55,29 +55,37 @@ dpctl_sycl_interface_lib = os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"]
 dpctl_sycl_interface_include = os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"]
 sycl_lib = os.environ["ONEAPI_ROOT"] + "\compiler\latest\windows\lib"
 
+# Get long description
+with open("README.md", "r", encoding="utf-8") as file:
+    long_description = file.read()
+
 
 def get_sdl_cflags():
+    cflags = []
     if IS_LIN or IS_MAC:
-        return [
+        cflags = [
             "-fstack-protector",
             "-fPIC",
             "-D_FORTIFY_SOURCE=2",
             "-Wformat",
             "-Wformat-security",
         ]
-    elif IS_WIN:
-        return []
+    # Add cflags from environment
+    cflags += os.getenv("CFLAGS", "").split(" ")
+
+    return cflags
 
 
 def get_sdl_ldflags():
+    ldflags = []
     if IS_LIN:
-        return [
-            "-Wl,-z,noexecstack,-z,relro,-z,now",
-        ]
-    elif IS_MAC:
-        return []
+        ldflags = ["-Wl,-z,noexecstack,-z,relro,-z,now"]
     elif IS_WIN:
-        return ["/NXCompat", "/DynamicBase"]
+        ldflags = ["/NXCompat", "/DynamicBase"]
+    # Add ldflags from environment
+    ldflags += os.getenv("LDFLAGS", "").split(" ")
+
+    return ldflags
 
 
 def get_other_cxxflags():
@@ -237,9 +245,11 @@ def _get_cmdclass():
 
 setup(
     name="dpctl",
-    version=versioneer.get_version(),
+    version=versioneer.get_version().split("+")[0],
     cmdclass=_get_cmdclass(),
     description="A lightweight Python wrapper for a subset of OpenCL and SYCL.",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     license="Apache 2.0",
     author="Intel Corporation",
     url="https://github.com/IntelPython/dpCtl",
