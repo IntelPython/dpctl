@@ -403,3 +403,69 @@ DPCTLDevice_GetImage2dMaxWidth(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     }
     return image_2d_max_width;
 }
+
+size_t
+DPCTLDevice_GetImage2dMaxHeight(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t image_2d_max_height = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            image_2d_max_height =
+                D->get_info<info::device::image2d_max_height>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return image_2d_max_height;
+}
+
+size_t
+DPCTLDevice_GetImage3dMaxWidth(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t image_3d_max_width = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            image_3d_max_width = D->get_info<info::device::image3d_max_width>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return image_3d_max_width;
+}
+
+size_t
+DPCTLDevice_GetImage3dMaxHeight(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t image_3d_max_height = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            image_3d_max_height =
+                D->get_info<info::device::image3d_max_height>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return image_3d_max_height;
+}
+
+size_t
+DPCTLDevice_GetImage3dMaxDepth(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t image_3d_max_depth = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            image_3d_max_depth = D->get_info<info::device::image3d_max_depth>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return image_3d_max_depth;
+}

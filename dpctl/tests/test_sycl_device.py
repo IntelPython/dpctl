@@ -247,6 +247,34 @@ def check_get_image_2d_max_width(device):
         pytest.fail("get_image_2d_max_width call failed")
 
 
+def check_get_image_2d_max_height(device):
+    try:
+        device.get_image_2d_max_height()
+    except Exception:
+        pytest.fail("get_image_2d_max_height call failed")
+
+
+def check_get_image_3d_max_width(device):
+    try:
+        device.get_image_3d_max_width()
+    except Exception:
+        pytest.fail("get_image_3d_max_width call failed")
+
+
+def check_get_image_3d_max_height(device):
+    try:
+        device.get_image_3d_max_height()
+    except Exception:
+        pytest.fail("get_image_3d_max_height call failed")
+
+
+def check_get_image_3d_max_depth(device):
+    try:
+        device.get_image_3d_max_depth()
+    except Exception:
+        pytest.fail("get_image_3d_max_depth call failed")
+
+
 list_of_checks = [
     check_get_max_compute_units,
     check_get_max_work_item_dims,
@@ -276,6 +304,10 @@ list_of_checks = [
     check_has_aspect_usm_restricted_shared_allocations,
     check_has_aspect_usm_system_allocator,
     check_get_image_2d_max_width,
+    check_get_image_2d_max_height,
+    check_get_image_3d_max_width,
+    check_get_image_3d_max_height,
+    check_get_image_3d_max_depth,
 ]
 
 

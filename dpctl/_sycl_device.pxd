@@ -45,6 +45,10 @@ cdef class _SyclDevice:
     cdef size_t _max_work_group_size
     cdef uint32_t _max_num_sub_groups
     cdef size_t _image_2d_max_width
+    cdef size_t _image_2d_max_height
+    cdef size_t _image_3d_max_width
+    cdef size_t _image_3d_max_height
+    cdef size_t _image_3d_max_depth
     cdef DPCTLSyclDeviceRef get_device_ref(self)
     cpdef get_backend(self)
     cpdef get_device_name(self)
@@ -57,6 +61,10 @@ cdef class _SyclDevice:
     cpdef get_max_work_group_size(self)
     cpdef get_max_num_sub_groups(self)
     cpdef get_image_2d_max_width(self)
+    cpdef get_image_2d_max_height(self)
+    cpdef get_image_3d_max_width(self)
+    cpdef get_image_3d_max_height(self)
+    cpdef get_image_3d_max_depth(self)
     cpdef is_accelerator(self)
     cpdef is_cpu(self)
     cpdef is_gpu(self)

@@ -53,6 +53,10 @@ from ._backend cimport (
     DPCTLDevice_HasAspect,
     DPCTLSyclDeviceType,
     DPCTLDevice_GetImage2dMaxWidth,
+    DPCTLDevice_GetImage2dMaxHeight,
+    DPCTLDevice_GetImage3dMaxWidth,
+    DPCTLDevice_GetImage3dMaxHeight,
+    DPCTLDevice_GetImage3dMaxDepth,
 )
 from . import backend_type, device_type
 import warnings
@@ -198,6 +202,30 @@ cdef class _SyclDevice:
         """
         return self._image_2d_max_width
 
+    cpdef get_image_2d_max_height(self):
+        """ Returns the maximum height of a 2D image or 1D image in pixels.
+            The minimum value is 8192 if the SYCL device has aspect::image.
+        """
+        return self._image_2d_max_height
+
+    cpdef get_image_3d_max_width(self):
+        """ Returns the maximum width of a 3D image in pixels.
+            The minimum value is 2048 if the SYCL device has aspect::image.
+        """
+        return self._image_3d_max_width
+
+    cpdef get_image_3d_max_height(self):
+        """ Returns the maximum height of a 3D image in pixels.
+            The minimum value is 2048 if the SYCL device has aspect::image.
+        """
+        return self._image_3d_max_height
+
+    cpdef get_image_3d_max_depth(self):
+        """ Returns the maximum depth of a 3D image in pixels.
+            The minimum value is 2048 if the SYCL device has aspect::image.
+        """
+        return self._image_3d_max_depth
+
     cpdef is_accelerator(self):
         """ Returns True if the SyclDevice instance is a SYCL accelerator
         device.
@@ -310,6 +338,10 @@ cdef class SyclDevice(_SyclDevice):
         device._gpu_device = DPCTLDevice_IsGPU(DRef)
         device._host_device = DPCTLDevice_IsHost(DRef)
         device._image_2d_max_width = DPCTLDevice_GetImage2dMaxWidth(DRef)
+        device._image_2d_max_height = DPCTLDevice_GetImage2dMaxHeight(DRef)
+        device._image_3d_max_width = DPCTLDevice_GetImage3dMaxWidth(DRef)
+        device._image_3d_max_height = DPCTLDevice_GetImage3dMaxHeight(DRef)
+        device._image_3d_max_depth = DPCTLDevice_GetImage3dMaxDepth(DRef)
 
     @staticmethod
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref):
@@ -335,6 +367,10 @@ cdef class SyclDevice(_SyclDevice):
         self._gpu_device = other._gpu_device
         self._host_device = other._host_device
         self._image_2d_max_width = other._image_2d_max_width
+        self._image_2d_max_height = other._image_2d_max_height
+        self._image_3d_max_width = other._image_3d_max_width
+        self._image_3d_max_height = other._image_3d_max_height
+        self._image_3d_max_depth = other._image_3d_max_depth
 
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef):
         # Initialize the attributes of the SyclDevice object
