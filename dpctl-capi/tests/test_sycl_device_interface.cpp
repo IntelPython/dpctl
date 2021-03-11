@@ -24,6 +24,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#include "../helper/include/dpctl_utils_helper.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_platform_interface.h"
@@ -252,6 +253,38 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsHost)
     if (!DRef)
         GTEST_SKIP_("Device not found");
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_IsHost(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxReadImageArgs)
+{
+    DPCTLSyclDeviceRef DRef = nullptr;
+    size_t max_read_image_args = 0;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(max_read_image_args =
+                                DPCTLDevice_GetMaxReadImageArgs(DRef));
+    size_t min_val = 128;
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("image"))))
+        EXPECT_TRUE(max_read_image_args >= min_val);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxWriteImageArgs)
+{
+    DPCTLSyclDeviceRef DRef = nullptr;
+    size_t max_write_image_args = 0;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(max_write_image_args =
+                                DPCTLDevice_GetMaxWriteImageArgs(DRef));
+    size_t min_val = 8;
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("image"))))
+        EXPECT_TRUE(max_write_image_args >= min_val);
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 

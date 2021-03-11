@@ -44,6 +44,8 @@ cdef class _SyclDevice:
     cdef size_t *_max_work_item_sizes
     cdef size_t _max_work_group_size
     cdef uint32_t _max_num_sub_groups
+    cdef uint32_t _max_read_image_args
+    cdef uint32_t _max_write_image_args
     cdef DPCTLSyclDeviceRef get_device_ref(self)
     cpdef get_backend(self)
     cpdef get_device_name(self)
@@ -59,6 +61,8 @@ cdef class _SyclDevice:
     cpdef is_cpu(self)
     cpdef is_gpu(self)
     cpdef is_host(self)
+    cpdef get_max_read_image_args(self)
+    cpdef get_max_write_image_args(self)
 
 
 cdef class SyclDevice(_SyclDevice):

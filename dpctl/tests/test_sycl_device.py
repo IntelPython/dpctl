@@ -240,6 +240,20 @@ def check_is_host(device):
         pytest.fail("is_hostcall failed")
 
 
+def check_get_max_read_image_args(device):
+    try:
+        device.get_max_read_image_args()
+    except Exception:
+        pytest.fail("get_max_read_image_args call failed")
+
+
+def check_get_max_write_image_args(device):
+    try:
+        device.get_max_write_image_args()
+    except Exception:
+        pytest.fail("get_max_write_image_args call failed")
+
+
 list_of_checks = [
     check_get_max_compute_units,
     check_get_max_work_item_dims,
@@ -268,6 +282,8 @@ list_of_checks = [
     check_has_aspect_usm_shared_allocations,
     check_has_aspect_usm_restricted_shared_allocations,
     check_has_aspect_usm_system_allocator,
+    check_get_max_read_image_args,
+    check_get_max_write_image_args,
 ]
 
 

@@ -387,3 +387,37 @@ bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     }
     return hasAspect;
 }
+
+uint32_t
+DPCTLDevice_GetMaxReadImageArgs(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    uint32_t max_read_image_args = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            max_read_image_args =
+                D->get_info<info::device::max_read_image_args>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return max_read_image_args;
+}
+
+uint32_t
+DPCTLDevice_GetMaxWriteImageArgs(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    uint32_t max_write_image_args = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            max_write_image_args =
+                D->get_info<info::device::max_write_image_args>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return max_write_image_args;
+}

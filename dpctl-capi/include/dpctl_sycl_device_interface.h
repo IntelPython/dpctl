@@ -265,4 +265,30 @@ DPCTL_API
 bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                            DPCTLSyclAspectType AT);
 
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::max_read_image_args>().
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the maximum number of simultaneous image objects that
+ * can be read from by a kernel. The minimum value is 128 if the
+ * SYCL device has aspect::image.
+ */
+DPCTL_API
+uint32_t
+DPCTLDevice_GetMaxReadImageArgs(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::max_write_image_args>().
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the maximum number of simultaneous image objects that
+ *  can be written to by a kernel. The minimum value is 8 if the SYCL
+ * device has aspect::image.
+ */
+DPCTL_API
+uint32_t
+DPCTLDevice_GetMaxWriteImageArgs(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
 DPCTL_C_EXTERN_C_END

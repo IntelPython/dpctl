@@ -52,6 +52,8 @@ from ._backend cimport (
     DPCTLSyclDeviceSelectorRef,
     DPCTLDevice_HasAspect,
     DPCTLSyclDeviceType,
+    DPCTLDevice_GetMaxReadImageArgs,
+    DPCTLDevice_GetMaxWriteImageArgs,
 )
 from . import backend_type, device_type
 import warnings
@@ -240,6 +242,20 @@ cdef class _SyclDevice:
         """
         return int(<size_t>self._device_ref)
 
+    cpdef get_max_read_image_args(self):
+        """ Returns the maximum number of simultaneous image objects that
+            can be read from by a kernel. The minimum value is 128 if the
+            SYCL device has aspect::image.
+        """
+        return self._max_read_image_args
+
+    cpdef get_max_write_image_args(self):
+        """ Returns the maximum number of simultaneous image objects that
+            can be written to by a kernel. The minimum value is 8 if the SYCL
+            device has aspect::image.
+        """
+        return self._max_write_image_args
+
     @property
     def __name__(self):
         return "SyclDevice"
@@ -302,6 +318,8 @@ cdef class SyclDevice(_SyclDevice):
         device._cpu_device = DPCTLDevice_IsCPU(DRef)
         device._gpu_device = DPCTLDevice_IsGPU(DRef)
         device._host_device = DPCTLDevice_IsHost(DRef)
+        device._max_read_image_args = DPCTLDevice_GetMaxReadImageArgs(DRef)
+        device._max_write_image_args = DPCTLDevice_GetMaxWriteImageArgs(DRef)
 
     @staticmethod
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref):
@@ -326,6 +344,8 @@ cdef class SyclDevice(_SyclDevice):
         self._cpu_device = other._cpu_device
         self._gpu_device = other._gpu_device
         self._host_device = other._host_device
+        self._max_read_image_args = other._max_read_image_args
+        self._max_write_image_args = other._max_write_image_args
 
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef):
         # Initialize the attributes of the SyclDevice object
