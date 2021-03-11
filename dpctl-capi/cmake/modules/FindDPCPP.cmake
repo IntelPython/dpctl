@@ -34,8 +34,10 @@ include( FindPackageHandleStandardArgs )
 
 string(COMPARE EQUAL "${DPCPP_INSTALL_DIR}" "" no_dpcpp_root)
 if(${no_dpcpp_root})
-    message(STATUS "Set the DPCPP_ROOT argument providing the path to \
-                         a dpcpp installation.")
+    message(STATUS
+        "Set the DPCPP_INSTALL_DIR variable to provide a path to a dpcpp "
+        "installation."
+    )
     return()
 endif()
 

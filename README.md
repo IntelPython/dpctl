@@ -41,7 +41,7 @@ conda install dpctl
 
 Build and Install with setuptools
 =================================
-dpCtl relies on DPC++ runtime. With Intel oneAPI installed you should activate it.
+`dpctl` relies on DPC++ runtime. With Intel oneAPI installed you should activate it.
 `setup.py` requires environment variable `ONEAPI_ROOT` and following packages
 installed:
 - `cython`
@@ -49,10 +49,19 @@ installed:
 - `cmake` - for building C API
 - `ninja` - only on Windows
 
-Activate DPC++ compiler:
+You need `DPC++` to build `dpctl`. If you want to build using the `DPC++` in a
+oneAPI distribution, activate DPC++ compiler as follows:
 ```bash
 export ONEAPI_ROOT=/opt/intel/oneapi
 source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
+```
+To use a custom built `DPC++`, you need to create an environment variable called
+`DPCPP_HOME` that points to the root directory of the custom `DPC++` install
+path. Note that if you set the `DPCPP_HOME` environment variable, `setup.py`
+will ignore any oneAPI installation.
+
+```bash
+export DPCPP_HOME=PATH_TO_YOUR_CUSTOM_DPCPP
 ```
 
 For install:

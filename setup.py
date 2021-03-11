@@ -42,18 +42,20 @@ else:
     assert False, sys.platform + " not supported"
 
 if IS_LIN:
-    DPCPP_ROOT = os.environ["ONEAPI_ROOT"] + "/compiler/latest/linux"
     os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
     os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
     os.environ["CFLAGS"] = "-fPIC"
-
 elif IS_WIN:
     os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
     os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl\include"
+    DPCPP_HOME = os.environ.get("DPCPP_HOME")
+    if DPCPP_HOME:
+        sycl_lib = os.environ["DPCPP_HOME"] + "\lib"
+    else:
+        sycl_lib = os.environ["ONEAPI_ROOT"] + "\compiler\latest\windows\lib"
 
 dpctl_sycl_interface_lib = os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"]
 dpctl_sycl_interface_include = os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"]
-sycl_lib = os.environ["ONEAPI_ROOT"] + "\compiler\latest\windows\lib"
 
 
 def get_sdl_cflags():

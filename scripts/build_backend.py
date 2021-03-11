@@ -34,13 +34,17 @@ elif sys.platform in ["win32", "cygwin"]:
 else:
     assert False, sys.platform + " not supported"
 
-ONEAPI_ROOT = os.environ.get("ONEAPI_ROOT")
 CODE_COVERAGE = os.environ.get("CODE_COVERAGE")
-
-if IS_LIN:
-    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, "compiler/latest/linux")
-if IS_WIN:
-    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, "compiler\latest\windows")
+DPCPP_HOME = os.environ.get("DPCPP_HOME")
+if not DPCPP_HOME:
+    ONEAPI_ROOT = os.environ.get("ONEAPI_ROOT")
+    if IS_LIN:
+        DPCPP_HOME = os.path.join(ONEAPI_ROOT, "compiler/latest/linux")
+    elif IS_WIN:
+        DPCPP_HOME = os.path.join(ONEAPI_ROOT, "compiler\latest\windows")
+        print("DPCPP_HOME", DPCPP_HOME)
+    else:
+        assert False, sys.platform + " not supported"
 
 dpctl_dir = os.getcwd()
 build_cmake_dir = os.path.join(dpctl_dir, "build_cmake")
@@ -62,9 +66,11 @@ if IS_LIN:
             "-DCMAKE_BUILD_TYPE=Debug",
             "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
             "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
-            "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
-            "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
-            "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "dpcpp"),
+            "-DDPCPP_INSTALL_DIR=" + DPCPP_HOME,
+            "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_HOME, "bin", "clang"),
+            "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_HOME, "bin", "clang++"),
+            "-DCMAKE_LINKER:PATH= " + os.path.join(DPCPP_HOME, "bin", "lld"),
+            "-DCMAKE_CXX_FLAGS=-fsycl",
             "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON",
             "-DDPCTL_BUILD_CAPI_TESTS=ON",
             "-DDPCTL_GENERATE_COVERAGE=ON",
@@ -82,9 +88,11 @@ if IS_LIN:
             "-DCMAKE_BUILD_TYPE=Release",
             "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
             "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
-            "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
-            "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
-            "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "dpcpp"),
+            "-DDPCPP_INSTALL_DIR=" + DPCPP_HOME,
+            "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_HOME, "bin", "clang"),
+            "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_HOME, "bin", "clang++"),
+            "-DCMAKE_LINKER:PATH= " + os.path.join(DPCPP_HOME, "bin", "lld"),
+            "-DCMAKE_CXX_FLAGS=-fsycl",
             "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON",
             backends,
         ]
@@ -104,9 +112,10 @@ if IS_WIN:
         "-DCMAKE_BUILD_TYPE=Release",
         "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
         "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
-        "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
-        "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang-cl.exe"),
-        "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "dpcpp.exe"),
+        "-DDPCPP_INSTALL_DIR=" + DPCPP_HOME,
+        "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_HOME, "bin", "clang-cl.exe"),
+        "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_HOME, "bin", "dpcpp.exe"),
+        "-DCMAKE_LINKER:PATH=" + os.path.join(DPCPP_HOME, "bin", "lld-link.exe"),
         backends,
     ]
     subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=False)
