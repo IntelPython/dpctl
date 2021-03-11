@@ -104,7 +104,7 @@ cdef class SyclAsynchronousError(Exception):
     """
 
 
-cdef void default_async_error_handler(int err) nogil:
+cdef void default_async_error_handler(int err) nogil except *:
     with gil:
         raise SyclAsynchronousError(err)
 
