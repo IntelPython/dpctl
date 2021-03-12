@@ -26,9 +26,10 @@
 #pragma once
 
 /*!
- * @brief
+ * @brief    Type of function to be used in SYCL async error handler provide by
+ * DPCTL.
  *
- * @param    err_code       My Param doc
- * @return   {return}       My Param doc
+ * @param    err_code       Error code extracted from an SYCL asynchronous
+ * error.
  */
 typedef void error_handler_callback(int err_code);
