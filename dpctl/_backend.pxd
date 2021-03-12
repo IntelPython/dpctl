@@ -186,6 +186,7 @@ cdef extern from "dpctl_sycl_device_selector_interface.h":
     DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create()
     DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create()
     void DPCTLDeviceSelector_Delete(DPCTLSyclDeviceSelectorRef DSRef)
+    int DPCTLDeviceSelector_Score(DPCTLSyclDeviceSelectorRef, DPCTLSyclDeviceRef)
 
 
 cdef extern from "dpctl_sycl_event_interface.h":
