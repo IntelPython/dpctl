@@ -105,4 +105,19 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create();
 DPCTL_API
 void DPCTLDeviceSelector_Delete(__dpctl_take DPCTLSyclDeviceSelectorRef DSRef);
 
+/*!
+ *@brief Scores the device specified by DRef by device selector specified by
+ *DSRef.
+ *
+ * @param    DSRef An opaque DPCTLSyclDeviceSelectorRef pointer.
+ * @param    DRef An opaque DPCTLSyclDeviceRef pointer.
+ *
+ * @return A integer score. The negative value indicates select rejected the
+ *device.
+ * @ingroup DeviceSelectors
+ */
+DPCTL_API
+int DPCTLDeviceSelector_Score(__dpctl_keep DPCTLSyclDeviceSelectorRef DSRef,
+                              __dpctl_keep DPCTLSyclDeviceRef DRef);
+
 DPCTL_C_EXTERN_C_END
