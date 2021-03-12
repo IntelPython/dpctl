@@ -24,8 +24,8 @@ from ._backend cimport (
     _aspect_type,
     _backend_type,
     _device_type,
-    DPCTLDefaultSelector_Create,
     DPCTLCString_Delete,
+    DPCTLDefaultSelector_Create,
     DPCTLDevice_Copy,
     DPCTLDevice_CreateFromSelector,
     DPCTLDevice_Delete,
@@ -46,6 +46,7 @@ from ._backend cimport (
     DPCTLDeviceMgr_PrintDeviceInfo,
     DPCTLFilterSelector_Create,
     DPCTLDeviceSelector_Delete,
+    DPCTLDeviceSelector_Score,
     DPCTLSize_t_Array_Delete,
     DPCTLSyclBackendType,
     DPCTLSyclDeviceRef,
@@ -462,6 +463,15 @@ cdef class SyclDevice(_SyclDevice):
     def has_aspect_usm_system_allocator(self):
         cdef _aspect_type AT = _aspect_type._usm_system_allocator
         return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def default_selector_score(self):
+        cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create()
+        cdef int score = -1
+        if (DSRef):
+            score = DPCTLDeviceSelector_Score(DSRef, self._device_ref)
+            DPCTLDeviceSelector_Delete(DSRef)
+        return score
 
     @property
     def __name__(self):
