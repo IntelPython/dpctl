@@ -182,6 +182,26 @@ TEST_P(TestUnsupportedFilters, Chk_DPCTLFilterSelector_Create)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
+TEST_F(TestDeviceSelectorInterface, Chk_DPCTLGPUSelector_Score)
+{
+    DPCTLSyclDeviceSelectorRef DSRef_GPU = nullptr;
+    DPCTLSyclDeviceSelectorRef DSRef_CPU = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DSRef_GPU = DPCTLGPUSelector_Create());
+    EXPECT_NO_FATAL_FAILURE(DSRef_CPU = DPCTLCPUSelector_Create());
+    if (DSRef_CPU && DSRef_GPU) {
+        DPCTLSyclDeviceRef DRef = nullptr;
+        EXPECT_NO_FATAL_FAILURE(DRef =
+                                    DPCTLDevice_CreateFromSelector(DSRef_CPU));
+        ASSERT_TRUE(DRef != nullptr);
+        EXPECT_TRUE(DPCTLDevice_IsCPU(DRef));
+        EXPECT_TRUE(DPCTLDeviceSelector_Score(DSRef_GPU, DRef) < 0);
+        EXPECT_TRUE(DPCTLDeviceSelector_Score(DSRef_CPU, DRef) > 0);
+        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    }
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef_GPU));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef_CPU));
+}
+
 INSTANTIATE_TEST_SUITE_P(FilterSelectorCreation,
                          TestFilterSelector,
                          ::testing::Values("opencl",
