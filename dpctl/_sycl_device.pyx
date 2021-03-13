@@ -55,6 +55,7 @@ from ._backend cimport (
     DPCTLSyclDeviceType,
 )
 from . import backend_type, device_type
+from libc.stdint cimport uint32_t
 import warnings
 
 __all__ = [
@@ -91,7 +92,7 @@ cdef class SyclDevice(_SyclDevice):
                 # Create a SyclDevice with an explicit filter string, in
                 # this case the first level_zero gpu device.
                 level_zero_gpu = dpctl.SyclDevice("level_zero:gpu:0"):
-                level_zero_gpu.dump_device_info()
+                level_zero_gpu.print_device_info()
 
         - by calling one of the device selector helper functions:
 
@@ -110,7 +111,7 @@ cdef class SyclDevice(_SyclDevice):
                 # Create a SyclDevice of type GPU based on whatever is returned
                 # by the SYCL `gpu_selector` device selector class.
                 gpu = dpctl.select_gpu_device():
-                gpu.dump_device_info()
+                gpu.print_device_info()
 
     """
     @staticmethod
@@ -119,17 +120,6 @@ cdef class SyclDevice(_SyclDevice):
         device._device_name = DPCTLDevice_GetName(DRef)
         device._driver_version = DPCTLDevice_GetDriverInfo(DRef)
         device._vendor_name = DPCTLDevice_GetVendorName(DRef)
-        device._accelerator_device = DPCTLDevice_IsAccelerator(DRef)
-        device._cpu_device = DPCTLDevice_IsCPU(DRef)
-        device._gpu_device = DPCTLDevice_IsGPU(DRef)
-        device._host_device = DPCTLDevice_IsHost(DRef)
-        device._max_compute_units = DPCTLDevice_GetMaxComputeUnits(DRef)
-        if (device._host_device):
-            device._max_num_sub_groups = -1
-        else:
-            device._max_num_sub_groups = DPCTLDevice_GetMaxNumSubGroups(DRef)
-        device._max_work_group_size = DPCTLDevice_GetMaxWorkGroupSize(DRef)
-        device._max_work_item_dims = DPCTLDevice_GetMaxWorkItemDims(DRef)
         device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes(DRef)
 
     @staticmethod
@@ -145,18 +135,10 @@ cdef class SyclDevice(_SyclDevice):
             return -1
         self._device_name = DPCTLDevice_GetName(self._device_ref)
         self._driver_version = DPCTLDevice_GetDriverInfo(self._device_ref)
-        self._max_compute_units = other._max_compute_units
-        self._max_num_sub_groups = other._max_num_sub_groups
-        self._max_work_group_size = other._max_work_group_size
-        self._max_work_item_dims = other._max_work_item_dims
         self._max_work_item_sizes =  (
             DPCTLDevice_GetMaxWorkItemSizes(self._device_ref)
         )
         self._vendor_name = DPCTLDevice_GetVendorName(self._device_ref)
-        self._accelerator_device = other._accelerator_device
-        self._cpu_device = other._cpu_device
-        self._gpu_device = other._gpu_device
-        self._host_device = other._host_device
 
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef):
         # Initialize the attributes of the SyclDevice object
@@ -169,7 +151,6 @@ cdef class SyclDevice(_SyclDevice):
 
     def __cinit__(self, arg=None):
         cdef DPCTLSyclDeviceSelectorRef DSRef = NULL
-        cdef DPCTLSyclDeviceRef DRef = NULL
         cdef const char *filter_c_str = NULL
         cdef int ret = 0
 
@@ -179,7 +160,9 @@ cdef class SyclDevice(_SyclDevice):
             DSRef = DPCTLFilterSelector_Create(filter_c_str)
             ret = self._init_from_selector(DSRef)
             if ret == -1:
-                raise ValueError("Could not create a Device with the selector")
+                raise ValueError(
+                    "Could not create a SyclDevice with the selector string"
+                )
             # Free up the device selector
             DPCTLDeviceSelector_Delete(DSRef)
         elif isinstance(arg, unicode):
@@ -188,40 +171,52 @@ cdef class SyclDevice(_SyclDevice):
             DSRef = DPCTLFilterSelector_Create(filter_c_str)
             ret = self._init_from_selector(DSRef)
             if ret == -1:
-                raise ValueError("Could not create a Device with the selector")
+                raise ValueError(
+                    "Could not create a SyclDevice with the selector string"
+                )
             # Free up the device selector
             DPCTLDeviceSelector_Delete(DSRef)
         elif isinstance(arg, _SyclDevice):
             ret = self._init_from__SyclDevice(arg)
             if ret == -1:
-                raise ValueError("Could not create a Device from _SyclDevice instance")
+                raise ValueError(
+                    "Could not create a SyclDevice from _SyclDevice instance"
+                )
         elif arg is None:
             DSRef = DPCTLDefaultSelector_Create()
             ret = self._init_from_selector(DSRef)
             if ret == -1:
-                raise ValueError("Could not create a Device from default selector")
+                raise ValueError(
+                    "Could not create a SyclDevice from default selector"
+                )
         else:
             raise ValueError(
                 "Invalid argument. Argument should be a str object specifying "
                 "a SYCL filter selector string."
             )
 
-    def dump_device_info(self):
-        """ Print information about the SYCL device.
-        """
-        warnings.warn(
-            "WARNING: dump_device_info is deprecated and will be removed in "
-            "a future release of dpctl. Use print_device_info instead."
-        )
-        DPCTLDeviceMgr_PrintDeviceInfo(self._device_ref)
-
-
     def print_device_info(self):
         """ Print information about the SYCL device.
         """
         DPCTLDeviceMgr_PrintDeviceInfo(self._device_ref)
 
-    cpdef get_backend(self):
+    cdef DPCTLSyclDeviceRef get_device_ref (self):
+        """ Returns the DPCTLSyclDeviceRef pointer for this class.
+        """
+        return self._device_ref
+
+    def addressof_ref(self):
+        """
+        Returns the address of the DPCTLSyclDeviceRef pointer as a size_t.
+
+        Returns:
+            int: The address of the DPCTLSyclDeviceRef object used to create
+            this SyclDevice cast to a size_t.
+        """
+        return int(<size_t>self._device_ref)
+
+    @property
+    def backend(self):
         """Returns the backend_type enum value for this device
 
         Returns:
@@ -241,12 +236,8 @@ cdef class SyclDevice(_SyclDevice):
         else:
             raise ValueError("Unknown backend type.")
 
-    cpdef get_device_name(self):
-        """ Returns the name of the device as a string
-        """
-        return self._device_name.decode()
-
-    cpdef get_device_type(self):
+    @property
+    def device_type(self):
         """ Returns the type of the device as a `device_type` enum.
 
         Returns:
@@ -269,110 +260,6 @@ cdef class SyclDevice(_SyclDevice):
             return device_type.host_device
         else:
             raise ValueError("Unknown device type.")
-
-    cpdef get_vendor_name(self):
-        """ Returns the device vendor name as a string
-        """
-        return self._vendor_name.decode()
-
-    cpdef get_driver_version(self):
-        """ Returns the OpenCL software driver version as a string
-            in the form: major number.minor number, if this SYCL
-            device is an OpenCL device. Returns a string class
-            with the value "1.2" if this SYCL device is a host device.
-        """
-        return self._driver_version.decode()
-
-    cpdef get_max_compute_units(self):
-        """ Returns the number of parallel compute units
-            available to the device. The minimum value is 1.
-        """
-        return self._max_compute_units
-
-    cpdef get_max_work_item_dims(self):
-        """ Returns the maximum dimensions that specify
-            the global and local work-item IDs used by the
-            data parallel execution model. The minimum
-            value is 3 if this SYCL device is not of device
-            type ``info::device_type::custom``.
-        """
-        return self._max_work_item_dims
-
-    cpdef get_max_work_item_sizes(self):
-        """ Returns the maximum number of work-items
-            that are permitted in each dimension of the
-            work-group of the nd_range. The minimum
-            value is (1; 1; 1) for devices that are not of
-            device type ``info::device_type::custom``.
-        """
-        max_work_item_sizes = []
-        for n in range(3):
-            max_work_item_sizes.append(self._max_work_item_sizes[n])
-        return tuple(max_work_item_sizes)
-
-    cpdef get_max_work_group_size(self):
-        """ Returns the maximum number of work-items
-            that are permitted in a work-group executing a
-            kernel on a single compute unit. The minimum
-            value is 1.
-        """
-        return self._max_work_group_size
-
-    cpdef get_max_num_sub_groups(self):
-        """ Returns the maximum number of sub-groups
-            in a work-group for any kernel executed on the
-            device. The minimum value is 1.
-        """
-        return self._max_num_sub_groups
-
-    cpdef is_accelerator(self):
-        """ Returns True if the SyclDevice instance is a SYCL accelerator
-        device.
-
-        Returns:
-            bool: True if the SyclDevice is a SYCL accelerator device,
-            else False.
-        """
-        return self._accelerator_device
-
-    cpdef is_cpu(self):
-        """ Returns True if the SyclDevice instance is a SYCL CPU device.
-
-        Returns:
-            bool: True if the SyclDevice is a SYCL CPU device, else False.
-        """
-        return self._cpu_device
-
-    cpdef is_gpu(self):
-        """ Returns True if the SyclDevice instance is a SYCL GPU device.
-
-        Returns:
-            bool: True if the SyclDevice is a SYCL GPU device, else False.
-        """
-        return self._gpu_device
-
-    cpdef is_host(self):
-        """ Returns True if the SyclDevice instance is a SYCL host device.
-
-        Returns:
-            bool: True if the SyclDevice is a SYCL host device, else False.
-        """
-        return self._host_device
-
-    cdef DPCTLSyclDeviceRef get_device_ref (self):
-        """ Returns the DPCTLSyclDeviceRef pointer for this class.
-        """
-        return self._device_ref
-
-    def addressof_ref(self):
-        """
-        Returns the address of the DPCTLSyclDeviceRef pointer as a size_t.
-
-        Returns:
-            int: The address of the DPCTLSyclDeviceRef object used to create
-            this SyclDevice cast to a size_t.
-        """
-        return int(<size_t>self._device_ref)
 
     @property
     def has_aspect_host(self):
@@ -472,6 +359,120 @@ cdef class SyclDevice(_SyclDevice):
             score = DPCTLDeviceSelector_Score(DSRef, self._device_ref)
             DPCTLDeviceSelector_Delete(DSRef)
         return score
+
+    @property
+    def is_accelerator(self):
+        """ Returns True if the SyclDevice instance is a SYCL accelerator
+        device.
+
+        Returns:
+            bool: True if the SyclDevice is a SYCL accelerator device,
+            else False.
+        """
+        return DPCTLDevice_IsAccelerator(self._device_ref)
+
+    @property
+    def is_cpu(self):
+        """ Returns True if the SyclDevice instance is a SYCL CPU device.
+
+        Returns:
+            bool: True if the SyclDevice is a SYCL CPU device, else False.
+        """
+        return DPCTLDevice_IsCPU(self._device_ref)
+
+    @property
+    def is_gpu(self):
+        """ Returns True if the SyclDevice instance is a SYCL GPU device.
+
+        Returns:
+            bool: True if the SyclDevice is a SYCL GPU device, else False.
+        """
+        return DPCTLDevice_IsGPU(self._device_ref)
+
+    @property
+    def is_host(self):
+        """ Returns True if the SyclDevice instance is a SYCL host device.
+
+        Returns:
+            bool: True if the SyclDevice is a SYCL host device, else False.
+        """
+        return DPCTLDevice_IsHost(self._device_ref)
+
+    @property
+    def max_work_item_dims(self):
+        """ Returns the maximum dimensions that specify
+            the global and local work-item IDs used by the
+            data parallel execution model. The cb
+            value is 3 if this SYCL device is not of device
+            type ``info::device_type::custom``.
+        """
+        cdef uint32_t max_work_item_dims = 0
+        max_work_item_dims = DPCTLDevice_GetMaxWorkItemDims(self._device_ref)
+        return max_work_item_dims
+
+    @property
+    def max_work_item_sizes(self):
+        """ Returns the maximum number of work-items
+            that are permitted in each dimension of the
+            work-group of the nd_range. The minimum
+            value is (1; 1; 1) for devices that are not of
+            device type ``info::device_type::custom``.
+        """
+        max_work_item_sizes = []
+        for n in range(3):
+            max_work_item_sizes.append(self._max_work_item_sizes[n])
+        return tuple(max_work_item_sizes)
+
+    @property
+    def max_compute_units(self):
+        """ Returns the number of parallel compute units
+            available to the device. The minimum value is 1.
+        """
+        cdef uint32_t max_compute_units = 0
+        max_compute_units = DPCTLDevice_GetMaxComputeUnits(self._device_ref)
+        return max_compute_units
+
+    @property
+    def max_work_group_size(self):
+        """ Returns the maximum number of work-items
+            that are permitted in a work-group executing a
+            kernel on a single compute unit. The minimum
+            value is 1.
+        """
+        cdef uint32_t max_work_group_size = 0
+        max_work_group_size = DPCTLDevice_GetMaxWorkGroupSize(self._device_ref)
+        return max_work_group_size
+
+    @property
+    def max_num_sub_groups(self):
+        """ Returns the maximum number of sub-groups
+            in a work-group for any kernel executed on the
+            device. The minimum value is 1.
+        """
+        cdef uint32_t max_num_sub_groups = 0
+        if (not self.is_host):
+            max_num_sub_groups = (
+                DPCTLDevice_GetMaxNumSubGroups(self._device_ref)
+            )
+        return max_num_sub_groups
+
+    @property
+    def vendor_name(self):
+        """ Returns the device vendor name as a string.
+        """
+        return self._vendor_name.decode()
+
+    @property
+    def driver_version(self):
+        """ Returns a backend-defined driver version as a string.
+        """
+        return self._driver_version.decode()
+
+    @property
+    def device_name(self):
+        """ Returns the name of the device as a string
+        """
+        return self._device_name.decode()
 
     @property
     def __name__(self):

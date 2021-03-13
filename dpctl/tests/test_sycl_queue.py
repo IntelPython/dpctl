@@ -53,34 +53,34 @@ list_of_invalid_filter_selectors = [
 
 # Unit test cases that will be run for every device
 def check_get_max_compute_units(device):
-    max_compute_units = device.get_max_compute_units()
+    max_compute_units = device.max_compute_units
     assert max_compute_units > 0
 
 
 def check_get_max_work_item_dims(device):
-    max_work_item_dims = device.get_max_work_item_dims()
+    max_work_item_dims = device.max_work_item_dims
     assert max_work_item_dims > 0
 
 
 def check_get_max_work_item_sizes(device):
-    max_work_item_sizes = device.get_max_work_item_sizes()
+    max_work_item_sizes = device.max_work_item_sizes
     for size in max_work_item_sizes:
         assert size is not None
 
 
 def check_get_max_work_group_size(device):
-    max_work_group_size = device.get_max_work_group_size()
+    max_work_group_size = device.max_work_group_size
     # Special case for FPGA simulator
-    if device.is_accelerator():
+    if device.is_accelerator:
         assert max_work_group_size >= 0
     else:
         assert max_work_group_size > 0
 
 
 def check_get_max_num_sub_groups(device):
-    max_num_sub_groups = device.get_max_num_sub_groups()
+    max_num_sub_groups = device.max_num_sub_groups
     # Special case for FPGA simulator
-    if device.is_accelerator() or device.is_host():
+    if device.is_accelerator or device.is_host:
         assert max_num_sub_groups >= 0
     else:
         assert max_num_sub_groups > 0
@@ -214,28 +214,28 @@ def check_has_aspect_usm_system_allocator(device):
 
 def check_is_accelerator(device):
     try:
-        device.is_accelerator()
+        device.is_accelerator
     except Exception:
         pytest.fail("is_accelerator call failed")
 
 
 def check_is_cpu(device):
     try:
-        device.is_cpu()
+        device.is_cpu
     except Exception:
         pytest.fail("is_cpu call failed")
 
 
 def check_is_gpu(device):
     try:
-        device.is_gpu()
+        device.is_gpu
     except Exception:
         pytest.fail("is_gpu call failed")
 
 
 def check_is_host(device):
     try:
-        device.is_host()
+        device.is_host
     except Exception:
         pytest.fail("is_hostcall failed")
 
