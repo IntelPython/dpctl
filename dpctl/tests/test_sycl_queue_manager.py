@@ -19,6 +19,7 @@
 
 import dpctl
 import unittest
+from ._helper import has_cpu, has_gpu
 
 
 class TestGetNumPlatforms(unittest.TestCase):
@@ -48,13 +49,13 @@ class TestIsInDeviceContext(unittest.TestCase):
     def test_is_in_device_context_outside_device_ctxt(self):
         self.assertFalse(dpctl.is_in_device_context())
 
-    @unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
+    @unittest.skipUnless(has_gpu(), "No OpenCL GPU queues available")
     def test_is_in_device_context_inside_device_ctxt(self):
         with dpctl.device_context("opencl:gpu:0"):
             self.assertTrue(dpctl.is_in_device_context())
 
-    @unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
-    @unittest.skipUnless(dpctl.has_cpu_queues(), "No OpenCL CPU queues available")
+    @unittest.skipUnless(has_gpu(), "No OpenCL GPU queues available")
+    @unittest.skipUnless(has_cpu(), "No OpenCL CPU queues available")
     def test_is_in_device_context_inside_nested_device_ctxt(self):
         with dpctl.device_context("opencl:cpu:0"):
             with dpctl.device_context("opencl:gpu:0"):
@@ -76,7 +77,7 @@ class TestGetCurrentDevice(unittest.TestCase):
 
         self.assertNotEqual(dpctl.get_current_device_type(), None)
 
-    @unittest.skipUnless(dpctl.has_cpu_queues(), "No OpenCL CPU queues available")
+    @unittest.skipUnless(has_cpu(), "No OpenCL CPU queues available")
     def test_get_current_device_type_inside_nested_device_ctxt(self):
         self.assertNotEqual(dpctl.get_current_device_type(), None)
 
@@ -95,8 +96,8 @@ class TestGetCurrentQueueInMultipleThreads(unittest.TestCase):
     def test_num_current_queues_outside_with_clause(self):
         self.assertEqual(dpctl.get_num_activated_queues(), 0)
 
-    @unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
-    @unittest.skipUnless(dpctl.has_cpu_queues(), "No OpenCL CPU queues available")
+    @unittest.skipUnless(has_gpu(), "No OpenCL GPU queues available")
+    @unittest.skipUnless(has_cpu(), "No OpenCL CPU queues available")
     def test_num_current_queues_inside_with_clause(self):
         with dpctl.device_context("opencl:cpu:0"):
             self.assertEqual(dpctl.get_num_activated_queues(), 1)
@@ -104,8 +105,8 @@ class TestGetCurrentQueueInMultipleThreads(unittest.TestCase):
                 self.assertEqual(dpctl.get_num_activated_queues(), 2)
         self.assertEqual(dpctl.get_num_activated_queues(), 0)
 
-    @unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
-    @unittest.skipUnless(dpctl.has_cpu_queues(), "No OpenCL CPU queues available")
+    @unittest.skipUnless(has_gpu(), "No OpenCL GPU queues available")
+    @unittest.skipUnless(has_cpu(), "No OpenCL CPU queues available")
     def test_num_current_queues_inside_threads(self):
         from threading import Thread
 
