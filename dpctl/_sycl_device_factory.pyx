@@ -179,7 +179,9 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
     return devices
 
 
-cpdef int get_num_devices(backend=backend_type.all, device_type=device_type_t.all):
+cpdef int get_num_devices(
+    backend=backend_type.all, device_type=device_type_t.all
+):
     cdef DPCTLSyclBackendType BTy = _backend_type._ALL_BACKENDS
     cdef DPCTLSyclDeviceType DTy = _device_type._ALL_DEVICES
     cdef int num_devices = 0

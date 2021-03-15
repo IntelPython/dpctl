@@ -33,6 +33,7 @@ namespace
 {
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
 
 } /* end of anonymous namespace */
 
@@ -119,6 +120,18 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create()
         std::cerr << re.what() << '\n';
         return nullptr;
     }
+}
+
+int DPCTLDeviceSelector_Score(__dpctl_keep DPCTLSyclDeviceSelectorRef DSRef,
+                              __dpctl_keep DPCTLSyclDeviceRef DRef)
+{
+    constexpr int REJECT_DEVICE_SCORE = -1;
+    if (DSRef && DRef) {
+        auto dev = *(unwrap(DRef));
+        return (*unwrap(DSRef))(dev);
+    }
+    else
+        return REJECT_DEVICE_SCORE;
 }
 
 void DPCTLDeviceSelector_Delete(__dpctl_take DPCTLSyclDeviceSelectorRef DSRef)

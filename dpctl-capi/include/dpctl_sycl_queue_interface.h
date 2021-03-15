@@ -31,18 +31,90 @@
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_data_types.h"
+#include "dpctl_error_handler_type.h"
 #include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
 
+/**
+ * @defgroup QueueInterface sycl::queue class wrapper functions.
+ */
+
+/*!
+ * @brief A wrapper for sycl::queue contructor to construct a new queue from the
+ * provided context, device, async handler and propertis bit flags.
+ *
+ * @param    CRef           An opaque pointer to a sycl::context.
+ * @param    DRef           An opaque pointer to a sycl::device
+ * @param    error_handler  A callback function that will be invoked by the
+ *                          async_handler used during queue creation. Can be
+ *                          NULL if no async_handler is needed.
+ * @param    properties     A combination of bit flags using the values defined
+ *                          in the DPCTLQueuePropertyType enum. The bit flags
+ *                          are used to create a sycl::property_list that is
+ *                          passed to the SYCL queue constructor.
+ * @return An opaque DPCTLSyclQueueRef pointer containing the new sycl::queue
+ * object. A nullptr is returned if the queue could not be created.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclQueueRef
+DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
+                  __dpctl_keep const DPCTLSyclDeviceRef DRef,
+                  error_handler_callback *error_handler,
+                  int properties);
+
+/*!
+ * @brief Constructs a sycl::queue object of the specified SYCL device.
+ *
+ * Constructs a new SYCL queue for the specified SYCL device. The behaviour of
+ * this function differs from the SYCL `queue(const device &syclDevice, const
+ * async_handler &asyncHandler, const property_list &propList = {})` constructor
+ * of the queue class. Unlike the SYCL queue class constructor, we try not to
+ * create a new SYCL context for the device and instead look to reuse a
+ * previously cached SYCL context for the device (refer
+ * dpctl_sycl_device_manager.cpp). DPCTL caches contexts only for root devices
+ * and for all custom devices the function begaves the same way as the SYCL
+ * constructor.
+ *
+ * @param    dRef           An opaque pointer to a sycl::device.
+ * @param    error_handler  A callback function that will be invoked by the
+ *                          async_handler used during queue creation. Can be
+ *                          NULL if no async_handler is needed.
+ * @param    properties     A combination of bit flags using the values defined
+ *                          in the DPCTLQueuePropertyType enum. The bit flags
+ *                          are used to create a sycl::property_list that is
+ *                          passed to the SYCL queue constructor.
+ * @return An opaque DPCTLSyclQueueRef pointer containing the new sycl::queue
+ * object. A nullptr is returned if the queue could not be created.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclQueueRef
+DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef dRef,
+                           error_handler_callback *error_handler,
+                           int properties);
+
 /*!
  * @brief Delete the pointer after casting it to sycl::queue.
  *
  * @param    QRef           A DPCTLSyclQueueRef pointer that gets deleted.
+ * @ingroup QueueInterface
  */
 DPCTL_API
 void DPCTLQueue_Delete(__dpctl_take DPCTLSyclQueueRef QRef);
+
+/*!
+ * @brief Returns a copy of the DPCTLSyclQueueRef object.
+ *
+ * @param    DRef           DPCTLSyclQueueRef object to be copied.
+ * @return   A new DPCTLSyclQueueRef created by copying the passed in
+ * DPCTLSyclQueueRef object.
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclQueueRef
+DPCTLQueue_Copy(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
  * @brief Checks if two DPCTLSyclQueueRef objects point to the same sycl::queue.
@@ -50,6 +122,7 @@ void DPCTLQueue_Delete(__dpctl_take DPCTLSyclQueueRef QRef);
  * @param    QRef1          First opaque pointer to the sycl queue.
  * @param    QRef2          Second opaque pointer to the sycl queue.
  * @return   True if the underlying sycl::queue are same, false otherwise.
+ * @ingroup QueueInterface
  */
 DPCTL_API
 bool DPCTLQueue_AreEq(__dpctl_keep const DPCTLSyclQueueRef QRef1,
@@ -61,6 +134,7 @@ bool DPCTLQueue_AreEq(__dpctl_keep const DPCTLSyclQueueRef QRef1,
  * @param    QRef           An opaque pointer to the sycl queue.
  * @return   A enum DPCTLSyclBackendType corresponding to the backed for the
  * queue.
+ * @ingroup QueueInterface
  */
 DPCTL_API
 DPCTLSyclBackendType DPCTLQueue_GetBackend(__dpctl_keep DPCTLSyclQueueRef QRef);
@@ -70,6 +144,7 @@ DPCTLSyclBackendType DPCTLQueue_GetBackend(__dpctl_keep DPCTLSyclQueueRef QRef);
  *
  * @param    QRef           An opaque pointer to the sycl queue.
  * @return   A DPCTLSyclContextRef pointer to the sycl context for the queue.
+ * @ingroup QueueInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclContextRef
@@ -80,6 +155,7 @@ DPCTLQueue_GetContext(__dpctl_keep const DPCTLSyclQueueRef QRef);
  *
  * @param    QRef           An opaque pointer to the sycl queue.
  * @return   A DPCTLSyclDeviceRef pointer to the sycl device for the queue.
+ * @ingroup QueueInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclDeviceRef
@@ -115,6 +191,7 @@ DPCTLQueue_GetDevice(__dpctl_keep const DPCTLSyclQueueRef QRef);
  * @param    NDepEvents     Size of the DepEvents list.
  * @return   An opaque pointer to the sycl::event returned by the
  *           sycl::queue.submit() function.
+ * @ingroup QueueInterface
  */
 DPCTL_API
 DPCTLSyclEventRef
@@ -162,6 +239,7 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
  * @param    NDepEvents     Size of the DepEvents list.
  * @return   An opaque pointer to the sycl::event returned by the
  *           sycl::queue.submit() function.
+ * @ingroup QueueInterface
  */
 DPCTL_API
 DPCTLSyclEventRef
@@ -181,6 +259,7 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
  * enqueued tasks in the queue.
  *
  * @param    QRef           Opaque pointer to a sycl::queue.
+ * @ingroup QueueInterface
  */
 DPCTL_API
 void DPCTLQueue_Wait(__dpctl_keep const DPCTLSyclQueueRef QRef);
@@ -193,6 +272,7 @@ void DPCTLQueue_Wait(__dpctl_keep const DPCTLSyclQueueRef QRef);
  * @param    Dest           An USM pointer to the destination memory.
  * @param    Src            An USM pointer to the source memory.
  * @param    Count          A number of bytes to copy.
+ * @ingroup QueueInterface
  */
 DPCTL_API
 void DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
@@ -207,6 +287,7 @@ void DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
  * @param    QRef           An opaque pointer to the sycl queue.
  * @param    Ptr            An USM pointer to memory.
  * @param    Count          A number of bytes to prefetch.
+ * @ingroup QueueInterface
  */
 DPCTL_API
 void DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
@@ -223,6 +304,7 @@ void DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
  * @param    Advice         Device-defined advice for the specified allocation.
  *                          A value of 0 reverts the advice for Ptr to the
  *                          default behavior.
+ * @ingroup QueueInterface
  */
 DPCTL_API
 void DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
