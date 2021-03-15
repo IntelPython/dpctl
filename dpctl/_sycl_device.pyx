@@ -480,5 +480,5 @@ cdef class SyclDevice(_SyclDevice):
 
     def __repr__(self):
         return ("<dpctl." + self.__name__ + " [" +
-                str(self.get_backend()) + ", " + str(self.get_device_type()) +", " +
-                " " + self.get_device_name() + "] at {}>".format(hex(id(self))) )
+                str(self.backend) + ", " + str(self.device_type) +", " +
+                " " + self.device_name + "] at {}>".format(hex(id(self))) )
