@@ -255,6 +255,17 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsHost)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesEqually)
+{
+    DPCTLSyclDeviceRef DRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    int count = 10;
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_CreateSubDevicesEqually(DRef, count));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+}
+
 INSTANTIATE_TEST_SUITE_P(DPCTLDevice_Fns,
                          TestDPCTLSyclDeviceInterface,
                          ::testing::Values("opencl",

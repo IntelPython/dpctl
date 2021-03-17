@@ -387,3 +387,24 @@ bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     }
     return hasAspect;
 }
+
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                                    size_t count)
+{
+    vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            auto max_compute_units = DPCTLDevice_GetMaxComputeUnits(DRef);
+            auto subdevices = int(max_compute_units / count);
+            for (int i = 0; i < subdevices; ++i) {
+                Devices->emplace_back(wrap(new cl::sycl::device(count)));
+            }
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return wrap(Devices);
+}

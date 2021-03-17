@@ -31,6 +31,7 @@
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_data_types.h"
+#include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_types.h"
 
@@ -264,5 +265,23 @@ bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DevRef1,
 DPCTL_API
 bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                            DPCTLSyclAspectType AT);
+
+/*!
+ * @brief Returns a vector of sub devices
+ * partitioned from this SYCL device based on the count parameter. The returned
+ * vector contains as many sub devices as can be created such that each sub
+ * device contains count compute units. If the device’s total number of compute
+ * units is not evenly divided by count, then the remaining compute units are
+ * not included in any of the sub devices.
+ *
+ * @param    DRef         Opaque pointer to a sycl::device
+ * @param    count        Count compute units that need to contains in
+ * subdevices
+ * @return   A #DPCTLDeviceVectorRef containing #DPCTLSyclDeviceRef objects
+ */
+DPCTL_API
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                                    size_t count);
 
 DPCTL_C_EXTERN_C_END
