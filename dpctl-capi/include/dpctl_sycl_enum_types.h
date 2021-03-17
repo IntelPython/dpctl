@@ -123,6 +123,21 @@ enum DPCTLSyclAspectType
 };
 
 /*!
+ * @brief DPCTL analogue of sycl::info::partition_affinity_domain enum
+ *
+ */
+enum DPCTLPartitionAffinityDomainType
+{
+    not_applicable,
+    numa,
+    L4_cache,
+    L3_cache,
+    L2_cache,
+    L1_cache,
+    next_partitionable
+};
+
+/*!
  * @brief Enums to depict the properties that can be passed to a sycl::queue
  * constructor.
  *
