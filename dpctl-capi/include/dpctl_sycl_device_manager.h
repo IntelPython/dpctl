@@ -73,6 +73,7 @@ DPCTL_DECLARE_VECTOR(Device)
  * @return   True if the underlying sycl::device are same, false otherwise.
  * @ingroup DeviceManager
  */
+DPCTL_API
 bool DPCTLDeviceMgr_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
                           __dpctl_keep const DPCTLSyclDeviceRef DRef2);
 

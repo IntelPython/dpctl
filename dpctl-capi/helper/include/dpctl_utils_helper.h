@@ -26,6 +26,7 @@
 
 #include "../include/dpctl_sycl_enum_types.h"
 #include <CL/sycl.hpp>
+#include "Support/DllExport.h"
 
 /*!
  * @brief Converts a sycl::info::device_type input value to a string.
@@ -33,6 +34,7 @@
  * @param    devTy          A sycl::info::device_type enum value.
  * @return   A string representation of a sycl::info::device_type enum.
  */
+DPCTL_API
 std::string DPCTL_DeviceTypeToStr(sycl::info::device_type devTy);
 
 /*!
@@ -47,6 +49,7 @@ std::string DPCTL_DeviceTypeToStr(sycl::info::device_type devTy);
  * string.
  * @throws runtime_error
  */
+DPCTL_API
 sycl::info::device_type DPCTL_StrToDeviceType(const std::string &devTyStr);
 
 /*!
@@ -58,6 +61,7 @@ sycl::info::device_type DPCTL_StrToDeviceType(const std::string &devTyStr);
  * DPCTLSyclDeviceType enum value.
  * @throws runtime_error
  */
+DPCTL_API
 sycl::backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy);
 
 /*!
@@ -69,6 +73,7 @@ sycl::backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy);
  * @return   A DPCTLSyclBackendType enum value for the input
  * sycl::backend enum value.
  */
+DPCTL_API
 DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(sycl::backend B);
 
 /*!
@@ -81,6 +86,7 @@ DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(sycl::backend B);
  * DPCTLSyclDeviceType enum value.
  * @throws runtime_error
  */
+DPCTL_API
 sycl::info::device_type
 DPCTL_DPCTLDeviceTypeToSyclDeviceType(DPCTLSyclDeviceType DTy);
 
@@ -93,6 +99,7 @@ DPCTL_DPCTLDeviceTypeToSyclDeviceType(DPCTLSyclDeviceType DTy);
  * @return   A DPCTLSyclDeviceType enum value for the input
  * sycl::info::device_type enum value.
  */
+DPCTL_API
 DPCTLSyclDeviceType
 DPCTL_SyclDeviceTypeToDPCTLDeviceType(sycl::info::device_type D);
 
@@ -103,6 +110,7 @@ DPCTL_SyclDeviceTypeToDPCTLDeviceType(sycl::info::device_type D);
  * @return   A string representation of a sycl::aspect.
  * @throws runtime_error
  */
+DPCTL_API
 std::string DPCTL_AspectToStr(sycl::aspect aspectTy);
 
 /*!
@@ -114,6 +122,7 @@ std::string DPCTL_AspectToStr(sycl::aspect aspectTy);
  * string.
  * @throws runtime_error
  */
+DPCTL_API
 sycl::aspect DPCTL_StrToAspectType(const std::string &aspectTyStr);
 
 /*!
@@ -125,6 +134,7 @@ sycl::aspect DPCTL_StrToAspectType(const std::string &aspectTyStr);
  * DPCTLSyclAspectType enum value.
  * @throws runtime_error
  */
+DPCTL_API
 sycl::aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy);
 
 /*!
@@ -137,4 +147,5 @@ sycl::aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy);
  * sycl::aspect enum value.
  * @throws runtime_error
  */
+DPCTL_API
 DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(sycl::aspect Aspect);
