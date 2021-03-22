@@ -102,22 +102,22 @@ def device_type_str(request):
 
 def check_if_device_type_is_valid(devices):
     for d in devices:
-        assert d.get_device_type() in set(item for item in dty)
+        assert d.device_type in set(item for item in dty)
 
 
 def check_if_backend_is_valid(devices):
     for d in devices:
-        assert d.get_backend() in set(item for item in bty)
+        assert d.backend in set(item for item in bty)
 
 
 def check_if_backend_matches(devices, backend):
     for d in devices:
-        assert d.get_backend() == backend
+        assert d.backend == backend
 
 
 def check_if_device_type_matches(devices, device_type):
     for d in devices:
-        assert d.get_device_type() == device_type
+        assert d.device_type == device_type
 
 
 def test_get_devices_with_string_args(str_args):

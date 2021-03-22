@@ -20,8 +20,6 @@
 """ This file declares the SyclDevice extension type.
 """
 
-from libcpp cimport bool
-from libc.stdint cimport uint32_t
 from ._backend cimport (
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
@@ -32,18 +30,10 @@ cdef class _SyclDevice:
     ''' Wrapper class for a Sycl Device
     '''
     cdef DPCTLSyclDeviceRef _device_ref
-    cdef bool _accelerator_device
-    cdef bool _cpu_device
-    cdef bool _gpu_device
-    cdef bool _host_device
     cdef const char *_vendor_name
     cdef const char *_device_name
     cdef const char *_driver_version
-    cdef uint32_t _max_compute_units
-    cdef uint32_t _max_work_item_dims
     cdef size_t *_max_work_item_sizes
-    cdef size_t _max_work_group_size
-    cdef uint32_t _max_num_sub_groups
 
 
 cdef class SyclDevice(_SyclDevice):
@@ -54,17 +44,3 @@ cdef class SyclDevice(_SyclDevice):
     cdef int _init_from__SyclDevice(self, _SyclDevice other)
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef)
     cdef DPCTLSyclDeviceRef get_device_ref(self)
-    cpdef get_backend(self)
-    cpdef get_device_name(self)
-    cpdef get_device_type(self)
-    cpdef get_vendor_name(self)
-    cpdef get_driver_version(self)
-    cpdef get_max_compute_units(self)
-    cpdef get_max_work_item_dims(self)
-    cpdef get_max_work_item_sizes(self)
-    cpdef get_max_work_group_size(self)
-    cpdef get_max_num_sub_groups(self)
-    cpdef is_accelerator(self)
-    cpdef is_cpu(self)
-    cpdef is_gpu(self)
-    cpdef is_host(self)
