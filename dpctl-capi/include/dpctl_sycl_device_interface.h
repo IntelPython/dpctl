@@ -34,6 +34,7 @@
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_types.h"
+#include <vector>
 
 DPCTL_C_EXTERN_C_BEGIN
 
@@ -283,5 +284,36 @@ DPCTL_API
 __dpctl_give DPCTLDeviceVectorRef
 DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                     size_t count);
+
+/*!
+ * @brief Returns a vector of sub devices
+ * partitioned from this SYCL device based on the counts parameter. For each
+ * non-zero value M in the counts vector, a sub device with M compute units
+ * is created.
+ *
+ * @param    DRef         Opaque pointer to a sycl::device
+ * @param    vector<size_t> &counts        Vector with count compute units
+ * that need to contains in subdevices
+ * @return   A #DPCTLDeviceVectorRef containing #DPCTLSyclDeviceRef objects
+ */
+DPCTL_API
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                                     const std::vector<size_t> &counts);
+
+/*!
+ * @brief Returns a vector of sub devices
+ * partitioned from this SYCL device by affinity domain based on the domain
+ * parameter.
+ *
+ * @param    DRef         Opaque pointer to a sycl::device
+ * @param    DPCTLPartitionAffinityDomainType DPCTLPartitionAffinityDomainType
+ * of sycl::info::partition_affinity_domain
+ * @return   A #DPCTLDeviceVectorRef containing #DPCTLSyclDeviceRef objects
+ */
+DPCTL_API
+__dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef,
+    DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy);
 
 DPCTL_C_EXTERN_C_END

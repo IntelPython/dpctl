@@ -39,6 +39,8 @@ namespace
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclDeviceRef>,
+                                   DPCTLDeviceVectorRef)
 
 } /* end of anonymous namespace */
 
@@ -396,11 +398,73 @@ DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     auto D = unwrap(DRef);
     if (D) {
         try {
-            auto max_compute_units = DPCTLDevice_GetMaxComputeUnits(DRef);
-            auto subdevices = int(max_compute_units / count);
-            for (int i = 0; i < subdevices; ++i) {
-                Devices->emplace_back(wrap(new cl::sycl::device(count)));
+            auto subDevices = D->create_sub_devices<
+                info::partition_property::partition_equally>(count);
+            Devices = new vector_class<DPCTLSyclDeviceRef>();
+            for (auto &sd : subDevices) {
+                Devices->emplace_back(wrap(new device(sd)));
             }
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+            return nullptr;
+        } catch (feature_not_supported const &fnse) {
+            std::cerr << fnse.what() << '\n';
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return wrap(Devices);
+}
+
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                                     const std::vector<size_t> &counts)
+{
+    vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            auto subDevices = D->create_sub_devices<
+                info::partition_property::partition_by_counts>(counts);
+            Devices = new vector_class<DPCTLSyclDeviceRef>();
+            for (auto &sd : subDevices) {
+                Devices->emplace_back(wrap(new device(sd)));
+            }
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+            return nullptr;
+        } catch (feature_not_supported const &fnse) {
+            std::cerr << fnse.what() << '\n';
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return wrap(Devices);
+}
+
+__dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef,
+    DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy)
+{
+    vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            auto domain = DPCTL_DPCTLPartitionAffinityDomainTypeToSycl(
+                PartitionAffinityDomainTy);
+            auto subDevices = D->create_sub_devices<
+                info::partition_property::partition_by_affinity_domain>(domain);
+            Devices = new vector_class<DPCTLSyclDeviceRef>();
+            for (auto &sd : subDevices) {
+                Devices->emplace_back(wrap(new device(sd)));
+            }
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+            return nullptr;
+        } catch (feature_not_supported const &fnse) {
+            std::cerr << fnse.what() << '\n';
         } catch (runtime_error const &re) {
             // \todo log error
             std::cerr << re.what() << '\n';
