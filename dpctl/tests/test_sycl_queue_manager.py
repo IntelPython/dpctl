@@ -36,12 +36,12 @@ class TestDumpMethods(unittest.TestCase):
         except Exception:
             self.fail("Encountered an exception inside dump().")
 
-    def test_dpctl_dump_device_info(self):
+    def test_dpctl_print_device_info(self):
         q = dpctl.get_current_queue()
         try:
-            q.get_sycl_device().dump_device_info()
+            q.get_sycl_device().print_device_info()
         except Exception:
-            self.fail("Encountered an exception inside dump_device_info().")
+            self.fail("Encountered an exception inside print_device_info().")
 
 
 @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
