@@ -418,10 +418,11 @@ cdef class SyclDevice(_SyclDevice):
             value is (1; 1; 1) for devices that are not of
             device type ``info::device_type::custom``.
         """
-        max_work_item_sizes = []
-        for n in range(3):
-            max_work_item_sizes.append(self._max_work_item_sizes[n])
-        return tuple(max_work_item_sizes)
+        return (
+            self._max_work_item_sizes[0],
+            self._max_work_item_sizes[1],
+            self._max_work_item_sizes[2],
+        )
 
     @property
     def max_compute_units(self):
