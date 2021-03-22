@@ -1,8 +1,6 @@
 #!/bin/bash
 set +xe
-
 export CODE_COVERAGE=ON
 python setup.py clean --all
-python setup.py build develop
+python setup.py develop
 pytest --pyargs dpctl -vv
-

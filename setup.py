@@ -52,7 +52,13 @@ elif IS_WIN:
     if DPCPP_HOME:
         sycl_lib = os.environ["DPCPP_HOME"] + "\lib"
     else:
-        sycl_lib = os.environ["ONEAPI_ROOT"] + "\compiler\latest\windows\lib"
+        ONEAPI_ROOT = os.environ.get("ONEAPI_ROOT")
+        if not ONEAPI_ROOT:
+            print("Fatal Error. A dpcpp toolchain is needed to build dpctl.")
+            import sys
+
+            sys.exit()
+        sycl_lib = ONEAPI_ROOT + "\compiler\latest\windows\lib"
 
 dpctl_sycl_interface_lib = os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"]
 dpctl_sycl_interface_include = os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"]

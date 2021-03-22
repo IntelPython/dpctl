@@ -38,6 +38,11 @@ CODE_COVERAGE = os.environ.get("CODE_COVERAGE")
 DPCPP_HOME = os.environ.get("DPCPP_HOME")
 if not DPCPP_HOME:
     ONEAPI_ROOT = os.environ.get("ONEAPI_ROOT")
+    if not ONEAPI_ROOT:
+        print("Fatal Error. A dpcpp toolchain is needed to build dpctl.")
+        import sys
+
+        sys.exit()
     if IS_LIN:
         DPCPP_HOME = os.path.join(ONEAPI_ROOT, "compiler/latest/linux")
     elif IS_WIN:
