@@ -29,11 +29,52 @@
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_data_types.h"
-#include "dpctl_sycl_platform_interface.h"
+#include "dpctl_error_handler_type.h"
+#include "dpctl_sycl_device_manager.h"
+#include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_types.h"
 #include <stdbool.h>
 
 DPCTL_C_EXTERN_C_BEGIN
+
+/*!
+ * @brief Constructs a new SYCL context for the given SYCL device using the
+ * optional async error handler and properties bit flags.
+ *
+ * @param    DRef           Opaque pointer to a SYCL device.
+ * @param    error_handler  A callback function that will be invoked by the
+ *                          async_handler used during context creation. Can be
+ *                          NULL if no async_handler is needed.
+ * @param    properties     An optional combination of bit flags to define
+ *                          context properties. Currently, dpctl does not use
+ *                          this argument.
+ * @return   A new opaque pointer wrapping a SYCL context.
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclContextRef
+DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                    error_handler_callback *error_handler,
+                    int properties);
+
+/*!
+ * @brief Constructs a new SYCL context for the given vector of SYCL devices
+ * using the optional async error handler and properties bit flags.
+ *
+ * @param    DVRef          An opaque pointer to a std::vector of
+ *                          DPCTLSyclDeviceRef opaque pointers.
+ * @param    error_handler  A callback function that will be invoked by the
+ *                          async_handler used during context creation. Can be
+ *                          NULL if no async_handler is needed.
+ * @param    properties     An optional combination of bit flags to define
+ *                          context properties. Currently, dpctl does not use
+ *                          this argument.
+ * @return   A new opaque pointer wrapping a SYCL context.
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclContextRef DPCTLContext_CreateFromDeviceVector(
+    __dpctl_keep const DPCTLDeviceVectorRef DVRef,
+    error_handler_callback *error_handler,
+    int properties);
 
 /*!
  * @brief Checks if two DPCTLSyclContextRef objects point to the same
@@ -46,6 +87,17 @@ DPCTL_C_EXTERN_C_BEGIN
 DPCTL_API
 bool DPCTLContext_AreEq(__dpctl_keep const DPCTLSyclContextRef CtxRef1,
                         __dpctl_keep const DPCTLSyclContextRef CtxRef2);
+
+/*!
+ * @brief Returns a copy of the DPCTLSyclContextRef object.
+ *
+ * @param    CRef           DPCTLSyclContextRef object to be copied.
+ * @return   A new DPCTLSyclContextRef created by copying the passed in
+ * DPCTLSyclContextRef object.
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclContextRef
+DPCTLContext_Copy(__dpctl_keep const DPCTLSyclContextRef CRef);
 
 /*!
  * @brief Returns true if this SYCL context is a host context.
