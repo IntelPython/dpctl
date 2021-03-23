@@ -25,13 +25,14 @@
 
 #pragma once
 
+#include "Support/DllExport.h"
 #include "dpctl_error_handler_type.h"
 #include <CL/sycl.hpp>
 
 /*!
  * @brief Functor class used by DPCTL to handle SYCL asynchronous errors.
  */
-class DPCTL_AsyncErrorHandler
+class DPCTL_API DPCTL_AsyncErrorHandler
 {
     error_handler_callback *handler_ = nullptr;
 
