@@ -104,7 +104,6 @@ TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices)
             EXPECT_NO_FATAL_FAILURE(
                 CRef = DPCTLContext_CreateFromDeviceVector(DVRef, nullptr, 0));
             ASSERT_TRUE(CRef);
-
         } catch (feature_not_supported const &fnse) {
             GTEST_SKIP_("Skipping creating context for sub-devices");
         }
