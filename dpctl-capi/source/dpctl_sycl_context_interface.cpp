@@ -61,10 +61,10 @@ DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     return CRef;
 }
 
-__dpctl_give DPCTLSyclContextRef DPCTLContext_CreateFromDeviceVector(
-    __dpctl_keep const DPCTLDeviceVectorRef DVRef,
-    error_handler_callback *error_handler,
-    int /**/)
+__dpctl_give DPCTLSyclContextRef
+DPCTLContext_CreateForDevices(__dpctl_keep const DPCTLDeviceVectorRef DVRef,
+                              error_handler_callback *error_handler,
+                              int /**/)
 {
     DPCTLSyclContextRef CRef = nullptr;
     vector_class<device> Devices;
