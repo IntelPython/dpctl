@@ -71,10 +71,10 @@ DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
  * @return   A new opaque pointer wrapping a SYCL context.
  */
 DPCTL_API
-__dpctl_give DPCTLSyclContextRef DPCTLContext_CreateFromDeviceVector(
-    __dpctl_keep const DPCTLDeviceVectorRef DVRef,
-    error_handler_callback *error_handler,
-    int properties);
+__dpctl_give DPCTLSyclContextRef
+DPCTLContext_CreateForDevices(__dpctl_keep const DPCTLDeviceVectorRef DVRef,
+                              error_handler_callback *error_handler,
+                              int properties);
 
 /*!
  * @brief Checks if two DPCTLSyclContextRef objects point to the same
