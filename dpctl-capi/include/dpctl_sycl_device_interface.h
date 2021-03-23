@@ -292,14 +292,16 @@ DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
  * is created.
  *
  * @param    DRef         Opaque pointer to a sycl::device
- * @param    vector<size_t> &counts        Vector with count compute units
+ * @param    counts       Array with count compute units
  * that need to contains in subdevices
+ * @param    ncounts      Number of counts
  * @return   A #DPCTLDeviceVectorRef containing #DPCTLSyclDeviceRef objects
  */
 DPCTL_API
 __dpctl_give DPCTLDeviceVectorRef
 DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
-                                     const std::vector<size_t> &counts);
+                                     __dpctl_keep size_t *counts,
+                                     size_t ncounts);
 
 /*!
  * @brief Returns a vector of sub devices

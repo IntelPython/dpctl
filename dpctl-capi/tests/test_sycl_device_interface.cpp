@@ -26,7 +26,6 @@
 
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
-#include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_platform_interface.h"
 #include "dpctl_utils.h"
 #include <CL/sycl.hpp>
@@ -266,77 +265,6 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsHost)
     if (!DRef)
         GTEST_SKIP_("Device not found");
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_IsHost(DRef));
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
-}
-
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesEqually)
-{
-    DPCTLSyclDeviceRef DRef = nullptr;
-    DPCTLDeviceVectorRef DVRef = nullptr;
-    uint32_t maxCUs = 0;
-
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
-
-    EXPECT_NO_FATAL_FAILURE(maxCUs = DPCTLDevice_GetMaxComputeUnits(DRef));
-    if (maxCUs) {
-        int count = maxCUs / 2;
-        EXPECT_NO_FATAL_FAILURE(
-            DVRef = DPCTLDevice_CreateSubDevicesEqually(DRef, count));
-        if (DVRef) {
-            EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) > 0);
-            EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
-        }
-    }
-
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
-}
-
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByCounts)
-{
-    DPCTLSyclDeviceRef DRef = nullptr;
-    DPCTLDeviceVectorRef DVRef = nullptr;
-    uint32_t maxCUs = 0;
-
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
-
-    EXPECT_NO_FATAL_FAILURE(maxCUs = DPCTLDevice_GetMaxComputeUnits(DRef));
-    if (maxCUs) {
-        size_t count = maxCUs / 2;
-        const std::vector<size_t> counts{count, count};
-        EXPECT_NO_FATAL_FAILURE(
-            DVRef = DPCTLDevice_CreateSubDevicesByCounts(DRef, counts));
-        if (DVRef) {
-            EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) > 0);
-            EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
-        }
-    }
-
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
-}
-
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinity)
-{
-    DPCTLSyclDeviceRef DRef = nullptr;
-    DPCTLDeviceVectorRef DVRef = nullptr;
-    DPCTLPartitionAffinityDomainType domain = numa;
-
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
-
-    if (domain) {
-        EXPECT_NO_FATAL_FAILURE(
-            DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, domain));
-        if (DVRef) {
-            EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) > 0);
-            EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
-        }
-    }
-
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
