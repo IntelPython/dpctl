@@ -102,7 +102,7 @@ TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices)
                 unwrap(DVRef)->emplace_back(wrap(new device(sd)));
             }
             EXPECT_NO_FATAL_FAILURE(
-                CRef = DPCTLContext_CreateForDevices(DVRef, nullptr, 0));
+                CRef = DPCTLContext_CreateFromDevices(DVRef, nullptr, 0));
             ASSERT_TRUE(CRef);
         } catch (feature_not_supported const &fnse) {
             GTEST_SKIP_("Skipping creating context for sub-devices");
