@@ -160,8 +160,9 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityNuma)
 
     info::partition_affinity_domain domain =
         info::partition_affinity_domain::numa;
-    DPCTLPartitionAffinityDomainType dpctl_domain =
-        DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain);
+    DPCTLPartitionAffinityDomainType dpctl_domain;
+    EXPECT_NO_FATAL_FAILURE(
+        dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
     EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
     if (!DRef)
@@ -177,7 +178,13 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityNuma)
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
             expected_size = subDevices.size();
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        } catch (feature_not_supported const &fnse) {
+            std::cerr << fnse.what() << '\n';
         } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
         }
 
         if (DVRef && expected_size) {
@@ -196,8 +203,9 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL4Cache)
 
     info::partition_affinity_domain domain =
         info::partition_affinity_domain::L4_cache;
-    DPCTLPartitionAffinityDomainType dpctl_domain =
-        DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain);
+    DPCTLPartitionAffinityDomainType dpctl_domain;
+    EXPECT_NO_FATAL_FAILURE(
+        dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
     EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
     if (!DRef)
@@ -208,16 +216,23 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL4Cache)
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
         auto D = unwrap(DRef);
+        size_t expected_size = 0;
         try {
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
-            auto expected_size = subDevices.size();
-
-            if (DVRef) {
-                EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) == expected_size);
-                EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
-            }
+            expected_size = subDevices.size();
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        } catch (feature_not_supported const &fnse) {
+            std::cerr << fnse.what() << '\n';
         } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+
+        if (DVRef && expected_size) {
+            EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) == expected_size);
+            EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
     }
 
@@ -231,8 +246,9 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL3Cache)
 
     info::partition_affinity_domain domain =
         info::partition_affinity_domain::L3_cache;
-    DPCTLPartitionAffinityDomainType dpctl_domain =
-        DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain);
+    DPCTLPartitionAffinityDomainType dpctl_domain;
+    EXPECT_NO_FATAL_FAILURE(
+        dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
     EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
     if (!DRef)
@@ -243,16 +259,23 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL3Cache)
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
         auto D = unwrap(DRef);
+        size_t expected_size = 0;
         try {
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
-            auto expected_size = subDevices.size();
-
-            if (DVRef) {
-                EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) == expected_size);
-                EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
-            }
+            expected_size = subDevices.size();
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        } catch (feature_not_supported const &fnse) {
+            std::cerr << fnse.what() << '\n';
         } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+
+        if (DVRef && expected_size) {
+            EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) == expected_size);
+            EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
     }
 
@@ -266,8 +289,9 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL2Cache)
 
     info::partition_affinity_domain domain =
         info::partition_affinity_domain::L2_cache;
-    DPCTLPartitionAffinityDomainType dpctl_domain =
-        DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain);
+    DPCTLPartitionAffinityDomainType dpctl_domain;
+    EXPECT_NO_FATAL_FAILURE(
+        dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
     EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
     if (!DRef)
@@ -278,16 +302,23 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL2Cache)
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
         auto D = unwrap(DRef);
+        size_t expected_size = 0;
         try {
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
-            auto expected_size = subDevices.size();
-
-            if (DVRef) {
-                EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) == expected_size);
-                EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
-            }
+            expected_size = subDevices.size();
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        } catch (feature_not_supported const &fnse) {
+            std::cerr << fnse.what() << '\n';
         } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+
+        if (DVRef && expected_size) {
+            EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) == expected_size);
+            EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
     }
 
@@ -301,8 +332,9 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL1Cache)
 
     info::partition_affinity_domain domain =
         info::partition_affinity_domain::L1_cache;
-    DPCTLPartitionAffinityDomainType dpctl_domain =
-        DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain);
+    DPCTLPartitionAffinityDomainType dpctl_domain;
+    EXPECT_NO_FATAL_FAILURE(
+        dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
     EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
     if (!DRef)
@@ -313,16 +345,23 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL1Cache)
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
         auto D = unwrap(DRef);
+        size_t expected_size = 0;
         try {
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
-            auto expected_size = subDevices.size();
-
-            if (DVRef) {
-                EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) == expected_size);
-                EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
-            }
+            expected_size = subDevices.size();
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        } catch (feature_not_supported const &fnse) {
+            std::cerr << fnse.what() << '\n';
         } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+
+        if (DVRef && expected_size) {
+            EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) == expected_size);
+            EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
     }
 
@@ -337,8 +376,9 @@ TEST_P(TestDPCTLSyclDeviceInterface,
 
     info::partition_affinity_domain domain =
         info::partition_affinity_domain::next_partitionable;
-    DPCTLPartitionAffinityDomainType dpctl_domain =
-        DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain);
+    DPCTLPartitionAffinityDomainType dpctl_domain;
+    EXPECT_NO_FATAL_FAILURE(
+        dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
     EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
     if (!DRef)
@@ -349,16 +389,23 @@ TEST_P(TestDPCTLSyclDeviceInterface,
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
         auto D = unwrap(DRef);
+        size_t expected_size = 0;
         try {
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
-            auto expected_size = subDevices.size();
-
-            if (DVRef) {
-                EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) == expected_size);
-                EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
-            }
+            expected_size = subDevices.size();
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        } catch (feature_not_supported const &fnse) {
+            std::cerr << fnse.what() << '\n';
         } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+
+        if (DVRef && expected_size) {
+            EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) == expected_size);
+            EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
     }
 
