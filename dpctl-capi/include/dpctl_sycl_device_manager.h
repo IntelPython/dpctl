@@ -43,7 +43,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * @brief Contains a #DPCTLSyclDeviceRef and #DPCTLSyclContextRef 2-tuple that
  * contains a sycl::device and a sycl::context associated with that device.
  */
-typedef struct DeviceAndContextPair
+typedef struct DPCTL_API DeviceAndContextPair
 {
     DPCTLSyclDeviceRef DRef;
     DPCTLSyclContextRef CRef;
@@ -73,6 +73,7 @@ DPCTL_DECLARE_VECTOR(Device)
  * @return   True if the underlying sycl::device are same, false otherwise.
  * @ingroup DeviceManager
  */
+DPCTL_API
 bool DPCTLDeviceMgr_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
                           __dpctl_keep const DPCTLSyclDeviceRef DRef2);
 
