@@ -183,6 +183,9 @@ cdef extern from "dpctl_sycl_device_interface.h":
 cdef extern from "dpctl_sycl_device_manager.h":
     cdef struct DPCTLDeviceVector
     ctypedef DPCTLDeviceVector *DPCTLDeviceVectorRef
+    cdef DPCTLDeviceVectorRef DPCTLDeviceVector_CreateFromArray(
+        size_t nelems,
+        DPCTLSyclDeviceRef *elems)
     cdef void DPCTLDeviceVector_Delete(DPCTLDeviceVectorRef DVRef)
     cdef void DPCTLDeviceVector_Clear(DPCTLDeviceVectorRef DVRef)
     cdef size_t DPCTLDeviceVector_Size(DPCTLDeviceVectorRef DVRef)
@@ -246,6 +249,16 @@ cdef extern from "dpctl_sycl_platform_interface.h":
 
 
 cdef extern from "dpctl_sycl_context_interface.h":
+    cdef DPCTLSyclContextRef DPCTLContext_Create(
+        const DPCTLSyclDeviceRef DRef,
+        error_handler_callback *error_handler,
+        int properties)
+    cdef DPCTLSyclContextRef DPCTLContext_CreateFromDevices(
+        const DPCTLDeviceVectorRef DVRef,
+        error_handler_callback *error_handler,
+        int properties)
+    cdef DPCTLSyclContextRef DPCTLContext_Copy(
+        const DPCTLSyclContextRef CRef)
     cdef bool DPCTLContext_AreEq(const DPCTLSyclContextRef CtxRef1,
                                  const DPCTLSyclContextRef CtxRef2)
     cdef DPCTLSyclBackendType DPCTLContext_GetBackend(
