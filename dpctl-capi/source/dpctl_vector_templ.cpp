@@ -141,10 +141,7 @@ void FN(EL,
     // SYCLREF(EL) copy = nullptr;
     if (Vec) {
         try {
-            Vec->at(index) = unwrap(element);
-            // auto ret = Vec->at(index);
-            // auto Ref = unwrap(ret);
-            // copy = wrap(new std::remove_pointer<decltype(Ref)>::type(*Ref));
+            Vec->at(index) = element;
         } catch (std::out_of_range const &oor) {
             std::cerr << oor.what() << '\n';
         } catch (std::bad_alloc const &ba) {
