@@ -94,17 +94,6 @@ size_t FN(EL, Size)(__dpctl_keep VECTOR(EL) VRef)
 }
 
 /*!
- * @brief Returns the number of elements in the vector.
- *
- */
-void FN(EL, Resize)(__dpctl_keep VECTOR(EL) VRef, size_t resize)
-{
-    auto V = unwrap(VRef);
-    if (V)
-        V->resize(resize);
-}
-
-/*!
  * @brief Returns a copy of the opaque pointer at specified index, and throws
  * an out_of_range exception if the index is incorrect.
  *
@@ -127,27 +116,4 @@ SYCLREF(EL) FN(EL, GetAt)(__dpctl_keep VECTOR(EL) VRef, size_t index)
         }
     }
     return copy;
-}
-
-/*!
- * @brief Returns a copy of the opaque pointer at specified index, and throws
- * an out_of_range exception if the index is incorrect.
- *
- */
-void FN(EL,
-        SetAt)(__dpctl_keep VECTOR(EL) VRef, size_t index, SYCLREF(EL) element)
-{
-    auto Vec = unwrap(VRef);
-    // SYCLREF(EL) copy = nullptr;
-    if (Vec) {
-        try {
-            Vec->at(index) = element;
-        } catch (std::out_of_range const &oor) {
-            std::cerr << oor.what() << '\n';
-        } catch (std::bad_alloc const &ba) {
-            // \todo log error
-            std::cerr << ba.what() << '\n';
-            // return nullptr;
-        }
-    }
 }

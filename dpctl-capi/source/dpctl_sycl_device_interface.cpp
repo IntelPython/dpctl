@@ -394,17 +394,15 @@ __dpctl_give DPCTLDeviceVectorRef
 DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                     size_t count)
 {
-    DPCTLDeviceVectorRef Devices = nullptr;
+    vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
     auto D = unwrap(DRef);
     if (D) {
         try {
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_equally>(count);
-            Devices = DPCTLDeviceVector_Create();
-            DPCTLDeviceVector_Resize(Devices, subDevices.size());
-            for (int i = 0; i < subDevices.size(); i++) {
-                DPCTLDeviceVector_SetAt(Devices, i,
-                                        wrap(new device(subDevices[i])));
+            Devices = new vector_class<DPCTLSyclDeviceRef>();
+            for (auto &sd : subDevices) {
+                Devices->emplace_back(wrap(new device(sd)));
             }
         } catch (std::bad_alloc const &ba) {
             std::cerr << ba.what() << '\n';
@@ -416,7 +414,7 @@ DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
             std::cerr << re.what() << '\n';
         }
     }
-    return Devices;
+    return wrap(Devices);
 }
 
 __dpctl_give DPCTLDeviceVectorRef
