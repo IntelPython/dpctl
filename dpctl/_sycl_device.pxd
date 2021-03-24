@@ -40,7 +40,7 @@ cdef class SyclDevice(_SyclDevice):
     @staticmethod
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref)
     @staticmethod
-    cdef void _init_helper(SyclDevice device, DPCTLSyclDeviceRef DRef)
+    cdef void _init_helper(_SyclDevice device, DPCTLSyclDeviceRef DRef)
     cdef int _init_from__SyclDevice(self, _SyclDevice other)
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef)
     cdef DPCTLSyclDeviceRef get_device_ref(self)
