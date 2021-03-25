@@ -33,6 +33,7 @@ from ._backend cimport (
     DPCTLDefaultSelector_Create,
     DPCTLDevice_CreateFromSelector,
     DPCTLDeviceMgr_GetDevices,
+    DPCTLDeviceMgr_GetNumDevices,
     DPCTLDeviceSelector_Delete,
     DPCTLDeviceVectorRef,
     DPCTLDeviceVector_Delete,
@@ -45,7 +46,6 @@ from ._backend cimport (
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclDeviceType,
 )
-from ._sycl_device cimport SyclDevice
 from . import backend_type, device_type as device_type_t
 
 __all__ = [
@@ -55,6 +55,11 @@ __all__ = [
     "select_default_device",
     "select_gpu_device",
     "select_host_device",
+    "get_num_devices",
+    "has_cpu_devices",
+    "has_gpu_devices",
+    "has_accelerator_devices",
+    "has_host_device",
 ]
 
 
@@ -174,7 +179,67 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
     return devices
 
 
-cpdef select_accelerator_device():
+cpdef int get_num_devices(
+    backend=backend_type.all, device_type=device_type_t.all
+):
+    cdef DPCTLSyclBackendType BTy = _backend_type._ALL_BACKENDS
+    cdef DPCTLSyclDeviceType DTy = _device_type._ALL_DEVICES
+    cdef int num_devices = 0
+
+    if isinstance(backend, str):
+        BTy = _string_to_dpctl_sycl_backend_ty(backend)
+    elif isinstance(backend, backend_type):
+        BTy = _enum_to_dpctl_sycl_backend_ty(backend)
+    else:
+        raise TypeError(
+            "backend should be specified as a str or an "
+            "enum_types.backend_type"
+        )
+
+    if isinstance(device_type, str):
+        DTy = _string_to_dpctl_sycl_device_ty(device_type)
+    elif isinstance(device_type, device_type_t):
+        DTy = _enum_to_dpctl_sycl_device_ty(device_type)
+    else:
+        raise TypeError(
+            "device type should be specified as a str or an "
+            "enum_types.device_type"
+        )
+
+    num_devices = DPCTLDeviceMgr_GetNumDevices(BTy | DTy)
+
+    return num_devices
+
+
+cpdef cpp_bool has_cpu_devices():
+    """ Returns: True if `sycl::device_type::cpu` devices are present, False otherwise
+    """
+    cdef int num_cpu_dev = DPCTLDeviceMgr_GetNumDevices(_device_type._CPU)
+    return <cpp_bool>num_cpu_dev
+
+
+cpdef cpp_bool has_gpu_devices():
+    """ Returns: True if `sycl::device_type::gpu` devices are present, False otherwise
+    """
+    cdef int num_gpu_dev = DPCTLDeviceMgr_GetNumDevices(_device_type._GPU)
+    return <cpp_bool>num_gpu_dev
+
+
+cpdef cpp_bool has_accelerator_devices():
+    """ Returns: True if `sycl::device_type::accelerator` devices are present, False otherwise
+    """
+    cdef int num_accelerator_dev = DPCTLDeviceMgr_GetNumDevices(_device_type._ACCELERATOR)
+    return <cpp_bool>num_accelerator_dev
+
+
+cpdef cpp_bool has_host_device():
+    """ Returns: True if `sycl::device_type::host` devices are present, False otherwise
+    """
+    cdef int num_host_dev = DPCTLDeviceMgr_GetNumDevices(_device_type._HOST_DEVICE)
+    return <cpp_bool>num_host_dev
+
+
+cpdef SyclDevice select_accelerator_device():
     """ A wrapper for SYCL's `accelerator_selector` device_selector class.
 
     Returns:
@@ -194,7 +259,7 @@ cpdef select_accelerator_device():
     return Device
 
 
-cpdef select_cpu_device():
+cpdef SyclDevice select_cpu_device():
     """ A wrapper for SYCL's `cpu_selector` device_selector class.
 
     Returns:
@@ -214,7 +279,7 @@ cpdef select_cpu_device():
     return Device
 
 
-cpdef select_default_device():
+cpdef SyclDevice select_default_device():
     """ A wrapper for SYCL's `default_selector` device_selector class.
 
     Returns:
@@ -234,7 +299,7 @@ cpdef select_default_device():
     return Device
 
 
-cpdef select_gpu_device():
+cpdef SyclDevice select_gpu_device():
     """ A wrapper for SYCL's `gpu_selector` device_selector class.
 
     Returns:
@@ -254,7 +319,7 @@ cpdef select_gpu_device():
     return Device
 
 
-cpdef select_host_device():
+cpdef SyclDevice select_host_device():
     """ A wrapper for SYCL's `host_selector` device_selector class.
 
     Returns:

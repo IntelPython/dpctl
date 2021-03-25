@@ -23,9 +23,10 @@ import unittest
 import dpctl.memory as dpctl_mem
 import dpctl.program as dpctl_prog
 import numpy as np
+from ._helper import has_cpu, has_gpu
 
 
-@unittest.skipUnless(dpctl.has_gpu_queues(), "No OpenCL GPU queues available")
+@unittest.skipUnless(has_gpu(), "No OpenCL GPU queues available")
 class Test1DKernelSubmit(unittest.TestCase):
     def test_create_program_from_source(self):
         oclSrc = "                                                             \

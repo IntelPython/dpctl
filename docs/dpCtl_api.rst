@@ -55,9 +55,7 @@ Functions
 .. autofunction:: get_include
 .. autofunction:: get_num_activated_queues
 .. autofunction:: get_num_platforms
-.. autofunction:: get_num_queues
-.. autofunction:: has_cpu_queues
-.. autofunction:: has_gpu_queues
+.. autofunction:: get_num_devices
 .. autofunction:: has_sycl_platforms
 .. autofunction:: is_in_device_context
-.. autofunction:: set_default_queue
+.. autofunction:: set_global_queue

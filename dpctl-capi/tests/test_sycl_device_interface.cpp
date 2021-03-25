@@ -59,6 +59,19 @@ struct TestDPCTLSyclDeviceInterface
     }
 };
 
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_Copy)
+{
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclDeviceRef Copied_DRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(Copied_DRef = DPCTLDevice_Copy(DRef));
+    EXPECT_TRUE(bool(Copied_DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(Copied_DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+}
+
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetBackend)
 {
     DPCTLSyclDeviceRef DRef = nullptr;
