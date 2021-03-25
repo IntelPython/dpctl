@@ -121,8 +121,9 @@ DPCTLContext_GetDevices(__dpctl_keep const DPCTLSyclContextRef CRef)
 {
     auto Context = unwrap(CRef);
     if (!Context) {
-	std::cerr << "Can not retrieve devices from DPCTLSyclContextRef as input is a nullptr\n";
-	return nullptr;
+        std::cerr << "Can not retrieve devices from DPCTLSyclContextRef as "
+                     "input is a nullptr\n";
+        return nullptr;
     }
     vector_class<DPCTLSyclDeviceRef> *DevicesVectorPtr = nullptr;
     try {
@@ -133,12 +134,12 @@ DPCTLContext_GetDevices(__dpctl_keep const DPCTLSyclContextRef CRef)
         return nullptr;
     }
     try {
-	auto Devices = Context->get_devices();
-	DevicesVectorPtr->reserve(Devices.size());
-	for(const auto &Dev : Devices) {
-	    DevicesVectorPtr->emplace_back(wrap(new device(Dev)));
-	}
-	return wrap(DevicesVectorPtr);
+        auto Devices = Context->get_devices();
+        DevicesVectorPtr->reserve(Devices.size());
+        for (const auto &Dev : Devices) {
+            DevicesVectorPtr->emplace_back(wrap(new device(Dev)));
+        }
+        return wrap(DevicesVectorPtr);
     } catch (std::bad_alloc const &ba) {
         // \todo log error
         std::cerr << ba.what() << '\n';
