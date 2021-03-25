@@ -113,12 +113,13 @@ TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices)
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
 }
 
-TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices2)
+TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices_GetDevices)
 {
     size_t nCUs = 0;
     DPCTLSyclContextRef CRef = nullptr;
     DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLDeviceVectorRef DVRef = nullptr;
+    DPCTLDeviceVectorRef Res_DVRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
     if (!DRef)
         GTEST_SKIP_("Device not found");
@@ -141,6 +142,9 @@ TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices2)
             EXPECT_NO_FATAL_FAILURE(
                 CRef = DPCTLContext_CreateFromDevices(DVRef, nullptr, 0));
             ASSERT_TRUE(CRef);
+	    EXPECT_NO_FATAL_FAILURE(
+		Res_DVRef = DPCTLContext_GetDevices(CRef));
+	    ASSERT_TRUE(DPCTLDeviceVector_Size(Res_DVRef) == len);
 	    delete[] ar;
         } catch (feature_not_supported const &fnse) {
             GTEST_SKIP_("Skipping creating context for sub-devices");
@@ -149,6 +153,26 @@ TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices2)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(Res_DVRef));
+}
+
+TEST_P(TestDPCTLContextInterface, Chk_GetDevices)
+{
+    DPCTLSyclContextRef CRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLDeviceVectorRef DVRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    if (!DRef)
+        GTEST_SKIP_("Device not found");
+    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
+    ASSERT_TRUE(CRef);
+    EXPECT_NO_FATAL_FAILURE(
+	DVRef = DPCTLContext_GetDevices(CRef));
+    ASSERT_TRUE(DVRef);
+    EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) == 1);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
 }
 
 TEST_P(TestDPCTLContextInterface, Chk_AreEq)

@@ -244,6 +244,8 @@ cdef extern from "dpctl_sycl_context_interface.h":
         int properties)
     cdef DPCTLSyclContextRef DPCTLContext_Copy(
         const DPCTLSyclContextRef CRef)
+    cdef DPCTLDeviceVectorRef DPCTLContext_GetDevices(
+        const DPCTLSyclContextRef CRef)
     cdef bool DPCTLContext_AreEq(const DPCTLSyclContextRef CtxRef1,
                                  const DPCTLSyclContextRef CtxRef2)
     cdef DPCTLSyclBackendType DPCTLContext_GetBackend(

@@ -116,6 +116,36 @@ DPCTLContext_Copy(__dpctl_keep const DPCTLSyclContextRef CRef)
     }
 }
 
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLContext_GetDevices(__dpctl_keep const DPCTLSyclContextRef CRef)
+{
+    auto Context = unwrap(CRef);
+    if (!Context) {
+	std::cerr << "Can not retrieve devices from DPCTLSyclContextRef as input is a nullptr\n";
+	return nullptr;
+    }
+    vector_class<DPCTLSyclDeviceRef> *DevicesVectorPtr = nullptr;
+    try {
+        DevicesVectorPtr = new vector_class<DPCTLSyclDeviceRef>();
+    } catch (std::bad_alloc const &ba) {
+        // \todo log error
+        std::cerr << ba.what() << '\n';
+        return nullptr;
+    }
+    try {
+	auto Devices = Context->get_devices();
+	DevicesVectorPtr->reserve(Devices.size());
+	for(const auto &Dev : Devices) {
+	    DevicesVectorPtr->emplace_back(wrap(new device(Dev)));
+	}
+	return wrap(DevicesVectorPtr);
+    } catch (std::bad_alloc const &ba) {
+        // \todo log error
+        std::cerr << ba.what() << '\n';
+        return nullptr;
+    }
+}
+
 bool DPCTLContext_IsHost(__dpctl_keep const DPCTLSyclContextRef CtxRef)
 {
     auto Ctx = unwrap(CtxRef);
