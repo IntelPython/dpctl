@@ -34,6 +34,8 @@ cdef class _SyclDevice:
     cdef const char *_device_name
     cdef const char *_driver_version
     cdef size_t *_max_work_item_sizes
+    # cdef list _create_sub_devices_equally
+    # cpdef create_sub_devices_equally(self, size_t count)
 
 
 cdef class SyclDevice(_SyclDevice):
@@ -44,3 +46,4 @@ cdef class SyclDevice(_SyclDevice):
     cdef int _init_from__SyclDevice(self, _SyclDevice other)
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef)
     cdef DPCTLSyclDeviceRef get_device_ref(self)
+    cpdef create_sub_devices_equally(self, size_t count)

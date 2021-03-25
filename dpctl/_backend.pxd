@@ -167,11 +167,11 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef bool DPCTLDevice_IsHostUnifiedMemory(const DPCTLSyclDeviceRef DRef)
     cpdef bool DPCTLDevice_HasAspect(
         const DPCTLSyclDeviceRef DRef, DPCTLSyclAspectType AT)
-    cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesEqually(
+    cdef list DPCTLDevice_CreateSubDevicesEqually(
         const DPCTLSyclDeviceRef DRef, size_t count)
-    cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByCounts(
+    cdef list DPCTLDevice_CreateSubDevicesByCounts(
         const DPCTLSyclDeviceRef DRef, size_t *counts, size_t ncounts)
-    cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
+    cdef list DPCTLDevice_CreateSubDevicesByAffinity(
         const DPCTLSyclDeviceRef DRef,
         DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy)
 

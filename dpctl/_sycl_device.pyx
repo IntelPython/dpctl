@@ -53,6 +53,7 @@ from ._backend cimport (
     DPCTLSyclDeviceSelectorRef,
     DPCTLDevice_HasAspect,
     DPCTLSyclDeviceType,
+    DPCTLDevice_CreateSubDevicesEqually,
 )
 from . import backend_type, device_type
 from libc.stdint cimport uint32_t
@@ -73,6 +74,16 @@ cdef class _SyclDevice:
         DPCTLCString_Delete(self._vendor_name)
         DPCTLCString_Delete(self._driver_version)
         DPCTLSize_t_Array_Delete(self._max_work_item_sizes)
+
+    # cpdef create_sub_devices_equally(self, size_t count):
+    #     """ Returns a vector of sub devices partitioned from this SYCL device
+    #         based on the count parameter. The returned
+    #         vector contains as many sub devices as can be created such that each sub
+    #         device contains count compute units. If the device’s total number of compute
+    #         units is not evenly divided by count, then the remaining compute units are
+    #         not included in any of the sub devices.
+    #     """
+    #     return self._create_sub_devices_equally
 
 
 cdef class SyclDevice(_SyclDevice):
@@ -121,6 +132,7 @@ cdef class SyclDevice(_SyclDevice):
         device._driver_version = DPCTLDevice_GetDriverInfo(DRef)
         device._vendor_name = DPCTLDevice_GetVendorName(DRef)
         device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes(DRef)
+        # device._create_sub_devices_equally = DPCTLDevice_CreateSubDevicesEqually(DRef, count)
 
     @staticmethod
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref):
@@ -138,6 +150,9 @@ cdef class SyclDevice(_SyclDevice):
         self._max_work_item_sizes =  (
             DPCTLDevice_GetMaxWorkItemSizes(self._device_ref)
         )
+        # self._create_sub_devices_equally = (
+        #     DPCTLDevice_CreateSubDevicesEqually(self._device_ref, count)
+        # )
         self._vendor_name = DPCTLDevice_GetVendorName(self._device_ref)
 
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef):
@@ -148,6 +163,16 @@ cdef class SyclDevice(_SyclDevice):
         else:
             SyclDevice._init_helper(self, DRef)
             return 0
+
+    cpdef create_sub_devices_equally(self, size_t count):
+        """ Returns a vector of sub devices partitioned from this SYCL device
+            based on the count parameter. The returned
+            vector contains as many sub devices as can be created such that each sub
+            device contains count compute units. If the device’s total number of compute
+            units is not evenly divided by count, then the remaining compute units are
+            not included in any of the sub devices.
+        """
+        return DPCTLDevice_CreateSubDevicesEqually(self._device_ref, count)
 
     def __cinit__(self, arg=None):
         cdef DPCTLSyclDeviceSelectorRef DSRef = NULL
