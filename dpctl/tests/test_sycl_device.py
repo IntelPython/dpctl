@@ -242,58 +242,58 @@ def check_is_host(device):
 
 def check_get_sub_group_independent_forward_progress(device):
     try:
-        device.get_sub_group_independent_forward_progress()
+        device.sub_group_independent_forward_progress
     except Exception:
-        pytest.fail("get_sub_group_independent_forward_progress call failed")
+        pytest.fail("sub_group_independent_forward_progress call failed")
 
 
 def check_get_preferred_vector_width_char(device):
     try:
-        device.get_preferred_vector_width_char()
+        device.preferred_vector_width_char
     except Exception:
-        pytest.fail("get_preferred_vector_width_char call failed")
+        pytest.fail("preferred_vector_width_char call failed")
 
 
 def check_get_preferred_vector_width_short(device):
     try:
-        device.get_preferred_vector_width_short()
+        device.preferred_vector_width_short
     except Exception:
-        pytest.fail("get_preferred_vector_width_short call failed")
+        pytest.fail("preferred_vector_width_short call failed")
 
 
 def check_get_preferred_vector_width_int(device):
     try:
-        device.get_preferred_vector_width_int()
+        device.preferred_vector_width_int
     except Exception:
-        pytest.fail("get_preferred_vector_width_int call failed")
+        pytest.fail("preferred_vector_width_int call failed")
 
 
 def check_get_preferred_vector_width_long(device):
     try:
-        device.get_preferred_vector_width_long()
+        device.preferred_vector_width_long
     except Exception:
-        pytest.fail("get_preferred_vector_width_long call failed")
+        pytest.fail("preferred_vector_width_long call failed")
 
 
 def check_get_preferred_vector_width_float(device):
     try:
-        device.get_preferred_vector_width_float()
+        device.preferred_vector_width_float
     except Exception:
-        pytest.fail("get_preferred_vector_width_float call failed")
+        pytest.fail("preferred_vector_width_float call failed")
 
 
 def check_get_preferred_vector_width_double(device):
     try:
-        device.get_preferred_vector_width_double()
+        device.preferred_vector_width_double
     except Exception:
-        pytest.fail("get_preferred_vector_width_double call failed")
+        pytest.fail("preferred_vector_width_double call failed")
 
 
 def check_get_preferred_vector_width_half(device):
     try:
-        device.get_preferred_vector_width_half()
+        device.preferred_vector_width_half
     except Exception:
-        pytest.fail("get_preferred_vector_width_half call failed")
+        pytest.fail("preferred_vector_width_half call failed")
 
 
 list_of_checks = [
