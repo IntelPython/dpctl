@@ -20,6 +20,7 @@
 import dpctl
 import dpctl.memory
 import unittest
+from ._helper import has_sycl_platforms
 
 
 class TestQueueMemcpy(unittest.TestCase):
@@ -29,7 +30,7 @@ class TestQueueMemcpy(unittest.TestCase):
         return mobj
 
     @unittest.skipUnless(
-        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+        has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_memcpy_copy_usm_to_usm(self):
         mobj1 = self._create_memory()
@@ -46,7 +47,7 @@ class TestQueueMemcpy(unittest.TestCase):
         self.assertEqual(mv2[:3], b"123")
 
     @unittest.skipUnless(
-        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+        has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_memcpy_type_error(self):
         mobj = self._create_memory()
