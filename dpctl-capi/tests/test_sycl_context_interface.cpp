@@ -143,6 +143,7 @@ TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices_GetDevices)
             EXPECT_NO_FATAL_FAILURE(
                 CRef = DPCTLContext_CreateFromDevices(DVRef, nullptr, 0));
             ASSERT_TRUE(CRef);
+            ASSERT_TRUE(DPCTLContext_DeviceCount(CRef) == len);
             EXPECT_NO_FATAL_FAILURE(Res_DVRef = DPCTLContext_GetDevices(CRef));
             ASSERT_TRUE(DPCTLDeviceVector_Size(Res_DVRef) == len);
             delete[] ar;

@@ -100,6 +100,16 @@ __dpctl_give DPCTLSyclContextRef
 DPCTLContext_Copy(__dpctl_keep const DPCTLSyclContextRef CRef);
 
 /*!
+ * @brief Returns the number of devices associated with sycl::context referenced
+ * by DPCTLSyclContextRef object.
+ *
+ * @param    CRef           DPCTLSyclContexRef object to query.
+ * @return   A positive count on success or zero on error.
+ */
+DPCTL_API
+size_t DPCTLContext_DeviceCount(__dpctl_keep const DPCTLSyclContextRef CRef);
+
+/*!
  * @brief Returns a vector of devices associated with sycl::context referenced
  * by DPCTLSyclContextRef object.
  *
