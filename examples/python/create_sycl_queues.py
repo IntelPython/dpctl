@@ -43,7 +43,7 @@ with device_context("opencl:cpu:0") as cpu_queue:
     print("========================================")
     print("Current context inside with scope")
     print("========================================")
-    cpu_queue.get_sycl_device().dump_device_info()
+    cpu_queue.get_sycl_device().print_device_info()
 
     # Note the current context can be either directly accessed by using
     # the "cpu_queue" object, or it can be accessed via the runtime's
@@ -51,10 +51,10 @@ with device_context("opencl:cpu:0") as cpu_queue:
     print("========================================")
     print("Looking up current context using runtime")
     print("========================================")
-    rt.get_current_queue().get_sycl_device().dump_device_info()
+    rt.get_current_queue().get_sycl_device().print_device_info()
 
 
 print("========================================")
 print("Current context after exiting with scope")
 print("========================================")
-rt.get_current_queue().get_sycl_device().dump_device_info()
+rt.get_current_queue().get_sycl_device().print_device_info()
