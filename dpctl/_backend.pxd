@@ -104,6 +104,18 @@ cdef extern from "dpctl_sycl_enum_types.h":
     ctypedef _aspect_type DPCTLSyclAspectType
 
 
+    cdef enum _partition_affinity_domain_type 'DPCTLPartitionAffinityDomainType':
+        _not_applicable                     'not_applicable',
+        _numa                               'numa',
+        _L4_cache                           'L4_cache',
+        _L3_cache                           'L3_cache',
+        _L2_cache                           'L2_cache',
+        _L1_cache                           'L1_cache',
+        _next_partitionable                 'next_partitionable',
+
+    ctypedef _partition_affinity_domain_type DPCTLPartitionAffinityDomainType
+
+
 cdef extern from "dpctl_sycl_types.h":
     cdef struct DPCTLOpaqueSyclContext
     cdef struct DPCTLOpaqueSyclDevice
@@ -155,6 +167,13 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef bool DPCTLDevice_IsHostUnifiedMemory(const DPCTLSyclDeviceRef DRef)
     cpdef bool DPCTLDevice_HasAspect(
         const DPCTLSyclDeviceRef DRef, DPCTLSyclAspectType AT)
+    cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesEqually(
+        const DPCTLSyclDeviceRef DRef, size_t count)
+    cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByCounts(
+        const DPCTLSyclDeviceRef DRef, size_t *counts, size_t ncounts)
+    cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
+        const DPCTLSyclDeviceRef DRef,
+        DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy)
 
 
 cdef extern from "dpctl_sycl_device_manager.h":
