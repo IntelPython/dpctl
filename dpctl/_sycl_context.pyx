@@ -170,6 +170,9 @@ cdef class SyclContext(_SyclContext):
         return int(<size_t>self._ctx_ref)
 
     def get_devices (self):
+        """
+        Returns the list of SyclDevice objects associated with SyclContext instance.
+        """
         cdef DPCTLDeviceVectorRef DVRef = DPCTLContext_GetDevices(self.get_context_ref())
         cdef size_t num_devs
         cdef size_t i
@@ -181,4 +184,30 @@ cdef class SyclContext(_SyclContext):
         for i in range(num_devs):
             DRef = DPCTLDeviceVector_GetAt(DVRef, i)
             devices.append(SyclDevice._create(DRef))
+        DPCTLDeviceVector_Delete(DVRef)
         return devices
+
+    def device_count (self):
+        """
+        Returns the number of sycl devices associated with SyclContext instance.
+        """
+        cdef DPCTLDeviceVectorRef DVRef = DPCTLContext_GetDevices(self.get_context_ref())
+        cdef size_t num_devs
+        cdef size_t i
+        cdef DPCTLSyclDeviceRef DRef
+        if (DVRef is NULL):
+            raise ValueError("Internal error: NULL device vector encountered")
+        num_devs = DPCTLDeviceVector_Size(DVRef)
+        DPCTLDeviceVector_Delete(DVRef)
+        return num_devs
+
+    @property
+    def __name__(self):
+        return "SyclContext"
+
+    def __repr__(self):
+        cdef size_t n = self.device_count()
+        if n == 1:
+            return ("<dpctl." + self.__name__ + " at {}>".format(hex(id(self))))
+        else:
+            return ("<dpctl." + self.__name__ + " for {} devices at {}>".format(n, hex(id(self))))
