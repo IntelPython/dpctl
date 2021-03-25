@@ -19,6 +19,7 @@
 
 from .test_dparray import *
 from .test_sycl_device import *
+from .test_sycl_context import *
 from .test_sycl_kernel_submit import *
 from .test_sycl_platform import *
 from .test_sycl_program import *
