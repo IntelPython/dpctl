@@ -27,6 +27,7 @@ from ._backend cimport (
     DPCTLSyclDeviceRef,
     DPCTLContext_Create,
     DPCTLContext_CreateFromDevices,
+    DPCTLContext_GetDevices,
     DPCTLContext_Copy,
     DPCTLContext_Delete,
     DPCTLContext_AreEq,
@@ -34,6 +35,8 @@ from ._backend cimport (
     DPCTLDevice_Copy,
     DPCTLDeviceVectorRef,
     DPCTLDeviceVector_CreateFromArray,
+    DPCTLDeviceVector_GetAt,
+    DPCTLDeviceVector_Size,
     DPCTLDeviceVector_Delete,
     error_handler_callback
 )
@@ -165,3 +168,17 @@ cdef class SyclContext(_SyclContext):
             SyclContext cast to a size_t.
         """
         return int(<size_t>self._ctx_ref)
+
+    def get_devices (self):
+        cdef DPCTLDeviceVectorRef DVRef = DPCTLContext_GetDevices(self.get_context_ref())
+        cdef size_t num_devs
+        cdef size_t i
+        cdef DPCTLSyclDeviceRef DRef
+        if (DVRef is NULL):
+            raise ValueError("Internal error: NULL device vector encountered")
+        num_devs = DPCTLDeviceVector_Size(DVRef)
+        devices = []
+        for i in range(num_devs):
+            DRef = DPCTLDeviceVector_GetAt(DVRef, i)
+            devices.append(SyclDevice._create(DRef))
+        return devices
