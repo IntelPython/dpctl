@@ -27,6 +27,7 @@ from ._backend cimport (
     DPCTLSyclDeviceRef,
     DPCTLContext_Create,
     DPCTLContext_CreateFromDevices,
+    DPCTLContext_DeviceCount,
     DPCTLContext_GetDevices,
     DPCTLContext_Copy,
     DPCTLContext_Delete,
@@ -191,15 +192,12 @@ cdef class SyclContext(_SyclContext):
         """
         Returns the number of sycl devices associated with SyclContext instance.
         """
-        cdef DPCTLDeviceVectorRef DVRef = DPCTLContext_GetDevices(self.get_context_ref())
-        cdef size_t num_devs
-        cdef size_t i
-        cdef DPCTLSyclDeviceRef DRef
-        if (DVRef is NULL):
-            raise ValueError("Internal error: NULL device vector encountered")
-        num_devs = DPCTLDeviceVector_Size(DVRef)
-        DPCTLDeviceVector_Delete(DVRef)
-        return num_devs
+        cdef size_t num_devs = DPCTLContext_DeviceCount(self.get_context_ref())
+        if num_devs:
+            return num_devs
+        else:
+            raise ValueError("An error was encountered quering the number of devices "
+                             "associated with this context")
 
     @property
     def __name__(self):
