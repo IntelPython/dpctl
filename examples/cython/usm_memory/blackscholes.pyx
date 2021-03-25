@@ -26,12 +26,13 @@ import dpctl
 import numpy as np
 
 cdef extern from "sycl_blackscholes.hpp":
-    cdef void cpp_blackscholes[T](c_dpctl.DPCTLSyclQueueRef, size_t n_opts, T* option_params, T* callput)
-    cdef void cpp_populate_params[T](c_dpctl.DPCTLSyclQueueRef, size_t n_opts, T* option_params, T pl, T ph, T sl, T sh, T tl, T th, T rl, T rh, T vl, T vh, int seed)
+    cdef void cpp_blackscholes[T](c_dpctl.DPCTLSyclQueueRef, size_t n_opts, T* option_params, T* callput) except +
+    cdef void cpp_populate_params[T](c_dpctl.DPCTLSyclQueueRef, size_t n_opts, T* option_params, T pl, T ph, T sl, T sh, T tl, T th, T rl, T rh, T vl, T vh, int seed) except +
 
 def black_scholes_price(floating[:, ::1] option_params):
     cdef size_t n_opts = option_params.shape[0]
     cdef size_t n_params = option_params.shape[1]
+    cdef size_t n_bytes = 0
     cdef c_dpctl.SyclQueue q
     cdef c_dpctl.DPCTLSyclQueueRef q_ptr
     cdef c_dpctl_mem.MemoryUSMShared mobj
@@ -51,14 +52,16 @@ def black_scholes_price(floating[:, ::1] option_params):
     q = c_dpctl.get_current_queue()
     q_ptr = q.get_queue_ref()
     if (floating is double):
-        mobj = c_dpctl_mem.MemoryUSMShared(nbytes=2*n_opts * sizeof(double))
+        n_bytes = 2*n_opts * sizeof(double)
+        mobj = c_dpctl_mem.MemoryUSMShared(n_bytes)
         callput_arr = np.ndarray((n_opts, 2), buffer=mobj, dtype='d')
         call_put_prices = callput_arr
         dp1 = &option_params[0,0]
         dp2 = &call_put_prices[0,0];
         cpp_blackscholes[double](q_ptr, n_opts, dp1, dp2)
     elif (floating is float):
-        mobj = c_dpctl_mem.MemoryUSMShared(nbytes=2*n_opts * sizeof(float))
+        n_bytes = 2*n_opts * sizeof(float)
+        mobj = c_dpctl_mem.MemoryUSMShared(n_bytes)
         callput_arr = np.ndarray((n_opts, 2), buffer=mobj, dtype='f')
         call_put_prices = callput_arr
         fp1 = &option_params[0,0]

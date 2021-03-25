@@ -21,6 +21,7 @@
 # distutils: language = c++
 # cython: language_level=3
 
+from dpctl._backend cimport *
 from dpctl._sycl_context cimport *
 from dpctl._sycl_device cimport *
 from dpctl._sycl_device_factory cimport *

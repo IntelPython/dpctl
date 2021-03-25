@@ -25,6 +25,9 @@ from libcpp cimport bool
 from libc.stdint cimport uint32_t
 
 
+cdef extern from "dpctl_error_handler_type.h":
+    ctypedef void error_handler_callback(int err_code)
+
 cdef extern from "dpctl_utils.h":
     cdef void DPCTLCString_Delete(const char *str)
     cdef void DPCTLSize_t_Array_Delete(size_t *arr)
@@ -72,6 +75,11 @@ cdef extern from "dpctl_sycl_enum_types.h":
         _VOID_PTR           'DPCTL_VOID_PTR'
 
     ctypedef _arg_data_type DPCTLKernelArgType
+
+    ctypedef enum _queue_property_type 'DPCTLQueuePropertyType':
+        _DEFAULT_PROPERTY   'DPCTL_DEFAULT_PROPERTY'
+        _ENABLE_PROFILING   'DPCTL_ENABLE_PROFILING'
+        _IN_ORDER           'DPCTL_IN_ORDER'
 
     cdef enum _aspect_type 'DPCTLSyclAspectType':
         _host                               'host',
@@ -154,6 +162,9 @@ cdef extern from "dpctl_sycl_device_interface.h":
 cdef extern from "dpctl_sycl_device_manager.h":
     cdef struct DPCTLDeviceVector
     ctypedef DPCTLDeviceVector *DPCTLDeviceVectorRef
+    ctypedef struct DPCTL_DeviceAndContextPair:
+        DPCTLSyclDeviceRef DRef
+        DPCTLSyclContextRef CRef
 
     cdef void DPCTLDeviceVector_Delete(DPCTLDeviceVectorRef DVRef)
     cdef void DPCTLDeviceVector_Clear(DPCTLDeviceVectorRef DVRef)
@@ -164,6 +175,8 @@ cdef extern from "dpctl_sycl_device_manager.h":
     cdef DPCTLDeviceVectorRef DPCTLDeviceMgr_GetDevices(int device_identifier)
     cdef size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier)
     cdef void DPCTLDeviceMgr_PrintDeviceInfo(const DPCTLSyclDeviceRef DRef)
+    cdef DPCTL_DeviceAndContextPair DPCTLDeviceMgr_GetDeviceAndContextPair(
+        const DPCTLSyclDeviceRef DRef)
 
 
 cdef extern from "dpctl_sycl_device_selector_interface.h":
@@ -175,6 +188,7 @@ cdef extern from "dpctl_sycl_device_selector_interface.h":
     DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create()
     DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create()
     void DPCTLDeviceSelector_Delete(DPCTLSyclDeviceSelectorRef DSRef)
+    int DPCTLDeviceSelector_Score(DPCTLSyclDeviceSelectorRef, DPCTLSyclDeviceRef)
 
 
 cdef extern from "dpctl_sycl_event_interface.h":
@@ -226,7 +240,17 @@ cdef extern from "dpctl_sycl_program_interface.h":
 cdef extern from "dpctl_sycl_queue_interface.h":
     cdef bool DPCTLQueue_AreEq(const DPCTLSyclQueueRef QRef1,
                                const DPCTLSyclQueueRef QRef2)
+    cdef DPCTLSyclQueueRef DPCTLQueue_Create(
+        const DPCTLSyclContextRef CRef,
+        const DPCTLSyclDeviceRef DRef,
+        error_handler_callback *error_handler,
+        int properties)
+    cdef DPCTLSyclQueueRef DPCTLQueue_CreateForDevice(
+        const DPCTLSyclDeviceRef dRef,
+        error_handler_callback *handler,
+        int properties)
     cdef void DPCTLQueue_Delete(DPCTLSyclQueueRef QRef)
+    cdef DPCTLSyclQueueRef DPCTLQueue_Copy(DPCTLSyclQueueRef QRef)
     cdef DPCTLSyclBackendType DPCTLQueue_GetBackend(const DPCTLSyclQueueRef Q)
     cdef DPCTLSyclContextRef DPCTLQueue_GetContext(const DPCTLSyclQueueRef Q)
     cdef DPCTLSyclDeviceRef DPCTLQueue_GetDevice(const DPCTLSyclQueueRef Q)
@@ -270,26 +294,12 @@ cdef extern from "dpctl_sycl_queue_interface.h":
 
 cdef extern from "dpctl_sycl_queue_manager.h":
     cdef DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue()
-    cdef size_t DPCTLQueueMgr_GetNumQueues(DPCTLSyclBackendType BETy,
-                                           DPCTLSyclDeviceType DeviceTy)
-    cdef size_t DPCTLQueueMgr_GetNumActivatedQueues()
-    cdef DPCTLSyclQueueRef DPCTLQueueMgr_GetQueue(
-        DPCTLSyclBackendType BETy,
-        DPCTLSyclDeviceType DeviceTy,
-        size_t DNum)
+    cdef bool DPCTLQueueMgr_GlobalQueueIsCurrent()
     cdef bool DPCTLQueueMgr_IsCurrentQueue(const DPCTLSyclQueueRef QRef)
     cdef void DPCTLQueueMgr_PopQueue()
-    cdef DPCTLSyclQueueRef DPCTLQueueMgr_PushQueue(
-        DPCTLSyclBackendType BETy,
-        DPCTLSyclDeviceType DeviceTy,
-        size_t DNum)
-    cdef DPCTLSyclQueueRef DPCTLQueueMgr_SetAsDefaultQueue(
-        DPCTLSyclBackendType BETy,
-        DPCTLSyclDeviceType DeviceTy,
-        size_t DNum)
-    cdef DPCTLSyclQueueRef DPCTLQueueMgr_GetQueueFromContextAndDevice(
-        DPCTLSyclContextRef CRef,
-        DPCTLSyclDeviceRef DRef)
+    cdef void DPCTLQueueMgr_PushQueue(const DPCTLSyclQueueRef dRef)
+    cdef void DPCTLQueueMgr_SetGlobalQueue(const DPCTLSyclQueueRef dRef)
+    cdef size_t DPCTLQueueMgr_GetQueueStackSize()
 
 
 cdef extern from "dpctl_sycl_usm_interface.h":
