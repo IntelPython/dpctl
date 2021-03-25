@@ -242,16 +242,16 @@ def check_is_host(device):
 
 def check_get_max_read_image_args(device):
     try:
-        device.get_max_read_image_args()
+        device.max_read_image_args
     except Exception:
-        pytest.fail("get_max_read_image_args call failed")
+        pytest.fail("max_read_image_args call failed")
 
 
 def check_get_max_write_image_args(device):
     try:
-        device.get_max_write_image_args()
+        device.max_write_image_args
     except Exception:
-        pytest.fail("get_max_write_image_args call failed")
+        pytest.fail("max_write_image_args call failed")
 
 
 list_of_checks = [
