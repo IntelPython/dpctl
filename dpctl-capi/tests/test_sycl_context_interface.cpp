@@ -133,19 +133,19 @@ TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices_GetDevices)
         try {
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_equally>(nCUs / 2);
-	    const size_t len = subDevices.size();
-	    auto ar = new DPCTLSyclDeviceRef[len];
-	    for(size_t i=0; i < len; ++i) {
-		ar[i] = wrap(new device(subDevices.at(i)));
-	    }
-            EXPECT_NO_FATAL_FAILURE(DVRef = DPCTLDeviceVector_CreateFromArray(len, ar));
+            const size_t len = subDevices.size();
+            auto ar = new DPCTLSyclDeviceRef[len];
+            for (size_t i = 0; i < len; ++i) {
+                ar[i] = wrap(new device(subDevices.at(i)));
+            }
+            EXPECT_NO_FATAL_FAILURE(
+                DVRef = DPCTLDeviceVector_CreateFromArray(len, ar));
             EXPECT_NO_FATAL_FAILURE(
                 CRef = DPCTLContext_CreateFromDevices(DVRef, nullptr, 0));
             ASSERT_TRUE(CRef);
-	    EXPECT_NO_FATAL_FAILURE(
-		Res_DVRef = DPCTLContext_GetDevices(CRef));
-	    ASSERT_TRUE(DPCTLDeviceVector_Size(Res_DVRef) == len);
-	    delete[] ar;
+            EXPECT_NO_FATAL_FAILURE(Res_DVRef = DPCTLContext_GetDevices(CRef));
+            ASSERT_TRUE(DPCTLDeviceVector_Size(Res_DVRef) == len);
+            delete[] ar;
         } catch (feature_not_supported const &fnse) {
             GTEST_SKIP_("Skipping creating context for sub-devices");
         }
@@ -166,8 +166,7 @@ TEST_P(TestDPCTLContextInterface, Chk_GetDevices)
         GTEST_SKIP_("Device not found");
     EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
     ASSERT_TRUE(CRef);
-    EXPECT_NO_FATAL_FAILURE(
-	DVRef = DPCTLContext_GetDevices(CRef));
+    EXPECT_NO_FATAL_FAILURE(DVRef = DPCTLContext_GetDevices(CRef));
     ASSERT_TRUE(DVRef);
     EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) == 1);
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
