@@ -41,16 +41,20 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef);
 struct TestDPCTLSyclDeviceInterface
     : public ::testing::TestWithParam<const char *>
 {
-    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
 
     TestDPCTLSyclDeviceInterface()
     {
-        EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLFilterSelector_Create(GetParam()));
+        auto DS = DPCTLFilterSelector_Create(GetParam());
+        if (DS) {
+            EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DS));
+        }
+        DPCTLDeviceSelector_Delete(DS);
     }
 
     void SetUp()
     {
-        if (!DSRef) {
+        if (!DRef) {
             auto message = "Skipping as no device of type " +
                            std::string(GetParam()) + ".";
             GTEST_SKIP_(message.c_str());
@@ -59,19 +63,14 @@ struct TestDPCTLSyclDeviceInterface
 
     ~TestDPCTLSyclDeviceInterface()
     {
-        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+        DPCTLDevice_Delete(DRef);
     }
 };
 
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesEqually)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLDeviceVectorRef DVRef = nullptr;
     uint32_t maxCUs = 0;
-
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
 
     EXPECT_NO_FATAL_FAILURE(maxCUs = DPCTLDevice_GetMaxComputeUnits(DRef));
     if (maxCUs) {
@@ -83,19 +82,12 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesEqually)
             EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
     }
-
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByCounts)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLDeviceVectorRef DVRef = nullptr;
     uint32_t maxCUs = 0;
-
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
 
     EXPECT_NO_FATAL_FAILURE(maxCUs = DPCTLDevice_GetMaxComputeUnits(DRef));
     if (maxCUs) {
@@ -113,24 +105,17 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByCounts)
             EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
     }
-
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface,
        Chk_CreateSubDevicesByAffinityNotApplicable)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLDeviceVectorRef DVRef = nullptr;
 
     info::partition_affinity_domain domain =
         info::partition_affinity_domain::not_applicable;
     DPCTLPartitionAffinityDomainType dpctl_domain =
         DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain);
-
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
 
     if (dpctl_domain) {
         EXPECT_NO_FATAL_FAILURE(
@@ -149,13 +134,10 @@ TEST_P(TestDPCTLSyclDeviceInterface,
         } catch (runtime_error const &re) {
         }
     }
-
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityNuma)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLDeviceVectorRef DVRef = nullptr;
 
     info::partition_affinity_domain domain =
@@ -164,10 +146,6 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityNuma)
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
-
     if (dpctl_domain) {
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
@@ -192,13 +170,10 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityNuma)
             EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
     }
-
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL4Cache)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLDeviceVectorRef DVRef = nullptr;
 
     info::partition_affinity_domain domain =
@@ -207,10 +182,6 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL4Cache)
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
-
     if (dpctl_domain) {
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
@@ -235,13 +206,10 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL4Cache)
             EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
     }
-
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL3Cache)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLDeviceVectorRef DVRef = nullptr;
 
     info::partition_affinity_domain domain =
@@ -250,10 +218,6 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL3Cache)
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
-
     if (dpctl_domain) {
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
@@ -278,13 +242,10 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL3Cache)
             EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
     }
-
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL2Cache)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLDeviceVectorRef DVRef = nullptr;
 
     info::partition_affinity_domain domain =
@@ -293,10 +254,6 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL2Cache)
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
-
     if (dpctl_domain) {
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
@@ -321,13 +278,10 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL2Cache)
             EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
     }
-
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL1Cache)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLDeviceVectorRef DVRef = nullptr;
 
     info::partition_affinity_domain domain =
@@ -336,10 +290,6 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL1Cache)
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
-
     if (dpctl_domain) {
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
@@ -364,14 +314,11 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL1Cache)
             EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
     }
-
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface,
        Chk_CreateSubDevicesByAffinityNextPartitionable)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLDeviceVectorRef DVRef = nullptr;
 
     info::partition_affinity_domain domain =
@@ -380,10 +327,6 @@ TEST_P(TestDPCTLSyclDeviceInterface,
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
-
     if (dpctl_domain) {
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
@@ -408,8 +351,6 @@ TEST_P(TestDPCTLSyclDeviceInterface,
             EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
     }
-
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 INSTANTIATE_TEST_SUITE_P(DPCTLDevice_Fns,
