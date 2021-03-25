@@ -242,37 +242,37 @@ def check_is_host(device):
 
 def check_get_image_2d_max_width(device):
     try:
-        device.get_image_2d_max_width()
+        device.image_2d_max_width
     except Exception:
-        pytest.fail("get_image_2d_max_width call failed")
+        pytest.fail("image_2d_max_width call failed")
 
 
 def check_get_image_2d_max_height(device):
     try:
-        device.get_image_2d_max_height()
+        device.image_2d_max_height
     except Exception:
-        pytest.fail("get_image_2d_max_height call failed")
+        pytest.fail("image_2d_max_height call failed")
 
 
 def check_get_image_3d_max_width(device):
     try:
-        device.get_image_3d_max_width()
+        device.image_3d_max_width
     except Exception:
-        pytest.fail("get_image_3d_max_width call failed")
+        pytest.fail("image_3d_max_width call failed")
 
 
 def check_get_image_3d_max_height(device):
     try:
-        device.get_image_3d_max_height()
+        device.image_3d_max_height
     except Exception:
-        pytest.fail("get_image_3d_max_height call failed")
+        pytest.fail("image_3d_max_height call failed")
 
 
 def check_get_image_3d_max_depth(device):
     try:
-        device.get_image_3d_max_depth()
+        device.image_3d_max_depth
     except Exception:
-        pytest.fail("get_image_3d_max_depth call failed")
+        pytest.fail("image_3d_max_depth call failed")
 
 
 list_of_checks = [
