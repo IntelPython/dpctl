@@ -240,6 +240,62 @@ def check_is_host(device):
         pytest.fail("is_hostcall failed")
 
 
+def check_get_sub_group_independent_forward_progress(device):
+    try:
+        device.sub_group_independent_forward_progress
+    except Exception:
+        pytest.fail("sub_group_independent_forward_progress call failed")
+
+
+def check_get_preferred_vector_width_char(device):
+    try:
+        device.preferred_vector_width_char
+    except Exception:
+        pytest.fail("preferred_vector_width_char call failed")
+
+
+def check_get_preferred_vector_width_short(device):
+    try:
+        device.preferred_vector_width_short
+    except Exception:
+        pytest.fail("preferred_vector_width_short call failed")
+
+
+def check_get_preferred_vector_width_int(device):
+    try:
+        device.preferred_vector_width_int
+    except Exception:
+        pytest.fail("preferred_vector_width_int call failed")
+
+
+def check_get_preferred_vector_width_long(device):
+    try:
+        device.preferred_vector_width_long
+    except Exception:
+        pytest.fail("preferred_vector_width_long call failed")
+
+
+def check_get_preferred_vector_width_float(device):
+    try:
+        device.preferred_vector_width_float
+    except Exception:
+        pytest.fail("preferred_vector_width_float call failed")
+
+
+def check_get_preferred_vector_width_double(device):
+    try:
+        device.preferred_vector_width_double
+    except Exception:
+        pytest.fail("preferred_vector_width_double call failed")
+
+
+def check_get_preferred_vector_width_half(device):
+    try:
+        device.preferred_vector_width_half
+    except Exception:
+        pytest.fail("preferred_vector_width_half call failed")
+
+
 list_of_checks = [
     check_get_max_compute_units,
     check_get_max_work_item_dims,
@@ -250,6 +306,14 @@ list_of_checks = [
     check_is_cpu,
     check_is_gpu,
     check_is_host,
+    check_get_sub_group_independent_forward_progress,
+    check_get_preferred_vector_width_char,
+    check_get_preferred_vector_width_short,
+    check_get_preferred_vector_width_int,
+    check_get_preferred_vector_width_long,
+    check_get_preferred_vector_width_float,
+    check_get_preferred_vector_width_double,
+    check_get_preferred_vector_width_half,
     check_has_aspect_host,
     check_has_aspect_cpu,
     check_has_aspect_gpu,
