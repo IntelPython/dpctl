@@ -24,6 +24,7 @@ from ._backend cimport (
     _aspect_type,
     _backend_type,
     _device_type,
+    _partition_affinity_domain_type,
     DPCTLCString_Delete,
     DPCTLDefaultSelector_Create,
     DPCTLDevice_Copy,
@@ -66,6 +67,8 @@ from ._backend cimport (
     DPCTLDevice_GetPreferredVectorWidthDouble,
     DPCTLDevice_GetPreferredVectorWidthHalf,
     DPCTLDevice_CreateSubDevicesEqually,
+    DPCTLDevice_CreateSubDevicesByCounts,
+    DPCTLDevice_CreateSubDevicesByAffinity,
 )
 from . import backend_type, device_type
 from libc.stdint cimport uint32_t
@@ -185,6 +188,29 @@ cdef class SyclDevice(_SyclDevice):
         """
         cdef DPCTLDeviceVectorRef DVRef = NULL
         DVRef = DPCTLDevice_CreateSubDevicesEqually(self._device_ref, count)
+        cdef list devices = _get_devices(DVRef)
+        DPCTLDeviceVector_Delete(DVRef)
+        return devices
+
+    cpdef list create_sub_devices_by_counts(self, list counts, size_t ncounts):
+        """ Returns a vector of sub devices
+            partitioned from this SYCL device based on the counts parameter. For each
+            non-zero value M in the counts vector, a sub device with M compute units
+            is created.
+        """
+        cdef DPCTLDeviceVectorRef DVRef = NULL
+        DVRef = DPCTLDevice_CreateSubDevicesByCounts(self._device_ref, counts, ncounts)
+        cdef list devices = _get_devices(DVRef)
+        DPCTLDeviceVector_Delete(DVRef)
+        return devices
+
+    cpdef list create_sub_devices_by_affinity(self, _partition_affinity_domain_type domain):
+        """ Returns a vector of sub devices
+            partitioned from this SYCL device by affinity domain based on the domain
+            parameter.
+        """
+        cdef DPCTLDeviceVectorRef DVRef = NULL
+        DVRef = DPCTLDevice_CreateSubDevicesByAffinity(self._device_ref, domain)
         cdef list devices = _get_devices(DVRef)
         DPCTLDeviceVector_Delete(DVRef)
         return devices
