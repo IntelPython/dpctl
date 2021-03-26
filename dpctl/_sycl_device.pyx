@@ -58,6 +58,14 @@ from ._backend cimport (
     DPCTLDevice_GetImage3dMaxWidth,
     DPCTLDevice_GetImage3dMaxHeight,
     DPCTLDevice_GetImage3dMaxDepth,
+    DPCTLDevice_GetSubGroupIndependentForwardProgress,
+    DPCTLDevice_GetPreferredVectorWidthChar,
+    DPCTLDevice_GetPreferredVectorWidthShort,
+    DPCTLDevice_GetPreferredVectorWidthInt,
+    DPCTLDevice_GetPreferredVectorWidthLong,
+    DPCTLDevice_GetPreferredVectorWidthFloat,
+    DPCTLDevice_GetPreferredVectorWidthDouble,
+    DPCTLDevice_GetPreferredVectorWidthHalf,
 )
 from . import backend_type, device_type
 from libc.stdint cimport uint32_t
@@ -496,6 +504,62 @@ cdef class SyclDevice(_SyclDevice):
                 DPCTLDevice_GetMaxNumSubGroups(self._device_ref)
             )
         return max_num_sub_groups
+
+    @property
+    def sub_group_independent_forward_progress(self):
+        """ Returns true if the device supports independent forward progress of
+            sub-groups with respect to other sub-groups in the same work-group.
+        """
+        return DPCTLDevice_GetSubGroupIndependentForwardProgress(self._device_ref)
+
+    @property
+    def preferred_vector_width_char(self):
+        """ Returns the preferred native vector width size for built-in scalar
+            types that can be put into vectors.
+        """
+        return DPCTLDevice_GetPreferredVectorWidthChar(self._device_ref)
+
+    @property
+    def preferred_vector_width_short(self):
+        """ Returns the preferred native vector width size for built-in scalar
+            types that can be put into vectors.
+        """
+        return DPCTLDevice_GetPreferredVectorWidthShort(self._device_ref)
+
+    @property
+    def preferred_vector_width_int(self):
+        """ Returns the preferred native vector width size for built-in scalar
+            types that can be put into vectors.
+        """
+        return DPCTLDevice_GetPreferredVectorWidthInt(self._device_ref)
+
+    @property
+    def preferred_vector_width_long(self):
+        """ Returns the preferred native vector width size for built-in scalar
+            types that can be put into vectors.
+        """
+        return DPCTLDevice_GetPreferredVectorWidthLong(self._device_ref)
+
+    @property
+    def preferred_vector_width_float(self):
+        """ Returns the preferred native vector width size for built-in scalar
+            types that can be put into vectors.
+        """
+        return DPCTLDevice_GetPreferredVectorWidthFloat(self._device_ref)
+
+    @property
+    def preferred_vector_width_double(self):
+        """ Returns the preferred native vector width size for built-in scalar
+            types that can be put into vectors.
+        """
+        return DPCTLDevice_GetPreferredVectorWidthDouble(self._device_ref)
+
+    @property
+    def preferred_vector_width_half(self):
+        """ Returns the preferred native vector width size for built-in scalar
+            types that can be put into vectors.
+        """
+        return DPCTLDevice_GetPreferredVectorWidthHalf(self._device_ref)
 
     @property
     def vendor_name(self):

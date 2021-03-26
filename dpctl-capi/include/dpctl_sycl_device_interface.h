@@ -331,3 +331,99 @@ size_t
 DPCTLDevice_GetImage3dMaxDepth(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 DPCTL_C_EXTERN_C_END
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::sub_group_independent_forward_progress>.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns true if the device supports independent forward progress of
+ * sub-groups with respect to other sub-groups in the same work-group.
+ */
+DPCTL_API
+bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::preferred_vector_width_char>.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the preferred native vector width size for built-in scalar
+ * types that can be put into vectors.
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetPreferredVectorWidthChar(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::preferred_vector_width_short>.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the preferred native vector width size for built-in scalar
+ * types that can be put into vectors.
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetPreferredVectorWidthShort(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::preferred_vector_width_int>.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the preferred native vector width size for built-in scalar
+ * types that can be put into vectors.
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetPreferredVectorWidthInt(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::preferred_vector_width_long>.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the preferred native vector width size for built-in scalar
+ * types that can be put into vectors.
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetPreferredVectorWidthLong(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::preferred_vector_width_float>.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the preferred native vector width size for built-in scalar
+ * types that can be put into vectors.
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetPreferredVectorWidthFloat(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::preferred_vector_width_double>.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the preferred native vector width size for built-in scalar
+ * types that can be put into vectors.
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetPreferredVectorWidthDouble(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::preferred_vector_width_half>.
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the preferred native vector width size for built-in scalar
+ * types that can be put into vectors.
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
