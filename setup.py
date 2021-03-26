@@ -60,6 +60,10 @@ with open("README.md", "r", encoding="utf-8") as file:
     long_description = file.read()
 
 
+def remove_empty(li):
+    return [el for el in li if el]
+
+
 def get_sdl_cflags():
     cflags = []
     if IS_LIN or IS_MAC:
@@ -71,7 +75,7 @@ def get_sdl_cflags():
             "-Wformat-security",
         ]
     # Add cflags from environment
-    cflags += os.getenv("CFLAGS", "").split(" ")
+    cflags += remove_empty(os.getenv("CFLAGS", "").split(" "))
 
     return cflags
 
@@ -83,7 +87,7 @@ def get_sdl_ldflags():
     elif IS_WIN:
         ldflags = ["/NXCompat", "/DynamicBase"]
     # Add ldflags from environment
-    ldflags += os.getenv("LDFLAGS", "").split(" ")
+    ldflags += remove_empty(os.getenv("LDFLAGS", "").split(" "))
 
     return ldflags
 

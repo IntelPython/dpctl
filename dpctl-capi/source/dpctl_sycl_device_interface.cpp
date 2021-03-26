@@ -390,6 +390,142 @@ bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     return hasAspect;
 }
 
+bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    bool SubGroupProgress = false;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            SubGroupProgress = D->get_info<
+                info::device::sub_group_independent_forward_progress>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return SubGroupProgress;
+}
+
+uint32_t DPCTLDevice_GetPreferredVectorWidthChar(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t vector_width_char = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            vector_width_char =
+                D->get_info<info::device::preferred_vector_width_char>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return vector_width_char;
+}
+
+uint32_t DPCTLDevice_GetPreferredVectorWidthShort(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t vector_width_short = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            vector_width_short =
+                D->get_info<info::device::preferred_vector_width_short>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return vector_width_short;
+}
+
+uint32_t DPCTLDevice_GetPreferredVectorWidthInt(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t vector_width_int = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            vector_width_int =
+                D->get_info<info::device::preferred_vector_width_int>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return vector_width_int;
+}
+
+uint32_t DPCTLDevice_GetPreferredVectorWidthLong(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t vector_width_long = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            vector_width_long =
+                D->get_info<info::device::preferred_vector_width_long>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return vector_width_long;
+}
+
+uint32_t DPCTLDevice_GetPreferredVectorWidthFloat(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t vector_width_float = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            vector_width_float =
+                D->get_info<info::device::preferred_vector_width_float>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return vector_width_float;
+}
+
+uint32_t DPCTLDevice_GetPreferredVectorWidthDouble(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t vector_width_double = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            vector_width_double =
+                D->get_info<info::device::preferred_vector_width_double>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return vector_width_double;
+}
+
+uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t vector_width_half = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            vector_width_half =
+                D->get_info<info::device::preferred_vector_width_half>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return vector_width_half;
+}
+
 __dpctl_give DPCTLDeviceVectorRef
 DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                     size_t count)
@@ -475,3 +611,4 @@ __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
     }
     return wrap(Devices);
 }
+
