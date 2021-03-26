@@ -138,6 +138,14 @@ cdef extern from "dpctl_sycl_types.h":
     ctypedef DPCTLOpaqueSyclUSM            *DPCTLSyclUSMRef
 
 
+cdef extern from "dpctl_sycl_device_manager.h":
+    cdef struct DPCTLDeviceVector
+    ctypedef DPCTLDeviceVector *DPCTLDeviceVectorRef
+    ctypedef struct DPCTL_DeviceAndContextPair:
+        DPCTLSyclDeviceRef DRef
+        DPCTLSyclContextRef CRef
+
+
 cdef extern from "dpctl_sycl_device_interface.h":
     cdef bool DPCTLDevice_AreEq(const DPCTLSyclDeviceRef DRef1,
                                 const DPCTLSyclDeviceRef DRef2)
@@ -175,22 +183,16 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(const DPCTLSyclDeviceRef DRef)
     cpdef bool DPCTLDevice_HasAspect(
         const DPCTLSyclDeviceRef DRef, DPCTLSyclAspectType AT)
-    cdef list DPCTLDevice_CreateSubDevicesEqually(
+    cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesEqually(
         const DPCTLSyclDeviceRef DRef, size_t count)
-    cdef list DPCTLDevice_CreateSubDevicesByCounts(
+    cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByCounts(
         const DPCTLSyclDeviceRef DRef, size_t *counts, size_t ncounts)
-    cdef list DPCTLDevice_CreateSubDevicesByAffinity(
+    cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
         const DPCTLSyclDeviceRef DRef,
         DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy)
 
 
 cdef extern from "dpctl_sycl_device_manager.h":
-    cdef struct DPCTLDeviceVector
-    ctypedef DPCTLDeviceVector *DPCTLDeviceVectorRef
-    ctypedef struct DPCTL_DeviceAndContextPair:
-        DPCTLSyclDeviceRef DRef
-        DPCTLSyclContextRef CRef
-
     cdef void DPCTLDeviceVector_Delete(DPCTLDeviceVectorRef DVRef)
     cdef void DPCTLDeviceVector_Clear(DPCTLDeviceVectorRef DVRef)
     cdef size_t DPCTLDeviceVector_Size(DPCTLDeviceVectorRef DVRef)
