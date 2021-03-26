@@ -159,7 +159,17 @@ cdef class SyclContext(_SyclContext):
             dev = SyclDevice(arg)
             ret = self._init_from_one_device(<SyclDevice> dev, 0)
         if (ret < 0):
-            raise ValueError(ret)
+            if (ret == -1):
+                raise ValueError("Context failed to be created.")
+            if (ret == -2):
+                raise TypeError("List of devices to create context from must be non-empty.")
+            if (ret == -3):
+                raise MemoryError("Could not allocate necessary temporary memory.")
+            if (ret == -4):
+                raise ValueError("Internal Error: Could not create a copy of a sycl device.")
+            if (ret == -5):
+                raise ValueError("Internal Error: Creation of DeviceVector failed.")
+            raise ValueError("Unrecognized error code ({}) encountered.".format(ret))
 
     cpdef bool equals (self, SyclContext ctxt):
         """ Returns true if the SyclContext argument has the same _context_ref
