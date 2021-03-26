@@ -104,7 +104,7 @@ cdef class SyclContext(_SyclContext):
         cdef int i = 0
         cdef int j
         cdef size_t num_bytes
-        cdef DPCTLDeviceVectorRef DVRef
+        cdef DPCTLDeviceVectorRef DVRef = NULL
         cdef error_handler_callback * eh_callback = \
             <error_handler_callback *>&default_async_error_handler
         cdef DPCTLSyclContextRef CRef = NULL
