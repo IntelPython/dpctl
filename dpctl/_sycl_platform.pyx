@@ -53,7 +53,7 @@ __all__ = [
 ]
 
 cdef class _SyclPlatform:
-    """ A helper metaclass to abstract a cl::sycl::platform instance.
+    """ Data owner for SyclPlatform
     """
 
     def __dealloc__(self):
@@ -67,7 +67,7 @@ cdef class SyclPlatform(_SyclPlatform):
     """ Python equivalent for cl::sycl::platform class.
     """
     @staticmethod
-    cdef void _init_helper(SyclPlatform platform, DPCTLSyclPlatformRef PRef):
+    cdef void _init_helper(_SyclPlatform platform, DPCTLSyclPlatformRef PRef):
         platform._platform_ref = PRef
         platform._name = DPCTLPlatform_GetName(PRef)
         platform._version = DPCTLPlatform_GetVersion(PRef)
@@ -75,9 +75,9 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @staticmethod
     cdef SyclPlatform _create(DPCTLSyclPlatformRef pref):
-        cdef SyclPlatform p = <SyclPlatform>_SyclPlatform.__new__(_SyclPlatform)
+        cdef _SyclPlatform p = _SyclPlatform.__new__(_SyclPlatform)
         # Initialize the attributes of the SyclPlatform object
-        SyclPlatform._init_helper(p, pref)
+        SyclPlatform._init_helper(<_SyclPlatform>p, pref)
         return SyclPlatform(p)
 
     cdef int _init_from__SyclPlatform(self, _SyclPlatform other):
@@ -87,6 +87,14 @@ cdef class SyclPlatform(_SyclPlatform):
         self._name = DPCTLPlatform_GetName(self._platform_ref)
         self._version = DPCTLPlatform_GetVersion(self._platform_ref)
         self._vendor = DPCTLPlatform_GetVendor(self._platform_ref)
+
+    cdef int _init_from_cstring(self, const char *string):
+        cdef DPCTLSyclDeviceSelectorRef DSRef = NULL
+        DSRef = DPCTLFilterSelector_Create(string)
+        ret = self._init_from_selector(DSRef)
+        # Free up the device selector
+        DPCTLDeviceSelector_Delete(DSRef)
+        return ret
 
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef):
         # Initialize the SyclPlatform from a DPCTLSyclDeviceSelectorRef
@@ -115,25 +123,19 @@ cdef class SyclPlatform(_SyclPlatform):
         if type(arg) is unicode:
             string = bytes(<unicode>arg, "utf-8")
             filter_c_str = string
-            DSRef = DPCTLFilterSelector_Create(filter_c_str)
-            ret = self._init_from_selector(DSRef)
+            ret = self._init_from_cstring(filter_c_str)
             if ret == -1:
                 raise ValueError(
                     "Could not create a SyclPlatform with the selector string"
                 )
-            # Free up the device selector
-            DPCTLDeviceSelector_Delete(DSRef)
         elif isinstance(arg, unicode):
             string = bytes(<unicode>unicode(arg), "utf-8")
             filter_c_str = string
-            DSRef = DPCTLFilterSelector_Create(filter_c_str)
-            ret = self._init_from_selector(DSRef)
+            ret = self._init_from_cstring(filter_c_str)
             if ret == -1:
                 raise ValueError(
                     "Could not create a SyclPlatform with the selector string"
                 )
-            # Free up the device selector
-            DPCTLDeviceSelector_Delete(DSRef)
         elif isinstance(arg, _SyclPlatform):
             ret = self._init_from__SyclPlatform(arg)
             if ret == -1:
@@ -211,7 +213,7 @@ def lsplatform():
         On a system with an OpenCL CPU driver, OpenCL GPU driver,
         Level Zero GPU driver, running the command. ::
 
-        $python -c "import dpctl; dpctl.print_info()"
+        $python -c "import dpctl; dpctl.lsplatform()"
 
         returns ::
 
