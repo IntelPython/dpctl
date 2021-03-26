@@ -25,6 +25,7 @@ from ._backend cimport (
     _arg_data_type,
     _backend_type,
     _queue_property_type,
+    DPCTLContext_Create,
     DPCTLContext_Delete,
     DPCTLDefaultSelector_Create,
     DPCTLDevice_CreateFromSelector,
@@ -262,8 +263,12 @@ cdef class SyclQueue:
 
         CRef = DPCTLDeviceMgr_GetCachedContext(DRef)
         if (CRef is NULL):
-            DPCTLDevice_Delete(DRef)
-            return -3
+            # look-up failed (was not a root device?)
+            # create a new context
+            CRef = DPCTLContext_Create(DRef, NULL, 0)
+            if (CRef is NULL):
+                DPCTLDevice_Delete(DRef)
+                return -3
         QRef = DPCTLQueue_Create(
             CRef,
             DRef,

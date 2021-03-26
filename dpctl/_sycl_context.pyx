@@ -39,7 +39,9 @@ from ._backend cimport (
     DPCTLDeviceVector_GetAt,
     DPCTLDeviceVector_Size,
     DPCTLDeviceVector_Delete,
-    error_handler_callback
+    error_handler_callback,
+    DPCTL_DeviceAndContextPair,
+    DPCTLDeviceMgr_GetDeviceAndContextPair,
 )
 from ._sycl_queue cimport default_async_error_handler
 from ._sycl_device cimport SyclDevice
@@ -81,11 +83,19 @@ cdef class SyclContext(_SyclContext):
 
     cdef int _init_from_one_device(self, SyclDevice device, int props):
         cdef DPCTLSyclDeviceRef DRef = device.get_device_ref()
+        cdef DPCTLSyclContextRef CRef = NULL
         cdef error_handler_callback * eh_callback = \
             <error_handler_callback *>&default_async_error_handler
-        cdef DPCTLSyclContextRef CRef = DPCTLContext_Create(DRef, eh_callback, props)
-        if (CRef is NULL):
-            return -1
+        cdef DPCTL_DeviceAndContextPair dev_ctx
+        # look up cached contexts for root devices first
+        dev_ctx = DPCTLDeviceMgr_GetDeviceAndContextPair(DRef)
+        if (dev_ctx.CRef is NULL) or (dev_ctx.DRef is NULL):
+            # look-up failed, create a new one
+            CRef = DPCTLContext_Create(DRef, eh_callback, props)
+            if (CRef is NULL):
+                return -1
+        else:
+            CRef = dev_ctx.CRef
         SyclContext._init_helper(<_SyclContext> self, CRef)
         return 0
 
