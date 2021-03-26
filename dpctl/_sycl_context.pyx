@@ -207,10 +207,11 @@ cdef class SyclContext(_SyclContext):
             devices.append(SyclDevice._create(DRef))
         DPCTLDeviceVector_Delete(DVRef)
         return devices
-
+    
+    @property
     def device_count (self):
         """
-        Returns the number of sycl devices associated with SyclContext instance.
+        The number of sycl devices associated with SyclContext instance.
         """
         cdef size_t num_devs = DPCTLContext_DeviceCount(self.get_context_ref())
         if num_devs:
@@ -224,7 +225,7 @@ cdef class SyclContext(_SyclContext):
         return "SyclContext"
 
     def __repr__(self):
-        cdef size_t n = self.device_count()
+        cdef size_t n = self.device_count
         if n == 1:
             return ("<dpctl." + self.__name__ + " at {}>".format(hex(id(self))))
         else:

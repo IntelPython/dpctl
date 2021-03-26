@@ -14,11 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" Defines unit test cases for the SyclQueue class.
+""" Defines unit test cases for the SyclContxt class.
 """
 
 import dpctl
 import pytest
+
 
 list_of_standard_selectors = [
     dpctl.select_accelerator_device,
@@ -358,3 +359,24 @@ def test_context_equals():
     except dpctl.SyclQueueCreationError:
         pytest.skip()
     assert ctx0.equals(ctx1)
+
+
+def test_context_can_be_used_in_queue(valid_filter):
+    try:
+        ctx = dpctl.SyclContext(valid_filter)
+    except ValueError:
+        pytest.skip()
+    devs = ctx.get_devices()
+    assert len(devs) == ctx.device_count
+    for d in devs:
+        q = dpctl.SyclQueue(ctx, d)
+
+
+@pytest.mark.xfail(reason="DPC++ bug in device equality")
+def test_context_can_be_used_in_queue2(valid_filter):
+    d = dpctl.SyclDevice(valid_filter)
+    if d.default_selector_score < 0:
+        # skip test for devices rejected by default selector
+        pytest.skip()
+    ctx = dpctl.SyclContext(d)
+    q = dpctl.SyclQueue(ctx, d)
