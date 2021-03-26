@@ -144,6 +144,10 @@ DPCTLContext_GetDevices(__dpctl_keep const DPCTLSyclContextRef CRef)
         // \todo log error
         std::cerr << ba.what() << '\n';
         return nullptr;
+    } catch (const runtime_error &re) {
+        // \todo log error
+        std::cerr << re.what() << '\n';
+        return nullptr;
     }
 }
 
