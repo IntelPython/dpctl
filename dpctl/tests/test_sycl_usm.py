@@ -21,7 +21,7 @@ import unittest
 import dpctl
 from dpctl.memory import MemoryUSMShared, MemoryUSMHost, MemoryUSMDevice
 import numpy as np
-from ._helper import has_cpu, has_gpu
+from ._helper import has_cpu, has_gpu, has_sycl_platforms
 
 
 class Dummy(MemoryUSMShared):
@@ -39,7 +39,7 @@ class Dummy(MemoryUSMShared):
 
 class TestMemory(unittest.TestCase):
     @unittest.skipUnless(
-        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+        has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_memory_create(self):
         nbytes = 1024
@@ -50,7 +50,7 @@ class TestMemory(unittest.TestCase):
 
     @unittest.expectedFailure
     @unittest.skipUnless(
-        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+        has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_memory_create_with_np(self):
         mobj = dpctl.memory.MemoryUSMShared(np.int64(16384))
@@ -69,7 +69,7 @@ class TestMemory(unittest.TestCase):
         return ba
 
     @unittest.skipUnless(
-        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+        has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_memory_without_context(self):
         mobj = self._create_memory()
@@ -108,7 +108,7 @@ class TestMemory(unittest.TestCase):
             self.assertTrue(usm_type in ["unknown", "shared"])
 
     @unittest.skipUnless(
-        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+        has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_buffer_protocol(self):
         mobj = self._create_memory()
@@ -117,7 +117,7 @@ class TestMemory(unittest.TestCase):
         self.assertEqual(mv1, mv2)
 
     @unittest.skipUnless(
-        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+        has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_copy_host_roundtrip(self):
         mobj = self._create_memory()
@@ -128,7 +128,7 @@ class TestMemory(unittest.TestCase):
         self.assertEqual(host_src_obj, host_dest_obj)
 
     @unittest.skipUnless(
-        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+        has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_zero_copy(self):
         mobj = self._create_memory()
@@ -140,7 +140,7 @@ class TestMemory(unittest.TestCase):
         self.assertEqual(mobj_data, mobj2_data)
 
     @unittest.skipUnless(
-        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+        has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_pickling(self):
         import pickle
@@ -172,7 +172,7 @@ class _TestMemoryUSMBase:
         pass
 
     @unittest.skipUnless(
-        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+        has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_create_with_size_and_alignment_and_queue(self):
         q = dpctl.get_current_queue()
@@ -181,7 +181,7 @@ class _TestMemoryUSMBase:
         self.assertEqual(m.get_usm_type(), self.usm_type)
 
     @unittest.skipUnless(
-        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+        has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_create_with_size_and_queue(self):
         q = dpctl.get_current_queue()
@@ -190,7 +190,7 @@ class _TestMemoryUSMBase:
         self.assertEqual(m.get_usm_type(), self.usm_type)
 
     @unittest.skipUnless(
-        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+        has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_create_with_size_and_alignment(self):
         m = self.MemoryUSMClass(1024, alignment=64)
@@ -198,7 +198,7 @@ class _TestMemoryUSMBase:
         self.assertEqual(m.get_usm_type(), self.usm_type)
 
     @unittest.skipUnless(
-        dpctl.has_sycl_platforms(), "No SYCL devices except the default host device."
+        has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_create_with_only_size(self):
         m = self.MemoryUSMClass(1024)
@@ -206,7 +206,7 @@ class _TestMemoryUSMBase:
         self.assertEqual(m.get_usm_type(), self.usm_type)
 
     @unittest.skipUnless(
-        dpctl.has_sycl_platforms(), "No SYCL Devices except the default host device."
+        has_sycl_platforms(), "No SYCL Devices except the default host device."
     )
     def test_sycl_usm_array_interface(self):
         m = self.MemoryUSMClass(256)
