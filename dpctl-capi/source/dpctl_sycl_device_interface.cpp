@@ -537,7 +537,7 @@ DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_equally>(count);
             Devices = new vector_class<DPCTLSyclDeviceRef>();
-            for (auto &sd : subDevices) {
+            for (const auto &sd : subDevices) {
                 Devices->emplace_back(wrap(new device(sd)));
             }
         } catch (std::bad_alloc const &ba) {
