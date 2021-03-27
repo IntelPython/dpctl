@@ -1,6 +1,6 @@
 //===-- dpctl_sycl_context_interface.h - C API for sycl::context -*-C++-*- ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

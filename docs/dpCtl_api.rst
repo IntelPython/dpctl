@@ -1,7 +1,7 @@
 .. _dpCtl_api:
 
 ################
-dpCtl Python API
+dpctl Python API
 ################
 
 .. automodule:: dpctl

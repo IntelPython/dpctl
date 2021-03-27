@@ -1,6 +1,6 @@
 //===--- test_sycl_device_selector_interface.cpp - Device selector tests   ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

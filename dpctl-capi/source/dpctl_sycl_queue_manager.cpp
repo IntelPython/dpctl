@@ -1,6 +1,6 @@
 //===-------- dpctl_sycl_queue_manager.cpp - Implements a SYCL queue manager =//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

@@ -1,6 +1,6 @@
 //=== dpctl_sycl_device_selector_interface.h - device_selector C API -*-C++-*-//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

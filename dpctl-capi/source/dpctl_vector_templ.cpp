@@ -1,6 +1,6 @@
 //===-- dpctl_vector_templ.cpp - Wrapper functions for opaque vector types ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

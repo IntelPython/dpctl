@@ -1,4 +1,4 @@
-#                      Data Parallel Control (dpCtl)
+#                      Data Parallel Control (dpctl)
 #
 # Copyright 2020 Intel Corporation
 #

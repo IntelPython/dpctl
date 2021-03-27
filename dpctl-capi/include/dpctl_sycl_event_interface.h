@@ -1,6 +1,6 @@
 //===----- dpctl_sycl_event_interface.h - C API for sycl::event  -*-C++-*- ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

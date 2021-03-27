@@ -1,4 +1,4 @@
-#               Data Parallel Control Library (dpCtl)
+#               Data Parallel Control Library (dpctl)
 #
 # Copyright 2020-2021 Intel Corporation
 #
@@ -270,7 +270,7 @@ setup(
     long_description_content_type="text/markdown",
     license="Apache 2.0",
     author="Intel Corporation",
-    url="https://github.com/IntelPython/dpCtl",
+    url="https://github.com/IntelPython/dpctl",
     packages=find_packages(include=["*"]),
     include_package_data=True,
     ext_modules=extensions(),

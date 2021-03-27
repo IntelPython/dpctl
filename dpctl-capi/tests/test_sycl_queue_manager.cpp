@@ -1,6 +1,6 @@
 //===------- test_sycl_queue_manager.cpp - Test cases for queue manager    ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
