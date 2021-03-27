@@ -23,4 +23,4 @@ Indices and tables
     :caption: Contents:
 
     toc_pyapi
-    api/dpCtl-CAPI_root
+    api/dpctl-CAPI_root

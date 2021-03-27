@@ -1,4 +1,4 @@
-.. _dpCtl.dptensor_api:
+.. _dpctl.dptensor_api:
 
 #########################
 dpctl dptensor Python API

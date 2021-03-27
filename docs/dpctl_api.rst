@@ -1,4 +1,4 @@
-.. _dpCtl_api:
+.. _dpctl_api:
 
 ################
 dpctl Python API
