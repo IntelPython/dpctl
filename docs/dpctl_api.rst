@@ -9,26 +9,14 @@ dpctl Python API
 Classes
 -------
 
-.. autoclass:: dpctl.SyclContext
-    :members:
-    :undoc-members:
+.. toctree::
+    :maxdepth: 1
 
-.. autoclass:: dpctl.SyclDevice
-    :members:
-    :inherited-members:
-    :undoc-members:
-
-.. autoclass:: dpctl.SyclEvent
-    :members:
-    :undoc-members:
-
-.. autoclass:: dpctl.SyclPlatform
-    :members:
-    :undoc-members:
-
-.. autoclass:: dpctl.SyclQueue
-    :members:
-    :undoc-members:
+    dpctl_pyapi_classes/SyclContext
+    dpctl_pyapi_classes/SyclDevice
+    dpctl_pyapi_classes/SyclEvent
+    dpctl_pyapi_classes/SyclPlatform
+    dpctl_pyapi_classes/SyclQueue
 
 Enumerations
 ------------
