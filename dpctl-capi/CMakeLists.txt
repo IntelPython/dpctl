@@ -25,7 +25,7 @@ option(DPCTL_BUILD_CAPI_TESTS
 
 # Load our CMake modules to search for DPCPP and Level Zero
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
-find_package(DPCPP REQUIRED)
+find_package(DPCPP 2021.2.0 REQUIRED)
 
 if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
     set(DPCTL_ENABLE_LO_PROGRAM_CREATION 1)
