@@ -17,7 +17,8 @@
 # distutils: language = c++
 # cython: language_level=3
 
-""" Implements SyclDevice Cython extension type.
+"""
+    Implements SyclDevice Cython extension type.
 """
 
 from ._backend cimport (
@@ -183,7 +184,6 @@ cdef class SyclDevice(_SyclDevice):
           :func:`dpctl.select_default_device()`,
           :func:`dpctl.select_gpu_device()`,
           :func:`dpctl.select_host_device()`.
-
 
         :Example:
             .. code-block:: python
