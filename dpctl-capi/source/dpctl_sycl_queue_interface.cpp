@@ -137,16 +137,13 @@ std::unique_ptr<property_list> create_property_list(int properties)
 }
 
 __dpctl_give DPCTLSyclQueueRef
-getQueueImpl(__dpctl_take DPCTLSyclContextRef cRef,
-             __dpctl_take DPCTLSyclDeviceRef dRef,
+getQueueImpl(__dpctl_keep DPCTLSyclContextRef cRef,
+             __dpctl_keep DPCTLSyclDeviceRef dRef,
              error_handler_callback *handler,
              int properties)
 {
     DPCTLSyclQueueRef qRef = nullptr;
     qRef = DPCTLQueue_Create(cRef, dRef, handler, properties);
-    DPCTLContext_Delete(cRef);
-    DPCTLDevice_Delete(dRef);
-
     return qRef;
 }
 
@@ -216,36 +213,37 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
 }
 
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef dRef,
+DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                            error_handler_callback *handler,
                            int properties)
 {
-    DPCTLSyclQueueRef qRef = nullptr;
-    auto Device = unwrap(dRef);
+    DPCTLSyclContextRef CRef = nullptr;
+    DPCTLSyclQueueRef QRef = nullptr;
+    auto Device = unwrap(DRef);
 
     if (!Device) {
         std::cerr << "Cannot create queue from NULL device reference.\n";
-        return qRef;
+        return QRef;
     }
-    auto cached = DPCTLDeviceMgr_GetDeviceAndContextPair(dRef);
-    if (cached.CRef) {
-        qRef = getQueueImpl(cached.CRef, cached.DRef, handler, properties);
-    }
-    // We only cache contexts for root devices. If the dRef argument points to
-    // a sub-device, then the queue manager allocates a new context and creates
-    // a new queue to retrun to caller. Note that any context for a sub-device
-    // is not cached.
-    else {
+    // Check if a cached default context exists for the device.
+    CRef = DPCTLDeviceMgr_GetCachedContext(DRef);
+    // If a cached default context was found, that context will be used to use
+    // create the new queue. When a default cached context was not found, as
+    // will be the case for non-root devices, i.e., sub-devices, a new context
+    // will be allocated. Note that any newly allocated context is not cached.
+    if (!CRef) {
         try {
-            auto CRef = wrap(new context(*Device));
-            auto DRef_copy = wrap(new device(*Device));
-            qRef = getQueueImpl(CRef, DRef_copy, handler, properties);
+            CRef = wrap(new context(*Device));
         } catch (std::bad_alloc const &ba) {
             std::cerr << ba.what() << std::endl;
+            return QRef;
         }
     }
-
-    return qRef;
+    // At this point we have a valid context and the queue can be allocated.
+    QRef = getQueueImpl(CRef, DRef, handler, properties);
+    // Free the context
+    DPCTLContext_Delete(CRef);
+    return QRef;
 }
 
 /*!
@@ -304,9 +302,20 @@ DPCTLSyclBackendType DPCTLQueue_GetBackend(__dpctl_keep DPCTLSyclQueueRef QRef)
 __dpctl_give DPCTLSyclDeviceRef
 DPCTLQueue_GetDevice(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
+    DPCTLSyclDeviceRef DRef = nullptr;
     auto Q = unwrap(QRef);
-    auto Device = new device(Q->get_device());
-    return wrap(Device);
+    if (Q) {
+        try {
+            auto Device = new device(Q->get_device());
+            DRef = wrap(Device);
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+        }
+    }
+    else {
+        std::cerr << "Could not get the device for this queue.\n";
+    }
+    return DRef;
 }
 
 __dpctl_give DPCTLSyclContextRef
@@ -438,7 +447,8 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
 
 void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
 {
-    // \todo what happens if the QRef is null or a pointer to a valid sycl queue
+    // \todo what happens if the QRef is null or a pointer to a valid sycl
+    // queue
     auto SyclQueue = unwrap(QRef);
     SyclQueue->wait();
 }
