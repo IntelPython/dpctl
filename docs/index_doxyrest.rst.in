@@ -23,4 +23,4 @@ Indices and tables
     :caption: Contents:
 
     toc_pyapi
-    api/dpctl-CAPI_root
+    @DOXYREST_OUTPUT_DIR_NAME@/index

@@ -1,4 +1,4 @@
-.. _dpctl_api:
+.. _dpctl_pyapi:
 
 ################
 dpctl Python API
@@ -12,11 +12,11 @@ Classes
 .. toctree::
     :maxdepth: 1
 
-    dpctl_pyapi_classes/SyclContext
-    dpctl_pyapi_classes/SyclDevice
-    dpctl_pyapi_classes/SyclEvent
-    dpctl_pyapi_classes/SyclPlatform
-    dpctl_pyapi_classes/SyclQueue
+    dpctl_pyapi/SyclContext
+    dpctl_pyapi/SyclDevice
+    dpctl_pyapi/SyclEvent
+    dpctl_pyapi/SyclPlatform
+    dpctl_pyapi/SyclQueue
 
 Enumerations
 ------------

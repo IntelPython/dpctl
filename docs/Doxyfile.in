@@ -44,7 +44,7 @@ PROJECT_NUMBER         = @CURRENT_RELEASE@
 # for a project that appears at the top of each page and should give viewer a
 # quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          = "A SYCL queue and memory manager for Python modules."
+PROJECT_BRIEF          = "A lightweight C API for SYCL runtime classes"
 
 # With the PROJECT_LOGO tag one can specify a logo or an icon that is included
 # in the documentation. The maximum height of the logo should not exceed 55
@@ -917,10 +917,7 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = ../dpctl-capi/build
-EXCLUDE                += ../dpctl-capi/install
-EXCLUDE                += ../dpctl-capi/tests
-EXCLUDE                += ../dpctl-capi/CMakeLists.txt
+EXCLUDE                =
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
