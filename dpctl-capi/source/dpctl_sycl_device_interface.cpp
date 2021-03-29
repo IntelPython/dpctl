@@ -611,4 +611,3 @@ __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
     }
     return wrap(Devices);
 }
-
