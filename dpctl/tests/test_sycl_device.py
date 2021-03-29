@@ -365,6 +365,13 @@ def check_create_sub_devices_by_affinity_next_partitionable(device):
         pytest.fail("create_sub_devices_by_affinity failed")
 
 
+def check_print_device_info(device):
+    try:
+        device.print_device_info()
+    except Exception:
+        pytest.fail("Encountered an exception inside print_device_info().")
+
+
 list_of_checks = [
     check_get_max_compute_units,
     check_get_max_work_item_dims,
@@ -410,6 +417,7 @@ list_of_checks = [
     check_create_sub_devices_by_affinity_L2_cache,
     check_create_sub_devices_by_affinity_L1_cache,
     check_create_sub_devices_by_affinity_next_partitionable,
+    check_print_device_info,
 ]
 
 

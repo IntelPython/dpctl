@@ -26,8 +26,8 @@ from dpctl import device_context, device_type
 # Global runtime object inside dpctl
 rt = dpctl
 
-# Print metadata about the runtime
-rt.dump()
+# Print out the list of platforms
+rt.lsplatform()
 
 # The runtime is initialized with a default context defined using sycl's
 # default_selector. The Sycl queue for that context is returned by
