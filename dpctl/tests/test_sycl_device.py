@@ -299,67 +299,67 @@ def check_get_preferred_vector_width_half(device):
 
 def check_create_sub_devices_equally(device):
     try:
-        n = device.max_compute_units / 2
-        device.create_sub_devices_equally(n)
+        n = int(device.max_compute_units / 2)
+        device.create_sub_devices(n)
     except Exception:
-        pytest.fail("create_sub_devices_equally failed")
+        pytest.fail("create_sub_devices failed")
 
 
 def check_create_sub_devices_by_counts(device):
     try:
         n = device.max_compute_units / 2
-        device.create_sub_devices_by_counts(np.array([n, n]), 2)
+        device.create_sub_devices((n, n))
     except Exception:
-        pytest.fail("create_sub_devices_by_counts failed")
+        pytest.fail("create_sub_devices failed")
 
 
 def check_create_sub_devices_by_affinity_not_applicable(device):
     try:
-        device.create_sub_devices_by_affinity("not_applicable")
+        device.create_sub_devices("not_applicable")
     except Exception:
-        pytest.fail("create_sub_devices_by_affinity failed")
+        pytest.fail("create_sub_devices failed")
 
 
 def check_create_sub_devices_by_affinity_numa(device):
     try:
-        device.create_sub_devices_by_affinity("numa")
+        device.create_sub_devices("numa")
     except Exception:
-        pytest.fail("create_sub_devices_by_affinity failed")
+        pytest.fail("create_sub_devices failed")
 
 
 def check_create_sub_devices_by_affinity_L4_cache(device):
     try:
-        device.create_sub_devices_by_affinity("L4_cache")
+        device.create_sub_devices("L4_cache")
     except Exception:
-        pytest.fail("create_sub_devices_by_affinity failed")
+        pytest.fail("create_sub_devices failed")
 
 
 def check_create_sub_devices_by_affinity_L3_cache(device):
     try:
-        device.create_sub_devices_by_affinity("L3_cache")
+        device.create_sub_devices("L3_cache")
     except Exception:
-        pytest.fail("create_sub_devices_by_affinity failed")
+        pytest.fail("create_sub_devices failed")
 
 
 def check_create_sub_devices_by_affinity_L2_cache(device):
     try:
-        device.create_sub_devices_by_affinity("L2_cache")
+        device.create_sub_devices("L2_cache")
     except Exception:
-        pytest.fail("create_sub_devices_by_affinity failed")
+        pytest.fail("create_sub_devices failed")
 
 
 def check_create_sub_devices_by_affinity_L1_cache(device):
     try:
-        device.create_sub_devices_by_affinity("L1_cache")
+        device.create_sub_devices("L1_cache")
     except Exception:
-        pytest.fail("create_sub_devices_by_affinity failed")
+        pytest.fail("create_sub_devices failed")
 
 
 def check_create_sub_devices_by_affinity_next_partitionable(device):
     try:
-        device.create_sub_devices_by_affinity("next_partitionable")
+        device.create_sub_devices("next_partitionable")
     except Exception:
-        pytest.fail("create_sub_devices_by_affinity failed")
+        pytest.fail("create_sub_devices failed")
 
 
 def check_print_device_info(device):

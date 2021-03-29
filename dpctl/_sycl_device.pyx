@@ -73,6 +73,7 @@ from ._backend cimport (
 from . import backend_type, device_type
 from libc.stdint cimport uint32_t
 import warnings
+import numpy as np
 
 __all__ = [
     "SyclDevice",
@@ -205,33 +206,44 @@ cdef class SyclDevice(_SyclDevice):
         DPCTLDeviceVector_Delete(DVRef)
         return devices
 
-    cpdef list create_sub_devices_by_affinity(self, str domain):
+    cpdef list create_sub_devices_by_affinity(self, _partition_affinity_domain_type domain):
         """ Returns a vector of sub devices
             partitioned from this SYCL device by affinity domain based on the domain
             parameter.
         """
-        cdef _partition_affinity_domain_type domain_type
-        if domain == "not_applicable":
-            domain_type = _partition_affinity_domain_type._not_applicable
-        elif domain == "numa":
-            domain_type = _partition_affinity_domain_type._numa
-        elif domain == "L4_cache":
-            domain_type = _partition_affinity_domain_type._L4_cache
-        elif domain == "L3_cache":
-            domain_type = _partition_affinity_domain_type._L3_cache
-        elif domain == "L2_cache":
-            domain_type = _partition_affinity_domain_type._L2_cache
-        elif domain == "L1_cache":
-            domain_type = _partition_affinity_domain_type._L1_cache
-        elif domain == "next_partitionable":
-            domain_type = _partition_affinity_domain_type._next_partitionable
-        else:
-            raise Exception('Unsupported type of domain') 
         cdef DPCTLDeviceVectorRef DVRef = NULL
-        DVRef = DPCTLDevice_CreateSubDevicesByAffinity(self._device_ref, domain_type)
+        DVRef = DPCTLDevice_CreateSubDevicesByAffinity(self._device_ref, domain)
         cdef list devices = _get_devices(DVRef)
         DPCTLDeviceVector_Delete(DVRef)
         return devices
+
+    def create_sub_devices(self, partition=None):
+        if isinstance(partition, int) and partition > 0:
+            self.create_sub_devices_equally(partition)
+        elif isinstance(partition, tuple) and all([i > 0 for i in partition]):
+            counts = np.array([i for i in partition], dtype=np.uintp)
+            ncounts = len(counts)
+            self.create_sub_devices_by_counts(counts, ncounts)
+        elif isinstance(partition, str):
+            if partition == "not_applicable":
+                domain_type = _partition_affinity_domain_type._not_applicable
+            elif partition == "numa":
+                domain_type = _partition_affinity_domain_type._numa
+            elif partition == "L4_cache":
+                domain_type = _partition_affinity_domain_type._L4_cache
+            elif partition == "L3_cache":
+                domain_type = _partition_affinity_domain_type._L3_cache
+            elif partition == "L2_cache":
+                domain_type = _partition_affinity_domain_type._L2_cache
+            elif partition == "L1_cache":
+                domain_type = _partition_affinity_domain_type._L1_cache
+            elif partition == "next_partitionable":
+                domain_type = _partition_affinity_domain_type._next_partitionable
+            else:
+                raise Exception('Unsupported type of domain')
+            self.create_sub_devices_by_affinity(domain_type)
+        else:
+            raise Exception('Unsupported type of sub-device argument')
 
     def __cinit__(self, arg=None):
         cdef DPCTLSyclDeviceSelectorRef DSRef = NULL
