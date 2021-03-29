@@ -75,6 +75,12 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @staticmethod
     cdef SyclPlatform _create(DPCTLSyclPlatformRef pref):
+        """
+        This function calls DPCTLPlatform_Delete(pref).
+
+        The user of this function must pass a copy to keep the
+        pref argument alive.
+        """
         cdef _SyclPlatform p = _SyclPlatform.__new__(_SyclPlatform)
         # Initialize the attributes of the SyclPlatform object
         SyclPlatform._init_helper(<_SyclPlatform>p, pref)
@@ -92,13 +98,12 @@ cdef class SyclPlatform(_SyclPlatform):
         cdef DPCTLSyclDeviceSelectorRef DSRef = NULL
         DSRef = DPCTLFilterSelector_Create(string)
         ret = self._init_from_selector(DSRef)
-        # Free up the device selector
-        DPCTLDeviceSelector_Delete(DSRef)
         return ret
 
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef):
         # Initialize the SyclPlatform from a DPCTLSyclDeviceSelectorRef
         cdef DPCTLSyclPlatformRef PRef = DPCTLPlatform_CreateFromSelector(DSRef)
+        DPCTLDeviceSelector_Delete(DSRef)
         if PRef is NULL:
             return -1
         else:
