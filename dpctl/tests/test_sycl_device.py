@@ -19,6 +19,7 @@
 
 import dpctl
 import pytest
+import numpy as np
 
 list_of_standard_selectors = [
     dpctl.select_accelerator_device,
@@ -314,53 +315,49 @@ def check_create_sub_devices_by_counts(device):
 
 def check_create_sub_devices_by_affinity_not_applicable(device):
     try:
-        device.create_sub_devices_by_affinity(
-            _partition_affinity_domain_type._not_applicable
-        )
+        device.create_sub_devices_by_affinity("not_applicable")
     except Exception:
         pytest.fail("create_sub_devices_by_affinity failed")
 
 
 def check_create_sub_devices_by_affinity_numa(device):
     try:
-        device.create_sub_devices_by_affinity(_partition_affinity_domain_type._numa)
+        device.create_sub_devices_by_affinity("numa")
     except Exception:
         pytest.fail("create_sub_devices_by_affinity failed")
 
 
 def check_create_sub_devices_by_affinity_L4_cache(device):
     try:
-        device.create_sub_devices_by_affinity(_partition_affinity_domain_type._L4_cache)
+        device.create_sub_devices_by_affinity("L4_cache")
     except Exception:
         pytest.fail("create_sub_devices_by_affinity failed")
 
 
 def check_create_sub_devices_by_affinity_L3_cache(device):
     try:
-        device.create_sub_devices_by_affinity(_partition_affinity_domain_type._L3_cache)
+        device.create_sub_devices_by_affinity("L3_cache")
     except Exception:
         pytest.fail("create_sub_devices_by_affinity failed")
 
 
 def check_create_sub_devices_by_affinity_L2_cache(device):
     try:
-        device.create_sub_devices_by_affinity(_partition_affinity_domain_type._L2_cache)
+        device.create_sub_devices_by_affinity("L2_cache")
     except Exception:
         pytest.fail("create_sub_devices_by_affinity failed")
 
 
 def check_create_sub_devices_by_affinity_L1_cache(device):
     try:
-        device.create_sub_devices_by_affinity(_partition_affinity_domain_type._L1_cache)
+        device.create_sub_devices_by_affinity("L1_cache")
     except Exception:
         pytest.fail("create_sub_devices_by_affinity failed")
 
 
 def check_create_sub_devices_by_affinity_next_partitionable(device):
     try:
-        device.create_sub_devices_by_affinity(
-            _partition_affinity_domain_type._next_partitionable
-        )
+        device.create_sub_devices_by_affinity("next_partitionable")
     except Exception:
         pytest.fail("create_sub_devices_by_affinity failed")
 

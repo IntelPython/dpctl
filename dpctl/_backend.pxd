@@ -104,7 +104,7 @@ cdef extern from "dpctl_sycl_enum_types.h":
     ctypedef _aspect_type DPCTLSyclAspectType
 
 
-    cpdef enum _partition_affinity_domain_type 'DPCTLPartitionAffinityDomainType':
+    cdef enum _partition_affinity_domain_type 'DPCTLPartitionAffinityDomainType':
         _not_applicable                     'not_applicable',
         _numa                               'numa',
         _L4_cache                           'L4_cache',
