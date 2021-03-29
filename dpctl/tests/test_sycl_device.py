@@ -19,7 +19,6 @@
 
 import dpctl
 import pytest
-import numpy as np
 
 list_of_standard_selectors = [
     dpctl.select_accelerator_device,
