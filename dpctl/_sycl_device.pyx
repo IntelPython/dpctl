@@ -192,14 +192,15 @@ cdef class SyclDevice(_SyclDevice):
         DPCTLDeviceVector_Delete(DVRef)
         return devices
 
-    cpdef list create_sub_devices_by_counts(self, list counts, size_t ncounts):
+    cpdef list create_sub_devices_by_counts(self, size_t[:] counts, size_t ncounts):
         """ Returns a vector of sub devices
             partitioned from this SYCL device based on the counts parameter. For each
             non-zero value M in the counts vector, a sub device with M compute units
             is created.
         """
+        cdef size_t *counts_buff = &counts[0]
         cdef DPCTLDeviceVectorRef DVRef = NULL
-        DVRef = DPCTLDevice_CreateSubDevicesByCounts(self._device_ref, counts, ncounts)
+        DVRef = DPCTLDevice_CreateSubDevicesByCounts(self._device_ref, counts_buff, ncounts)
         cdef list devices = _get_devices(DVRef)
         DPCTLDeviceVector_Delete(DVRef)
         return devices
