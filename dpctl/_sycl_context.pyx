@@ -40,8 +40,7 @@ from ._backend cimport (
     DPCTLDeviceVector_Size,
     DPCTLDeviceVector_Delete,
     error_handler_callback,
-    DPCTL_DeviceAndContextPair,
-    DPCTLDeviceMgr_GetDeviceAndContextPair,
+    DPCTLDeviceMgr_GetCachedContext,
 )
 from ._sycl_queue cimport default_async_error_handler
 from ._sycl_device cimport SyclDevice
@@ -71,6 +70,11 @@ cdef class SyclContext(_SyclContext):
     
     @staticmethod
     cdef SyclContext _create (DPCTLSyclContextRef ctxt):
+        """
+        Calls DPCTLContext_Delete(ctxt).
+
+        Users should pass a copy if they intend to keep the argument ctxt alive.
+        """
         cdef _SyclContext ret = <_SyclContext>_SyclContext.__new__(_SyclContext)
         SyclContext._init_helper(ret, ctxt)
         return SyclContext(ret)
@@ -86,16 +90,13 @@ cdef class SyclContext(_SyclContext):
         cdef DPCTLSyclContextRef CRef = NULL
         cdef error_handler_callback * eh_callback = \
             <error_handler_callback *>&default_async_error_handler
-        cdef DPCTL_DeviceAndContextPair dev_ctx
         # look up cached contexts for root devices first
-        dev_ctx = DPCTLDeviceMgr_GetDeviceAndContextPair(DRef)
-        if (dev_ctx.CRef is NULL) or (dev_ctx.DRef is NULL):
+        CRef = DPCTLDeviceMgr_GetCachedContext(DRef)
+        if (CRef is NULL):
             # look-up failed, create a new one
             CRef = DPCTLContext_Create(DRef, eh_callback, props)
             if (CRef is NULL):
                 return -1
-        else:
-            CRef = dev_ctx.CRef
         SyclContext._init_helper(<_SyclContext> self, CRef)
         return 0
 
