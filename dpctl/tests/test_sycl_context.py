@@ -372,7 +372,6 @@ def test_context_can_be_used_in_queue(valid_filter):
         q = dpctl.SyclQueue(ctx, d)
 
 
-@pytest.mark.xfail(reason="DPC++ bug in device equality")
 def test_context_can_be_used_in_queue2(valid_filter):
     d = dpctl.SyclDevice(valid_filter)
     if d.default_selector_score < 0:
