@@ -257,14 +257,14 @@ PROTECTION_FILTER = "public"
 --! setting to ``false``.
 --!
 
-EXCLUDE_EMPTY_DEFINES = false
+EXCLUDE_EMPTY_DEFINES = true
 
 --!
 --! If non-``nil``, each define will be checked using this regular expression
 --! and if its name matches, this define will be excluded from the documentation.
 --!
 
-EXCLUDE_DEFINE_PATTERN = nil
+EXCLUDE_DEFINE_PATTERN = "DPCTL_API"
 
 --!
 --! Usually providing documentation blocks for default constructors is
