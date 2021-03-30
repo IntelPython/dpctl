@@ -19,32 +19,10 @@
 
 import dpctl
 import unittest
-from ._helper import has_cpu, has_gpu
+from ._helper import has_cpu, has_gpu, has_sycl_platforms
 
 
-class TestGetNumPlatforms(unittest.TestCase):
-    @unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
-    def test_dpctl_get_num_platforms(self):
-        self.assertGreaterEqual(dpctl.get_num_platforms(), 1)
-
-
-@unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
-class TestDumpMethods(unittest.TestCase):
-    def test_dpctl_dump(self):
-        try:
-            dpctl.dump()
-        except Exception:
-            self.fail("Encountered an exception inside dump().")
-
-    def test_dpctl_print_device_info(self):
-        q = dpctl.get_current_queue()
-        try:
-            q.get_sycl_device().print_device_info()
-        except Exception:
-            self.fail("Encountered an exception inside print_device_info().")
-
-
-@unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
+@unittest.skipIf(not has_sycl_platforms(), "No SYCL platforms available")
 class TestIsInDeviceContext(unittest.TestCase):
     def test_is_in_device_context_outside_device_ctxt(self):
         self.assertFalse(dpctl.is_in_device_context())
@@ -64,7 +42,7 @@ class TestIsInDeviceContext(unittest.TestCase):
         self.assertFalse(dpctl.is_in_device_context())
 
 
-@unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
+@unittest.skipIf(not has_sycl_platforms(), "No SYCL platforms available")
 class TestGetCurrentDevice(unittest.TestCase):
     def test_get_current_device_type_outside_device_ctxt(self):
         self.assertNotEqual(dpctl.get_current_device_type(), None)
@@ -91,7 +69,7 @@ class TestGetCurrentDevice(unittest.TestCase):
         self.assertNotEqual(dpctl.get_current_device_type(), None)
 
 
-@unittest.skipIf(not dpctl.has_sycl_platforms(), "No SYCL platforms available")
+@unittest.skipIf(not has_sycl_platforms(), "No SYCL platforms available")
 class TestGetCurrentQueueInMultipleThreads(unittest.TestCase):
     def test_num_current_queues_outside_with_clause(self):
         self.assertEqual(dpctl.get_num_activated_queues(), 0)

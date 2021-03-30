@@ -18,14 +18,11 @@
 # cython: language_level=3
 
 from __future__ import print_function
-from enum import Enum, auto
 import logging
 from . import backend_type, device_type
 from ._backend cimport(
     _backend_type,
     _device_type,
-    DPCTLPlatform_DumpInfo,
-    DPCTLPlatform_GetNumNonHostPlatforms,
     DPCTLQueueMgr_GetCurrentQueue,
     DPCTLQueueMgr_GlobalQueueIsCurrent,
     DPCTLQueueMgr_PushQueue,
@@ -39,13 +36,10 @@ from ._sycl_context cimport SyclContext
 
 __all__ = [
     "device_context",
-    "dump",
     "get_current_backend",
     "get_current_device_type",
     "get_current_queue",
     "get_num_activated_queues",
-    "get_num_platforms",
-    "has_sycl_platforms",
     "is_in_device_context",
     "set_global_queue",
 ]
@@ -74,58 +68,6 @@ cdef class _SyclQueueManager:
 
     def _remove_current_queue(self):
         DPCTLQueueMgr_PopQueue()
-
-    def dump(self):
-        """
-        Prints information about the SYCL environment.
-
-        Currently, this function prints a list of all SYCL platforms that
-        are available on the system and the list of devices for each platform.
-
-        :Example:
-            On a system with an OpenCL CPU driver, OpenCL GPU driver,
-            Level Zero GPU driver, running the command. ::
-
-            $python -c "import dpctl; dpctl.dump()"
-
-            returns ::
-
-                ---Platform 0::
-                    Name        Intel(R) OpenCL
-                    Version     OpenCL 2.1 LINUX
-                    Vendor      Intel(R) Corporation
-                    Profile     FULL_PROFILE
-                    Backend     opencl
-                    Devices     1
-                ---Device 0::
-                    Name                Intel(R) Core(TM) i7-9700 CPU @ 3.00GHz
-                    Driver version      2020.11.11.0.13_160000
-                    Device type         cpu
-                ---Platform 1::
-                    Name        Intel(R) OpenCL HD Graphics
-                    Version     OpenCL 3.0
-                    Vendor      Intel(R) Corporation
-                    Profile     FULL_PROFILE
-                    Backend     opencl
-                    Devices     1
-                ---Device 0::
-                    Name                Intel(R) Graphics Gen9 [0x3e98]
-                    Driver version      20.47.18513
-                    Device type         gpu
-                ---Platform 2::
-                    Name        Intel(R) Level-Zero
-                    Version     1.0
-                    Vendor      Intel(R) Corporation
-                    Profile     FULL_PROFILE
-                    Backend     level_zero
-                    Devices     1
-                ---Device 0::
-                    Name                Intel(R) Graphics Gen9 [0x3e98]
-                    Driver version      1.0.18513
-                    Device type         gpu
-
-        """
-        DPCTLPlatform_DumpInfo()
 
     cpdef get_current_backend(self):
         """
@@ -182,34 +124,6 @@ cdef class _SyclQueueManager:
         """
         return DPCTLQueueMgr_GetQueueStackSize()
 
-    def get_num_platforms(self):
-        """
-        Returns the number of available non-host SYCL platforms.
-        *WARNING: To be depracated in the near future.*
-
-        Returns:
-            int: The number of non-host SYCL backends.
-        """
-        return DPCTLPlatform_GetNumNonHostPlatforms()
-
-    def has_sycl_platforms(self):
-        """
-        Checks if the system has any non-host SYCL platforms. *WARNING: The
-        behavior of the function may change in the future to include the host
-        platform.*
-
-        Returns:
-            bool: Returns True if there is at least one non-host SYCL,
-            platform, otherwise returns False.
-
-        """
-        cdef size_t num_platforms = DPCTLPlatform_GetNumNonHostPlatforms()
-        if num_platforms:
-            return True
-        else:
-            return False
-
-
     def is_in_device_context(self):
         """
         Checks if the control is inside a :func:`dpctl.device_context()` scope.
@@ -252,10 +166,7 @@ cdef class _SyclQueueManager:
 _mgr = _SyclQueueManager()
 
 # Global bound functions
-dump                     = _mgr.dump
-get_num_platforms        = _mgr.get_num_platforms
 get_num_activated_queues = _mgr.get_num_activated_queues
-has_sycl_platforms       = _mgr.has_sycl_platforms
 set_global_queue         = _mgr.set_global_queue
 is_in_device_context     = _mgr.is_in_device_context
 

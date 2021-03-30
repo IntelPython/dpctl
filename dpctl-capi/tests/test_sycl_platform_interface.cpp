@@ -23,43 +23,208 @@
 /// dpctl_sycl_platform_interface.h.
 ///
 //===----------------------------------------------------------------------===//
+
+#include "Support/CBindingWrapping.h"
+#include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_platform_interface.h"
+#include "dpctl_sycl_platform_manager.h"
+#include "dpctl_utils.h"
+#include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 
-struct TestDPCTLSyclPlatformInterface : public ::testing::Test
+using namespace cl::sycl;
+
+namespace
 {
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclPlatformRef>,
+                                   DPCTLPlatformVectorRef);
+
+void check_platform_name(__dpctl_keep const DPCTLSyclPlatformRef PRef)
+{
+    const char *name = nullptr;
+    EXPECT_NO_FATAL_FAILURE(name = DPCTLPlatform_GetName(PRef));
+    EXPECT_TRUE(name);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(name));
+}
+
+void check_platform_vendor(__dpctl_keep const DPCTLSyclPlatformRef PRef)
+{
+    const char *vname = nullptr;
+    EXPECT_NO_FATAL_FAILURE(vname = DPCTLPlatform_GetVendor(PRef));
+    EXPECT_TRUE(vname);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(vname));
+}
+
+void check_platform_version(__dpctl_keep const DPCTLSyclPlatformRef PRef)
+{
+    const char *version = nullptr;
+    EXPECT_NO_FATAL_FAILURE(version = DPCTLPlatform_GetVersion(PRef));
+    EXPECT_TRUE(version);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(version));
+}
+
+void check_platform_backend(__dpctl_keep const DPCTLSyclPlatformRef PRef)
+{
+    DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
+    EXPECT_NO_FATAL_FAILURE(BTy = DPCTLPlatform_GetBackend(PRef));
+    EXPECT_TRUE([BTy] {
+        switch (BTy) {
+        case DPCTLSyclBackendType::DPCTL_CUDA:
+            return true;
+        case DPCTLSyclBackendType::DPCTL_HOST:
+            return true;
+        case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO:
+            return true;
+        case DPCTLSyclBackendType::DPCTL_OPENCL:
+            return true;
+        default:
+            return false;
+        }
+    }());
+}
+
+} // namespace
+
+struct TestDPCTLSyclPlatformInterface
+    : public ::testing::TestWithParam<const char *>
+{
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclPlatformRef PRef = nullptr;
+
+    TestDPCTLSyclPlatformInterface()
+    {
+        EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLFilterSelector_Create(GetParam()));
+        if (DSRef) {
+            EXPECT_NO_FATAL_FAILURE(
+                PRef = DPCTLPlatform_CreateFromSelector(DSRef));
+        }
+    }
+
+    void SetUp()
+    {
+        if (!PRef) {
+            auto message = "Skipping as no platform of type " +
+                           std::string(GetParam()) + ".";
+            GTEST_SKIP_(message.c_str());
+        }
+    }
+
+    ~TestDPCTLSyclPlatformInterface()
+    {
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_Delete(PRef));
+    }
 };
 
-TEST_F(TestDPCTLSyclPlatformInterface, CheckGetNumPlatforms)
+struct TestDPCTLSyclDefaultPlatform : public ::testing::Test
 {
-    auto nplatforms = DPCTLPlatform_GetNumNonHostPlatforms();
-    EXPECT_GE(nplatforms, 0ul);
-}
+    DPCTLSyclPlatformRef PRef = nullptr;
 
-TEST_F(TestDPCTLSyclPlatformInterface, GetNumBackends)
-{
-    auto nbackends = DPCTLPlatform_GetNumNonHostBackends();
-    EXPECT_GE(nbackends, 0ul);
-}
-
-TEST_F(TestDPCTLSyclPlatformInterface, GetListOfBackends)
-{
-    auto nbackends = DPCTLPlatform_GetNumNonHostBackends();
-
-    if (!nbackends)
-        GTEST_SKIP_("No non host backends available");
-
-    auto backends = DPCTLPlatform_GetListOfNonHostBackends();
-    EXPECT_TRUE(backends != nullptr);
-    for (auto i = 0ul; i < nbackends; ++i) {
-        EXPECT_TRUE(backends[i] == DPCTLSyclBackendType::DPCTL_CUDA ||
-                    backends[i] == DPCTLSyclBackendType::DPCTL_OPENCL ||
-                    backends[i] == DPCTLSyclBackendType::DPCTL_LEVEL_ZERO);
+    TestDPCTLSyclDefaultPlatform()
+    {
+        EXPECT_NO_FATAL_FAILURE(PRef = DPCTLPlatform_Create());
     }
-    DPCTLPlatform_DeleteListOfBackends(backends);
+
+    void SetUp()
+    {
+        ASSERT_TRUE(PRef);
+    }
+
+    ~TestDPCTLSyclDefaultPlatform()
+    {
+        EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_Delete(PRef));
+    }
+};
+
+TEST_P(TestDPCTLSyclPlatformInterface, Chk_GetName)
+{
+    check_platform_name(PRef);
 }
 
-TEST_F(TestDPCTLSyclPlatformInterface, CheckDPCTLPlatformDumpInfo)
+TEST_P(TestDPCTLSyclPlatformInterface, Chk_GetVendor)
 {
-    EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_DumpInfo());
+    check_platform_vendor(PRef);
 }
+
+TEST_P(TestDPCTLSyclPlatformInterface, Chk_GetVersion)
+{
+    check_platform_version(PRef);
+}
+
+TEST_P(TestDPCTLSyclPlatformInterface, Chk_GetBackend)
+{
+    check_platform_backend(PRef);
+}
+
+TEST_P(TestDPCTLSyclPlatformInterface, Chk_Copy)
+{
+    DPCTLSyclPlatformRef Copied_PRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(Copied_PRef = DPCTLPlatform_Copy(PRef));
+    EXPECT_TRUE(bool(Copied_PRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_Delete(Copied_PRef));
+}
+
+TEST_P(TestDPCTLSyclPlatformInterface, Chk_PrintInfo)
+{
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(PRef));
+}
+
+TEST_F(TestDPCTLSyclDefaultPlatform, Chk_GetName)
+{
+    check_platform_name(PRef);
+}
+
+TEST_F(TestDPCTLSyclDefaultPlatform, Chk_GetVendor)
+{
+    check_platform_vendor(PRef);
+}
+
+TEST_F(TestDPCTLSyclDefaultPlatform, Chk_GetVersion)
+{
+    check_platform_version(PRef);
+}
+
+TEST_F(TestDPCTLSyclDefaultPlatform, Chk_GetBackend)
+{
+    check_platform_backend(PRef);
+}
+
+TEST_F(TestDPCTLSyclDefaultPlatform, Chk_PrintInfo)
+{
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(PRef));
+}
+
+TEST(TestGetPlatforms, Chk)
+{
+    auto PVRef = DPCTLPlatform_GetPlatforms();
+    auto nPlatforms = DPCTLPlatformVector_Size(PVRef);
+    if (nPlatforms) {
+        for (auto i = 0ul; i < nPlatforms; ++i) {
+            DPCTLSyclPlatformRef PRef = nullptr;
+            EXPECT_NO_FATAL_FAILURE(PRef = DPCTLPlatformVector_GetAt(PVRef, i));
+            ASSERT_TRUE(PRef);
+            check_platform_backend(PRef);
+            check_platform_name(PRef);
+            check_platform_vendor(PRef);
+            check_platform_version(PRef);
+            EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_Delete(PRef));
+        }
+    }
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatformVector_Delete(PVRef));
+}
+
+INSTANTIATE_TEST_SUITE_P(DPCTLPlatform_Tests,
+                         TestDPCTLSyclPlatformInterface,
+                         ::testing::Values("opencl",
+                                           "opencl:gpu",
+                                           "opencl:cpu",
+                                           "opencl:gpu:0",
+                                           "gpu",
+                                           "cpu",
+                                           "level_zero",
+                                           "level_zero:gpu",
+                                           "opencl:cpu:0",
+                                           "level_zero:gpu:0",
+                                           "gpu:0",
+                                           "gpu:1",
+                                           "1"));

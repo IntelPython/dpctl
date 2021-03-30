@@ -153,6 +153,14 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsHost(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsHostUnifiedMemory(const DPCTLSyclDeviceRef DRef)
+    cdef bool DPCTLDevice_GetSubGroupIndependentForwardProgress(const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthChar(const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthShort(const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthInt(const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthLong(const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthFloat(const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthDouble(const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(const DPCTLSyclDeviceRef DRef)
     cpdef bool DPCTLDevice_HasAspect(
         const DPCTLSyclDeviceRef DRef, DPCTLSyclAspectType AT)
     cdef uint32_t DPCTLDevice_GetMaxReadImageArgs(const DPCTLSyclDeviceRef DRef)
@@ -183,11 +191,10 @@ cdef extern from "dpctl_sycl_device_selector_interface.h":
     DPCTLSyclDeviceSelectorRef DPCTLAcceleratorSelector_Create()
     DPCTLSyclDeviceSelectorRef DPCTLDefaultSelector_Create()
     DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create()
-    DPCTLSyclDeviceSelectorRef DPCTLFilterSelector_Create(
-        const char *filter_str)
+    DPCTLSyclDeviceSelectorRef DPCTLFilterSelector_Create(const char *)
     DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create()
     DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create()
-    void DPCTLDeviceSelector_Delete(DPCTLSyclDeviceSelectorRef DSRef)
+    void DPCTLDeviceSelector_Delete(DPCTLSyclDeviceSelectorRef)
     int DPCTLDeviceSelector_Score(DPCTLSyclDeviceSelectorRef, DPCTLSyclDeviceRef)
 
 
@@ -202,13 +209,31 @@ cdef extern from "dpctl_sycl_kernel_interface.h":
     cdef void DPCTLKernel_Delete(DPCTLSyclKernelRef KRef)
 
 
+cdef extern from "dpctl_sycl_platform_manager.h":
+    cdef struct DPCTLPlatformVector
+    ctypedef DPCTLPlatformVector *DPCTLPlatformVectorRef
+
+    cdef void DPCTLPlatformVector_Delete(DPCTLPlatformVectorRef)
+    cdef void DPCTLPlatformVector_Clear(DPCTLPlatformVectorRef)
+    cdef size_t DPCTLPlatformVector_Size(DPCTLPlatformVectorRef)
+    cdef DPCTLSyclPlatformRef DPCTLPlatformVector_GetAt(
+        DPCTLPlatformVectorRef,
+        size_t index)
+    cdef void DPCTLPlatformMgr_PrintInfo(const DPCTLSyclPlatformRef)
+
+
 cdef extern from "dpctl_sycl_platform_interface.h":
-    cdef void DPCTLPlatform_Delete()
-    cdef size_t DPCTLPlatform_GetNumNonHostPlatforms()
-    cdef void DPCTLPlatform_DumpInfo()
-    cdef size_t DPCTLPlatform_GetNumNonHostBackends()
-    cdef DPCTLSyclBackendType *DPCTLPlatform_GetListOfNonHostBackends()
-    cdef void DPCTLPlatform_DeleteListOfBackends(DPCTLSyclBackendType * BEs)
+    cdef DPCTLSyclPlatformRef DPCTLPlatform_Copy(const DPCTLSyclPlatformRef)
+    cdef DPCTLSyclPlatformRef DPCTLPlatform_Create()
+    cdef DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
+        const DPCTLSyclDeviceSelectorRef)
+    cdef void DPCTLPlatform_Delete(DPCTLSyclPlatformRef)
+    cdef DPCTLSyclBackendType DPCTLPlatform_GetBackend(
+        const DPCTLSyclPlatformRef)
+    cdef const char *DPCTLPlatform_GetName(const DPCTLSyclPlatformRef)
+    cdef const char *DPCTLPlatform_GetVendor(const DPCTLSyclPlatformRef)
+    cdef const char *DPCTLPlatform_GetVersion(const DPCTLSyclPlatformRef)
+    cdef DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms()
 
 
 cdef extern from "dpctl_sycl_context_interface.h":
