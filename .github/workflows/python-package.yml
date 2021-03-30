@@ -41,4 +41,5 @@ jobs:
       env:
         ONEAPI_ROOT: /opt/intel/oneapi
       run: |
+        source $ONEAPI_ROOT/compiler/latest/env/vars.sh
         python setup.py develop
