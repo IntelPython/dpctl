@@ -37,8 +37,8 @@ jobs:
       if: steps.cache-oneapi.outputs.cache-hit != 'true'
       run: scripts/install_linux.sh $LINUX_BASEKIT_URL $LINUX_DPCPP_COMPONENTS_WEB
 
-    - name: Install in Development Mode
-      env:
-        ONEAPI_ROOT: /opt/intel/oneapi
-      run: |
-        python setup.py develop
+    # - name: Install in Development Mode
+    #   env:
+    #     ONEAPI_ROOT: /opt/intel/oneapi
+    #   run: |
+    #     python setup.py develop
