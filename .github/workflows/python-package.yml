@@ -2,6 +2,10 @@ name: Python package
 
 on: [push]
 
+env:
+  LINUX_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/17431/l_BaseKit_p_2021.1.0.2659_offline.sh
+  LINUX_DPCPP_COMPONENTS_WEB: intel.oneapi.lin.dpcpp-cpp-compiler
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,6 +15,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -19,6 +24,21 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Cache oneAPI
+      id: cache-oneapi
+      uses: actions/cache@v2
+      with:
+        path: |
+          /opt/intel/oneapi/compiler
+          /opt/intel/oneapi/tbb
+        key: install-${{ env.LINUX_BASEKIT_URL }}-${{ env.LINUX_DPCPP_COMPONENTS_WEB }}-compiler-tbb-${{ hashFiles('**/scripts/cache_exclude_linux.sh') }}
+    - name: Install oneAPI
+      if: steps.cache-oneapi.outputs.cache-hit != 'true'
+      run: scripts/install_linux.sh $LINUX_BASEKIT_URL $LINUX_DPCPP_COMPONENTS_WEB
+
     - name: Install in Development Mode
+      env:
+        ONEAPI_ROOT: /opt/intel/oneapi
       run: |
         python setup.py develop
