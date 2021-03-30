@@ -32,10 +32,13 @@ jobs:
         path: |
           /opt/intel/oneapi/compiler
           /opt/intel/oneapi/tbb
-        key: install-${{ env.LINUX_BASEKIT_URL }}-${{ env.LINUX_DPCPP_COMPONENTS_WEB }}-compiler-tbb-${{ hashFiles('**/scripts/cache_exclude_linux.sh') }}
+        key: build-${{ env.LINUX_BASEKIT_URL }}-${{ env.LINUX_DPCPP_COMPONENTS_WEB }}-compiler-tbb-${{ hashFiles('**/scripts/cache_exclude_linux.sh') }}
     - name: Install oneAPI
       if: steps.cache-oneapi.outputs.cache-hit != 'true'
       run: scripts/install_linux.sh $LINUX_BASEKIT_URL $LINUX_DPCPP_COMPONENTS_WEB
+    - name: Exclude unused files from oneAPI cache
+      if: steps.cache-oneapi.outputs.cache-hit != 'true'
+      run: scripts/cache_exclude_linux.sh
 
     - name: Install in Development Mode
       env:
