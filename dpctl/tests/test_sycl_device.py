@@ -353,12 +353,9 @@ list_of_checks = [
     check_has_aspect_usm_shared_allocations,
     check_has_aspect_usm_restricted_shared_allocations,
     check_has_aspect_usm_system_allocator,
-<<<<<<< HEAD
     check_get_max_read_image_args,
     check_get_max_write_image_args,
-=======
     check_print_device_info,
->>>>>>> f0ada84a527859f94b5fbbdb11932ab6be304741
 ]
 
 
