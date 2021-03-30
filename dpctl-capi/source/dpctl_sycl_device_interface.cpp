@@ -388,87 +388,26 @@ bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     return hasAspect;
 }
 
-size_t
-DPCTLDevice_GetImage2dMaxWidth(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    size_t image_2d_max_width = 0;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            image_2d_max_width = D->get_info<info::device::image2d_max_width>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
-        }
+#define declmethod(FUNC, NAME)                                                 \
+    size_t DPCTLDevice_##FUNC(__dpctl_keep const DPCTLSyclDeviceRef DRef)      \
+    {                                                                          \
+        size_t result = 0;                                                     \
+        auto D = unwrap(DRef);                                                 \
+        if (D) {                                                               \
+            try {                                                              \
+                result = D->get_info<info::device::NAME>();                    \
+            } catch (runtime_error const &re) {                                \
+                std::cerr << re.what() << '\n';                                \
+            }                                                                  \
+        }                                                                      \
+        return result;                                                         \
     }
-    return image_2d_max_width;
-}
-
-size_t
-DPCTLDevice_GetImage2dMaxHeight(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    size_t image_2d_max_height = 0;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            image_2d_max_height =
-                D->get_info<info::device::image2d_max_height>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
-        }
-    }
-    return image_2d_max_height;
-}
-
-size_t
-DPCTLDevice_GetImage3dMaxWidth(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    size_t image_3d_max_width = 0;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            image_3d_max_width = D->get_info<info::device::image3d_max_width>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
-        }
-    }
-    return image_3d_max_width;
-}
-
-size_t
-DPCTLDevice_GetImage3dMaxHeight(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    size_t image_3d_max_height = 0;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            image_3d_max_height =
-                D->get_info<info::device::image3d_max_height>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
-        }
-    }
-    return image_3d_max_height;
-}
-
-size_t
-DPCTLDevice_GetImage3dMaxDepth(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    size_t image_3d_max_depth = 0;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            image_3d_max_depth = D->get_info<info::device::image3d_max_depth>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
-        }
-    }
-    return image_3d_max_depth;
-}
+declmethod(GetImage2dMaxWidth, image2d_max_width);
+declmethod(GetImage2dMaxHeight, image2d_max_height);
+declmethod(GetImage3dMaxWidth, image3d_max_width);
+declmethod(GetImage3dMaxHeight, image3d_max_height);
+declmethod(GetImage3dMaxDepth, image3d_max_depth);
+#undef declmethod
 
 bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
     __dpctl_keep const DPCTLSyclDeviceRef DRef)
