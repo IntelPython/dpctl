@@ -33,6 +33,7 @@ extensions = [
     "sphinx.ext.githubpages",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx.ext.todo",
 ]
 
 use_doxyrest = "@DPCTL_ENABLE_DOXYREST@"
@@ -61,7 +62,7 @@ source_suffix = ".rst"
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-highlight_language = "C"
+highlight_language = "Python"
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
