@@ -18,9 +18,9 @@
 """
 
 from .test_dparray import *
-from .test_dump_functions import *
 from .test_sycl_device import *
 from .test_sycl_kernel_submit import *
+from .test_sycl_platform import *
 from .test_sycl_program import *
 from .test_sycl_queue import *
 from .test_sycl_queue_manager import *

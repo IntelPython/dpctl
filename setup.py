@@ -200,6 +200,13 @@ def extensions():
             **extension_args
         ),
         Extension(
+            "dpctl._sycl_platform",
+            [
+                os.path.join("dpctl", "_sycl_platform.pyx"),
+            ],
+            **extension_args
+        ),
+        Extension(
             "dpctl._sycl_queue",
             [
                 os.path.join("dpctl", "_sycl_queue.pyx"),

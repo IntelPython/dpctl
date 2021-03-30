@@ -331,6 +331,13 @@ def check_get_preferred_vector_width_half(device):
         pytest.fail("preferred_vector_width_half call failed")
 
 
+def check_print_device_info(device):
+    try:
+        device.print_device_info()
+    except Exception:
+        pytest.fail("Encountered an exception inside print_device_info().")
+
+
 list_of_checks = [
     check_get_max_compute_units,
     check_get_max_work_item_dims,
@@ -372,6 +379,7 @@ list_of_checks = [
     check_get_image_3d_max_width,
     check_get_image_3d_max_height,
     check_get_image_3d_max_depth,
+    check_print_device_info,
 ]
 
 

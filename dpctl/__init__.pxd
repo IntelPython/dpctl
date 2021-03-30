@@ -26,5 +26,6 @@ from dpctl._sycl_context cimport *
 from dpctl._sycl_device cimport *
 from dpctl._sycl_device_factory cimport *
 from dpctl._sycl_event cimport *
+from dpctl._sycl_platform cimport *
 from dpctl._sycl_queue cimport *
 from dpctl._sycl_queue_manager cimport *
