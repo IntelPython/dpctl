@@ -159,14 +159,8 @@ size_t DPCTLContext_DeviceCount(__dpctl_keep const DPCTLSyclContextRef CRef)
                      "input is a nullptr\n";
         return 0;
     }
-    try {
-        auto Devices = Context->get_devices();
-        return Devices.size();
-    } catch (std::bad_alloc const &ba) {
-        // \todo log error
-        std::cerr << ba.what() << '\n';
-        return 0;
-    }
+    const auto Devices = Context->get_devices();
+    return Devices.size();
 }
 
 bool DPCTLContext_IsHost(__dpctl_keep const DPCTLSyclContextRef CtxRef)
