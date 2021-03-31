@@ -1,6 +1,6 @@
 //===- dpctl_sycl_program_interface.h - C API for sycl::program  -*-C++-*- ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

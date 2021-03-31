@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
-project("Data-parallel Control (dpCtl)")
+project("Data-parallel Control (dpctl)")
 # Add the cmake folder so the FindSphinx module is found
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
@@ -9,7 +9,7 @@ find_package (Git)
 
 set(DOC_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated_docs)
 if( DPCTL_DOCGEN_PREFIX )
-    message(STATUS "Generating dpCtl documents in " ${DPCTL_DOCGEN_PREFIX})
+    message(STATUS "Generating dpctl documents in " ${DPCTL_DOCGEN_PREFIX})
     set(DOC_OUTPUT_DIR ${DPCTL_DOCGEN_PREFIX})
 endif()
 
@@ -74,7 +74,7 @@ add_custom_command(
     COMMAND
         ${SPHINX_EXECUTABLE} -b html
         # Tell Breathe where to find the Doxygen output
-        -Dbreathe_projects.dpCtl-CAPI=${DOXYGEN_OUTPUT_DIR}/xml
+        -Dbreathe_projects.dpctl-CAPI=${DOXYGEN_OUTPUT_DIR}/xml
         ${SPHINX_SOURCE} ${SPHINX_OUTPUT_DIR}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS

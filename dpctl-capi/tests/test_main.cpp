@@ -1,6 +1,6 @@
 //===-------------------- test_main.cpp - Common test runner               ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -19,7 +19,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// A common test runner for all tests in dpCtl C API.
+/// A common test runner for all tests in dpctl C API.
 ///
 //===----------------------------------------------------------------------===//
 

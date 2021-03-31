@@ -1,6 +1,6 @@
 //=== dpctl_sycl_platform_manager.cpp - Implements helpers for sycl::platform //
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

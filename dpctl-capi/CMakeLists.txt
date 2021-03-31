@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("dpCtl C API - A C wrapper for a subset of SYCL")
+project("dpctl C API - A C wrapper for a subset of SYCL")
 
 # Option to turn on support for creating Level Zero interoperability programs
 # from a SPIR-V binary file.
@@ -152,7 +152,7 @@ if(DPCTL_GENERATE_COVERAGE)
     endif()
 endif()
 
-# Add sub-directory to build the dpCtl C API test cases
+# Add sub-directory to build the dpctl C API test cases
 if(DPCTL_BUILD_CAPI_TESTS)
     add_subdirectory(tests)
 endif()

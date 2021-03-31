@@ -1,6 +1,6 @@
 //===-------------- dpctl_data_types.h - Defines integer types   -*-C++-*- ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

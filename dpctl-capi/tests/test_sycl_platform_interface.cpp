@@ -1,6 +1,6 @@
 //===-- test_sycl_platform_interface.cpp - Test cases for platform interface =//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

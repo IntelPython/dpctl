@@ -1,6 +1,6 @@
 //===---- dpctl_sycl_queue_manager.h - A manager for sycl queues -*-C++-*- ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -20,7 +20,7 @@
 ///
 /// \file
 /// This header declares a set of functions to support a concept of current
-/// queue for applications using dpCtl.
+/// queue for applications using dpctl.
 ///
 //===----------------------------------------------------------------------===//
 
@@ -41,8 +41,8 @@ DPCTL_C_EXTERN_C_BEGIN
 /*!
  * @brief Get the current sycl::queue for the thread of execution.
  *
- * DpCtl lets an application access a "current queue" as soon as the application
- * loads dpCtl. The initial current queue also termed the global queue is a
+ * Dpctl lets an application access a "current queue" as soon as the application
+ * loads dpctl. The initial current queue also termed the global queue is a
  * queue created using SYCL's default_selector. The current queue is set per
  * thread and can be changed for a specific execution scope using the PushQueue
  * and PopQueue functions in this module. The global queue can also be changed

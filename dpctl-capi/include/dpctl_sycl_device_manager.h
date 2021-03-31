@@ -1,6 +1,6 @@
 //===-- dpctl_sycl_device_manager.h - A manager for sycl devices -*-C++-*- ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -108,7 +108,7 @@ size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier);
 
 /*!
  * @brief Prints out the info::deivice attributes for the device that are
- * currently supported by dpCtl.
+ * currently supported by dpctl.
  *
  * @param    DRef           A #DPCTLSyclDeviceRef opaque pointer.
  * @ingroup DeviceManager

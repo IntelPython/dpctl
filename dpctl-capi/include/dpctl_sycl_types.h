@@ -1,6 +1,6 @@
 //===-- dpctl_sycl_types.h - Defines opaque types for SYCL objects -*-C++-*- =//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -19,7 +19,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines types used by dpCtl's C interface to SYCL.
+/// This file defines types used by dpctl's C interface to SYCL.
 ///
 //===----------------------------------------------------------------------===//
 

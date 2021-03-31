@@ -1,7 +1,7 @@
 .. _dpCtl.program_api:
 
 ########################
-dpCtl Program Python API
+dpctl Program Python API
 ########################
 
 .. automodule:: dpctl.program

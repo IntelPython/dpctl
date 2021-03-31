@@ -1,6 +1,6 @@
 # Example "sycl_direct_linkage"
 
-This Cython extension does not use dpCtl and links to SYCL directly.
+This Cython extension does not use dpctl and links to SYCL directly.
 
 It exposes `columnwise_total` function that uses oneMKL to compute
 totals for each column of its argument matrix in double precision,
@@ -19,7 +19,7 @@ This extension does not allow one to control the device/queue to
 which execution of kernel is being schedules.
 
 A related example "sycl_buffer" modifies this example in that it uses
-`dpCtl` to retrieve the current queue, allowing a user control the queue,
+`dpctl` to retrieve the current queue, allowing a user control the queue,
 and the avoid the overhead of the queue creation.
 
 To illustrate the queue creation overhead in each call, compare execution of default queue,
