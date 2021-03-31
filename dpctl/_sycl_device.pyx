@@ -616,7 +616,7 @@ cdef class SyclDevice(_SyclDevice):
         cdef size_t ncounts = len(counts)
         cdef size_t *counts_buff = <size_t *> malloc(ncounts * sizeof(size_t))
         cdef DPCTLDeviceVectorRef DVRef = NULL
-        cdef int i
+        cdef size_t i
         for i in range(ncounts):
             counts_buff[i] = counts[i]
         DVRef = DPCTLDevice_CreateSubDevicesByCounts(self._device_ref, counts_buff, ncounts)
