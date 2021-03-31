@@ -73,11 +73,20 @@ from ._backend cimport (
 from . import backend_type, device_type
 from libc.stdint cimport uint32_t
 import warnings
-import numpy as np
+from libc.stdlib cimport malloc, free
 
 __all__ = [
     "SyclDevice",
 ]
+
+
+cdef class SubDeviceCreationError(Exception):
+    """
+    A SubDeviceCreationError exception is raised when
+    sub-devices were not created.
+
+    """
+    pass
 
 
 cdef class _SyclDevice:
@@ -179,7 +188,13 @@ cdef class SyclDevice(_SyclDevice):
             SyclDevice._init_helper(self, DRef)
             return 0
 
-    cpdef list create_sub_devices_equally(self, size_t count):
+    cdef _raise_sub_devices_creation_error(self, fname, errcode):
+        e = SubDeviceCreationError("Sub-devices were not created.")
+        e.fname = fname
+        e.code = errcode
+        raise e
+
+    cdef list create_sub_devices_equally(self, size_t count):
         """ Returns a vector of sub devices partitioned from this SYCL device
             based on the count parameter. The returned
             vector contains as many sub devices as can be created such that each sub
@@ -189,41 +204,47 @@ cdef class SyclDevice(_SyclDevice):
         """
         cdef DPCTLDeviceVectorRef DVRef = NULL
         DVRef = DPCTLDevice_CreateSubDevicesEqually(self._device_ref, count)
+        if DVRef is NULL:
+            self._raise_sub_devices_creation_error("DPCTLSubDeviceCreationError", -1)
         cdef list devices = _get_devices(DVRef)
         DPCTLDeviceVector_Delete(DVRef)
         return devices
 
-    cpdef list create_sub_devices_by_counts(self, size_t[:] counts, size_t ncounts):
+    cdef list create_sub_devices_by_counts(self, list counts):
         """ Returns a vector of sub devices
             partitioned from this SYCL device based on the counts parameter. For each
             non-zero value M in the counts vector, a sub device with M compute units
             is created.
         """
-        cdef size_t *counts_buff = &counts[0]
+        cdef size_t ncounts = len(counts)
+        cdef size_t *counts_buff = <size_t *> malloc(ncounts * sizeof(size_t))
         cdef DPCTLDeviceVectorRef DVRef = NULL
         DVRef = DPCTLDevice_CreateSubDevicesByCounts(self._device_ref, counts_buff, ncounts)
+        if DVRef is NULL:
+            self._raise_sub_devices_creation_error("DPCTLSubDeviceCreationError", -1)
         cdef list devices = _get_devices(DVRef)
+        free(counts_buff)
         DPCTLDeviceVector_Delete(DVRef)
         return devices
 
-    cpdef list create_sub_devices_by_affinity(self, _partition_affinity_domain_type domain):
+    cdef list create_sub_devices_by_affinity(self, _partition_affinity_domain_type domain):
         """ Returns a vector of sub devices
             partitioned from this SYCL device by affinity domain based on the domain
             parameter.
         """
         cdef DPCTLDeviceVectorRef DVRef = NULL
         DVRef = DPCTLDevice_CreateSubDevicesByAffinity(self._device_ref, domain)
+        if DVRef is NULL:
+            self._raise_sub_devices_creation_error("DPCTLSubDeviceCreationError", -1)
         cdef list devices = _get_devices(DVRef)
         DPCTLDeviceVector_Delete(DVRef)
         return devices
 
-    def create_sub_devices(self, partition=None):
+    def create_sub_devices(self, partition):
         if isinstance(partition, int) and partition > 0:
-            self.create_sub_devices_equally(partition)
-        elif isinstance(partition, tuple) and all([i > 0 for i in partition]):
-            counts = np.array([i for i in partition], dtype=np.uintp)
-            ncounts = len(counts)
-            self.create_sub_devices_by_counts(counts, ncounts)
+            return self.create_sub_devices_equally(partition)
+        elif isinstance(partition, list) and all([i > 0 for i in partition]):
+            return self.create_sub_devices_by_counts(partition)
         elif isinstance(partition, str):
             if partition == "not_applicable":
                 domain_type = _partition_affinity_domain_type._not_applicable
@@ -241,7 +262,7 @@ cdef class SyclDevice(_SyclDevice):
                 domain_type = _partition_affinity_domain_type._next_partitionable
             else:
                 raise Exception('Unsupported type of domain')
-            self.create_sub_devices_by_affinity(domain_type)
+            return self.create_sub_devices_by_affinity(domain_type)
         else:
             raise Exception('Unsupported type of sub-device argument')
 
