@@ -88,8 +88,8 @@ cdef class SyclContext(_SyclContext):
     cdef int _init_from_one_device(self, SyclDevice device, int props):
         cdef DPCTLSyclDeviceRef DRef = device.get_device_ref()
         cdef DPCTLSyclContextRef CRef = NULL
-        cdef error_handler_callback * eh_callback = \
-            <error_handler_callback *>&default_async_error_handler
+        cdef error_handler_callback * eh_callback = (
+            <error_handler_callback *>&default_async_error_handler)
         # look up cached contexts for root devices first
         CRef = DPCTLDeviceMgr_GetCachedContext(DRef)
         if (CRef is NULL):
@@ -103,11 +103,11 @@ cdef class SyclContext(_SyclContext):
     cdef int _init_from_devices(self, object devices, int props):
         cdef int num_devices = len(devices)
         cdef int i = 0
-        cdef int j
+        cdef int j = 0
         cdef size_t num_bytes
         cdef DPCTLDeviceVectorRef DVRef = NULL
-        cdef error_handler_callback * eh_callback = \
-            <error_handler_callback *>&default_async_error_handler
+        cdef error_handler_callback * eh_callback = (
+            <error_handler_callback *>&default_async_error_handler)
         cdef DPCTLSyclContextRef CRef = NULL
         cdef DPCTLSyclDeviceRef *elems
 
@@ -120,17 +120,14 @@ cdef class SyclContext(_SyclContext):
                 if not isinstance(dev, SyclDevice):
                     elems[i] = NULL
                 else:
-                    elems[i] = DPCTLDevice_Copy((<SyclDevice>dev).get_device_ref())
+                    elems[i] = (<SyclDevice>dev).get_device_ref()
                 if (elems[i] is NULL):
-                    for j in range(0, i):
-                        DPCTLDevice_Delete(elems[j])
                     PyMem_Free(elems)
                     return -4
                 i = i + 1
+            # CreateFromArray will make copies of devices referenced by elems
             DVRef = DPCTLDeviceVector_CreateFromArray(num_devices, elems)
             if (DVRef is NULL):
-                for j in range(num_devices):
-                    DPCTLDevice_Delete(elems[j])
                 PyMem_Free(elems)
                 return -5
             PyMem_Free(elems)
