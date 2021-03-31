@@ -6,7 +6,9 @@
 .. include:: ./docfiles/intro.rst
 
 .. toctree::
-    :maxdepth: 3
-    :caption: Contents:
+    :maxdepth: 1
+    :caption: API Documentation
 
     docfiles/toc_pyapi
+
+.. include:: ./docfiles/boilerplate.rst

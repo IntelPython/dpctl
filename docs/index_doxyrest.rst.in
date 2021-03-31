@@ -6,8 +6,10 @@
 .. include:: ./docfiles/intro.rst
 
 .. toctree::
-    :maxdepth: 3
-    :caption: Contents:
+    :maxdepth: 1
+    :caption: API Documentation
 
     docfiles/toc_pyapi
     @DOXYREST_OUTPUT_DIR_NAME@/index
+
+.. include:: ./docfiles/boilerplate.rst

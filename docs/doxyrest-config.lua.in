@@ -146,7 +146,7 @@ FOOTNOTE_MEMBER_PREFIX = nil
 --! formatting of module item declarations.
 --!
 
-LANGUAGE = C
+LANGUAGE = CPP
 
 --!
 --! Convert ``\verbatim`` sections in doxy-comments to ``.. code-block::``
