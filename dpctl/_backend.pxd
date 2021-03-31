@@ -181,6 +181,8 @@ cdef extern from "dpctl_sycl_device_interface.h":
 
 
 cdef extern from "dpctl_sycl_device_manager.h":
+    cdef struct DPCTLDeviceVector
+    ctypedef DPCTLDeviceVector *DPCTLDeviceVectorRef
     cdef void DPCTLDeviceVector_Delete(DPCTLDeviceVectorRef DVRef)
     cdef void DPCTLDeviceVector_Clear(DPCTLDeviceVectorRef DVRef)
     cdef size_t DPCTLDeviceVector_Size(DPCTLDeviceVectorRef DVRef)
@@ -190,7 +192,7 @@ cdef extern from "dpctl_sycl_device_manager.h":
     cdef DPCTLDeviceVectorRef DPCTLDeviceMgr_GetDevices(int device_identifier)
     cdef size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier)
     cdef void DPCTLDeviceMgr_PrintDeviceInfo(const DPCTLSyclDeviceRef DRef)
-    cdef DPCTL_DeviceAndContextPair DPCTLDeviceMgr_GetDeviceAndContextPair(
+    cdef DPCTLSyclContextRef DPCTLDeviceMgr_GetCachedContext(
         const DPCTLSyclDeviceRef DRef)
 
 

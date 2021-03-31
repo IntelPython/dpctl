@@ -56,26 +56,16 @@ struct TestDPCTLDeviceManager : public ::testing::TestWithParam<const char *>
     }
 };
 
-TEST_P(TestDPCTLDeviceManager, Chk_AreEq)
-{
-    auto DRef2 = DPCTLDevice_CreateFromSelector(DSRef);
-    bool compare = false;
-    EXPECT_NO_FATAL_FAILURE(compare = DPCTLDeviceMgr_AreEq(DRef, DRef2));
-    EXPECT_TRUE(compare);
-}
-
 TEST_P(TestDPCTLDeviceManager, Chk_PrintDeviceInfo)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
 }
 
-TEST_P(TestDPCTLDeviceManager, Chk_GetDeviceAndContextPair)
+TEST_P(TestDPCTLDeviceManager, Chk_GetCachedContext)
 {
-    DPCTL_DeviceAndContextPair deviceAndContext;
-    EXPECT_NO_FATAL_FAILURE(deviceAndContext =
-                                DPCTLDeviceMgr_GetDeviceAndContextPair(DRef));
-    ASSERT_TRUE(deviceAndContext.CRef != nullptr);
-    ASSERT_TRUE(deviceAndContext.DRef != nullptr);
+    DPCTLSyclContextRef CRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLDeviceMgr_GetCachedContext(DRef));
+    ASSERT_TRUE(CRef != nullptr);
 }
 
 INSTANTIATE_TEST_SUITE_P(DeviceMgrFunctions,

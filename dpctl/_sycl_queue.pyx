@@ -25,12 +25,12 @@ from ._backend cimport (
     _arg_data_type,
     _backend_type,
     _queue_property_type,
-    DPCTL_DeviceAndContextPair,
     DPCTLContext_Delete,
     DPCTLDefaultSelector_Create,
     DPCTLDevice_CreateFromSelector,
-    DPCTLDeviceMgr_GetDeviceAndContextPair,
+    DPCTLDeviceMgr_GetCachedContext,
     DPCTLDeviceSelector_Delete,
+    DPCTLDevice_Copy,
     DPCTLDevice_Delete,
     DPCTLFilterSelector_Create,
     DPCTLQueue_AreEq,
@@ -189,7 +189,7 @@ cdef class SyclQueue:
                 status = self._init_queue_from_filter_string(
                     filter_c_str, props)
             elif isinstance(arg, SyclDevice):
-                status = self._init_queue_from_device(<SyclDevice> arg, props)
+                status = self._init_queue_from_device(<SyclDevice>arg, props)
             else:
                 raise TypeError(
                     "Positional argument {} is not a filter string or a "
@@ -259,13 +259,11 @@ cdef class SyclQueue:
         """
         cdef DPCTLSyclContextRef CRef
         cdef DPCTLSyclQueueRef QRef
-        cdef DPCTL_DeviceAndContextPair dev_ctx
 
-        dev_ctx = DPCTLDeviceMgr_GetDeviceAndContextPair(DRef)
-        if (dev_ctx.CRef is NULL) or (dev_ctx.DRef is NULL):
+        CRef = DPCTLDeviceMgr_GetCachedContext(DRef)
+        if (CRef is NULL):
+            DPCTLDevice_Delete(DRef)
             return -3
-        DRef = dev_ctx.DRef
-        CRef = dev_ctx.CRef
         QRef = DPCTLQueue_Create(
             CRef,
             DRef,
@@ -273,8 +271,8 @@ cdef class SyclQueue:
             props
         )
         if QRef is NULL:
-            DPCTLDevice_Delete(DRef)
             DPCTLContext_Delete(CRef)
+            DPCTLDevice_Delete(DRef)
             return -4
         _dev = SyclDevice._create(DRef)
         _ctxt = SyclContext._create(CRef)
@@ -296,10 +294,11 @@ cdef class SyclQueue:
             -4 : queue could not be created from context,device, error handler
                  and properties
         """
-        cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLFilterSelector_Create(c_str)
-        cdef DPCTLSyclDeviceRef DRef
+        cdef DPCTLSyclDeviceSelectorRef DSRef = NULL
+        cdef DPCTLSyclDeviceRef DRef = NULL
         cdef int ret = 0
 
+        DSRef = DPCTLFilterSelector_Create(c_str)
         if DSRef is NULL:
             ret = -1 # Filter selector failed to be created
         else:
@@ -309,12 +308,13 @@ cdef class SyclQueue:
                 ret = -2 # Device could not be created
             else:
                 ret = self._init_queue_from_DPCTLSyclDeviceRef(DRef, props)
-                DPCTLDevice_Delete(DRef)
         return ret
 
     cdef int _init_queue_from_device(self, SyclDevice dev, int props):
-        cdef DPCTLSyclDeviceRef DRef = dev.get_device_ref()
-
+        cdef DPCTLSyclDeviceRef DRef = NULL
+        # The DRef will be stored in self._device and freed when self._device
+        # is garbage collected.
+        DRef = DPCTLDevice_Copy(dev.get_device_ref())
         if (DRef is NULL):
             return -2 # Device could not be created
         else:
@@ -323,14 +323,14 @@ cdef class SyclQueue:
     cdef int _init_queue_default(self, int props):
         cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create()
         cdef int ret = 0
-
+        # The DRef will be stored in self._device and freed when self._device
+        # is garbage collected.
         DRef = DPCTLDevice_CreateFromSelector(DSRef)
         DPCTLDeviceSelector_Delete(DSRef)
         if (DRef is NULL):
             ret = -2 # Device could not be created
         else:
             ret = self._init_queue_from_DPCTLSyclDeviceRef(DRef, props)
-            DPCTLDevice_Delete(DRef)
         return ret
 
     cdef int _init_queue_from_context_and_device(
@@ -338,9 +338,9 @@ cdef class SyclQueue:
     ):
         """
         """
-        cdef DPCTLSyclContextRef CRef
-        cdef DPCTLSyclDeviceRef DRef
-        cdef DPCTLSyclQueueRef QRef
+        cdef DPCTLSyclContextRef CRef = NULL
+        cdef DPCTLSyclDeviceRef DRef = NULL
+        cdef DPCTLSyclQueueRef QRef = NULL
         CRef = ctxt.get_context_ref()
         DRef = dev.get_device_ref()
         QRef = DPCTLQueue_Create(
