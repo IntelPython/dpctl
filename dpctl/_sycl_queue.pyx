@@ -25,6 +25,7 @@ from ._backend cimport (
     _arg_data_type,
     _backend_type,
     _queue_property_type,
+    DPCTLContext_Create,
     DPCTLContext_Delete,
     DPCTLDefaultSelector_Create,
     DPCTLDevice_CreateFromSelector,
@@ -262,8 +263,12 @@ cdef class SyclQueue:
 
         CRef = DPCTLDeviceMgr_GetCachedContext(DRef)
         if (CRef is NULL):
-            DPCTLDevice_Delete(DRef)
-            return -3
+            # look-up failed (was not a root device?)
+            # create a new context
+            CRef = DPCTLContext_Create(DRef, NULL, 0)
+            if (CRef is NULL):
+                DPCTLDevice_Delete(DRef)
+                return -3
         QRef = DPCTLQueue_Create(
             CRef,
             DRef,
@@ -287,7 +292,7 @@ cdef class SyclQueue:
         Creates device from device selector, then calls helper function above.
 
         Returns:
-            0 : normal execution
+             0 : normal execution
             -1 : filter selector could not be created (malformed?)
             -2 : Device could not be created from filter selector
             -3 : Context creation/look-up failed
@@ -358,12 +363,18 @@ cdef class SyclQueue:
 
     @staticmethod
     cdef SyclQueue _create(DPCTLSyclQueueRef qref):
+        """
+        This function calls DPCTLQueue_Delete(qref).
+        The user of this function must pass a copy to keep the
+        qref argument alive.
+        """
         if qref is NULL:
             raise SyclQueueCreationError("Queue creation failed.")
         cdef _SyclQueue ret = _SyclQueue.__new__(_SyclQueue)
         ret._context = SyclContext._create(DPCTLQueue_GetContext(qref))
         ret._device = SyclDevice._create(DPCTLQueue_GetDevice(qref))
         ret._queue_ref = qref
+        # ret is a temporary, and will call DPCTLQueue_Delete(qref)
         return SyclQueue(ret)
 
     @staticmethod

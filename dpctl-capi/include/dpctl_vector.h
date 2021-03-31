@@ -41,6 +41,10 @@ DPCTL_C_EXTERN_C_BEGIN
     __dpctl_give DPCTL##EL##VectorRef DPCTL##EL##Vector_Create();              \
                                                                                \
     DPCTL_API                                                                  \
+    __dpctl_give DPCTL##EL##VectorRef DPCTL##EL##Vector_CreateFromArray(       \
+        size_t len, __dpctl_keep DPCTLSycl##EL##Ref *elems);                   \
+                                                                               \
+    DPCTL_API                                                                  \
     void DPCTL##EL##Vector_Delete(__dpctl_take DPCTL##EL##VectorRef Ref);      \
                                                                                \
     DPCTL_API                                                                  \

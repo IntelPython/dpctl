@@ -21,15 +21,25 @@
 """
 
 from ._backend cimport DPCTLSyclContextRef
+from ._sycl_device cimport SyclDevice
 from libcpp cimport bool
 
-
-cdef class SyclContext:
-    ''' Wrapper class for a Sycl Context
-    '''
+cdef class _SyclContext:
+    """ Data owner for SyclContext
+    """
     cdef DPCTLSyclContextRef _ctxt_ref
 
+
+cdef class SyclContext(_SyclContext):
+    ''' Wrapper class for a Sycl Context
+    '''
+
     @staticmethod
-    cdef SyclContext _create (DPCTLSyclContextRef ctxt)
+    cdef SyclContext _create (DPCTLSyclContextRef CRef)
+    @staticmethod
+    cdef void _init_helper(_SyclContext self, DPCTLSyclContextRef CRef)
+    cdef int _init_from__SyclContext(self, _SyclContext other)
+    cdef int _init_from_one_device(self, SyclDevice device, int props)
+    cdef int _init_from_devices(self, object devices, int props)
     cpdef bool equals (self, SyclContext ctxt)
     cdef DPCTLSyclContextRef get_context_ref (self)
