@@ -45,7 +45,6 @@ cdef class SyclDevice(_SyclDevice):
     cdef int _init_from__SyclDevice(self, _SyclDevice other)
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef)
     cdef DPCTLSyclDeviceRef get_device_ref(self)
-    cdef _raise_sub_devices_creation_error(self, fname, errcode)
     cdef list create_sub_devices_equally(self, size_t count)
-    cdef list create_sub_devices_by_counts(self, list counts)
+    cdef list create_sub_devices_by_counts(self, object counts)
     cdef list create_sub_devices_by_affinity(self, _partition_affinity_domain_type domain)
