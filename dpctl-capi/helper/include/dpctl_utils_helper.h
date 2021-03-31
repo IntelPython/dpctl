@@ -1,6 +1,6 @@
 //===-- dpctl_utils.h - Enum to string helper functions          -*-C++-*- ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -19,7 +19,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines common helper functions used in other places in dpCtl.
+/// This file defines common helper functions used in other places in dpctl.
 //===----------------------------------------------------------------------===//
 
 #pragma once

@@ -1,6 +1,6 @@
-//===--------- dpctl_config.h - Configured options for dpCtl C API         ===//
+//===--------- dpctl_config.h - Configured options for dpctl C API         ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -19,14 +19,14 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file exports a set of dpCtl C API configurations.
+/// This file exports a set of dpctl C API configurations.
 ///
 //===----------------------------------------------------------------------===//
 
 #pragma once
 
-/* Defined when dpCtl was built with level zero program creation enabled. */
+/* Defined when dpctl was built with level zero program creation enabled. */
 #cmakedefine DPCTL_ENABLE_LO_PROGRAM_CREATION @DPCTL_ENABLE_LO_PROGRAM_CREATION@
 
-/* The DPCPP version used to build dpCtl */
+/* The DPCPP version used to build dpctl */
 #define DPCTL_DPCPP_VERSION "@DPCPP_VERSION@"

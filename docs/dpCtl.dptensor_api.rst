@@ -1,7 +1,7 @@
 .. _dpCtl.dptensor_api:
 
 #########################
-dpCtl dptensor Python API
+dpctl dptensor Python API
 #########################
 
 .. automodule:: dpctl.dptensor

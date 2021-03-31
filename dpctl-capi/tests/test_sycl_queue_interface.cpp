@@ -1,6 +1,6 @@
 //===------ test_sycl_queue_interface.cpp - Test cases for queue interface ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

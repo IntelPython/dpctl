@@ -1,6 +1,6 @@
 //===--- dpctl_sycl_device_interface.cpp - Implements C API for sycl::device =//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

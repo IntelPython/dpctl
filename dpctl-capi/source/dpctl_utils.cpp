@@ -1,6 +1,6 @@
 //===------------- dpctl_utils.cpp - Implements helper functions           ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

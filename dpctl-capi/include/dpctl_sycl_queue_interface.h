@@ -1,6 +1,6 @@
 //===----- dpctl_sycl_queue_interface.h - C API for sycl::queue  -*-C++-*- ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

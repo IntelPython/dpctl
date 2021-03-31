@@ -38,7 +38,7 @@ extensions = [
 ]
 
 # Breathe Configuration
-breathe_default_project = "dpCtl-CAPI"
+breathe_default_project = "dpctl-CAPI"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -58,8 +58,8 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 exhale_args = {
     # These arguments are required
     "containmentFolder": "./api",
-    "rootFileName": "dpCtl-CAPI_root.rst",
-    "rootFileTitle": "dpCtl C API",
+    "rootFileName": "dpctl-CAPI_root.rst",
+    "rootFileTitle": "dpctl C API",
     "doxygenStripFromPath": "..",
     "createTreeView": True,
     "exhaleExecutesDoxygen": True,

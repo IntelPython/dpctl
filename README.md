@@ -41,7 +41,7 @@ conda install dpctl
 
 Build and Install with setuptools
 =================================
-dpCtl relies on DPC++ runtime. With Intel oneAPI installed you should activate it.
+dpctl relies on DPC++ runtime. With Intel oneAPI installed you should activate it.
 `setup.py` requires environment variable `ONEAPI_ROOT` and following packages
 installed:
 - `cython`
@@ -67,11 +67,11 @@ python setup.py develop
 
 Install Wheel Package from Pypi
 ==================================
-1. Install dpCtl
+1. Install dpctl
 ```cmd
 python -m pip install --index-url https://pypi.anaconda.org/intel/simple -extra-index-url https://pypi.org/simple dpctl
 ```
-Note: dpCtl wheel package is placed on Pypi, but some of its dependencies (like Intel numpy) are in Anaconda Cloud.
+Note: dpctl wheel package is placed on Pypi, but some of its dependencies (like Intel numpy) are in Anaconda Cloud.
 That is why install command requires additional intel Pypi channel from Anaconda Cloud.
 
 2. Set path to Performance Libraries in case of using venv or system Python:
@@ -84,9 +84,9 @@ On Windows:
 set PATH=<path_to_your_env>\bin;<path_to_your_env>\Library\bin;%PATH%
 ```
 
-Using dpCtl
+Using dpctl
 ===========
-dpCtl relies on DPC++ runtime. With Intel oneAPI installed you could activate it.
+dpctl relies on DPC++ runtime. With Intel oneAPI installed you could activate it.
 
 On Windows:
 ```cmd
@@ -97,7 +97,7 @@ On Linux:
 source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
 ```
 
-When dpCtl is installed via conda package
+When dpctl is installed via conda package
 then it uses DPC++ runtime from `dpcpp_cpp_rt` package
 and it is not necessary to activate oneAPI DPC++ compiler environment.
 
@@ -113,7 +113,7 @@ for script in `ls examples/python/`; do echo "executing ${script}"; python examp
 ```
 
 Examples of building Cython extensions with DPC++ compiler, that interoperate
-with dpCtl can be found in folder `cython`.
+with dpctl can be found in folder `cython`.
 
 Each example in `cython` folder can be built using
 `CC=clang CXX=dpcpp python setup.py build_ext --inplace`.

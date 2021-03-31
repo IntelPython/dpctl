@@ -1,6 +1,6 @@
 //===-- dpctl_async_error_handler.h - An async error handler     -*-C++-*- ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

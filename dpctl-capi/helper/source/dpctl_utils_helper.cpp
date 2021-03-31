@@ -1,6 +1,6 @@
 //===- dpctl_utils_helper.cpp - Implementation of enum to string helpers   ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
