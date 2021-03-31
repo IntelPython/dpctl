@@ -126,7 +126,7 @@ TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices_GetDevices)
             const size_t len = subDevices.size();
             auto ar = new DPCTLSyclDeviceRef[len];
             for (size_t i = 0; i < len; ++i) {
-                ar[i] = wrap(new device(subDevices.at(i)));
+                ar[i] = wrap(&subDevices.at(i));
             }
             EXPECT_NO_FATAL_FAILURE(
                 DVRef = DPCTLDeviceVector_CreateFromArray(len, ar));

@@ -49,7 +49,7 @@ __dpctl_give VECTOR(EL) FN(EL, Create)()
 
 /*!
  * @brief Creates a new std::vector of the opaque SYCL pointer types from given
- * C array.
+ * C array with deep copy.
  *
  * @return   A new dynamically allocated std::vector of opaque pointer types.
  */
@@ -57,8 +57,12 @@ __dpctl_give VECTOR(EL)
     FN(EL, CreateFromArray)(size_t n, __dpctl_keep SYCLREF(EL) * elems)
 {
     try {
-        auto Vec = new vector_class<SYCLREF(EL)>(n);
-        Vec->assign(elems, elems + n);
+        auto Vec = new vector_class<SYCLREF(EL)>();
+        for (size_t i = 0; i < n; ++i) {
+            auto Ref = unwrap(elems[i]);
+            Vec->emplace_back(
+                wrap(new std::remove_pointer<decltype(Ref)>::type(*Ref)));
+        }
         return wrap(Vec);
     } catch (std::bad_alloc const &ba) {
         return nullptr;
