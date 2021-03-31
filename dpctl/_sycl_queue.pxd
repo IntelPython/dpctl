@@ -31,6 +31,7 @@ from ._sycl_device cimport SyclDevice
 from .program._program cimport SyclKernel
 from libcpp cimport bool as cpp_bool
 
+cdef void default_async_error_handler(int) nogil except *
 
 cdef class _SyclQueue:
     """ Python wrapper class for a sycl::queue.
