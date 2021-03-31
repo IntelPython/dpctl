@@ -25,7 +25,10 @@ from ._backend cimport (
     _arg_data_type,
     _backend_type,
     _queue_property_type,
+<<<<<<< HEAD
     DPCTLContext_Create,
+=======
+>>>>>>> Remove workarounds to make device equality work. (#338)
     DPCTLContext_Delete,
     DPCTLDefaultSelector_Create,
     DPCTLDevice_CreateFromSelector,
