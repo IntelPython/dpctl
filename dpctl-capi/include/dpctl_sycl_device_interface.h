@@ -34,7 +34,6 @@
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_types.h"
-#include <vector>
 
 DPCTL_C_EXTERN_C_BEGIN
 
