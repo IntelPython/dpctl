@@ -64,6 +64,8 @@ struct QueueManager
                 delete unwrap(CRef);
             } catch (std::bad_alloc const &ba) {
                 std::cerr << ba.what() << '\n';
+            } catch (runtime_error const &re) {
+                std::cerr << re.what() << '\n';
             }
 
             return qs;
