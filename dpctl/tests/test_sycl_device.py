@@ -47,7 +47,7 @@ list_of_valid_filter_selectors = [
 list_of_invalid_filter_selectors = [
     "-1",
     "opencl:gpu:-1",
-    "level_zero:cpu:0",
+    "cuda:cpu:0",
     "abc",
 ]
 

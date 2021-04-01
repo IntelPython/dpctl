@@ -42,20 +42,6 @@ constexpr size_t SIZE = 1024;
 
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPCTLSyclUSMRef);
 
-bool has_devices()
-{
-    bool ret = false;
-    for (auto &p : platform::get_platforms()) {
-        if (p.is_host())
-            continue;
-        if (!p.get_devices().empty()) {
-            ret = true;
-            break;
-        }
-    }
-    return ret;
-}
-
 void common_test_body(size_t nbytes,
                       const DPCTLSyclUSMRef Ptr,
                       const DPCTLSyclQueueRef Q,
@@ -89,15 +75,11 @@ struct TestDPCTLSyclUSMInterface : public ::testing::Test
 
 TEST_F(TestDPCTLSyclUSMInterface, MallocShared)
 {
-    if (!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl Devices.\n");
-
     auto Q = DPCTLQueueMgr_GetCurrentQueue();
+    ASSERT_TRUE(Q);
     const size_t nbytes = SIZE;
-
     auto Ptr = DPCTLmalloc_shared(nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
-
     common_test_body(nbytes, Ptr, Q, "shared");
     DPCTLfree_with_queue(Ptr, Q);
     DPCTLQueue_Delete(Q);
@@ -105,15 +87,11 @@ TEST_F(TestDPCTLSyclUSMInterface, MallocShared)
 
 TEST_F(TestDPCTLSyclUSMInterface, MallocDevice)
 {
-    if (!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl Devices.\n");
-
     auto Q = DPCTLQueueMgr_GetCurrentQueue();
+    ASSERT_TRUE(Q);
     const size_t nbytes = SIZE;
-
     auto Ptr = DPCTLmalloc_device(nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
-
     common_test_body(nbytes, Ptr, Q, "device");
     DPCTLfree_with_queue(Ptr, Q);
     DPCTLQueue_Delete(Q);
@@ -121,15 +99,11 @@ TEST_F(TestDPCTLSyclUSMInterface, MallocDevice)
 
 TEST_F(TestDPCTLSyclUSMInterface, MallocHost)
 {
-    if (!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl Devices.\n");
-
     auto Q = DPCTLQueueMgr_GetCurrentQueue();
+    ASSERT_TRUE(Q);
     const size_t nbytes = SIZE;
-
     auto Ptr = DPCTLmalloc_host(nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
-
     common_test_body(nbytes, Ptr, Q, "host");
     DPCTLfree_with_queue(Ptr, Q);
     DPCTLQueue_Delete(Q);
@@ -137,15 +111,11 @@ TEST_F(TestDPCTLSyclUSMInterface, MallocHost)
 
 TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocShared)
 {
-    if (!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl Devices.\n");
-
     auto Q = DPCTLQueueMgr_GetCurrentQueue();
+    ASSERT_TRUE(Q);
     const size_t nbytes = SIZE;
-
     auto Ptr = DPCTLaligned_alloc_shared(64, nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
-
     common_test_body(nbytes, Ptr, Q, "shared");
     DPCTLfree_with_queue(Ptr, Q);
     DPCTLQueue_Delete(Q);
@@ -153,15 +123,11 @@ TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocShared)
 
 TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocDevice)
 {
-    if (!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl Devices.\n");
-
     auto Q = DPCTLQueueMgr_GetCurrentQueue();
+    ASSERT_TRUE(Q);
     const size_t nbytes = SIZE;
-
     auto Ptr = DPCTLaligned_alloc_device(64, nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
-
     common_test_body(nbytes, Ptr, Q, "device");
     DPCTLfree_with_queue(Ptr, Q);
     DPCTLQueue_Delete(Q);
@@ -169,15 +135,11 @@ TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocDevice)
 
 TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocHost)
 {
-    if (!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl Devices.\n");
-
     auto Q = DPCTLQueueMgr_GetCurrentQueue();
+    ASSERT_TRUE(Q);
     const size_t nbytes = SIZE;
-
     auto Ptr = DPCTLaligned_alloc_host(64, nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
-
     common_test_body(nbytes, Ptr, Q, "host");
     DPCTLfree_with_queue(Ptr, Q);
 }
