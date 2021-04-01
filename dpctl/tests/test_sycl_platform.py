@@ -37,6 +37,13 @@ list_of_valid_filter_selectors = [
     "1",
 ]
 
+list_of_invalid_filter_selectors = [
+    "-1",
+    "opencl:gpu:-1",
+    "cuda:cpu:0",
+    "abc",
+]
+
 
 def check_name(platform):
     try:
@@ -87,6 +94,11 @@ def valid_filter(request):
     return request.param
 
 
+@pytest.fixture(params=list_of_invalid_filter_selectors)
+def invalid_filter(request):
+    return request.param
+
+
 @pytest.fixture(params=list_of_checks)
 def check(request):
     return request.param
@@ -102,6 +114,14 @@ def test_platform_creation(valid_filter, check):
     except ValueError:
         pytest.skip("Failed to create platform with supported filter")
     check(platform)
+
+
+def test_invalid_platform_creation(invalid_filter, check):
+    """Tests if we can create a SyclPlatform using a supported filter selector
+    string.
+    """
+    with pytest.raises(ValueError):
+        platform = dpctl.SyclPlatform(invalid_filter)
 
 
 def test_lsplatform():
