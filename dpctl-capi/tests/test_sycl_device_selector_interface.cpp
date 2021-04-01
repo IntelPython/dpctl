@@ -46,15 +46,17 @@ struct TestDeviceSelectorInterface : public ::testing::Test
 struct TestFilterSelector : public ::testing::TestWithParam<const char *>
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
 
     TestFilterSelector()
     {
         EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLFilterSelector_Create(GetParam()));
+        EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
     }
 
     void SetUp()
     {
-        if (!DSRef) {
+        if (!DRef) {
             auto message = "Skipping as no device of type " +
                            std::string(GetParam()) + ".";
             GTEST_SKIP_(message.c_str());
@@ -64,6 +66,7 @@ struct TestFilterSelector : public ::testing::TestWithParam<const char *>
     ~TestFilterSelector()
     {
         EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     }
 };
 
@@ -76,15 +79,6 @@ struct TestUnsupportedFilters : public ::testing::TestWithParam<const char *>
         EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLFilterSelector_Create(GetParam()));
     }
 
-    void SetUp()
-    {
-        if (!DSRef) {
-            auto message = "Skipping as no device of type " +
-                           std::string(GetParam()) + ".";
-            GTEST_SKIP_(message.c_str());
-        }
-    }
-
     ~TestUnsupportedFilters()
     {
         EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
@@ -94,84 +88,107 @@ struct TestUnsupportedFilters : public ::testing::TestWithParam<const char *>
 TEST_F(TestDeviceSelectorInterface, Chk_DPCTLAcceleratorSelector_Create)
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+
     EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLAcceleratorSelector_Create());
-    if (DSRef) {
-        DPCTLSyclDeviceRef DRef = nullptr;
-        EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-        ASSERT_TRUE(DRef != nullptr);
-        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
-        EXPECT_TRUE(DPCTLDevice_IsAccelerator(DRef));
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+
+    if (!DRef) {
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
         EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+        GTEST_SKIP_("Device not found. Skip tests.");
     }
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
+    EXPECT_TRUE(DPCTLDevice_IsAccelerator(DRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_F(TestDeviceSelectorInterface, Chk_DPCTLDefaultSelector_Create)
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+
     EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
-    if (DSRef) {
-        DPCTLSyclDeviceRef DRef = nullptr;
-        EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-        ASSERT_TRUE(DRef != nullptr);
-        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+
+    if (!DRef) {
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
         EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+        GTEST_SKIP_("Device not found. Skip tests.");
     }
+
+    ASSERT_TRUE(DRef != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_F(TestDeviceSelectorInterface, Chk_DPCTLCPUSelector_Create)
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+
     EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLCPUSelector_Create());
-    if (DSRef) {
-        DPCTLSyclDeviceRef DRef = nullptr;
-        EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-        ASSERT_TRUE(DRef != nullptr);
-        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
-        EXPECT_TRUE(DPCTLDevice_IsCPU(DRef));
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+
+    if (!DRef) {
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
         EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+        GTEST_SKIP_("Device not found. Skip tests.");
     }
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
+    EXPECT_TRUE(DPCTLDevice_IsCPU(DRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_F(TestDeviceSelectorInterface, Chk_DPCTLGPUSelector_Create)
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+
     EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLGPUSelector_Create());
-    if (DSRef) {
-        DPCTLSyclDeviceRef DRef = nullptr;
-        EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-        ASSERT_TRUE(DRef != nullptr);
-        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
-        EXPECT_TRUE(DPCTLDevice_IsGPU(DRef));
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+
+    if (!DRef) {
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
         EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+        GTEST_SKIP_("Device not found. Skip tests.");
     }
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
+    EXPECT_TRUE(DPCTLDevice_IsGPU(DRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_F(TestDeviceSelectorInterface, Chk_DPCTLHostSelector_Create)
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+
     EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLHostSelector_Create());
-    if (DSRef) {
-        DPCTLSyclDeviceRef DRef = nullptr;
-        EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-        ASSERT_TRUE(DRef != nullptr);
-        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
-        // FIXME: DPCPP's host_selector returns a CPU device for some reason.
-        // EXPECT_TRUE(DPCTLDevice_IsHost(DRef));
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+
+    if (!DRef) {
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
         EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+        GTEST_SKIP_("Device not found. Skip tests.");
     }
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
+    // FIXME: DPCPP's host_selector returns a CPU device for some reason.
+    // EXPECT_TRUE(DPCTLDevice_IsHost(DRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestFilterSelector, Chk_DPCTLFilterSelector_Create)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
     ASSERT_TRUE(DRef != nullptr);
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestUnsupportedFilters, Chk_DPCTLFilterSelector_Create)
@@ -186,20 +203,26 @@ TEST_F(TestDeviceSelectorInterface, Chk_DPCTLGPUSelector_Score)
 {
     DPCTLSyclDeviceSelectorRef DSRef_GPU = nullptr;
     DPCTLSyclDeviceSelectorRef DSRef_CPU = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+
     EXPECT_NO_FATAL_FAILURE(DSRef_GPU = DPCTLGPUSelector_Create());
     EXPECT_NO_FATAL_FAILURE(DSRef_CPU = DPCTLCPUSelector_Create());
-    if (DSRef_CPU && DSRef_GPU) {
-        DPCTLSyclDeviceRef DRef = nullptr;
-        EXPECT_NO_FATAL_FAILURE(DRef =
-                                    DPCTLDevice_CreateFromSelector(DSRef_CPU));
-        ASSERT_TRUE(DRef != nullptr);
-        EXPECT_TRUE(DPCTLDevice_IsCPU(DRef));
-        EXPECT_TRUE(DPCTLDeviceSelector_Score(DSRef_GPU, DRef) < 0);
-        EXPECT_TRUE(DPCTLDeviceSelector_Score(DSRef_CPU, DRef) > 0);
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef_CPU));
+
+    if (!DRef) {
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef_GPU));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef_CPU));
         EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+        GTEST_SKIP_("Device not found. Skip tests.");
     }
+
+    ASSERT_TRUE(DRef != nullptr);
+    EXPECT_TRUE(DPCTLDevice_IsCPU(DRef));
+    EXPECT_TRUE(DPCTLDeviceSelector_Score(DSRef_GPU, DRef) < 0);
+    EXPECT_TRUE(DPCTLDeviceSelector_Score(DSRef_CPU, DRef) > 0);
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef_GPU));
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef_CPU));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 INSTANTIATE_TEST_SUITE_P(FilterSelectorCreation,
@@ -216,9 +239,10 @@ INSTANTIATE_TEST_SUITE_P(FilterSelectorCreation,
                                            "level_zero:gpu:0",
                                            "gpu:0",
                                            "gpu:1",
-                                           "1"));
+                                           "1",
+                                           "0",
+                                           "host"));
 
-INSTANTIATE_TEST_SUITE_P(
-    NegativeFilterSelectorCreation,
-    TestUnsupportedFilters,
-    ::testing::Values("abc", "-1", "opencl:gpu:1", "level_zero:cpu:0"));
+INSTANTIATE_TEST_SUITE_P(NegativeFilterSelectorCreation,
+                         TestUnsupportedFilters,
+                         ::testing::Values("abc", "-1", "cuda:cpu:0"));
