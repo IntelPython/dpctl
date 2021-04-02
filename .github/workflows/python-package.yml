@@ -3,7 +3,6 @@ name: Python package
 on: [push]
 
 env:
-  # TODO: update oneAPI
   LINUX_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/17769/l_BaseKit_p_2021.2.0.2883_offline.sh
   LINUX_DPCPP_COMPONENTS_WEB: intel.oneapi.lin.dpcpp-cpp-compiler
 
@@ -13,6 +12,9 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7]
+
+    env:
+      ONEAPI_ROOT: /opt/intel/oneapi
 
     steps:
     - uses: actions/checkout@v2
@@ -35,7 +37,6 @@ jobs:
         path: |
           /opt/intel/oneapi/compiler
           /opt/intel/oneapi/tbb
-        # TODO: better key
         key: build-${{ env.LINUX_BASEKIT_URL }}-${{ env.LINUX_DPCPP_COMPONENTS_WEB }}-compiler-tbb-${{ hashFiles('**/scripts/cache_exclude_linux.sh') }}
     - name: Install oneAPI
       if: steps.cache-oneapi.outputs.cache-hit != 'true'
@@ -45,18 +46,12 @@ jobs:
       run: scripts/cache_exclude_linux.sh
 
     - name: Install in Development Mode
-      env:
-        ONEAPI_ROOT: /opt/intel/oneapi
-      # TODO: extract and reuse env variable
-      # TODO: extract and reuse source of oneAPI compiler
       run: |
         source $ONEAPI_ROOT/compiler/latest/env/vars.sh
         python setup.py develop
     # - name: Setup tmate session
     #   uses: mxschmitt/action-tmate@v3
     - name: Test with pytest
-      env:
-        ONEAPI_ROOT: /opt/intel/oneapi
       run: |
         source $ONEAPI_ROOT/compiler/latest/env/vars.sh
         source $ONEAPI_ROOT/tbb/latest/env/vars.sh
