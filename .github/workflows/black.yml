@@ -25,3 +25,5 @@ jobs:
 
       # Run black code formatter
       - uses: psf/black@20.8b1
+        with:
+          args: ". --check"
