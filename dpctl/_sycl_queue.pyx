@@ -393,21 +393,6 @@ cdef class SyclQueue:
         ret._device = dev
         return SyclQueue(ret)
 
-    cdef _raise_queue_submit_error(self, fname, errcode):
-        e = SyclKernelSubmitError("Kernel submission to Sycl queue failed.")
-        e.fname = fname
-        e.code = errcode
-        raise e
-
-    cdef _raise_invalid_range_error(self, fname, ndims, errcode):
-        e = SyclKernelInvalidRangeError(
-            "Range with ", ndims, " not allowed. Range should have between "
-            " one and three dimensions."
-        )
-        e.fname = fname
-        e.code = errcode
-        raise e
-
     cdef int _populate_args(
         self,
         list args,
@@ -580,7 +565,10 @@ cdef class SyclQueue:
                 free(kargs)
                 free(kargty)
                 free(depEvents)
-                self._raise_invalid_range_error("SyclQueue.submit", nGS, -1)
+                raise SyclKernelInvalidRangeError(
+                    "Range with ", nGS, " not allowed. Range can only have "
+                    "between one and three dimensions."
+                )
             Eref = DPCTLQueue_SubmitRange(
                 kernel.get_kernel_ref(),
                 self.get_queue_ref(),
@@ -598,13 +586,19 @@ cdef class SyclQueue:
                 free(kargs)
                 free(kargty)
                 free(depEvents)
-                self._raise_invalid_range_error("SyclQueue.submit", nGS, -1)
+                raise SyclKernelInvalidRangeError(
+                    "Range with ", nGS, " not allowed. Range can only have "
+                    "between one and three dimensions."
+                )
             ret = self._populate_range (lRange, lS, nLS)
             if ret == -1:
                 free(kargs)
                 free(kargty)
                 free(depEvents)
-                self._raise_invalid_range_error("SyclQueue.submit", nLS, -1)
+                raise SyclKernelInvalidRangeError(
+                    "Range with ", nLS, " not allowed. Range can only have "
+                    "between one and three dimensions."
+                )
             if nGS != nLS:
                 free(kargs)
                 free(kargty)
@@ -630,7 +624,9 @@ cdef class SyclQueue:
         free(depEvents)
 
         if Eref is NULL:
-            self._raise_queue_submit_error("DPCTLQueue_Submit", -1)
+            raise SyclKernelSubmitError(
+                "Kernel submission to Sycl queue failed."
+            )
 
         return SyclEvent._create(Eref, args)
 
