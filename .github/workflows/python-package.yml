@@ -54,9 +54,9 @@ jobs:
         python setup.py develop
     # - name: Setup tmate session
     #   uses: mxschmitt/action-tmate@v3
-    # - name: Test with pytest
-    #   env:
-    #     ONEAPI_ROOT: /opt/intel/oneapi
-    #   run: |
-    #     source $ONEAPI_ROOT/compiler/latest/env/vars.sh
-    #     pytest
+    - name: Test with pytest
+      env:
+        ONEAPI_ROOT: /opt/intel/oneapi
+      run: |
+        source $ONEAPI_ROOT/compiler/latest/env/vars.sh
+        pytest
