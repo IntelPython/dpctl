@@ -356,7 +356,7 @@ def test_context_equals():
     try:
         ctx1 = dpctl.SyclContext("gpu")
         ctx0 = dpctl.SyclContext("gpu")
-    except dpctl.SyclQueueCreationError:
+    except ValueError:
         pytest.skip()
     assert ctx0.equals(ctx1)
 
@@ -373,7 +373,10 @@ def test_context_can_be_used_in_queue(valid_filter):
 
 
 def test_context_can_be_used_in_queue2(valid_filter):
-    d = dpctl.SyclDevice(valid_filter)
+    try:
+        d = dpctl.SyclDevice(valid_filter)
+    except ValueError:
+        pytest.skip()
     if d.default_selector_score < 0:
         # skip test for devices rejected by default selector
         pytest.skip()
