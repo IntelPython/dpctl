@@ -43,6 +43,7 @@ class TestIsInDeviceContext(unittest.TestCase):
 
 
 @unittest.skipIf(not has_sycl_platforms(), "No SYCL platforms available")
+@unittest.skipUnless(has_gpu(), "No OpenCL GPU queues available")
 class TestGetCurrentDevice(unittest.TestCase):
     def test_get_current_device_type_outside_device_ctxt(self):
         self.assertNotEqual(dpctl.get_current_device_type(), None)
