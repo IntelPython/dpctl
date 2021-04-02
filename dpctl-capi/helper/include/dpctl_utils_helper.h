@@ -149,3 +149,32 @@ sycl::aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy);
  */
 DPCTL_API
 DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(sycl::aspect Aspect);
+
+/*!
+ * @brief Converts a DPCTLPartitionAffinityDomainType enum value to its
+ * corresponding sycl::info::partition_affinity_domain enum value.
+ *
+ * @param    PartitionAffinityDomainTy           A
+ * DPCTLPartitionAffinityDomainType enum value
+ * @return   A sycl::info::partition_affinity_domain enum value for the input
+ * DPCTLPartitionAffinityDomainType enum value.
+ * @throws runtime_error
+ */
+DPCTL_API
+sycl::info::partition_affinity_domain
+DPCTL_DPCTLPartitionAffinityDomainTypeToSycl(
+    DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy);
+
+/*!
+ * @brief Converts a sycl::info::partition_affinity_domain enum value to
+ * corresponding DPCTLPartitionAffinityDomainType enum value.
+ *
+ * @param    PartitionAffinityDomain sycl::info::partition_affinity_domain to be
+ * converted to DPCTLPartitionAffinityDomainType enum.
+ * @return   A DPCTLPartitionAffinityDomainType enum value for the input
+ * sycl::info::partition_affinity_domain enum value.
+ * @throws runtime_error
+ */
+DPCTL_API
+DPCTLPartitionAffinityDomainType DPCTL_SyclPartitionAffinityDomainToDPCTLType(
+    sycl::info::partition_affinity_domain PartitionAffinityDomain);

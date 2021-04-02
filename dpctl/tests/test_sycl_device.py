@@ -19,6 +19,7 @@
 
 import dpctl
 import pytest
+from dpctl._sycl_device import SubDeviceCreationError
 
 list_of_standard_selectors = [
     dpctl.select_accelerator_device,
@@ -296,6 +297,89 @@ def check_get_preferred_vector_width_half(device):
         pytest.fail("preferred_vector_width_half call failed")
 
 
+def check_create_sub_devices_equally(device):
+    try:
+        n = int(device.max_compute_units / 2)
+        device.create_sub_devices(partition=n)
+    except SubDeviceCreationError:
+        pytest.skip("create_sub_devices can't create sub-devices on this device")
+    except Exception:
+        pytest.fail("create_sub_devices failed")
+
+
+def check_create_sub_devices_by_counts(device):
+    try:
+        n = device.max_compute_units / 2
+        device.create_sub_devices(partition=(n, n))
+    except SubDeviceCreationError:
+        pytest.skip("create_sub_devices can't create sub-devices on this device")
+    except Exception:
+        pytest.fail("create_sub_devices failed")
+
+
+def check_create_sub_devices_by_affinity_not_applicable(device):
+    try:
+        device.create_sub_devices(partition="not_applicable")
+    except SubDeviceCreationError:
+        pytest.skip("create_sub_devices can't create sub-devices on this device")
+    except Exception:
+        pytest.fail("create_sub_devices failed")
+
+
+def check_create_sub_devices_by_affinity_numa(device):
+    try:
+        device.create_sub_devices(partition="numa")
+    except SubDeviceCreationError:
+        pytest.skip("create_sub_devices can't create sub-devices on this device")
+    except Exception:
+        pytest.fail("create_sub_devices failed")
+
+
+def check_create_sub_devices_by_affinity_L4_cache(device):
+    try:
+        device.create_sub_devices(partition="L4_cache")
+    except SubDeviceCreationError:
+        pytest.skip("create_sub_devices can't create sub-devices on this device")
+    except Exception:
+        pytest.fail("create_sub_devices failed")
+
+
+def check_create_sub_devices_by_affinity_L3_cache(device):
+    try:
+        device.create_sub_devices(partition="L3_cache")
+    except SubDeviceCreationError:
+        pytest.skip("create_sub_devices can't create sub-devices on this device")
+    except Exception:
+        pytest.fail("create_sub_devices failed")
+
+
+def check_create_sub_devices_by_affinity_L2_cache(device):
+    try:
+        device.create_sub_devices(partition="L2_cache")
+    except SubDeviceCreationError:
+        pytest.skip("create_sub_devices can't create sub-devices on this device")
+    except Exception:
+        pytest.fail("create_sub_devices failed")
+
+
+def check_create_sub_devices_by_affinity_L1_cache(device):
+    try:
+        device.create_sub_devices(partition="L1_cache")
+    except SubDeviceCreationError:
+        pytest.skip("create_sub_devices can't create sub-devices on this device")
+    except Exception:
+        pytest.fail("create_sub_devices failed")
+
+
+def check_create_sub_devices_by_affinity_next_partitionable(device):
+    try:
+        device.create_sub_devices(partition="next_partitionable")
+    except SubDeviceCreationError:
+        pytest.skip("create_sub_devices can't create sub-devices on this device")
+    except Exception:
+        pytest.fail("create_sub_devices failed")
+
+
 def check_print_device_info(device):
     try:
         device.print_device_info()
@@ -339,6 +423,15 @@ list_of_checks = [
     check_has_aspect_usm_shared_allocations,
     check_has_aspect_usm_restricted_shared_allocations,
     check_has_aspect_usm_system_allocator,
+    check_create_sub_devices_equally,
+    check_create_sub_devices_by_counts,
+    check_create_sub_devices_by_affinity_not_applicable,
+    check_create_sub_devices_by_affinity_numa,
+    check_create_sub_devices_by_affinity_L4_cache,
+    check_create_sub_devices_by_affinity_L3_cache,
+    check_create_sub_devices_by_affinity_L2_cache,
+    check_create_sub_devices_by_affinity_L1_cache,
+    check_create_sub_devices_by_affinity_next_partitionable,
     check_print_device_info,
 ]
 
