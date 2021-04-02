@@ -17,7 +17,7 @@ Run before each commit: `clang-format -style=file -i dpctl-capi/include/*.h dpct
 
 We use [black](https://black.readthedocs.io/en/stable/) code formatter.
 
-- Revision: `20.8b1` or branch `stable`.
+- Revision: `20.8b1`.
 - See configuration in `pyproject.toml`.
 
 Run before each commit: `black .`
