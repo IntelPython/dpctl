@@ -28,11 +28,13 @@ requirements:
     run:
         - python
         - numpy >=1.17
-        - dpcpp_cpp_rt
+        - dpcpp_cpp_rt >=2021.2
+
 test:
-  requires:
-    - pytest
-    - pytest-cov
+    requires:
+        - pytest
+        - pytest-cov
+
 about:
     home: https://github.com/IntelPython/dpctl.git
     license: Apache-2.0
