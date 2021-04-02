@@ -1,6 +1,9 @@
 name: Python package
 
-on: [push]
+on:
+  pull_request:
+  push:
+    branches: [master]
 
 env:
   LINUX_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/17769/l_BaseKit_p_2021.2.0.2883_offline.sh
