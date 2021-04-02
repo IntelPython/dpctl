@@ -59,4 +59,5 @@ jobs:
         ONEAPI_ROOT: /opt/intel/oneapi
       run: |
         source $ONEAPI_ROOT/compiler/latest/env/vars.sh
+        source $ONEAPI_ROOT/tbb/latest/env/vars.sh
         pytest
