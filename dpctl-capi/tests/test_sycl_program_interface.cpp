@@ -98,7 +98,6 @@ TEST_P(TestDPCTLSyclProgramInterface, Chk_CreateFromSpirv)
     ASSERT_TRUE(PRef != nullptr);
     ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "add"));
     ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "axpy"));
-    DPCTLProgram_Delete(PRef);
 }
 
 TEST_P(TestDPCTLSyclProgramInterface, Chk_GetKernel)
