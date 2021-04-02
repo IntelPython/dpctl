@@ -49,8 +49,6 @@ jobs:
       run: |
         source $ONEAPI_ROOT/compiler/latest/env/vars.sh
         python setup.py develop
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v3
     - name: Test with pytest
       run: |
         source $ONEAPI_ROOT/compiler/latest/env/vars.sh
