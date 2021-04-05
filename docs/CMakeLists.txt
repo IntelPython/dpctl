@@ -157,6 +157,7 @@ function(_set_current_release)
         if (NOT "${CURRENT_RELEASE}" STREQUAL "${CURRENT_COMMIT}")
             set(CURRENT_RELEASE "master" PARENT_SCOPE)
         endif ()
+        set(CURRENT_RELEASE ${CURRENT_RELEASE} PARENT_SCOPE)
     endif (GIT_FOUND)
 endfunction()
 
