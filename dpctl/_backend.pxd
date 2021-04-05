@@ -22,7 +22,7 @@ types defined by dpctl's C API.
 """
 
 from libcpp cimport bool
-from libc.stdint cimport uint32_t
+from libc.stdint cimport uint32_t, int64_t
 
 
 cdef extern from "dpctl_error_handler_type.h":
@@ -210,6 +210,7 @@ cdef extern from "dpctl_sycl_device_manager.h":
     cdef void DPCTLDeviceMgr_PrintDeviceInfo(const DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclContextRef DPCTLDeviceMgr_GetCachedContext(
         const DPCTLSyclDeviceRef DRef)
+    cdef int64_t DPCTLDeviceMgr_GetRelativeId(const DPCTLSyclDeviceRef DRef)
 
 
 cdef extern from "dpctl_sycl_device_selector_interface.h":
