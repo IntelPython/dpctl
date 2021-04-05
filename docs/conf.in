@@ -38,7 +38,7 @@ extensions = [
 
 use_doxyrest = "@DPCTL_ENABLE_DOXYREST@"
 
-if len(use_doxyrest):
+if use_doxyrest == "ON":
     # Specify the path to Doxyrest extensions for Sphinx:
     import sys, os
 
