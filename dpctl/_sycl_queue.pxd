@@ -53,8 +53,6 @@ cdef class SyclQueue (_SyclQueue):
         self, SyclContext, SyclDevice, int
     )
     cdef int _init_queue_from_capsule(self, object)
-    cdef _raise_queue_submit_error(self, fname, errcode)
-    cdef _raise_invalid_range_error(self, fname, ndims, errcode)
     cdef int _populate_args(
         self,
         list args,
