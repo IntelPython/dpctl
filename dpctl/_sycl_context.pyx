@@ -141,7 +141,7 @@ cdef class SyclContext(_SyclContext):
             PyMem_Free(elems)
         else:
             return -2
-        DPCTLContext_CreateFromDevices(DVRef, eh_callback, props)
+        CRef = DPCTLContext_CreateFromDevices(DVRef, eh_callback, props)
         DPCTLDeviceVector_Delete(DVRef)
         if (CRef is NULL):
             return -1
