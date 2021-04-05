@@ -52,6 +52,7 @@ cdef class SyclQueue (_SyclQueue):
     cdef int _init_queue_from_context_and_device(
         self, SyclContext, SyclDevice, int
     )
+    cdef int _init_queue_from_capsule(self, object)
     cdef int _populate_args(
         self,
         list args,
