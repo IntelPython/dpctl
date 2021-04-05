@@ -34,6 +34,7 @@ from ._backend cimport (
     DPCTLDeviceVector_Delete,
     DPCTLDeviceVector_GetAt,
     DPCTLDeviceVector_Size,
+    DPCTLDevice_AreEq,
     DPCTLDevice_GetBackend,
     DPCTLDevice_GetDeviceType,
     DPCTLDevice_GetDriverInfo,
@@ -74,6 +75,7 @@ from ._backend cimport (
     DPCTLDevice_CreateSubDevicesEqually,
     DPCTLDevice_CreateSubDevicesByCounts,
     DPCTLDevice_CreateSubDevicesByAffinity,
+    DPCTLDevice_GetParentDevice,
 )
 from . import backend_type, device_type
 from libc.stdint cimport uint32_t
@@ -96,7 +98,7 @@ cdef class SubDeviceCreationError(Exception):
 
 
 cdef class _SyclDevice:
-    """ A helper metaclass to abstract a cl::sycl::device instance.
+    """ A helper data-owner class to abstract a cl::sycl::device instance.
     """
 
     def __dealloc__(self):
@@ -714,3 +716,23 @@ cdef class SyclDevice(_SyclDevice):
                 return self.create_sub_devices_equally(partition)
             except Exception as e:
                 raise TypeError("Unsupported type of sub-device argument")
+
+    @property
+    def parent_device(self):
+        cdef DPCTLSyclDeviceRef pDRef = NULL
+        pDRef = DPCTLDevice_GetParentDevice(self._device_ref)
+        if (pDRef is NULL):
+            return None
+        return SyclDevice._create(pDRef)
+
+    cpdef cpp_bool equals(self, SyclDevice other):
+        """ Returns true if the SyclDevice argument has the same _device_ref
+            as this SyclDevice.
+        """
+        return DPCTLDevice_AreEq(self._device_ref, other.get_device_ref())
+
+    def __eq__(self, other):
+        if isinstance(other, SyclDevice):
+            return self.equals(<SyclDevice> other)
+        else:
+            return False

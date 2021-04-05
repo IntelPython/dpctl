@@ -25,10 +25,11 @@ from ._backend cimport (
     DPCTLSyclDeviceSelectorRef,
     _partition_affinity_domain_type
 )
+from libcpp cimport bool as cpp_bool
 
 
 cdef class _SyclDevice:
-    ''' Wrapper class for a Sycl Device
+    ''' Wrapper data owner class for a Sycl Device
     '''
     cdef DPCTLSyclDeviceRef _device_ref
     cdef const char *_vendor_name
@@ -48,3 +49,4 @@ cdef class SyclDevice(_SyclDevice):
     cdef list create_sub_devices_equally(self, size_t count)
     cdef list create_sub_devices_by_counts(self, object counts)
     cdef list create_sub_devices_by_affinity(self, _partition_affinity_domain_type domain)
+    cpdef cpp_bool equals(self, SyclDevice q)
