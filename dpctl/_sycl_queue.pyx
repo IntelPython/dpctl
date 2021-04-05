@@ -536,7 +536,7 @@ cdef class SyclQueue(_SyclQueue):
 
     cpdef cpp_bool equals(self, SyclQueue q):
         """ Returns true if the SyclQueue argument has the same _queue_ref
-            as this SycleQueue.
+            as this SyclQueue.
         """
         return DPCTLQueue_AreEq(self._queue_ref, q.get_queue_ref())
 
