@@ -45,12 +45,20 @@ from ._backend cimport (
 from ._sycl_queue cimport default_async_error_handler
 from ._sycl_device cimport SyclDevice
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
+from cpython cimport pycapsule
 
 __all__ = [
     "SyclContext",
 ]
 
 _logger = logging.getLogger(__name__)
+
+cdef void _context_capsule_deleter(object o):
+    cdef DPCTLSyclContextRef CRef = NULL
+    if pycapsule.PyCapsule_IsValid(o, "SyclContextRef"):
+        CRef = <DPCTLSyclContextRef> pycapsule.PyCapsule_GetPointer(o, "SyclContextRef")
+        DPCTLContext_Delete(CRef)
+
 
 cdef class _SyclContext:
     """ Data owner for SyclContext
@@ -79,13 +87,13 @@ cdef class SyclContext(_SyclContext):
         SyclContext._init_helper(ret, ctxt)
         return SyclContext(ret)
 
-    cdef int _init_from__SyclContext(self, _SyclContext other):
+    cdef int _init_context_from__SyclContext(self, _SyclContext other):
         self._ctxt_ref = DPCTLContext_Copy(other._ctxt_ref)
         if (self._ctxt_ref is NULL):
             return -1
         return 0
 
-    cdef int _init_from_one_device(self, SyclDevice device, int props):
+    cdef int _init_context_from_one_device(self, SyclDevice device, int props):
         cdef DPCTLSyclDeviceRef DRef = device.get_device_ref()
         cdef DPCTLSyclContextRef CRef = NULL
         cdef error_handler_callback * eh_callback = (
@@ -100,7 +108,7 @@ cdef class SyclContext(_SyclContext):
         SyclContext._init_helper(<_SyclContext> self, CRef)
         return 0
 
-    cdef int _init_from_devices(self, object devices, int props):
+    cdef int _init_context_from_devices(self, object devices, int props):
         cdef int num_devices = len(devices)
         cdef int i = 0
         cdef int j = 0
@@ -140,6 +148,33 @@ cdef class SyclContext(_SyclContext):
         SyclContext._init_helper(<_SyclContext> self, CRef)
         return 0
 
+    cdef int _init_context_from_capsule(self, object cap):
+        """
+        For named PyCapsule with name SyclContextRef, which carries pointer to
+        sycl::context object, interpreted as DPCTLSyclContextRef, creates corresponding
+        SyclContext.
+        """
+        cdef DPCTLSyclContextRef CRef = NULL
+        cdef DPCTLSyclContextRef CRef_copy = NULL
+        cdef int ret = 0
+        if pycapsule.PyCapsule_IsValid(cap, "SyclContextRef"):
+            CRef = <DPCTLSyclContextRef> pycapsule.PyCapsule_GetPointer(cap, "SyclContextRef")
+            if (CRef is NULL):
+                return -6
+            ret = pycapsule.PyCapsule_SetName(cap, "used_SyclContextRef")
+            if (ret):
+                return -6
+            CRef_copy = DPCTLContext_Copy(CRef)
+            if (CRef_copy is NULL):
+                return -7
+            self._ctxt_ref = CRef_copy
+            return 0
+        else:
+            # __cinit__ checks that capsule is valid, so one can be here only
+            # if call to `_init_context_from_capsule` was made outside of __cinit__
+            # and the capsule was not checked to be valid
+            return -128
+
     def __cinit__(self, arg=None):
         """ SyclContext() - create a context for a default device
             SyclContext(filter_selector_string) - create a context for specified device
@@ -148,25 +183,29 @@ cdef class SyclContext(_SyclContext):
         """
         cdef int ret = 0
         if isinstance(arg, _SyclContext):
-            ret = self._init_from__SyclContext(<_SyclContext> arg)
+            ret = self._init_context_from__SyclContext(<_SyclContext> arg)
         elif isinstance(arg, SyclDevice):
-            ret = self._init_from_one_device(<SyclDevice> arg, 0)
+            ret = self._init_context_from_one_device(<SyclDevice> arg, 0)
+        elif pycapsule.PyCapsule_IsValid(arg, "SyclContextRef"):
+            status = self._init_context_from_capsule(arg)
         elif isinstance(arg, (list, tuple)) and all([isinstance(argi, SyclDevice) for argi in arg]):
-            ret = self._init_from_devices(arg, 0)
+            ret = self._init_conext_from_devices(arg, 0)
         else:
             dev = SyclDevice(arg)
-            ret = self._init_from_one_device(<SyclDevice> dev, 0)
+            ret = self._init_context_from_one_device(<SyclDevice> dev, 0)
         if (ret < 0):
             if (ret == -1):
                 raise ValueError("Context failed to be created.")
-            if (ret == -2):
+            elif (ret == -2):
                 raise TypeError("List of devices to create context from must be non-empty.")
-            if (ret == -3):
+            elif (ret == -3):
                 raise MemoryError("Could not allocate necessary temporary memory.")
-            if (ret == -4):
+            elif (ret == -4) or (ret == -7):
                 raise ValueError("Internal Error: Could not create a copy of a sycl device.")
-            if (ret == -5):
+            elif (ret == -5):
                 raise ValueError("Internal Error: Creation of DeviceVector failed.")
+            elif (ret == -6):
+                raise TypeError("Input capsule {} contains a null pointer or could not be renamed".format(arg))
             raise ValueError("Unrecognized error code ({}) encountered.".format(ret))
 
     cpdef bool equals (self, SyclContext ctxt):
@@ -228,3 +267,11 @@ cdef class SyclContext(_SyclContext):
             return ("<dpctl." + self.__name__ + " at {}>".format(hex(id(self))))
         else:
             return ("<dpctl." + self.__name__ + " for {} devices at {}>".format(n, hex(id(self))))
+
+    def _get_capsule(self):
+        cdef DPCTLSyclContextRef CRef = NULL
+        CRef = DPCTLContext_Copy(self._ctxt_ref)
+        if (CRef is NULL):
+            raise ValueError("SyclContext copy failed.")
+        return pycapsule.PyCapsule_New(<void *>CRef, "SyclContextRef", &_context_capsule_deleter)
+        
