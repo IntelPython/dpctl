@@ -47,6 +47,11 @@ function(_setup_doxyrest)
     set(DOXYREST_OUTPUT_DIR_NAME dpctl-capi-doxyrest)
     set(DOXYREST_OUTPUT_DIR
         ${CMAKE_CURRENT_SOURCE_DIR}/${DOXYREST_OUTPUT_DIR_NAME}
+        PARENT_SCOPE
+    )
+    set(DOXYREST_OUTPUT_DIR
+       ${CMAKE_CURRENT_SOURCE_DIR}/${DOXYREST_OUTPUT_DIR_NAME}
+
     )
     set(DOXYREST_CONFIG_IN ${CMAKE_CURRENT_SOURCE_DIR}/doxyrest-config.lua.in)
     set(DOXYREST_CONFIG_OUT ${CMAKE_CURRENT_SOURCE_DIR}/doxyrest-config.lua)
@@ -81,7 +86,6 @@ function(_setup_sphinx)
     set(SPHINX_INDEX_FILE ${SPHINX_OUTPUT_DIR}/index.html)
     set(SPHINX_CONF_IN ${SPHINX_SOURCE}/conf.in)
     set(SPHINX_CONF_OUT ${SPHINX_SOURCE}/conf.py)
-
     # Only regenerate Sphinx when:
     # - Doxygen has rerun
     # - Our doc files have been updated

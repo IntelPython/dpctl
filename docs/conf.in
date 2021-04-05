@@ -47,6 +47,13 @@ if use_doxyrest == "ON":
         os.path.abspath("@DOXYREST_SPHINX_DIR@"),
     )
     extensions += ["doxyrest", "cpplexer"]
+    # A workaround to fix issues leftover in the doxyrest generated
+    # rst files.
+    import fileinput
+
+    with fileinput.FileInput("@DOXYREST_OUTPUT_DIR@/global.rst", inplace=True) as file:
+        for line in file:
+            print(line.replace("typedefDPCTL_C_EXTERN_C_BEGIN", ""), end="")
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
