@@ -192,6 +192,7 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
         const DPCTLSyclDeviceRef DRef,
         DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy)
+    cdef DPCTLSyclDeviceRef DPCTLDevice_GetParentDevice(const DPCTLSyclDeviceRef DRef)
 
 
 cdef extern from "dpctl_sycl_device_manager.h":
