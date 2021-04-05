@@ -56,6 +56,13 @@ struct TestDPCTLDeviceManager : public ::testing::TestWithParam<const char *>
     }
 };
 
+TEST_P(TestDPCTLDeviceManager, Chk_GetRelativeId)
+{
+    int64_t rel_id = -1;
+    EXPECT_NO_FATAL_FAILURE(rel_id = DPCTLDeviceMgr_GetRelativeId(DRef));
+    EXPECT_FALSE(rel_id == -1);
+}
+
 TEST_P(TestDPCTLDeviceManager, Chk_PrintDeviceInfo)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
