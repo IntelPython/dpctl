@@ -479,3 +479,15 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthDouble(
 DPCTL_API
 uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(
     __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::parent_device>
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns an opaque pointer to the parent device for a sub-device,
+ * or nullptr otherwise.
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclDeviceRef
+DPCTLDevice_GetParentDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef);
