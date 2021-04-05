@@ -138,7 +138,7 @@ function(_setup_sphinx)
 endfunction()
 
 function(_set_current_release)
-    set(CURRENT_RELEASE "")
+    set(CURRENT_RELEASE "" PARENT_SCOPE)
     # Use git describe to get latest tag name
     if (GIT_FOUND)
         execute_process(
@@ -155,7 +155,7 @@ function(_set_current_release)
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
         if (NOT "${CURRENT_RELEASE}" STREQUAL "${CURRENT_COMMIT}")
-            set(CURRENT_RELEASE "master")
+            set(CURRENT_RELEASE "master" PARENT_SCOPE)
         endif ()
     endif (GIT_FOUND)
 endfunction()
