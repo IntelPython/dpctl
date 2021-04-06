@@ -132,7 +132,9 @@ cdef int _parse_queue_properties(object prop) except *:
             elif (p == "default"):
                 res = res | _queue_property_type._DEFAULT_PROPERTY
             else:
-                raise ValueError("queue property '{}' is not understood.".format(prop))
+                raise ValueError(("queue property '{}' is not understood, "
+                                 "expecting 'in_order', 'enable_profiling', or 'default'"
+                                  ).format(prop))
         else:
             raise ValueError("queue property '{}' is not understood.".format(prop))
     return res
@@ -164,7 +166,7 @@ cdef class SyclQueue(_SyclQueue):
                create SyclQueue from default selector
            SyclQueue(filter_string, *, /, propery=None)
                create SyclQueue from filter selector string
-           SyclQueue(SyclDevice, *, / property=None)
+           SyclQueue(SyclDevice, *, /, property=None)
                create SyclQueue from give SyclDevice automatically
                finding/creating SyclContext.
            SyclQueue(SyclContext, SyclDevice, *, /, property=None)
