@@ -450,7 +450,8 @@ void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
     // \todo what happens if the QRef is null or a pointer to a valid sycl
     // queue
     auto SyclQueue = unwrap(QRef);
-    SyclQueue->wait();
+    if (SyclQueue)
+        SyclQueue->wait();
 }
 
 void DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
@@ -459,8 +460,10 @@ void DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
                        size_t Count)
 {
     auto Q = unwrap(QRef);
-    auto event = Q->memcpy(Dest, Src, Count);
-    event.wait();
+    if (Q) {
+        auto event = Q->memcpy(Dest, Src, Count);
+        event.wait();
+    }
 }
 
 void DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
@@ -468,8 +471,10 @@ void DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
                          size_t Count)
 {
     auto Q = unwrap(QRef);
-    auto event = Q->prefetch(Ptr, Count);
-    event.wait();
+    if (Q) {
+        auto event = Q->prefetch(Ptr, Count);
+        event.wait();
+    }
 }
 
 void DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
@@ -478,6 +483,19 @@ void DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
                           int Advice)
 {
     auto Q = unwrap(QRef);
-    auto event = Q->mem_advise(Ptr, Count, static_cast<pi_mem_advice>(Advice));
-    event.wait();
+    if (Q) {
+        auto event =
+            Q->mem_advise(Ptr, Count, static_cast<pi_mem_advice>(Advice));
+        event.wait();
+    }
+}
+
+bool DPCTLQueue_IsInOrder(__dpctl_keep const DPCTLSyclQueueRef QRef)
+{
+    auto Q = unwrap(QRef);
+    if (Q) {
+        return Q->is_in_order();
+    }
+    else
+        return false;
 }
