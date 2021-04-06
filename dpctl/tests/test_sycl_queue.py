@@ -321,6 +321,10 @@ def test_valid_filter_selectors(valid_filter, check):
     try:
         q = dpctl.SyclQueue(valid_filter)
         device = q.get_sycl_device()
+        assert q.is_in_order is False
+        q2 = dpctl.SyclQueue(valid_filter, property="in_order")
+        # assert device == q2.get_sycl_device()
+        assert q2.is_in_order is True
     except dpctl.SyclQueueCreationError:
         pytest.skip("Failed to create device with supported filter")
     check(device)
