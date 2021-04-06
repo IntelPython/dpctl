@@ -9,6 +9,6 @@
     :maxdepth: 1
     :caption: API Documentation
 
-    docfiles/toc_pyapi
+    docfiles/dpctl_pyapi
 
 .. include:: ./docfiles/boilerplate.rst

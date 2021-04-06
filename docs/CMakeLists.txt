@@ -155,7 +155,7 @@ function(_set_current_release)
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
         if (NOT "${CURRENT_RELEASE}" STREQUAL "${CURRENT_COMMIT}")
-            set(CURRENT_RELEASE "master" PARENT_SCOPE)
+            set(CURRENT_RELEASE "master")
         endif ()
         set(CURRENT_RELEASE ${CURRENT_RELEASE} PARENT_SCOPE)
     endif (GIT_FOUND)
