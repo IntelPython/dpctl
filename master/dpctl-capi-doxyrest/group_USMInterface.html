@@ -1,0 +1,549 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>USM Interface &mdash; Data-parallel Control (dpctl) master documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/target-highlight.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/doxyrest-pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Todo List" href="page_todo.html" />
+    <link rel="prev" title="Queue Manager" href="group_QueueManager.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../docfiles/dpctl_pyapi.html">dpctl Python API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">dpctl C API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="group_ContextInterface.html">Context Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceInterface.html">Device Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceManager.html">Device Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceSelectors.html">Device Selector Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_EventInterface.html">Event Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_KernelInterface.html">Kernel Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_PlatformInterface.html">Platform Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_PlatformManager.html">Platform Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_ProgramInterface.html">Program Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_QueueInterface.html">Queue Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_QueueManager.html">Queue Manager</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">USM Interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detailed-documentation">Detailed Documentation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#global-functions">Global Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="page_todo.html">Todo List</a></li>
+<li class="toctree-l2"><a class="reference internal" href="global.html">Global Namespace</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data-parallel Control (dpctl)</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">dpctl C API</a> &raquo;</li>
+        
+      <li>USM Interface</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/dpctl-capi-doxyrest/group_USMInterface.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="usm-interface">
+<span id="doxid-d9-d27-group-usminterface"></span><span id="index-0"></span><h1>USM Interface<a class="headerlink" href="#usm-interface" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// global functions</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+DPCTLaligned_alloc_device<span></span><span class="p">(</span>
+    <span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+DPCTLaligned_alloc_host<span></span><span class="p">(</span>
+    <span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+DPCTLaligned_alloc_shared<span></span><span class="p">(</span>
+    <span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">void</span>
+DPCTLfree_with_context<span></span><span class="p">(</span>
+    <span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">void</span>
+DPCTLfree_with_queue<span></span><span class="p">(</span>
+    <span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+DPCTLmalloc_device<span></span><span class="p">(</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+DPCTLmalloc_host<span></span><span class="p">(</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+DPCTLmalloc_shared<span></span><span class="p">(</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
+DPCTLUSM_GetPointerDevice<span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span>
+    <span class="p">);</span>
+
+<span class="k">const</span> <span class="n">DPCTL_API</span> <span class="kt">char</span><span class="o">*</span>
+DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span>
+    <span class="p">);</span></pre>
+</div>
+<div class="section" id="detailed-documentation">
+<span id="details-d9-d27-group-usminterface"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="global-functions">
+<h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this headline">¶</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga40c3e68d157d775bbe6daa188b84b3e3"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+<span class="n">DPCTLaligned_alloc_device</span><span class="p">(</span>
+    <span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
+    <span class="p">)</span></pre>
+<p>Create USM device memory.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>alignment</p></td>
+<td><p>Allocation’s byte alignment</p></td>
+</tr>
+<tr class="row-even"><td><p>size</p></td>
+<td><p>Number of bytes to allocate</p></td>
+</tr>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>Sycl queue reference to use in allocation</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>The pointer to USM device memory with requested alignment. On failure, returns nullptr.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga327bba1e6a5a1f6922e74ab6914e58ff"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+<span class="n">DPCTLaligned_alloc_host</span><span class="p">(</span>
+    <span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
+    <span class="p">)</span></pre>
+<p>Create USM host memory.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>alignment</p></td>
+<td><p>Allocation’s byte alignment</p></td>
+</tr>
+<tr class="row-even"><td><p>size</p></td>
+<td><p>Number of bytes to allocate</p></td>
+</tr>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>Sycl queue reference to use in allocation</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>The pointer to USM host memory with the requested alignment. On failure, returns nullptr.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga7c3e58848a979723dc350d2a8016edd8"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+<span class="n">DPCTLaligned_alloc_shared</span><span class="p">(</span>
+    <span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
+    <span class="p">)</span></pre>
+<p>Create USM shared memory.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>alignment</p></td>
+<td><p>Allocation’s byte alignment</p></td>
+</tr>
+<tr class="row-even"><td><p>size</p></td>
+<td><p>Number of bytes to allocate</p></td>
+</tr>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>Sycl queue reference to use in allocation</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>The pointer to USM shared memory with the requested alignment. On failure, returns nullptr.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1gad1da9c1cb7fca0b3c1bc0edc9467c0a9"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<span class="n">DPCTLfree_with_context</span><span class="p">(</span>
+    <span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span>
+    <span class="p">)</span></pre>
+<p>Free USM memory.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>MRef</p></td>
+<td><p>USM pointer to free</p></td>
+</tr>
+<tr class="row-even"><td><p>CRef</p></td>
+<td><p>Sycl context reference to use.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga0d8486b09ea0a677a3fb6cbe677f8633"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<span class="n">DPCTLfree_with_queue</span><span class="p">(</span>
+    <span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
+    <span class="p">)</span></pre>
+<p>Free USM memory.</p>
+<p>USM pointer must have been allocated using the same context as the one used to construct the queue.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>MRef</p></td>
+<td><p>USM pointer to free</p></td>
+</tr>
+<tr class="row-even"><td><p>QRef</p></td>
+<td><p>Sycl queue reference to use.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1gac1927ffcb3ca7ef43366a8b64e211ef2"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+<span class="n">DPCTLmalloc_device</span><span class="p">(</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
+    <span class="p">)</span></pre>
+<p>Create USM device memory.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>size</p></td>
+<td><p>Number of bytes to allocate</p></td>
+</tr>
+<tr class="row-even"><td><p>QRef</p></td>
+<td><p>Sycl queue reference to use in allocation</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>The pointer to USM device memory. On failure, returns nullptr.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga699b56970ac78f3b3ca87a2ad6ff4615"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+<span class="n">DPCTLmalloc_host</span><span class="p">(</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
+    <span class="p">)</span></pre>
+<p>Create USM host memory.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>size</p></td>
+<td><p>Number of bytes to allocate</p></td>
+</tr>
+<tr class="row-even"><td><p>QRef</p></td>
+<td><p>Sycl queue reference to use in allocation</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>The pointer to USM host memory. On failure, returns nullptr.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga7c9316842db74f4730fab04a4e4f4eb5"><span id="index-8"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+<span class="n">DPCTLmalloc_shared</span><span class="p">(</span>
+    <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
+    <span class="p">)</span></pre>
+<p>Create USM shared memory.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>size</p></td>
+<td><p>Number of bytes to allocate</p></td>
+</tr>
+<tr class="row-even"><td><p>QRef</p></td>
+<td><p>Sycl queue reference to use in allocation</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>The pointer to USM shared memory. On failure, returns nullptr.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga7ebb5012408e40e3e78b4da551da8412"><span id="index-9"></span><span></span><span class="n">DPCTL_API</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
+<span class="n">DPCTLUSM_GetPointerDevice</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span>
+    <span class="p">)</span></pre>
+<p>Get the device associated with USM pointer.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>MRef</p></td>
+<td><p>USM pointer</p></td>
+</tr>
+<tr class="row-even"><td><p>CRef</p></td>
+<td><p>Sycl context reference associated with the pointer</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>A DPCTLSyclDeviceRef pointer to the sycl device.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga1e8658653d946578f1b4deb3333ec41c"><span id="index-10"></span><span></span><span class="k">const</span> <span class="n">DPCTL_API</span> <span class="kt">char</span><span class="o">*</span>
+<span class="n">DPCTLUSM_GetPointerType</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span>
+    <span class="p">)</span></pre>
+<p>Get pointer type.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>MRef</p></td>
+<td><p>USM Memory</p></td>
+</tr>
+<tr class="row-even"><td><p>CRef</p></td>
+<td><p>Sycl context reference associated with the pointer</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>“host”, “device”, “shared” or “unknown”</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="page_todo.html" class="btn btn-neutral float-right" title="Todo List" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="group_QueueManager.html" class="btn btn-neutral float-left" title="Queue Manager" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Intel Corp.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

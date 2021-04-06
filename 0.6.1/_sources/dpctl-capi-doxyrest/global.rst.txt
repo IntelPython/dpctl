@@ -1,0 +1,2865 @@
+.. _global:
+.. index:: pair: namespace; global
+
+Global Namespace
+================
+
+.. toctree::
+	:hidden:
+
+	enum_DPCTLKernelArgType.rst
+	enum_DPCTLSyclBackendType.rst
+	enum_DPCTLSyclDeviceType.rst
+
+Overview
+~~~~~~~~
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	
+	// typedefs
+
+	typedef  struct DPCTLOpaqueSyclContext* :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`;
+	typedef struct DPCTLOpaqueSyclDevice* :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`;
+	typedef struct DPCTLOpaqueSyclDeviceSelector* :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`;
+	typedef struct DPCTLOpaqueSyclEvent* :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`;
+	typedef struct DPCTLOpaqueSyclKernel* :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`;
+	typedef struct DPCTLOpaqueSyclPlatform* :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`;
+	typedef struct DPCTLOpaqueSyclProgram* :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>`;
+	typedef struct DPCTLOpaqueSyclQueue* :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`;
+	typedef struct DPCTLOpaqueSyclUSM* :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`;
+
+	// enums
+
+	enum :ref:`DPCTLKernelArgType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>`;
+	enum :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`;
+	enum :ref:`DPCTLSyclDeviceType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>`;
+
+	// global functions
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API bool
+	:ref:`DPCTLContext_AreEq<doxid-df/d74/dpctl__sycl__context__interface_8h_1a38955d262be1046aa7109cb461a8a9a1>`(
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef1,
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef2
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLContext_Delete<doxid-df/d74/dpctl__sycl__context__interface_8h_1a12d2a8bc191c360fe67eae5e1fc78c63>`(__dpctl_take :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
+
+	DPCTL_API :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`
+	:ref:`DPCTLContext_GetBackend<doxid-df/d74/dpctl__sycl__context__interface_8h_1aa6a2b2cf4f898df8824da1b52ba9ceb6>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLContext_IsHost<doxid-df/d74/dpctl__sycl__context__interface_8h_1a24db0f38d9acb63c50c686f848b21a53>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_AreEq<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1acca90175ba2c19c63823a843e32d37c5>`(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DevRef1,
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DevRef2
+		);
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	:ref:`DPCTLDevice_Copy<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a6cf67f0bc9c0f05466a8e451ac510235>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	:ref:`DPCTLDevice_Create<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a71e1a01764bd7d02441a2cce8ca54d91>`();
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	:ref:`DPCTLDevice_CreateFromSelector<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a371463122c4ec271be68364d1e9a284d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>` DSRef);
+
+	DPCTL_API void
+	:ref:`DPCTLDevice_Delete<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a062853b5082debfcae7d7b840907b667>`(__dpctl_take :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API void
+	:ref:`DPCTLDevice_DumpInfo<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a5dc66f4fc5c76828fd219de4321f6b1d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API const __dpctl_give char*
+	:ref:`DPCTLDevice_GetDriverInfo<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1aa2cdd5354030ab3e5305608f6f3991df>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetMaxComputeUnits<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ac9635668177d01284e64d1d4373a391a>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetMaxNumSubGroups<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a6c5a99a6da732f5cee47a09ff1559a30>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLDevice_GetMaxWorkGroupSize<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1affdc9aeff99885627cd26364df7479de>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetMaxWorkItemDims<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a365748d856fa3af3fe3ed288bb19c55a>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API __dpctl_keep size_t*
+	:ref:`DPCTLDevice_GetMaxWorkItemSizes<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ac5292cd7933df4ef7fb15a3d0d05d463>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API const __dpctl_give char*
+	:ref:`DPCTLDevice_GetName<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a36ca01c406d1200b56e94a98595ffb0d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API const __dpctl_give char*
+	:ref:`DPCTLDevice_GetVendorName<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1acab7510672c0631a5cc08188504504e0>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_HasInt64BaseAtomics<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a99f66298027c11575e36e9ceb5368bbd>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_HasInt64ExtendedAtomics<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a940b6b7248cce57836fab5845654972f>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_IsAccelerator<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a00b3410f618ec90c88a3d892b62e3409>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_IsCPU<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ab5f205e2cc7e3112c6265c0ffdffaa57>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_IsGPU<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1af8f14aedc1fd3b836bd07c2e4be5d541>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_IsHost<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1abad898eaf8374c3259598a140e7abd7c>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_IsHostUnifiedMemory<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a4ff6d7f04e60ee4afd68010348a5f65c>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	:ref:`DPCTLAcceleratorSelector_Create<doxid-d5/d8a/dpctl__sycl__device__selector__interface_8h_1a8e8bdcf05b2fce353a54da75dc2750d5>`();
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	:ref:`DPCTLCPUSelector_Create<doxid-d5/d8a/dpctl__sycl__device__selector__interface_8h_1a8bda877d51d758ee5240335fa3b2c6d6>`();
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	:ref:`DPCTLDefaultSelector_Create<doxid-d5/d8a/dpctl__sycl__device__selector__interface_8h_1ac44ce9a9ccf68a37742d74196f5f5db5>`();
+
+	DPCTL_API void
+	:ref:`DPCTLDeviceSelector_Delete<doxid-d5/d8a/dpctl__sycl__device__selector__interface_8h_1a30678acd2383c56d7eb78bf99b7bcf7c>`(__dpctl_take :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>` DSRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	:ref:`DPCTLFilterSelector_Create<doxid-d5/d8a/dpctl__sycl__device__selector__interface_8h_1a1cfad5b95c7793766cf863378cdccf3d>`(__dpctl_keep const char* filter_str);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	:ref:`DPCTLGPUSelector_Create<doxid-d5/d8a/dpctl__sycl__device__selector__interface_8h_1a7601f3b9030672562a5730007cf20c17>`();
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	:ref:`DPCTLHostSelector_Create<doxid-d5/d8a/dpctl__sycl__device__selector__interface_8h_1ae46c9c8d925974a4b8eab91a53166df7>`();
+
+	DPCTL_API void
+	:ref:`DPCTLEvent_Delete<doxid-d5/d12/dpctl__sycl__event__interface_8h_1ae16fbf7465ec6d86a63e042100feba77>`(__dpctl_take :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API void
+	:ref:`DPCTLEvent_Wait<doxid-d5/d12/dpctl__sycl__event__interface_8h_1ae8d88a108da4c44b1948f8b35b26f0d0>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
+	DPCTL_API void
+	:ref:`DPCTLKernel_Delete<doxid-df/df4/dpctl__sycl__kernel__interface_8h_1a02cb1ddc64d9f78d228a5dc222c8862b>`(__dpctl_take :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API const __dpctl_give char*
+	:ref:`DPCTLKernel_GetFunctionName<doxid-df/df4/dpctl__sycl__kernel__interface_8h_1a6fcafc771756b6663800cc5e44ca38b0>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLKernel_GetNumArgs<doxid-df/df4/dpctl__sycl__kernel__interface_8h_1ae585c0ae9e5e1826ca24aac6f9b2a71d>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API void
+	:ref:`DPCTLPlatform_DeleteListOfBackends<doxid-d3/d02/dpctl__sycl__platform__interface_8h_1ad7d8cebb857860b70e011203f74f5cc4>`(__dpctl_take :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`* BEArr);
+
+	DPCTL_API void
+	:ref:`DPCTLPlatform_DumpInfo<doxid-d3/d02/dpctl__sycl__platform__interface_8h_1a43276373d1fb9526daa10593296fc6de>`();
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`*
+	:ref:`DPCTLPlatform_GetListOfNonHostBackends<doxid-d3/d02/dpctl__sycl__platform__interface_8h_1aece639b9e5d2f8ce4de7af6343a887d2>`();
+
+	DPCTL_API size_t
+	:ref:`DPCTLPlatform_GetNumNonHostBackends<doxid-d3/d02/dpctl__sycl__platform__interface_8h_1a90a943806968222fdd816c42625d8f47>`();
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API size_t
+	:ref:`DPCTLPlatform_GetNumNonHostPlatforms<doxid-d3/d02/dpctl__sycl__platform__interface_8h_1a302a3498814da9e47da281858a8312b1>`();
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>`
+	:ref:`DPCTLProgram_CreateFromOCLSource<doxid-dc/d02/dpctl__sycl__program__interface_8h_1ae1f8caf6c9bb8d8683b3717f63e56ae7>`(
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` Ctx,
+		__dpctl_keep const char* Source,
+		__dpctl_keep const char* CompileOpts
+		);
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API __dpctl_give :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>`
+	:ref:`DPCTLProgram_CreateFromSpirv<doxid-dc/d02/dpctl__sycl__program__interface_8h_1abcff5343cce7838ac340fc2344cf39f7>`(
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` Ctx,
+		__dpctl_keep const void* IL,
+		size_t Length,
+		const char* CompileOpts
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLProgram_Delete<doxid-dc/d02/dpctl__sycl__program__interface_8h_1a29760f4984675c264bbdf11b92b89c08>`(__dpctl_take :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>` PRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`
+	:ref:`DPCTLProgram_GetKernel<doxid-dc/d02/dpctl__sycl__program__interface_8h_1a86fcd9c7af5bc38a056e237c89b3fa9c>`(
+		__dpctl_keep :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>` PRef,
+		__dpctl_keep const char* KernelName
+		);
+
+	DPCTL_API bool
+	:ref:`DPCTLProgram_HasKernel<doxid-dc/d02/dpctl__sycl__program__interface_8h_1a9c266676f09dd0ed681adfe2d6b1ff06>`(
+		__dpctl_keep :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>` PRef,
+		__dpctl_keep const char* KernelName
+		);
+
+	DPCTL_API bool
+	:ref:`DPCTLQueue_AreEq<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a8a957bd257ec77b0f57bcb3c35e1e479>`(
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef1,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef2
+		);
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API void
+	:ref:`DPCTLQueue_Delete<doxid-da/db8/dpctl__sycl__queue__interface_8h_1ad09eba83cac8a984addeda6994a8172b>`(__dpctl_take :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+
+	DPCTL_API :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`
+	:ref:`DPCTLQueue_GetBackend<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a8c3629a8627e9748cdec34688f6ce908>`(__dpctl_keep :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
+	:ref:`DPCTLQueue_GetContext<doxid-da/db8/dpctl__sycl__queue__interface_8h_1ad11e27086f2cee7f3d22f33de1a24bc9>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	:ref:`DPCTLQueue_GetDevice<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a44095b28dfb5c357e6c065749e9aa8c0>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+
+	DPCTL_API void
+	:ref:`DPCTLQueue_MemAdvise<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a0ef8f0c4ee3fd1e0289633ffe3d283dc>`(
+		__dpctl_keep :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		const void* Ptr,
+		size_t Count,
+		int Advice
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLQueue_Memcpy<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a25103f4d9872482ce6efde712a807979>`(
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		void* Dest,
+		const void* Src,
+		size_t Count
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLQueue_Prefetch<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a4281ab0ca2559019d062411477f85a01>`(
+		__dpctl_keep :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		const void* Ptr,
+		size_t Count
+		);
+
+	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	:ref:`DPCTLQueue_SubmitNDRange<doxid-da/db8/dpctl__sycl__queue__interface_8h_1aac9356153363bb89ade3116816fca94b>`(
+		__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		__dpctl_keep void** Args,
+		__dpctl_keep const :ref:`DPCTLKernelArgType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>`* ArgTypes,
+		size_t NArgs,
+		__dpctl_keep const size_t gRange[3],
+		__dpctl_keep const size_t lRange[3],
+		size_t NDims,
+		__dpctl_keep const :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`* DepEvents,
+		size_t NDepEvents
+		);
+
+	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	:ref:`DPCTLQueue_SubmitRange<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a9ed0d59f789b4fb0959b0af022fdbe23>`(
+		__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		__dpctl_keep void** Args,
+		__dpctl_keep const :ref:`DPCTLKernelArgType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>`* ArgTypes,
+		size_t NArgs,
+		__dpctl_keep const size_t Range[3],
+		size_t NRange,
+		__dpctl_keep const :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`* DepEvents,
+		size_t NDepEvents
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLQueue_Wait<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a3411357b2a09bad80be5b4fee8a8ed44>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
+	:ref:`DPCTLQueueMgr_GetCurrentQueue<doxid-d1/dac/dpctl__sycl__queue__manager_8h_1ac1533b1f3bc20f258c45af1346e0e9d9>`();
+
+	DPCTL_API size_t
+	:ref:`DPCTLQueueMgr_GetNumActivatedQueues<doxid-d1/dac/dpctl__sycl__queue__manager_8h_1a563f8335ead48d3586b9837457cd3c13>`();
+
+	DPCTL_API size_t
+	:ref:`DPCTLQueueMgr_GetNumQueues<doxid-d1/dac/dpctl__sycl__queue__manager_8h_1ab7fceeb737c6759b799c92b597070d52>`(
+		:ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>` BETy,
+		:ref:`DPCTLSyclDeviceType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>` DeviceTy
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
+	:ref:`DPCTLQueueMgr_GetQueue<doxid-d1/dac/dpctl__sycl__queue__manager_8h_1a9cfce59d7bfc5033186c20ab6954e737>`(
+		:ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>` BETy,
+		:ref:`DPCTLSyclDeviceType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>` DeviceTy,
+		size_t DNum
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
+	:ref:`DPCTLQueueMgr_GetQueueFromContextAndDevice<doxid-d1/dac/dpctl__sycl__queue__manager_8h_1a81b6f33ea0a17c9513a9ea19ddaa3544>`(
+		__dpctl_keep :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef,
+		__dpctl_keep :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef
+		);
+
+	DPCTL_API bool
+	:ref:`DPCTLQueueMgr_IsCurrentQueue<doxid-d1/dac/dpctl__sycl__queue__manager_8h_1a77d39c59561d3f427a1dde1ce81652db>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+
+	DPCTL_API void
+	:ref:`DPCTLQueueMgr_PopQueue<doxid-d1/dac/dpctl__sycl__queue__manager_8h_1a60e20b64f0c70866e2e08442962fd621>`();
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
+	:ref:`DPCTLQueueMgr_PushQueue<doxid-d1/dac/dpctl__sycl__queue__manager_8h_1a3e7def4dc72567e111b633b1d8f84d6d>`(
+		:ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>` BETy,
+		:ref:`DPCTLSyclDeviceType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>` DeviceTy,
+		size_t DNum
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
+	:ref:`DPCTLQueueMgr_SetAsDefaultQueue<doxid-d1/dac/dpctl__sycl__queue__manager_8h_1a1591403f0924782109219208595d0ec7>`(
+		:ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>` BETy,
+		:ref:`DPCTLSyclDeviceType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>` DeviceTy,
+		size_t DNum
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
+	:ref:`DPCTLaligned_alloc_device<doxid-de/d29/dpctl__sycl__usm__interface_8h_1a40c3e68d157d775bbe6daa188b84b3e3>`(
+		size_t alignment,
+		size_t size,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
+	:ref:`DPCTLaligned_alloc_host<doxid-de/d29/dpctl__sycl__usm__interface_8h_1a327bba1e6a5a1f6922e74ab6914e58ff>`(
+		size_t alignment,
+		size_t size,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
+	:ref:`DPCTLaligned_alloc_shared<doxid-de/d29/dpctl__sycl__usm__interface_8h_1a7c3e58848a979723dc350d2a8016edd8>`(
+		size_t alignment,
+		size_t size,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLfree_with_context<doxid-de/d29/dpctl__sycl__usm__interface_8h_1ad1da9c1cb7fca0b3c1bc0edc9467c0a9>`(
+		__dpctl_take :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLfree_with_queue<doxid-de/d29/dpctl__sycl__usm__interface_8h_1a0d8486b09ea0a677a3fb6cbe677f8633>`(
+		__dpctl_take :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
+	:ref:`DPCTLmalloc_device<doxid-de/d29/dpctl__sycl__usm__interface_8h_1ac1927ffcb3ca7ef43366a8b64e211ef2>`(
+		size_t size,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
+	:ref:`DPCTLmalloc_host<doxid-de/d29/dpctl__sycl__usm__interface_8h_1a699b56970ac78f3b3ca87a2ad6ff4615>`(
+		size_t size,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
+		);
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
+	:ref:`DPCTLmalloc_shared<doxid-de/d29/dpctl__sycl__usm__interface_8h_1ad303be21cd2fb9d8637595cdfbf34869>`(
+		size_t size,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
+		);
+
+	DPCTL_API :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	:ref:`DPCTLUSM_GetPointerDevice<doxid-de/d29/dpctl__sycl__usm__interface_8h_1a7ebb5012408e40e3e78b4da551da8412>`(
+		__dpctl_keep const :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef
+		);
+
+	const DPCTL_API char*
+	:ref:`DPCTLUSM_GetPointerType<doxid-de/d29/dpctl__sycl__usm__interface_8h_1a1e8658653d946578f1b4deb3333ec41c>`(
+		__dpctl_keep const :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef
+		);
+
+.. _details-global:
+
+Detailed Documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+Typedefs
+--------
+
+.. index:: pair: typedef; DPCTLSyclContextRef
+.. _doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef  struct DPCTLOpaqueSyclContext* DPCTLSyclContextRef
+
+Opaque pointer to a sycl::context.
+
+.. index:: pair: typedef; DPCTLSyclDeviceRef
+.. _doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef struct DPCTLOpaqueSyclDevice* DPCTLSyclDeviceRef
+
+Opaque pointer to a sycl::device.
+
+.. index:: pair: typedef; DPCTLSyclDeviceSelectorRef
+.. _doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef struct DPCTLOpaqueSyclDeviceSelector* DPCTLSyclDeviceSelectorRef
+
+Opaque pointer to a sycl::device_selector.
+
+.. index:: pair: typedef; DPCTLSyclEventRef
+.. _doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef struct DPCTLOpaqueSyclEvent* DPCTLSyclEventRef
+
+Opaque pointer to a sycl::event.
+
+.. index:: pair: typedef; DPCTLSyclKernelRef
+.. _doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef struct DPCTLOpaqueSyclKernel* DPCTLSyclKernelRef
+
+Opaque pointer to a sycl::kernel.
+
+.. index:: pair: typedef; DPCTLSyclPlatformRef
+.. _doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef struct DPCTLOpaqueSyclPlatform* DPCTLSyclPlatformRef
+
+Opaque pointer to a sycl::platform.
+
+.. index:: pair: typedef; DPCTLSyclProgramRef
+.. _doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef struct DPCTLOpaqueSyclProgram* DPCTLSyclProgramRef
+
+Opaque pointer to a sycl::program.
+
+.. index:: pair: typedef; DPCTLSyclQueueRef
+.. _doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef struct DPCTLOpaqueSyclQueue* DPCTLSyclQueueRef
+
+Opaque pointer to a sycl::queue.
+
+
+
+.. rubric:: See also:
+
+sycl::queue
+
+.. index:: pair: typedef; DPCTLSyclUSMRef
+.. _doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef struct DPCTLOpaqueSyclUSM* DPCTLSyclUSMRef
+
+Used to pass a sycl::usm memory opaquely through DPCTL interfaces.
+
+
+
+.. rubric:: See also:
+
+sycl::usm
+
+Global Functions
+----------------
+
+.. index:: pair: function; DPCTLContext_AreEq
+.. _doxid-df/d74/dpctl__sycl__context__interface_8h_1a38955d262be1046aa7109cb461a8a9a1:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API bool
+	DPCTLContext_AreEq(
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef1,
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef2
+		)
+
+Checks if two DPCTLSyclContextRef objects point to the same sycl::context.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- CtxRef1
+
+		- First opaque pointer to the sycl context.
+
+	*
+		- CtxRef2
+
+		- Second opaque pointer to the sycl context.
+
+
+
+.. rubric:: Returns:
+
+True if the underlying sycl::context are same, false otherwise.
+
+.. index:: pair: function; DPCTLContext_Delete
+.. _doxid-df/d74/dpctl__sycl__context__interface_8h_1a12d2a8bc191c360fe67eae5e1fc78c63:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLContext_Delete(__dpctl_take :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef)
+
+Delete the pointer after casting it to sycl::context.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- CtxRef
+
+		- The DPCTLSyclContextRef pointer to be deleted.
+
+.. index:: pair: function; DPCTLContext_GetBackend
+.. _doxid-df/d74/dpctl__sycl__context__interface_8h_1aa6a2b2cf4f898df8824da1b52ba9ceb6:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`
+	DPCTLContext_GetBackend(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef)
+
+Returns the sycl backend for the DPCTLSyclContextRef pointer.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- CtxRef
+
+		- An opaque pointer to a sycl::context.
+
+
+
+.. rubric:: Returns:
+
+The sycl backend for the DPCTLSyclContextRef returned as a DPCTLSyclBackendType enum type.
+
+.. index:: pair: function; DPCTLContext_IsHost
+.. _doxid-df/d74/dpctl__sycl__context__interface_8h_1a24db0f38d9acb63c50c686f848b21a53:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLContext_IsHost(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef)
+
+Returns true if this SYCL context is a host context.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- CtxRef
+
+		- An opaque pointer to a sycl::context.
+
+
+
+.. rubric:: Returns:
+
+True if the SYCL context is a host context, else False.
+
+.. index:: pair: function; DPCTLDevice_AreEq
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1acca90175ba2c19c63823a843e32d37c5:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_AreEq(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DevRef1,
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DevRef2
+		)
+
+Checks if two DPCTLSyclDeviceRef objects point to the same sycl::device.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DevRef1
+
+		- First opaque pointer to the sycl device.
+
+	*
+		- DevRef2
+
+		- Second opaque pointer to the sycl device.
+
+
+
+.. rubric:: Returns:
+
+True if the underlying sycl::device are same, false otherwise.
+
+.. index:: pair: function; DPCTLDevice_Copy
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a6cf67f0bc9c0f05466a8e451ac510235:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	DPCTLDevice_Copy(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns a copy of the DPCTLSyclDeviceRef object.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- DPCTLSyclDeviceRef object to be copied.
+
+
+
+.. rubric:: Returns:
+
+A new DPCTLSyclDeviceRef created by copying the passed in DPCTLSyclDeviceRef object.
+
+.. index:: pair: function; DPCTLDevice_Create
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a71e1a01764bd7d02441a2cce8ca54d91:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	DPCTLDevice_Create()
+
+Returns a new DPCTLSyclDeviceRef opaque object wrapping a SYCL device instance as a host device.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to the host SYCL device.
+
+.. index:: pair: function; DPCTLDevice_CreateFromSelector
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a371463122c4ec271be68364d1e9a284d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	DPCTLDevice_CreateFromSelector(__dpctl_keep const :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>` DSRef)
+
+Returns a new DPCTLSyclDeviceRef opaque object created using the provided device_selector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DSRef
+
+		- An opaque pointer to a SYCL device_selector.
+
+
+
+.. rubric:: Returns:
+
+Returns an opaque pointer to a SYCL device created using the device_selector, if the requested device could not be created a nullptr is returned.
+
+.. index:: pair: function; DPCTLDevice_Delete
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a062853b5082debfcae7d7b840907b667:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLDevice_Delete(__dpctl_take :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Deletes a DPCTLSyclDeviceRef pointer after casting to to sycl::device.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- The DPCTLSyclDeviceRef pointer to be freed.
+
+.. index:: pair: function; DPCTLDevice_DumpInfo
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a5dc66f4fc5c76828fd219de4321f6b1d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLDevice_DumpInfo(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Prints out some of the info::deivice attributes for the device.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- A DPCTLSyclDeviceRef pointer.
+
+.. index:: pair: function; DPCTLDevice_GetDriverInfo
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1aa2cdd5354030ab3e5305608f6f3991df:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API const __dpctl_give char*
+	DPCTLDevice_GetDriverInfo(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns the OpenCL software driver version as a C string.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+A C string in the form major_number.minor.number that corresponds to the OpenCL driver version if this is a OpenCL device.
+
+.. index:: pair: function; DPCTLDevice_GetMaxComputeUnits
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ac9635668177d01284e64d1d4373a391a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetMaxComputeUnits(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::max_compute_units>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns 0.
+
+.. index:: pair: function; DPCTLDevice_GetMaxNumSubGroups
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a6c5a99a6da732f5cee47a09ff1559a30:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetMaxNumSubGroups(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::max_num_sub_groups>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns 0.
+
+.. index:: pair: function; DPCTLDevice_GetMaxWorkGroupSize
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1affdc9aeff99885627cd26364df7479de:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLDevice_GetMaxWorkGroupSize(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper for get_info<info::device::max_work_group_size>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns 0.
+
+.. index:: pair: function; DPCTLDevice_GetMaxWorkItemDims
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a365748d856fa3af3fe3ed288bb19c55a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetMaxWorkItemDims(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper for get_info<info::device::max_work_item_dimensions>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns 0.
+
+.. index:: pair: function; DPCTLDevice_GetMaxWorkItemSizes
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ac5292cd7933df4ef7fb15a3d0d05d463:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_keep size_t*
+	DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper for get_info<info::device::max_work_item_sizes>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns NULL.
+
+.. index:: pair: function; DPCTLDevice_GetName
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a36ca01c406d1200b56e94a98595ffb0d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API const __dpctl_give char*
+	DPCTLDevice_GetName(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns a C string for the device name.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+A C string containing the OpenCL device name.
+
+.. index:: pair: function; DPCTLDevice_GetVendorName
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1acab7510672c0631a5cc08188504504e0:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API const __dpctl_give char*
+	DPCTLDevice_GetVendorName(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns a C string corresponding to the vendor name.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+A C string containing the OpenCL device vendor name.
+
+.. index:: pair: function; DPCTLDevice_HasInt64BaseAtomics
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a99f66298027c11575e36e9ceb5368bbd:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_HasInt64BaseAtomics(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::aspect::int64_base_atomics>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns true if device has int64_base_atomics else returns false.
+
+.. index:: pair: function; DPCTLDevice_HasInt64ExtendedAtomics
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a940b6b7248cce57836fab5845654972f:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_HasInt64ExtendedAtomics(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::aspect::int64_extended_atomics>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns true if device has int64_extended_atomics else returns false.
+
+.. index:: pair: function; DPCTLDevice_IsAccelerator
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a00b3410f618ec90c88a3d892b62e3409:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_IsAccelerator(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns true if this SYCL device is an OpenCL device and the device type is sycl::info::device_type::accelerator.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+True if the device type is an accelerator, else False.
+
+.. index:: pair: function; DPCTLDevice_IsCPU
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ab5f205e2cc7e3112c6265c0ffdffaa57:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_IsCPU(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns true if this SYCL device is an OpenCL device and the device type is sycl::info::device_type::cpu.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+True if the device type is a cpu, else False.
+
+.. index:: pair: function; DPCTLDevice_IsGPU
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1af8f14aedc1fd3b836bd07c2e4be5d541:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_IsGPU(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns true if this SYCL device is an OpenCL device and the device type is sycl::info::device_type::gpu.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+True if the device type is a gpu, else False.
+
+.. index:: pair: function; DPCTLDevice_IsHost
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1abad898eaf8374c3259598a140e7abd7c:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_IsHost(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns true if this SYCL device is a host device.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+True if the device is a host device, else False.
+
+.. index:: pair: function; DPCTLDevice_IsHostUnifiedMemory
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a4ff6d7f04e60ee4afd68010348a5f65c:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_IsHostUnifiedMemory(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns True if the device and the host share a unified memory subsystem, else returns False.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Boolean indicating if the device shares a unified memory subsystem with the host.
+
+.. index:: pair: function; DPCTLAcceleratorSelector_Create
+.. _doxid-d5/d8a/dpctl__sycl__device__selector__interface_8h_1a8e8bdcf05b2fce353a54da75dc2750d5:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	DPCTLAcceleratorSelector_Create()
+
+Returns an opaque wrapper for sycl::accelerator_selector object.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to a sycl::accelerator_selector object.
+
+.. index:: pair: function; DPCTLCPUSelector_Create
+.. _doxid-d5/d8a/dpctl__sycl__device__selector__interface_8h_1a8bda877d51d758ee5240335fa3b2c6d6:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	DPCTLCPUSelector_Create()
+
+Returns an opaque wrapper for sycl::cpu_selector object.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to a sycl::cpu_selector object.
+
+.. index:: pair: function; DPCTLDefaultSelector_Create
+.. _doxid-d5/d8a/dpctl__sycl__device__selector__interface_8h_1ac44ce9a9ccf68a37742d74196f5f5db5:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	DPCTLDefaultSelector_Create()
+
+Returns an opaque wrapper for sycl::default_selector object.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to a sycl::default_selector object.
+
+.. index:: pair: function; DPCTLDeviceSelector_Delete
+.. _doxid-d5/d8a/dpctl__sycl__device__selector__interface_8h_1a30678acd2383c56d7eb78bf99b7bcf7c:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLDeviceSelector_Delete(__dpctl_take :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>` DSRef)
+
+Deletes the DPCTLSyclDeviceSelectorRef after casting it to a sycl::device_selector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DSRef
+
+		- An opaque DPCTLSyclDeviceSelectorRef pointer that would be freed.
+
+.. index:: pair: function; DPCTLFilterSelector_Create
+.. _doxid-d5/d8a/dpctl__sycl__device__selector__interface_8h_1a1cfad5b95c7793766cf863378cdccf3d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	DPCTLFilterSelector_Create(__dpctl_keep const char* filter_str)
+
+Returns an opaque wrapper for sycl::ONEAPI::filter_selector object based on the passed in filter string.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- filter_str
+
+		- A C string providing a filter based on which to create a device_selector.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to a sycl::ONEAPI::filter_selector object.
+
+.. index:: pair: function; DPCTLGPUSelector_Create
+.. _doxid-d5/d8a/dpctl__sycl__device__selector__interface_8h_1a7601f3b9030672562a5730007cf20c17:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	DPCTLGPUSelector_Create()
+
+Returns an opaque wrapper for sycl::gpu_selector object.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to a sycl::gpu_selector object.
+
+.. index:: pair: function; DPCTLHostSelector_Create
+.. _doxid-d5/d8a/dpctl__sycl__device__selector__interface_8h_1ae46c9c8d925974a4b8eab91a53166df7:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	DPCTLHostSelector_Create()
+
+Returns an opaque wrapper for sycl::host_selector object.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to a sycl::host_selector object.
+
+.. index:: pair: function; DPCTLEvent_Delete
+.. _doxid-d5/d12/dpctl__sycl__event__interface_8h_1ae16fbf7465ec6d86a63e042100feba77:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLEvent_Delete(__dpctl_take :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef)
+
+Deletes the DPCTLSyclEventRef after casting it to a sycl::event.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- ERef
+
+		- An opaque DPCTLSyclEventRef pointer that would be freed.
+
+.. index:: pair: function; DPCTLEvent_Wait
+.. _doxid-d5/d12/dpctl__sycl__event__interface_8h_1ae8d88a108da4c44b1948f8b35b26f0d0:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API void
+	DPCTLEvent_Wait(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef)
+
+C-API wrapper for sycl::event.wait.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- ERef
+
+		- An opaque DPCTLSyclEventRef pointer on which to wait.
+
+.. index:: pair: function; DPCTLKernel_Delete
+.. _doxid-df/df4/dpctl__sycl__kernel__interface_8h_1a02cb1ddc64d9f78d228a5dc222c8862b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLKernel_Delete(__dpctl_take :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+
+Deletes the DPCTLSyclKernelRef after casting it to a sycl::kernel.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- DPCTLSyclKernelRef pointer to an OpenCL interoperability kernel.
+
+.. index:: pair: function; DPCTLKernel_GetFunctionName
+.. _doxid-df/df4/dpctl__sycl__kernel__interface_8h_1a6fcafc771756b6663800cc5e44ca38b0:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API const __dpctl_give char*
+	DPCTLKernel_GetFunctionName(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+
+Returns a C string for the kernel name.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- DPCTLSyclKernelRef pointer to an OpenCL interoperability kernel.
+
+
+
+.. rubric:: Returns:
+
+If a kernel name exists then returns it as a C string, else returns a nullptr.
+
+.. index:: pair: function; DPCTLKernel_GetNumArgs
+.. _doxid-df/df4/dpctl__sycl__kernel__interface_8h_1ae585c0ae9e5e1826ca24aac6f9b2a71d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLKernel_GetNumArgs(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+
+Returns the number of arguments for the OpenCL kernel.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- DPCTLSyclKernelRef pointer to an OpenCL interoperability kernel.
+
+
+
+.. rubric:: Returns:
+
+Returns the number of arguments for the OpenCL interoperability kernel.
+
+.. index:: pair: function; DPCTLPlatform_DeleteListOfBackends
+.. _doxid-d3/d02/dpctl__sycl__platform__interface_8h_1ad7d8cebb857860b70e011203f74f5cc4:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLPlatform_DeleteListOfBackends(__dpctl_take :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`* BEArr)
+
+Frees an array of DPCTLSyclBackendType enum values.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- BEArr
+
+		- An array of DPCTLSyclBackendType enum values to be freed.
+
+.. index:: pair: function; DPCTLPlatform_DumpInfo
+.. _doxid-d3/d02/dpctl__sycl__platform__interface_8h_1a43276373d1fb9526daa10593296fc6de:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLPlatform_DumpInfo()
+
+Prints out some selected info about all sycl::platform on the system.
+
+.. index:: pair: function; DPCTLPlatform_GetListOfNonHostBackends
+.. _doxid-d3/d02/dpctl__sycl__platform__interface_8h_1aece639b9e5d2f8ce4de7af6343a887d2:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`*
+	DPCTLPlatform_GetListOfNonHostBackends()
+
+Returns an array of the unique non-host DPCTLSyclBackendType values on the system.
+
+
+
+.. rubric:: Returns:
+
+An array of DPCTLSyclBackendType enum values.
+
+.. index:: pair: function; DPCTLPlatform_GetNumNonHostBackends
+.. _doxid-d3/d02/dpctl__sycl__platform__interface_8h_1a90a943806968222fdd816c42625d8f47:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLPlatform_GetNumNonHostBackends()
+
+Returns the number of unique non-host sycl backends on the system.
+
+
+
+.. rubric:: Returns:
+
+The number of unique sycl backends.
+
+.. index:: pair: function; DPCTLPlatform_GetNumNonHostPlatforms
+.. _doxid-d3/d02/dpctl__sycl__platform__interface_8h_1a302a3498814da9e47da281858a8312b1:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API size_t
+	DPCTLPlatform_GetNumNonHostPlatforms()
+
+Returns the number of non-host type sycl::platform available on the system.
+
+
+
+.. rubric:: Returns:
+
+The number of available sycl::platforms.
+
+.. index:: pair: function; DPCTLProgram_CreateFromOCLSource
+.. _doxid-dc/d02/dpctl__sycl__program__interface_8h_1ae1f8caf6c9bb8d8683b3717f63e56ae7:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>`
+	DPCTLProgram_CreateFromOCLSource(
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` Ctx,
+		__dpctl_keep const char* Source,
+		__dpctl_keep const char* CompileOpts
+		)
+
+Create a Sycl program from an OpenCL kernel source string.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- Ctx
+
+		- An opaque pointer to a sycl::context
+
+	*
+		- Source
+
+		- OpenCL source string
+
+	*
+		- CompileOpts
+
+		- Extra compiler flags (refer Sycl spec.)
+
+
+
+.. rubric:: Returns:
+
+A new SyclProgramRef pointer if the program creation succeeded, else returns NULL.
+
+.. index:: pair: function; DPCTLProgram_CreateFromSpirv
+.. _doxid-dc/d02/dpctl__sycl__program__interface_8h_1abcff5343cce7838ac340fc2344cf39f7:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API __dpctl_give :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>`
+	DPCTLProgram_CreateFromSpirv(
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` Ctx,
+		__dpctl_keep const void* IL,
+		size_t Length,
+		const char* CompileOpts
+		)
+
+Create a Sycl program from an OpenCL SPIR-V binary file.
+
+Sycl 1.2 does not expose any method to create a sycl::program from a SPIR-V IL file. To get around this limitation, we first creare a SYCL interoperability program and then create a SYCL program from the interoperability program. Currently, interoperability programs can be created for OpenCL and Level-0 backends.
+
+The feature to create a Sycl kernel from a SPIR-V IL binary will be available in Sycl 2.0 at which point this function may become deprecated.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- Ctx
+
+		- An opaque pointer to a sycl::context
+
+	*
+		- IL
+
+		- SPIR-V binary
+
+	*
+		- Length
+
+		- The size of the IL binary in bytes.
+
+	*
+		- CompileOpts
+
+		- Optional compiler flags used when compiling the SPIR-V binary.
+
+
+
+.. rubric:: Returns:
+
+A new SyclProgramRef pointer if the program creation succeeded, else returns NULL.
+
+.. index:: pair: function; DPCTLProgram_Delete
+.. _doxid-dc/d02/dpctl__sycl__program__interface_8h_1a29760f4984675c264bbdf11b92b89c08:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLProgram_Delete(__dpctl_take :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>` PRef)
+
+Frees the DPCTLSyclProgramRef pointer.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- PRef
+
+		- Opaque pointer to a sycl::program
+
+.. index:: pair: function; DPCTLProgram_GetKernel
+.. _doxid-dc/d02/dpctl__sycl__program__interface_8h_1a86fcd9c7af5bc38a056e237c89b3fa9c:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`
+	DPCTLProgram_GetKernel(
+		__dpctl_keep :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>` PRef,
+		__dpctl_keep const char* KernelName
+		)
+
+Returns the SyclKernel with given name from the program, if not found then return NULL.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- PRef
+
+		- Opaque pointer to a sycl::program
+
+	*
+		- KernelName
+
+		- Name of kernel
+
+
+
+.. rubric:: Returns:
+
+A SyclKernel reference if the kernel exists, else NULL
+
+.. index:: pair: function; DPCTLProgram_HasKernel
+.. _doxid-dc/d02/dpctl__sycl__program__interface_8h_1a9c266676f09dd0ed681adfe2d6b1ff06:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLProgram_HasKernel(
+		__dpctl_keep :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>` PRef,
+		__dpctl_keep const char* KernelName
+		)
+
+Return True if a SyclKernel with given name exists in the program, if not found then returns False.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- PRef
+
+		- Opaque pointer to a sycl::program
+
+	*
+		- KernelName
+
+		- Name of kernel
+
+
+
+.. rubric:: Returns:
+
+True if the kernel exists, else False
+
+.. index:: pair: function; DPCTLQueue_AreEq
+.. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1a8a957bd257ec77b0f57bcb3c35e1e479:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLQueue_AreEq(
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef1,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef2
+		)
+
+Checks if two DPCTLSyclQueueRef objects point to the same sycl::queue.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef1
+
+		- First opaque pointer to the sycl queue.
+
+	*
+		- QRef2
+
+		- Second opaque pointer to the sycl queue.
+
+
+
+.. rubric:: Returns:
+
+True if the underlying sycl::queue are same, false otherwise.
+
+.. index:: pair: function; DPCTLQueue_Delete
+.. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1ad09eba83cac8a984addeda6994a8172b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API void
+	DPCTLQueue_Delete(__dpctl_take :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
+
+Delete the pointer after casting it to sycl::queue.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- A DPCTLSyclQueueRef pointer that gets deleted.
+
+.. index:: pair: function; DPCTLQueue_GetBackend
+.. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1a8c3629a8627e9748cdec34688f6ce908:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`
+	DPCTLQueue_GetBackend(__dpctl_keep :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
+
+Returns the Sycl backend for the provided sycl::queue.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to the sycl queue.
+
+
+
+.. rubric:: Returns:
+
+A enum DPCTLSyclBackendType corresponding to the backed for the queue.
+
+.. index:: pair: function; DPCTLQueue_GetContext
+.. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1ad11e27086f2cee7f3d22f33de1a24bc9:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
+	DPCTLQueue_GetContext(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
+
+Returns the Sycl context for the queue.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to the sycl queue.
+
+
+
+.. rubric:: Returns:
+
+A DPCTLSyclContextRef pointer to the sycl context for the queue.
+
+.. index:: pair: function; DPCTLQueue_GetDevice
+.. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1a44095b28dfb5c357e6c065749e9aa8c0:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	DPCTLQueue_GetDevice(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
+
+returns the Sycl device for the queue.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to the sycl queue.
+
+
+
+.. rubric:: Returns:
+
+A DPCTLSyclDeviceRef pointer to the sycl device for the queue.
+
+.. index:: pair: function; DPCTLQueue_MemAdvise
+.. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1a0ef8f0c4ee3fd1e0289633ffe3d283dc:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLQueue_MemAdvise(
+		__dpctl_keep :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		const void* Ptr,
+		size_t Count,
+		int Advice
+		)
+
+C-API wrapper for sycl::queue::mem_advise, the function waits on an event till the operation completes.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to the sycl queue.
+
+	*
+		- Ptr
+
+		- An USM pointer to memory.
+
+	*
+		- Count
+
+		- A number of bytes to prefetch.
+
+	*
+		- Advice
+
+		- Device-defined advice for the specified allocation. A value of 0 reverts the advice for Ptr to the default behavior.
+
+.. index:: pair: function; DPCTLQueue_Memcpy
+.. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1a25103f4d9872482ce6efde712a807979:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLQueue_Memcpy(
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		void* Dest,
+		const void* Src,
+		size_t Count
+		)
+
+C-API wrapper for sycl::queue::memcpy, the function waits on an event till the memcpy operation completes.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to the sycl queue.
+
+	*
+		- Dest
+
+		- An USM pointer to the destination memory.
+
+	*
+		- Src
+
+		- An USM pointer to the source memory.
+
+	*
+		- Count
+
+		- A number of bytes to copy.
+
+.. index:: pair: function; DPCTLQueue_Prefetch
+.. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1a4281ab0ca2559019d062411477f85a01:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLQueue_Prefetch(
+		__dpctl_keep :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		const void* Ptr,
+		size_t Count
+		)
+
+C-API wrapper for sycl::queue::prefetch, the function waits on an event till the prefetch operation completes.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to the sycl queue.
+
+	*
+		- Ptr
+
+		- An USM pointer to memory.
+
+	*
+		- Count
+
+		- A number of bytes to prefetch.
+
+.. index:: pair: function; DPCTLQueue_SubmitNDRange
+.. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1aac9356153363bb89ade3116816fca94b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	DPCTLQueue_SubmitNDRange(
+		__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		__dpctl_keep void** Args,
+		__dpctl_keep const :ref:`DPCTLKernelArgType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>`* ArgTypes,
+		size_t NArgs,
+		__dpctl_keep const size_t gRange[3],
+		__dpctl_keep const size_t lRange[3],
+		size_t NDims,
+		__dpctl_keep const :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`* DepEvents,
+		size_t NDepEvents
+		)
+
+Submits the kernel to the specified queue with the provided nd_range argument.
+
+A wrapper over sycl::queue.submit(). The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as parallel_for(nd_range<NRange>, \*unwrap(KRef)).
+
+Todo sycl::buffer arguments are not supported yet.
+
+Add support for id<Dims> WorkItemOffset
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- Opaque pointer to an OpenCL interoperability kernel wrapped inside a sycl::kernel.
+
+	*
+		- QRef
+
+		- Opaque pointer to the sycl::queue where the kernel will be enqueued.
+
+	*
+		- Args
+
+		- An array of void\* pointers that represent the kernel arguments for the kernel.
+
+	*
+		- ArgTypes
+
+		- An array of DPCTLKernelArgType enum values that represent the type of each kernel argument.
+
+	*
+		- NArgs
+
+		- Size of Args.
+
+	*
+		- gRange
+
+		- Defines the overall dimension of the dispatch for the kernel. The array can have up to three dimensions.
+
+	*
+		- lRange
+
+		- Defines the iteration domain of a single work-group in a parallel dispatch. The array can have up to three dimensions.
+
+	*
+		- NDims
+
+		- The number of dimensions for both local and global ranges.
+
+	*
+		- DepEvents
+
+		- List of dependent DPCTLSyclEventRef objects (events) for the kernel. We call sycl::handler.depends_on for each of the provided events.
+
+	*
+		- NDepEvents
+
+		- Size of the DepEvents list.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to the sycl::event returned by the sycl::queue.submit() function.
+
+.. index:: pair: function; DPCTLQueue_SubmitRange
+.. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1a9ed0d59f789b4fb0959b0af022fdbe23:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	DPCTLQueue_SubmitRange(
+		__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		__dpctl_keep void** Args,
+		__dpctl_keep const :ref:`DPCTLKernelArgType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>`* ArgTypes,
+		size_t NArgs,
+		__dpctl_keep const size_t Range[3],
+		size_t NRange,
+		__dpctl_keep const :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`* DepEvents,
+		size_t NDepEvents
+		)
+
+Submits the kernel to the specified queue with the provided range argument.
+
+A wrapper over sycl::queue.submit(). The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as parallel_for(range<NRange>, \*unwrap(KRef)).
+
+Todo sycl::buffer arguments are not supported yet.
+
+Add support for id<Dims> WorkItemOffset
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- Opaque pointer to an OpenCL interoperability kernel wrapped inside a sycl::kernel.
+
+	*
+		- QRef
+
+		- Opaque pointer to the sycl::queue where the kernel will be enqueued.
+
+	*
+		- Args
+
+		- An array of void\* pointers that represent the kernel arguments for the kernel.
+
+	*
+		- ArgTypes
+
+		- An array of DPCTLKernelArgType enum values that represent the type of each kernel argument.
+
+	*
+		- NArgs
+
+		- Size of Args and ArgTypes.
+
+	*
+		- Range
+
+		- Defines the overall dimension of the dispatch for the kernel. The array can have up to three dimensions.
+
+	*
+		- NRange
+
+		- Size of the gRange array.
+
+	*
+		- DepEvents
+
+		- List of dependent DPCTLSyclEventRef objects (events) for the kernel. We call sycl::handler.depends_on for each of the provided events.
+
+	*
+		- NDepEvents
+
+		- Size of the DepEvents list.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to the sycl::event returned by the sycl::queue.submit() function.
+
+.. index:: pair: function; DPCTLQueue_Wait
+.. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1a3411357b2a09bad80be5b4fee8a8ed44:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLQueue_Wait(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
+
+Calls the sycl::queue.submit function to do a blocking wait on all enqueued tasks in the queue.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- Opaque pointer to a sycl::queue.
+
+.. index:: pair: function; DPCTLQueueMgr_GetCurrentQueue
+.. _doxid-d1/dac/dpctl__sycl__queue__manager_8h_1ac1533b1f3bc20f258c45af1346e0e9d9:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
+	DPCTLQueueMgr_GetCurrentQueue()
+
+Get the sycl::queue object that is currently activated for this thread.
+
+
+
+.. rubric:: Returns:
+
+A copy of the current (top of the stack) sycl::queue is returned wrapped inside an opaque DPCTLSyclQueueRef pointer.
+
+.. index:: pair: function; DPCTLQueueMgr_GetNumActivatedQueues
+.. _doxid-d1/dac/dpctl__sycl__queue__manager_8h_1a563f8335ead48d3586b9837457cd3c13:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLQueueMgr_GetNumActivatedQueues()
+
+Get the number of activated queues not including the global or default queue.
+
+
+
+.. rubric:: Returns:
+
+The number of activated queues.
+
+.. index:: pair: function; DPCTLQueueMgr_GetNumQueues
+.. _doxid-d1/dac/dpctl__sycl__queue__manager_8h_1ab7fceeb737c6759b799c92b597070d52:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLQueueMgr_GetNumQueues(
+		:ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>` BETy,
+		:ref:`DPCTLSyclDeviceType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>` DeviceTy
+		)
+
+Get the number of available queues for given backend and device type combination.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- BETy
+
+		- Type of Sycl backend.
+
+	*
+		- DeviceTy
+
+		- Type of Sycl device.
+
+
+
+.. rubric:: Returns:
+
+The number of available queues.
+
+.. index:: pair: function; DPCTLQueueMgr_GetQueue
+.. _doxid-d1/dac/dpctl__sycl__queue__manager_8h_1a9cfce59d7bfc5033186c20ab6954e737:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
+	DPCTLQueueMgr_GetQueue(
+		:ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>` BETy,
+		:ref:`DPCTLSyclDeviceType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>` DeviceTy,
+		size_t DNum
+		)
+
+Get a sycl::queue object of the specified type and device id.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- BETy
+
+		- A valid Sycl backend value.
+
+	*
+		- DeviceTy
+
+		- The type of Sycl device (sycl_device_type)
+
+	*
+		- DNum
+
+		- Device id for the device (defaults to 0)
+
+
+
+.. rubric:: Returns:
+
+A copy of the sycl::queue corresponding to the device is returned wrapped inside a DPCTLSyclDeviceType pointer. A runtime_error exception is raised if no such device exists.
+
+.. index:: pair: function; DPCTLQueueMgr_GetQueueFromContextAndDevice
+.. _doxid-d1/dac/dpctl__sycl__queue__manager_8h_1a81b6f33ea0a17c9513a9ea19ddaa3544:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
+	DPCTLQueueMgr_GetQueueFromContextAndDevice(
+		__dpctl_keep :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef,
+		__dpctl_keep :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef
+		)
+
+Creates a new instance of SYCL queue from SYCL context and SYCL device.
+
+The instance is not placed into queue manager. The user assumes ownership of the queue reference and should deallocate it using DPCTLQueue_Delete.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- CRef
+
+		- Sycl context reference
+
+	*
+		- DRef
+
+		- Sycl device reference
+
+
+
+.. rubric:: Returns:
+
+A copy of the sycl::queue created from given context and device references.
+
+.. index:: pair: function; DPCTLQueueMgr_IsCurrentQueue
+.. _doxid-d1/dac/dpctl__sycl__queue__manager_8h_1a77d39c59561d3f427a1dde1ce81652db:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
+
+Returns True if the passed in queue and the current queue are the same, else returns False.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to a sycl::queue.
+
+
+
+.. rubric:: Returns:
+
+True or False depending on whether the QRef argument is the same as the currently activated queue.
+
+.. index:: pair: function; DPCTLQueueMgr_PopQueue
+.. _doxid-d1/dac/dpctl__sycl__queue__manager_8h_1a60e20b64f0c70866e2e08442962fd621:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLQueueMgr_PopQueue()
+
+Pops the top of stack element from DPCTL's stack of activated sycl::queue objects.
+
+DPCTLPopSyclQueue only removes the reference from the DPCTL stack of sycl::queue objects. Any instance of the popped queue that were previously acquired by calling DPCTLPushSyclQueue() or :ref:`DPCTLQueueMgr_GetCurrentQueue() <doxid-d1/dac/dpctl__sycl__queue__manager_8h_1ac1533b1f3bc20f258c45af1346e0e9d9>` needs to be freed separately. In addition, a runtime_error is thrown when the stack contains only one sycl::queue, i.e., the default queue.
+
+.. index:: pair: function; DPCTLQueueMgr_PushQueue
+.. _doxid-d1/dac/dpctl__sycl__queue__manager_8h_1a3e7def4dc72567e111b633b1d8f84d6d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
+	DPCTLQueueMgr_PushQueue(
+		:ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>` BETy,
+		:ref:`DPCTLSyclDeviceType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>` DeviceTy,
+		size_t DNum
+		)
+
+Pushes a new sycl::queue object to the top of DPCTL's thread-local stack of a "activated" queues, and returns a copy of the queue to caller.
+
+The DPCTL queue manager maintains a thread-local stack of sycl::queue objects to facilitate nested parallelism. The sycl::queue at the top of the stack is termed as the currently activated queue, and is always the one returned by :ref:`DPCTLQueueMgr_GetCurrentQueue() <doxid-d1/dac/dpctl__sycl__queue__manager_8h_1ac1533b1f3bc20f258c45af1346e0e9d9>`. DPCTLPushSyclQueueToStack creates a new sycl::queue corresponding to the specified device and pushes it to the top of the stack. A copy of the sycl::queue is returned to the caller wrapped inside the opaque DPCTLSyclQueueRef pointer. A runtime_error exception is thrown when a new sycl::queue could not be created for the specified device.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- BETy
+
+		- Type of Sycl backend.
+
+	*
+		- DeviceTy
+
+		- The type of Sycl device (sycl_device_type)
+
+	*
+		- DNum
+
+		- Device id for the device (defaults to 0)
+
+
+
+.. rubric:: Returns:
+
+A copy of the sycl::queue that was pushed to the top of DPCTL's stack of sycl::queue objects. Nullptr is returned if no such device exists.
+
+.. index:: pair: function; DPCTLQueueMgr_SetAsDefaultQueue
+.. _doxid-d1/dac/dpctl__sycl__queue__manager_8h_1a1591403f0924782109219208595d0ec7:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
+	DPCTLQueueMgr_SetAsDefaultQueue(
+		:ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>` BETy,
+		:ref:`DPCTLSyclDeviceType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>` DeviceTy,
+		size_t DNum
+		)
+
+Set the default DPCTL queue to the sycl::queue for the given backend and device type combination and return a DPCTLSyclQueueRef for that queue. If no queue was created Null is returned to caller.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- BETy
+
+		- Type of Sycl backend.
+
+	*
+		- DeviceTy
+
+		- The type of Sycl device (sycl_device_type)
+
+	*
+		- DNum
+
+		- Device id for the device
+
+
+
+.. rubric:: Returns:
+
+A copy of the sycl::queue that was set as the new default queue. If no queue could be created then returns Null.
+
+.. index:: pair: function; DPCTLaligned_alloc_device
+.. _doxid-de/d29/dpctl__sycl__usm__interface_8h_1a40c3e68d157d775bbe6daa188b84b3e3:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
+	DPCTLaligned_alloc_device(
+		size_t alignment,
+		size_t size,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
+		)
+
+Create USM device memory.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- alignment
+
+		- Allocation's byte alignment
+
+	*
+		- size
+
+		- Number of bytes to allocate
+
+	*
+		- QRef
+
+		- Sycl queue reference to use in allocation
+
+
+
+.. rubric:: Returns:
+
+The pointer to USM device memory with requested alignment. On failure, returns nullptr.
+
+.. index:: pair: function; DPCTLaligned_alloc_host
+.. _doxid-de/d29/dpctl__sycl__usm__interface_8h_1a327bba1e6a5a1f6922e74ab6914e58ff:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
+	DPCTLaligned_alloc_host(
+		size_t alignment,
+		size_t size,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
+		)
+
+Create USM host memory.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- alignment
+
+		- Allocation's byte alignment
+
+	*
+		- size
+
+		- Number of bytes to allocate
+
+	*
+		- QRef
+
+		- Sycl queue reference to use in allocation
+
+
+
+.. rubric:: Returns:
+
+The pointer to USM host memory with the requested alignment. On failure, returns nullptr.
+
+.. index:: pair: function; DPCTLaligned_alloc_shared
+.. _doxid-de/d29/dpctl__sycl__usm__interface_8h_1a7c3e58848a979723dc350d2a8016edd8:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
+	DPCTLaligned_alloc_shared(
+		size_t alignment,
+		size_t size,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
+		)
+
+Create USM shared memory.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- alignment
+
+		- Allocation's byte alignment
+
+	*
+		- size
+
+		- Number of bytes to allocate
+
+	*
+		- QRef
+
+		- Sycl queue reference to use in allocation
+
+
+
+.. rubric:: Returns:
+
+The pointer to USM shared memory with the requested alignment. On failure, returns nullptr.
+
+.. index:: pair: function; DPCTLfree_with_context
+.. _doxid-de/d29/dpctl__sycl__usm__interface_8h_1ad1da9c1cb7fca0b3c1bc0edc9467c0a9:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLfree_with_context(
+		__dpctl_take :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef
+		)
+
+Free USM memory.
+
+.. index:: pair: function; DPCTLfree_with_queue
+.. _doxid-de/d29/dpctl__sycl__usm__interface_8h_1a0d8486b09ea0a677a3fb6cbe677f8633:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLfree_with_queue(
+		__dpctl_take :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
+		)
+
+Free USM memory.
+
+USM pointer must have been allocated using the same context as the one used to construct the queue.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- MRef
+
+		- USM pointer to free
+
+	*
+		- QRef
+
+		- Sycl queue reference to use.
+
+.. index:: pair: function; DPCTLmalloc_device
+.. _doxid-de/d29/dpctl__sycl__usm__interface_8h_1ac1927ffcb3ca7ef43366a8b64e211ef2:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
+	DPCTLmalloc_device(
+		size_t size,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
+		)
+
+Create USM device memory.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- size
+
+		- Number of bytes to allocate
+
+	*
+		- QRef
+
+		- Sycl queue reference to use in allocation
+
+
+
+.. rubric:: Returns:
+
+The pointer to USM device memory. On failure, returns nullptr.
+
+.. index:: pair: function; DPCTLmalloc_host
+.. _doxid-de/d29/dpctl__sycl__usm__interface_8h_1a699b56970ac78f3b3ca87a2ad6ff4615:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
+	DPCTLmalloc_host(
+		size_t size,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
+		)
+
+Create USM host memory.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- size
+
+		- Number of bytes to allocate
+
+	*
+		- QRef
+
+		- Sycl queue reference to use in allocation
+
+
+
+.. rubric:: Returns:
+
+The pointer to USM host memory. On failure, returns nullptr.
+
+.. index:: pair: function; DPCTLmalloc_shared
+.. _doxid-de/d29/dpctl__sycl__usm__interface_8h_1ad303be21cd2fb9d8637595cdfbf34869:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_C_EXTERN_C_BEGIN DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
+	DPCTLmalloc_shared(
+		size_t size,
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
+		)
+
+Create USM shared memory.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- size
+
+		- Number of bytes to allocate
+
+	*
+		- QRef
+
+		- Sycl queue reference to use in allocation
+
+
+
+.. rubric:: Returns:
+
+The pointer to USM shared memory. On failure, returns nullptr.
+
+.. index:: pair: function; DPCTLUSM_GetPointerDevice
+.. _doxid-de/d29/dpctl__sycl__usm__interface_8h_1a7ebb5012408e40e3e78b4da551da8412:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	DPCTLUSM_GetPointerDevice(
+		__dpctl_keep const :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef
+		)
+
+Get the device associated with USM pointer.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- MRef
+
+		- USM pointer
+
+	*
+		- CRef
+
+		- Sycl context reference associated with the pointer
+
+
+
+.. rubric:: Returns:
+
+A DPCTLSyclDeviceRef pointer to the sycl device.
+
+.. index:: pair: function; DPCTLUSM_GetPointerType
+.. _doxid-de/d29/dpctl__sycl__usm__interface_8h_1a1e8658653d946578f1b4deb3333ec41c:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	const DPCTL_API char*
+	DPCTLUSM_GetPointerType(
+		__dpctl_keep const :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef
+		)
+
+Get pointer type.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- MRef
+
+		- USM Memory
+
+	*
+		- CRef
+
+		- Sycl context reference associated with the pointer
+
+
+
+.. rubric:: Returns:
+
+"host", "device", "shared" or "unknown"
+

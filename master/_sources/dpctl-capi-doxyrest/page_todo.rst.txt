@@ -1,0 +1,28 @@
+.. index:: pair: page; Todo List
+.. _doxid-dd/da0/todo:
+
+Todo List
+=========
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- Global :ref:`DPCTLKernelArgType <doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>`
+
+		- :target:`doxid-dd/da0/todo_1_todo000001` Add support for sycl::buffer
+
+	*
+		- Global :ref:`DPCTLQueue_SubmitNDRange <doxid-d9/db1/group__QueueInterface_1gaac9356153363bb89ade3116816fca94b>` (\__dpctl_keep const DPCTLSyclKernelRef KRef, \__dpctl_keep const DPCTLSyclQueueRef QRef, \__dpctl_keep void \*\*Args, \__dpctl_keep const DPCTLKernelArgType \*ArgTypes, size_t NArgs, \__dpctl_keep const size_t gRange[3], \__dpctl_keep const size_t lRange[3], size_t NDims, \__dpctl_keep const DPCTLSyclEventRef \*DepEvents, size_t NDepEvents)
+
+		- :target:`doxid-dd/da0/todo_1_todo000003` sycl::buffer arguments are not supported yet.
+		  
+		  Add support for id<Dims> WorkItemOffset
+
+	*
+		- Global :ref:`DPCTLQueue_SubmitRange <doxid-d9/db1/group__QueueInterface_1ga9ed0d59f789b4fb0959b0af022fdbe23>` (\__dpctl_keep const DPCTLSyclKernelRef KRef, \__dpctl_keep const DPCTLSyclQueueRef QRef, \__dpctl_keep void \*\*Args, \__dpctl_keep const DPCTLKernelArgType \*ArgTypes, size_t NArgs, \__dpctl_keep const size_t Range[3], size_t NRange, \__dpctl_keep const DPCTLSyclEventRef \*DepEvents, size_t NDepEvents)
+
+		- :target:`doxid-dd/da0/todo_1_todo000002` sycl::buffer arguments are not supported yet.
+		  
+		  Add support for id<Dims> WorkItemOffset
+

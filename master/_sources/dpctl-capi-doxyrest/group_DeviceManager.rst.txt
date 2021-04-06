@@ -1,0 +1,361 @@
+.. index:: pair: group; Device Manager
+.. _doxid-d0/d15/group__DeviceManager:
+
+Device Manager
+==============
+
+.. toctree::
+	:hidden:
+
+Overview
+~~~~~~~~
+
+Helper functions for sycl::device objects that do not directly map to any sycl::device member function. :ref:`More...<details-d0/d15/group__DeviceManager>`
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	
+	// typedefs
+
+	typedef struct DPCTLDeviceVector* :target:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`;
+
+	// global functions
+
+	DPCTL_API :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
+	:ref:`DPCTLDeviceMgr_GetCachedContext<doxid-d0/d15/group__DeviceManager_1gabb587f003e809eaef26d7dbd253ec88e>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
+	:ref:`DPCTLDeviceMgr_GetDevices<doxid-d0/d15/group__DeviceManager_1gab7f1386fee08d194d4ad046221c02e18>`(int device_identifier);
+
+	DPCTL_API size_t
+	:ref:`DPCTLDeviceMgr_GetNumDevices<doxid-d0/d15/group__DeviceManager_1ga2578ffe4d41ef3adbb690ea99bb5f664>`(int device_identifier);
+
+	DPCTL_API void
+	:ref:`DPCTLDeviceMgr_PrintDeviceInfo<doxid-d0/d15/group__DeviceManager_1ga4d424acf4bfc1365804d43aad4238846>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API void
+	:ref:`DPCTLDeviceVector_Clear<doxid-d0/d15/group__DeviceManager_1gad1a650d77c292d10e48f76b5d10ec37f>`(__dpctl_keep :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` VRef);
+
+	__dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
+	:ref:`DPCTLDeviceVector_Create<doxid-d0/d15/group__DeviceManager_1ga574c840aab7f26bf689c3c7c8f04f571>`();
+
+	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
+	:ref:`DPCTLDeviceVector_CreateFromArray<doxid-d0/d15/group__DeviceManager_1ga5d498e683c8a82f38b74bccf89ab85df>`(
+		size_t len,
+		__dpctl_keep :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`* elems
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLDeviceVector_Delete<doxid-d0/d15/group__DeviceManager_1gaf53c39c7f54bf3d212a2fd8343ab0138>`(__dpctl_take :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` VRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	:ref:`DPCTLDeviceVector_GetAt<doxid-d0/d15/group__DeviceManager_1gaecf00f881483a91a46060bb21a12c12b>`(
+		__dpctl_keep :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` VRef,
+		size_t index
+		);
+
+	DPCTL_API size_t
+	:ref:`DPCTLDeviceVector_Size<doxid-d0/d15/group__DeviceManager_1ga792de109fa69610d378487cdaf23cf7a>`(__dpctl_keep :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` VRef);
+
+.. _details-d0/d15/group__DeviceManager:
+
+Detailed Documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+Helper functions for sycl::device objects that do not directly map to any sycl::device member function.
+
+Global Functions
+----------------
+
+.. index:: pair: function; DPCTLDeviceMgr_GetCachedContext
+.. _doxid-d0/d15/group__DeviceManager_1gabb587f003e809eaef26d7dbd253ec88e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
+	DPCTLDeviceMgr_GetCachedContext(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+If the DPCTLSyclDeviceRef argument is a root device, then this function returns a cached default SYCL context for that device.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- A pointer to a sycl::device that will be used to search an internal map containing a cached "default" sycl::context for the device.
+
+
+
+.. rubric:: Returns:
+
+A DPCTLSyclContextRef associated with the :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` argument passed to the function. If the :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` is not found in the cache, then returns a nullptr.
+
+.. index:: pair: function; DPCTLDeviceMgr_GetDevices
+.. _doxid-d0/d15/group__DeviceManager_1gab7f1386fee08d194d4ad046221c02e18:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
+	DPCTLDeviceMgr_GetDevices(int device_identifier)
+
+Returns a pointer to a std::vector<sycl::DPCTLSyclDeviceRef> containing the set of :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` pointers matching the passed in device_identifier bit flag.
+
+The device_identifier can be a combination of :ref:`DPCTLSyclBackendType <doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>` and :ref:`DPCTLSyclDeviceType <doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>` bit flags. The function returns all devices that match the specified bit flags. For example,
+
+.. ref-code-block:: cpp
+
+	// Returns all opencl devices
+	DPCTLDeviceMgr_GetDevices(DPCTLSyclBackendType::DPCTL_OPENCL);
+	
+	// Returns all opencl gpu devices
+	DPCTLDeviceMgr_GetDevices(
+	    DPCTLSyclBackendType::DPCTL_OPENCL|DPCTLSyclDeviceType::DPCTL_GPU);
+	
+	// Returns all gpu devices
+	DPCTLDeviceMgr_GetDevices(DPCTLSyclDeviceType::DPCTL_GPU);
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- device_identifier
+
+		- A bitflag that can be any combination of :ref:`DPCTLSyclBackendType <doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>` and :ref:`DPCTLSyclDeviceType <doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>` enum values.
+
+
+
+.. rubric:: Returns:
+
+A :ref:`DPCTLDeviceVectorRef <doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` containing :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` objects that match the device identifier bit flags.
+
+.. index:: pair: function; DPCTLDeviceMgr_GetNumDevices
+.. _doxid-d0/d15/group__DeviceManager_1ga2578ffe4d41ef3adbb690ea99bb5f664:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLDeviceMgr_GetNumDevices(int device_identifier)
+
+Get the number of available devices for given backend and device type combination.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- device_identifier
+
+		- Identifies a device using a combination of :ref:`DPCTLSyclBackendType <doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>` and :ref:`DPCTLSyclDeviceType <doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>` enum values. The argument can be either one of the enum values or a bitwise OR-ed combination.
+
+
+
+.. rubric:: Returns:
+
+The number of available devices satisfying the condition specified by the device_identifier bit flag.
+
+.. index:: pair: function; DPCTLDeviceMgr_PrintDeviceInfo
+.. _doxid-d0/d15/group__DeviceManager_1ga4d424acf4bfc1365804d43aad4238846:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLDeviceMgr_PrintDeviceInfo(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Prints out the info::deivice attributes for the device that are currently supported by dpctl.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- A :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` opaque pointer.
+
+.. index:: pair: function; DPCTLDeviceVector_Clear
+.. _doxid-d0/d15/group__DeviceManager_1gad1a650d77c292d10e48f76b5d10ec37f:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLDeviceVector_Clear(__dpctl_keep :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` VRef)
+
+Delete all the elements of the std::vector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- VRef
+
+		- Opaque pointer to a vector.
+
+.. index:: pair: function; DPCTLDeviceVector_Create
+.. _doxid-d0/d15/group__DeviceManager_1ga574c840aab7f26bf689c3c7c8f04f571:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	__dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
+	DPCTLDeviceVector_Create()
+
+Create an opaque pointer to a std::vector of opaque pointers wrapping the SYCL data type.
+
+
+
+.. rubric:: Returns:
+
+Returns a new opaque pointer to a vector.
+
+.. index:: pair: function; DPCTLDeviceVector_CreateFromArray
+.. _doxid-d0/d15/group__DeviceManager_1ga5d498e683c8a82f38b74bccf89ab85df:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
+	DPCTLDeviceVector_CreateFromArray(
+		size_t len,
+		__dpctl_keep :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`* elems
+		)
+
+Create an opaque pointer to a std::vector created from the input raw array. The elements of the input array are deep copied before inserting the copies into the vector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- len
+
+		- Number of elements in the input array.
+
+	*
+		- elems
+
+		- A C array whose elements will be copied into the returned vector.
+
+
+
+.. rubric:: Returns:
+
+Returns a new opaque pointer to a vector.
+
+.. index:: pair: function; DPCTLDeviceVector_Delete
+.. _doxid-d0/d15/group__DeviceManager_1gaf53c39c7f54bf3d212a2fd8343ab0138:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLDeviceVector_Delete(__dpctl_take :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` VRef)
+
+Delete all elements in the vector and then delete the vector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- VRef
+
+		- Opaque pointer to a vector to be deleted.
+
+.. index:: pair: function; DPCTLDeviceVector_GetAt
+.. _doxid-d0/d15/group__DeviceManager_1gaecf00f881483a91a46060bb21a12c12b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	DPCTLDeviceVector_GetAt(
+		__dpctl_keep :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` VRef,
+		size_t index
+		)
+
+Returns the element at the specified index.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- VRef
+
+		- Opaque pointer to a vector.
+
+	*
+		- index
+
+		- The index postion of the element to be returned.
+
+
+
+.. rubric:: Returns:
+
+The element at the specified postion, if the index position is out of bounds then a nullptr is returned.
+
+.. index:: pair: function; DPCTLDeviceVector_Size
+.. _doxid-d0/d15/group__DeviceManager_1ga792de109fa69610d378487cdaf23cf7a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLDeviceVector_Size(__dpctl_keep :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` VRef)
+
+Returns the number of elements in the vector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- VRef
+
+		- Opaque pointer to a vector.
+
+
+
+.. rubric:: Returns:
+
+The current size of the vector.
+
