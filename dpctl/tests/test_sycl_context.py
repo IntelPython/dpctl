@@ -382,3 +382,27 @@ def test_context_can_be_used_in_queue2(valid_filter):
         pytest.skip()
     ctx = dpctl.SyclContext(d)
     q = dpctl.SyclQueue(ctx, d)
+
+
+def test_context_multi_device():
+    try:
+        d = dpctl.SyclDevice("cpu")
+    except ValueError:
+        pytest.skip()
+    if d.default_selector_score < 0:
+        pytest.skip()
+    n = d.max_compute_units
+    n1 = n // 2
+    n2 = n - n1
+    if n1 == 0 or n2 == 0:
+        pytest.skip()
+    d1, d2 = d.create_sub_devices(partition=(n1, n2))
+    ctx = dpctl.SyclContext((d1, d2))
+    assert ctx.device_count == 2
+    q1 = dpctl.SyclQueue(ctx, d1)
+    q2 = dpctl.SyclQueue(ctx, d2)
+    import dpctl.memory as dpmem
+
+    shmem_1 = dpmem.MemoryUSMShared(256, queue=q1)
+    shmem_2 = dpmem.MemoryUSMDevice(256, queue=q2)
+    shmem_2.copy_from_device(shmem_1)
