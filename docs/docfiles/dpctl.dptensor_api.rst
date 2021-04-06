@@ -1,8 +1,8 @@
 .. _dpctl.dptensor_api:
 
-#########################
-dpctl dptensor Python API
-#########################
+##############
+dpctl.dptensor
+##############
 
 .. automodule:: dpctl.dptensor
     :members:
