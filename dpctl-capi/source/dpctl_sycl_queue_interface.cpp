@@ -119,14 +119,16 @@ bool set_kernel_arg(handler &cgh,
 std::unique_ptr<property_list> create_property_list(int properties)
 {
     std::unique_ptr<property_list> propList;
-    if (properties & (DPCTL_ENABLE_PROFILING | DPCTL_IN_ORDER)) {
-        propList = std::make_unique<property_list>(
-            sycl::property::queue::enable_profiling(),
-            sycl::property::queue::in_order());
-    }
-    else if (properties & DPCTL_ENABLE_PROFILING) {
-        propList = std::make_unique<property_list>(
-            sycl::property::queue::enable_profiling());
+    if (properties & DPCTL_ENABLE_PROFILING) {
+        if (properties & DPCTL_IN_ORDER) {
+            propList = std::make_unique<property_list>(
+                sycl::property::queue::enable_profiling(),
+                sycl::property::queue::in_order());
+        }
+        else {
+            propList = std::make_unique<property_list>(
+                sycl::property::queue::enable_profiling());
+        }
     }
     else if (properties & DPCTL_IN_ORDER) {
         propList =
