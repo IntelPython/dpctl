@@ -33,6 +33,12 @@
 
 DPCTL_C_EXTERN_C_BEGIN
 
+/*! \addtogroup PlatformManager Platform class helper functions
+ * Helper functions for ``sycl::platform`` objects that do not directly map to
+ * any ``sycl::platform`` member function.
+ * @{
+ */
+
 // Declares a set of types abd functions to deal with vectors of
 // DPCTLSyclPlatformRef. Refer dpctl_vector_macros.h
 DPCTL_DECLARE_VECTOR(Platform)
@@ -43,5 +49,7 @@ DPCTL_DECLARE_VECTOR(Platform)
  */
 DPCTL_API
 void DPCTLPlatformMgr_PrintInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef);
+
+/*! @} */
 
 DPCTL_C_EXTERN_C_END

@@ -33,6 +33,10 @@
 
 DPCTL_C_EXTERN_C_BEGIN
 
+/**
+ * @defgroup USMInterface USM Interface
+ */
+
 /*!
  * @brief Create USM shared memory.
  *
@@ -40,6 +44,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * @param    QRef     Sycl queue reference to use in allocation
  *
  * @return The pointer to USM shared memory. On failure, returns nullptr.
+ * @ingroup USMInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
@@ -54,6 +59,7 @@ DPCTLmalloc_shared(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
  *
  * @return The pointer to USM shared memory with the requested alignment.
  * On failure, returns nullptr.
+ * @ingroup USMInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
@@ -68,6 +74,7 @@ DPCTLaligned_alloc_shared(size_t alignment,
  * @param    QRef     Sycl queue reference to use in allocation
  *
  * @return The pointer to USM host memory. On failure, returns nullptr.
+ * @ingroup USMInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
@@ -82,6 +89,7 @@ DPCTLmalloc_host(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
  *
  * @return The pointer to USM host memory with the requested alignment.
  * On failure, returns nullptr.
+ * @ingroup USMInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
@@ -96,6 +104,7 @@ DPCTLaligned_alloc_host(size_t alignment,
  * @param    QRef     Sycl queue reference to use in allocation
  *
  * @return The pointer to USM device memory. On failure, returns nullptr.
+ * @ingroup USMInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
@@ -110,6 +119,7 @@ DPCTLmalloc_device(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef);
  *
  * @return The pointer to USM device memory with requested alignment.
  * On failure, returns nullptr.
+ * @ingroup USMInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclUSMRef
@@ -125,6 +135,7 @@ DPCTLaligned_alloc_device(size_t alignment,
  *
  * USM pointer must have been allocated using the same context as the one
  * used to construct the queue.
+ * @ingroup USMInterface
  */
 DPCTL_API
 void DPCTLfree_with_queue(__dpctl_take DPCTLSyclUSMRef MRef,
@@ -132,7 +143,9 @@ void DPCTLfree_with_queue(__dpctl_take DPCTLSyclUSMRef MRef,
 
 /*!
  * @brief Free USM memory.
- *
+ * @param   MRef      USM pointer to free
+ * @param   CRef      Sycl context reference to use.
+ * @ingroup USMInterface
  */
 DPCTL_API
 void DPCTLfree_with_context(__dpctl_take DPCTLSyclUSMRef MRef,
@@ -145,6 +158,7 @@ void DPCTLfree_with_context(__dpctl_take DPCTLSyclUSMRef MRef,
  * @param    CRef      Sycl context reference associated with the pointer
  *
  * @return "host", "device", "shared" or "unknown"
+ * @ingroup USMInterface
  */
 DPCTL_API
 const char *
@@ -158,6 +172,7 @@ DPCTLUSM_GetPointerType(__dpctl_keep const DPCTLSyclUSMRef MRef,
  * @param  CRef    Sycl context reference associated with the pointer
  *
  * @return A DPCTLSyclDeviceRef pointer to the sycl device.
+ * @ingroup USMInterface
  */
 DPCTL_API
 DPCTLSyclDeviceRef
