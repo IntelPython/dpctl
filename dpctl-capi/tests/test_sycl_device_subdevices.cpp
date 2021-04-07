@@ -38,6 +38,9 @@ using namespace cl::sycl;
 
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef);
 
+const DPCTLPartitionAffinityDomainType a_dpctl_domain =
+    DPCTLPartitionAffinityDomainType::not_applicable;
+
 struct TestDPCTLSyclDeviceInterface
     : public ::testing::TestWithParam<const char *>
 {
@@ -142,7 +145,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityNuma)
 
     info::partition_affinity_domain domain =
         info::partition_affinity_domain::numa;
-    DPCTLPartitionAffinityDomainType dpctl_domain;
+    DPCTLPartitionAffinityDomainType dpctl_domain = a_dpctl_domain;
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
@@ -178,7 +181,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL4Cache)
 
     info::partition_affinity_domain domain =
         info::partition_affinity_domain::L4_cache;
-    DPCTLPartitionAffinityDomainType dpctl_domain;
+    DPCTLPartitionAffinityDomainType dpctl_domain = a_dpctl_domain;
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
@@ -214,7 +217,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL3Cache)
 
     info::partition_affinity_domain domain =
         info::partition_affinity_domain::L3_cache;
-    DPCTLPartitionAffinityDomainType dpctl_domain;
+    DPCTLPartitionAffinityDomainType dpctl_domain = a_dpctl_domain;
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
@@ -250,7 +253,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL2Cache)
 
     info::partition_affinity_domain domain =
         info::partition_affinity_domain::L2_cache;
-    DPCTLPartitionAffinityDomainType dpctl_domain;
+    DPCTLPartitionAffinityDomainType dpctl_domain = a_dpctl_domain;
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
@@ -286,7 +289,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL1Cache)
 
     info::partition_affinity_domain domain =
         info::partition_affinity_domain::L1_cache;
-    DPCTLPartitionAffinityDomainType dpctl_domain;
+    DPCTLPartitionAffinityDomainType dpctl_domain = a_dpctl_domain;
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
@@ -323,7 +326,7 @@ TEST_P(TestDPCTLSyclDeviceInterface,
 
     info::partition_affinity_domain domain =
         info::partition_affinity_domain::next_partitionable;
-    DPCTLPartitionAffinityDomainType dpctl_domain;
+    DPCTLPartitionAffinityDomainType dpctl_domain = a_dpctl_domain;
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
