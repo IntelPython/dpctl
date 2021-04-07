@@ -6,4 +6,4 @@ set -e
 source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh || true
 
 ${PYTHON} -c "import dpctl"
-pytest -q -ra --disable-warnings --cov dpctl --cov-report term-missing --pyargs dpctl -vv
+coverage run -m --source=dpctl --branch --omit=*/dpctl/tests/*,*/dpctl/_version.py pytest -q -ra --disable-warnings --pyargs dpctl -vv && coverage report -m

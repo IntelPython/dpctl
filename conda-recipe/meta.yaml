@@ -33,7 +33,7 @@ requirements:
 test:
     requires:
         - pytest
-        - pytest-cov
+        - coverage
 
 about:
     home: https://github.com/IntelPython/dpctl.git
