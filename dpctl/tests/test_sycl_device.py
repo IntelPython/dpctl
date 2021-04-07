@@ -241,6 +241,41 @@ def check_is_host(device):
         pytest.fail("is_hostcall failed")
 
 
+def check_get_image_2d_max_width(device):
+    try:
+        device.image_2d_max_width
+    except Exception:
+        pytest.fail("image_2d_max_width call failed")
+
+
+def check_get_image_2d_max_height(device):
+    try:
+        device.image_2d_max_height
+    except Exception:
+        pytest.fail("image_2d_max_height call failed")
+
+
+def check_get_image_3d_max_width(device):
+    try:
+        device.image_3d_max_width
+    except Exception:
+        pytest.fail("image_3d_max_width call failed")
+
+
+def check_get_image_3d_max_height(device):
+    try:
+        device.image_3d_max_height
+    except Exception:
+        pytest.fail("image_3d_max_height call failed")
+
+
+def check_get_image_3d_max_depth(device):
+    try:
+        device.image_3d_max_depth
+    except Exception:
+        pytest.fail("image_3d_max_depth call failed")
+
+
 def check_get_sub_group_independent_forward_progress(device):
     try:
         device.sub_group_independent_forward_progress
@@ -423,6 +458,11 @@ list_of_checks = [
     check_has_aspect_usm_shared_allocations,
     check_has_aspect_usm_restricted_shared_allocations,
     check_has_aspect_usm_system_allocator,
+    check_get_image_2d_max_width,
+    check_get_image_2d_max_height,
+    check_get_image_3d_max_width,
+    check_get_image_3d_max_height,
+    check_get_image_3d_max_depth,
     check_create_sub_devices_equally,
     check_create_sub_devices_by_counts,
     check_create_sub_devices_by_affinity_not_applicable,

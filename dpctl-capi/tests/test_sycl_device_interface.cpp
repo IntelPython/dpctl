@@ -275,6 +275,61 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthHalf)
     }
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage2dMaxWidth)
+{
+    size_t image_2d_max_width = 0;
+    EXPECT_NO_FATAL_FAILURE(image_2d_max_width =
+                                DPCTLDevice_GetImage2dMaxWidth(DRef));
+    size_t min_val = 8192;
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("image"))))
+        EXPECT_TRUE(image_2d_max_width >= min_val);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage2dMaxHeight)
+{
+    size_t image_2d_max_height = 0;
+    EXPECT_NO_FATAL_FAILURE(image_2d_max_height =
+                                DPCTLDevice_GetImage2dMaxHeight(DRef));
+    size_t min_val = 8192;
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("image"))))
+        EXPECT_TRUE(image_2d_max_height >= min_val);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage3dMaxWidth)
+{
+    size_t image_3d_max_width = 0;
+    EXPECT_NO_FATAL_FAILURE(image_3d_max_width =
+                                DPCTLDevice_GetImage3dMaxWidth(DRef));
+    size_t min_val = 2048;
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("image"))))
+        EXPECT_TRUE(image_3d_max_width >= min_val);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage3dMaxHeight)
+{
+    size_t image_3d_max_height = 0;
+    EXPECT_NO_FATAL_FAILURE(image_3d_max_height =
+                                DPCTLDevice_GetImage3dMaxHeight(DRef));
+    size_t min_val = 2048;
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("image"))))
+        EXPECT_TRUE(image_3d_max_height >= min_val);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage3dMaxDepth)
+{
+    size_t image_3d_max_depth = 0;
+    EXPECT_NO_FATAL_FAILURE(image_3d_max_depth =
+                                DPCTLDevice_GetImage3dMaxDepth(DRef));
+    size_t min_val = 2048;
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("image"))))
+        EXPECT_TRUE(image_3d_max_depth >= min_val);
+}
+
 INSTANTIATE_TEST_SUITE_P(DPCTLDevice_Fns,
                          TestDPCTLSyclDeviceInterface,
                          ::testing::Values("opencl",

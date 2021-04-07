@@ -180,6 +180,11 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(const DPCTLSyclDeviceRef DRef)
     cpdef bool DPCTLDevice_HasAspect(
         const DPCTLSyclDeviceRef DRef, DPCTLSyclAspectType AT)
+    cdef size_t DPCTLDevice_GetImage2dMaxWidth(const DPCTLSyclDeviceRef DRef)
+    cdef size_t DPCTLDevice_GetImage2dMaxHeight(const DPCTLSyclDeviceRef DRef)
+    cdef size_t DPCTLDevice_GetImage3dMaxWidth(const DPCTLSyclDeviceRef DRef)
+    cdef size_t DPCTLDevice_GetImage3dMaxHeight(const DPCTLSyclDeviceRef DRef)
+    cdef size_t DPCTLDevice_GetImage3dMaxDepth(const DPCTLSyclDeviceRef DRef)
     cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesEqually(
         const DPCTLSyclDeviceRef DRef, size_t count)
     cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByCounts(

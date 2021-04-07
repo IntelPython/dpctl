@@ -392,6 +392,27 @@ bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     return hasAspect;
 }
 
+#define declmethod(FUNC, NAME)                                                 \
+    size_t DPCTLDevice_##FUNC(__dpctl_keep const DPCTLSyclDeviceRef DRef)      \
+    {                                                                          \
+        size_t result = 0;                                                     \
+        auto D = unwrap(DRef);                                                 \
+        if (D) {                                                               \
+            try {                                                              \
+                result = D->get_info<info::device::NAME>();                    \
+            } catch (runtime_error const &re) {                                \
+                std::cerr << re.what() << '\n';                                \
+            }                                                                  \
+        }                                                                      \
+        return result;                                                         \
+    }
+declmethod(GetImage2dMaxWidth, image2d_max_width);
+declmethod(GetImage2dMaxHeight, image2d_max_height);
+declmethod(GetImage3dMaxWidth, image3d_max_width);
+declmethod(GetImage3dMaxHeight, image3d_max_height);
+declmethod(GetImage3dMaxDepth, image3d_max_depth);
+#undef declmethod
+
 bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
     __dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
