@@ -1,4 +1,4 @@
-#                      Data Parallel Control (dpCtl)
+#                      Data Parallel Control (dpctl)
 #
 # Copyright 2020-2021 Intel Corporation
 #
@@ -14,11 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Top-level module of all dpCtl Python unit test cases.
+"""Top-level module of all dpctl Python unit test cases.
 """
 
 from .test_dparray import *
 from .test_sycl_device import *
+from .test_sycl_context import *
 from .test_sycl_kernel_submit import *
 from .test_sycl_platform import *
 from .test_sycl_program import *

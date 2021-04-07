@@ -1,6 +1,6 @@
 //===------ dpctl_sycl_usm_interface.cpp - Implements C API for USM ops    ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

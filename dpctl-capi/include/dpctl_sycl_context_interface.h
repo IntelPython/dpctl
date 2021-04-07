@@ -1,6 +1,6 @@
 //===-- dpctl_sycl_context_interface.h - C API for sycl::context -*-C++-*- ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -98,6 +98,27 @@ bool DPCTLContext_AreEq(__dpctl_keep const DPCTLSyclContextRef CtxRef1,
 DPCTL_API
 __dpctl_give DPCTLSyclContextRef
 DPCTLContext_Copy(__dpctl_keep const DPCTLSyclContextRef CRef);
+
+/*!
+ * @brief Returns the number of devices associated with sycl::context referenced
+ * by DPCTLSyclContextRef object.
+ *
+ * @param    CRef           DPCTLSyclContexRef object to query.
+ * @return   A positive count on success or zero on error.
+ */
+DPCTL_API
+size_t DPCTLContext_DeviceCount(__dpctl_keep const DPCTLSyclContextRef CRef);
+
+/*!
+ * @brief Returns a vector of devices associated with sycl::context referenced
+ * by DPCTLSyclContextRef object.
+ *
+ * @param    CRef           DPCTLSyclContexRef object to query.
+ * @return   A DPCTLDeviceVectorRef with devices associated with given CRef.
+ */
+DPCTL_API
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLContext_GetDevices(__dpctl_keep const DPCTLSyclContextRef CRef);
 
 /*!
  * @brief Returns true if this SYCL context is a host context.

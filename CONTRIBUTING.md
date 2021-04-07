@@ -9,7 +9,7 @@ We use [clang-format](https://clang.llvm.org/docs/ClangFormat.html) code formatt
 Install: `conda install clang-tools`
 
 - Revision: `10.0.1`
-- See the default configuration used by dpCtl in `.clang-format`.
+- See the default configuration used by dpctl in `.clang-format`.
 
 Run before each commit: `clang-format -style=file -i dpctl-capi/include/*.h dpctl-capi/include/Support/*.h dpctl-capi/source/*.cpp dpctl-capi/tests/*.cpp dpctl-capi/helper/include/*.h dpctl-capi/helper/source/*.cpp`
 
@@ -17,7 +17,7 @@ Run before each commit: `clang-format -style=file -i dpctl-capi/include/*.h dpct
 
 We use [black](https://black.readthedocs.io/en/stable/) code formatter.
 
-- Revision: `20.8b1` or branch `stable`.
+- Revision: `20.8b1`.
 - See configuration in `pyproject.toml`.
 
 Run before each commit: `black .`
@@ -30,7 +30,7 @@ purpose of the file. The standard header looks like this:
 ```
 //===----- dpctl_sycl_event_interface.h - C API for sycl::event  -*-C++-*- ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -69,7 +69,7 @@ Few things to note about this format:
 Every Python and Cython file should only include the following license header:
 
 ```
-#                      Data Parallel Control (dpCtl)
+#                      Data Parallel Control (dpctl)
 #
 # Copyright 2020-2021 Intel Corporation
 #

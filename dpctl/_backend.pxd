@@ -1,4 +1,4 @@
-#                      Data Parallel Control (dpCtl)
+#                      Data Parallel Control (dpctl)
 #
 # Copyright 2020-2021 Intel Corporation
 #
@@ -104,6 +104,18 @@ cdef extern from "dpctl_sycl_enum_types.h":
     ctypedef _aspect_type DPCTLSyclAspectType
 
 
+    cdef enum _partition_affinity_domain_type 'DPCTLPartitionAffinityDomainType':
+        _not_applicable                     'not_applicable',
+        _numa                               'numa',
+        _L4_cache                           'L4_cache',
+        _L3_cache                           'L3_cache',
+        _L2_cache                           'L2_cache',
+        _L1_cache                           'L1_cache',
+        _next_partitionable                 'next_partitionable',
+
+    ctypedef _partition_affinity_domain_type DPCTLPartitionAffinityDomainType
+
+
 cdef extern from "dpctl_sycl_types.h":
     cdef struct DPCTLOpaqueSyclContext
     cdef struct DPCTLOpaqueSyclDevice
@@ -124,6 +136,11 @@ cdef extern from "dpctl_sycl_types.h":
     ctypedef DPCTLOpaqueSyclProgram        *DPCTLSyclProgramRef
     ctypedef DPCTLOpaqueSyclQueue          *DPCTLSyclQueueRef
     ctypedef DPCTLOpaqueSyclUSM            *DPCTLSyclUSMRef
+
+
+cdef extern from "dpctl_sycl_device_manager.h":
+    cdef struct DPCTLDeviceVector
+    ctypedef DPCTLDeviceVector *DPCTLDeviceVectorRef
 
 
 cdef extern from "dpctl_sycl_device_interface.h":
@@ -165,15 +182,19 @@ cdef extern from "dpctl_sycl_device_interface.h":
         const DPCTLSyclDeviceRef DRef, DPCTLSyclAspectType AT)
     cdef uint32_t DPCTLDevice_GetMaxReadImageArgs(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetMaxWriteImageArgs(const DPCTLSyclDeviceRef DRef)
+    cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesEqually(
+        const DPCTLSyclDeviceRef DRef, size_t count)
+    cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByCounts(
+        const DPCTLSyclDeviceRef DRef, size_t *counts, size_t ncounts)
+    cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
+        const DPCTLSyclDeviceRef DRef,
+        DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy)
 
 
 cdef extern from "dpctl_sycl_device_manager.h":
-    cdef struct DPCTLDeviceVector
-    ctypedef DPCTLDeviceVector *DPCTLDeviceVectorRef
-    ctypedef struct DPCTL_DeviceAndContextPair:
-        DPCTLSyclDeviceRef DRef
-        DPCTLSyclContextRef CRef
-
+    cdef DPCTLDeviceVectorRef DPCTLDeviceVector_CreateFromArray(
+        size_t nelems,
+        DPCTLSyclDeviceRef *elems)
     cdef void DPCTLDeviceVector_Delete(DPCTLDeviceVectorRef DVRef)
     cdef void DPCTLDeviceVector_Clear(DPCTLDeviceVectorRef DVRef)
     cdef size_t DPCTLDeviceVector_Size(DPCTLDeviceVectorRef DVRef)
@@ -183,7 +204,7 @@ cdef extern from "dpctl_sycl_device_manager.h":
     cdef DPCTLDeviceVectorRef DPCTLDeviceMgr_GetDevices(int device_identifier)
     cdef size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier)
     cdef void DPCTLDeviceMgr_PrintDeviceInfo(const DPCTLSyclDeviceRef DRef)
-    cdef DPCTL_DeviceAndContextPair DPCTLDeviceMgr_GetDeviceAndContextPair(
+    cdef DPCTLSyclContextRef DPCTLDeviceMgr_GetCachedContext(
         const DPCTLSyclDeviceRef DRef)
 
 
@@ -237,6 +258,19 @@ cdef extern from "dpctl_sycl_platform_interface.h":
 
 
 cdef extern from "dpctl_sycl_context_interface.h":
+    cdef DPCTLSyclContextRef DPCTLContext_Create(
+        const DPCTLSyclDeviceRef DRef,
+        error_handler_callback *error_handler,
+        int properties)
+    cdef DPCTLSyclContextRef DPCTLContext_CreateFromDevices(
+        const DPCTLDeviceVectorRef DVRef,
+        error_handler_callback *error_handler,
+        int properties)
+    cdef DPCTLSyclContextRef DPCTLContext_Copy(
+        const DPCTLSyclContextRef CRef)
+    cdef DPCTLDeviceVectorRef DPCTLContext_GetDevices(
+        const DPCTLSyclContextRef CRef)
+    cdef size_t DPCTLContext_DeviceCount(const DPCTLSyclContextRef CRef)
     cdef bool DPCTLContext_AreEq(const DPCTLSyclContextRef CtxRef1,
                                  const DPCTLSyclContextRef CtxRef2)
     cdef DPCTLSyclBackendType DPCTLContext_GetBackend(

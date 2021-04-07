@@ -1,6 +1,6 @@
 //=== dpctl_sycl_platform_interface.cpp - Implements C API for sycl::platform //
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -84,6 +84,9 @@ __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
             PRef = wrap(P);
         } catch (std::bad_alloc const &ba) {
             std::cerr << ba.what() << '\n';
+        } catch (runtime_error const &re) {
+            std::cerr << re.what() << '\n';
+            return nullptr;
         }
     }
     else {

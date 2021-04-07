@@ -1,6 +1,6 @@
 //=== dpctl_vector_macros.h - Macros to help build function sig.    -*-C++-*- //
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

@@ -14,12 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" Defines unit test cases for the SyclDevice class.
+""" Defines unit test cases for the SyclContxt class.
 """
 
 import dpctl
 import pytest
-from dpctl._sycl_device import SubDeviceCreationError
+
 
 list_of_standard_selectors = [
     dpctl.select_accelerator_device,
@@ -48,7 +48,7 @@ list_of_valid_filter_selectors = [
 list_of_invalid_filter_selectors = [
     "-1",
     "opencl:gpu:-1",
-    "cuda:cpu:0",
+    "level_zero:cpu:0",
     "abc",
 ]
 
@@ -241,166 +241,6 @@ def check_is_host(device):
         pytest.fail("is_hostcall failed")
 
 
-def check_get_max_read_image_args(device):
-    try:
-        device.max_read_image_args
-    except Exception:
-        pytest.fail("max_read_image_args call failed")
-
-
-def check_get_max_write_image_args(device):
-    try:
-        device.max_write_image_args
-    except Exception:
-        pytest.fail("max_write_image_args call failed")
-
-
-def check_get_sub_group_independent_forward_progress(device):
-    try:
-        device.sub_group_independent_forward_progress
-    except Exception:
-        pytest.fail("sub_group_independent_forward_progress call failed")
-
-
-def check_get_preferred_vector_width_char(device):
-    try:
-        device.preferred_vector_width_char
-    except Exception:
-        pytest.fail("preferred_vector_width_char call failed")
-
-
-def check_get_preferred_vector_width_short(device):
-    try:
-        device.preferred_vector_width_short
-    except Exception:
-        pytest.fail("preferred_vector_width_short call failed")
-
-
-def check_get_preferred_vector_width_int(device):
-    try:
-        device.preferred_vector_width_int
-    except Exception:
-        pytest.fail("preferred_vector_width_int call failed")
-
-
-def check_get_preferred_vector_width_long(device):
-    try:
-        device.preferred_vector_width_long
-    except Exception:
-        pytest.fail("preferred_vector_width_long call failed")
-
-
-def check_get_preferred_vector_width_float(device):
-    try:
-        device.preferred_vector_width_float
-    except Exception:
-        pytest.fail("preferred_vector_width_float call failed")
-
-
-def check_get_preferred_vector_width_double(device):
-    try:
-        device.preferred_vector_width_double
-    except Exception:
-        pytest.fail("preferred_vector_width_double call failed")
-
-
-def check_get_preferred_vector_width_half(device):
-    try:
-        device.preferred_vector_width_half
-    except Exception:
-        pytest.fail("preferred_vector_width_half call failed")
-
-
-def check_create_sub_devices_equally(device):
-    try:
-        n = int(device.max_compute_units / 2)
-        device.create_sub_devices(partition=n)
-    except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
-    except Exception:
-        pytest.fail("create_sub_devices failed")
-
-
-def check_create_sub_devices_by_counts(device):
-    try:
-        n = device.max_compute_units / 2
-        device.create_sub_devices(partition=(n, n))
-    except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
-    except Exception:
-        pytest.fail("create_sub_devices failed")
-
-
-def check_create_sub_devices_by_affinity_not_applicable(device):
-    try:
-        device.create_sub_devices(partition="not_applicable")
-    except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
-    except Exception:
-        pytest.fail("create_sub_devices failed")
-
-
-def check_create_sub_devices_by_affinity_numa(device):
-    try:
-        device.create_sub_devices(partition="numa")
-    except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
-    except Exception:
-        pytest.fail("create_sub_devices failed")
-
-
-def check_create_sub_devices_by_affinity_L4_cache(device):
-    try:
-        device.create_sub_devices(partition="L4_cache")
-    except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
-    except Exception:
-        pytest.fail("create_sub_devices failed")
-
-
-def check_create_sub_devices_by_affinity_L3_cache(device):
-    try:
-        device.create_sub_devices(partition="L3_cache")
-    except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
-    except Exception:
-        pytest.fail("create_sub_devices failed")
-
-
-def check_create_sub_devices_by_affinity_L2_cache(device):
-    try:
-        device.create_sub_devices(partition="L2_cache")
-    except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
-    except Exception:
-        pytest.fail("create_sub_devices failed")
-
-
-def check_create_sub_devices_by_affinity_L1_cache(device):
-    try:
-        device.create_sub_devices(partition="L1_cache")
-    except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
-    except Exception:
-        pytest.fail("create_sub_devices failed")
-
-
-def check_create_sub_devices_by_affinity_next_partitionable(device):
-    try:
-        device.create_sub_devices(partition="next_partitionable")
-    except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
-    except Exception:
-        pytest.fail("create_sub_devices failed")
-
-
-def check_print_device_info(device):
-    try:
-        device.print_device_info()
-    except Exception:
-        pytest.fail("Encountered an exception inside print_device_info().")
-
-
 list_of_checks = [
     check_get_max_compute_units,
     check_get_max_work_item_dims,
@@ -411,14 +251,6 @@ list_of_checks = [
     check_is_cpu,
     check_is_gpu,
     check_is_host,
-    check_get_sub_group_independent_forward_progress,
-    check_get_preferred_vector_width_char,
-    check_get_preferred_vector_width_short,
-    check_get_preferred_vector_width_int,
-    check_get_preferred_vector_width_long,
-    check_get_preferred_vector_width_float,
-    check_get_preferred_vector_width_double,
-    check_get_preferred_vector_width_half,
     check_has_aspect_host,
     check_has_aspect_cpu,
     check_has_aspect_gpu,
@@ -437,18 +269,6 @@ list_of_checks = [
     check_has_aspect_usm_shared_allocations,
     check_has_aspect_usm_restricted_shared_allocations,
     check_has_aspect_usm_system_allocator,
-    check_get_max_read_image_args,
-    check_get_max_write_image_args,
-    check_create_sub_devices_equally,
-    check_create_sub_devices_by_counts,
-    check_create_sub_devices_by_affinity_not_applicable,
-    check_create_sub_devices_by_affinity_numa,
-    check_create_sub_devices_by_affinity_L4_cache,
-    check_create_sub_devices_by_affinity_L3_cache,
-    check_create_sub_devices_by_affinity_L2_cache,
-    check_create_sub_devices_by_affinity_L1_cache,
-    check_create_sub_devices_by_affinity_next_partitionable,
-    check_print_device_info,
 ]
 
 
@@ -478,7 +298,12 @@ def test_standard_selectors(device_selector, check):
     """
     try:
         device = device_selector()
-        check(device)
+        if device.default_selector_score < 0:
+            pytest.skip()
+        ctx = dpctl.SyclContext(device)
+        devs = ctx.get_devices()
+        assert len(devs) == 1
+        check(devs[0])
     except ValueError:
         pytest.skip()
 
@@ -490,22 +315,94 @@ def test_current_device(check):
     except Exception:
         pytest.fail("Encountered an exception inside get_current_queue().")
     device = q.get_sycl_device()
-    check(device)
+    ctx = q.get_sycl_context()
+    devs = ctx.get_devices()
+    # add check that device is among devs
+    check(devs[0])
 
 
 def test_valid_filter_selectors(valid_filter, check):
     """Tests if we can create a SyclDevice using a supported filter selector string."""
     device = None
     try:
-        device = dpctl.SyclDevice(valid_filter)
+        ctx = dpctl.SyclContext(valid_filter)
+        device = ctx.get_devices()
     except ValueError:
-        pytest.skip("Failed to create device with supported filter")
-    check(device)
+        pytest.skip("Failed to create context with supported filter")
+    check(device[0])
 
 
 def test_invalid_filter_selectors(invalid_filter):
-    """An invalid filter string should always be caught and a ValueError
+    """An invalid filter string should always be caught and a SyclQueueCreationError
     raised.
     """
     with pytest.raises(ValueError):
-        device = dpctl.SyclDevice(invalid_filter)
+        q = dpctl.SyclContext(invalid_filter)
+
+
+def test_context_not_equals():
+    try:
+        ctx_gpu = dpctl.SyclContext("gpu")
+    except ValueError:
+        pytest.skip()
+    try:
+        ctx_cpu = dpctl.SyclContext("cpu")
+    except ValueError:
+        pytest.skip()
+    assert not ctx_cpu.equals(ctx_gpu)
+
+
+def test_context_equals():
+    try:
+        ctx1 = dpctl.SyclContext("gpu")
+        ctx0 = dpctl.SyclContext("gpu")
+    except ValueError:
+        pytest.skip()
+    assert ctx0.equals(ctx1)
+
+
+def test_context_can_be_used_in_queue(valid_filter):
+    try:
+        ctx = dpctl.SyclContext(valid_filter)
+    except ValueError:
+        pytest.skip()
+    devs = ctx.get_devices()
+    assert len(devs) == ctx.device_count
+    for d in devs:
+        q = dpctl.SyclQueue(ctx, d)
+
+
+def test_context_can_be_used_in_queue2(valid_filter):
+    try:
+        d = dpctl.SyclDevice(valid_filter)
+    except ValueError:
+        pytest.skip()
+    if d.default_selector_score < 0:
+        # skip test for devices rejected by default selector
+        pytest.skip()
+    ctx = dpctl.SyclContext(d)
+    q = dpctl.SyclQueue(ctx, d)
+
+
+def test_context_multi_device():
+    try:
+        d = dpctl.SyclDevice("cpu")
+    except ValueError:
+        pytest.skip()
+    if d.default_selector_score < 0:
+        pytest.skip()
+    n = d.max_compute_units
+    n1 = n // 2
+    n2 = n - n1
+    if n1 == 0 or n2 == 0:
+        pytest.skip()
+    d1, d2 = d.create_sub_devices(partition=(n1, n2))
+    ctx = dpctl.SyclContext((d1, d2))
+    assert ctx.device_count == 2
+    q1 = dpctl.SyclQueue(ctx, d1)
+    q2 = dpctl.SyclQueue(ctx, d2)
+    import dpctl.memory as dpmem
+
+    shmem_1 = dpmem.MemoryUSMShared(256, queue=q1)
+    shmem_2 = dpmem.MemoryUSMDevice(256, queue=q2)
+    shmem_2.copy_from_device(shmem_1)

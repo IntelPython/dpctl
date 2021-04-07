@@ -1,6 +1,6 @@
 //===- MemOwnershipAttrs.h - Defines memory ownership attributes -*-C++-*- ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -22,7 +22,7 @@
 /// This file defines a group of macros that serve as attributes indicating the
 /// type of ownership of a pointer. The macros are modeled after similar
 /// attributes defines in Integer Set Library (isl) and serve the purpose of
-/// helping a programmer understand the semantics of a dpCtl function.
+/// helping a programmer understand the semantics of a dpctl function.
 ///
 //===----------------------------------------------------------------------===//
 

@@ -1,7 +1,7 @@
 What?
 =====
 
-Generator scripts for dpCtl API documentation. To run these scripts, follow
+Generator scripts for dpctl API documentation. To run these scripts, follow
 the following steps:
 ```bash
 cd dpctl/docs
@@ -16,7 +16,7 @@ documents in the current source directory in a sub-directory called
 `generated_docs`.
 
 The `make Sphinx` command will generate standalone Doxygen documentation and
-a consolidated Sphinx documentation for both dpCtl Python and C APIs.
+a consolidated Sphinx documentation for both dpctl Python and C APIs.
 
 Prerequisite
 ============

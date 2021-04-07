@@ -1,6 +1,6 @@
 //===- dpctl_sycl_enum_types.h - C API enums for few sycl enum   -*-C++-*- ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -19,7 +19,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This header defines dpCtl specficif enum types that wrap corresponding Sycl
+/// This header defines dpctl specific enum types that wrap corresponding Sycl
 /// enum classes. These enums are defined primarily so that Python extensions
 /// that use DPCTL do not have to include Sycl headers directly.
 ///
@@ -120,6 +120,21 @@ enum DPCTLSyclAspectType
     usm_shared_allocations,
     usm_restricted_shared_allocations,
     usm_system_allocator
+};
+
+/*!
+ * @brief DPCTL analogue of sycl::info::partition_affinity_domain enum
+ *
+ */
+enum DPCTLPartitionAffinityDomainType
+{
+    not_applicable,
+    numa,
+    L4_cache,
+    L3_cache,
+    L2_cache,
+    L1_cache,
+    next_partitionable
 };
 
 /*!

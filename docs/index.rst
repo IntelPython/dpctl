@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Data-parallel Control (dpCtl)'s documentation!
+Welcome to Data-parallel Control (dpctl)'s documentation!
 =========================================================
 
 .. toctree::

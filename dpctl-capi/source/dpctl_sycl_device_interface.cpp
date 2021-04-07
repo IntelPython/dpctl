@@ -1,6 +1,6 @@
 //===--- dpctl_sycl_device_interface.cpp - Implements C API for sycl::device =//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -39,6 +39,8 @@ namespace
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclDeviceRef>,
+                                   DPCTLDeviceVectorRef)
 
 } /* end of anonymous namespace */
 
@@ -366,10 +368,12 @@ bool DPCTLDevice_IsHostUnifiedMemory(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
                        __dpctl_keep const DPCTLSyclDeviceRef DRef2)
 {
-    // Note: DPCPP does not yet support device equality of the form:
-    // *unwrap(DevRef1) == *unwrap(DevRef2). Till DPCPP is fixed we use the
-    // custom equality checker implemented inside DPCTLDeviceMgr.
-    return DPCTLDeviceMgr_AreEq(DRef1, DRef2);
+    auto D1 = unwrap(DRef1);
+    auto D2 = unwrap(DRef2);
+    if (D1 && D2)
+        return *D1 == *D2;
+    else
+        return false;
 }
 
 bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
@@ -540,4 +544,90 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(
         }
     }
     return vector_width_half;
+}
+
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                                    size_t count)
+{
+    vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            auto subDevices = D->create_sub_devices<
+                info::partition_property::partition_equally>(count);
+            Devices = new vector_class<DPCTLSyclDeviceRef>();
+            for (const auto &sd : subDevices) {
+                Devices->emplace_back(wrap(new device(sd)));
+            }
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+            return nullptr;
+        } catch (feature_not_supported const &fnse) {
+            std::cerr << fnse.what() << '\n';
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return wrap(Devices);
+}
+
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                                     __dpctl_keep size_t *counts,
+                                     size_t ncounts)
+{
+    vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
+    std::vector<size_t> vcounts;
+    vcounts.assign(counts, counts + ncounts);
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            auto subDevices = D->create_sub_devices<
+                info::partition_property::partition_by_counts>(vcounts);
+            Devices = new vector_class<DPCTLSyclDeviceRef>();
+            for (const auto &sd : subDevices) {
+                Devices->emplace_back(wrap(new device(sd)));
+            }
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+            return nullptr;
+        } catch (feature_not_supported const &fnse) {
+            std::cerr << fnse.what() << '\n';
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return wrap(Devices);
+}
+
+__dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef,
+    DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy)
+{
+    vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            auto domain = DPCTL_DPCTLPartitionAffinityDomainTypeToSycl(
+                PartitionAffinityDomainTy);
+            auto subDevices = D->create_sub_devices<
+                info::partition_property::partition_by_affinity_domain>(domain);
+            Devices = new vector_class<DPCTLSyclDeviceRef>();
+            for (const auto &sd : subDevices) {
+                Devices->emplace_back(wrap(new device(sd)));
+            }
+        } catch (std::bad_alloc const &ba) {
+            std::cerr << ba.what() << '\n';
+            return nullptr;
+        } catch (feature_not_supported const &fnse) {
+            std::cerr << fnse.what() << '\n';
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return wrap(Devices);
 }

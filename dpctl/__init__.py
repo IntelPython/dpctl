@@ -1,4 +1,4 @@
-#                      Data Parallel Control (dpCtl)
+#                      Data Parallel Control (dpctl)
 #
 # Copyright 2020-2021 Intel Corporation
 #
@@ -15,15 +15,15 @@
 # limitations under the License.
 
 """
-    **Data Parallel Control (dpCtl)**
+    **Data Parallel Control (dpctl)**
 
-    DpCtl provides a lightweight Python wrapper over a subset of
-    DPC++/SYCL's API. The goal of dpCtl is not (yet) to provide a
-    abstraction for every SYCL function. DpCtl is intended to provide
+    Dpctl provides a lightweight Python wrapper over a subset of
+    DPC++/SYCL's API. The goal of dpctl is not (yet) to provide a
+    abstraction for every SYCL function. Dpctl is intended to provide
     a common runtime to manage specific SYCL resources, such as devices
     and USM memory, for SYCL-based Python packages and extension modules.
 
-    The main features presently provided by dpCtl are:
+    The main features presently provided by dpctl are:
 
     * A SYCL queue manager exposed directly inside the top-level `dpctl`
       module.
@@ -65,9 +65,9 @@ __all__ = (
 
 def get_include():
     """
-    Return the directory that contains the dpCtl \*.h header files.
+    Return the directory that contains the dpctl \*.h header files.
 
-    Extension modules that need to be compiled against dpCtl should use
+    Extension modules that need to be compiled against dpctl should use
     this function to locate the appropriate include directory.
     """
     import os.path

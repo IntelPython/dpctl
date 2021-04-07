@@ -1,6 +1,6 @@
 //===--- test_sycl_context_interface.cpp - Test cases for device interface ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -43,16 +43,20 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclDeviceRef>,
 
 struct TestDPCTLContextInterface : public ::testing::TestWithParam<const char *>
 {
-    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
 
     TestDPCTLContextInterface()
     {
-        EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLFilterSelector_Create(GetParam()));
+        auto DS = DPCTLFilterSelector_Create(GetParam());
+        if (DS) {
+            EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DS));
+        }
+        DPCTLDeviceSelector_Delete(DS);
     }
 
     void SetUp()
     {
-        if (!DSRef) {
+        if (!DRef) {
             auto message = "Skipping as no device of type " +
                            std::string(GetParam()) + ".";
             GTEST_SKIP_(message.c_str());
@@ -61,20 +65,15 @@ struct TestDPCTLContextInterface : public ::testing::TestWithParam<const char *>
 
     ~TestDPCTLContextInterface()
     {
-        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     }
 };
 
 TEST_P(TestDPCTLContextInterface, Chk_Create)
 {
     DPCTLSyclContextRef CRef = nullptr;
-    DPCTLSyclDeviceRef DRef = nullptr;
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
     EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
     ASSERT_TRUE(CRef);
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
 }
 
@@ -82,11 +81,7 @@ TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices)
 {
     size_t nCUs = 0;
     DPCTLSyclContextRef CRef = nullptr;
-    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLDeviceVectorRef DVRef = nullptr;
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
 
     /* TODO: Once we have wrappers for sub-device creation let us use those
      * functions.
@@ -108,20 +103,67 @@ TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices)
             GTEST_SKIP_("Skipping creating context for sub-devices");
         }
     }
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+}
+
+TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices_GetDevices)
+{
+    size_t nCUs = 0;
+    DPCTLSyclContextRef CRef = nullptr;
+    DPCTLDeviceVectorRef DVRef = nullptr;
+    DPCTLDeviceVectorRef Res_DVRef = nullptr;
+
+    /* TODO: Once we have wrappers for sub-device creation let us use those
+     * functions.
+     */
+    EXPECT_NO_FATAL_FAILURE(nCUs = DPCTLDevice_GetMaxComputeUnits(DRef));
+    if (nCUs) {
+        auto D = unwrap(DRef);
+        try {
+            auto subDevices = D->create_sub_devices<
+                info::partition_property::partition_equally>(nCUs / 2);
+            const size_t len = subDevices.size();
+            auto ar = new DPCTLSyclDeviceRef[len];
+            for (size_t i = 0; i < len; ++i) {
+                ar[i] = wrap(&subDevices.at(i));
+            }
+            EXPECT_NO_FATAL_FAILURE(
+                DVRef = DPCTLDeviceVector_CreateFromArray(len, ar));
+            EXPECT_NO_FATAL_FAILURE(
+                CRef = DPCTLContext_CreateFromDevices(DVRef, nullptr, 0));
+            ASSERT_TRUE(CRef);
+            ASSERT_TRUE(DPCTLContext_DeviceCount(CRef) == len);
+            EXPECT_NO_FATAL_FAILURE(Res_DVRef = DPCTLContext_GetDevices(CRef));
+            ASSERT_TRUE(DPCTLDeviceVector_Size(Res_DVRef) == len);
+            delete[] ar;
+        } catch (feature_not_supported const &fnse) {
+            GTEST_SKIP_("Skipping creating context for sub-devices");
+        }
+    }
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(Res_DVRef));
+}
+
+TEST_P(TestDPCTLContextInterface, Chk_GetDevices)
+{
+    DPCTLSyclContextRef CRef = nullptr;
+    DPCTLDeviceVectorRef DVRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
+    ASSERT_TRUE(CRef);
+    EXPECT_NO_FATAL_FAILURE(DVRef = DPCTLContext_GetDevices(CRef));
+    ASSERT_TRUE(DVRef);
+    EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) == 1);
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
 }
 
 TEST_P(TestDPCTLContextInterface, Chk_AreEq)
 {
     DPCTLSyclContextRef CRef1 = nullptr, CRef2 = nullptr, CRef3 = nullptr;
-    DPCTLSyclDeviceRef DRef = nullptr;
     bool are_eq = true, are_not_eq = false;
 
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
     EXPECT_NO_FATAL_FAILURE(CRef1 = DPCTLContext_Create(DRef, nullptr, 0));
     EXPECT_NO_FATAL_FAILURE(CRef2 = DPCTLContext_Copy(CRef1));
     // TODO: This work till DPC++ does not have a default context per device,
@@ -136,7 +178,6 @@ TEST_P(TestDPCTLContextInterface, Chk_AreEq)
     EXPECT_TRUE(are_eq);
     EXPECT_FALSE(are_not_eq);
 
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef1));
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef2));
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef3));
@@ -145,12 +186,8 @@ TEST_P(TestDPCTLContextInterface, Chk_AreEq)
 TEST_P(TestDPCTLContextInterface, Chk_IsHost)
 {
     DPCTLSyclContextRef CRef = nullptr;
-    DPCTLSyclDeviceRef DRef = nullptr;
     bool is_host_device = false, is_host_context = false;
 
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
     EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
     ASSERT_TRUE(CRef);
 
@@ -158,20 +195,15 @@ TEST_P(TestDPCTLContextInterface, Chk_IsHost)
     EXPECT_NO_FATAL_FAILURE(is_host_context = DPCTLContext_IsHost(CRef));
     EXPECT_TRUE(is_host_device == is_host_context);
 
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
 }
 
 TEST_P(TestDPCTLContextInterface, Chk_GetBackend)
 {
     DPCTLSyclContextRef CRef = nullptr;
-    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLSyclBackendType context_backend = DPCTL_UNKNOWN_BACKEND,
                          device_backend = DPCTL_UNKNOWN_BACKEND;
 
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
     EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
     ASSERT_TRUE(CRef);
 
@@ -179,7 +211,6 @@ TEST_P(TestDPCTLContextInterface, Chk_GetBackend)
     EXPECT_NO_FATAL_FAILURE(context_backend = DPCTLContext_GetBackend(CRef));
     EXPECT_TRUE(device_backend == context_backend);
 
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
 }
 

@@ -1,6 +1,6 @@
 //===- CBindingWrapping.h - Wrappers for casting C pointers      -*-C++-*- ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -19,7 +19,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file declares the wrapping macros for the dpCtl C interface.
+/// This file declares the wrapping macros for the dpctl C interface.
 ///
 //===----------------------------------------------------------------------===//
 
