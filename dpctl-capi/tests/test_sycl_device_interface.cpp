@@ -277,82 +277,57 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthHalf)
 
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage2dMaxWidth)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
     size_t image_2d_max_width = 0;
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
     EXPECT_NO_FATAL_FAILURE(image_2d_max_width =
                                 DPCTLDevice_GetImage2dMaxWidth(DRef));
     size_t min_val = 8192;
     if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
                                         DPCTL_StrToAspectType("image"))))
         EXPECT_TRUE(image_2d_max_width >= min_val);
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage2dMaxHeight)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
     size_t image_2d_max_height = 0;
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
     EXPECT_NO_FATAL_FAILURE(image_2d_max_height =
                                 DPCTLDevice_GetImage2dMaxHeight(DRef));
     size_t min_val = 8192;
     if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
                                         DPCTL_StrToAspectType("image"))))
         EXPECT_TRUE(image_2d_max_height >= min_val);
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage3dMaxWidth)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
     size_t image_3d_max_width = 0;
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
     EXPECT_NO_FATAL_FAILURE(image_3d_max_width =
                                 DPCTLDevice_GetImage3dMaxWidth(DRef));
     size_t min_val = 2048;
     if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
                                         DPCTL_StrToAspectType("image"))))
         EXPECT_TRUE(image_3d_max_width >= min_val);
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage3dMaxHeight)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
     size_t image_3d_max_height = 0;
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
     EXPECT_NO_FATAL_FAILURE(image_3d_max_height =
                                 DPCTLDevice_GetImage3dMaxHeight(DRef));
     size_t min_val = 2048;
     if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
                                         DPCTL_StrToAspectType("image"))))
         EXPECT_TRUE(image_3d_max_height >= min_val);
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage3dMaxDepth)
 {
-    DPCTLSyclDeviceRef DRef = nullptr;
     size_t image_3d_max_depth = 0;
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    if (!DRef)
-        GTEST_SKIP_("Device not found");
     EXPECT_NO_FATAL_FAILURE(image_3d_max_depth =
                                 DPCTLDevice_GetImage3dMaxDepth(DRef));
     size_t min_val = 2048;
     if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
                                         DPCTL_StrToAspectType("image"))))
         EXPECT_TRUE(image_3d_max_depth >= min_val);
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
 INSTANTIATE_TEST_SUITE_P(DPCTLDevice_Fns,
