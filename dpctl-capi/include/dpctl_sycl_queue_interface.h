@@ -312,4 +312,14 @@ void DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
                           size_t Count,
                           int Advice);
 
+/*!
+ * @brief C-API wrapper for sycl::queue::is_in_order that indicates whether
+ * the referenced queue is in-order or out-of-order.
+ *
+ * @param    QRef         An opaque pointer to the sycl queue.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+bool DPCTLQueue_IsInOrder(__dpctl_keep const DPCTLSyclQueueRef QRef);
+
 DPCTL_C_EXTERN_C_END

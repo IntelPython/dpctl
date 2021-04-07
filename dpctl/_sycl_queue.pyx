@@ -47,6 +47,7 @@ from ._backend cimport (
     DPCTLQueue_SubmitNDRange,
     DPCTLQueue_SubmitRange,
     DPCTLQueue_Wait,
+    DPCTLQueue_IsInOrder,
     DPCTLSyclBackendType,
     DPCTLSyclContextRef,
     DPCTLSyclDeviceSelectorRef,
@@ -131,7 +132,9 @@ cdef int _parse_queue_properties(object prop) except *:
             elif (p == "default"):
                 res = res | _queue_property_type._DEFAULT_PROPERTY
             else:
-                raise ValueError("queue property '{}' is not understood.".format(prop))
+                raise ValueError(("queue property '{}' is not understood, "
+                                 "expecting 'in_order', 'enable_profiling', or 'default'"
+                                  ).format(prop))
         else:
             raise ValueError("queue property '{}' is not understood.".format(prop))
     return res
@@ -163,7 +166,7 @@ cdef class SyclQueue(_SyclQueue):
                create SyclQueue from default selector
            SyclQueue(filter_string, *, /, propery=None)
                create SyclQueue from filter selector string
-           SyclQueue(SyclDevice, *, / property=None)
+           SyclQueue(SyclDevice, *, /, property=None)
                create SyclQueue from give SyclDevice automatically
                finding/creating SyclContext.
            SyclQueue(SyclContext, SyclDevice, *, /, property=None)
@@ -730,11 +733,20 @@ cdef class SyclQueue(_SyclQueue):
        DPCTLQueue_MemAdvise(self._queue_ref, ptr, count, advice)
 
     @property
+    def is_in_order(self):
+        """True if SyclQueue is in-order, False if it is out-of-order."""
+        return DPCTLQueue_IsInOrder(self._queue_ref)
+
+    @property
     def __name__(self):
         return "SyclQueue"
 
     def __repr__(self):
-        return "<dpctl." + self.__name__ + " at {}>".format(hex(id(self)))
+        cdef cpp_bool in_order = DPCTLQueue_IsInOrder(self._queue_ref)
+        if in_order:
+            return "<dpctl." + self.__name__ + " at {}, property=in_order>".format(hex(id(self)))
+        else:
+            return "<dpctl." + self.__name__ + " at {}>".format(hex(id(self)))
 
     def _get_capsule(self):
         cdef DPCTLSyclQueueRef QRef = NULL
