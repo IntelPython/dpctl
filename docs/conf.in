@@ -125,5 +125,10 @@ if generate_multiversion == "ON":
             elif len(version):
                 versions.append(version)
 
+    # FIXME: Remove this hard coding
+    DOC_SITE_NAME = "https://intelpython.github.io/dpctl/"
+
     for version in versions:
-        html_context["versions"].append((version, "../" + version + "/index.html"))
+        html_context["versions"].append(
+            (version, DOC_SITE_NAME + version + "/index.html")
+        )
