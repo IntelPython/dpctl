@@ -1,6 +1,6 @@
 //===------ test_sycl_queue_interface.cpp - Test cases for queue interface ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -63,20 +63,6 @@ void axpy_kernel_checker(const float *a,
     for (auto i = 0ul; i < SIZE; ++i) {
         EXPECT_EQ(c[i], a[i] + d * b[i]);
     }
-}
-
-bool has_devices()
-{
-    bool ret = false;
-    for (auto &p : platform::get_platforms()) {
-        if (p.is_host())
-            continue;
-        if (!p.get_devices().empty()) {
-            ret = true;
-            break;
-        }
-    }
-    return ret;
 }
 
 } /* End of anonymous namespace */
@@ -155,6 +141,7 @@ TEST_F(TestDPCTLSyclQueueInterface, Check_Copy)
     DPCTLSyclQueueRef Q1 = nullptr;
     DPCTLSyclQueueRef Q2 = nullptr;
     EXPECT_NO_FATAL_FAILURE(Q1 = DPCTLQueueMgr_GetCurrentQueue());
+    ASSERT_TRUE(Q1);
     EXPECT_NO_FATAL_FAILURE(Q2 = DPCTLQueue_Copy(Q1));
     EXPECT_TRUE(bool(Q2));
     EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q1));
@@ -163,17 +150,22 @@ TEST_F(TestDPCTLSyclQueueInterface, Check_Copy)
 
 TEST_F(TestDPCTLSyclQueueInterface, CheckAreEq)
 {
-    auto nOclGPU = DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU);
-    if (!nOclGPU)
+    auto FSRef = DPCTLFilterSelector_Create("opencl:gpu:0");
+    auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
+    if (!DRef)
         GTEST_SKIP_("Skipping: No OpenCL GPUs available.\n");
 
     auto Q1 = DPCTLQueueMgr_GetCurrentQueue();
     auto Q2 = DPCTLQueueMgr_GetCurrentQueue();
 
-    EXPECT_TRUE(DPCTLQueue_AreEq(Q1, Q2));
+    EXPECT_TRUE(Q1 && Q2);
+    if (!(Q1 && Q2)) {
+        DPCTLDeviceSelector_Delete(FSRef);
+        DPCTLDevice_Delete(DRef);
+        GTEST_SKIP_("No current queue exists. Skip everything else.");
+    }
 
-    auto FSRef = DPCTLFilterSelector_Create("opencl:gpu:0");
-    auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
+    EXPECT_TRUE(DPCTLQueue_AreEq(Q1, Q2));
     auto Q3 = DPCTLQueue_CreateForDevice(DRef, nullptr, 0);
     auto Q4 = DPCTLQueue_CreateForDevice(DRef, nullptr, 0);
 
@@ -198,19 +190,19 @@ TEST_F(TestDPCTLSyclQueueInterface, CheckAreEq)
 
 TEST_F(TestDPCTLSyclQueueInterface, CheckAreEq2)
 {
-    if (!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl devices.\n");
-
-    auto nOclGPU = DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU);
-    auto nOclCPU = DPCTLDeviceMgr_GetNumDevices(
-        DPCTLSyclBackendType::DPCTL_OPENCL | DPCTL_CPU);
-    if (!nOclGPU || !nOclCPU)
-        GTEST_SKIP_("OpenCL GPUs and CPU not available.\n");
-
     auto FSRef = DPCTLFilterSelector_Create("opencl:gpu:0");
     auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
     auto FSRef2 = DPCTLFilterSelector_Create("opencl:cpu:0");
     auto DRef2 = DPCTLDevice_CreateFromSelector(FSRef2);
+
+    if (!(DRef && DRef2)) {
+        DPCTLDeviceSelector_Delete(FSRef);
+        DPCTLDevice_Delete(DRef);
+        DPCTLDeviceSelector_Delete(FSRef2);
+        DPCTLDevice_Delete(DRef2);
+        GTEST_SKIP_("OpenCL GPUs and CPU not available.\n");
+    }
+
     auto GPU_Q =
         DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY);
     auto CPU_Q =
@@ -271,16 +263,13 @@ INSTANTIATE_TEST_SUITE_P(DPCTLQueueMemberFuncTests,
 
 TEST_F(TestDPCTLSyclQueueInterface, CheckSubmit)
 {
-    if (!has_devices())
-        GTEST_SKIP_("Skipping: No Sycl devices.\n");
-
-    auto nOpenCLGpuQ = DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU);
-
-    if (!nOpenCLGpuQ)
-        GTEST_SKIP_("Skipping: No OpenCL GPU device.\n");
-
     auto FSRef = DPCTLFilterSelector_Create("opencl:gpu:0");
     auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
+    if (!DRef) {
+        DPCTLDeviceSelector_Delete(FSRef);
+        DPCTLDevice_Delete(DRef);
+        GTEST_SKIP_("Skipping: No OpenCL GPU device.\n");
+    }
     auto Queue =
         DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY);
     auto CtxRef = DPCTLQueue_GetContext(Queue);

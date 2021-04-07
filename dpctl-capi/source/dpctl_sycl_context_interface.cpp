@@ -1,6 +1,6 @@
 //===- dpctl_sycl_context_interface.cpp - Implements C API for sycl::context =//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -114,6 +114,53 @@ DPCTLContext_Copy(__dpctl_keep const DPCTLSyclContextRef CRef)
         std::cerr << ba.what() << '\n';
         return nullptr;
     }
+}
+
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLContext_GetDevices(__dpctl_keep const DPCTLSyclContextRef CRef)
+{
+    auto Context = unwrap(CRef);
+    if (!Context) {
+        std::cerr << "Can not retrieve devices from DPCTLSyclContextRef as "
+                     "input is a nullptr\n";
+        return nullptr;
+    }
+    vector_class<DPCTLSyclDeviceRef> *DevicesVectorPtr = nullptr;
+    try {
+        DevicesVectorPtr = new vector_class<DPCTLSyclDeviceRef>();
+    } catch (std::bad_alloc const &ba) {
+        // \todo log error
+        std::cerr << ba.what() << '\n';
+        return nullptr;
+    }
+    try {
+        auto Devices = Context->get_devices();
+        DevicesVectorPtr->reserve(Devices.size());
+        for (const auto &Dev : Devices) {
+            DevicesVectorPtr->emplace_back(wrap(new device(Dev)));
+        }
+        return wrap(DevicesVectorPtr);
+    } catch (std::bad_alloc const &ba) {
+        // \todo log error
+        std::cerr << ba.what() << '\n';
+        return nullptr;
+    } catch (const runtime_error &re) {
+        // \todo log error
+        std::cerr << re.what() << '\n';
+        return nullptr;
+    }
+}
+
+size_t DPCTLContext_DeviceCount(__dpctl_keep const DPCTLSyclContextRef CRef)
+{
+    auto Context = unwrap(CRef);
+    if (!Context) {
+        std::cerr << "Can not retrieve devices from DPCTLSyclContextRef as "
+                     "input is a nullptr\n";
+        return 0;
+    }
+    const auto Devices = Context->get_devices();
+    return Devices.size();
 }
 
 bool DPCTLContext_IsHost(__dpctl_keep const DPCTLSyclContextRef CtxRef)

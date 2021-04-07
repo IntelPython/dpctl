@@ -1,4 +1,4 @@
-#                      Data Parallel Control (dpCtl)
+#                      Data Parallel Control (dpctl)
 #
 # Copyright 2020-2021 Intel Corporation
 #
@@ -25,12 +25,13 @@ from ._backend cimport (
     _arg_data_type,
     _backend_type,
     _queue_property_type,
-    DPCTL_DeviceAndContextPair,
+    DPCTLContext_Create,
     DPCTLContext_Delete,
     DPCTLDefaultSelector_Create,
     DPCTLDevice_CreateFromSelector,
-    DPCTLDeviceMgr_GetDeviceAndContextPair,
+    DPCTLDeviceMgr_GetCachedContext,
     DPCTLDeviceSelector_Delete,
+    DPCTLDevice_Copy,
     DPCTLDevice_Delete,
     DPCTLFilterSelector_Create,
     DPCTLQueue_AreEq,
@@ -56,6 +57,7 @@ from .memory._memory cimport _Memory
 from . import backend_type
 import ctypes
 from libc.stdlib cimport malloc, free
+from cpython cimport pycapsule
 import logging
 
 
@@ -135,8 +137,15 @@ cdef int _parse_queue_properties(object prop) except *:
     return res
 
 
+cdef void _queue_capsule_deleter(object o):
+    cdef DPCTLSyclQueueRef QRef = NULL
+    if pycapsule.PyCapsule_IsValid(o, "SyclQueueRef"):
+        QRef = <DPCTLSyclQueueRef> pycapsule.PyCapsule_GetPointer(o, "SyclQueueRef")
+        DPCTLQueue_Delete(QRef)
+
+
 cdef class _SyclQueue:
-    """ Internal helper metaclass to abstract `cl::sycl::queue` instance.
+    """ Barebone data owner class used by SyclQueue.
     """
     def __dealloc__(self):
         if (self._queue_ref):
@@ -145,7 +154,7 @@ cdef class _SyclQueue:
         # self._device is a Python object
 
 
-cdef class SyclQueue:
+cdef class SyclQueue(_SyclQueue):
     """ Python wrapper class for cl::sycl::queue.
     """
     def __cinit__(self, *args, **kwargs):
@@ -189,7 +198,9 @@ cdef class SyclQueue:
                 status = self._init_queue_from_filter_string(
                     filter_c_str, props)
             elif isinstance(arg, SyclDevice):
-                status = self._init_queue_from_device(<SyclDevice> arg, props)
+                status = self._init_queue_from_device(<SyclDevice>arg, props)
+            elif pycapsule.PyCapsule_IsValid(arg, "SyclQueueRef"):
+                status = self._init_queue_from_capsule(arg)
             else:
                 raise TypeError(
                     "Positional argument {} is not a filter string or a "
@@ -218,11 +229,11 @@ cdef class SyclQueue:
                     "Device filter selector string '{}' is not understood."
                     .format(arg)
                 )
-            elif status == -2:
+            elif status == -2 or status == -8:
                 raise SyclQueueCreationError(
                     "SYCL Device '{}' could not be created.".format(arg)
                 )
-            elif status == -3:
+            elif status == -3 or status == -7:
                 raise SyclQueueCreationError(
                     "SYCL Context could not be created from '{}'.".format(arg)
                 )
@@ -232,6 +243,10 @@ cdef class SyclQueue:
                 raise SyclQueueCreationError(
                     "SYCL Queue failed to be created from '{}'.".format(arg)
                 )
+            elif status == -5:
+                raise TypeError("Input capsule {} contains a null pointer or could not be renamed".format(arg))
+            elif status == -6:
+                raise "SYCL Queue failed to be created from '{}'.".format(arg)
 
     cdef int _init_queue_from__SyclQueue(self, _SyclQueue other):
         """ Copy data container _SyclQueue fields over.
@@ -259,13 +274,15 @@ cdef class SyclQueue:
         """
         cdef DPCTLSyclContextRef CRef
         cdef DPCTLSyclQueueRef QRef
-        cdef DPCTL_DeviceAndContextPair dev_ctx
 
-        dev_ctx = DPCTLDeviceMgr_GetDeviceAndContextPair(DRef)
-        if (dev_ctx.CRef is NULL) or (dev_ctx.DRef is NULL):
-            return -3
-        DRef = dev_ctx.DRef
-        CRef = dev_ctx.CRef
+        CRef = DPCTLDeviceMgr_GetCachedContext(DRef)
+        if (CRef is NULL):
+            # look-up failed (was not a root device?)
+            # create a new context
+            CRef = DPCTLContext_Create(DRef, NULL, 0)
+            if (CRef is NULL):
+                DPCTLDevice_Delete(DRef)
+                return -3
         QRef = DPCTLQueue_Create(
             CRef,
             DRef,
@@ -273,8 +290,8 @@ cdef class SyclQueue:
             props
         )
         if QRef is NULL:
-            DPCTLDevice_Delete(DRef)
             DPCTLContext_Delete(CRef)
+            DPCTLDevice_Delete(DRef)
             return -4
         _dev = SyclDevice._create(DRef)
         _ctxt = SyclContext._create(CRef)
@@ -289,17 +306,18 @@ cdef class SyclQueue:
         Creates device from device selector, then calls helper function above.
 
         Returns:
-            0 : normal execution
+             0 : normal execution
             -1 : filter selector could not be created (malformed?)
             -2 : Device could not be created from filter selector
             -3 : Context creation/look-up failed
             -4 : queue could not be created from context,device, error handler
                  and properties
         """
-        cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLFilterSelector_Create(c_str)
-        cdef DPCTLSyclDeviceRef DRef
+        cdef DPCTLSyclDeviceSelectorRef DSRef = NULL
+        cdef DPCTLSyclDeviceRef DRef = NULL
         cdef int ret = 0
 
+        DSRef = DPCTLFilterSelector_Create(c_str)
         if DSRef is NULL:
             ret = -1 # Filter selector failed to be created
         else:
@@ -309,12 +327,13 @@ cdef class SyclQueue:
                 ret = -2 # Device could not be created
             else:
                 ret = self._init_queue_from_DPCTLSyclDeviceRef(DRef, props)
-                DPCTLDevice_Delete(DRef)
         return ret
 
     cdef int _init_queue_from_device(self, SyclDevice dev, int props):
-        cdef DPCTLSyclDeviceRef DRef = dev.get_device_ref()
-
+        cdef DPCTLSyclDeviceRef DRef = NULL
+        # The DRef will be stored in self._device and freed when self._device
+        # is garbage collected.
+        DRef = DPCTLDevice_Copy(dev.get_device_ref())
         if (DRef is NULL):
             return -2 # Device could not be created
         else:
@@ -323,14 +342,14 @@ cdef class SyclQueue:
     cdef int _init_queue_default(self, int props):
         cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create()
         cdef int ret = 0
-
+        # The DRef will be stored in self._device and freed when self._device
+        # is garbage collected.
         DRef = DPCTLDevice_CreateFromSelector(DSRef)
         DPCTLDeviceSelector_Delete(DSRef)
         if (DRef is NULL):
             ret = -2 # Device could not be created
         else:
             ret = self._init_queue_from_DPCTLSyclDeviceRef(DRef, props)
-            DPCTLDevice_Delete(DRef)
         return ret
 
     cdef int _init_queue_from_context_and_device(
@@ -338,9 +357,9 @@ cdef class SyclQueue:
     ):
         """
         """
-        cdef DPCTLSyclContextRef CRef
-        cdef DPCTLSyclDeviceRef DRef
-        cdef DPCTLSyclQueueRef QRef
+        cdef DPCTLSyclContextRef CRef = NULL
+        cdef DPCTLSyclDeviceRef DRef = NULL
+        cdef DPCTLSyclQueueRef QRef = NULL
         CRef = ctxt.get_context_ref()
         DRef = dev.get_device_ref()
         QRef = DPCTLQueue_Create(
@@ -356,14 +375,60 @@ cdef class SyclQueue:
         self._queue_ref = QRef
         return 0 # normal return
 
+    cdef int _init_queue_from_capsule(self, object cap):
+        """
+        For named PyCapsule with name SyclQueueRef, which carries pointer to
+        sycl::queue object, interpreted as DPCTLSyclQueueRef, creates corresponding
+        SyclQueue.
+        """
+        cdef DPCTLSyclContextRef CRef = NULL
+        cdef DPCTLSyclDeviceRef DRef = NULL
+        cdef DPCTLSyclQueueRef QRef = NULL
+        cdef DPCTLSyclQueueRef QRef_copy = NULL
+        cdef int ret = 0
+        if pycapsule.PyCapsule_IsValid(cap, "SyclQueueRef"):
+            QRef = <DPCTLSyclQueueRef> pycapsule.PyCapsule_GetPointer(cap, "SyclQueueRef")
+            if (QRef is NULL):
+                return -5
+            ret = pycapsule.PyCapsule_SetName(cap, "used_SyclQueueRef")
+            if (ret):
+                return -5
+            QRef_copy = DPCTLQueue_Copy(QRef)
+            if (QRef_copy is NULL):
+                return -6            
+            CRef = DPCTLQueue_GetContext(QRef_copy)
+            if (CRef is NULL):
+                DPCTLQueue_Delete(QRef_copy)
+                return -7
+            DRef = DPCTLQueue_GetDevice(QRef_copy)
+            if (DRef is NULL):
+                DPCTLContext_Delete(CRef)
+                DPCTLQueue_Delete(QRef_copy)
+                return -8
+            self._context = SyclContext._create(CRef)
+            self._device = SyclDevice._create(DRef)
+            self._queue_ref = QRef_copy
+            return 0
+        else:
+            # __cinit__ checks that capsule is valid, so one can be here only
+            # if call to `_init_queue_from_capsule` was made outside of __cinit__
+            # and the capsule was not checked to be valid
+            return -128
+
     @staticmethod
     cdef SyclQueue _create(DPCTLSyclQueueRef qref):
+        """
+        This function calls DPCTLQueue_Delete(qref).
+        The user of this function must pass a copy to keep the
+        qref argument alive.
+        """
         if qref is NULL:
             raise SyclQueueCreationError("Queue creation failed.")
         cdef _SyclQueue ret = _SyclQueue.__new__(_SyclQueue)
         ret._context = SyclContext._create(DPCTLQueue_GetContext(qref))
         ret._device = SyclDevice._create(DPCTLQueue_GetDevice(qref))
         ret._queue_ref = qref
+        # ret is a temporary, and will call DPCTLQueue_Delete(qref)
         return SyclQueue(ret)
 
     @staticmethod
@@ -381,21 +446,6 @@ cdef class SyclQueue:
         ret._context = ctx
         ret._device = dev
         return SyclQueue(ret)
-
-    cdef _raise_queue_submit_error(self, fname, errcode):
-        e = SyclKernelSubmitError("Kernel submission to Sycl queue failed.")
-        e.fname = fname
-        e.code = errcode
-        raise e
-
-    cdef _raise_invalid_range_error(self, fname, ndims, errcode):
-        e = SyclKernelInvalidRangeError(
-            "Range with ", ndims, " not allowed. Range should have between "
-            " one and three dimensions."
-        )
-        e.fname = fname
-        e.code = errcode
-        raise e
 
     cdef int _populate_args(
         self,
@@ -471,7 +521,7 @@ cdef class SyclQueue:
 
     cpdef cpp_bool equals(self, SyclQueue q):
         """ Returns true if the SyclQueue argument has the same _queue_ref
-            as this SycleQueue.
+            as this SyclQueue.
         """
         return DPCTLQueue_AreEq(self._queue_ref, q.get_queue_ref())
 
@@ -569,7 +619,10 @@ cdef class SyclQueue:
                 free(kargs)
                 free(kargty)
                 free(depEvents)
-                self._raise_invalid_range_error("SyclQueue.submit", nGS, -1)
+                raise SyclKernelInvalidRangeError(
+                    "Range with ", nGS, " not allowed. Range can only have "
+                    "between one and three dimensions."
+                )
             Eref = DPCTLQueue_SubmitRange(
                 kernel.get_kernel_ref(),
                 self.get_queue_ref(),
@@ -587,13 +640,19 @@ cdef class SyclQueue:
                 free(kargs)
                 free(kargty)
                 free(depEvents)
-                self._raise_invalid_range_error("SyclQueue.submit", nGS, -1)
+                raise SyclKernelInvalidRangeError(
+                    "Range with ", nGS, " not allowed. Range can only have "
+                    "between one and three dimensions."
+                )
             ret = self._populate_range (lRange, lS, nLS)
             if ret == -1:
                 free(kargs)
                 free(kargty)
                 free(depEvents)
-                self._raise_invalid_range_error("SyclQueue.submit", nLS, -1)
+                raise SyclKernelInvalidRangeError(
+                    "Range with ", nLS, " not allowed. Range can only have "
+                    "between one and three dimensions."
+                )
             if nGS != nLS:
                 free(kargs)
                 free(kargty)
@@ -619,7 +678,9 @@ cdef class SyclQueue:
         free(depEvents)
 
         if Eref is NULL:
-            self._raise_queue_submit_error("DPCTLQueue_Submit", -1)
+            raise SyclKernelSubmitError(
+                "Kernel submission to Sycl queue failed."
+            )
 
         return SyclEvent._create(Eref, args)
 
@@ -674,3 +735,10 @@ cdef class SyclQueue:
 
     def __repr__(self):
         return "<dpctl." + self.__name__ + " at {}>".format(hex(id(self)))
+
+    def _get_capsule(self):
+        cdef DPCTLSyclQueueRef QRef = NULL
+        QRef = DPCTLQueue_Copy(self._queue_ref)
+        if (QRef is NULL):
+            raise ValueError("SyclQueue copy failed.")
+        return pycapsule.PyCapsule_New(<void *>QRef, "SyclQueueRef", &_queue_capsule_deleter)

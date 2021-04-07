@@ -1,6 +1,6 @@
 //===-- dpctl_vector_templ.cpp - Wrapper functions for opaque vector types ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -41,6 +41,28 @@ __dpctl_give VECTOR(EL) FN(EL, Create)()
 {
     try {
         auto Vec = new vector_class<SYCLREF(EL)>();
+        return wrap(Vec);
+    } catch (std::bad_alloc const &ba) {
+        return nullptr;
+    }
+}
+
+/*!
+ * @brief Creates a new std::vector of the opaque SYCL pointer types from given
+ * C array with deep copy.
+ *
+ * @return   A new dynamically allocated std::vector of opaque pointer types.
+ */
+__dpctl_give VECTOR(EL)
+    FN(EL, CreateFromArray)(size_t n, __dpctl_keep SYCLREF(EL) * elems)
+{
+    try {
+        auto Vec = new vector_class<SYCLREF(EL)>();
+        for (size_t i = 0; i < n; ++i) {
+            auto Ref = unwrap(elems[i]);
+            Vec->emplace_back(
+                wrap(new std::remove_pointer<decltype(Ref)>::type(*Ref)));
+        }
         return wrap(Vec);
     } catch (std::bad_alloc const &ba) {
         return nullptr;

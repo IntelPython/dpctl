@@ -1,4 +1,4 @@
-#                      Data Parallel Control (dpCtl)
+#                      Data Parallel Control (dpctl)
 #
 # Copyright 2020-2021 Intel Corporation
 #
@@ -31,6 +31,7 @@ from ._sycl_device cimport SyclDevice
 from .program._program cimport SyclKernel
 from libcpp cimport bool as cpp_bool
 
+cdef void default_async_error_handler(int) nogil except *
 
 cdef class _SyclQueue:
     """ Python wrapper class for a sycl::queue.
@@ -51,8 +52,7 @@ cdef class SyclQueue (_SyclQueue):
     cdef int _init_queue_from_context_and_device(
         self, SyclContext, SyclDevice, int
     )
-    cdef _raise_queue_submit_error(self, fname, errcode)
-    cdef _raise_invalid_range_error(self, fname, ndims, errcode)
+    cdef int _init_queue_from_capsule(self, object)
     cdef int _populate_args(
         self,
         list args,

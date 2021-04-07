@@ -28,13 +28,15 @@ requirements:
     run:
         - python
         - numpy >=1.17
-        - dpcpp_cpp_rt
+        - dpcpp_cpp_rt >=2021.2
+
 test:
-  requires:
-    - pytest
-    - pytest-cov
+    requires:
+        - pytest
+        - pytest-cov
+
 about:
-    home: https://github.com/IntelPython/dpCtl.git
+    home: https://github.com/IntelPython/dpctl.git
     license: Apache-2.0
     license_file: LICENSE
     summary: 'A lightweight Python wrapper for a subset of OpenCL and SYCL API.'

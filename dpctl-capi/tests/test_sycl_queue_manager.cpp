@@ -1,6 +1,6 @@
 //===------- test_sycl_queue_manager.cpp - Test cases for queue manager    ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -129,50 +129,73 @@ TEST_P(TestDPCTLSyclQueueManager, CheckIsCurrentQueue)
 
 TEST(TestDPCTLSyclQueueManager, CheckGetNumActivatedQueues)
 {
-    if (!(DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU) &&
-          DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_CPU)))
-        GTEST_SKIP_("Both OpenCL gpu and cpu drivers needed for this test.");
-
     size_t num0, num1, num2, num4;
-    auto DS1 = DPCTLFilterSelector_Create("opencl:gpu");
-    auto D1 = DPCTLDevice_CreateFromSelector(DS1);
-    auto Q1 = DPCTLQueue_CreateForDevice(D1, nullptr, DPCTL_DEFAULT_PROPERTY);
-    DPCTLQueueMgr_PushQueue(Q1);
+    DPCTLSyclDeviceSelectorRef CPU_DSRef = nullptr, GPU_DSRef = nullptr;
+    DPCTLSyclDeviceRef CPU_DRef = nullptr, GPU_DRef = nullptr;
 
-    std::thread first(foo, std::ref(num1));
-    std::thread second(bar, std::ref(num2));
+    GPU_DSRef = DPCTLFilterSelector_Create("opencl:gpu");
+    GPU_DRef = DPCTLDevice_CreateFromSelector(GPU_DSRef);
+    CPU_DSRef = DPCTLFilterSelector_Create("opencl:cpu");
+    CPU_DRef = DPCTLDevice_CreateFromSelector(CPU_DSRef);
 
-    // synchronize threads:
-    first.join();
-    second.join();
+    if (!(CPU_DRef && GPU_DRef)) {
+        DPCTLDeviceSelector_Delete(GPU_DSRef);
+        DPCTLDevice_Delete(GPU_DRef);
+        DPCTLDeviceSelector_Delete(CPU_DSRef);
+        DPCTLDevice_Delete(CPU_DRef);
+        GTEST_SKIP_(
+            "OpenCL GPU and CPU devices are needed, but were not found.");
+    }
+    else {
+        auto Q1 = DPCTLQueue_CreateForDevice(GPU_DRef, nullptr,
+                                             DPCTL_DEFAULT_PROPERTY);
+        DPCTLQueueMgr_PushQueue(Q1);
+        std::thread first(foo, std::ref(num1));
+        std::thread second(bar, std::ref(num2));
 
-    // Capture the number of active queues in first
-    num0 = DPCTLQueueMgr_GetQueueStackSize();
-    DPCTLQueueMgr_PopQueue();
-    num4 = DPCTLQueueMgr_GetQueueStackSize();
+        // synchronize threads:
+        first.join();
+        second.join();
 
-    // Verify what the expected number of activated queues each time a thread
-    // called getNumActivatedQueues.
-    EXPECT_EQ(num0, 1ul);
-    EXPECT_EQ(num1, 2ul);
-    EXPECT_EQ(num2, 1ul);
-    EXPECT_EQ(num4, 0ul);
+        // Capture the number of active queues in first
+        num0 = DPCTLQueueMgr_GetQueueStackSize();
+        DPCTLQueueMgr_PopQueue();
+        num4 = DPCTLQueueMgr_GetQueueStackSize();
 
-    DPCTLQueue_Delete(Q1);
-    DPCTLDeviceSelector_Delete(DS1);
-    DPCTLDevice_Delete(D1);
+        // Verify what the expected number of activated queues each time a
+        // thread called getNumActivatedQueues.
+        EXPECT_EQ(num0, 1ul);
+        EXPECT_EQ(num1, 2ul);
+        EXPECT_EQ(num2, 1ul);
+        EXPECT_EQ(num4, 0ul);
+
+        DPCTLQueue_Delete(Q1);
+        DPCTLDeviceSelector_Delete(GPU_DSRef);
+        DPCTLDevice_Delete(GPU_DRef);
+        DPCTLDeviceSelector_Delete(CPU_DSRef);
+        DPCTLDevice_Delete(CPU_DRef);
+    }
 }
 
 TEST(TestDPCTLSyclQueueManager, CheckIsCurrentQueue2)
 {
-    if (!(DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_GPU) &&
-          DPCTLDeviceMgr_GetNumDevices(DPCTL_OPENCL | DPCTL_CPU)))
-        GTEST_SKIP_("Both OpenCL gpu and cpu drivers needed for this test.");
+    DPCTLSyclDeviceSelectorRef DS1 = nullptr, DS2 = nullptr;
+    DPCTLSyclDeviceRef D1 = nullptr, D2 = nullptr;
 
-    auto DS1 = DPCTLFilterSelector_Create("opencl:gpu");
-    auto DS2 = DPCTLFilterSelector_Create("opencl:cpu");
-    auto D1 = DPCTLDevice_CreateFromSelector(DS1);
-    auto D2 = DPCTLDevice_CreateFromSelector(DS2);
+    DS1 = DPCTLFilterSelector_Create("opencl:gpu");
+    DS2 = DPCTLFilterSelector_Create("opencl:cpu");
+    D1 = DPCTLDevice_CreateFromSelector(DS1);
+    D2 = DPCTLDevice_CreateFromSelector(DS2);
+
+    if (!(D1 && D2)) {
+        DPCTLDeviceSelector_Delete(DS1);
+        DPCTLDeviceSelector_Delete(DS2);
+        DPCTLDevice_Delete(D1);
+        DPCTLDevice_Delete(D2);
+        GTEST_SKIP_(
+            "OpenCL GPU and CPU devices are needed, but were not found.");
+    }
+
     auto Q1 = DPCTLQueue_CreateForDevice(D1, nullptr, DPCTL_DEFAULT_PROPERTY);
     DPCTLQueueMgr_PushQueue(Q1);
     EXPECT_TRUE(DPCTLQueueMgr_IsCurrentQueue(Q1));

@@ -1,6 +1,6 @@
 //===-------- dpctl_sycl_queue_manager.cpp - Implements a SYCL queue manager =//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -51,9 +51,9 @@ struct QueueManager
             auto DS = default_selector();
             try {
                 auto DRef = wrap(new device(DS.select_device()));
-                auto cached = DPCTLDeviceMgr_GetDeviceAndContextPair(DRef);
-                if (cached.CRef) {
-                    qs.emplace_back(*unwrap(cached.CRef), *unwrap(cached.DRef));
+                auto CRef = DPCTLDeviceMgr_GetCachedContext(DRef);
+                if (CRef) {
+                    qs.emplace_back(*unwrap(CRef), *unwrap(DRef));
                 }
                 else {
                     std::cerr << "Fatal Error: No cached context for default "
@@ -61,10 +61,11 @@ struct QueueManager
                     std::terminate();
                 }
                 delete unwrap(DRef);
-                delete unwrap(cached.DRef);
-                delete unwrap(cached.CRef);
+                delete unwrap(CRef);
             } catch (std::bad_alloc const &ba) {
                 std::cerr << ba.what() << '\n';
+            } catch (runtime_error const &re) {
+                std::cerr << re.what() << '\n';
             }
 
             return qs;

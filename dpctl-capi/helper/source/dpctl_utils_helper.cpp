@@ -1,6 +1,6 @@
 //===- dpctl_utils_helper.cpp - Implementation of enum to string helpers   ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -380,5 +380,51 @@ DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(aspect Aspect)
         return DPCTLSyclAspectType::usm_system_allocator;
     default:
         throw runtime_error("Unsupported aspect type", -1);
+    }
+}
+
+info::partition_affinity_domain DPCTL_DPCTLPartitionAffinityDomainTypeToSycl(
+    DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy)
+{
+    switch (PartitionAffinityDomainTy) {
+    case DPCTLPartitionAffinityDomainType::not_applicable:
+        return info::partition_affinity_domain::not_applicable;
+    case DPCTLPartitionAffinityDomainType::numa:
+        return info::partition_affinity_domain::numa;
+    case DPCTLPartitionAffinityDomainType::L4_cache:
+        return info::partition_affinity_domain::L4_cache;
+    case DPCTLPartitionAffinityDomainType::L3_cache:
+        return info::partition_affinity_domain::L3_cache;
+    case DPCTLPartitionAffinityDomainType::L2_cache:
+        return info::partition_affinity_domain::L2_cache;
+    case DPCTLPartitionAffinityDomainType::L1_cache:
+        return info::partition_affinity_domain::L1_cache;
+    case DPCTLPartitionAffinityDomainType::next_partitionable:
+        return info::partition_affinity_domain::next_partitionable;
+    default:
+        throw runtime_error("Unsupported partition_affinity_domain type", -1);
+    }
+}
+
+DPCTLPartitionAffinityDomainType DPCTL_SyclPartitionAffinityDomainToDPCTLType(
+    sycl::info::partition_affinity_domain PartitionAffinityDomain)
+{
+    switch (PartitionAffinityDomain) {
+    case info::partition_affinity_domain::not_applicable:
+        return DPCTLPartitionAffinityDomainType::not_applicable;
+    case info::partition_affinity_domain::numa:
+        return DPCTLPartitionAffinityDomainType::numa;
+    case info::partition_affinity_domain::L4_cache:
+        return DPCTLPartitionAffinityDomainType::L4_cache;
+    case info::partition_affinity_domain::L3_cache:
+        return DPCTLPartitionAffinityDomainType::L3_cache;
+    case info::partition_affinity_domain::L2_cache:
+        return DPCTLPartitionAffinityDomainType::L2_cache;
+    case info::partition_affinity_domain::L1_cache:
+        return DPCTLPartitionAffinityDomainType::L1_cache;
+    case info::partition_affinity_domain::next_partitionable:
+        return DPCTLPartitionAffinityDomainType::next_partitionable;
+    default:
+        throw runtime_error("Unsupported partition_affinity_domain type", -1);
     }
 }

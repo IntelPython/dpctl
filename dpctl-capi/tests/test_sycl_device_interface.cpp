@@ -1,6 +1,6 @@
 //===--- test_sycl_device_interface.cpp - Test cases for device interface  ===//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //

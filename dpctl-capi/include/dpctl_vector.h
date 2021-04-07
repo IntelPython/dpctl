@@ -1,6 +1,6 @@
 //===-- dpctl_vector.h - Defines macros for opaque vector types    -*-C++-*- =//
 //
-//                      Data Parallel Control (dpCtl)
+//                      Data Parallel Control (dpctl)
 //
 // Copyright 2020-2021 Intel Corporation
 //
@@ -20,7 +20,7 @@
 ///
 /// \file
 /// A set of helper macros are defined here to create opaque lists (implemented
-/// using std::vector) and helper functions of any DPCTL type.
+/// using std::vector) and helper functions of any dpctl type.
 ///
 //===----------------------------------------------------------------------===//
 
@@ -39,6 +39,10 @@ DPCTL_C_EXTERN_C_BEGIN
 #define DPCTL_DECLARE_VECTOR_FN(EL)                                            \
     DPCTL_API                                                                  \
     __dpctl_give DPCTL##EL##VectorRef DPCTL##EL##Vector_Create();              \
+                                                                               \
+    DPCTL_API                                                                  \
+    __dpctl_give DPCTL##EL##VectorRef DPCTL##EL##Vector_CreateFromArray(       \
+        size_t len, __dpctl_keep DPCTLSycl##EL##Ref *elems);                   \
                                                                                \
     DPCTL_API                                                                  \
     void DPCTL##EL##Vector_Delete(__dpctl_take DPCTL##EL##VectorRef Ref);      \

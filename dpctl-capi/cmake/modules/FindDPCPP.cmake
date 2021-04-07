@@ -1,4 +1,4 @@
-#                       Data Parallel Control (dpCtl)
+#                       Data Parallel Control (dpctl)
 #
 # Copyright 2020-2021 Intel Corporation
 #
@@ -24,13 +24,15 @@
 # If successful, the following variables will be defined:
 # DPCPP_FOUND
 # DPCPP_VERSION
+# DPCPP_VERSION_MAJOR
+# DPCPP_VERSION_MINOR
 # DPCPP_INCLUDE_DIR
 # DPCPP_SYCL_INCLUDE_DIR
 # DPCPP_LIBRARY_DIR
 # DPCPP_SYCL_LIBRARY
 # DPCPP_OPENCL_LIBRARY
 
-include( FindPackageHandleStandardArgs )
+include(FindPackageHandleStandardArgs)
 
 string(COMPARE EQUAL "${DPCPP_INSTALL_DIR}" "" no_dpcpp_root)
 if(${no_dpcpp_root})
@@ -57,10 +59,13 @@ execute_process(
 # If dpcpp is found then set the package variables
 if(${dpcpp_result} MATCHES "0")
     string(REPLACE "\n" ";" DPCPP_VERSION_LIST "${dpcpp_ver}")
+    set(IDX 0)
     list(GET DPCPP_VERSION_LIST 0 dpcpp_ver_line)
     foreach(X ${DPCPP_VERSION_LIST})
-        message(STATUS "dpcpp ver[${dpcpp_result}]: ${X}")
+        message(STATUS "dpcpp ver[${IDX}]: ${X}")
+        MATH(EXPR IDX "${IDX}+1")
     endforeach()
+    list(GET DPCPP_VERSION_LIST 0 VERSION_STRING)
 
     # check if llvm-cov and llvm-profdata are packaged as part of dpcpp
     find_program(LLVM_COV_EXE
@@ -89,7 +94,13 @@ if(${dpcpp_result} MATCHES "0")
 
     # set package-level variables
     set(DPCPP_ROOT ${DPCPP_INSTALL_DIR})
-    list(GET DPCPP_VERSION_LIST 0 DPCPP_VERSION)
+    # Get the dpcpp version
+    string(REGEX MATCH "[0-9]+\.[0-9]+\.[0-9]+" DPCPP_VERSION ${VERSION_STRING})
+    # Split out the version into major, minor an patch
+    string(REPLACE "." ";" DPCPP_VERSION_LIST1 "${DPCPP_VERSION}")
+    list(GET DPCPP_VERSION_LIST1 0 DPCPP_VERSION_MAJOR)
+    list(GET DPCPP_VERSION_LIST1 1 DPCPP_VERSION_MINOR)
+    list(GET DPCPP_VERSION_LIST1 2 DPCPP_VERSION_PATCH)
     set(DPCPP_INCLUDE_DIR ${DPCPP_INSTALL_DIR}/include)
     set(DPCPP_SYCL_INCLUDE_DIR ${DPCPP_INSTALL_DIR}/include/sycl)
     set(DPCPP_LIBRARY_DIR ${DPCPP_INSTALL_DIR}/lib)
@@ -100,15 +111,26 @@ if(${dpcpp_result} MATCHES "0")
         set(DPCPP_SYCL_LIBRARY ${DPCPP_INSTALL_DIR}/lib/libsycl.so)
         set(DPCPP_OPENCL_LIBRARY ${DPCPP_INSTALL_DIR}/lib/libOpenCL.so)
     endif()
-	set(DPCPP_FOUND TRUE)
 else()
     message(STATUS "DPCPP needed to build dpctl_sycl_interface")
     return()
 endif()
 
+# Check if a specific version of DPCPP is requested
+if(DPCPP_FIND_VERSION)
+    string(COMPARE EQUAL ${DPCPP_FIND_VERSION} ${DPCPP_VERSION} VERSION_MATCH)
+    if(VERSION_MATCH)
+        set(DPCPP_FOUND TRUE)
+    endif()
+else()
+    set(DPCPP_FOUND TRUE)
+endif()
+
 find_package_handle_standard_args(DPCPP DEFAULT_MSG
     DPCPP_FOUND
     DPCPP_VERSION
+    DPCPP_VERSION_MAJOR
+    DPCPP_VERSION_MINOR
     DPCPP_INCLUDE_DIR
     DPCPP_SYCL_INCLUDE_DIR
     DPCPP_LIBRARY_DIR
