@@ -170,6 +170,7 @@
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  
 </div>
@@ -195,6 +196,10 @@
 
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.backend">backend (dpctl.SyclDevice attribute)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl_pyapi.html#dpctl.backend_type">backend_type (class in dpctl)</a>
 </li>
@@ -234,16 +239,28 @@
 </li>
       <li><a href="docfiles/dpctl.program_api.html#dpctl.program.create_program_from_spirv">create_program_from_spirv() (in module dpctl.program)</a>
 </li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.create_sub_devices">create_sub_devices() (dpctl.SyclDevice method)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.default_selector_score">default_selector_score (dpctl.SyclDevice attribute)</a>
+</li>
       <li><a href="docfiles/dpctl_pyapi.html#dpctl.device_context">device_context() (in module dpctl)</a>
 </li>
-      <li><a href="docfiles/dpctl_pyapi.html#dpctl.device_type">device_type (class in dpctl)</a>
+      <li><a href="docfiles/dpctl_pyapi/SyclContext.html#dpctl.SyclContext.device_count">device_count (dpctl.SyclContext attribute)</a>
 </li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.device_name">device_name (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi.html#dpctl.device_type">device_type (class in dpctl)</a>
+
+      <ul>
+        <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.device_type">(dpctl.SyclDevice attribute)</a>
+</li>
+      </ul></li>
       <li>
     dpctl
 
@@ -566,6 +583,8 @@
         <li><a href="dpctl-capi-doxyrest/global.html#index-46">function</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     DPCTLKernelArgType
 
@@ -573,8 +592,6 @@
         <li><a href="dpctl-capi-doxyrest/enum_DPCTLKernelArgType.html#index-0">enum</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     DPCTLmalloc_device
 
@@ -897,9 +914,9 @@
         <li><a href="dpctl-capi-doxyrest/global.html#index-86">function</a>
 </li>
       </ul></li>
-      <li><a href="docfiles/dpctl_pyapi.html#dpctl.dump">dump() (in module dpctl)</a>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.driver_version">driver_version (dpctl.SyclDevice attribute)</a>
 </li>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.dump_device_info">dump_device_info() (dpctl.SyclDevice method)</a>
+      <li><a href="docfiles/dpctl_pyapi.html#dpctl.dump">dump() (in module dpctl)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1103,34 +1120,20 @@
 </li>
       <li><a href="docfiles/dpctl_pyapi.html#dpctl.get_current_queue">get_current_queue() (in module dpctl)</a>
 </li>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.get_device_name">get_device_name() (dpctl.SyclDevice method)</a>
-</li>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.get_device_type">get_device_type() (dpctl.SyclDevice method)</a>
-</li>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.get_driver_version">get_driver_version() (dpctl.SyclDevice method)</a>
+      <li><a href="docfiles/dpctl_pyapi/SyclContext.html#dpctl.SyclContext.get_devices">get_devices() (dpctl.SyclContext method)</a>
 </li>
       <li><a href="docfiles/dpctl.program_api.html#dpctl.program.SyclKernel.get_function_name">get_function_name() (dpctl.program.SyclKernel method)</a>
 </li>
       <li><a href="docfiles/dpctl_pyapi.html#dpctl.get_include">get_include() (in module dpctl)</a>
 </li>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.get_max_compute_units">get_max_compute_units() (dpctl.SyclDevice method)</a>
-</li>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.get_max_num_sub_groups">get_max_num_sub_groups() (dpctl.SyclDevice method)</a>
-</li>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.get_max_work_group_size">get_max_work_group_size() (dpctl.SyclDevice method)</a>
-</li>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.get_max_work_item_dims">get_max_work_item_dims() (dpctl.SyclDevice method)</a>
-</li>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.get_max_work_item_sizes">get_max_work_item_sizes() (dpctl.SyclDevice method)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl_pyapi.html#dpctl.get_num_activated_queues">get_num_activated_queues() (in module dpctl)</a>
 </li>
       <li><a href="docfiles/dpctl.program_api.html#dpctl.program.SyclKernel.get_num_args">get_num_args() (dpctl.program.SyclKernel method)</a>
 </li>
       <li><a href="docfiles/dpctl_pyapi.html#dpctl.get_num_platforms">get_num_platforms() (in module dpctl)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl_pyapi.html#dpctl.get_num_queues">get_num_queues() (in module dpctl)</a>
 </li>
       <li><a href="docfiles/dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue.get_sycl_backend">get_sycl_backend() (dpctl.SyclQueue method)</a>
@@ -1149,8 +1152,6 @@
         <li><a href="docfiles/dpctl.memory_api.html#dpctl.memory.MemoryUSMShared.get_usm_type">(dpctl.memory.MemoryUSMShared method)</a>
 </li>
       </ul></li>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.get_vendor_name">get_vendor_name() (dpctl.SyclDevice method)</a>
-</li>
       <li>
     global
 
@@ -1164,15 +1165,47 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docfiles/dpctl_pyapi.html#dpctl.has_cpu_queues">has_cpu_queues() (in module dpctl)</a>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_accelerator">has_aspect_accelerator (dpctl.SyclDevice attribute)</a>
 </li>
-      <li><a href="docfiles/dpctl_pyapi.html#dpctl.has_gpu_queues">has_gpu_queues() (in module dpctl)</a>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_cpu">has_aspect_cpu (dpctl.SyclDevice attribute)</a>
 </li>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_int64_base_atomics">has_int64_base_atomics() (dpctl.SyclDevice method)</a>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_custom">has_aspect_custom (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_fp16">has_aspect_fp16 (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_fp64">has_aspect_fp64 (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_gpu">has_aspect_gpu (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_host">has_aspect_host (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_image">has_aspect_image (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_int64_base_atomics">has_aspect_int64_base_atomics (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_int64_extended_atomics">has_aspect_int64_extended_atomics (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_online_compiler">has_aspect_online_compiler (dpctl.SyclDevice attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_int64_extended_atomics">has_int64_extended_atomics() (dpctl.SyclDevice method)</a>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_online_linker">has_aspect_online_linker (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_queue_profiling">has_aspect_queue_profiling (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_usm_device_allocations">has_aspect_usm_device_allocations (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_usm_host_allocations">has_aspect_usm_host_allocations (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations">has_aspect_usm_restricted_shared_allocations (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_usm_shared_allocations">has_aspect_usm_shared_allocations (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.has_aspect_usm_system_allocator">has_aspect_usm_system_allocator (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi.html#dpctl.has_cpu_queues">has_cpu_queues() (in module dpctl)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi.html#dpctl.has_gpu_queues">has_gpu_queues() (in module dpctl)</a>
 </li>
       <li><a href="docfiles/dpctl.program_api.html#dpctl.program.SyclProgram.has_sycl_kernel">has_sycl_kernel() (dpctl.program.SyclProgram method)</a>
 </li>
@@ -1184,15 +1217,15 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.is_accelerator">is_accelerator() (dpctl.SyclDevice method)</a>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.is_accelerator">is_accelerator (dpctl.SyclDevice attribute)</a>
 </li>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.is_cpu">is_cpu() (dpctl.SyclDevice method)</a>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.is_cpu">is_cpu (dpctl.SyclDevice attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.is_gpu">is_gpu() (dpctl.SyclDevice method)</a>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.is_gpu">is_gpu (dpctl.SyclDevice attribute)</a>
 </li>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.is_host">is_host() (dpctl.SyclDevice method)</a>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.is_host">is_host (dpctl.SyclDevice attribute)</a>
 </li>
       <li><a href="docfiles/dpctl_pyapi.html#dpctl.is_in_device_context">is_in_device_context() (in module dpctl)</a>
 </li>
@@ -1202,18 +1235,28 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.max_compute_units">max_compute_units (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.max_num_sub_groups">max_num_sub_groups (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.max_work_group_size">max_work_group_size (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.max_work_item_dims">max_work_item_dims (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.max_work_item_sizes">max_work_item_sizes (dpctl.SyclDevice attribute)</a>
+</li>
       <li><a href="docfiles/dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue.mem_advise">mem_advise() (dpctl.SyclQueue method)</a>
 </li>
       <li><a href="docfiles/dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue.memcpy">memcpy() (dpctl.SyclQueue method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl.memory_api.html#dpctl.memory.MemoryUSMDevice">MemoryUSMDevice (class in dpctl.memory)</a>
 </li>
       <li><a href="docfiles/dpctl.memory_api.html#dpctl.memory.MemoryUSMHost">MemoryUSMHost (class in dpctl.memory)</a>
 </li>
       <li><a href="docfiles/dpctl.memory_api.html#dpctl.memory.MemoryUSMShared">MemoryUSMShared (class in dpctl.memory)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     module
 
@@ -1263,9 +1306,25 @@
         <li><a href="dpctl-capi-doxyrest/page_todo.html#index-0">Todo List</a>
 </li>
       </ul></li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_char">preferred_vector_width_char (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_double">preferred_vector_width_double (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_float">preferred_vector_width_float (dpctl.SyclDevice attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_half">preferred_vector_width_half (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_int">preferred_vector_width_int (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_long">preferred_vector_width_long (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_short">preferred_vector_width_short (dpctl.SyclDevice attribute)</a>
+</li>
       <li><a href="docfiles/dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue.prefetch">prefetch() (dpctl.SyclQueue method)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.print_device_info">print_device_info() (dpctl.SyclDevice method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1297,14 +1356,20 @@
         <li><a href="docfiles/dpctl.memory_api.html#dpctl.memory.MemoryUSMShared.size">(dpctl.memory.MemoryUSMShared attribute)</a>
 </li>
       </ul></li>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.sub_group_independent_forward_progress">sub_group_independent_forward_progress (dpctl.SyclDevice attribute)</a>
+</li>
       <li><a href="docfiles/dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue.submit">submit() (dpctl.SyclQueue method)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue.sycl_context">sycl_context (dpctl.SyclQueue attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue.sycl_device">sycl_device (dpctl.SyclQueue attribute)</a>
 </li>
       <li><a href="docfiles/dpctl_pyapi/SyclContext.html#dpctl.SyclContext">SyclContext (class in dpctl)</a>
 </li>
-      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice">SyclDevice (class in dpctl)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice">SyclDevice (class in dpctl)</a>
+</li>
       <li><a href="docfiles/dpctl_pyapi/SyclEvent.html#dpctl.SyclEvent">SyclEvent (class in dpctl)</a>
 </li>
       <li><a href="docfiles/dpctl.program_api.html#dpctl.program.SyclKernel">SyclKernel (class in dpctl.program)</a>
@@ -1380,6 +1445,14 @@
   </ul></td>
 </tr></table>
 
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice.vendor_name">vendor_name (dpctl.SyclDevice attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -1432,11 +1505,11 @@
         <dt>Versions</dt>
         
            <strong> 
-          <dd><a href="../0.6.1/index.html">0.6.1</a></dd>
+          <dd><a href="https://intelpython.github.io/dpctl/0.6.1/index.html">0.6.1</a></dd>
            </strong> 
         
           
-          <dd><a href="../latest/index.html">latest</a></dd>
+          <dd><a href="https://intelpython.github.io/dpctl/latest/index.html">latest</a></dd>
           
         
       </dl>

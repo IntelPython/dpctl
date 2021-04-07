@@ -1,0 +1,169 @@
+.. index:: pair: group; C API for SYCL Device Selectors
+.. _doxid-db/ddf/group__DeviceSelectors:
+
+C API for SYCL Device Selectors
+===============================
+
+.. toctree::
+	:hidden:
+
+Overview
+~~~~~~~~
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	
+	// global functions
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	:ref:`DPCTLAcceleratorSelector_Create<doxid-db/ddf/group__DeviceSelectors_1gae32559d9e35f99b2f1090f2f1c75423f>`();
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	:ref:`DPCTLCPUSelector_Create<doxid-db/ddf/group__DeviceSelectors_1ga8bda877d51d758ee5240335fa3b2c6d6>`();
+
+	DPCTL_API void
+	:ref:`DPCTLDeviceSelector_Delete<doxid-db/ddf/group__DeviceSelectors_1ga30678acd2383c56d7eb78bf99b7bcf7c>`(__dpctl_take :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>` DSRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	:ref:`DPCTLFilterSelector_Create<doxid-db/ddf/group__DeviceSelectors_1ga1cfad5b95c7793766cf863378cdccf3d>`(__dpctl_keep const char* filter_str);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	:ref:`DPCTLGPUSelector_Create<doxid-db/ddf/group__DeviceSelectors_1ga7601f3b9030672562a5730007cf20c17>`();
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	:ref:`DPCTLHostSelector_Create<doxid-db/ddf/group__DeviceSelectors_1gae46c9c8d925974a4b8eab91a53166df7>`();
+
+.. _details-db/ddf/group__DeviceSelectors:
+
+Detailed Documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+Global Functions
+----------------
+
+.. index:: pair: function; DPCTLAcceleratorSelector_Create
+.. _doxid-db/ddf/group__DeviceSelectors_1gae32559d9e35f99b2f1090f2f1c75423f:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	DPCTLAcceleratorSelector_Create()
+
+Returns an opaque wrapper for sycl::accelerator_selector object.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to a sycl::accelerator_selector object.
+
+.. index:: pair: function; DPCTLCPUSelector_Create
+.. _doxid-db/ddf/group__DeviceSelectors_1ga8bda877d51d758ee5240335fa3b2c6d6:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	DPCTLCPUSelector_Create()
+
+Returns an opaque wrapper for sycl::cpu_selector object.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to a sycl::cpu_selector object.
+
+.. index:: pair: function; DPCTLDeviceSelector_Delete
+.. _doxid-db/ddf/group__DeviceSelectors_1ga30678acd2383c56d7eb78bf99b7bcf7c:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLDeviceSelector_Delete(__dpctl_take :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>` DSRef)
+
+Deletes the DPCTLSyclDeviceSelectorRef after casting it to a sycl::device_selector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DSRef
+
+		- An opaque DPCTLSyclDeviceSelectorRef pointer that would be freed.
+
+.. index:: pair: function; DPCTLFilterSelector_Create
+.. _doxid-db/ddf/group__DeviceSelectors_1ga1cfad5b95c7793766cf863378cdccf3d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	DPCTLFilterSelector_Create(__dpctl_keep const char* filter_str)
+
+Returns an opaque wrapper for sycl::ONEAPI::filter_selector object based on the passed in filter string.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- filter_str
+
+		- A C string providing a filter based on which to create a device_selector.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to a sycl::ONEAPI::filter_selector object.
+
+.. index:: pair: function; DPCTLGPUSelector_Create
+.. _doxid-db/ddf/group__DeviceSelectors_1ga7601f3b9030672562a5730007cf20c17:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	DPCTLGPUSelector_Create()
+
+Returns an opaque wrapper for sycl::gpu_selector object.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to a sycl::gpu_selector object.
+
+.. index:: pair: function; DPCTLHostSelector_Create
+.. _doxid-db/ddf/group__DeviceSelectors_1gae46c9c8d925974a4b8eab91a53166df7:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
+	DPCTLHostSelector_Create()
+
+Returns an opaque wrapper for sycl::host_selector object.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to a sycl::host_selector object.
+
