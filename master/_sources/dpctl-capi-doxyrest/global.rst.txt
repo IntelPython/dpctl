@@ -77,13 +77,13 @@ Overview
 	:ref:`DPCTLContext_Delete<doxid-da/df7/group__ContextInterface_1ga12d2a8bc191c360fe67eae5e1fc78c63>`(__dpctl_take :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
 
 	DPCTL_API size_t
-	:ref:`DPCTLContext_DeviceCount<doxid-df/d74/dpctl__sycl__context__interface_8h_1a835a44d29be8de2b0b6bf4ccb09578be>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef);
+	:ref:`DPCTLContext_DeviceCount<doxid-da/df7/group__ContextInterface_1ga835a44d29be8de2b0b6bf4ccb09578be>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef);
 
 	DPCTL_API :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`
 	:ref:`DPCTLContext_GetBackend<doxid-da/df7/group__ContextInterface_1gaa6a2b2cf4f898df8824da1b52ba9ceb6>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
-	:ref:`DPCTLContext_GetDevices<doxid-df/d74/dpctl__sycl__context__interface_8h_1aba52414ec6b07a3a3364f7a5a2c72b13>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef);
+	:ref:`DPCTLContext_GetDevices<doxid-da/df7/group__ContextInterface_1gaba52414ec6b07a3a3364f7a5a2c72b13>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef);
 
 	DPCTL_API bool
 	:ref:`DPCTLContext_IsHost<doxid-da/df7/group__ContextInterface_1ga24db0f38d9acb63c50c686f848b21a53>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
@@ -104,20 +104,20 @@ Overview
 	:ref:`DPCTLDevice_CreateFromSelector<doxid-d8/de9/group__DeviceInterface_1ga371463122c4ec271be68364d1e9a284d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>` DSRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
-	:ref:`DPCTLDevice_CreateSubDevicesByAffinity<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a4057d831791c4be08b43bd7c6f9bf4d3>`(
+	:ref:`DPCTLDevice_CreateSubDevicesByAffinity<doxid-d8/de9/group__DeviceInterface_1ga4057d831791c4be08b43bd7c6f9bf4d3>`(
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
 		:ref:`DPCTLPartitionAffinityDomainType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670>` PartitionAffinityDomainTy
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
-	:ref:`DPCTLDevice_CreateSubDevicesByCounts<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a794e3f46e0c4805e6eb56b55524fd3f9>`(
+	:ref:`DPCTLDevice_CreateSubDevicesByCounts<doxid-d8/de9/group__DeviceInterface_1ga794e3f46e0c4805e6eb56b55524fd3f9>`(
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
 		__dpctl_keep size_t* counts,
 		size_t ncounts
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
-	:ref:`DPCTLDevice_CreateSubDevicesEqually<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a75e3383f16c69d7ccb8377609e61964a>`(
+	:ref:`DPCTLDevice_CreateSubDevicesEqually<doxid-d8/de9/group__DeviceInterface_1ga75e3383f16c69d7ccb8377609e61964a>`(
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
 		size_t count
 		);
@@ -578,7 +578,7 @@ Type of function to be used in SYCL async error handler provide by DPCTL.
 
 	typedef  struct DPCTLOpaqueSyclContext* DPCTLSyclContextRef
 
-Opaque pointer to a sycl::context.
+Opaque pointer to a ``sycl::context``
 
 .. index:: pair: typedef; DPCTLSyclDeviceRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d:
@@ -588,7 +588,7 @@ Opaque pointer to a sycl::context.
 
 	typedef struct DPCTLOpaqueSyclDevice* DPCTLSyclDeviceRef
 
-Opaque pointer to a sycl::device.
+Opaque pointer to a ``sycl::device``
 
 .. index:: pair: typedef; DPCTLSyclDeviceSelectorRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83:
@@ -598,7 +598,7 @@ Opaque pointer to a sycl::device.
 
 	typedef struct DPCTLOpaqueSyclDeviceSelector* DPCTLSyclDeviceSelectorRef
 
-Opaque pointer to a sycl::device_selector.
+Opaque pointer to a ``sycl::device_selector``
 
 .. index:: pair: typedef; DPCTLSyclEventRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03:
@@ -608,7 +608,7 @@ Opaque pointer to a sycl::device_selector.
 
 	typedef struct DPCTLOpaqueSyclEvent* DPCTLSyclEventRef
 
-Opaque pointer to a sycl::event.
+Opaque pointer to a ``sycl::event``
 
 .. index:: pair: typedef; DPCTLSyclKernelRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844:
@@ -618,7 +618,7 @@ Opaque pointer to a sycl::event.
 
 	typedef struct DPCTLOpaqueSyclKernel* DPCTLSyclKernelRef
 
-Opaque pointer to a sycl::kernel.
+Opaque pointer to a ``sycl::kernel``
 
 .. index:: pair: typedef; DPCTLSyclPlatformRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0:
@@ -628,7 +628,7 @@ Opaque pointer to a sycl::kernel.
 
 	typedef struct DPCTLOpaqueSyclPlatform* DPCTLSyclPlatformRef
 
-Opaque pointer to a sycl::platform.
+Opaque pointer to a ``sycl::platform``
 
 .. index:: pair: typedef; DPCTLSyclProgramRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172:
@@ -638,7 +638,7 @@ Opaque pointer to a sycl::platform.
 
 	typedef struct DPCTLOpaqueSyclProgram* DPCTLSyclProgramRef
 
-Opaque pointer to a sycl::program.
+Opaque pointer to a ``sycl::program``
 
 .. index:: pair: typedef; DPCTLSyclQueueRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a:
@@ -648,7 +648,7 @@ Opaque pointer to a sycl::program.
 
 	typedef struct DPCTLOpaqueSyclQueue* DPCTLSyclQueueRef
 
-Opaque pointer to a sycl::queue.
+Opaque pointer to a ``sycl::queue``
 
 .. index:: pair: typedef; DPCTLSyclUSMRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6:
@@ -658,183 +658,5 @@ Opaque pointer to a sycl::queue.
 
 	typedef struct DPCTLOpaqueSyclUSM* DPCTLSyclUSMRef
 
-Used to pass a sycl::usm memory opaquely through DPCTL interfaces.
-
-Global Functions
-----------------
-
-.. index:: pair: function; DPCTLContext_DeviceCount
-.. _doxid-df/d74/dpctl__sycl__context__interface_8h_1a835a44d29be8de2b0b6bf4ccb09578be:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	DPCTL_API size_t
-	DPCTLContext_DeviceCount(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef)
-
-Returns the number of devices associated with sycl::context referenced by DPCTLSyclContextRef object.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- CRef
-
-		- DPCTLSyclContexRef object to query.
-
-
-
-.. rubric:: Returns:
-
-A positive count on success or zero on error.
-
-.. index:: pair: function; DPCTLContext_GetDevices
-.. _doxid-df/d74/dpctl__sycl__context__interface_8h_1aba52414ec6b07a3a3364f7a5a2c72b13:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
-	DPCTLContext_GetDevices(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef)
-
-Returns a vector of devices associated with sycl::context referenced by DPCTLSyclContextRef object.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- CRef
-
-		- DPCTLSyclContexRef object to query.
-
-
-
-.. rubric:: Returns:
-
-A DPCTLDeviceVectorRef with devices associated with given CRef.
-
-.. index:: pair: function; DPCTLDevice_CreateSubDevicesByAffinity
-.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a4057d831791c4be08b43bd7c6f9bf4d3:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
-	DPCTLDevice_CreateSubDevicesByAffinity(
-		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
-		:ref:`DPCTLPartitionAffinityDomainType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670>` PartitionAffinityDomainTy
-		)
-
-Returns a vector of sub devices partitioned from this SYCL device by affinity domain based on the domain parameter.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- DRef
-
-		- Opaque pointer to a sycl::device
-
-	*
-		- DPCTLPartitionAffinityDomainType
-
-		- DPCTLPartitionAffinityDomainType of sycl::info::partition_affinity_domain
-
-
-
-.. rubric:: Returns:
-
-A :ref:`DPCTLDeviceVectorRef <doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` containing :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` objects
-
-.. index:: pair: function; DPCTLDevice_CreateSubDevicesByCounts
-.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a794e3f46e0c4805e6eb56b55524fd3f9:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
-	DPCTLDevice_CreateSubDevicesByCounts(
-		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
-		__dpctl_keep size_t* counts,
-		size_t ncounts
-		)
-
-Returns a vector of sub devices partitioned from this SYCL device based on the counts parameter. For each non-zero value M in the counts vector, a sub device with M compute units is created.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- DRef
-
-		- Opaque pointer to a sycl::device
-
-	*
-		- counts
-
-		- Array with count compute units that need to contains in subdevices
-
-	*
-		- ncounts
-
-		- Number of counts
-
-
-
-.. rubric:: Returns:
-
-A :ref:`DPCTLDeviceVectorRef <doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` containing :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` objects
-
-.. index:: pair: function; DPCTLDevice_CreateSubDevicesEqually
-.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a75e3383f16c69d7ccb8377609e61964a:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
-	DPCTLDevice_CreateSubDevicesEqually(
-		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
-		size_t count
-		)
-
-Returns a vector of sub devices partitioned from this SYCL device based on the count parameter. The returned vector contains as many sub devices as can be created such that each sub device contains count compute units. If the device’s total number of compute units is not evenly divided by count, then the remaining compute units are not included in any of the sub devices.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- DRef
-
-		- Opaque pointer to a sycl::device
-
-	*
-		- count
-
-		- Count compute units that need to contains in subdevices
-
-
-
-.. rubric:: Returns:
-
-A :ref:`DPCTLDeviceVectorRef <doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` containing :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` objects
+Used to pass a ``sycl::usm`` memory opaquely through DPCTL interfaces.
 

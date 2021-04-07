@@ -1,8 +1,8 @@
-.. index:: pair: group; Platform Manager
+.. index:: pair: group; Platform class helper functions
 .. _doxid-d7/d69/group__PlatformManager:
 
-Platform Manager
-================
+Platform class helper functions
+===============================
 
 .. toctree::
 	:hidden:
@@ -10,7 +10,7 @@ Platform Manager
 Overview
 ~~~~~~~~
 
-Helper functions for sycl::platform objects that do not directly map to any sycl::platform member function. :ref:`More...<details-d7/d69/group__PlatformManager>`
+Helper functions for ``sycl::platform`` objects that do not directly map to any ``sycl::platform`` member function. :ref:`More...<details-d7/d69/group__PlatformManager>`
 
 
 .. ref-code-block:: cpp
@@ -55,7 +55,7 @@ Helper functions for sycl::platform objects that do not directly map to any sycl
 Detailed Documentation
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Helper functions for sycl::platform objects that do not directly map to any sycl::platform member function.
+Helper functions for ``sycl::platform`` objects that do not directly map to any ``sycl::platform`` member function.
 
 Global Functions
 ----------------

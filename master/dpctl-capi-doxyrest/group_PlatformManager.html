@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Platform Manager &mdash; Data-parallel Control (dpctl) master documentation</title>
+  <title>Platform class helper functions &mdash; Data-parallel Control (dpctl) master documentation</title>
   
 
   
@@ -37,8 +37,8 @@
   <link rel="stylesheet" href="../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Program Interface" href="group_ProgramInterface.html" />
-    <link rel="prev" title="Platform Interface" href="group_PlatformInterface.html" /> 
+    <link rel="next" title="Program class C wrapper" href="group_ProgramInterface.html" />
+    <link rel="prev" title="Platform class C wrapper" href="group_PlatformInterface.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,18 +86,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">API Documentation</span></p>
+              <p class="caption"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../docfiles/user_guides/QuickStart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../docfiles/dpctl_pyapi.html">dpctl Python API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">dpctl C API</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="group_ContextInterface.html">Context Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_DeviceInterface.html">Device Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_DeviceManager.html">Device Manager</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_DeviceSelectors.html">Device Selector Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_EventInterface.html">Event Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_KernelInterface.html">Kernel Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_PlatformInterface.html">Platform Interface</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Platform Manager</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="group_ContextInterface.html">Context class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceInterface.html">Device class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceManager.html">Device class helper functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceSelectors.html">Device selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_EventInterface.html">Event class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_KernelInterface.html">Kernel class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_PlatformInterface.html">Platform class C wrapper</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Platform class helper functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#detailed-documentation">Detailed Documentation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#global-functions">Global Functions</a></li>
@@ -105,9 +109,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="group_ProgramInterface.html">Program Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_QueueInterface.html">Queue Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_QueueManager.html">Queue Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_ProgramInterface.html">Program class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_QueueInterface.html">Queue class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_QueueManager.html">Queue class helper functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_USMInterface.html">USM Interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page_todo.html">Todo List</a></li>
 <li class="toctree-l2"><a class="reference internal" href="global.html">Global Namespace</a></li>
@@ -160,7 +164,7 @@
         
           <li><a href="index.html">dpctl C API</a> &raquo;</li>
         
-      <li>Platform Manager</li>
+      <li>Platform class helper functions</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -179,13 +183,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="platform-manager">
-<span id="doxid-d7-d69-group-platformmanager"></span><span id="index-0"></span><h1>Platform Manager<a class="headerlink" href="#platform-manager" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="platform-class-helper-functions">
+<span id="doxid-d7-d69-group-platformmanager"></span><span id="index-0"></span><h1>Platform class helper functions<a class="headerlink" href="#platform-class-helper-functions" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>Helper functions for sycl::platform objects that do not directly map to any sycl::platform member function. <a class="reference internal" href="#details-d7-d69-group-platformmanager"><span class="std std-ref">More…</span></a></p>
+<p>Helper functions for <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> objects that do not directly map to any <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> member function. <a class="reference internal" href="#details-d7-d69-group-platformmanager"><span class="std std-ref">More…</span></a></p>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
 
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLPlatformVector</span><span class="o">*</span> <span class="doxyrest-code-target target" id="doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span></span><span class="n">DPCTLPlatformVectorRef</span></span><span></span><span class="p">;</span>
@@ -221,7 +225,7 @@ DPCTLPlatformVector_Size<span></span><span class="p">(</span><span class="n">__d
 </div>
 <div class="section" id="detailed-documentation">
 <span id="details-d7-d69-group-platformmanager"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this headline">¶</a></h2>
-<p>Helper functions for sycl::platform objects that do not directly map to any sycl::platform member function.</p>
+<p>Helper functions for <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> objects that do not directly map to any <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> member function.</p>
 <div class="section" id="global-functions">
 <h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this headline">¶</a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d7-d69-group-platformmanager-1ga43dde9c2dda7a74ba44d7cba6d1e5d7f"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
@@ -349,10 +353,10 @@ DPCTLPlatformVector_Size<span></span><span class="p">(</span><span class="n">__d
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="group_ProgramInterface.html" class="btn btn-neutral float-right" title="Program Interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="group_ProgramInterface.html" class="btn btn-neutral float-right" title="Program class C wrapper" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="group_PlatformInterface.html" class="btn btn-neutral float-left" title="Platform Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="group_PlatformInterface.html" class="btn btn-neutral float-left" title="Platform class C wrapper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -376,6 +380,30 @@ DPCTLPlatformVector_Size<span></span><span class="p">(</span><span class="n">__d
 
   </div>
   
+
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Other versions</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl>
+        <dt>Versions</dt>
+        
+          
+          <dd><a href="../0.6.1/index.html">0.6.1</a></dd>
+          
+        
+          
+          <dd><a href="../latest/index.html">latest</a></dd>
+          
+        
+      </dl>
+      
+    </div>
+  </div>
 
 
   <script type="text/javascript">

@@ -1,8 +1,8 @@
-.. index:: pair: group; Queue Manager
+.. index:: pair: group; Queue class helper functions
 .. _doxid-d9/db6/group__QueueManager:
 
-Queue Manager
-=============
+Queue class helper functions
+============================
 
 .. toctree::
 	:hidden:

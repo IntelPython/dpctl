@@ -37,8 +37,8 @@
   <link rel="stylesheet" href="../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="dpctl.SyclContext" href="dpctl_pyapi/SyclContext.html" />
-    <link rel="prev" title="Welcome to Data-parallel Control (dpctl)’s documentation!" href="../index.html" /> 
+    <link rel="next" title="dpctl.dptensor" href="dpctl.dptensor_api.html" />
+    <link rel="prev" title="Quick Start Guide" href="user_guides/QuickStart.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,9 +86,19 @@
               
             
             
-              <p class="caption"><span class="caption-text">API Documentation</span></p>
+              <p class="caption"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guides/QuickStart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">dpctl Python API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sub-modules">Sub-modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.dptensor_api.html">dpctl.dptensor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.memory_api.html">dpctl.memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program_api.html">dpctl.program</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#classes">Classes</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dpctl_pyapi/SyclContext.html">dpctl.SyclContext</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl_pyapi/SyclDevice.html">dpctl.SyclDevice</a></li>
@@ -174,6 +184,16 @@
 API. The Python API exposes wrappers for the SYCL runtime classes (expect
 <cite>device_selector</cite>) described in Section 4.6 of the SYCL 2020 spec (<a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes">https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes</a>).</p>
 <p>Apart from the main SYCL runtime classes, dpctl includes a <cite>memory</cite> sub-module that exposes the SYCL USM allocators and deallocators.</p>
+<div class="section" id="sub-modules">
+<h2>Sub-modules<a class="headerlink" href="#sub-modules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dpctl.dptensor_api.html">dpctl.dptensor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpctl.memory_api.html">dpctl.memory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpctl.program_api.html">dpctl.program</a></li>
+</ul>
+</div>
+</div>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
@@ -623,10 +643,10 @@ or created from given arguments.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpctl_pyapi/SyclContext.html" class="btn btn-neutral float-right" title="dpctl.SyclContext" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpctl.dptensor_api.html" class="btn btn-neutral float-right" title="dpctl.dptensor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to Data-parallel Control (dpctl)’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="user_guides/QuickStart.html" class="btn btn-neutral float-left" title="Quick Start Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -650,6 +670,30 @@ or created from given arguments.</p>
 
   </div>
   
+
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Other versions</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl>
+        <dt>Versions</dt>
+        
+          
+          <dd><a href="../0.6.1/index.html">0.6.1</a></dd>
+          
+        
+          
+          <dd><a href="../latest/index.html">latest</a></dd>
+          
+        
+      </dl>
+      
+    </div>
+  </div>
 
 
   <script type="text/javascript">

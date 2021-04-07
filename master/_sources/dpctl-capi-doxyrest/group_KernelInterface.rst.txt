@@ -1,8 +1,8 @@
-.. index:: pair: group; Kernel Interface
+.. index:: pair: group; Kernel class C wrapper
 .. _doxid-d1/dcb/group__KernelInterface:
 
-Kernel Interface
-================
+Kernel class C wrapper
+======================
 
 .. toctree::
 	:hidden:

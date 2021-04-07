@@ -86,21 +86,25 @@
               
             
             
-              <p class="caption"><span class="caption-text">API Documentation</span></p>
+              <p class="caption"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../docfiles/user_guides/QuickStart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../docfiles/dpctl_pyapi.html">dpctl Python API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">dpctl C API</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="group_ContextInterface.html">Context Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_DeviceInterface.html">Device Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_DeviceManager.html">Device Manager</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_DeviceSelectors.html">Device Selector Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_EventInterface.html">Event Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_KernelInterface.html">Kernel Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_PlatformInterface.html">Platform Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_PlatformManager.html">Platform Manager</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_ProgramInterface.html">Program Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_QueueInterface.html">Queue Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_QueueManager.html">Queue Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_ContextInterface.html">Context class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceInterface.html">Device class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceManager.html">Device class helper functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceSelectors.html">Device selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_EventInterface.html">Event class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_KernelInterface.html">Kernel class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_PlatformInterface.html">Platform class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_PlatformManager.html">Platform class helper functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_ProgramInterface.html">Program class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_QueueInterface.html">Queue class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_QueueManager.html">Queue class helper functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_USMInterface.html">USM Interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page_todo.html">Todo List</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Global Namespace</a><ul>
@@ -113,7 +117,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#detailed-documentation">Detailed Documentation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#typedefs">Typedefs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#global-functions">Global Functions</a></li>
 </ul>
 </li>
 </ul>
@@ -245,13 +248,13 @@ DPCTLContext_CreateFromDevices<span></span><span class="p">(</span>
 DPCTLContext_Delete<span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CtxRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">size_t</span>
-<a class="reference internal" href="#doxid-df-d74-dpctl-sycl-context-interface-8h-1a835a44d29be8de2b0b6bf4ccb09578be"><span class="std std-ref">DPCTLContext_DeviceCount</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span><span class="p">);</span>
+DPCTLContext_DeviceCount<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclBackendType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1aa217d239d7e3752c49bd9fd42c71c933"><span class="std std-ref">DPCTLSyclBackendType</span></a><span></span>
 DPCTLContext_GetBackend<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CtxRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="group_DeviceManager.html#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
-<a class="reference internal" href="#doxid-df-d74-dpctl-sycl-context-interface-8h-1aba52414ec6b07a3a3364f7a5a2c72b13"><span class="std std-ref">DPCTLContext_GetDevices</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span><span class="p">);</span>
+DPCTLContext_GetDevices<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">bool</span>
 DPCTLContext_IsHost<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CtxRef</span><span class="p">);</span>
@@ -272,20 +275,20 @@ DPCTLDevice_Create<span></span><span class="p">();</span>
 DPCTLDevice_CreateFromSelector<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span> <span class="n">DSRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="group_DeviceManager.html#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
-<a class="reference internal" href="#doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a4057d831791c4be08b43bd7c6f9bf4d3"><span class="std std-ref">DPCTLDevice_CreateSubDevicesByAffinity</span></a><span></span><span class="p">(</span>
+DPCTLDevice_CreateSubDevicesByAffinity<span></span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">,</span>
     <a class="reference internal" href="enum_DPCTLPartitionAffinityDomainType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a27908eb4caace370bd771904e6a48670"><span class="std std-ref">DPCTLPartitionAffinityDomainType</span></a><span></span> <span class="n">PartitionAffinityDomainTy</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="group_DeviceManager.html#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
-<a class="reference internal" href="#doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a794e3f46e0c4805e6eb56b55524fd3f9"><span class="std std-ref">DPCTLDevice_CreateSubDevicesByCounts</span></a><span></span><span class="p">(</span>
+DPCTLDevice_CreateSubDevicesByCounts<span></span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span> <span class="n">counts</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">ncounts</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="group_DeviceManager.html#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
-<a class="reference internal" href="#doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a75e3383f16c69d7ccb8377609e61964a"><span class="std std-ref">DPCTLDevice_CreateSubDevicesEqually</span></a><span></span><span class="p">(</span>
+DPCTLDevice_CreateSubDevicesEqually<span></span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">count</span>
     <span class="p">);</span>
@@ -725,133 +728,23 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span id="index-2"></span><span></span><span class="k">typedef</span>  <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclContext</span><span class="o">*</span> <span class="n">DPCTLSyclContextRef</span></pre>
-<p>Opaque pointer to a sycl::context.</p>
+<p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code></p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span id="index-3"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclDevice</span><span class="o">*</span> <span class="n">DPCTLSyclDeviceRef</span></pre>
-<p>Opaque pointer to a sycl::device.</p>
+<p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code></p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span id="index-4"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclDeviceSelector</span><span class="o">*</span> <span class="n">DPCTLSyclDeviceSelectorRef</span></pre>
-<p>Opaque pointer to a sycl::device_selector.</p>
+<p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::device_selector</span></code></p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span id="index-5"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclEvent</span><span class="o">*</span> <span class="n">DPCTLSyclEventRef</span></pre>
-<p>Opaque pointer to a sycl::event.</p>
+<p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code></p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span id="index-6"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclKernel</span><span class="o">*</span> <span class="n">DPCTLSyclKernelRef</span></pre>
-<p>Opaque pointer to a sycl::kernel.</p>
+<p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::kernel</span></code></p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span id="index-7"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclPlatform</span><span class="o">*</span> <span class="n">DPCTLSyclPlatformRef</span></pre>
-<p>Opaque pointer to a sycl::platform.</p>
+<p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code></p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a665a90816ae3328f517ba19c70e4b172"><span id="index-8"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclProgram</span><span class="o">*</span> <span class="n">DPCTLSyclProgramRef</span></pre>
-<p>Opaque pointer to a sycl::program.</p>
+<p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::program</span></code></p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span id="index-9"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclQueue</span><span class="o">*</span> <span class="n">DPCTLSyclQueueRef</span></pre>
-<p>Opaque pointer to a sycl::queue.</p>
+<p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code></p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span id="index-10"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclUSM</span><span class="o">*</span> <span class="n">DPCTLSyclUSMRef</span></pre>
-<p>Used to pass a sycl::usm memory opaquely through DPCTL interfaces.</p>
-</div>
-<div class="section" id="global-functions">
-<h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this headline">¶</a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d74-dpctl-sycl-context-interface-8h-1a835a44d29be8de2b0b6bf4ccb09578be"><span id="index-11"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
-<span class="n">DPCTLContext_DeviceCount</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span><span class="p">)</span></pre>
-<p>Returns the number of devices associated with sycl::context referenced by DPCTLSyclContextRef object.</p>
-<p class="rubric">Parameters:</p>
-<table class="colwidths-given docutils align-default">
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>CRef</p></td>
-<td><p>DPCTLSyclContexRef object to query.</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Returns:</p>
-<p>A positive count on success or zero on error.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d74-dpctl-sycl-context-interface-8h-1aba52414ec6b07a3a3364f7a5a2c72b13"><span id="index-12"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="group_DeviceManager.html#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
-<span class="n">DPCTLContext_GetDevices</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span><span class="p">)</span></pre>
-<p>Returns a vector of devices associated with sycl::context referenced by DPCTLSyclContextRef object.</p>
-<p class="rubric">Parameters:</p>
-<table class="colwidths-given docutils align-default">
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>CRef</p></td>
-<td><p>DPCTLSyclContexRef object to query.</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Returns:</p>
-<p>A DPCTLDeviceVectorRef with devices associated with given CRef.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a4057d831791c4be08b43bd7c6f9bf4d3"><span id="index-13"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="group_DeviceManager.html#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
-<span class="n">DPCTLDevice_CreateSubDevicesByAffinity</span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">,</span>
-    <a class="reference internal" href="enum_DPCTLPartitionAffinityDomainType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a27908eb4caace370bd771904e6a48670"><span class="std std-ref">DPCTLPartitionAffinityDomainType</span></a><span></span> <span class="n">PartitionAffinityDomainTy</span>
-    <span class="p">)</span></pre>
-<p>Returns a vector of sub devices partitioned from this SYCL device by affinity domain based on the domain parameter.</p>
-<p class="rubric">Parameters:</p>
-<table class="colwidths-given docutils align-default">
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>DRef</p></td>
-<td><p>Opaque pointer to a sycl::device</p></td>
-</tr>
-<tr class="row-even"><td><p>DPCTLPartitionAffinityDomainType</p></td>
-<td><p>DPCTLPartitionAffinityDomainType of sycl::info::partition_affinity_domain</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Returns:</p>
-<p>A <span class="xref std std-ref">DPCTLDeviceVectorRef</span> containing <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a> objects</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a794e3f46e0c4805e6eb56b55524fd3f9"><span id="index-14"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="group_DeviceManager.html#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
-<span class="n">DPCTLDevice_CreateSubDevicesByCounts</span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">,</span>
-    <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span> <span class="n">counts</span><span class="p">,</span>
-    <span class="kt">size_t</span> <span class="n">ncounts</span>
-    <span class="p">)</span></pre>
-<p>Returns a vector of sub devices partitioned from this SYCL device based on the counts parameter. For each non-zero value M in the counts vector, a sub device with M compute units is created.</p>
-<p class="rubric">Parameters:</p>
-<table class="colwidths-given docutils align-default">
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>DRef</p></td>
-<td><p>Opaque pointer to a sycl::device</p></td>
-</tr>
-<tr class="row-even"><td><p>counts</p></td>
-<td><p>Array with count compute units that need to contains in subdevices</p></td>
-</tr>
-<tr class="row-odd"><td><p>ncounts</p></td>
-<td><p>Number of counts</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Returns:</p>
-<p>A <span class="xref std std-ref">DPCTLDeviceVectorRef</span> containing <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a> objects</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a75e3383f16c69d7ccb8377609e61964a"><span id="index-15"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="group_DeviceManager.html#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
-<span class="n">DPCTLDevice_CreateSubDevicesEqually</span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">,</span>
-    <span class="kt">size_t</span> <span class="n">count</span>
-    <span class="p">)</span></pre>
-<p>Returns a vector of sub devices partitioned from this SYCL device based on the count parameter. The returned vector contains as many sub devices as can be created such that each sub device contains count compute units. If the device’s total number of compute units is not evenly divided by count, then the remaining compute units are not included in any of the sub devices.</p>
-<p class="rubric">Parameters:</p>
-<table class="colwidths-given docutils align-default">
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>DRef</p></td>
-<td><p>Opaque pointer to a sycl::device</p></td>
-</tr>
-<tr class="row-even"><td><p>count</p></td>
-<td><p>Count compute units that need to contains in subdevices</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Returns:</p>
-<p>A <span class="xref std std-ref">DPCTLDeviceVectorRef</span> containing <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a> objects</p>
+<p>Used to pass a <code class="docutils literal notranslate"><span class="pre">sycl::usm</span></code> memory opaquely through DPCTL interfaces.</p>
 </div>
 </div>
 </div>
@@ -891,6 +784,30 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
 
   </div>
   
+
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Other versions</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl>
+        <dt>Versions</dt>
+        
+          
+          <dd><a href="../0.6.1/index.html">0.6.1</a></dd>
+          
+        
+          
+          <dd><a href="../latest/index.html">latest</a></dd>
+          
+        
+      </dl>
+      
+    </div>
+  </div>
 
 
   <script type="text/javascript">

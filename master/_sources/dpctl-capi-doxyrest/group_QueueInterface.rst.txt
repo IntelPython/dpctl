@@ -1,8 +1,8 @@
-.. index:: pair: group; Queue Interface
+.. index:: pair: group; Queue class C wrapper
 .. _doxid-d9/db1/group__QueueInterface:
 
-Queue Interface
-===============
+Queue class C wrapper
+=====================
 
 .. toctree::
 	:hidden:
@@ -246,9 +246,19 @@ An opaque DPCTLSyclQueueRef pointer containing the new sycl::queue object. A nul
 		int properties
 		)
 
-Constructs a sycl::queue object of the specified SYCL device.
+Constructs a ``sycl::queue`` object of the specified SYCL device.
 
-Constructs a new SYCL queue for the specified SYCL device. The behaviour of this function differs from the SYCL ``queue(const device &syclDevice, const async_handler &asyncHandler, const property_list &propList = {})`` constructor of the queue class. Unlike the SYCL queue class constructor, we try not to create a new SYCL context for the device and instead look to reuse a previously cached SYCL context for the device (refer dpctl_sycl_device_manager.cpp). DPCTL caches contexts only for root devices and for all custom devices the function begaves the same way as the SYCL constructor.
+Constructs a new SYCL queue for the specified SYCL device. The behaviour of this function differs from the following queue constructor:
+
+.. ref-code-block:: cpp
+
+	queue(
+	    const device &syclDevice,
+	    const async_handler &asyncHandler,
+	    const property_list &propList = {}
+	)
+
+Unlike the SYCL queue constructor, we try not to create a new SYCL context for the device and instead look to reuse a previously cached SYCL context for the device (refer dpctl_sycl_device_manager.cpp). DPCTL caches contexts only for root devices and for all custom devices the function begaves the same way as the SYCL constructor.
 
 
 
@@ -260,7 +270,7 @@ Constructs a new SYCL queue for the specified SYCL device. The behaviour of this
 	*
 		- dRef
 
-		- An opaque pointer to a sycl::device.
+		- An opaque pointer to a ``sycl::device``.
 
 	*
 		- error_handler
@@ -270,13 +280,13 @@ Constructs a new SYCL queue for the specified SYCL device. The behaviour of this
 	*
 		- properties
 
-		- A combination of bit flags using the values defined in the DPCTLQueuePropertyType enum. The bit flags are used to create a sycl::property_list that is passed to the SYCL queue constructor.
+		- A combination of bit flags using the values defined in the DPCTLQueuePropertyType enum. The bit flags are used to create a ``sycl::property_list`` that is passed to the SYCL queue constructor.
 
 
 
 .. rubric:: Returns:
 
-An opaque DPCTLSyclQueueRef pointer containing the new sycl::queue object. A nullptr is returned if the queue could not be created.
+An opaque DPCTLSyclQueueRef pointer containing the new ``sycl::queue`` object. A nullptr is returned if the queue could not be created.
 
 .. index:: pair: function; DPCTLQueue_Delete
 .. _doxid-d9/db1/group__QueueInterface_1ga44557847663338a67f423a06ecf9192a:

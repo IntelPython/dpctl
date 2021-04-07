@@ -6,6 +6,16 @@ dpctl Python API
 
 .. automodule:: dpctl
 
+Sub-modules
+-----------
+
+.. toctree::
+    :maxdepth: 1
+
+    dpctl.dptensor_api
+    dpctl.memory_api
+    dpctl.program_api
+
 Classes
 -------
 
@@ -15,7 +25,6 @@ Classes
     dpctl_pyapi/SyclContext
     dpctl_pyapi/SyclDevice
     dpctl_pyapi/SyclEvent
-    dpctl_pyapi/SyclPlatform
     dpctl_pyapi/SyclQueue
 
 Enumerations
@@ -53,4 +62,3 @@ Functions
 .. autofunction:: has_sycl_platforms
 .. autofunction:: is_in_device_context
 .. autofunction:: set_default_queue
-

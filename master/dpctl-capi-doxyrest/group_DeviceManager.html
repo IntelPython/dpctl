@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Device Manager &mdash; Data-parallel Control (dpctl) master documentation</title>
+  <title>Device class helper functions &mdash; Data-parallel Control (dpctl) master documentation</title>
   
 
   
@@ -37,8 +37,8 @@
   <link rel="stylesheet" href="../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Device Selector Interface" href="group_DeviceSelectors.html" />
-    <link rel="prev" title="Device Interface" href="group_DeviceInterface.html" /> 
+    <link rel="next" title="Device selection" href="group_DeviceSelectors.html" />
+    <link rel="prev" title="Device class C wrapper" href="group_DeviceInterface.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,13 +86,17 @@
               
             
             
-              <p class="caption"><span class="caption-text">API Documentation</span></p>
+              <p class="caption"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../docfiles/user_guides/QuickStart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../docfiles/dpctl_pyapi.html">dpctl Python API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">dpctl C API</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="group_ContextInterface.html">Context Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_DeviceInterface.html">Device Interface</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Device Manager</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="group_ContextInterface.html">Context class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceInterface.html">Device class C wrapper</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Device class helper functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#detailed-documentation">Detailed Documentation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#global-functions">Global Functions</a></li>
@@ -100,14 +104,14 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="group_DeviceSelectors.html">Device Selector Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_EventInterface.html">Event Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_KernelInterface.html">Kernel Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_PlatformInterface.html">Platform Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_PlatformManager.html">Platform Manager</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_ProgramInterface.html">Program Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_QueueInterface.html">Queue Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_QueueManager.html">Queue Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceSelectors.html">Device selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_EventInterface.html">Event class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_KernelInterface.html">Kernel class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_PlatformInterface.html">Platform class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_PlatformManager.html">Platform class helper functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_ProgramInterface.html">Program class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_QueueInterface.html">Queue class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_QueueManager.html">Queue class helper functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_USMInterface.html">USM Interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page_todo.html">Todo List</a></li>
 <li class="toctree-l2"><a class="reference internal" href="global.html">Global Namespace</a></li>
@@ -160,7 +164,7 @@
         
           <li><a href="index.html">dpctl C API</a> &raquo;</li>
         
-      <li>Device Manager</li>
+      <li>Device class helper functions</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -179,8 +183,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="device-manager">
-<span id="doxid-d0-d15-group-devicemanager"></span><span id="index-0"></span><h1>Device Manager<a class="headerlink" href="#device-manager" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="device-class-helper-functions">
+<span id="doxid-d0-d15-group-devicemanager"></span><span id="index-0"></span><h1>Device class helper functions<a class="headerlink" href="#device-class-helper-functions" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <div class="section" id="overview">
@@ -419,10 +423,10 @@ DPCTLDeviceVector_Size<span></span><span class="p">(</span><span class="n">__dpc
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="group_DeviceSelectors.html" class="btn btn-neutral float-right" title="Device Selector Interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="group_DeviceSelectors.html" class="btn btn-neutral float-right" title="Device selection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="group_DeviceInterface.html" class="btn btn-neutral float-left" title="Device Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="group_DeviceInterface.html" class="btn btn-neutral float-left" title="Device class C wrapper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -446,6 +450,30 @@ DPCTLDeviceVector_Size<span></span><span class="p">(</span><span class="n">__dpc
 
   </div>
   
+
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Other versions</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl>
+        <dt>Versions</dt>
+        
+          
+          <dd><a href="../0.6.1/index.html">0.6.1</a></dd>
+          
+        
+          
+          <dd><a href="../latest/index.html">latest</a></dd>
+          
+        
+      </dl>
+      
+    </div>
+  </div>
 
 
   <script type="text/javascript">

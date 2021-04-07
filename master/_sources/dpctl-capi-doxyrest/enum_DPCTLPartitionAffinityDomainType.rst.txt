@@ -4,7 +4,7 @@
 enum DPCTLPartitionAffinityDomainType
 =====================================
 
-DPCTL analogue of sycl::info::partition_affinity_domain enum.
+DPCTL analogue of ``sycl::info::partition_affinity_domain`` enum.
 
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block

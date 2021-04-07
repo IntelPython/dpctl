@@ -1,8 +1,8 @@
-.. index:: pair: group; Device Manager
+.. index:: pair: group; Device class helper functions
 .. _doxid-d0/d15/group__DeviceManager:
 
-Device Manager
-==============
+Device class helper functions
+=============================
 
 .. toctree::
 	:hidden:

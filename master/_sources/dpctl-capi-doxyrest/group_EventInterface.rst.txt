@@ -1,8 +1,8 @@
-.. index:: pair: group; Event Interface
+.. index:: pair: group; Event class C wrapper
 .. _doxid-d6/d8a/group__EventInterface:
 
-Event Interface
-===============
+Event class C wrapper
+=====================
 
 .. toctree::
 	:hidden:

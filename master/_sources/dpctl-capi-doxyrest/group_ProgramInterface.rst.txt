@@ -1,8 +1,8 @@
-.. index:: pair: group; Program Interface
+.. index:: pair: group; Program class C wrapper
 .. _doxid-d3/d4f/group__ProgramInterface:
 
-Program Interface
-=================
+Program class C wrapper
+=======================
 
 .. toctree::
 	:hidden:

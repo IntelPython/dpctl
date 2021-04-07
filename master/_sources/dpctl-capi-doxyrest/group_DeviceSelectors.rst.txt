@@ -1,8 +1,8 @@
-.. index:: pair: group; Device Selector Interface
+.. index:: pair: group; Device selection
 .. _doxid-db/ddf/group__DeviceSelectors:
 
-Device Selector Interface
-=========================
+Device selection
+================
 
 .. toctree::
 	:hidden:
