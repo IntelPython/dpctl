@@ -65,13 +65,13 @@ Install Wheel package from Pypi
 2. Set path to Performance Libraries in case of using ``venv`` or system Python.
 
 
-On Linux:
+On Linux
 
 .. code-block:: bash
 
     export LD_LIBRARY_PATH=<path_to_your_env>/lib
 
-On Windows:
+On Windows
 
 .. code-block:: bat
 
@@ -148,15 +148,15 @@ installed:
     - ``pytest`` (optional to run Python API tests)
 
 Once the prerequisites are installed, building using ``setuptools`` involves The
-usual steps:
+usual steps
 
-to build and install.
+to build and install
 
 .. code-block:: bash
 
     python setup.py install
 
-to develop.
+, and to develop.
 
 .. code-block:: bash
 
