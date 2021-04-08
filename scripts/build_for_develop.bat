@@ -1,13 +1,3 @@
-REM check if oneAPI has been activated, only try activating if not
-dpcpp.exe --version >nul 2>&1
-IF %ERRORLEVEL% NEQ 0 (
-    set ERRORLEVEL=
-    call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
-    IF ERRORLEVEL 1 exit /b 1
-)
-REM conda uses %ERRORLEVEL% but FPGA scripts can set it. So it should be reseted.
-set ERRORLEVEL=
-
 rmdir /S /Q build_cmake
 mkdir build_cmake
 
@@ -18,7 +8,7 @@ set "INSTALL_PREFIX=%cd%"
 
 cd ..\build_cmake
 
-set "DPCPP_ROOT=%ONEAPI_ROOT%\compiler\latest\windows"
+set "DPCPP_ROOT=%BUILD_PREFIX%"
 
 if defined USE_GTEST (
     set "_BUILD_CAPI_TEST=ON"
