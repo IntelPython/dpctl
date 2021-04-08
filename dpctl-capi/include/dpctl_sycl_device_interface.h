@@ -126,7 +126,7 @@ bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  */
 DPCTL_API
 DPCTLSyclBackendType
-DPCTLDevice_GetBackend(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+DPCTLDevice_GetBackendVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns the DPCTLSyclDeviceType enum value for the DPCTLSyclDeviceRef
@@ -148,7 +148,7 @@ DPCTLDevice_GetDeviceType(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  */
 DPCTL_API
 __dpctl_give const char *
-DPCTLDevice_GetDriverInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+DPCTLDevice_GetDriverVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Wrapper over device.get_info<info::device::max_compute_units>().
@@ -229,7 +229,7 @@ DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  */
 DPCTL_API
 __dpctl_give const char *
-DPCTLDevice_GetVendorName(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+DPCTLDevice_GetVendor(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns True if the device and the host share a unified memory

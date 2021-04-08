@@ -31,8 +31,8 @@ cdef class _SyclDevice:
     ''' Wrapper class for a Sycl Device
     '''
     cdef DPCTLSyclDeviceRef _device_ref
-    cdef const char *_vendor_name
-    cdef const char *_device_name
+    cdef const char *_vendor
+    cdef const char *_name
     cdef const char *_driver_version
     cdef size_t *_max_work_item_sizes
 

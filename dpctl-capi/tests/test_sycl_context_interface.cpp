@@ -207,7 +207,8 @@ TEST_P(TestDPCTLContextInterface, Chk_GetBackend)
     EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
     ASSERT_TRUE(CRef);
 
-    EXPECT_NO_FATAL_FAILURE(device_backend = DPCTLDevice_GetBackend(DRef));
+    EXPECT_NO_FATAL_FAILURE(device_backend =
+                                DPCTLDevice_GetBackendVersion(DRef));
     EXPECT_NO_FATAL_FAILURE(context_backend = DPCTLContext_GetBackend(CRef));
     EXPECT_TRUE(device_backend == context_backend);
 
