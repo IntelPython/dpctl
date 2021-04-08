@@ -275,6 +275,28 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthHalf)
     }
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxReadImageArgs)
+{
+    size_t max_read_image_args = 0;
+    EXPECT_NO_FATAL_FAILURE(max_read_image_args =
+                                DPCTLDevice_GetMaxReadImageArgs(DRef));
+    size_t min_val = 128;
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("image"))))
+        EXPECT_TRUE(max_read_image_args >= min_val);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWriteImageArgs)
+{
+    size_t max_write_image_args = 0;
+    EXPECT_NO_FATAL_FAILURE(max_write_image_args =
+                                DPCTLDevice_GetMaxWriteImageArgs(DRef));
+    size_t min_val = 8;
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("image"))))
+        EXPECT_TRUE(max_write_image_args >= min_val);
+}
+
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetImage2dMaxWidth)
 {
     size_t image_2d_max_width = 0;

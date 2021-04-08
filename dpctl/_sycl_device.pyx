@@ -60,6 +60,8 @@ from ._backend cimport (
     DPCTLSyclDeviceSelectorRef,
     DPCTLDevice_HasAspect,
     DPCTLSyclDeviceType,
+    DPCTLDevice_GetMaxReadImageArgs,
+    DPCTLDevice_GetMaxWriteImageArgs,
     DPCTLDevice_GetImage2dMaxWidth,
     DPCTLDevice_GetImage2dMaxHeight,
     DPCTLDevice_GetImage3dMaxWidth,
@@ -480,6 +482,22 @@ cdef class SyclDevice(_SyclDevice):
             score = DPCTLDeviceSelector_Score(DSRef, self._device_ref)
             DPCTLDeviceSelector_Delete(DSRef)
         return score
+
+    @property
+    def max_read_image_args(self):
+        """ Returns the maximum number of simultaneous image objects that
+            can be read from by a kernel. The minimum value is 128 if the
+            SYCL device has aspect::image.
+        """
+        return DPCTLDevice_GetMaxReadImageArgs(self._device_ref)
+
+    @property
+    def max_write_image_args(self):
+        """ Returns the maximum number of simultaneous image objects that
+            can be written to by a kernel. The minimum value is 8 if the SYCL
+            device has aspect::image.
+        """
+        return DPCTLDevice_GetMaxWriteImageArgs(self._device_ref)
 
     @property
     def is_accelerator(self):

@@ -392,10 +392,10 @@ bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     return hasAspect;
 }
 
-#define declmethod(FUNC, NAME)                                                 \
-    size_t DPCTLDevice_##FUNC(__dpctl_keep const DPCTLSyclDeviceRef DRef)      \
+#define declmethod(FUNC, NAME, TYPE)                                           \
+    TYPE DPCTLDevice_##FUNC(__dpctl_keep const DPCTLSyclDeviceRef DRef)        \
     {                                                                          \
-        size_t result = 0;                                                     \
+        TYPE result = 0;                                                       \
         auto D = unwrap(DRef);                                                 \
         if (D) {                                                               \
             try {                                                              \
@@ -406,11 +406,13 @@ bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         }                                                                      \
         return result;                                                         \
     }
-declmethod(GetImage2dMaxWidth, image2d_max_width);
-declmethod(GetImage2dMaxHeight, image2d_max_height);
-declmethod(GetImage3dMaxWidth, image3d_max_width);
-declmethod(GetImage3dMaxHeight, image3d_max_height);
-declmethod(GetImage3dMaxDepth, image3d_max_depth);
+declmethod(GetMaxReadImageArgs, max_read_image_args, uint32_t);
+declmethod(GetMaxWriteImageArgs, max_write_image_args, uint32_t);
+declmethod(GetImage2dMaxWidth, image2d_max_width, size_t);
+declmethod(GetImage2dMaxHeight, image2d_max_height, size_t);
+declmethod(GetImage3dMaxWidth, image3d_max_width, size_t);
+declmethod(GetImage3dMaxHeight, image3d_max_height, size_t);
+declmethod(GetImage3dMaxDepth, image3d_max_depth, size_t);
 #undef declmethod
 
 bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
