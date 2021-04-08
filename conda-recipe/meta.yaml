@@ -33,7 +33,10 @@ requirements:
 test:
     requires:
         - pytest
-        - coverage
+        - pytest-cov
+        - cython
+    source_files:
+        - .coveragerc
 
 about:
     home: https://github.com/IntelPython/dpctl.git
