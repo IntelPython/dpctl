@@ -53,7 +53,7 @@ struct TestUnsupportedFilters : public ::testing::TestWithParam<const char *>
     }
 };
 
-TEST_P(TestUnsupportedFilters, Chk_DPCTLDevice_CreateFromSelector)
+TEST_P(TestUnsupportedFilters, ChkDPCTLDeviceCreateFromSelector)
 {
     DPCTLSyclDeviceRef DRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));

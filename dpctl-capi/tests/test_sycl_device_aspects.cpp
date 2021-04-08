@@ -152,7 +152,7 @@ struct TestDPCTLSyclDeviceInterfaceAspects
     }
 };
 
-TEST_P(TestDPCTLSyclDeviceInterfaceAspects, Chk_HasAspect)
+TEST_P(TestDPCTLSyclDeviceInterfaceAspects, ChkHasAspect)
 {
     bool actual = false;
     auto dpctlAspect = DPCTL_StrToAspectType(GetParam().second.first);
