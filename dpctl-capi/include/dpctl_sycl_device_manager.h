@@ -116,4 +116,15 @@ size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier);
 DPCTL_API
 void DPCTLDeviceMgr_PrintDeviceInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
+/*!
+ * @brief Gives the index of the given device in the vector returned get_devices
+ * for the platform associated with DRef for the device type of DRef.
+ *
+ * @param    DRef           A #DPCTLSyclDeviceRef opaque pointer.
+ * @ingroup DeviceManager
+ */
+DPCTL_API
+int64_t
+DPCTLDeviceMgr_GetRelativeId(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
 DPCTL_C_EXTERN_C_END

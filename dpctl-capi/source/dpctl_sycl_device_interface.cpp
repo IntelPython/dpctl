@@ -549,6 +549,27 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(
     return vector_width_half;
 }
 
+__dpctl_give DPCTLSyclDeviceRef
+DPCTLDevice_GetParentDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            auto parent_D = D->get_info<info::device::parent_device>();
+            return wrap(new device(parent_D));
+        } catch (invalid_object_error const &ioe) {
+            // not a sub device
+            return nullptr;
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+            return nullptr;
+        }
+    }
+    else
+        return nullptr;
+}
+
 __dpctl_give DPCTLDeviceVectorRef
 DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                     size_t count)

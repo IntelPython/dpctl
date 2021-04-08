@@ -330,6 +330,13 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage3dMaxDepth)
         EXPECT_TRUE(image_3d_max_depth >= min_val);
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetParentDevice)
+{
+    DPCTLSyclDeviceRef pDRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(pDRef = DPCTLDevice_GetParentDevice(DRef));
+    EXPECT_TRUE(pDRef == nullptr);
+}
+
 INSTANTIATE_TEST_SUITE_P(DPCTLDevice_Fns,
                          TestDPCTLSyclDeviceInterface,
                          ::testing::Values("opencl",
