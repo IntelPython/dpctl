@@ -60,6 +60,11 @@ from ._backend cimport (
     DPCTLSyclDeviceType,
     DPCTLDevice_GetMaxReadImageArgs,
     DPCTLDevice_GetMaxWriteImageArgs,
+    DPCTLDevice_GetImage2dMaxWidth,
+    DPCTLDevice_GetImage2dMaxHeight,
+    DPCTLDevice_GetImage3dMaxWidth,
+    DPCTLDevice_GetImage3dMaxHeight,
+    DPCTLDevice_GetImage3dMaxDepth,
     DPCTLDevice_GetSubGroupIndependentForwardProgress,
     DPCTLDevice_GetPreferredVectorWidthChar,
     DPCTLDevice_GetPreferredVectorWidthShort,
@@ -402,6 +407,41 @@ cdef class SyclDevice(_SyclDevice):
     def has_aspect_usm_system_allocator(self):
         cdef _aspect_type AT = _aspect_type._usm_system_allocator
         return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def image_2d_max_width(self):
+        """ Returns the maximum width of a 2D image or 1D image in pixels.
+            The minimum value is 8192 if the SYCL device has aspect::image.
+        """
+        return DPCTLDevice_GetImage2dMaxWidth(self._device_ref)
+
+    @property
+    def image_2d_max_height(self):
+        """ Returns the maximum height of a 2D image or 1D image in pixels.
+            The minimum value is 8192 if the SYCL device has aspect::image.
+        """
+        return DPCTLDevice_GetImage2dMaxHeight(self._device_ref)
+
+    @property
+    def image_3d_max_width(self):
+        """ Returns the maximum width of a 3D image in pixels.
+            The minimum value is 2048 if the SYCL device has aspect::image.
+        """
+        return DPCTLDevice_GetImage3dMaxWidth(self._device_ref)
+
+    @property
+    def image_3d_max_height(self):
+        """ Returns the maximum height of a 3D image in pixels.
+            The minimum value is 2048 if the SYCL device has aspect::image.
+        """
+        return DPCTLDevice_GetImage3dMaxHeight(self._device_ref)
+
+    @property
+    def image_3d_max_depth(self):
+        """ Returns the maximum depth of a 3D image in pixels.
+            The minimum value is 2048 if the SYCL device has aspect::image.
+        """
+        return DPCTLDevice_GetImage3dMaxDepth(self._device_ref)
 
     @property
     def default_selector_score(self):

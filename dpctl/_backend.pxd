@@ -182,6 +182,11 @@ cdef extern from "dpctl_sycl_device_interface.h":
         const DPCTLSyclDeviceRef DRef, DPCTLSyclAspectType AT)
     cdef uint32_t DPCTLDevice_GetMaxReadImageArgs(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetMaxWriteImageArgs(const DPCTLSyclDeviceRef DRef)
+    cdef size_t DPCTLDevice_GetImage2dMaxWidth(const DPCTLSyclDeviceRef DRef)
+    cdef size_t DPCTLDevice_GetImage2dMaxHeight(const DPCTLSyclDeviceRef DRef)
+    cdef size_t DPCTLDevice_GetImage3dMaxWidth(const DPCTLSyclDeviceRef DRef)
+    cdef size_t DPCTLDevice_GetImage3dMaxHeight(const DPCTLSyclDeviceRef DRef)
+    cdef size_t DPCTLDevice_GetImage3dMaxDepth(const DPCTLSyclDeviceRef DRef)
     cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesEqually(
         const DPCTLSyclDeviceRef DRef, size_t count)
     cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByCounts(
@@ -349,6 +354,7 @@ cdef extern from "dpctl_sycl_queue_interface.h":
         const void *Src,
         size_t Count,
         int Advice)
+    cdef bool DPCTLQueue_IsInOrder(const DPCTLSyclQueueRef QRef)
 
 
 cdef extern from "dpctl_sycl_queue_manager.h":

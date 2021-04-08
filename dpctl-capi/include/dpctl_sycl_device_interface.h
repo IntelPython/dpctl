@@ -293,6 +293,71 @@ uint32_t
 DPCTLDevice_GetMaxWriteImageArgs(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
+ * @brief Wrapper over
+ * device.get_info<info::device::image2d_max_width>().
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the maximum width of a 2D image
+ * or 1D image in pixels. The minimum value is
+ * 8192 if the SYCL device has aspect::image.
+ */
+DPCTL_API
+size_t
+DPCTLDevice_GetImage2dMaxWidth(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::image2d_max_height>().
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the maximum height of a 2D image
+ * or 1D image in pixels. The minimum value is
+ * 8192 if the SYCL device has aspect::image.
+ */
+DPCTL_API
+size_t
+DPCTLDevice_GetImage2dMaxHeight(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::image3d_max_width>().
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the maximum width of a 3D image
+ * in pixels. The minimum value is
+ * 2048 if the SYCL device has aspect::image.
+ */
+DPCTL_API
+size_t
+DPCTLDevice_GetImage3dMaxWidth(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::image3d_max_height>().
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the maximum height of a 3D image
+ * The minimum value is
+ * 2048 if the SYCL device has aspect::image.
+ */
+DPCTL_API
+size_t
+DPCTLDevice_GetImage3dMaxHeight(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::image3d_max_depth>().
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the maximum depth of a 3D image
+ * The minimum value is
+ * 2048 if the SYCL device has aspect::image.
+ */
+DPCTL_API
+size_t
+DPCTLDevice_GetImage3dMaxDepth(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
  * @brief Returns a vector of sub devices
  * partitioned from this SYCL device based on the count parameter. The returned
  * vector contains as many sub devices as can be created such that each sub

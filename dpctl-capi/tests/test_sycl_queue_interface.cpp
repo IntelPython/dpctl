@@ -255,6 +255,22 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckGetDevice)
     DPCTLDevice_Delete(D);
 }
 
+TEST_P(TestDPCTLQueueMemberFunctions, CheckIsInOrder)
+{
+    bool ioq = true;
+
+    EXPECT_NO_FATAL_FAILURE(ioq = DPCTLQueue_IsInOrder(QRef));
+    EXPECT_FALSE(ioq);
+
+    DPCTLSyclQueueRef QRef_ioq = nullptr;
+    EXPECT_NO_FATAL_FAILURE(
+        QRef_ioq = DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_IN_ORDER));
+    EXPECT_TRUE(QRef_ioq);
+    EXPECT_NO_FATAL_FAILURE(ioq = DPCTLQueue_IsInOrder(QRef_ioq));
+    EXPECT_TRUE(ioq);
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(QRef_ioq));
+}
+
 INSTANTIATE_TEST_SUITE_P(DPCTLQueueMemberFuncTests,
                          TestDPCTLQueueMemberFunctions,
                          ::testing::Values("opencl:gpu:0",
