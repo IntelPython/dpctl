@@ -38,7 +38,7 @@ cdef class _SyclDevice:
     cdef size_t *_max_work_item_sizes
 
 
-cdef class SyclDevice(_SyclDevice):
+cdef public class SyclDevice(_SyclDevice) [object PySyclDeviceObject, type PySyclDeviceType]:
     @staticmethod
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref)
     @staticmethod

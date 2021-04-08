@@ -41,7 +41,7 @@ cdef class _SyclQueue:
     cdef SyclDevice _device
 
 
-cdef class SyclQueue (_SyclQueue):
+cdef public class SyclQueue (_SyclQueue) [object PySyclQueueObject, type PySyclQueueType]:
     """ Python wrapper class for a sycl::queue.
     """
     cdef int _init_queue_default(self, int)
