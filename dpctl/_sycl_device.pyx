@@ -34,6 +34,7 @@ from ._backend cimport (
     DPCTLDeviceVector_Delete,
     DPCTLDeviceVector_GetAt,
     DPCTLDeviceVector_Size,
+    DPCTLDevice_AreEq,
     DPCTLDevice_GetBackend,
     DPCTLDevice_GetDeviceType,
     DPCTLDevice_GetDriverInfo,
@@ -49,6 +50,7 @@ from ._backend cimport (
     DPCTLDevice_IsGPU,
     DPCTLDevice_IsHost,
     DPCTLDeviceMgr_PrintDeviceInfo,
+    DPCTLDeviceMgr_GetRelativeId,
     DPCTLFilterSelector_Create,
     DPCTLDeviceSelector_Delete,
     DPCTLDeviceSelector_Score,
@@ -74,9 +76,10 @@ from ._backend cimport (
     DPCTLDevice_CreateSubDevicesEqually,
     DPCTLDevice_CreateSubDevicesByCounts,
     DPCTLDevice_CreateSubDevicesByAffinity,
+    DPCTLDevice_GetParentDevice,
 )
 from . import backend_type, device_type
-from libc.stdint cimport uint32_t
+from libc.stdint cimport uint32_t, int64_t
 from libc.stdlib cimport malloc, free
 import warnings
 import collections
@@ -96,7 +99,7 @@ cdef class SubDeviceCreationError(Exception):
 
 
 cdef class _SyclDevice:
-    """ A helper metaclass to abstract a cl::sycl::device instance.
+    """ A helper data-owner class to abstract a cl::sycl::device instance.
     """
 
     def __dealloc__(self):
@@ -122,6 +125,34 @@ cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
         DPCTLDeviceVector_Delete(DVRef)
 
     return devices
+
+
+cdef str _backend_type_to_filter_string_part(DPCTLSyclBackendType BTy):
+   if BTy == _backend_type._CUDA:
+       return "cuda"
+   elif BTy == _backend_type._HOST:
+       return "host"
+   elif BTy == _backend_type._LEVEL_ZERO:
+       return "level_zero"
+   elif BTy == _backend_type._OPENCL:
+       return "opencl"
+   else:
+       return "unknown"
+
+
+cdef str _device_type_to_filter_string_part(DPCTLSyclDeviceType DTy):
+   if DTy == _device_type._ACCELERATOR:
+       return "accelerator"
+   elif DTy == _device_type._AUTOMATIC:
+       return "automatic"
+   elif DTy == _device_type._CPU:
+       return "cpu"
+   elif DTy == _device_type._GPU:
+       return "gpu"
+   elif DTy == _device_type._HOST_DEVICE:
+       return "host"
+   else:
+       return "unknown"
 
 
 cdef class SyclDevice(_SyclDevice):
@@ -714,3 +745,49 @@ cdef class SyclDevice(_SyclDevice):
                 return self.create_sub_devices_equally(partition)
             except Exception as e:
                 raise TypeError("Unsupported type of sub-device argument")
+
+    @property
+    def parent_device(self):
+        """ Parent device for a sub-device, or None for a root device.
+        """
+        cdef DPCTLSyclDeviceRef pDRef = NULL
+        pDRef = DPCTLDevice_GetParentDevice(self._device_ref)
+        if (pDRef is NULL):
+            return None
+        return SyclDevice._create(pDRef)
+
+    cpdef cpp_bool equals(self, SyclDevice other):
+        """ Returns true if the SyclDevice argument has the same _device_ref
+            as this SyclDevice.
+        """
+        return DPCTLDevice_AreEq(self._device_ref, other.get_device_ref())
+
+    def __eq__(self, other):
+        if isinstance(other, SyclDevice):
+            return self.equals(<SyclDevice> other)
+        else:
+            return False
+
+    @property
+    def filter_string(self):
+        """ For a parent device returns a tuple (backend, device_kind, relative_id).
+            Raises an exception for sub-devices.
+        """
+        cdef DPCTLSyclDeviceRef pDRef = NULL
+        cdef DPCTLSyclBackendType BTy
+        cdef DPCTLSyclDeviceType DTy
+        cdef int64_t relId = -1
+        pDRef = DPCTLDevice_GetParentDevice(self._device_ref)
+        if (pDRef is NULL):
+            BTy = DPCTLDevice_GetBackend(self._device_ref)
+            DTy = DPCTLDevice_GetDeviceType(self._device_ref)
+            relId = DPCTLDeviceMgr_GetRelativeId(self._device_ref)
+            if (relId == -1):
+                raise TypeError("This SyclDevice is not a root device")
+            br_str = _backend_type_to_filter_string_part(BTy)
+            dt_str = _device_type_to_filter_string_part(DTy)
+            return ":".join((br_str, dt_str, str(relId)))
+        else:
+            # this a sub-device, free it, and raise an exception
+            DPCTLDevice_Delete(pDRef)
+            raise TypeError("This SyclDevice is not a root device")
