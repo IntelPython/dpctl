@@ -22,11 +22,14 @@ in dpctl.memory._memory.pyx.
 
 """
 
-from .._backend cimport DPCTLSyclUSMRef
+from .._backend cimport DPCTLSyclUSMRef, DPCTLSyclQueueRef
 from .._sycl_context cimport SyclContext
 from .._sycl_device cimport SyclDevice
 from .._sycl_queue cimport SyclQueue
 
+
+cdef DPCTLSyclQueueRef get_queue_ref_from_ptr_and_syclobj(
+    DPCTLSyclUSMRef ptr, object syclobj)
 
 cdef class _Memory:
     cdef DPCTLSyclUSMRef memory_ptr
