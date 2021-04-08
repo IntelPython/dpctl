@@ -69,7 +69,7 @@ struct TestDPCTLContextInterface : public ::testing::TestWithParam<const char *>
     }
 };
 
-TEST_P(TestDPCTLContextInterface, Chk_Create)
+TEST_P(TestDPCTLContextInterface, ChkCreate)
 {
     DPCTLSyclContextRef CRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
@@ -77,7 +77,7 @@ TEST_P(TestDPCTLContextInterface, Chk_Create)
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
 }
 
-TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices)
+TEST_P(TestDPCTLContextInterface, ChkCreateWithDevices)
 {
     size_t nCUs = 0;
     DPCTLSyclContextRef CRef = nullptr;
@@ -107,7 +107,7 @@ TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices)
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
 }
 
-TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices_GetDevices)
+TEST_P(TestDPCTLContextInterface, ChkCreateWithDevicesGetDevices)
 {
     size_t nCUs = 0;
     DPCTLSyclContextRef CRef = nullptr;
@@ -146,7 +146,7 @@ TEST_P(TestDPCTLContextInterface, Chk_CreateWithDevices_GetDevices)
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(Res_DVRef));
 }
 
-TEST_P(TestDPCTLContextInterface, Chk_GetDevices)
+TEST_P(TestDPCTLContextInterface, ChkGetDevices)
 {
     DPCTLSyclContextRef CRef = nullptr;
     DPCTLDeviceVectorRef DVRef = nullptr;
@@ -159,7 +159,7 @@ TEST_P(TestDPCTLContextInterface, Chk_GetDevices)
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
 }
 
-TEST_P(TestDPCTLContextInterface, Chk_AreEq)
+TEST_P(TestDPCTLContextInterface, ChkAreEq)
 {
     DPCTLSyclContextRef CRef1 = nullptr, CRef2 = nullptr, CRef3 = nullptr;
     bool are_eq = true, are_not_eq = false;
@@ -183,7 +183,7 @@ TEST_P(TestDPCTLContextInterface, Chk_AreEq)
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef3));
 }
 
-TEST_P(TestDPCTLContextInterface, Chk_IsHost)
+TEST_P(TestDPCTLContextInterface, ChkIsHost)
 {
     DPCTLSyclContextRef CRef = nullptr;
     bool is_host_device = false, is_host_context = false;
@@ -198,7 +198,7 @@ TEST_P(TestDPCTLContextInterface, Chk_IsHost)
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
 }
 
-TEST_P(TestDPCTLContextInterface, Chk_GetBackend)
+TEST_P(TestDPCTLContextInterface, ChkGetBackend)
 {
     DPCTLSyclContextRef CRef = nullptr;
     DPCTLSyclBackendType context_backend = DPCTL_UNKNOWN_BACKEND,

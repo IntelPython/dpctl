@@ -54,7 +54,7 @@ struct TestUnsupportedFilters : public ::testing::TestWithParam<const char *>
     }
 };
 
-TEST_P(TestUnsupportedFilters, Chk_DPCTLPlatform_CreateFromSelector)
+TEST_P(TestUnsupportedFilters, ChkDPCTLPlatformCreateFromSelector)
 {
     DPCTLSyclPlatformRef PRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(PRef = DPCTLPlatform_CreateFromSelector(DSRef));
