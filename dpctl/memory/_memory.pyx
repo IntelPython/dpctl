@@ -32,6 +32,7 @@ from .._sycl_queue_manager cimport get_current_queue
 
 from cpython cimport Py_buffer
 from cpython.bytes cimport PyBytes_AS_STRING, PyBytes_FromStringAndSize
+from cpython cimport pycapsule
 
 import numpy as np
 
@@ -41,9 +42,62 @@ __all__ = [
     "MemoryUSMDevice"
 ]
 
-cdef _throw_sycl_usm_ary_iface():
-    raise ValueError("__sycl_usm_array_interface__ is malformed")
+cdef object _sycl_usm_ary_iface_error():
+    return ValueError("__sycl_usm_array_interface__ is malformed")
 
+
+cdef DPCTLSyclQueueRef _queue_ref_copy_from_SyclQueue(SyclQueue q):
+    return DPCTLQueue_Copy(q.get_queue_ref())
+
+
+cdef DPCTLSyclQueueRef _queue_ref_copy_from_USMRef_and_SyclContext(
+    DPCTLSyclUSMRef ptr, SyclContext ctx):
+    """ Obtain device from pointer and sycl context, use 
+        context and device to create a queue from which this memory
+        can be accessible.
+    """
+    cdef SyclDevice dev = _Memory.get_pointer_device(ptr, ctx)
+    cdef DPCTLSyclContextRef CRef = NULL
+    cdef DPCTLSyclDeviceRef DRef = NULL    
+    CRef = ctx.get_context_ref()
+    DRef = dev.get_device_ref()
+    return DPCTLQueue_Create(CRef, DRef, NULL, 0)
+
+
+cdef DPCTLSyclQueueRef get_queue_ref_from_ptr_and_syclobj(
+    DPCTLSyclUSMRef ptr, object syclobj):
+    """ Constructs queue from pointer and syclobject from 
+        __sycl_usm_array_interface__
+    """
+    cdef DPCTLSyclQueueRef QRef = NULL
+    cdef SyclContext ctx
+    if type(syclobj) is SyclQueue:
+        return _queue_ref_copy_from_SyclQueue(<SyclQueue> syclobj)
+    elif type(syclobj) is SyclContext:
+        ctx = <SyclContext>syclobj
+        return _queue_ref_copy_from_USMRef_and_SyclContext(ptr, ctx)
+    elif type(syclobj) is str:
+        q = SyclQueue(syclobj)
+        return _queue_ref_copy_from_SyclQueue(<SyclQueue> q)
+    elif pycapsule.PyCapsule_IsValid(syclobj, "SyclQueueRef"):
+        q = SyclQueue(syclobj)
+        return _queue_ref_copy_from_SyclQueue(<SyclQueue> q)
+    elif pycapsule.PyCapsule_IsValid(syclobj, "SyclContextRef"):
+        ctx = <SyclContext>SyclContext(syclobj)
+        return _queue_ref_copy_from_USMRef_and_SyclContext(ptr, ctx)
+    elif hasattr(syclobj, '_get_capsule'):
+        cap = syclobj._get_capsule()
+        if pycapsule.PyCapsule_IsValid(cap, "SyclQueueRef"):
+            q = SyclQueue(cap)
+            return _queue_ref_copy_from_SyclQueue(<SyclQueue> q)
+        elif pycapsule.PyCapsule_IsValid(cap, "SyclContexRef"):
+            ctx = <SyclContext>SyclContext(cap)
+            return _queue_ref_copy_from_USMRef_and_SyclContext(ptr, ctx)
+        else:
+            return QRef
+    else:
+        return QRef
+    
 
 cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
                         void *src_ptr, SyclQueue src_queue, size_t nbytes):
@@ -98,17 +152,18 @@ cdef class _BufferData:
         cdef Py_ssize_t arr_data_ptr
         cdef SyclDevice dev
         cdef SyclContext ctx
+        cdef DPCTLSyclQueueRef QRef = NULL
 
         if ary_version != 1:
-            _throw_sycl_usm_ary_iface()
+            raise _sycl_usm_ary_iface_error()
         if not ary_data_tuple or len(ary_data_tuple) != 2:
-            _throw_sycl_usm_ary_iface()
+            raise _sycl_usm_ary_iface_error()
         if not ary_shape or len(ary_shape) != 1 or ary_shape[0] < 1:
             raise ValueError
         try:
             dt = np.dtype(ary_typestr)
         except TypeError:
-            _throw_sycl_usm_ary_iface()
+            raise _sycl_usm_ary_iface_error()
         if (ary_strides and len(ary_strides) != 1
             and ary_strides[0] != dt.itemsize):
             raise ValueError("Must be contiguous")
@@ -116,7 +171,7 @@ cdef class _BufferData:
         if (not ary_syclobj or
             not isinstance(ary_syclobj,
                            (dpctl.SyclQueue, dpctl.SyclContext))):
-            _throw_sycl_usm_ary_iface()
+            raise _sycl_usm_ary_iface_error()
 
         buf = _BufferData.__new__(_BufferData)
         arr_data_ptr = <Py_ssize_t>ary_data_tuple[0]
@@ -125,15 +180,8 @@ cdef class _BufferData:
         buf.itemsize = <Py_ssize_t>(dt.itemsize)
         buf.nbytes = (<Py_ssize_t>ary_shape[0]) * buf.itemsize
 
-        if isinstance(ary_syclobj, dpctl.SyclQueue):
-            buf.queue = <SyclQueue>ary_syclobj
-        else:
-            # Obtain device from pointer and context
-            ctx = <SyclContext> ary_syclobj
-            dev = _Memory.get_pointer_device(buf.p, ctx)
-            # Use context and device to create a queue to
-            # be able to copy memory
-            buf.queue = SyclQueue._create_from_context_and_device(ctx, dev)
+        QRef = get_queue_ref_from_ptr_and_syclobj(buf.p, ary_syclobj)
+        buf.queue = SyclQueue._create(QRef)
 
         return buf
 
