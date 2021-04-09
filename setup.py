@@ -41,19 +41,19 @@ elif sys.platform in ["win32", "cygwin"]:
 else:
     assert False, sys.platform + " not supported"
 
-DPCPP_ROOT = os.environ["BUILD_PREFIX"]
 
 if IS_LIN:
+    DPCPP_ROOT = os.environ["BUILD_PREFIX"]
     os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
     os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
     os.environ["CFLAGS"] = "-fPIC"
-    sycl_lib = os.path.join(os.environ["BUILD_PREFIX"], 'lib')
 
 elif IS_WIN:
+    DPCPP_ROOT = os.path.join(os.environ["BUILD_PREFIX"], "Library")
     os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
     os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl\include"
-    sycl_lib = os.path.join(os.environ["BUILD_PREFIX"], 'Library', 'lib')
 
+sycl_lib = os.path.join(DPCPP_ROOT, 'lib')
 dpctl_sycl_interface_lib = os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"]
 dpctl_sycl_interface_include = os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"]
 

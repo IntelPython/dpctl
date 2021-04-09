@@ -8,7 +8,7 @@ set "INSTALL_PREFIX=%cd%"
 
 cd ..\build_cmake
 
-set "DPCPP_ROOT=%BUILD_PREFIX%"
+set "DPCPP_ROOT=%BUILD_PREFIX%\Library"
 
 if defined USE_GTEST (
     set "_BUILD_CAPI_TEST=ON"
