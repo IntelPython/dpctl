@@ -35,12 +35,17 @@
 
 DPCTL_C_EXTERN_C_BEGIN
 
+/**
+ * @defgroup PlatformInterface Platform class C wrapper
+ */
+
 /*!
  * @brief Returns a copy of the DPCTLSyclPlatformRef object.
  *
- * @param    DRef           DPCTLSyclPlatformRef object to be copied.
+ * @param    PRef           DPCTLSyclPlatformRef object to be copied.
  * @return   A new DPCTLSyclPlatformRef created by copying the passed in
  * DPCTLSyclPlatformRef object.
+ * @ingroup PlatformInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclPlatformRef
@@ -51,6 +56,7 @@ DPCTLPlatform_Copy(__dpctl_keep const DPCTLSyclPlatformRef PRef);
  * using SYCL's default_selector.
  *
  * @return   A new DPCTLSyclPlatformRef pointer wrapping a SYCL platform object.
+ * @ingroup PlatformInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_Create();
@@ -61,6 +67,7 @@ __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_Create();
  *
  * @param    DSRef          An opaque pointer to a SYCL device_selector object.
  * @return   A new DPCTLSyclPlatformRef pointer wrapping a SYCL platform object.
+ * @ingroup PlatformInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
@@ -70,6 +77,7 @@ __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
  * @brief Deletes the DPCTLSyclProgramRef pointer.
  *
  * @param    PRef           An opaque pointer to a sycl::platform.
+ * @ingroup PlatformInterface
  */
 DPCTL_API
 void DPCTLPlatform_Delete(__dpctl_take DPCTLSyclPlatformRef PRef);
@@ -81,6 +89,7 @@ void DPCTLPlatform_Delete(__dpctl_take DPCTLSyclPlatformRef PRef);
  * @param    PRef           Opaque pointer to a sycl::platform
  * @return   A DPCTLSyclBackendType enum value identifying the SYCL backend
  * associated with the platform.
+ * @ingroup PlatformInterface
  */
 DPCTL_API
 DPCTLSyclBackendType
@@ -91,6 +100,7 @@ DPCTLPlatform_GetBackend(__dpctl_keep const DPCTLSyclPlatformRef PRef);
  *
  * @param    PRef           Opaque pointer to a sycl::platform
  * @return   A C string containing the name of the sycl::platform.
+ * @ingroup PlatformInterface
  */
 DPCTL_API
 __dpctl_give const char *
@@ -102,6 +112,7 @@ DPCTLPlatform_GetName(__dpctl_keep const DPCTLSyclPlatformRef PRef);
  * @param    PRef           Opaque pointer to a sycl::platform
  * @return    A C string containing the name of the vendor provifing the
  * platform.
+ * @ingroup PlatformInterface
  */
 DPCTL_API
 __dpctl_give const char *
@@ -114,6 +125,7 @@ DPCTLPlatform_GetVendor(__dpctl_keep const DPCTLSyclPlatformRef PRef);
  * @param    PRef           Opaque pointer to a sycl::platform
  * @return   A C string containing the software driver version of the device
  * associated with the platform.
+ * @ingroup PlatformInterface
  */
 DPCTL_API
 __dpctl_give const char *
@@ -125,6 +137,7 @@ DPCTLPlatform_GetVersion(__dpctl_keep const DPCTLSyclPlatformRef PRef);
  *
  * @return    A #DPCTLPlatformVectorRef containing #DPCTLSyclPlatformRef
  * objects.
+ * @ingroup PlatformInterface
  */
 DPCTL_API
 __dpctl_give DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms();

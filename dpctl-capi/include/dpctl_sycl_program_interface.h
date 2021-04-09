@@ -34,6 +34,10 @@
 
 DPCTL_C_EXTERN_C_BEGIN
 
+/**
+ * @defgroup ProgramInterface Program class C wrapper
+ */
+
 /*!
  * @brief Create a Sycl program from an OpenCL SPIR-V binary file.
  *
@@ -53,6 +57,7 @@ DPCTL_C_EXTERN_C_BEGIN
  *                          SPIR-V binary.
  * @return   A new SyclProgramRef pointer if the program creation succeeded,
  *           else returns NULL.
+ * @ingroup ProgramInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclProgramRef
@@ -69,6 +74,7 @@ DPCTLProgram_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef Ctx,
  * @param    CompileOpts    Extra compiler flags (refer Sycl spec.)
  * @return   A new SyclProgramRef pointer if the program creation succeeded,
  *           else returns NULL.
+ * @ingroup ProgramInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclProgramRef
@@ -83,6 +89,7 @@ DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
  * @param    PRef           Opaque pointer to a sycl::program
  * @param    KernelName     Name of kernel
  * @return   A SyclKernel reference if the kernel exists, else NULL
+ * @ingroup ProgramInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclKernelRef
@@ -96,6 +103,7 @@ DPCTLProgram_GetKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
  * @param    PRef           Opaque pointer to a sycl::program
  * @param    KernelName     Name of kernel
  * @return   True if the kernel exists, else False
+ * @ingroup ProgramInterface
  */
 DPCTL_API
 bool DPCTLProgram_HasKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
@@ -105,6 +113,7 @@ bool DPCTLProgram_HasKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
  * @brief Frees the DPCTLSyclProgramRef pointer.
  *
  * @param    PRef           Opaque pointer to a sycl::program
+ * @ingroup ProgramInterface
  */
 DPCTL_API
 void DPCTLProgram_Delete(__dpctl_take DPCTLSyclProgramRef PRef);
