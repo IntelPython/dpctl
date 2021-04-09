@@ -87,3 +87,12 @@ _dpctl_bindings*
 
 # generated C API coverage reports
 dpctl-c-api-coverage
+
+# generated header files
+dpctl/_sycl_queue.h
+dpctl/_sycl_context.h
+dpctl/_sycl_device.h
+dpctl/_sycl_event.h
+dpctl/_sycl_queue.h
+dpctl/_sycl_queue_manager.h
+dpctl/memory/_memory.h
