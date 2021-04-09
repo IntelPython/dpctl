@@ -30,7 +30,7 @@ cdef class _SyclContext:
     cdef DPCTLSyclContextRef _ctxt_ref
 
 
-cdef class SyclContext(_SyclContext):
+cdef public class SyclContext(_SyclContext) [object PySyclContextObject, type PySyclContextType]:
     ''' Wrapper class for a Sycl Context
     '''
 

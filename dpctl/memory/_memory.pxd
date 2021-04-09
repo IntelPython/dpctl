@@ -31,7 +31,8 @@ from .._sycl_queue cimport SyclQueue
 cdef DPCTLSyclQueueRef get_queue_ref_from_ptr_and_syclobj(
     DPCTLSyclUSMRef ptr, object syclobj)
 
-cdef class _Memory:
+
+cdef public class _Memory [object Py_MemoryObject, type Py_MemoryType]:
     cdef DPCTLSyclUSMRef memory_ptr
     cdef Py_ssize_t nbytes
     cdef SyclQueue queue
@@ -50,18 +51,18 @@ cdef class _Memory:
     cpdef bytes tobytes(self)
 
     @staticmethod
-    cdef SyclDevice get_pointer_device(DPCTLSyclUSMRef p, SyclContext ctx)
+    cdef public SyclDevice get_pointer_device(DPCTLSyclUSMRef p, SyclContext ctx)
     @staticmethod
-    cdef bytes get_pointer_type(DPCTLSyclUSMRef p, SyclContext ctx)
+    cdef public bytes get_pointer_type(DPCTLSyclUSMRef p, SyclContext ctx)
 
 
-cdef class MemoryUSMShared(_Memory):
+cdef public class MemoryUSMShared(_Memory) [object PyMemoryUSMSharedObject, type PyMemoryUSMSharedType]:
     pass
 
 
-cdef class MemoryUSMHost(_Memory):
+cdef public class MemoryUSMHost(_Memory) [object PyMemoryUSMHostObject, type PyMemoryUSMHostType]:
     pass
 
 
-cdef class MemoryUSMDevice(_Memory):
+cdef public class MemoryUSMDevice(_Memory) [object PyMemoryUSMDeviceObject, type PyMemoryUSMDeviceType]:
     pass
