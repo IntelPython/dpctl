@@ -151,7 +151,7 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
         const DPCTLSyclDeviceSelectorRef DSRef)
     cdef void DPCTLDevice_Delete(DPCTLSyclDeviceRef DRef)
-    cdef DPCTLSyclBackendType DPCTLDevice_GetBackendVersion(
+    cdef DPCTLSyclBackendType DPCTLDevice_GetBackend(
         const DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclDeviceType DPCTLDevice_GetDeviceType(
         const DPCTLSyclDeviceRef DRef)

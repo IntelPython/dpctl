@@ -74,7 +74,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_Copy)
 TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetBackend)
 {
     DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
-    EXPECT_NO_FATAL_FAILURE(BTy = DPCTLDevice_GetBackendVersion(DRef));
+    EXPECT_NO_FATAL_FAILURE(BTy = DPCTLDevice_GetBackend(DRef));
     EXPECT_TRUE([BTy] {
         switch (BTy) {
         case DPCTLSyclBackendType::DPCTL_CUDA:

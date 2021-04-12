@@ -158,7 +158,7 @@ bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 DPCTLSyclBackendType
-DPCTLDevice_GetBackendVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+DPCTLDevice_GetBackend(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
     auto D = unwrap(DRef);

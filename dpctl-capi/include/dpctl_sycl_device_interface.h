@@ -126,7 +126,7 @@ bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  */
 DPCTL_API
 DPCTLSyclBackendType
-DPCTLDevice_GetBackendVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+DPCTLDevice_GetBackend(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Returns the DPCTLSyclDeviceType enum value for the DPCTLSyclDeviceRef

@@ -34,7 +34,7 @@ from ._backend cimport (
     DPCTLDeviceVector_Delete,
     DPCTLDeviceVector_GetAt,
     DPCTLDeviceVector_Size,
-    DPCTLDevice_GetBackendVersion,
+    DPCTLDevice_GetBackend,
     DPCTLDevice_AreEq,
     DPCTLDevice_GetDeviceType,
     DPCTLDevice_GetDriverVersion,
@@ -309,7 +309,7 @@ cdef class SyclDevice(_SyclDevice):
             backend_type: The backend for the device.
         """
         cdef DPCTLSyclBackendType BTy = (
-            DPCTLDevice_GetBackendVersion(self._device_ref)
+            DPCTLDevice_GetBackend(self._device_ref)
         )
         if BTy == _backend_type._CUDA:
             return backend_type.cuda
@@ -779,7 +779,7 @@ cdef class SyclDevice(_SyclDevice):
         cdef int64_t relId = -1
         pDRef = DPCTLDevice_GetParentDevice(self._device_ref)
         if (pDRef is NULL):
-            BTy = DPCTLDevice_GetBackendVersion(self._device_ref)
+            BTy = DPCTLDevice_GetBackend(self._device_ref)
             DTy = DPCTLDevice_GetDeviceType(self._device_ref)
             relId = DPCTLDeviceMgr_GetRelativeId(self._device_ref)
             if (relId == -1):
