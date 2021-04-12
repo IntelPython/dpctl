@@ -9,6 +9,9 @@ else
     exit 1
 fi
 
+wget https://github.com/oneapi-src/level-zero/blob/master/include/zet_api.h
+mv "$(pwd)/zet_api.h" "$(pwd)/dpctl-capi/include/zet_api.h"
+
 ${PYTHON} setup.py clean --all
 ${PYTHON} setup.py install
 
