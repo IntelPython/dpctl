@@ -28,7 +28,6 @@ from dpctl._backend cimport *
 from .._sycl_context cimport SyclContext
 from .._sycl_device cimport SyclDevice
 from .._sycl_queue cimport SyclQueue
-from .._sycl_queue_manager cimport get_current_queue
 
 from cpython cimport Py_buffer
 from cpython.bytes cimport PyBytes_AS_STRING, PyBytes_FromStringAndSize
@@ -222,7 +221,7 @@ cdef class _Memory:
 
         if (nbytes > 0):
             if queue is None:
-                queue = get_current_queue()
+                queue = dpctl.SyclQueue()
 
             if (ptr_type == b"shared"):
                 if alignment > 0:
@@ -493,7 +492,7 @@ cdef class MemoryUSMShared(_Memory):
     USM shared memory.
 
     Non-positive alignments are not used (malloc_shared is used instead).
-    The queue=None the current `dpctl.get_current_queue()` is used to allocate memory.
+    For the queue=None cast the `dpctl.SyclQueue()` is used to allocate memory.
 
     MemoryUSMShared(usm_obj) constructor create instance from `usm_obj` expected to
     implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of
@@ -525,7 +524,7 @@ cdef class MemoryUSMHost(_Memory):
     USM host memory.
 
     Non-positive alignments are not used (malloc_host is used instead).
-    The queue=None the current `dpctl.get_current_queue()` is used to allocate memory.
+    For the queue=None case `dpctl.SyclQueue()` is used to allocate memory.
 
     MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj` expected to
     implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of
@@ -557,7 +556,7 @@ cdef class MemoryUSMDevice(_Memory):
     USM device memory.
 
     Non-positive alignments are not used (malloc_device is used instead).
-    The queue=None the current `dpctl.get_current_queue()` is used to allocate memory.
+    For the queue=None cast the `dpctl.SyclQueue()` is used to allocate memory.
 
     MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj` expected to
     implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of
