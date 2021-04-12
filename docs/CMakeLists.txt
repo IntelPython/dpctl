@@ -51,7 +51,7 @@ function(_setup_doxygen)
 endfunction()
 
 function(_setup_doxyrest)
-    set(DOXYREST_OUTPUT_DIR_NAME dpctl-capi-doxyrest)
+    set(DOXYREST_OUTPUT_DIR_NAME docfiles/dpctl-capi)
     set(DOXYREST_OUTPUT_DIR
         ${CMAKE_CURRENT_SOURCE_DIR}/${DOXYREST_OUTPUT_DIR_NAME}
         PARENT_SCOPE
