@@ -30,9 +30,9 @@ print("")
 import dpctl
 
 with dpctl.device_context("opencl:gpu"):
-    print("Running on: ", dpctl.get_current_queue().get_sycl_device().name)
+    print("Running on: ", dpctl.get_current_queue().sycl_device.name)
     print(sb.columnwise_total(X))
 
 with dpctl.device_context("opencl:cpu"):
-    print("Running on: ", dpctl.get_current_queue().get_sycl_device().name)
+    print("Running on: ", dpctl.get_current_queue().sycl_device.name)
     print(sb.columnwise_total(X))
