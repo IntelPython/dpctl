@@ -762,7 +762,7 @@ cdef class SyclDevice(_SyclDevice):
                 partition = int(partition)
                 return self.create_sub_devices_equally(partition)
             except Exception as e:
-                raise TypeError("Unsupported type of sub-device argument")
+                raise TypeError("Unsupported type of sub-device argument") from e
 
     @property
     def parent_device(self):
