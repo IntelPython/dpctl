@@ -34,32 +34,32 @@ class Test1DKernelSubmit(unittest.TestCase):
             size_t index = get_global_id(0);                                   \
             c[index] = d*a[index] + b[index];                                  \
         }"
-        with dpctl.device_context("opencl:gpu:0"):
-            q = dpctl.get_current_queue()
-            prog = dpctl_prog.create_program_from_source(q, oclSrc)
-            axpyKernel = prog.get_sycl_kernel("axpy")
+        q = dpctl.SyclQueue("opencl:gpu")
+        prog = dpctl_prog.create_program_from_source(q, oclSrc)
+        axpyKernel = prog.get_sycl_kernel("axpy")
 
-            abuf = dpctl_mem.MemoryUSMShared(1024 * np.dtype("i").itemsize)
-            bbuf = dpctl_mem.MemoryUSMShared(1024 * np.dtype("i").itemsize)
-            cbuf = dpctl_mem.MemoryUSMShared(1024 * np.dtype("i").itemsize)
-            a = np.ndarray((1024), buffer=abuf, dtype="i")
-            b = np.ndarray((1024), buffer=bbuf, dtype="i")
-            c = np.ndarray((1024), buffer=cbuf, dtype="i")
-            a[:] = np.arange(1024)
-            b[:] = np.arange(1024, 0, -1)
-            c[:] = 0
-            d = 2
-            args = []
+        bufBytes = 1024 * np.dtype("i").itemsize
+        abuf = dpctl_mem.MemoryUSMShared(bufBytes, queue=q)
+        bbuf = dpctl_mem.MemoryUSMShared(bufBytes, queue=q)
+        cbuf = dpctl_mem.MemoryUSMShared(bufBytes, queue=q)
+        a = np.ndarray((1024), buffer=abuf, dtype="i")
+        b = np.ndarray((1024), buffer=bbuf, dtype="i")
+        c = np.ndarray((1024), buffer=cbuf, dtype="i")
+        a[:] = np.arange(1024)
+        b[:] = np.arange(1024, 0, -1)
+        c[:] = 0
+        d = 2
+        args = []
 
-            args.append(a.base)
-            args.append(b.base)
-            args.append(c.base)
-            args.append(ctypes.c_int(d))
+        args.append(a.base)
+        args.append(b.base)
+        args.append(c.base)
+        args.append(ctypes.c_int(d))
 
-            r = [1024]
+        r = [1024]
 
-            q.submit(axpyKernel, args, r)
-            self.assertTrue(np.allclose(c, a * d + b))
+        q.submit(axpyKernel, args, r)
+        self.assertTrue(np.allclose(c, a * d + b))
 
 
 if __name__ == "__main__":
