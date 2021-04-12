@@ -63,7 +63,7 @@ struct TestDPCTLSyclDeviceInterface
     }
 };
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_Copy)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkCopy)
 {
     DPCTLSyclDeviceRef Copied_DRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(Copied_DRef = DPCTLDevice_Copy(DRef));
@@ -71,7 +71,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_Copy)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(Copied_DRef));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetBackend)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetBackend)
 {
     DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
     EXPECT_NO_FATAL_FAILURE(BTy = DPCTLDevice_GetBackend(DRef));
@@ -91,7 +91,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetBackend)
     }());
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetDeviceType)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetDeviceType)
 {
     DPCTLSyclDeviceType DTy = DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE;
     EXPECT_NO_FATAL_FAILURE(DTy = DPCTLDevice_GetDeviceType(DRef));
@@ -99,7 +99,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetDeviceType)
     EXPECT_TRUE(DTy != DPCTLSyclDeviceType::DPCTL_ALL);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetDriverInfo)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetDriverInfo)
 {
     const char *DriverInfo = nullptr;
     EXPECT_NO_FATAL_FAILURE(DriverInfo = DPCTLDevice_GetDriverVersion(DRef));
@@ -107,7 +107,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetDriverInfo)
     EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(DriverInfo));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetName)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetName)
 {
     const char *Name = nullptr;
     EXPECT_NO_FATAL_FAILURE(Name = DPCTLDevice_GetName(DRef));
@@ -115,7 +115,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetName)
     EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(Name));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetVendorName)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetVendorName)
 {
     const char *VendorName = nullptr;
     EXPECT_NO_FATAL_FAILURE(VendorName = DPCTLDevice_GetVendor(DRef));
@@ -123,21 +123,21 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetVendorName)
     EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(VendorName));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxComputeUnits)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxComputeUnits)
 {
     size_t n = 0;
     EXPECT_NO_FATAL_FAILURE(n = DPCTLDevice_GetMaxComputeUnits(DRef));
     EXPECT_TRUE(n > 0);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxWorkItemDims)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWorkItemDims)
 {
     size_t n = 0;
     EXPECT_NO_FATAL_FAILURE(n = DPCTLDevice_GetMaxWorkItemDims(DRef));
     EXPECT_TRUE(n > 0);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxWorkItemSizes)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWorkItemSizes)
 {
     size_t *sizes = nullptr;
     EXPECT_NO_FATAL_FAILURE(sizes = DPCTLDevice_GetMaxWorkItemSizes(DRef));
@@ -145,7 +145,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxWorkItemSizes)
     EXPECT_NO_FATAL_FAILURE(DPCTLSize_t_Array_Delete(sizes));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxWorkGroupSize)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWorkGroupSize)
 {
     size_t n = 0;
     EXPECT_NO_FATAL_FAILURE(n = DPCTLDevice_GetMaxWorkGroupSize(DRef));
@@ -155,7 +155,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxWorkGroupSize)
         EXPECT_TRUE(n > 0);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxNumSubGroups)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxNumSubGroups)
 {
     size_t n = 0;
     EXPECT_NO_FATAL_FAILURE(n = DPCTLDevice_GetMaxNumSubGroups(DRef));
@@ -165,7 +165,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetMaxNumSubGroups)
         EXPECT_TRUE(n > 0);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPlatform)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPlatform)
 {
     DPCTLSyclPlatformRef PRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(PRef = DPCTLDevice_GetPlatform(DRef));
@@ -173,27 +173,27 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPlatform)
     EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_Delete(PRef));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsAccelerator)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkIsAccelerator)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_IsAccelerator(DRef));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsCPU)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkIsCPU)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_IsCPU(DRef));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsGPU)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkIsGPU)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_IsGPU(DRef));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_IsHost)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkIsHost)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_IsHost(DRef));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetSubGroupIndependentForwardProgress)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetSubGroupIndependentForwardProgress)
 {
     bool sub_group_progress = 0;
     EXPECT_NO_FATAL_FAILURE(
@@ -205,7 +205,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetSubGroupIndependentForwardProgress)
     EXPECT_TRUE(get_sub_group_progress == sub_group_progress);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthChar)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthChar)
 {
     size_t vector_width_char = 0;
     EXPECT_NO_FATAL_FAILURE(vector_width_char =
@@ -213,7 +213,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthChar)
     EXPECT_TRUE(vector_width_char != 0);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthShort)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthShort)
 {
     size_t vector_width_short = 0;
     EXPECT_NO_FATAL_FAILURE(vector_width_short =
@@ -221,7 +221,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthShort)
     EXPECT_TRUE(vector_width_short != 0);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthInt)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthInt)
 {
     size_t vector_width_int = 0;
     EXPECT_NO_FATAL_FAILURE(vector_width_int =
@@ -229,7 +229,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthInt)
     EXPECT_TRUE(vector_width_int != 0);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthLong)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthLong)
 {
     size_t vector_width_long = 0;
     EXPECT_NO_FATAL_FAILURE(vector_width_long =
@@ -237,7 +237,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthLong)
     EXPECT_TRUE(vector_width_long != 0);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthFloat)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthFloat)
 {
     size_t vector_width_float = 0;
     EXPECT_NO_FATAL_FAILURE(vector_width_float =
@@ -245,7 +245,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthFloat)
     EXPECT_TRUE(vector_width_float != 0);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthDouble)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthDouble)
 {
     size_t vector_width_double = 0;
     EXPECT_NO_FATAL_FAILURE(
@@ -260,7 +260,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthDouble)
     }
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthHalf)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthHalf)
 {
     size_t vector_width_half = 0;
     EXPECT_NO_FATAL_FAILURE(vector_width_half =
@@ -275,7 +275,29 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetPreferredVectorWidthHalf)
     }
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage2dMaxWidth)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxReadImageArgs)
+{
+    size_t max_read_image_args = 0;
+    EXPECT_NO_FATAL_FAILURE(max_read_image_args =
+                                DPCTLDevice_GetMaxReadImageArgs(DRef));
+    size_t min_val = 128;
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("image"))))
+        EXPECT_TRUE(max_read_image_args >= min_val);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWriteImageArgs)
+{
+    size_t max_write_image_args = 0;
+    EXPECT_NO_FATAL_FAILURE(max_write_image_args =
+                                DPCTLDevice_GetMaxWriteImageArgs(DRef));
+    size_t min_val = 8;
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("image"))))
+        EXPECT_TRUE(max_write_image_args >= min_val);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetImage2dMaxWidth)
 {
     size_t image_2d_max_width = 0;
     EXPECT_NO_FATAL_FAILURE(image_2d_max_width =
@@ -286,7 +308,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage2dMaxWidth)
         EXPECT_TRUE(image_2d_max_width >= min_val);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage2dMaxHeight)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetImage2dMaxHeight)
 {
     size_t image_2d_max_height = 0;
     EXPECT_NO_FATAL_FAILURE(image_2d_max_height =
@@ -297,7 +319,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage2dMaxHeight)
         EXPECT_TRUE(image_2d_max_height >= min_val);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage3dMaxWidth)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetImage3dMaxWidth)
 {
     size_t image_3d_max_width = 0;
     EXPECT_NO_FATAL_FAILURE(image_3d_max_width =
@@ -308,7 +330,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage3dMaxWidth)
         EXPECT_TRUE(image_3d_max_width >= min_val);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage3dMaxHeight)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetImage3dMaxHeight)
 {
     size_t image_3d_max_height = 0;
     EXPECT_NO_FATAL_FAILURE(image_3d_max_height =
@@ -319,7 +341,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage3dMaxHeight)
         EXPECT_TRUE(image_3d_max_height >= min_val);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage3dMaxDepth)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetImage3dMaxDepth)
 {
     size_t image_3d_max_depth = 0;
     EXPECT_NO_FATAL_FAILURE(image_3d_max_depth =
@@ -330,14 +352,14 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetImage3dMaxDepth)
         EXPECT_TRUE(image_3d_max_depth >= min_val);
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_GetParentDevice)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetParentDevice)
 {
     DPCTLSyclDeviceRef pDRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(pDRef = DPCTLDevice_GetParentDevice(DRef));
     EXPECT_TRUE(pDRef == nullptr);
 }
 
-INSTANTIATE_TEST_SUITE_P(DPCTLDevice_Fns,
+INSTANTIATE_TEST_SUITE_P(DPCTLDeviceFns,
                          TestDPCTLSyclDeviceInterface,
                          ::testing::Values("opencl",
                                            "opencl:gpu",

@@ -34,6 +34,10 @@
 
 DPCTL_C_EXTERN_C_BEGIN
 
+/**
+ * @defgroup KernelInterface Kernel class C wrapper
+ */
+
 /*!
  * @brief Returns a C string for the kernel name.
  *
@@ -41,6 +45,7 @@ DPCTL_C_EXTERN_C_BEGIN
  *                          interoperability kernel.
  * @return   If a kernel name exists then returns it as a C string, else
  *           returns a nullptr.
+ * @ingroup KernelInterface
  */
 DPCTL_API
 __dpctl_give const char *
@@ -53,6 +58,7 @@ DPCTLKernel_GetFunctionName(__dpctl_keep const DPCTLSyclKernelRef KRef);
  *                          interoperability kernel.
  * @return   Returns the number of arguments for the OpenCL interoperability
  *           kernel.
+ * @ingroup KernelInterface
  */
 DPCTL_API
 size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef KRef);
@@ -62,6 +68,7 @@ size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef KRef);
  *
  * @param    KRef           DPCTLSyclKernelRef pointer to an OpenCL
  *                          interoperability kernel.
+ * @ingroup KernelInterface
  */
 DPCTL_API
 void DPCTLKernel_Delete(__dpctl_take DPCTLSyclKernelRef KRef);

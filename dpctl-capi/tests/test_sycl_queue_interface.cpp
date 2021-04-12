@@ -126,7 +126,7 @@ protected:
     }
 };
 
-TEST_F(TestDPCTLSyclQueueInterface, Check_CreateForDevice)
+TEST_F(TestDPCTLSyclQueueInterface, CheckCreateForDevice)
 {
     /* We are testing that we do not crash even when input is garbage. */
     DPCTLSyclQueueRef QRef = nullptr;
@@ -136,7 +136,7 @@ TEST_F(TestDPCTLSyclQueueInterface, Check_CreateForDevice)
     ASSERT_TRUE(QRef == nullptr);
 }
 
-TEST_F(TestDPCTLSyclQueueInterface, Check_Copy)
+TEST_F(TestDPCTLSyclQueueInterface, CheckCopy)
 {
     DPCTLSyclQueueRef Q1 = nullptr;
     DPCTLSyclQueueRef Q2 = nullptr;

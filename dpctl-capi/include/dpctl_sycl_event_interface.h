@@ -33,11 +33,16 @@
 
 DPCTL_C_EXTERN_C_BEGIN
 
+/**
+ * @defgroup EventInterface Event class C wrapper
+ */
+
 /*!
  * @brief C-API wrapper for sycl::event.wait.
  *
  * @param    ERef           An opaque DPCTLSyclEventRef pointer on which to
  *                          wait.
+ * @ingroup EventInterface
  */
 DPCTL_API
 void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef);
@@ -47,6 +52,7 @@ void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef);
  *
  * @param    ERef           An opaque DPCTLSyclEventRef pointer that would be
  *                          freed.
+ * @ingroup EventInterface
  */
 DPCTL_API
 void DPCTLEvent_Delete(__dpctl_take DPCTLSyclEventRef ERef);

@@ -35,7 +35,7 @@
 DPCTL_C_EXTERN_C_BEGIN
 
 /**
- * @defgroup QueueManager Queue management helper functions
+ * @defgroup QueueManager Queue class helper functions
  */
 
 /*!
@@ -129,6 +129,7 @@ void DPCTLQueueMgr_PopQueue();
  * objects.
  *
  * @return   The current size of the queue manager's stack of queues.
+ * @ingroup QueueManager
  */
 DPCTL_API
 size_t DPCTLQueueMgr_GetQueueStackSize();

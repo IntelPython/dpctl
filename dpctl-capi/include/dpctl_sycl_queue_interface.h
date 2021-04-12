@@ -38,7 +38,7 @@
 DPCTL_C_EXTERN_C_BEGIN
 
 /**
- * @defgroup QueueInterface sycl::queue class wrapper functions.
+ * @defgroup QueueInterface Queue class C wrapper
  */
 
 /*!
@@ -66,28 +66,36 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
                   int properties);
 
 /*!
- * @brief Constructs a sycl::queue object of the specified SYCL device.
+ * @brief Constructs a ``sycl::queue`` object of the specified SYCL device.
  *
- * Constructs a new SYCL queue for the specified SYCL device. The behaviour of
- * this function differs from the SYCL `queue(const device &syclDevice, const
- * async_handler &asyncHandler, const property_list &propList = {})` constructor
- * of the queue class. Unlike the SYCL queue class constructor, we try not to
- * create a new SYCL context for the device and instead look to reuse a
- * previously cached SYCL context for the device (refer
- * dpctl_sycl_device_manager.cpp). DPCTL caches contexts only for root devices
- * and for all custom devices the function begaves the same way as the SYCL
- * constructor.
+ * Constructs a new SYCL queue for the specified SYCL device. The
+ * behaviour of this function differs from the following queue constructor:
  *
- * @param    dRef           An opaque pointer to a sycl::device.
+ * @code
+ *    queue(
+ *        const device &syclDevice,
+ *        const async_handler &asyncHandler,
+ *        const property_list &propList = {}
+ *    )
+ * @endcode
+ *
+ * Unlike the SYCL queue constructor, we try not to create a new SYCL
+ * context for the device and instead look to reuse a previously cached
+ * SYCL context for the device (refer dpctl_sycl_device_manager.cpp).
+ * DPCTL caches contexts only for root devices and for all custom devices the
+ * function begaves the same way as the SYCL constructor.
+ *
+ * @param    dRef           An opaque pointer to a ``sycl::device``.
  * @param    error_handler  A callback function that will be invoked by the
  *                          async_handler used during queue creation. Can be
  *                          NULL if no async_handler is needed.
  * @param    properties     A combination of bit flags using the values defined
  *                          in the DPCTLQueuePropertyType enum. The bit flags
- *                          are used to create a sycl::property_list that is
+ *                          are used to create a ``sycl::property_list`` that is
  *                          passed to the SYCL queue constructor.
- * @return An opaque DPCTLSyclQueueRef pointer containing the new sycl::queue
- * object. A nullptr is returned if the queue could not be created.
+ * @return An opaque DPCTLSyclQueueRef pointer containing the new
+ * ``sycl::queue`` object. A nullptr is returned if the queue could not be
+ * created.
  * @ingroup QueueInterface
  */
 DPCTL_API
@@ -108,9 +116,10 @@ void DPCTLQueue_Delete(__dpctl_take DPCTLSyclQueueRef QRef);
 /*!
  * @brief Returns a copy of the DPCTLSyclQueueRef object.
  *
- * @param    DRef           DPCTLSyclQueueRef object to be copied.
+ * @param    QRef           DPCTLSyclQueueRef object to be copied.
  * @return   A new DPCTLSyclQueueRef created by copying the passed in
  * DPCTLSyclQueueRef object.
+ * @ingroup QueueInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef

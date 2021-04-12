@@ -23,7 +23,7 @@
 from ._backend cimport DPCTLSyclEventRef
 
 
-cdef class SyclEvent:
+cdef public class SyclEvent [object PySyclEventObject, type PySyclEventType]:
     ''' Wrapper class for a Sycl Event
     '''
     cdef  DPCTLSyclEventRef _event_ref

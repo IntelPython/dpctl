@@ -127,7 +127,19 @@ TEST_P(TestDPCTLSyclQueueManager, CheckIsCurrentQueue)
     DPCTLQueue_Delete(Q0);
 }
 
-TEST(TestDPCTLSyclQueueManager, CheckGetNumActivatedQueues)
+INSTANTIATE_TEST_SUITE_P(QueueMgrFunctions,
+                         TestDPCTLSyclQueueManager,
+                         ::testing::Values("opencl:gpu:0",
+                                           "opencl:cpu:0",
+                                           "level_zero:gpu:0"));
+
+struct TestDPCTLQueueMgrFeatures : public ::testing::Test
+{
+    TestDPCTLQueueMgrFeatures() {}
+    ~TestDPCTLQueueMgrFeatures() {}
+};
+
+TEST_F(TestDPCTLQueueMgrFeatures, CheckGetNumActivatedQueues)
 {
     size_t num0, num1, num2, num4;
     DPCTLSyclDeviceSelectorRef CPU_DSRef = nullptr, GPU_DSRef = nullptr;
@@ -177,7 +189,7 @@ TEST(TestDPCTLSyclQueueManager, CheckGetNumActivatedQueues)
     }
 }
 
-TEST(TestDPCTLSyclQueueManager, CheckIsCurrentQueue2)
+TEST_F(TestDPCTLQueueMgrFeatures, CheckIsCurrentQueue2)
 {
     DPCTLSyclDeviceSelectorRef DS1 = nullptr, DS2 = nullptr;
     DPCTLSyclDeviceRef D1 = nullptr, D2 = nullptr;
@@ -214,8 +226,91 @@ TEST(TestDPCTLSyclQueueManager, CheckIsCurrentQueue2)
     DPCTLDevice_Delete(D2);
 }
 
-INSTANTIATE_TEST_SUITE_P(QueueMgrFunctions,
-                         TestDPCTLSyclQueueManager,
-                         ::testing::Values("opencl:gpu:0",
-                                           "opencl:cpu:0",
-                                           "level_zero:gpu:0"));
+TEST_F(TestDPCTLQueueMgrFeatures, CheckSetGlobalQueueForSubDevices)
+{
+    DPCTLSyclDeviceSelectorRef DS = nullptr;
+    DPCTLSyclDeviceRef RootCpu_DRef = nullptr;
+    size_t max_eu_count = 0;
+    DPCTLSyclDeviceRef SubDev0_DRef = nullptr;
+    DPCTLSyclDeviceRef SubDev1_DRef = nullptr;
+    DPCTLSyclQueueRef QRef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(DS = DPCTLFilterSelector_Create("opencl:cpu"));
+    EXPECT_NO_FATAL_FAILURE(RootCpu_DRef = DPCTLDevice_CreateFromSelector(DS));
+    DPCTLDeviceSelector_Delete(DS);
+    EXPECT_TRUE(RootCpu_DRef);
+    EXPECT_NO_FATAL_FAILURE(max_eu_count =
+                                DPCTLDevice_GetMaxComputeUnits(RootCpu_DRef));
+    size_t n1 = max_eu_count / 2;
+    size_t n2 = max_eu_count - n1;
+
+    if (n1 > 0 && n2 > 0) {
+        size_t counts[2] = {n1, n2};
+        DPCTLDeviceVectorRef DVRef = nullptr;
+        EXPECT_NO_FATAL_FAILURE(DVRef = DPCTLDevice_CreateSubDevicesByCounts(
+                                    RootCpu_DRef, counts, 2));
+        EXPECT_NO_FATAL_FAILURE(SubDev0_DRef =
+                                    DPCTLDeviceVector_GetAt(DVRef, 0));
+        EXPECT_NO_FATAL_FAILURE(SubDev1_DRef =
+                                    DPCTLDeviceVector_GetAt(DVRef, 1));
+        EXPECT_NO_FATAL_FAILURE(
+            QRef = DPCTLQueue_CreateForDevice(SubDev0_DRef, nullptr,
+                                              DPCTL_DEFAULT_PROPERTY));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(SubDev1_DRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(SubDev0_DRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLQueueMgr_SetGlobalQueue(QRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(QRef));
+    }
+    else {
+        DPCTLDevice_Delete(RootCpu_DRef);
+        GTEST_SKIP_("OpenCL CPU devices are needed, but were not found.");
+    }
+}
+
+TEST_F(TestDPCTLQueueMgrFeatures,
+       CheckSetGlobalQueueForSubDevicesMultiDeviceContext)
+{
+    DPCTLSyclDeviceSelectorRef DS = nullptr;
+    DPCTLSyclDeviceRef RootCpu_DRef = nullptr;
+    size_t max_eu_count = 0;
+    DPCTLSyclDeviceRef SubDev0_DRef = nullptr;
+    DPCTLSyclDeviceRef SubDev1_DRef = nullptr;
+    DPCTLSyclQueueRef QRef = nullptr;
+    DPCTLSyclContextRef CRef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(DS = DPCTLFilterSelector_Create("opencl:cpu"));
+    EXPECT_NO_FATAL_FAILURE(RootCpu_DRef = DPCTLDevice_CreateFromSelector(DS));
+    DPCTLDeviceSelector_Delete(DS);
+    EXPECT_TRUE(RootCpu_DRef);
+    EXPECT_NO_FATAL_FAILURE(max_eu_count =
+                                DPCTLDevice_GetMaxComputeUnits(RootCpu_DRef));
+    size_t n1 = max_eu_count / 2;
+    size_t n2 = max_eu_count - n1;
+
+    if (n1 > 0 && n2 > 0) {
+        size_t counts[2] = {n1, n2};
+        DPCTLDeviceVectorRef DVRef = nullptr;
+        EXPECT_NO_FATAL_FAILURE(DVRef = DPCTLDevice_CreateSubDevicesByCounts(
+                                    RootCpu_DRef, counts, 2));
+        EXPECT_NO_FATAL_FAILURE(SubDev0_DRef =
+                                    DPCTLDeviceVector_GetAt(DVRef, 0));
+        EXPECT_NO_FATAL_FAILURE(SubDev1_DRef =
+                                    DPCTLDeviceVector_GetAt(DVRef, 1));
+        EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_CreateFromDevices(
+                                    DVRef, nullptr, DPCTL_DEFAULT_PROPERTY));
+        EXPECT_NO_FATAL_FAILURE(
+            QRef = DPCTLQueue_Create(CRef, SubDev0_DRef, nullptr,
+                                     DPCTL_DEFAULT_PROPERTY));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(SubDev1_DRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(SubDev0_DRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLQueueMgr_SetGlobalQueue(QRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(QRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+    }
+    else {
+        DPCTLDevice_Delete(RootCpu_DRef);
+        GTEST_SKIP_("OpenCL CPU devices are needed, but were not found.");
+    }
+}

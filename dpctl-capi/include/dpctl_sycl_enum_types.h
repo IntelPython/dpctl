@@ -123,7 +123,7 @@ enum DPCTLSyclAspectType
 };
 
 /*!
- * @brief DPCTL analogue of sycl::info::partition_affinity_domain enum
+ * @brief DPCTL analogue of ``sycl::info::partition_affinity_domain`` enum.
  *
  */
 enum DPCTLPartitionAffinityDomainType

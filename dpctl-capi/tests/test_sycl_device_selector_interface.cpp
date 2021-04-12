@@ -85,7 +85,7 @@ struct TestUnsupportedFilters : public ::testing::TestWithParam<const char *>
     }
 };
 
-TEST_F(TestDeviceSelectorInterface, Chk_DPCTLAcceleratorSelector_Create)
+TEST_F(TestDeviceSelectorInterface, ChkDPCTLAcceleratorSelectorCreate)
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
     DPCTLSyclDeviceRef DRef = nullptr;
@@ -105,7 +105,7 @@ TEST_F(TestDeviceSelectorInterface, Chk_DPCTLAcceleratorSelector_Create)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDeviceSelectorInterface, Chk_DPCTLDefaultSelector_Create)
+TEST_F(TestDeviceSelectorInterface, ChkDPCTLDefaultSelectorCreate)
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
     DPCTLSyclDeviceRef DRef = nullptr;
@@ -125,7 +125,7 @@ TEST_F(TestDeviceSelectorInterface, Chk_DPCTLDefaultSelector_Create)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDeviceSelectorInterface, Chk_DPCTLCPUSelector_Create)
+TEST_F(TestDeviceSelectorInterface, ChkDPCTLCPUSelectorCreate)
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
     DPCTLSyclDeviceRef DRef = nullptr;
@@ -145,7 +145,7 @@ TEST_F(TestDeviceSelectorInterface, Chk_DPCTLCPUSelector_Create)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDeviceSelectorInterface, Chk_DPCTLGPUSelector_Create)
+TEST_F(TestDeviceSelectorInterface, ChkDPCTLGPUSelectorCreate)
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
     DPCTLSyclDeviceRef DRef = nullptr;
@@ -165,7 +165,7 @@ TEST_F(TestDeviceSelectorInterface, Chk_DPCTLGPUSelector_Create)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDeviceSelectorInterface, Chk_DPCTLHostSelector_Create)
+TEST_F(TestDeviceSelectorInterface, ChkDPCTLHostSelectorCreate)
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
     DPCTLSyclDeviceRef DRef = nullptr;
@@ -186,12 +186,12 @@ TEST_F(TestDeviceSelectorInterface, Chk_DPCTLHostSelector_Create)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_P(TestFilterSelector, Chk_DPCTLFilterSelector_Create)
+TEST_P(TestFilterSelector, ChkDPCTLFilterSelectorCreate)
 {
     ASSERT_TRUE(DRef != nullptr);
 }
 
-TEST_P(TestUnsupportedFilters, Chk_DPCTLFilterSelector_Create)
+TEST_P(TestUnsupportedFilters, ChkDPCTLFilterSelectorCreate)
 {
     DPCTLSyclDeviceRef DRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
@@ -199,7 +199,7 @@ TEST_P(TestUnsupportedFilters, Chk_DPCTLFilterSelector_Create)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDeviceSelectorInterface, Chk_DPCTLGPUSelector_Score)
+TEST_F(TestDeviceSelectorInterface, ChkDPCTLGPUSelectorScore)
 {
     DPCTLSyclDeviceSelectorRef DSRef_GPU = nullptr;
     DPCTLSyclDeviceSelectorRef DSRef_CPU = nullptr;
