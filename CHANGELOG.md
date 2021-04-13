@@ -6,6 +6,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Complete support for `sycl::ONEAPI::filter_selector` in dpctl.
+- C API for `sycl::queue` (#323), `syc::context` (#331), and `sycl::platform` (#298)
+  creation using opaque pointers.
+- A `DPCTLDeviceMgr` module in C API that caches a default context for root
+  devices (#277).
+- `DPCTLSyclBackendType` and `DPCTLSyclDeviceType` have a new member `ALL`
+  (#287).
+- C API now provides helper functions to convert between dpctl and SYCL enum
+  values (#296).
+- Macros to help create opaque vector classes for opaque SYCL types (#297).
+- `SyclDevice` (#321), `SyclContext` (#334), `SyclPlatform` (#336, #298),
+  `SyclQueue` (#323) have constructors that recognize filter selectors and closely
+  follow DPC++ interface.
+- Add API to get a `PyCapsule` from `SyclQueue`, `SyclContext` instances (#350).
+- Added `get_queue_ref_from_ptr_and_syclobj(ptr, syclobj)` that creates
+  `DPCTLSyclQueueRef` from a USM pointer and Python object `syclobj` from
+  `__sycl_usm_array_interface__` (#380).
+- Support for SYCL sub-devices, including sub-device creation, queue, and
+  context creation using sub-devices (#343).
+- `SyclDevice.parent_device` property to indicate if an instance has a parent
+  device (#366).
+- Several new getter functions for device info descriptors to device interface
+  (#300, #335, #318, #315, #308).
+- Support for SYCL device aspects (#307).
+- Properties for every `sycl::device` info and aspect that we support in
+  `SyclDevice` (#324).
+- Support handling async errors inside `SylQueue` instances (#346).
+- `get_backend`, `get_platform`, `get_device_type` to Python `SyclDevice` class (#300)
+- A `_sycl_device_factory.pyx` module providing `SyclDevice` constructors using
+  standard `sycl::device_selector` classes (previously in `_sycl_device.pyx`)
+  and a new `get_devices` (#277) function to enumerate all devices.
+- `_sycl_device_factory.pyx` implements `get_num_devices` and `has_*_device(s)`
+  functions (#320).
+- Enable Python coverage in CI for Linux (#369).
+- Use `public` keyword in `_sycl_*.pxd` to generate header files allowing
+  non-Cython centric native extensions to work with dpctl's Python objects
+  (#218).
+- Documentation improvements (#341).
+
+### Changed
+- Rename dpCtl to dpctl in all comments, license headers, and docs. (#342)
+- `dpctl.memory.MemoryUSM*` constructors now use `dpctl.SyclQueue()` instead of
+  `dpctl.get_current_queue()` when the `queue` keyword argument is `None` (default) (#382).
+- `dpctl.set_default_queue` has been renamed to `dpctl.set_global_queue()` (#323).
+- Changed `dpctl.dump` to `dpctl.lsplatform` (#336).
+- Various `SyclDevice` methods related to querying `sycl::info::device` were converted
+  to properties (#324).
+- Various C API functions names were changed.
+
+### Fixed
+- Possible crashes when a SYCL platform is not available (#349).
+- Fix tests which fail if GPU is not available (only CPU is available) (#359).
+- Fix breaking C API tests (#358).
+- Bandit warning about "subprocess.check_call(shell=True)" for Windows (#306).
+
+### Removed
+- Removed `get_num_platforms`, `has_cpu_queues`, `has_gpu_queues`, `get_num_queues`,
+  `has_sycl_platforms` (#320).
+
 ## [0.6.1] - 2021-03-01
 ### Fixed
 - Do not use POP_FRONT in FindDPCPP.cmake so that we can use a cmake version older that 3.15.
