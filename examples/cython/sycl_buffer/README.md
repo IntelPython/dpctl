@@ -21,9 +21,9 @@ CC=clang CXX=dpcpp python setup.py build_ext --inplace
 #2 Running
 
 ```
-# SYCL_BE=PI_OPENCL sets SYCL backend to OpenCL to avoid a
+# SYCL_DEVICE_FILTER=opencl sets SYCL backend to OpenCL to avoid a
 # transient issue with MKL's using the default Level-0 backend
-(idp) [08:16:12 ansatnuc04 simple]$ SYCL_BE=PI_OPENCL ipython
+(idp) [08:16:12 ansatnuc04 simple]$ SYCL_DEVICE_FILTER=opencl ipython
 Python 3.7.7 (default, Jul 14 2020, 22:02:37)
 Type 'copyright', 'credits' or 'license' for more information
 IPython 7.17.0 -- An enhanced Interactive Python. Type '?' for help.
@@ -67,7 +67,7 @@ Times for NumPy
 Running run.py:
 
 ```
-(idp) [09:14:53 ansatnuc04 sycl_buffer]$ SYCL_BE=PI_OPENCL python run.py
+(idp) [09:14:53 ansatnuc04 sycl_buffer]$ SYCL_DEVICE_FILTER=opencl python run.py
 Result computed by NumPy
 [  0.27170187 -23.36798583   7.31326489  -1.95121928]
 Result computed by SYCL extension
