@@ -1,6 +1,6 @@
 docs
 generated_docs
-dpctl-capi-doxyrest
+docfiles/dpctl-capi
 api
 build
 conf.py
