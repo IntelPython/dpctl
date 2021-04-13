@@ -158,20 +158,19 @@ cdef class _SyclQueue:
 
 
 cdef class SyclQueue(_SyclQueue):
-    """ Python wrapper class for cl::sycl::queue.
+    """ Python class representing cl::sycl::queue.
+
+        SyclQueue(*, /, property=None)
+            create SyclQueue from default selector
+        SyclQueue(filter_string, *, /, propery=None)
+            create SyclQueue from filter selector string
+        SyclQueue(SyclDevice, *, /, property=None)
+            create SyclQueue from give SyclDevice automatically
+            finding/creating SyclContext.
+        SyclQueue(SyclContext, SyclDevice, *, /, property=None)
+            create SyclQueue from give SyclContext, SyclDevice
     """
     def __cinit__(self, *args, **kwargs):
-        """
-           SyclQueue(*, /, property=None)
-               create SyclQueue from default selector
-           SyclQueue(filter_string, *, /, propery=None)
-               create SyclQueue from filter selector string
-           SyclQueue(SyclDevice, *, /, property=None)
-               create SyclQueue from give SyclDevice automatically
-               finding/creating SyclContext.
-           SyclQueue(SyclContext, SyclDevice, *, /, property=None)
-               create SyclQueue from give SyclContext, SyclDevice
-        """
         cdef int len_args
         cdef int status = 0
         cdef const char *filter_c_str = NULL
