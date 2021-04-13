@@ -2,4 +2,8 @@
 plugins = Cython.Coverage
 branch = True
 source = dpctl
-omit = */dpctl/tests/*, */dpctl/_version.py
+omit = */dpctl/tests/*
+
+[pytest]
+addopts = --cov=dpctl
+
