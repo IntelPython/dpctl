@@ -51,7 +51,7 @@ class TestQueueMemcpy(unittest.TestCase):
     )
     def test_memcpy_type_error(self):
         mobj = self._create_memory()
-        q = dpctl.get_current_queue()
+        q = mobj._queue
 
         with self.assertRaises(TypeError) as cm:
             q.memcpy(None, mobj, 3)
