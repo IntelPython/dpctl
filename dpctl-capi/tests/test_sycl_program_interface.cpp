@@ -92,7 +92,7 @@ struct TestDPCTLSyclProgramInterface
     }
 };
 
-TEST_P(TestDPCTLSyclProgramInterface, Chk_CreateFromSpirv)
+TEST_P(TestDPCTLSyclProgramInterface, ChkCreateFromSpirv)
 {
 
     ASSERT_TRUE(PRef != nullptr);
@@ -100,7 +100,7 @@ TEST_P(TestDPCTLSyclProgramInterface, Chk_CreateFromSpirv)
     ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "axpy"));
 }
 
-TEST_P(TestDPCTLSyclProgramInterface, Chk_GetKernel)
+TEST_P(TestDPCTLSyclProgramInterface, ChkGetKernel)
 {
     auto AddKernel = DPCTLProgram_GetKernel(PRef, "add");
     auto AxpyKernel = DPCTLProgram_GetKernel(PRef, "axpy");

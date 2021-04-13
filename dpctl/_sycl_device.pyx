@@ -35,20 +35,22 @@ from ._backend cimport (
     DPCTLDeviceVector_GetAt,
     DPCTLDeviceVector_Size,
     DPCTLDevice_GetBackend,
+    DPCTLDevice_AreEq,
     DPCTLDevice_GetDeviceType,
-    DPCTLDevice_GetDriverInfo,
+    DPCTLDevice_GetDriverVersion,
     DPCTLDevice_GetMaxComputeUnits,
     DPCTLDevice_GetMaxNumSubGroups,
     DPCTLDevice_GetMaxWorkGroupSize,
     DPCTLDevice_GetMaxWorkItemDims,
     DPCTLDevice_GetMaxWorkItemSizes,
-    DPCTLDevice_GetVendorName,
+    DPCTLDevice_GetVendor,
     DPCTLDevice_GetName,
     DPCTLDevice_IsAccelerator,
     DPCTLDevice_IsCPU,
     DPCTLDevice_IsGPU,
     DPCTLDevice_IsHost,
     DPCTLDeviceMgr_PrintDeviceInfo,
+    DPCTLDeviceMgr_GetRelativeId,
     DPCTLFilterSelector_Create,
     DPCTLDeviceSelector_Delete,
     DPCTLDeviceSelector_Score,
@@ -58,6 +60,8 @@ from ._backend cimport (
     DPCTLSyclDeviceSelectorRef,
     DPCTLDevice_HasAspect,
     DPCTLSyclDeviceType,
+    DPCTLDevice_GetMaxReadImageArgs,
+    DPCTLDevice_GetMaxWriteImageArgs,
     DPCTLDevice_GetImage2dMaxWidth,
     DPCTLDevice_GetImage2dMaxHeight,
     DPCTLDevice_GetImage3dMaxWidth,
@@ -74,9 +78,10 @@ from ._backend cimport (
     DPCTLDevice_CreateSubDevicesEqually,
     DPCTLDevice_CreateSubDevicesByCounts,
     DPCTLDevice_CreateSubDevicesByAffinity,
+    DPCTLDevice_GetParentDevice,
 )
 from . import backend_type, device_type
-from libc.stdint cimport uint32_t
+from libc.stdint cimport uint32_t, int64_t
 from libc.stdlib cimport malloc, free
 import warnings
 import collections
@@ -96,13 +101,13 @@ cdef class SubDeviceCreationError(Exception):
 
 
 cdef class _SyclDevice:
-    """ A helper metaclass to abstract a cl::sycl::device instance.
+    """ A helper data-owner class to abstract a cl::sycl::device instance.
     """
 
     def __dealloc__(self):
         DPCTLDevice_Delete(self._device_ref)
-        DPCTLCString_Delete(self._device_name)
-        DPCTLCString_Delete(self._vendor_name)
+        DPCTLCString_Delete(self._name)
+        DPCTLCString_Delete(self._vendor)
         DPCTLCString_Delete(self._driver_version)
         DPCTLSize_t_Array_Delete(self._max_work_item_sizes)
 
@@ -122,6 +127,34 @@ cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
         DPCTLDeviceVector_Delete(DVRef)
 
     return devices
+
+
+cdef str _backend_type_to_filter_string_part(DPCTLSyclBackendType BTy):
+   if BTy == _backend_type._CUDA:
+       return "cuda"
+   elif BTy == _backend_type._HOST:
+       return "host"
+   elif BTy == _backend_type._LEVEL_ZERO:
+       return "level_zero"
+   elif BTy == _backend_type._OPENCL:
+       return "opencl"
+   else:
+       return "unknown"
+
+
+cdef str _device_type_to_filter_string_part(DPCTLSyclDeviceType DTy):
+   if DTy == _device_type._ACCELERATOR:
+       return "accelerator"
+   elif DTy == _device_type._AUTOMATIC:
+       return "automatic"
+   elif DTy == _device_type._CPU:
+       return "cpu"
+   elif DTy == _device_type._GPU:
+       return "gpu"
+   elif DTy == _device_type._HOST_DEVICE:
+       return "host"
+   else:
+       return "unknown"
 
 
 cdef class SyclDevice(_SyclDevice):
@@ -166,9 +199,9 @@ cdef class SyclDevice(_SyclDevice):
     @staticmethod
     cdef void _init_helper(_SyclDevice device, DPCTLSyclDeviceRef DRef):
         device._device_ref = DRef
-        device._device_name = DPCTLDevice_GetName(DRef)
-        device._driver_version = DPCTLDevice_GetDriverInfo(DRef)
-        device._vendor_name = DPCTLDevice_GetVendorName(DRef)
+        device._name = DPCTLDevice_GetName(DRef)
+        device._driver_version = DPCTLDevice_GetDriverVersion(DRef)
+        device._vendor = DPCTLDevice_GetVendor(DRef)
         device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes(DRef)
 
     @staticmethod
@@ -189,12 +222,12 @@ cdef class SyclDevice(_SyclDevice):
         self._device_ref = DPCTLDevice_Copy(other._device_ref)
         if (self._device_ref is NULL):
             return -1
-        self._device_name = DPCTLDevice_GetName(self._device_ref)
-        self._driver_version = DPCTLDevice_GetDriverInfo(self._device_ref)
+        self._name = DPCTLDevice_GetName(self._device_ref)
+        self._driver_version = DPCTLDevice_GetDriverVersion(self._device_ref)
         self._max_work_item_sizes =  (
             DPCTLDevice_GetMaxWorkItemSizes(self._device_ref)
         )
-        self._vendor_name = DPCTLDevice_GetVendorName(self._device_ref)
+        self._vendor = DPCTLDevice_GetVendor(self._device_ref)
         return 0
 
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef):
@@ -451,6 +484,22 @@ cdef class SyclDevice(_SyclDevice):
         return score
 
     @property
+    def max_read_image_args(self):
+        """ Returns the maximum number of simultaneous image objects that
+            can be read from by a kernel. The minimum value is 128 if the
+            SYCL device has aspect::image.
+        """
+        return DPCTLDevice_GetMaxReadImageArgs(self._device_ref)
+
+    @property
+    def max_write_image_args(self):
+        """ Returns the maximum number of simultaneous image objects that
+            can be written to by a kernel. The minimum value is 8 if the SYCL
+            device has aspect::image.
+        """
+        return DPCTLDevice_GetMaxWriteImageArgs(self._device_ref)
+
+    @property
     def is_accelerator(self):
         """ Returns True if the SyclDevice instance is a SYCL accelerator
         device.
@@ -604,10 +653,10 @@ cdef class SyclDevice(_SyclDevice):
         return DPCTLDevice_GetPreferredVectorWidthHalf(self._device_ref)
 
     @property
-    def vendor_name(self):
+    def vendor(self):
         """ Returns the device vendor name as a string.
         """
-        return self._vendor_name.decode()
+        return self._vendor.decode()
 
     @property
     def driver_version(self):
@@ -616,10 +665,10 @@ cdef class SyclDevice(_SyclDevice):
         return self._driver_version.decode()
 
     @property
-    def device_name(self):
+    def name(self):
         """ Returns the name of the device as a string
         """
-        return self._device_name.decode()
+        return self._name.decode()
 
     @property
     def __name__(self):
@@ -628,7 +677,7 @@ cdef class SyclDevice(_SyclDevice):
     def __repr__(self):
         return ("<dpctl." + self.__name__ + " [" +
                 str(self.backend) + ", " + str(self.device_type) +", " +
-                " " + self.device_name + "] at {}>".format(hex(id(self))) )
+                " " + self.name + "] at {}>".format(hex(id(self))) )
 
     cdef list create_sub_devices_equally(self, size_t count):
         """ Returns a vector of sub devices partitioned from this SYCL device
@@ -714,3 +763,49 @@ cdef class SyclDevice(_SyclDevice):
                 return self.create_sub_devices_equally(partition)
             except Exception as e:
                 raise TypeError("Unsupported type of sub-device argument")
+
+    @property
+    def parent_device(self):
+        """ Parent device for a sub-device, or None for a root device.
+        """
+        cdef DPCTLSyclDeviceRef pDRef = NULL
+        pDRef = DPCTLDevice_GetParentDevice(self._device_ref)
+        if (pDRef is NULL):
+            return None
+        return SyclDevice._create(pDRef)
+
+    cpdef cpp_bool equals(self, SyclDevice other):
+        """ Returns true if the SyclDevice argument has the same _device_ref
+            as this SyclDevice.
+        """
+        return DPCTLDevice_AreEq(self._device_ref, other.get_device_ref())
+
+    def __eq__(self, other):
+        if isinstance(other, SyclDevice):
+            return self.equals(<SyclDevice> other)
+        else:
+            return False
+
+    @property
+    def filter_string(self):
+        """ For a parent device returns a tuple (backend, device_kind, relative_id).
+            Raises an exception for sub-devices.
+        """
+        cdef DPCTLSyclDeviceRef pDRef = NULL
+        cdef DPCTLSyclBackendType BTy
+        cdef DPCTLSyclDeviceType DTy
+        cdef int64_t relId = -1
+        pDRef = DPCTLDevice_GetParentDevice(self._device_ref)
+        if (pDRef is NULL):
+            BTy = DPCTLDevice_GetBackend(self._device_ref)
+            DTy = DPCTLDevice_GetDeviceType(self._device_ref)
+            relId = DPCTLDeviceMgr_GetRelativeId(self._device_ref)
+            if (relId == -1):
+                raise TypeError("This SyclDevice is not a root device")
+            br_str = _backend_type_to_filter_string_part(BTy)
+            dt_str = _device_type_to_filter_string_part(DTy)
+            return ":".join((br_str, dt_str, str(relId)))
+        else:
+            # this a sub-device, free it, and raise an exception
+            DPCTLDevice_Delete(pDRef)
+            raise TypeError("This SyclDevice is not a root device")

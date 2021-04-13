@@ -56,12 +56,19 @@ struct TestDPCTLDeviceManager : public ::testing::TestWithParam<const char *>
     }
 };
 
-TEST_P(TestDPCTLDeviceManager, Chk_PrintDeviceInfo)
+TEST_P(TestDPCTLDeviceManager, ChkGetRelativeId)
+{
+    int64_t rel_id = -1;
+    EXPECT_NO_FATAL_FAILURE(rel_id = DPCTLDeviceMgr_GetRelativeId(DRef));
+    EXPECT_FALSE(rel_id == -1);
+}
+
+TEST_P(TestDPCTLDeviceManager, ChkPrintDeviceInfo)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
 }
 
-TEST_P(TestDPCTLDeviceManager, Chk_GetCachedContext)
+TEST_P(TestDPCTLDeviceManager, ChkGetCachedContext)
 {
     DPCTLSyclContextRef CRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(CRef = DPCTLDeviceMgr_GetCachedContext(DRef));
@@ -100,7 +107,7 @@ struct TestDPCTLDeviceVector : public ::testing::TestWithParam<int>
     }
 };
 
-TEST_P(TestDPCTLDeviceVector, Chk_GetAt)
+TEST_P(TestDPCTLDeviceVector, ChkGetAt)
 {
     for (auto i = 0ul; i < nDevices; ++i) {
         DPCTLSyclDeviceRef DRef = nullptr;
@@ -118,7 +125,7 @@ INSTANTIATE_TEST_SUITE_P(
                       DPCTLSyclBackendType::DPCTL_OPENCL |
                           DPCTLSyclDeviceType::DPCTL_GPU));
 
-TEST(TestDPCTLDeviceVector, Chk_DPCTLDeviceVector_Create)
+TEST(TestDPCTLDeviceVector, ChkDPCTLDeviceVectorCreate)
 {
     DPCTLDeviceVectorRef DVRef = nullptr;
     size_t nDevices = 0;

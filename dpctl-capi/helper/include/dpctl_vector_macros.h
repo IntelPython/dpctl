@@ -18,8 +18,9 @@
 //
 //===----------------------------------------------------------------------===//
 ///
-/// \file These macros are used in dpctl_vector_templ.cpp. They help build the
-/// function signatures for the functions defined in dpctl_vector_templ.cpp.
+/// \file
+/// A set of macros used inside dpctl_vector_templ.cpp. The macros help build
+/// the function signatures for the functions defined in dpctl_vector_templ.cpp.
 ///
 //===----------------------------------------------------------------------===//
 

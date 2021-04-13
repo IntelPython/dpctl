@@ -194,3 +194,22 @@ void DPCTLDeviceMgr_PrintDeviceInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         std::cout << "Device is not valid (NULL). Cannot print device info.\n";
     }
 }
+
+int64_t DPCTLDeviceMgr_GetRelativeId(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    auto Device = unwrap(DRef);
+
+    if (Device) {
+        auto p = Device->get_platform();
+        auto dt = Device->get_info<sycl::info::device::device_type>();
+        auto dev_vec = p.get_devices(dt);
+        int64_t id = 0;
+        for (auto &d_i : dev_vec) {
+            if (*Device == d_i)
+                return id;
+            ++id;
+        }
+        return -1;
+    }
+    return -1;
+}

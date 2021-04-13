@@ -57,11 +57,7 @@ import timeit
 for _ in range(3):
 
     dpctl.set_global_queue("opencl:cpu:0")
-    print(
-        "Using : {}".format(
-            dpctl.get_current_queue().get_sycl_device().get_device_name()
-        )
-    )
+    print("Using : {}".format(dpctl.get_current_queue().sycl_device.name))
 
     t0 = timeit.default_timer()
     opts1 = gen_option_params(
@@ -74,11 +70,7 @@ for _ in range(3):
 
     # compute on GPU sycl device
     dpctl.set_global_queue("level_zero:gpu:0")
-    print(
-        "Using : {}".format(
-            dpctl.get_current_queue().get_sycl_device().get_device_name()
-        )
-    )
+    print("Using : {}".format(dpctl.get_current_queue().sycl_device.name))
 
     t0 = timeit.default_timer()
     opts2 = gen_option_params(

@@ -299,7 +299,7 @@ DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 __dpctl_give const char *
-DPCTLDevice_GetVendorName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+DPCTLDevice_GetVendor(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     char *cstr_vendor = nullptr;
     auto D = unwrap(DRef);
@@ -325,7 +325,7 @@ DPCTLDevice_GetVendorName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 __dpctl_give const char *
-DPCTLDevice_GetDriverInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+DPCTLDevice_GetDriverVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     char *cstr_driver = nullptr;
     auto D = unwrap(DRef);
@@ -392,10 +392,10 @@ bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     return hasAspect;
 }
 
-#define declmethod(FUNC, NAME)                                                 \
-    size_t DPCTLDevice_##FUNC(__dpctl_keep const DPCTLSyclDeviceRef DRef)      \
+#define declmethod(FUNC, NAME, TYPE)                                           \
+    TYPE DPCTLDevice_##FUNC(__dpctl_keep const DPCTLSyclDeviceRef DRef)        \
     {                                                                          \
-        size_t result = 0;                                                     \
+        TYPE result = 0;                                                       \
         auto D = unwrap(DRef);                                                 \
         if (D) {                                                               \
             try {                                                              \
@@ -406,11 +406,13 @@ bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         }                                                                      \
         return result;                                                         \
     }
-declmethod(GetImage2dMaxWidth, image2d_max_width);
-declmethod(GetImage2dMaxHeight, image2d_max_height);
-declmethod(GetImage3dMaxWidth, image3d_max_width);
-declmethod(GetImage3dMaxHeight, image3d_max_height);
-declmethod(GetImage3dMaxDepth, image3d_max_depth);
+declmethod(GetMaxReadImageArgs, max_read_image_args, uint32_t);
+declmethod(GetMaxWriteImageArgs, max_write_image_args, uint32_t);
+declmethod(GetImage2dMaxWidth, image2d_max_width, size_t);
+declmethod(GetImage2dMaxHeight, image2d_max_height, size_t);
+declmethod(GetImage3dMaxWidth, image3d_max_width, size_t);
+declmethod(GetImage3dMaxHeight, image3d_max_height, size_t);
+declmethod(GetImage3dMaxDepth, image3d_max_depth, size_t);
 #undef declmethod
 
 bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
@@ -547,6 +549,27 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(
         }
     }
     return vector_width_half;
+}
+
+__dpctl_give DPCTLSyclDeviceRef
+DPCTLDevice_GetParentDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            auto parent_D = D->get_info<info::device::parent_device>();
+            return wrap(new device(parent_D));
+        } catch (invalid_object_error const &ioe) {
+            // not a sub device
+            return nullptr;
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+            return nullptr;
+        }
+    }
+    else
+        return nullptr;
 }
 
 __dpctl_give DPCTLDeviceVectorRef

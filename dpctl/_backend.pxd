@@ -22,7 +22,7 @@ types defined by dpctl's C API.
 """
 
 from libcpp cimport bool
-from libc.stdint cimport uint32_t
+from libc.stdint cimport uint32_t, int64_t
 
 
 cdef extern from "dpctl_error_handler_type.h":
@@ -155,7 +155,7 @@ cdef extern from "dpctl_sycl_device_interface.h":
         const DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclDeviceType DPCTLDevice_GetDeviceType(
         const DPCTLSyclDeviceRef DRef)
-    cdef const char *DPCTLDevice_GetDriverInfo(const DPCTLSyclDeviceRef DRef)
+    cdef const char *DPCTLDevice_GetDriverVersion(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetMaxComputeUnits(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetMaxNumSubGroups(const DPCTLSyclDeviceRef DRef)
     cdef size_t DPCTLDevice_GetMaxWorkGroupSize(const DPCTLSyclDeviceRef DRef)
@@ -164,7 +164,7 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef const char *DPCTLDevice_GetName(const DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclPlatformRef DPCTLDevice_GetPlatform(
         const DPCTLSyclDeviceRef DRef)
-    cdef const char *DPCTLDevice_GetVendorName(const DPCTLSyclDeviceRef DRef)
+    cdef const char *DPCTLDevice_GetVendor(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsAccelerator(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsCPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
@@ -180,6 +180,8 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(const DPCTLSyclDeviceRef DRef)
     cpdef bool DPCTLDevice_HasAspect(
         const DPCTLSyclDeviceRef DRef, DPCTLSyclAspectType AT)
+    cdef uint32_t DPCTLDevice_GetMaxReadImageArgs(const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetMaxWriteImageArgs(const DPCTLSyclDeviceRef DRef)
     cdef size_t DPCTLDevice_GetImage2dMaxWidth(const DPCTLSyclDeviceRef DRef)
     cdef size_t DPCTLDevice_GetImage2dMaxHeight(const DPCTLSyclDeviceRef DRef)
     cdef size_t DPCTLDevice_GetImage3dMaxWidth(const DPCTLSyclDeviceRef DRef)
@@ -192,6 +194,7 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
         const DPCTLSyclDeviceRef DRef,
         DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy)
+    cdef DPCTLSyclDeviceRef DPCTLDevice_GetParentDevice(const DPCTLSyclDeviceRef DRef)
 
 
 cdef extern from "dpctl_sycl_device_manager.h":
@@ -209,6 +212,7 @@ cdef extern from "dpctl_sycl_device_manager.h":
     cdef void DPCTLDeviceMgr_PrintDeviceInfo(const DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclContextRef DPCTLDeviceMgr_GetCachedContext(
         const DPCTLSyclDeviceRef DRef)
+    cdef int64_t DPCTLDeviceMgr_GetRelativeId(const DPCTLSyclDeviceRef DRef)
 
 
 cdef extern from "dpctl_sycl_device_selector_interface.h":

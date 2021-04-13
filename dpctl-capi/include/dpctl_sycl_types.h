@@ -30,58 +30,56 @@
 DPCTL_C_EXTERN_C_BEGIN
 
 /*!
- * @brief Opaque pointer to a sycl::context
+ * @brief Opaque pointer to a ``sycl::context``
  *
  */
 typedef struct DPCTLOpaqueSyclContext *DPCTLSyclContextRef;
 
 /*!
- * @brief Opaque pointer to a sycl::device
+ * @brief Opaque pointer to a ``sycl::device``
  *
  */
 typedef struct DPCTLOpaqueSyclDevice *DPCTLSyclDeviceRef;
 
 /*!
- * @brief Opaque pointer to a sycl::device_selector
+ * @brief Opaque pointer to a ``sycl::device_selector``
  *
  */
 typedef struct DPCTLOpaqueSyclDeviceSelector *DPCTLSyclDeviceSelectorRef;
 
 /*!
- * @brief Opaque pointer to a sycl::event
+ * @brief Opaque pointer to a ``sycl::event``
  *
  */
 typedef struct DPCTLOpaqueSyclEvent *DPCTLSyclEventRef;
 
 /*!
- * @brief Opaque pointer to a sycl::kernel
+ * @brief Opaque pointer to a ``sycl::kernel``
  *
  */
 typedef struct DPCTLOpaqueSyclKernel *DPCTLSyclKernelRef;
 
 /*!
- * @brief Opaque pointer to a sycl::platform
+ * @brief Opaque pointer to a ``sycl::platform``
  *
  */
 typedef struct DPCTLOpaqueSyclPlatform *DPCTLSyclPlatformRef;
 
 /*!
- * @brief Opaque pointer to a sycl::program
+ * @brief Opaque pointer to a ``sycl::program``
  *
  */
 typedef struct DPCTLOpaqueSyclProgram *DPCTLSyclProgramRef;
 
 /*!
- * @brief Opaque pointer to a sycl::queue
+ * @brief Opaque pointer to a ``sycl::queue``
  *
- * @see sycl::queue
  */
 typedef struct DPCTLOpaqueSyclQueue *DPCTLSyclQueueRef;
 
 /*!
- * @brief Used to pass a sycl::usm memory opaquely through DPCTL interfaces.
+ * @brief Used to pass a ``sycl::usm`` memory opaquely through DPCTL interfaces.
  *
- * @see sycl::usm
  */
 typedef struct DPCTLOpaqueSyclUSM *DPCTLSyclUSMRef;
 

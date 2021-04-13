@@ -136,27 +136,27 @@ struct TestDPCTLSyclDefaultPlatform : public ::testing::Test
     }
 };
 
-TEST_P(TestDPCTLSyclPlatformInterface, Chk_GetName)
+TEST_P(TestDPCTLSyclPlatformInterface, ChkGetName)
 {
     check_platform_name(PRef);
 }
 
-TEST_P(TestDPCTLSyclPlatformInterface, Chk_GetVendor)
+TEST_P(TestDPCTLSyclPlatformInterface, ChkGetVendor)
 {
     check_platform_vendor(PRef);
 }
 
-TEST_P(TestDPCTLSyclPlatformInterface, Chk_GetVersion)
+TEST_P(TestDPCTLSyclPlatformInterface, ChkGetVersion)
 {
     check_platform_version(PRef);
 }
 
-TEST_P(TestDPCTLSyclPlatformInterface, Chk_GetBackend)
+TEST_P(TestDPCTLSyclPlatformInterface, ChkGetBackend)
 {
     check_platform_backend(PRef);
 }
 
-TEST_P(TestDPCTLSyclPlatformInterface, Chk_Copy)
+TEST_P(TestDPCTLSyclPlatformInterface, ChkCopy)
 {
     DPCTLSyclPlatformRef Copied_PRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(Copied_PRef = DPCTLPlatform_Copy(PRef));
@@ -164,32 +164,32 @@ TEST_P(TestDPCTLSyclPlatformInterface, Chk_Copy)
     EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_Delete(Copied_PRef));
 }
 
-TEST_P(TestDPCTLSyclPlatformInterface, Chk_PrintInfo)
+TEST_P(TestDPCTLSyclPlatformInterface, ChkPrintInfo)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(PRef));
 }
 
-TEST_F(TestDPCTLSyclDefaultPlatform, Chk_GetName)
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetName)
 {
     check_platform_name(PRef);
 }
 
-TEST_F(TestDPCTLSyclDefaultPlatform, Chk_GetVendor)
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetVendor)
 {
     check_platform_vendor(PRef);
 }
 
-TEST_F(TestDPCTLSyclDefaultPlatform, Chk_GetVersion)
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetVersion)
 {
     check_platform_version(PRef);
 }
 
-TEST_F(TestDPCTLSyclDefaultPlatform, Chk_GetBackend)
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetBackend)
 {
     check_platform_backend(PRef);
 }
 
-TEST_F(TestDPCTLSyclDefaultPlatform, Chk_PrintInfo)
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkPrintInfo)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(PRef));
 }
@@ -213,7 +213,7 @@ TEST(TestGetPlatforms, Chk)
     EXPECT_NO_FATAL_FAILURE(DPCTLPlatformVector_Delete(PVRef));
 }
 
-INSTANTIATE_TEST_SUITE_P(DPCTLPlatform_Tests,
+INSTANTIATE_TEST_SUITE_P(DPCTLPlatformTests,
                          TestDPCTLSyclPlatformInterface,
                          ::testing::Values("opencl",
                                            "opencl:gpu",

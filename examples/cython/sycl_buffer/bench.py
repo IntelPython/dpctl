@@ -27,7 +27,7 @@ print("NumPy result: ", X.sum(axis=0))
 dpctl.set_global_queue("opencl:cpu")
 print(
     "SYCL({}) result: {}".format(
-        dpctl.get_current_queue().get_sycl_device().get_device_name(),
+        dpctl.get_current_queue().sycl_device.name,
         sb.columnwise_total(X),
     )
 )
@@ -35,7 +35,7 @@ print(
 dpctl.set_default_queue("opencl:gpu")
 print(
     "SYCL({}) result: {}".format(
-        dpctl.get_current_queue().get_sycl_device().get_device_name(),
+        dpctl.get_current_queue().sycl_device.name,
         sb.columnwise_total(X),
     )
 )

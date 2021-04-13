@@ -35,8 +35,10 @@
 
 DPCTL_C_EXTERN_C_BEGIN
 
-/**
- * @defgroup DeviceManager Device management helper functions
+/*! \addtogroup DeviceManager Device class helper functions
+ * Helper functions for sycl::device objects that do not directly map to any
+ * sycl::device member function.
+ * @{
  */
 
 // Declares a set of types abd functions to deal with vectors of
@@ -69,7 +71,6 @@ DPCTL_DECLARE_VECTOR(Device)
  *                             enum values.
  * @return   A #DPCTLDeviceVectorRef containing #DPCTLSyclDeviceRef objects
  * that match the device identifier bit flags.
- * @ingroup DeviceManager
  */
 DPCTL_API
 __dpctl_give DPCTLDeviceVectorRef
@@ -101,7 +102,6 @@ DPCTLDeviceMgr_GetCachedContext(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  *                             the enum values or a bitwise OR-ed combination.
  * @return   The number of available devices satisfying the condition specified
  * by the device_identifier bit flag.
- * @ingroup DeviceManager
  */
 DPCTL_API
 size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier);
@@ -111,9 +111,21 @@ size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier);
  * currently supported by dpctl.
  *
  * @param    DRef           A #DPCTLSyclDeviceRef opaque pointer.
- * @ingroup DeviceManager
  */
 DPCTL_API
 void DPCTLDeviceMgr_PrintDeviceInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Gives the index of the given device in the vector returned get_devices
+ * for the platform associated with DRef for the device type of DRef.
+ *
+ * @param    DRef           A #DPCTLSyclDeviceRef opaque pointer.
+ * @ingroup DeviceManager
+ */
+DPCTL_API
+int64_t
+DPCTLDeviceMgr_GetRelativeId(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*! @} */
 
 DPCTL_C_EXTERN_C_END

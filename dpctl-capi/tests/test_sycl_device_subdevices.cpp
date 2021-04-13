@@ -1,3 +1,4 @@
+
 //===--- test_sycl_device_interface.cpp - Test cases for device interface  ===//
 //
 //                      Data Parallel Control (dpCtl)
@@ -70,7 +71,7 @@ struct TestDPCTLSyclDeviceInterface
     }
 };
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesEqually)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesEqually)
 {
     DPCTLDeviceVectorRef DVRef = nullptr;
     uint32_t maxCUs = 0;
@@ -81,13 +82,20 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesEqually)
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesEqually(DRef, count));
         if (DVRef) {
+            DPCTLSyclDeviceRef pDRef = nullptr;
+            DPCTLSyclDeviceRef sDRef = nullptr;
             EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) > 0);
+            EXPECT_NO_FATAL_FAILURE(sDRef = DPCTLDeviceVector_GetAt(DVRef, 0));
+            EXPECT_NO_FATAL_FAILURE(pDRef = DPCTLDevice_GetParentDevice(sDRef));
+            EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(sDRef));
+            EXPECT_TRUE(DPCTLDevice_AreEq(DRef, pDRef));
+            EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(pDRef));
             EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
     }
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByCounts)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByCounts)
 {
     DPCTLDeviceVectorRef DVRef = nullptr;
     uint32_t maxCUs = 0;
@@ -110,8 +118,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByCounts)
     }
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface,
-       Chk_CreateSubDevicesByAffinityNotApplicable)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityNotApplicable)
 {
     DPCTLDeviceVectorRef DVRef = nullptr;
 
@@ -139,7 +146,7 @@ TEST_P(TestDPCTLSyclDeviceInterface,
     }
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityNuma)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityNuma)
 {
     DPCTLDeviceVectorRef DVRef = nullptr;
 
@@ -175,7 +182,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityNuma)
     }
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL4Cache)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL4Cache)
 {
     DPCTLDeviceVectorRef DVRef = nullptr;
 
@@ -211,7 +218,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL4Cache)
     }
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL3Cache)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL3Cache)
 {
     DPCTLDeviceVectorRef DVRef = nullptr;
 
@@ -247,7 +254,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL3Cache)
     }
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL2Cache)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL2Cache)
 {
     DPCTLDeviceVectorRef DVRef = nullptr;
 
@@ -283,7 +290,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL2Cache)
     }
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL1Cache)
+TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL1Cache)
 {
     DPCTLDeviceVectorRef DVRef = nullptr;
 
@@ -320,7 +327,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, Chk_CreateSubDevicesByAffinityL1Cache)
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface,
-       Chk_CreateSubDevicesByAffinityNextPartitionable)
+       ChkCreateSubDevicesByAffinityNextPartitionable)
 {
     DPCTLDeviceVectorRef DVRef = nullptr;
 
@@ -356,7 +363,7 @@ TEST_P(TestDPCTLSyclDeviceInterface,
     }
 }
 
-INSTANTIATE_TEST_SUITE_P(DPCTLDevice_Fns,
+INSTANTIATE_TEST_SUITE_P(DPCTLDeviceFns,
                          TestDPCTLSyclDeviceInterface,
                          ::testing::Values("opencl",
                                            "opencl:gpu",
