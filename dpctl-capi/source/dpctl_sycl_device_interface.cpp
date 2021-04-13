@@ -299,7 +299,7 @@ DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 __dpctl_give const char *
-DPCTLDevice_GetVendorName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+DPCTLDevice_GetVendor(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     char *cstr_vendor = nullptr;
     auto D = unwrap(DRef);
@@ -325,7 +325,7 @@ DPCTLDevice_GetVendorName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 __dpctl_give const char *
-DPCTLDevice_GetDriverInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+DPCTLDevice_GetDriverVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     char *cstr_driver = nullptr;
     auto D = unwrap(DRef);

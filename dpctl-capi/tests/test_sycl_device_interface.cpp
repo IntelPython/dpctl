@@ -102,7 +102,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetDeviceType)
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetDriverInfo)
 {
     const char *DriverInfo = nullptr;
-    EXPECT_NO_FATAL_FAILURE(DriverInfo = DPCTLDevice_GetDriverInfo(DRef));
+    EXPECT_NO_FATAL_FAILURE(DriverInfo = DPCTLDevice_GetDriverVersion(DRef));
     EXPECT_TRUE(DriverInfo != nullptr);
     EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(DriverInfo));
 }
@@ -118,7 +118,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetName)
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetVendorName)
 {
     const char *VendorName = nullptr;
-    EXPECT_NO_FATAL_FAILURE(VendorName = DPCTLDevice_GetVendorName(DRef));
+    EXPECT_NO_FATAL_FAILURE(VendorName = DPCTLDevice_GetVendor(DRef));
     EXPECT_TRUE(VendorName != nullptr);
     EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(VendorName));
 }

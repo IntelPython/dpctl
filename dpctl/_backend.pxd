@@ -155,7 +155,7 @@ cdef extern from "dpctl_sycl_device_interface.h":
         const DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclDeviceType DPCTLDevice_GetDeviceType(
         const DPCTLSyclDeviceRef DRef)
-    cdef const char *DPCTLDevice_GetDriverInfo(const DPCTLSyclDeviceRef DRef)
+    cdef const char *DPCTLDevice_GetDriverVersion(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetMaxComputeUnits(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetMaxNumSubGroups(const DPCTLSyclDeviceRef DRef)
     cdef size_t DPCTLDevice_GetMaxWorkGroupSize(const DPCTLSyclDeviceRef DRef)
@@ -164,7 +164,7 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef const char *DPCTLDevice_GetName(const DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclPlatformRef DPCTLDevice_GetPlatform(
         const DPCTLSyclDeviceRef DRef)
-    cdef const char *DPCTLDevice_GetVendorName(const DPCTLSyclDeviceRef DRef)
+    cdef const char *DPCTLDevice_GetVendor(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsAccelerator(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsCPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
