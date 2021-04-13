@@ -69,7 +69,12 @@ cdef class _SyclContext:
 
 
 cdef class SyclContext(_SyclContext):
-    """ Python wrapper class for cl::sycl::context.
+    """ Python class representing cl::sycl::context.
+
+        SyclContext() - create a context for a default device
+        SyclContext(filter_selector_string) - create a context for specified device
+        SyclContext(SyclDevice_instance) - create a context for the given device
+        SyclContext((dev1, dev2, ...)) - create a context for given set of device instances
     """
     
     @staticmethod
@@ -176,11 +181,6 @@ cdef class SyclContext(_SyclContext):
             return -128
 
     def __cinit__(self, arg=None):
-        """ SyclContext() - create a context for a default device
-            SyclContext(filter_selector_string) - create a context for specified device
-            SyclContext(SyclDevice_instance) - create a context for the given device
-            SyclContext((dev1, dev2, ...)) - create a context for given set of devices
-        """
         cdef int ret = 0
         if isinstance(arg, _SyclContext):
             ret = self._init_context_from__SyclContext(<_SyclContext> arg)
