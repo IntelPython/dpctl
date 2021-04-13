@@ -6,8 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.7.0] - 2021-04-13
-
 ### Added
 - Complete support for `sycl::ONEAPI::filter_selector` in dpctl.
 - C API for `sycl::queue` (#323), `syc::context` (#331), and `sycl::platform` (#298)
