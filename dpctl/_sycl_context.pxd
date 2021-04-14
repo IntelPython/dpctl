@@ -42,5 +42,5 @@ cdef public class SyclContext(_SyclContext) [object PySyclContextObject, type Py
     cdef int _init_context_from_one_device(self, SyclDevice device, int props)
     cdef int _init_context_from_devices(self, object devices, int props)
     cdef int _init_context_from_capsule(self, object caps)
-    cpdef bool equals (self, SyclContext ctxt)
+    cdef bool equals (self, SyclContext ctxt)
     cdef DPCTLSyclContextRef get_context_ref (self)
