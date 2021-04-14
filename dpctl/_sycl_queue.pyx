@@ -239,7 +239,7 @@ cdef class SyclQueue(_SyclQueue):
                 raise SyclQueueCreationError(
                     "SYCL Context could not be created from '{}'.".format(arg)
                 )
-            elif status == -4:
+            elif status == -4 or status == -6:
                 if len_args == 2:
                     arg = args
                 raise SyclQueueCreationError(
@@ -247,8 +247,6 @@ cdef class SyclQueue(_SyclQueue):
                 )
             elif status == -5:
                 raise TypeError("Input capsule {} contains a null pointer or could not be renamed".format(arg))
-            elif status == -6:
-                raise "SYCL Queue failed to be created from '{}'.".format(arg)
 
     cdef int _init_queue_from__SyclQueue(self, _SyclQueue other):
         """ Copy data container _SyclQueue fields over.
