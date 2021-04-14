@@ -163,8 +163,8 @@ cdef class SyclDevice(_SyclDevice):
     There are two ways of creating a SyclDevice instance:
 
         - by directly passing in a filter string to the class constructor. The
-        filter string needs to conform to the the `DPC++ filter selector SYCL
-        extension <https://bit.ly/37kqANT>`_.
+          filter string needs to conform to the the `DPC++ filter selector SYCL
+          extension <https://bit.ly/37kqANT>`_.
 
         :Example:
             .. code-block:: python
