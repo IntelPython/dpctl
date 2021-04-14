@@ -428,8 +428,7 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
  * parameter.
  *
  * @param    DRef         Opaque pointer to a ``sycl::device``
- * @param    DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy
- *           of ``sycl::info::partition_affinity_domain``
+ * @param    PartAffDomTy A DPCTLPartitionAffinityDomainType enum value
  *
  * @return   A #DPCTLDeviceVectorRef containing #DPCTLSyclDeviceRef objects
  * @ingroup DeviceInterface
@@ -437,7 +436,7 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
 DPCTL_API
 __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
-    DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy);
+    DPCTLPartitionAffinityDomainType PartAffDomTy);
 
 DPCTL_C_EXTERN_C_END
 
