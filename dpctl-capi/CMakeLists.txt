@@ -99,6 +99,11 @@ if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
             PRIVATE
             ${LEVEL_ZERO_INCLUDE_DIR}
         )
+    elseif(WIN32)
+        target_include_directories(DPCTLSyclInterface
+            PRIVATE
+            ${LEVEL_ZERO_INCLUDE_DIR}
+        )
     else()
         message(WARNING
             "DPCTL support Level Zero program creation not supported "

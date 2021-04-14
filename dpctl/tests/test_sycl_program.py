@@ -87,10 +87,10 @@ class TestProgramForLevel0GPU(unittest.TestCase):
 
     # Level zero program creation from a SPIR-V binary is not supported
     # on Windows.
-    @unittest.skipIf(
-        sys.platform in ["win32", "cygwin"],
-        "Level Zero module creation unsupported on Windows.",
-    )
+    # @unittest.skipIf(
+    #     sys.platform in ["win32", "cygwin"],
+    #     "Level Zero module creation unsupported on Windows.",
+    # )
     def test_create_program_from_spirv(self):
         CURR_DIR = os.path.dirname(os.path.abspath(__file__))
         spirv_file = os.path.join(CURR_DIR, "input_files/multi_kernel.spv")
