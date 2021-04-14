@@ -21,12 +21,16 @@ import numpy as np, dpctl
 from reference_black_scholes import ref_python_black_scholes
 
 
-def gen_option_params(n_opts, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, dtype, queue=None):
+def gen_option_params(
+    n_opts, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, dtype, queue=None
+):
     nbytes = n_opts * 5 * np.dtype(dtype).itemsize
     usm_mem = dpctl_mem.MemoryUSMShared(nbytes, queue=queue)
     params = np.ndarray(shape=(n_opts, 5), buffer=usm_mem, dtype=dtype)
     seed = 1234
-    bs.populate_params(params, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, seed, queue=queue)
+    bs.populate_params(
+        params, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, seed, queue=queue
+    )
     return params
 
 
@@ -47,7 +51,9 @@ Xgpu = bs.black_scholes_price(opts)
 # compute prices in CPython
 X_ref = np.array([ref_python_black_scholes(*opt) for opt in opts], dtype="d")
 
-print("Correctness check: allclose(Xgpu, Xref) == ", np.allclose(Xgpu, X_ref, atol=1e-5))
+print(
+    "Correctness check: allclose(Xgpu, Xref) == ", np.allclose(Xgpu, X_ref, atol=1e-5)
+)
 
 n_opts = 3 * 10 ** 6
 
@@ -72,14 +78,14 @@ for _ in range(5):
     X1 = bs.black_scholes_price(opts1, queue=cpu_q)
     t1 = timeit.default_timer()
 
-    cpu_times.append(t1-t0)
+    cpu_times.append(t1 - t0)
 
     # compute on GPU sycl device
 
     t0 = timeit.default_timer()
     X2 = bs.black_scholes_price(opts2, queue=gpu_q)
     t1 = timeit.default_timer()
-    gpu_times.append(t1-t0)
+    gpu_times.append(t1 - t0)
 
 print("Using      : {}".format(cpu_q.sycl_device.name))
 print("Wall times : {}".format(cpu_times))
