@@ -49,4 +49,4 @@ cdef public class SyclDevice(_SyclDevice) [object PySyclDeviceObject, type PySyc
     cdef list create_sub_devices_equally(self, size_t count)
     cdef list create_sub_devices_by_counts(self, object counts)
     cdef list create_sub_devices_by_affinity(self, _partition_affinity_domain_type domain)
-    cpdef cpp_bool equals(self, SyclDevice q)
+    cdef cpp_bool equals(self, SyclDevice q)

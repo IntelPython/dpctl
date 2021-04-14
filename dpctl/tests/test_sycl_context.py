@@ -349,7 +349,7 @@ def test_context_not_equals():
         ctx_cpu = dpctl.SyclContext("cpu")
     except ValueError:
         pytest.skip()
-    assert not ctx_cpu.equals(ctx_gpu)
+    assert ctx_cpu != ctx_gpu
 
 
 def test_context_equals():
@@ -358,7 +358,7 @@ def test_context_equals():
         ctx0 = dpctl.SyclContext("gpu")
     except ValueError:
         pytest.skip()
-    assert ctx0.equals(ctx1)
+    assert ctx0 == ctx1
 
 
 def test_context_can_be_used_in_queue(valid_filter):

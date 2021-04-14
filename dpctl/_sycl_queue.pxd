@@ -66,7 +66,7 @@ cdef public class SyclQueue (_SyclQueue) [object PySyclQueueObject, type PySyclQ
     cdef  SyclQueue _create_from_context_and_device(
         SyclContext ctx, SyclDevice dev
     )
-    cpdef cpp_bool equals(self, SyclQueue q)
+    cdef cpp_bool equals(self, SyclQueue q)
     cpdef SyclContext get_sycl_context(self)
     cpdef SyclDevice get_sycl_device(self)
     cdef  DPCTLSyclQueueRef get_queue_ref(self)

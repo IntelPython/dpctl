@@ -519,11 +519,26 @@ cdef class SyclQueue(_SyclQueue):
 
         return ret
 
-    cpdef cpp_bool equals(self, SyclQueue q):
-        """ Returns true if the SyclQueue argument has the same _queue_ref
+    cdef cpp_bool equals(self, SyclQueue q):
+        """ Returns true if the SyclQueue argument `q` has the same _queue_ref
             as this SyclQueue.
         """
         return DPCTLQueue_AreEq(self._queue_ref, q.get_queue_ref())
+
+    def __eq__(self, other):
+        """
+        Returns True if two :class:`dpctl.SyclQueue` compared arguments have
+        the same underlying ``DPCTLSyclQueueRef`` object.
+
+        Returns:
+            :obj:`bool`: ``True`` if the two :class:`dpctl.SyclQueue` objects
+            point to the same ``DPCTLSyclQueueRef`` object, otherwise
+            ``False``.
+        """
+        if isinstance(other, SyclQueue):
+            return self.equals(<SyclQueue> other)
+        else:
+            return False
 
     def get_sycl_backend (self):
         """ Returns the Sycl backend associated with the queue.

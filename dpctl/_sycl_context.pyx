@@ -299,7 +299,7 @@ cdef class SyclContext(_SyclContext):
                 "Unrecognized error code ({}) encountered.".format(ret)
             )
 
-    cpdef bool equals(self, SyclContext ctxt):
+    cdef bool equals(self, SyclContext ctxt):
         """
         Returns true if the :class:`dpctl.SyclContext` argument has the
         same underlying ``DPCTLSyclContextRef`` object as this
@@ -311,6 +311,22 @@ cdef class SyclContext(_SyclContext):
             ``False``.
         """
         return DPCTLContext_AreEq(self._ctxt_ref, ctxt.get_context_ref())
+
+    def __eq__(self, other):
+        """
+        Returns True if the :class:`dpctl.SyclContext` argument has the
+        same underlying ``DPCTLSyclContextRef`` object as this
+        :class:`dpctl.SyclContext` instance.
+
+        Returns:
+            :obj:`bool`: ``True`` if the two :class:`dpctl.SyclContext` objects
+            point to the same ``DPCTLSyclContextRef`` object, otherwise
+            ``False``.
+        """
+        if isinstance(other, SyclContext):
+            return self.equals(<SyclContext> other)
+        else:
+            return False
 
     cdef DPCTLSyclContextRef get_context_ref(self):
         return self._ctxt_ref
