@@ -774,7 +774,7 @@ cdef class SyclDevice(_SyclDevice):
             return None
         return SyclDevice._create(pDRef)
 
-    cpdef cpp_bool equals(self, SyclDevice other):
+    cdef cpp_bool equals(self, SyclDevice other):
         """ Returns true if the SyclDevice argument has the same _device_ref
             as this SyclDevice.
         """

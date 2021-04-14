@@ -349,7 +349,7 @@ def test_context_not_equals():
     except dpctl.SyclQueueCreationError:
         pytest.skip()
     ctx_cpu = cpuQ.get_sycl_context()
-    assert not ctx_cpu.equals(ctx_gpu)
+    assert ctx_cpu != ctx_gpu
 
 
 def test_context_equals():
@@ -360,4 +360,4 @@ def test_context_equals():
         pytest.skip()
     ctx0 = gpuQ0.get_sycl_context()
     ctx1 = gpuQ1.get_sycl_context()
-    assert ctx0.equals(ctx1)
+    assert ctx0 == ctx1

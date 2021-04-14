@@ -319,7 +319,7 @@ cdef class SyclQueue(_SyclQueue):
                 raise SyclQueueCreationError(
                     "SYCL Context could not be created from '{}'.".format(arg)
                 )
-            elif status == -4:
+            elif status == -4 or status == -6:
                 if len_args == 2:
                     arg = args
                 raise SyclQueueCreationError(
@@ -327,8 +327,6 @@ cdef class SyclQueue(_SyclQueue):
                 )
             elif status == -5:
                 raise TypeError("Input capsule {} contains a null pointer or could not be renamed".format(arg))
-            elif status == -6:
-                raise "SYCL Queue failed to be created from '{}'.".format(arg)
 
     cdef int _init_queue_from__SyclQueue(self, _SyclQueue other):
         """ Copy data container _SyclQueue fields over.
@@ -601,11 +599,26 @@ cdef class SyclQueue(_SyclQueue):
 
         return ret
 
-    cpdef cpp_bool equals(self, SyclQueue q):
-        """ Returns true if the SyclQueue argument has the same _queue_ref
+    cdef cpp_bool equals(self, SyclQueue q):
+        """ Returns true if the SyclQueue argument `q` has the same _queue_ref
             as this SyclQueue.
         """
         return DPCTLQueue_AreEq(self._queue_ref, q.get_queue_ref())
+
+    def __eq__(self, other):
+        """
+        Returns True if two :class:`dpctl.SyclQueue` compared arguments have
+        the same underlying ``DPCTLSyclQueueRef`` object.
+
+        Returns:
+            :obj:`bool`: ``True`` if the two :class:`dpctl.SyclQueue` objects
+            point to the same ``DPCTLSyclQueueRef`` object, otherwise
+            ``False``.
+        """
+        if isinstance(other, SyclQueue):
+            return self.equals(<SyclQueue> other)
+        else:
+            return False
 
     def get_sycl_backend (self):
         """ Returns the Sycl backend associated with the queue.
