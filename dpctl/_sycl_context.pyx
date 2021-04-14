@@ -22,7 +22,7 @@
 
 from __future__ import print_function
 import logging
-from ._backend cimport (
+from ._backend cimport(
     DPCTLSyclContextRef,
     DPCTLSyclDeviceRef,
     DPCTLContext_Create,
@@ -69,20 +69,93 @@ cdef class _SyclContext:
 
 
 cdef class SyclContext(_SyclContext):
-    """ Python class representing cl::sycl::context.
-
-        SyclContext() - create a context for a default device
-        SyclContext(filter_selector_string) - create a context for specified device
-        SyclContext(SyclDevice_instance) - create a context for the given device
-        SyclContext((dev1, dev2, ...)) - create a context for given set of device instances
     """
-    
+    Python class representing ``cl::sycl::context``. There are multiple
+    ways to create a :class:`dpctl.SyclContext` object:
+
+        - Invoking the constructor with no arguments creates a context using
+          the default selector.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create a default SyclContext
+                ctx = dpctl.SyclContext()
+                print(ctx.get_devices())
+
+        - Invoking the constuctor with a specific filter string that creates a
+          context for the device corresponding to the filter string.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create a default SyclContext
+                ctx = dpctl.SyclContext("gpu")
+                d = ctx.get_devices()[0]
+                assert(d.is_gpu)
+
+        - Invoking the constuctor with a :class:`dpctl.SyclDevice` object
+          creates a context for that device.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create a level zero gpu device
+                d = dpctl.SyclDevice("level_zero:gpu")
+                ctx = dpctl.SyclContext(d)
+                d = ctx.get_devices()[0]
+                assert(d.is_gpu)
+
+        - Invoking the constuctor with a list of :class:`dpctl.SyclDevice`
+          objects creates a common context for all the devices. This
+          constructor call is especially useful when creation a context for
+          multiple sub-devices.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create a CPU device using the opencl driver
+                cpu_d = dpctl.SyclDevice("opencl:cpu")
+                # Partition the CPU device into sub-devices, each with two cores.
+                sub_devices = create_sub_devices(partition=2)
+                # Create a context common to all the sub-devices.
+                ctx = dpctl.SyclContext(sub_devices)
+                assert(len(ctx.get_devices) == len(sub_devices))
+
+        - Invoking the constuctor with a named ``PyCapsule`` with the name
+          **SyclContextRef** that carries a pointer to a ``sycl::context``
+          object.
+
+    Args:
+        arg (optional): Defaults to None.
+            The argument can be a :class:`dpctl.SyclDevice` instance,
+            a :obj:`list` of :class:`dpctl.SyclDevice` objects, or a named
+            ``PyCapsule`` called **SyclContextRef**.
+
+    Raises:
+        MemoryError: If the constructor could not allocate necessary
+                     temporary memory.
+        ValueError: If the :class:`dpctl.SyclContext` object creation failed.
+        TypeError: If the list of :class:`dpctl.SyclDevice` objects was empty,
+                   or the input capsule contained a null pointer or could not
+                   be renamed.
+
+    """
+
     @staticmethod
     cdef void _init_helper(_SyclContext context, DPCTLSyclContextRef CRef):
          context._ctxt_ref = CRef
-    
+
     @staticmethod
-    cdef SyclContext _create (DPCTLSyclContextRef ctxt):
+    cdef SyclContext _create(DPCTLSyclContextRef ctxt):
         """
         Calls DPCTLContext_Delete(ctxt).
 
@@ -155,15 +228,18 @@ cdef class SyclContext(_SyclContext):
 
     cdef int _init_context_from_capsule(self, object cap):
         """
-        For named PyCapsule with name SyclContextRef, which carries pointer to
-        sycl::context object, interpreted as DPCTLSyclContextRef, creates corresponding
-        SyclContext.
+        For named ``PyCapsule`` with name **SyclContextRef**, which carries
+        pointer to ``sycl::context`` object, interpreted as
+        ``DPCTLSyclContextRef``, creates corresponding
+        :class:`dpctl.SyclContext`.
         """
         cdef DPCTLSyclContextRef CRef = NULL
         cdef DPCTLSyclContextRef CRef_copy = NULL
         cdef int ret = 0
         if pycapsule.PyCapsule_IsValid(cap, "SyclContextRef"):
-            CRef = <DPCTLSyclContextRef> pycapsule.PyCapsule_GetPointer(cap, "SyclContextRef")
+            CRef = <DPCTLSyclContextRef> pycapsule.PyCapsule_GetPointer(
+                cap, "SyclContextRef"
+            )
             if (CRef is NULL):
                 return -6
             ret = pycapsule.PyCapsule_SetName(cap, "used_SyclContextRef")
@@ -188,7 +264,9 @@ cdef class SyclContext(_SyclContext):
             ret = self._init_context_from_one_device(<SyclDevice> arg, 0)
         elif pycapsule.PyCapsule_IsValid(arg, "SyclContextRef"):
             status = self._init_context_from_capsule(arg)
-        elif isinstance(arg, (list, tuple)) and all([isinstance(argi, SyclDevice) for argi in arg]):
+        elif isinstance(
+            arg, (list, tuple)) and all([isinstance(argi, SyclDevice) for argi in arg]
+        ):
             ret = self._init_context_from_devices(arg, 0)
         else:
             dev = SyclDevice(arg)
@@ -197,41 +275,74 @@ cdef class SyclContext(_SyclContext):
             if (ret == -1):
                 raise ValueError("Context failed to be created.")
             elif (ret == -2):
-                raise TypeError("List of devices to create context from must be non-empty.")
+                raise TypeError(
+                    "List of devices to create context from must be non-empty."
+                )
             elif (ret == -3):
-                raise MemoryError("Could not allocate necessary temporary memory.")
+                raise MemoryError(
+                    "Could not allocate necessary temporary memory."
+                )
             elif (ret == -4) or (ret == -7):
-                raise ValueError("Internal Error: Could not create a copy of a sycl device.")
+                raise ValueError(
+                    "Internal Error: Could not create a copy of a sycl device."
+                )
             elif (ret == -5):
-                raise ValueError("Internal Error: Creation of DeviceVector failed.")
+                raise ValueError(
+                    "Internal Error: Creation of DeviceVector failed."
+                )
             elif (ret == -6):
-                raise TypeError("Input capsule {} contains a null pointer or could not be renamed".format(arg))
-            raise ValueError("Unrecognized error code ({}) encountered.".format(ret))
+                raise TypeError(
+                    "Input capsule {} contains a null pointer or could not be"
+                    " renamed".format(arg)
+                )
+            raise ValueError(
+                "Unrecognized error code ({}) encountered.".format(ret)
+            )
 
-    cpdef bool equals (self, SyclContext ctxt):
-        """ Returns true if the SyclContext argument has the same _context_ref
-            as this SyclContext.
+    cpdef bool equals(self, SyclContext ctxt):
+        """
+        Returns true if the :class:`dpctl.SyclContext` argument has the
+        same underlying ``DPCTLSyclContextRef`` object as this
+        :class:`dpctl.SyclContext` instance.
+
+        Returns:
+            :obj:`bool`: ``True`` if the two :class:`dpctl.SyclContext` objects
+            point to the same ``DPCTLSyclContextRef`` object, otherwise
+            ``False``.
         """
         return DPCTLContext_AreEq(self._ctxt_ref, ctxt.get_context_ref())
 
-    cdef DPCTLSyclContextRef get_context_ref (self):
+    cdef DPCTLSyclContextRef get_context_ref(self):
         return self._ctxt_ref
 
     def addressof_ref (self):
         """
-        Returns the address of the DPCTLSyclContextRef pointer as a size_t.
+        Returns the address of the ``DPCTLSyclContextRef`` pointer as a
+        ``size_t``.
 
         Returns:
-            The address of the DPCTLSyclContextRef object used to create this
-            SyclContext cast to a size_t.
+            :obj:`int`: The address of the ``DPCTLSyclContextRef`` object
+            used to create this :class:`dpctl.SyclContext` cast to a
+            ``size_t``.
         """
         return int(<size_t>self._ctx_ref)
 
-    def get_devices (self):
+    def get_devices(self):
         """
-        Returns the list of SyclDevice objects associated with SyclContext instance.
+        Returns the list of :class:`dpctl.SyclDevice` objects associated with
+        :class:`dpctl.SyclContext` instance.
+
+        Returns:
+            :obj:`list`: A :obj:`list` of :class:`dpctl.SyclDevice` objects
+            that belong to this context.
+
+        Raises:
+            ValueError: If the ``DPCTLContext_GetDevices`` call returned
+                        ``NULL`` instead of a ``DPCTLDeviceVectorRef`` object.
         """
-        cdef DPCTLDeviceVectorRef DVRef = DPCTLContext_GetDevices(self.get_context_ref())
+        cdef DPCTLDeviceVectorRef DVRef = DPCTLContext_GetDevices(
+            self.get_context_ref()
+        )
         cdef size_t num_devs
         cdef size_t i
         cdef DPCTLSyclDeviceRef DRef
@@ -244,34 +355,86 @@ cdef class SyclContext(_SyclContext):
             devices.append(SyclDevice._create(DRef))
         DPCTLDeviceVector_Delete(DVRef)
         return devices
-    
+
     @property
-    def device_count (self):
+    def device_count(self):
         """
-        The number of sycl devices associated with SyclContext instance.
+        The number of sycl devices associated with the
+        :class:`dpctl.SyclContext` instance.
+
+        Returns:
+            :obj:`int`: Number of devices associated with the context.
+
+        Raises:
+            ValueError: If ``DPCTLContext_DeviceCount`` led to a
+                        failure.
         """
         cdef size_t num_devs = DPCTLContext_DeviceCount(self.get_context_ref())
         if num_devs:
             return num_devs
         else:
-            raise ValueError("An error was encountered quering the number of devices "
-                             "associated with this context")
+            raise ValueError(
+                "An error was encountered quering the number of devices "
+                "associated with this context"
+            )
 
     @property
     def __name__(self):
         return "SyclContext"
 
     def __repr__(self):
+        """
+        Returns the name of the class and number of devices in the context.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create a default SyclContext
+                ctx = dpctl.SyclContext()
+                print(ctx) # E.g : <dpctl.SyclContext at 0x7f154d8ab070>
+
+                cpu_d = dpctl.SyclDevice("opencl:cpu")
+                sub_devices = create_sub_devices(partition=2)
+                ctx2 = dpctl.SyclContext(sub_devices)
+                print(ctx2) # E.g : <dpctl.SyclContext for 4 devices at 0x7f154d8ab070>
+
+        Returns:
+            :obj:`str`: A string representation of the
+            :class:`dpctl.SyclContext` object.
+
+        """
         cdef size_t n = self.device_count
         if n == 1:
             return ("<dpctl." + self.__name__ + " at {}>".format(hex(id(self))))
         else:
-            return ("<dpctl." + self.__name__ + " for {} devices at {}>".format(n, hex(id(self))))
+            return ("<dpctl." + self.__name__ + " for {} devices at {}>"
+            .format(n, hex(id(self))))
 
     def _get_capsule(self):
+        """
+        Returns a copy of the underlying ``sycl::context`` pointer as a void
+        pointer inside a named ``PyCapsule`` that has the name
+        **SyclContextRef**. The ownership of the pointer inside the capsule is
+        passed to the caller, and pointer is deleted when the capsule goes out
+        of scope.
+
+        Returns:
+            :class:`pycapsule`: A capsule object storing a copy of the
+            ``sycl::context`` pointer belonging to thus
+            :class:`dpctl.SyclContext` instance.
+
+        Raises:
+            ValueError: If the ``DPCTLContext_Copy`` fails to copy the
+                        ``sycl::context`` pointer.
+        """
         cdef DPCTLSyclContextRef CRef = NULL
         CRef = DPCTLContext_Copy(self._ctxt_ref)
         if (CRef is NULL):
             raise ValueError("SyclContext copy failed.")
-        return pycapsule.PyCapsule_New(<void *>CRef, "SyclContextRef", &_context_capsule_deleter)
-        
+        return pycapsule.PyCapsule_New(
+            <void *>CRef,
+            "SyclContextRef",
+            &_context_capsule_deleter
+        )
