@@ -107,7 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../dpctl-capi-doxyrest/index.html">dpctl C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpctl-capi/index.html">dpctl C API</a></li>
 </ul>
 
             
@@ -183,10 +183,10 @@
 <p>There are two ways of creating a SyclDevice instance:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>by directly passing in a filter string to the class constructor. The</p></li>
+<li><p>by directly passing in a filter string to the class constructor. The
+filter string needs to conform to the the <a class="reference external" href="https://bit.ly/37kqANT">DPC++ filter selector SYCL
+extension</a>.</p></li>
 </ul>
-<p>filter string needs to conform to the the <a class="reference external" href="https://bit.ly/37kqANT">DPC++ filter selector SYCL
-extension</a>.</p>
 <dl class="field-list">
 <dt class="field-odd">Example</dt>
 <dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
@@ -261,12 +261,6 @@ this SyclDevice cast to a size_t.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="dpctl.SyclDevice.device_name">
-<code class="sig-name descname"><span class="pre">device_name</span></code><a class="headerlink" href="#dpctl.SyclDevice.device_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the name of the device as a string</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt id="dpctl.SyclDevice.device_type">
 <code class="sig-name descname"><span class="pre">device_type</span></code><a class="headerlink" href="#dpctl.SyclDevice.device_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the type of the device as a <cite>device_type</cite> enum.</p>
@@ -287,6 +281,20 @@ this SyclDevice cast to a size_t.</p>
 <dt id="dpctl.SyclDevice.driver_version">
 <code class="sig-name descname"><span class="pre">driver_version</span></code><a class="headerlink" href="#dpctl.SyclDevice.driver_version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a backend-defined driver version as a string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclDevice.equals">
+<code class="sig-name descname"><span class="pre">equals</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.equals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if the SyclDevice argument has the same _device_ref
+as this SyclDevice.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="dpctl.SyclDevice.filter_string">
+<code class="sig-name descname"><span class="pre">filter_string</span></code><a class="headerlink" href="#dpctl.SyclDevice.filter_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>For a parent device returns a tuple (backend, device_kind, relative_id).
+Raises an exception for sub-devices.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -380,6 +388,41 @@ this SyclDevice cast to a size_t.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt id="dpctl.SyclDevice.image_2d_max_height">
+<code class="sig-name descname"><span class="pre">image_2d_max_height</span></code><a class="headerlink" href="#dpctl.SyclDevice.image_2d_max_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum height of a 2D image or 1D image in pixels.
+The minimum value is 8192 if the SYCL device has aspect::image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="dpctl.SyclDevice.image_2d_max_width">
+<code class="sig-name descname"><span class="pre">image_2d_max_width</span></code><a class="headerlink" href="#dpctl.SyclDevice.image_2d_max_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum width of a 2D image or 1D image in pixels.
+The minimum value is 8192 if the SYCL device has aspect::image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="dpctl.SyclDevice.image_3d_max_depth">
+<code class="sig-name descname"><span class="pre">image_3d_max_depth</span></code><a class="headerlink" href="#dpctl.SyclDevice.image_3d_max_depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum depth of a 3D image in pixels.
+The minimum value is 2048 if the SYCL device has aspect::image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="dpctl.SyclDevice.image_3d_max_height">
+<code class="sig-name descname"><span class="pre">image_3d_max_height</span></code><a class="headerlink" href="#dpctl.SyclDevice.image_3d_max_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum height of a 3D image in pixels.
+The minimum value is 2048 if the SYCL device has aspect::image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="dpctl.SyclDevice.image_3d_max_width">
+<code class="sig-name descname"><span class="pre">image_3d_max_width</span></code><a class="headerlink" href="#dpctl.SyclDevice.image_3d_max_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum width of a 3D image in pixels.
+The minimum value is 2048 if the SYCL device has aspect::image.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt id="dpctl.SyclDevice.is_accelerator">
 <code class="sig-name descname"><span class="pre">is_accelerator</span></code><a class="headerlink" href="#dpctl.SyclDevice.is_accelerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if the SyclDevice instance is a SYCL accelerator
@@ -453,6 +496,14 @@ device. The minimum value is 1.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt id="dpctl.SyclDevice.max_read_image_args">
+<code class="sig-name descname"><span class="pre">max_read_image_args</span></code><a class="headerlink" href="#dpctl.SyclDevice.max_read_image_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum number of simultaneous image objects that
+can be read from by a kernel. The minimum value is 128 if the
+SYCL device has aspect::image.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt id="dpctl.SyclDevice.max_work_group_size">
 <code class="sig-name descname"><span class="pre">max_work_group_size</span></code><a class="headerlink" href="#dpctl.SyclDevice.max_work_group_size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the maximum number of work-items
@@ -479,6 +530,26 @@ that are permitted in each dimension of the
 work-group of the nd_range. The minimum
 value is (1; 1; 1) for devices that are not of
 device type <code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="dpctl.SyclDevice.max_write_image_args">
+<code class="sig-name descname"><span class="pre">max_write_image_args</span></code><a class="headerlink" href="#dpctl.SyclDevice.max_write_image_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum number of simultaneous image objects that
+can be written to by a kernel. The minimum value is 8 if the SYCL
+device has aspect::image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="dpctl.SyclDevice.name">
+<code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#dpctl.SyclDevice.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of the device as a string</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="dpctl.SyclDevice.parent_device">
+<code class="sig-name descname"><span class="pre">parent_device</span></code><a class="headerlink" href="#dpctl.SyclDevice.parent_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parent device for a sub-device, or None for a root device.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -544,8 +615,8 @@ sub-groups with respect to other sub-groups in the same work-group.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="dpctl.SyclDevice.vendor_name">
-<code class="sig-name descname"><span class="pre">vendor_name</span></code><a class="headerlink" href="#dpctl.SyclDevice.vendor_name" title="Permalink to this definition">¶</a></dt>
+<dt id="dpctl.SyclDevice.vendor">
+<code class="sig-name descname"><span class="pre">vendor</span></code><a class="headerlink" href="#dpctl.SyclDevice.vendor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the device vendor name as a string.</p>
 </dd></dl>
 

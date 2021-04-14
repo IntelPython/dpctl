@@ -32,6 +32,9 @@ Helper functions for sycl::device objects that do not directly map to any sycl::
 	DPCTL_API size_t
 	:ref:`DPCTLDeviceMgr_GetNumDevices<doxid-d0/d15/group__DeviceManager_1ga2578ffe4d41ef3adbb690ea99bb5f664>`(int device_identifier);
 
+	DPCTL_API int64_t
+	:ref:`DPCTLDeviceMgr_GetRelativeId<doxid-d0/d15/group__DeviceManager_1ga38db5431168d0d9883a62681b139762a>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
 	DPCTL_API void
 	:ref:`DPCTLDeviceMgr_PrintDeviceInfo<doxid-d0/d15/group__DeviceManager_1ga4d424acf4bfc1365804d43aad4238846>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
@@ -169,6 +172,29 @@ Get the number of available devices for given backend and device type combinatio
 .. rubric:: Returns:
 
 The number of available devices satisfying the condition specified by the device_identifier bit flag.
+
+.. index:: pair: function; DPCTLDeviceMgr_GetRelativeId
+.. _doxid-d0/d15/group__DeviceManager_1ga38db5431168d0d9883a62681b139762a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API int64_t
+	DPCTLDeviceMgr_GetRelativeId(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Gives the index of the given device in the vector returned get_devices for the platform associated with DRef for the device type of DRef.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- A :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` opaque pointer.
 
 .. index:: pair: function; DPCTLDeviceMgr_PrintDeviceInfo
 .. _doxid-d0/d15/group__DeviceManager_1ga4d424acf4bfc1365804d43aad4238846:

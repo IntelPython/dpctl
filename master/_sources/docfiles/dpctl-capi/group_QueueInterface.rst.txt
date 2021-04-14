@@ -55,6 +55,9 @@ Overview
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
 	:ref:`DPCTLQueue_GetDevice<doxid-d9/db1/group__QueueInterface_1ga44095b28dfb5c357e6c065749e9aa8c0>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
+	DPCTL_API bool
+	:ref:`DPCTLQueue_IsInOrder<doxid-d9/db1/group__QueueInterface_1ga0738e262108a1ac8f43f227548724f07>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+
 	DPCTL_API void
 	:ref:`DPCTLQueue_MemAdvise<doxid-d9/db1/group__QueueInterface_1ga0ef8f0c4ee3fd1e0289633ffe3d283dc>`(
 		__dpctl_keep :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
@@ -397,6 +400,29 @@ returns the Sycl device for the queue.
 .. rubric:: Returns:
 
 A DPCTLSyclDeviceRef pointer to the sycl device for the queue.
+
+.. index:: pair: function; DPCTLQueue_IsInOrder
+.. _doxid-d9/db1/group__QueueInterface_1ga0738e262108a1ac8f43f227548724f07:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLQueue_IsInOrder(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
+
+C-API wrapper for sycl::queue::is_in_order that indicates whether the referenced queue is in-order or out-of-order.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to the sycl queue.
 
 .. index:: pair: function; DPCTLQueue_MemAdvise
 .. _doxid-d9/db1/group__QueueInterface_1ga0ef8f0c4ee3fd1e0289633ffe3d283dc:

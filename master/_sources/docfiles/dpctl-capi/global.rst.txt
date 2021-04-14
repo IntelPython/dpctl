@@ -104,9 +104,9 @@ Overview
 	:ref:`DPCTLDevice_CreateFromSelector<doxid-d8/de9/group__DeviceInterface_1ga371463122c4ec271be68364d1e9a284d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>` DSRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
-	:ref:`DPCTLDevice_CreateSubDevicesByAffinity<doxid-d8/de9/group__DeviceInterface_1ga4057d831791c4be08b43bd7c6f9bf4d3>`(
+	:ref:`DPCTLDevice_CreateSubDevicesByAffinity<doxid-d8/de9/group__DeviceInterface_1gae0b93c3e13a3882ba5599a7321a2253c>`(
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
-		:ref:`DPCTLPartitionAffinityDomainType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670>` PartitionAffinityDomainTy
+		:ref:`DPCTLPartitionAffinityDomainType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670>` PartAffDomTy
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
@@ -132,13 +132,31 @@ Overview
 	:ref:`DPCTLDevice_GetDeviceType<doxid-d8/de9/group__DeviceInterface_1ga312596705e48023c62735ca1fe7a380f>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API const __dpctl_give char*
-	:ref:`DPCTLDevice_GetDriverInfo<doxid-d8/de9/group__DeviceInterface_1gaa2cdd5354030ab3e5305608f6f3991df>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+	:ref:`DPCTLDevice_GetDriverVersion<doxid-d8/de9/group__DeviceInterface_1gacb59e0e106b1538a8e974db4fed7228c>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLDevice_GetImage2dMaxHeight<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a4ef25a38cbf63e618016302e8ebf480d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLDevice_GetImage2dMaxWidth<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ad1f6957fdc5fb51ed873fa444af17c13>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLDevice_GetImage3dMaxDepth<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ac64423a160a010d1841b36ae2ab48658>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLDevice_GetImage3dMaxHeight<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ac041263954e4e4c2a5bf58eeb08c0b7e>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLDevice_GetImage3dMaxWidth<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a775e74dcd25c38e1d1575df3262b6f60>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API uint32_t
 	:ref:`DPCTLDevice_GetMaxComputeUnits<doxid-d8/de9/group__DeviceInterface_1gac9635668177d01284e64d1d4373a391a>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API uint32_t
 	:ref:`DPCTLDevice_GetMaxNumSubGroups<doxid-d8/de9/group__DeviceInterface_1ga6c5a99a6da732f5cee47a09ff1559a30>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetMaxReadImageArgs<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a9810a239416c53427e3742bfb72ea0a6>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API size_t
 	:ref:`DPCTLDevice_GetMaxWorkGroupSize<doxid-d8/de9/group__DeviceInterface_1gaffdc9aeff99885627cd26364df7479de>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
@@ -149,8 +167,14 @@ Overview
 	DPCTL_API __dpctl_keep size_t*
 	:ref:`DPCTLDevice_GetMaxWorkItemSizes<doxid-d8/de9/group__DeviceInterface_1gac5292cd7933df4ef7fb15a3d0d05d463>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetMaxWriteImageArgs<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a34dbd5b5dbde22ba5f1d5205de298d81>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
 	DPCTL_API const __dpctl_give char*
 	:ref:`DPCTLDevice_GetName<doxid-d8/de9/group__DeviceInterface_1ga36ca01c406d1200b56e94a98595ffb0d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	:ref:`DPCTLDevice_GetParentDevice<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1acccdc3f034e6c5fd2a249907355169bc>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
 	:ref:`DPCTLDevice_GetPlatform<doxid-d8/de9/group__DeviceInterface_1ga7a5b8354f2f4937eb0b6229ba8436ecc>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
@@ -180,7 +204,7 @@ Overview
 	:ref:`DPCTLDevice_GetSubGroupIndependentForwardProgress<doxid-d8/de9/group__DeviceInterface_1gafd08f141480c1eb8eb243c88823e85b0>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API const __dpctl_give char*
-	:ref:`DPCTLDevice_GetVendorName<doxid-d8/de9/group__DeviceInterface_1gacab7510672c0631a5cc08188504504e0>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+	:ref:`DPCTLDevice_GetVendor<doxid-d8/de9/group__DeviceInterface_1gae1af63c0f0016c766dd2703abc657bec>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API bool
 	:ref:`DPCTLDevice_HasAspect<doxid-d8/de9/group__DeviceInterface_1gada8dabfcfaf6a76079dd64fdf07d19a2>`(
@@ -211,6 +235,9 @@ Overview
 
 	DPCTL_API size_t
 	:ref:`DPCTLDeviceMgr_GetNumDevices<doxid-d0/d15/group__DeviceManager_1ga2578ffe4d41ef3adbb690ea99bb5f664>`(int device_identifier);
+
+	DPCTL_API int64_t
+	:ref:`DPCTLDeviceMgr_GetRelativeId<doxid-d0/d15/group__DeviceManager_1ga38db5431168d0d9883a62681b139762a>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API void
 	:ref:`DPCTLDeviceMgr_PrintDeviceInfo<doxid-d0/d15/group__DeviceManager_1ga4d424acf4bfc1365804d43aad4238846>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
@@ -400,6 +427,9 @@ Overview
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
 	:ref:`DPCTLQueue_GetDevice<doxid-d9/db1/group__QueueInterface_1ga44095b28dfb5c357e6c065749e9aa8c0>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLQueue_IsInOrder<doxid-d9/db1/group__QueueInterface_1ga0738e262108a1ac8f43f227548724f07>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
 	DPCTL_API void
 	:ref:`DPCTLQueue_MemAdvise<doxid-d9/db1/group__QueueInterface_1ga0ef8f0c4ee3fd1e0289633ffe3d283dc>`(
@@ -659,4 +689,239 @@ Opaque pointer to a ``sycl::queue``
 	typedef struct DPCTLOpaqueSyclUSM* DPCTLSyclUSMRef
 
 Used to pass a ``sycl::usm`` memory opaquely through DPCTL interfaces.
+
+Global Functions
+----------------
+
+.. index:: pair: function; DPCTLDevice_GetImage2dMaxHeight
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a4ef25a38cbf63e618016302e8ebf480d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLDevice_GetImage2dMaxHeight(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::image2d_max_height>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the maximum height of a 2D image or 1D image in pixels. The minimum value is 8192 if the SYCL device has aspect::image.
+
+.. index:: pair: function; DPCTLDevice_GetImage2dMaxWidth
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ad1f6957fdc5fb51ed873fa444af17c13:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLDevice_GetImage2dMaxWidth(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::image2d_max_width>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the maximum width of a 2D image or 1D image in pixels. The minimum value is 8192 if the SYCL device has aspect::image.
+
+.. index:: pair: function; DPCTLDevice_GetImage3dMaxDepth
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ac64423a160a010d1841b36ae2ab48658:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLDevice_GetImage3dMaxDepth(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::image3d_max_depth>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the maximum depth of a 3D image The minimum value is 2048 if the SYCL device has aspect::image.
+
+.. index:: pair: function; DPCTLDevice_GetImage3dMaxHeight
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ac041263954e4e4c2a5bf58eeb08c0b7e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLDevice_GetImage3dMaxHeight(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::image3d_max_height>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the maximum height of a 3D image The minimum value is 2048 if the SYCL device has aspect::image.
+
+.. index:: pair: function; DPCTLDevice_GetImage3dMaxWidth
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a775e74dcd25c38e1d1575df3262b6f60:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLDevice_GetImage3dMaxWidth(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::image3d_max_width>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the maximum width of a 3D image in pixels. The minimum value is 2048 if the SYCL device has aspect::image.
+
+.. index:: pair: function; DPCTLDevice_GetMaxReadImageArgs
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a9810a239416c53427e3742bfb72ea0a6:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetMaxReadImageArgs(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::max_read_image_args>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the maximum number of simultaneous image objects that can be read from by a kernel. The minimum value is 128 if the SYCL device has aspect::image.
+
+.. index:: pair: function; DPCTLDevice_GetMaxWriteImageArgs
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a34dbd5b5dbde22ba5f1d5205de298d81:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetMaxWriteImageArgs(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::max_write_image_args>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the maximum number of simultaneous image objects that can be written to by a kernel. The minimum value is 8 if the SYCL device has aspect::image.
+
+.. index:: pair: function; DPCTLDevice_GetParentDevice
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1acccdc3f034e6c5fd2a249907355169bc:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	DPCTLDevice_GetParentDevice(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::parent_device>
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns an opaque pointer to the parent device for a sub-device, or nullptr otherwise.
 

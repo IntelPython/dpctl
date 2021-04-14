@@ -107,7 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../dpctl-capi-doxyrest/index.html">dpctl C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpctl-capi/index.html">dpctl C API</a></li>
 </ul>
 
             
@@ -179,15 +179,173 @@
 <dl class="py class">
 <dt id="dpctl.SyclContext">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">SyclContext</span></code><a class="headerlink" href="#dpctl.SyclContext" title="Permalink to this definition">¶</a></dt>
-<dd><p>Python wrapper class for cl::sycl::context.</p>
+<dd><p>Python class representing <code class="docutils literal notranslate"><span class="pre">cl::sycl::context</span></code>. There are multiple
+ways to create a <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> object:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Invoking the constructor with no arguments creates a context using
+the default selector.</p></li>
+</ul>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+
+<span class="c1"># Create a default SyclContext</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclContext</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">get_devices</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>Invoking the constuctor with a specific filter string that creates a
+context for the device corresponding to the filter string.</p></li>
+</ul>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+
+<span class="c1"># Create a default SyclContext</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclContext</span><span class="p">(</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_devices</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">is_gpu</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>Invoking the constuctor with a <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> object
+creates a context for that device.</p></li>
+</ul>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+
+<span class="c1"># Create a level zero gpu device</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;level_zero:gpu&quot;</span><span class="p">)</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclContext</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_devices</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">is_gpu</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>Invoking the constuctor with a list of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>
+objects creates a common context for all the devices. This
+constructor call is especially useful when creation a context for
+multiple sub-devices.</p></li>
+</ul>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+
+<span class="c1"># Create a CPU device using the opencl driver</span>
+<span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;opencl:cpu&quot;</span><span class="p">)</span>
+<span class="c1"># Partition the CPU device into sub-devices, each with two cores.</span>
+<span class="n">sub_devices</span> <span class="o">=</span> <span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="c1"># Create a context common to all the sub-devices.</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclContext</span><span class="p">(</span><span class="n">sub_devices</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">get_devices</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_devices</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>Invoking the constuctor with a named <code class="docutils literal notranslate"><span class="pre">PyCapsule</span></code> with the name
+<strong>SyclContextRef</strong> that carries a pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code>
+object.</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arg</strong> (<em>optional</em>) – Defaults to None.
+The argument can be a <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instance,
+a <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> objects, or a named
+<code class="docutils literal notranslate"><span class="pre">PyCapsule</span></code> called <strong>SyclContextRef</strong>.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>MemoryError</strong> – If the constructor could not allocate necessary
+    temporary memory.</p></li>
+<li><p><strong>ValueError</strong> – If the <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> object creation failed.</p></li>
+<li><p><strong>TypeError</strong> – If the list of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> objects was empty,
+    or the input capsule contained a null pointer or could not
+    be renamed.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="dpctl.SyclContext.__name__">
+<code class="sig-name descname"><span class="pre">__name__</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'SyclContext'</span></em><a class="headerlink" href="#dpctl.SyclContext.__name__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclContext.__repr__">
+<code class="sig-name descname"><span class="pre">__repr__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclContext.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of the class and number of devices in the context.</p>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+
+<span class="c1"># Create a default SyclContext</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclContext</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span> <span class="c1"># E.g : &lt;dpctl.SyclContext at 0x7f154d8ab070&gt;</span>
+
+<span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;opencl:cpu&quot;</span><span class="p">)</span>
+<span class="n">sub_devices</span> <span class="o">=</span> <span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ctx2</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclContext</span><span class="p">(</span><span class="n">sub_devices</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ctx2</span><span class="p">)</span> <span class="c1"># E.g : &lt;dpctl.SyclContext for 4 devices at 0x7f154d8ab070&gt;</span>
+</pre></div>
+</div>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A string representation of the
+<a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpctl.SyclContext._get_capsule">
+<code class="sig-name descname"><span class="pre">_get_capsule</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclContext._get_capsule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the underlying <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> pointer as a void
+pointer inside a named <code class="docutils literal notranslate"><span class="pre">PyCapsule</span></code> that has the name
+<strong>SyclContextRef</strong>. The ownership of the pointer inside the capsule is
+passed to the caller, and pointer is deleted when the capsule goes out
+of scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A capsule object storing a copy of the
+<code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> pointer belonging to thus
+<a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> instance.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pycapsule</span></code></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the <code class="docutils literal notranslate"><span class="pre">DPCTLContext_Copy</span></code> fails to copy the
+    <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> pointer.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt id="dpctl.SyclContext.addressof_ref">
 <code class="sig-name descname"><span class="pre">addressof_ref</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclContext.addressof_ref" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the address of the DPCTLSyclContextRef pointer as a size_t.</p>
+<dd><p>Returns the address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclContextRef</span></code> pointer as a
+<code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The address of the DPCTLSyclContextRef object used to create this
-SyclContext cast to a size_t.</p>
+<dd class="field-odd"><p>The address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclContextRef</span></code> object
+used to create this <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> cast to a
+<code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -195,20 +353,58 @@ SyclContext cast to a size_t.</p>
 <dl class="py attribute">
 <dt id="dpctl.SyclContext.device_count">
 <code class="sig-name descname"><span class="pre">device_count</span></code><a class="headerlink" href="#dpctl.SyclContext.device_count" title="Permalink to this definition">¶</a></dt>
-<dd><p>The number of sycl devices associated with SyclContext instance.</p>
+<dd><p>The number of sycl devices associated with the
+<a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Number of devices associated with the context.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">DPCTLContext_DeviceCount</span></code> led to a
+    failure.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpctl.SyclContext.equals">
 <code class="sig-name descname"><span class="pre">equals</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclContext.equals" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns true if the SyclContext argument has the same _context_ref
-as this SyclContext.</p>
+<dd><p>Returns true if the <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> argument has the
+same underlying <code class="docutils literal notranslate"><span class="pre">DPCTLSyclContextRef</span></code> object as this
+<a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the two <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> objects
+point to the same <code class="docutils literal notranslate"><span class="pre">DPCTLSyclContextRef</span></code> object, otherwise
+<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpctl.SyclContext.get_devices">
 <code class="sig-name descname"><span class="pre">get_devices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclContext.get_devices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the list of SyclDevice objects associated with SyclContext instance.</p>
+<dd><p>Returns the list of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> objects associated with
+<a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> objects
+that belong to this context.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the <code class="docutils literal notranslate"><span class="pre">DPCTLContext_GetDevices</span></code> call returned
+    <code class="docutils literal notranslate"><span class="pre">NULL</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">DPCTLDeviceVectorRef</span></code> object.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

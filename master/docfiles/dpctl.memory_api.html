@@ -109,7 +109,7 @@
 <li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../dpctl-capi-doxyrest/index.html">dpctl C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpctl-capi/index.html">dpctl C API</a></li>
 </ul>
 
             
@@ -196,7 +196,7 @@ objects to maniputalate USM memory using NumPy or <cite>bytearray</cite>,
 <dd><p>MemoryUSMDevice(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
 USM device memory.</p>
 <p>Non-positive alignments are not used (malloc_device is used instead).
-The queue=None the current <cite>dpctl.get_current_queue()</cite> is used to allocate memory.</p>
+For the queue=None cast the <cite>dpctl.SyclQueue()</cite> is used to allocate memory.</p>
 <p>MemoryUSMDevice(usm_obj) constructor create instance from <cite>usm_obj</cite> expected to
 implement <cite>__sycl_usm_array_interface__</cite> protocol and exposing a contiguous block of
 USM memory of USM device type. Using copy=True to perform a copy if USM type is other
@@ -255,7 +255,7 @@ the memory of the instance</p>
 <dd><p>MemoryUSMHost(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
 USM host memory.</p>
 <p>Non-positive alignments are not used (malloc_host is used instead).
-The queue=None the current <cite>dpctl.get_current_queue()</cite> is used to allocate memory.</p>
+For the queue=None case <cite>dpctl.SyclQueue()</cite> is used to allocate memory.</p>
 <p>MemoryUSMDevice(usm_obj) constructor create instance from <cite>usm_obj</cite> expected to
 implement <cite>__sycl_usm_array_interface__</cite> protocol and exposing a contiguous block of
 USM memory of USM host type. Using copy=True to perform a copy if USM type is other
@@ -314,7 +314,7 @@ the memory of the instance</p>
 <dd><p>MemoryUSMShared(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
 USM shared memory.</p>
 <p>Non-positive alignments are not used (malloc_shared is used instead).
-The queue=None the current <cite>dpctl.get_current_queue()</cite> is used to allocate memory.</p>
+For the queue=None cast the <cite>dpctl.SyclQueue()</cite> is used to allocate memory.</p>
 <p>MemoryUSMShared(usm_obj) constructor create instance from <cite>usm_obj</cite> expected to
 implement <cite>__sycl_usm_array_interface__</cite> protocol and exposing a contiguous block of
 USM memory of USM shared type. Using copy=True to perform a copy if USM type is other

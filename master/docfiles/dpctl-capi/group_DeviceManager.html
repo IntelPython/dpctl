@@ -17,26 +17,26 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/target-highlight.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/target-highlight.js"></script>
     
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
 
   
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/doxyrest-pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Device selection" href="group_DeviceSelectors.html" />
     <link rel="prev" title="Device class C wrapper" href="group_DeviceInterface.html" /> 
 </head>
@@ -52,7 +52,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+            <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           
 
           
@@ -69,7 +69,7 @@
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -88,11 +88,11 @@
             
               <p class="caption"><span class="caption-text">User Guides</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../docfiles/user_guides/QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../docfiles/dpctl_pyapi.html">dpctl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpctl_pyapi.html">dpctl Python API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">dpctl C API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="group_ContextInterface.html">Context class C wrapper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_DeviceInterface.html">Device class C wrapper</a></li>
@@ -131,7 +131,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">Data-parallel Control (dpctl)</a>
+          <a href="../../index.html">Data-parallel Control (dpctl)</a>
         
       </nav>
 
@@ -160,7 +160,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
         
           <li><a href="index.html">dpctl C API</a> &raquo;</li>
         
@@ -170,7 +170,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/dpctl-capi-doxyrest/group_DeviceManager.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/docfiles/dpctl-capi/group_DeviceManager.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -204,6 +204,9 @@ DPCTLDeviceMgr_GetDevices<span></span><span class="p">(</span><span class="kt">i
 
 <span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 DPCTLDeviceMgr_GetNumDevices<span></span><span class="p">(</span><span class="kt">int</span> <span class="n">device_identifier</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">int64_t</span>
+DPCTLDeviceMgr_GetRelativeId<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
 DPCTLDeviceMgr_PrintDeviceInfo<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
@@ -298,7 +301,22 @@ DPCTLDeviceVector_Size<span></span><span class="p">(</span><span class="n">__dpc
 </table>
 <p class="rubric">Returns:</p>
 <p>The number of available devices satisfying the condition specified by the device_identifier bit flag.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1ga4d424acf4bfc1365804d43aad4238846"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1ga38db5431168d0d9883a62681b139762a"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">int64_t</span>
+<span class="n">DPCTLDeviceMgr_GetRelativeId</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
+<p>Gives the index of the given device in the vector returned get_devices for the platform associated with DRef for the device type of DRef.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>DRef</p></td>
+<td><p>A <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a> opaque pointer.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1ga4d424acf4bfc1365804d43aad4238846"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLDeviceMgr_PrintDeviceInfo</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Prints out the <a class="reference external" href="info::deivice">info::deivice</a> attributes for the device that are currently supported by dpctl.</p>
 <p class="rubric">Parameters:</p>
@@ -313,7 +331,7 @@ DPCTLDeviceVector_Size<span></span><span class="p">(</span><span class="n">__dpc
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1gad1a650d77c292d10e48f76b5d10ec37f"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1gad1a650d77c292d10e48f76b5d10ec37f"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLDeviceVector_Clear</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
 <p>Delete all the elements of the std::vector.</p>
 <p class="rubric">Parameters:</p>
@@ -328,12 +346,12 @@ DPCTLDeviceVector_Size<span></span><span class="p">(</span><span class="n">__dpc
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1ga574c840aab7f26bf689c3c7c8f04f571"><span id="index-6"></span><span></span><span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1ga574c840aab7f26bf689c3c7c8f04f571"><span id="index-7"></span><span></span><span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
 <span class="n">DPCTLDeviceVector_Create</span><span class="p">()</span></pre>
 <p>Create an opaque pointer to a std::vector of opaque pointers wrapping the SYCL data type.</p>
 <p class="rubric">Returns:</p>
 <p>Returns a new opaque pointer to a vector.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1ga5d498e683c8a82f38b74bccf89ab85df"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1ga5d498e683c8a82f38b74bccf89ab85df"><span id="index-8"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
 <span class="n">DPCTLDeviceVector_CreateFromArray</span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span><span class="o">*</span> <span class="n">elems</span>
@@ -356,7 +374,7 @@ DPCTLDeviceVector_Size<span></span><span class="p">(</span><span class="n">__dpc
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns a new opaque pointer to a vector.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1gaf53c39c7f54bf3d212a2fd8343ab0138"><span id="index-8"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1gaf53c39c7f54bf3d212a2fd8343ab0138"><span id="index-9"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLDeviceVector_Delete</span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
 <p>Delete all elements in the vector and then delete the vector.</p>
 <p class="rubric">Parameters:</p>
@@ -371,7 +389,7 @@ DPCTLDeviceVector_Size<span></span><span class="p">(</span><span class="n">__dpc
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1gaecf00f881483a91a46060bb21a12c12b"><span id="index-9"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1gaecf00f881483a91a46060bb21a12c12b"><span id="index-10"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
 <span class="n">DPCTLDeviceVector_GetAt</span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">index</span>
@@ -394,7 +412,7 @@ DPCTLDeviceVector_Size<span></span><span class="p">(</span><span class="n">__dpc
 </table>
 <p class="rubric">Returns:</p>
 <p>The element at the specified postion, if the index position is out of bounds then a nullptr is returned.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1ga792de109fa69610d378487cdaf23cf7a"><span id="index-10"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1ga792de109fa69610d378487cdaf23cf7a"><span id="index-11"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLDeviceVector_Size</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
 <p>Returns the number of elements in the vector.</p>
 <p class="rubric">Parameters:</p>

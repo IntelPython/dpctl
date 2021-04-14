@@ -107,7 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../dpctl-capi-doxyrest/index.html">dpctl C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpctl-capi/index.html">dpctl C API</a></li>
 </ul>
 
             
@@ -179,7 +179,9 @@
 <dl class="py class">
 <dt id="dpctl.SyclPlatform">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">SyclPlatform</span></code><a class="headerlink" href="#dpctl.SyclPlatform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Python equivalent for cl::sycl::platform class.</p>
+<dd><p>Python class representing cl::sycl::platform class.</p>
+<p>SyclPlatform() - create platform selected by sycl::default_selector
+SyclPlatform(filter_selector) - create platform selected by filter selector</p>
 <dl class="py attribute">
 <dt id="dpctl.SyclPlatform.backend">
 <code class="sig-name descname"><span class="pre">backend</span></code><a class="headerlink" href="#dpctl.SyclPlatform.backend" title="Permalink to this definition">¶</a></dt>
