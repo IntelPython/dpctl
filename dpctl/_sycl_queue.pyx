@@ -158,17 +158,97 @@ cdef class _SyclQueue:
 
 
 cdef class SyclQueue(_SyclQueue):
-    """ Python class representing cl::sycl::queue.
+    """
+    Python class representing ``cl::sycl::queue``. There are multiple
+    ways to create a :class:`dpctl.SyclQueue` object:
 
-        SyclQueue(*, /, property=None)
-            create SyclQueue from default selector
-        SyclQueue(filter_string, *, /, propery=None)
-            create SyclQueue from filter selector string
-        SyclQueue(SyclDevice, *, /, property=None)
-            create SyclQueue from give SyclDevice automatically
-            finding/creating SyclContext.
-        SyclQueue(SyclContext, SyclDevice, *, /, property=None)
-            create SyclQueue from give SyclContext, SyclDevice
+        - Invoking the constructor with no arguments creates a context using
+          the default selector.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create a default SyclQueue
+                q = dpctl.SyclQueue()
+                print(q.sycl_device)
+
+        - Invoking the constructor with specific filter selector string that
+          creates a queue for the device corresponding to the filter string.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create in-order SyclQueue for either gpu, or cpu device
+                q = dpctl.SyclQueue("gpu,cpu", property="in_order")
+                print([q.sycl_device.is_gpu, q.sycl_device.is_cpu])
+
+        - Invoking the constructor with a :class:`dpctl.SyclDevice` object
+          creates a queue for that device, automatically finding/creating
+          a :class:`dpctl.SyclContext` for the given device.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                d = dpctl.SyclDevice("gpu")
+                q = dpctl.SyclQueue(d)
+                ctx = q.sycl_context
+                print(q.sycl_device == d)
+                print(any([ d == ctx_d for ctx_d in ctx.get_devices()]))
+
+        - Invoking the constructor with a :class:`dpctl.SyclContext` and a
+          :class:`dpctl.SyclDevice` creates a queue for given context and
+          device.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create a CPU device using the opencl driver
+                cpu_d = dpctl.SyclDevice("opencl:cpu")
+                # Partition the CPU device into sub-devices, each with two cores.
+                sub_devices = cpu_d.create_sub_devices(partition=2)
+                # Create a context common to all the sub-devices.
+                ctx = dpctl.SyclContext(sub_devices)
+                # create a queue for each sub-device using the common context
+                queues = [dpctl.SyclQueue(ctx, sub_d) for sub_d in sub_devices]
+
+        - Invoking the constuctor with a named ``PyCapsule`` with the name
+          **"SyclQueueRef"** that carries a pointer to a ``sycl::queue``
+          object. The capsule will be renamed upon successful consumption
+          to ensure one-time use. A new named capsule can be constructed by
+          using :func:`dpctl.SyclQueue._get_capsule` method.
+
+    Args:
+        ctx (:class:`dpctl.SyclContext`, optional): Sycl context to create
+            :class:`dpctl.SyclQueue` from. If not specified, a single-device
+            context will be created from the specified device.
+        dev (str, :class:`dpctl.SyclDevice`, capsule, optional): Sycl device
+             to create :class:`dpctl.SyclQueue` from. If not specified, sycl
+             device selected by ``cl::sycl::default_selector`` is used.
+             The argument must be explicitly specified if `ctxt` argument is
+             provided.
+
+             If `dev` is a named ``PyCapsule`` called **"SyclQueueRef"** and
+             `ctxt` is not specified, :class:`dpctl.SyclQueue` instance is
+             created from foreign `sycl::queue` object referenced by the
+             capsule.
+        property (str, tuple(str), list(str), optional): Defaults to None.
+                The argument can be either "default", "in_order",
+                "enable_profiling", or a tuple containing these.
+
+    Raises:
+        SyclQueueCreationError: If the :class:`dpctl.SyclQueue` object creation failed.
+        TypeError: In case of incorrect arguments given to constructors, unexpected types
+                   of input arguments, or in the case the input capsule contained a null
+                   pointer or could not be renamed.
+
     """
     def __cinit__(self, *args, **kwargs):
         cdef int len_args

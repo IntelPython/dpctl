@@ -93,7 +93,7 @@ cdef class SyclContext(_SyclContext):
 
                 import dpctl
 
-                # Create a default SyclContext
+                # Create SyclContext for a gpu device
                 ctx = dpctl.SyclContext("gpu")
                 d = ctx.get_devices()[0]
                 assert(d.is_gpu)
@@ -125,20 +125,22 @@ cdef class SyclContext(_SyclContext):
                 # Create a CPU device using the opencl driver
                 cpu_d = dpctl.SyclDevice("opencl:cpu")
                 # Partition the CPU device into sub-devices, each with two cores.
-                sub_devices = create_sub_devices(partition=2)
+                sub_devices = cpu_d.create_sub_devices(partition=2)
                 # Create a context common to all the sub-devices.
                 ctx = dpctl.SyclContext(sub_devices)
                 assert(len(ctx.get_devices) == len(sub_devices))
 
-        - Invoking the constuctor with a named ``PyCapsule`` with the name
-          **SyclContextRef** that carries a pointer to a ``sycl::context``
-          object.
+        - Invoking the constuctor with a named ``PyCapsule`` with name
+          **"SyclContextRef"** that carries a pointer to a ``sycl::context``
+          object. The capsule will be renamed upon successful consumption
+          to ensure one-time use. A new named capsule can be constructed by
+          using :func:`dpctl.SyclContext._get_capsule` method.
 
     Args:
         arg (optional): Defaults to None.
-            The argument can be a :class:`dpctl.SyclDevice` instance,
-            a :obj:`list` of :class:`dpctl.SyclDevice` objects, or a named
-            ``PyCapsule`` called **SyclContextRef**.
+            The argument can be a selector string, a :class:`dpctl.SyclDevice`
+            instance, a :obj:`list` of :class:`dpctl.SyclDevice` objects, or a
+            named ``PyCapsule`` called **"SyclContextRef"**.
 
     Raises:
         MemoryError: If the constructor could not allocate necessary
@@ -228,7 +230,7 @@ cdef class SyclContext(_SyclContext):
 
     cdef int _init_context_from_capsule(self, object cap):
         """
-        For named ``PyCapsule`` with name **SyclContextRef**, which carries
+        For named ``PyCapsule`` with name **"SyclContextRef"**, which carries
         pointer to ``sycl::context`` object, interpreted as
         ``DPCTLSyclContextRef``, creates corresponding
         :class:`dpctl.SyclContext`.
