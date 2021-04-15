@@ -16,24 +16,21 @@
 
 import dpctl
 
+
 def create_default_queue():
-    """ Create a queue from default selector.
-    """
+    """Create a queue from default selector."""
     q = dpctl.SyclQueue()
     # Queue is out-of-order by default
     print("Queue {} is in order: {}".format(q, q.is_in_order))
 
 
 def create_queue_from_filter_selector():
-    """ Create queue for a GPU device or,
+    """Create queue for a GPU device or,
     if it is not available, for a CPU device.
 
     Create in-order queue with profilign enabled.
     """
-    q = dpctl.SyclQueue(
-        "gpu,cpu",
-        property=("in_order", "enable_profiling")
-    )
+    q = dpctl.SyclQueue("gpu,cpu", property=("in_order", "enable_profiling"))
     print("Queue {} is in order: {}".format(q, q.is_in_order))
     # display the device used
     print("Device targeted by the queue:")
@@ -47,8 +44,10 @@ def create_queue_from_device():
     cpu_d = dpctl.SyclDevice("opencl:cpu:0")
     q = dpctl.SyclQueue(cpu_d, property="enable_profiling")
     assert q.sycl_device == cpu_d
-    print("Number of devices in SyclContext "
-          "associated with the queue: ", q.sycl_context.device_count)
+    print(
+        "Number of devices in SyclContext " "associated with the queue: ",
+        q.sycl_context.device_count,
+    )
 
 
 def create_queue_from_subdevice():
@@ -59,8 +58,10 @@ def create_queue_from_subdevice():
     sub_devs = cpu_d.create_sub_devices(partition=4)
     q = dpctl.SyclQueue(sub_devs[0])
     # a single-device context is created automatically
-    print("Number of devices in SyclContext "
-          "associated with the queue: ", q.sycl_context.device_count)
+    print(
+        "Number of devices in SyclContext " "associated with the queue: ",
+        q.sycl_context.device_count,
+    )
 
 
 def create_queue_from_subdevice_multidevice_context():
@@ -72,13 +73,13 @@ def create_queue_from_subdevice_multidevice_context():
     ctx = dpctl.SyclContext(sub_devs)
     q = dpctl.SyclQueue(ctx, sub_devs[0])
     # a single-device context is created automatically
-    print("Number of devices in SyclContext "
-          "associated with the queue: ", q.sycl_context.device_count)
+    print(
+        "Number of devices in SyclContext " "associated with the queue: ",
+        q.sycl_context.device_count,
+    )
 
 
 if __name__ == "__main__":
     import _runner as runner
-    runner.run_examples(
-        "Queue creation examples for dpctl.",
-        globals()
-    )
+
+    runner.run_examples("Queue creation examples for dpctl.", globals())
