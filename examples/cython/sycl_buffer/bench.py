@@ -24,19 +24,19 @@ X = np.full((10 ** 4, 4098), 1e-4, dtype="d")
 print("=" * 10 + " Executing warm-up " + "=" * 10)
 print("NumPy result: ", X.sum(axis=0))
 
-dpctl.set_global_queue("opencl:cpu")
+q = dpctl.SyclQueue("opencl:cpu")
 print(
     "SYCL({}) result: {}".format(
-        dpctl.get_current_queue().sycl_device.name,
-        sb.columnwise_total(X),
+        q.sycl_device.name,
+        sb.columnwise_total(X, queue=q),
     )
 )
 
-dpctl.set_default_queue("opencl:gpu")
+q = dpctl.SyclQueue("opencl:gpu")
 print(
     "SYCL({}) result: {}".format(
-        dpctl.get_current_queue().sycl_device.name,
-        sb.columnwise_total(X),
+        q.sycl_device.name,
+        sb.columnwise_total(X, queue=q),
     )
 )
 
@@ -45,9 +45,9 @@ import timeit
 print("Times for 'opencl:cpu'")
 print(
     timeit.repeat(
-        stmt="sb.columnwise_total(X)",
-        setup='dpctl.set_global_queue("opencl:cpu"); '
-        "sb.columnwise_total(X)",  # ensure JIT compilation is not counted
+        stmt="sb.columnwise_total(X, queue=q)",
+        setup='q = dpctl.SyclQueue("opencl:cpu"); '
+        "sb.columnwise_total(X, queue=q)",  # ensure JIT compilation is not counted
         number=100,
         globals=globals(),
     )
@@ -56,8 +56,8 @@ print(
 print("Times for 'opencl:gpu'")
 print(
     timeit.repeat(
-        stmt="sb.columnwise_total(X)",
-        setup='dpctl.set_default_queue("opencl:gpu"); sb.columnwise_total(X)',
+        stmt="sb.columnwise_total(X, queue=q)",
+        setup='q = dpctl.SyclQueue("opencl:gpu"); sb.columnwise_total(X, queue=q)',
         number=100,
         globals=globals(),
     )

@@ -21,12 +21,16 @@ import numpy as np, dpctl
 from reference_black_scholes import ref_python_black_scholes
 
 
-def gen_option_params(n_opts, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, dtype):
-    usm_mem = dpctl_mem.MemoryUSMShared(n_opts * 5 * np.dtype(dtype).itemsize)
-    # usm_mem2 = dpctl_mem.MemoryUSMDevice(n_opts * 5 * np.dtype(dtype).itemsize)
+def gen_option_params(
+    n_opts, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, dtype, queue=None
+):
+    nbytes = n_opts * 5 * np.dtype(dtype).itemsize
+    usm_mem = dpctl_mem.MemoryUSMShared(nbytes, queue=queue)
     params = np.ndarray(shape=(n_opts, 5), buffer=usm_mem, dtype=dtype)
     seed = 1234
-    bs.populate_params(params, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, seed)
+    bs.populate_params(
+        params, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, seed, queue=queue
+    )
     return params
 
 
@@ -47,38 +51,44 @@ Xgpu = bs.black_scholes_price(opts)
 # compute prices in CPython
 X_ref = np.array([ref_python_black_scholes(*opt) for opt in opts], dtype="d")
 
-print(np.allclose(Xgpu, X_ref, atol=1e-5))
+print(
+    "Correctness check: allclose(Xgpu, Xref) == ", np.allclose(Xgpu, X_ref, atol=1e-5)
+)
 
 n_opts = 3 * 10 ** 6
 
 # compute on CPU sycl device
 import timeit
 
-for _ in range(3):
+cpu_q = dpctl.SyclQueue("opencl:cpu:0")
+opts1 = gen_option_params(
+    n_opts, 20.0, 30.0, 22.0, 29.0, 18.0, 24.0, 0.01, 0.05, 0.01, 0.05, "d", queue=cpu_q
+)
 
-    dpctl.set_global_queue("opencl:cpu:0")
-    print("Using : {}".format(dpctl.get_current_queue().sycl_device.name))
+gpu_q = dpctl.SyclQueue("level_zero:gpu:0")
+opts2 = gen_option_params(
+    n_opts, 20.0, 30.0, 22.0, 29.0, 18.0, 24.0, 0.01, 0.05, 0.01, 0.05, "d", queue=gpu_q
+)
+
+cpu_times = []
+gpu_times = []
+for _ in range(5):
 
     t0 = timeit.default_timer()
-    opts1 = gen_option_params(
-        n_opts, 20.0, 30.0, 22.0, 29.0, 18.0, 24.0, 0.01, 0.05, 0.01, 0.05, "d"
-    )
-    X1 = bs.black_scholes_price(opts1)
+    X1 = bs.black_scholes_price(opts1, queue=cpu_q)
     t1 = timeit.default_timer()
 
-    print("Elapsed: {}".format(t1 - t0))
+    cpu_times.append(t1 - t0)
 
     # compute on GPU sycl device
-    dpctl.set_global_queue("level_zero:gpu:0")
-    print("Using : {}".format(dpctl.get_current_queue().sycl_device.name))
 
     t0 = timeit.default_timer()
-    opts2 = gen_option_params(
-        n_opts, 20.0, 30.0, 22.0, 29.0, 18.0, 24.0, 0.01, 0.05, 0.01, 0.05, "d"
-    )
-    X2 = bs.black_scholes_price(opts2)
+    X2 = bs.black_scholes_price(opts2, queue=gpu_q)
     t1 = timeit.default_timer()
-    print("Elapsed: {}".format(t1 - t0))
+    gpu_times.append(t1 - t0)
 
-print(np.abs(opts1 - opts2).max())
-print(np.abs(X2 - X1).max())
+print("Using      : {}".format(cpu_q.sycl_device.name))
+print("Wall times : {}".format(cpu_times))
+
+print("Using      : {}".format(gpu_q.sycl_device.name))
+print("Wall times : {}".format(gpu_times))

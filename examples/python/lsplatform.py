@@ -14,28 +14,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Demonstrates SYCL USM memory usage in Python using dpctl.memory.
+"""Demonstrates SYCL queue selection operations provided by dpctl.
 """
 
 import dpctl
-import dpctl.memory as dpmem
 
-# allocate USM-shared byte-buffer
-ms = dpmem.MemoryUSMShared(16)
 
-# allocate USM-device byte-buffer
-md = dpmem.MemoryUSMDevice(16)
+def print_available_platforms():
+    """
+    Print information about SYCL platforms visible to runtime.
 
-# allocate USM-host byte-buffer
-mh = dpmem.MemoryUSMHost(16)
+    Environment variable `SYCL_DEVICE_FILTER` affects this list.
+    """
+    dpctl.lsplatform()
 
-# specify alignment
-mda = dpmem.MemoryUSMDevice(128, alignment=16)
 
-# allocate using given queue,
-# i.e. on the device and bound to the context stored in the queue
-mdq = dpmem.MemoryUSMDevice(256, queue=mda._queue)
+def list_available_platforms():
+    """
+    Get a list of SyclPlatform instances corresponding to platforms
+    visible to SYCL runtime.
 
-# information about device associate with USM buffer
-print("Allocation performed on device:")
-mda._queue.sycl_device.print_device_info()
+    Environment variable `SYCL_DEVICE_FILTER` affects this list.
+    """
+    for p in dpctl.get_platforms():
+        print(p)
+
+
+if __name__ == "__main__":
+    import _runner as runner
+
+    runner.run_examples("", globals())
