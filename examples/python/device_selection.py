@@ -21,6 +21,7 @@ import dpctl
 
 
 def print_device(d):
+    "Display information about given device argument."
     if type(d) is not dpctl.SyclDevice:
         raise ValueError
     print("Name: ", d.name)
@@ -94,4 +95,12 @@ def custom_select_device():
             selected_dev = d
     if selected_dev:
         print_device(selected_dev)
+    else:
+        print("No device with half-precision support is available.")
     return selected_dev
+
+
+if __name__ == "__main__":
+    import _runner as runner
+
+    runner.run_examples("Device selection examples for dpctl.", globals())

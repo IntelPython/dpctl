@@ -64,8 +64,15 @@ def subdivide_by_affinity(affinity="numa"):
     Create sub-devices partitioning by affinity.
     """
     cpu_d = dpctl.SyclDevice("cpu")
-    sub_devs = cpu_d.create_sub_devices(partition=affinity)
-    return sub_devs
+    try:
+        sub_devs = cpu_d.create_sub_devices(partition=affinity)
+        print(
+            "{} sub-devices were created with #EUs".format(
+                len(sub_devs), [d.max_compute_units for d in sub_devs]
+            )
+        )
+    except:
+        print("Device partitioning by affinity was not successful.")
 
 
 def create_subdevice_queue():
@@ -99,9 +106,6 @@ def create_subdevice_queue():
 
 
 if __name__ == "__main__":
-    print("")
-    print("Executing subdivide_root_cpu_device:")
-    subdivide_root_cpu_device()
-    print("")
-    print("Exectuting create_subdevice_queue:")
-    print(create_subdevice_queue())
+    import _runner as runner
+
+    runner.run_examples("Examples for working with subdevices in dpctl.", globals())
