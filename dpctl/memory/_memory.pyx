@@ -34,6 +34,7 @@ from cpython.bytes cimport PyBytes_AS_STRING, PyBytes_FromStringAndSize
 from cpython cimport pycapsule
 
 import numpy as np
+import numbers
 
 __all__ = [
     "MemoryUSMShared",
@@ -51,13 +52,13 @@ cdef DPCTLSyclQueueRef _queue_ref_copy_from_SyclQueue(SyclQueue q):
 
 cdef DPCTLSyclQueueRef _queue_ref_copy_from_USMRef_and_SyclContext(
     DPCTLSyclUSMRef ptr, SyclContext ctx):
-    """ Obtain device from pointer and sycl context, use 
+    """ Obtain device from pointer and sycl context, use
         context and device to create a queue from which this memory
         can be accessible.
     """
     cdef SyclDevice dev = _Memory.get_pointer_device(ptr, ctx)
     cdef DPCTLSyclContextRef CRef = NULL
-    cdef DPCTLSyclDeviceRef DRef = NULL    
+    cdef DPCTLSyclDeviceRef DRef = NULL
     CRef = ctx.get_context_ref()
     DRef = dev.get_device_ref()
     return DPCTLQueue_Create(CRef, DRef, NULL, 0)
@@ -65,7 +66,7 @@ cdef DPCTLSyclQueueRef _queue_ref_copy_from_USMRef_and_SyclContext(
 
 cdef DPCTLSyclQueueRef get_queue_ref_from_ptr_and_syclobj(
     DPCTLSyclUSMRef ptr, object syclobj):
-    """ Constructs queue from pointer and syclobject from 
+    """ Constructs queue from pointer and syclobject from
         __sycl_usm_array_interface__
     """
     cdef DPCTLSyclQueueRef QRef = NULL
@@ -96,7 +97,7 @@ cdef DPCTLSyclQueueRef get_queue_ref_from_ptr_and_syclobj(
             return QRef
     else:
         return QRef
-    
+
 
 cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
                         void *src_ptr, SyclQueue src_queue, size_t nbytes):
@@ -207,6 +208,9 @@ def _to_memory(unsigned char [::1] b, str usm_kind):
 
 
 cdef class _Memory:
+    """ Internal class implementing methods common to
+        MemoryUSMShared, MemoryUSMDevice, MemoryUSMHost
+    """
     cdef _cinit_empty(self):
         self.memory_ptr = NULL
         self.nbytes = 0
@@ -500,7 +504,7 @@ cdef class MemoryUSMShared(_Memory):
     than 'shared'.
     """
     def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None, int copy=False):
-        if (isinstance(other, int)):
+        if (isinstance(other, numbers.Integral)):
             self._cinit_alloc(alignment, <Py_ssize_t>other, b"shared", queue)
         else:
             self._cinit_other(other)
@@ -532,7 +536,7 @@ cdef class MemoryUSMHost(_Memory):
     than 'host'.
     """
     def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None, int copy=False):
-        if (isinstance(other, int)):
+        if (isinstance(other, numbers.Integral)):
             self._cinit_alloc(alignment, <Py_ssize_t>other, b"host", queue)
         else:
             self._cinit_other(other)
@@ -564,7 +568,7 @@ cdef class MemoryUSMDevice(_Memory):
     than 'device'.
     """
     def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None, int copy=False):
-        if (isinstance(other, int)):
+        if (isinstance(other, numbers.Integral)):
             self._cinit_alloc(alignment, <Py_ssize_t>other, b"device", queue)
         else:
             self._cinit_other(other)
