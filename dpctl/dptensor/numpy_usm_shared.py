@@ -78,6 +78,15 @@ def _get_usm_base(ary):
             return None
 
 
+def convert_ndarray_to_np_ndarray(x):
+    if isinstance(x, ndarray):
+        return np.ndarray(x.shape, x.dtype, x)
+    elif isinstance(x, tuple):
+        return tuple([convert_ndarray_to_np_ndarray(y) for y in x])
+    else:
+        return x
+
+
 class ndarray(np.ndarray):
     """
     numpy.ndarray subclass whose underlying memory buffer is allocated
@@ -267,7 +276,8 @@ class ndarray(np.ndarray):
             # USM memory.  However, if kwarg has numpy_usm_shared-typed out then
             # array_ufunc is called recursively so we cast out as regular
             # NumPy ndarray (having a USM data pointer).
-            if kwargs.get("out", None) is None:
+            out_arg = kwargs.get("out", None)
+            if out_arg is None:
                 # maybe copy?
                 # deal with multiple returned arrays, so kwargs['out'] can be tuple
                 res_type = np.result_type(*typing)
@@ -277,13 +287,8 @@ class ndarray(np.ndarray):
             else:
                 # If they manually gave numpy_usm_shared as out kwarg then we
                 # have to also cast as regular NumPy ndarray to avoid recursion.
-                if isinstance(kwargs["out"], ndarray):
-                    out = kwargs["out"]
-                    kwargs["out"] = np.ndarray(out.shape, out.dtype, out)
-                else:
-                    out = kwargs["out"]
-            ret = ufunc(*scalars, **kwargs)
-            return out
+                kwargs["out"] = convert_ndarray_to_np_ndarray(out_arg)
+            return ufunc(*scalars, **kwargs)
         else:
             return NotImplemented
 

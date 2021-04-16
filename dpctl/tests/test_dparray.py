@@ -47,6 +47,9 @@ class Test_dparray(unittest.TestCase):
         C = self.X * 5
         self.assertIsInstance(C, dparray.ndarray)
 
+    def test_inplace_sub(self):
+        self.X -= 1
+
     def test_dparray_through_python_func(self):
         def func_operation_with_const(dpctl_array):
             return dpctl_array * 2.0 + 13
