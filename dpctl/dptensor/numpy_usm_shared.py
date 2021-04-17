@@ -311,7 +311,7 @@ class ndarray(np.ndarray):
                         N = inp.shape
                 else:
                     return NotImplemented
-            assert("out" not in kwargs)
+            assert "out" not in kwargs
             return super().__array_ufunc__(ufunc, method, *scalars, **kwargs)
         else:
             return NotImplemented
