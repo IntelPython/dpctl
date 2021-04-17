@@ -289,6 +289,30 @@ class ndarray(np.ndarray):
                 # have to also cast as regular NumPy ndarray to avoid recursion.
                 kwargs["out"] = convert_ndarray_to_np_ndarray(out_arg)
             return ufunc(*scalars, **kwargs)
+        elif method == "reduce":
+            N = None
+            scalars = []
+            typing = []
+            for inp in inputs:
+                if isinstance(inp, Number):
+                    scalars.append(inp)
+                    typing.append(inp)
+                elif isinstance(inp, (self.__class__, np.ndarray)):
+                    if isinstance(inp, self.__class__):
+                        scalars.append(np.ndarray(inp.shape, inp.dtype, inp))
+                        typing.append(np.ndarray(inp.shape, inp.dtype))
+                    else:
+                        scalars.append(inp)
+                        typing.append(inp)
+                    if N is not None:
+                        if N != inp.shape:
+                            raise TypeError("inconsistent sizes")
+                    else:
+                        N = inp.shape
+                else:
+                    return NotImplemented
+            assert("out" not in kwargs)
+            return super().__array_ufunc__(ufunc, method, *scalars, **kwargs)
         else:
             return NotImplemented
 
