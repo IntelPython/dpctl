@@ -17,8 +17,7 @@
 # distutils: language = c++
 # cython: language_level=3
 
-"""
-    Implements SyclDevice Cython extension type.
+""" Implements SyclDevice Cython extension type.
 """
 
 from ._backend cimport (
