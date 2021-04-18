@@ -184,6 +184,7 @@ cdef class SyclDevice(_SyclDevice):
           :func:`dpctl.select_gpu_device()`,
           :func:`dpctl.select_host_device()`.
 
+
         :Example:
             .. code-block:: python
 
