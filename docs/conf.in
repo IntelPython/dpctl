@@ -27,8 +27,6 @@ release = "@CURRENT_RELEASE@"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "breathe",
-    "exhale",
     "sphinx.ext.todo",
     "sphinx.ext.coverage",
     "sphinx.ext.viewcode",
@@ -37,8 +35,24 @@ extensions = [
     "sphinx.ext.napoleon",
 ]
 
-# Breathe Configuration
-breathe_default_project = "dpctl-CAPI"
+use_doxyrest = "@DPCTL_ENABLE_DOXYREST@"
+
+if use_doxyrest == "ON":
+    # Specify the path to Doxyrest extensions for Sphinx:
+    import sys, os
+
+    sys.path.insert(
+        1,
+        os.path.abspath("@DOXYREST_SPHINX_DIR@"),
+    )
+    extensions += ["doxyrest", "cpplexer"]
+    # A workaround to fix issues leftover in the doxyrest generated
+    # rst files.
+    import fileinput
+
+    with fileinput.FileInput("@DOXYREST_OUTPUT_DIR@/global.rst", inplace=True) as file:
+        for line in file:
+            print(line.replace("typedefDPCTL_C_EXTERN_C_BEGIN", ""), end="")
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -53,31 +67,6 @@ source_suffix = ".rst"
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
-
-# Setup the exhale extension
-exhale_args = {
-    # These arguments are required
-    "containmentFolder": "./api",
-    "rootFileName": "dpctl-CAPI_root.rst",
-    "rootFileTitle": "dpctl C API",
-    "doxygenStripFromPath": "..",
-    "createTreeView": True,
-    "exhaleExecutesDoxygen": True,
-    # "exhaleUseDoxyfile": True,
-    "exhaleDoxygenStdin": textwrap.dedent(
-        """
-    INPUT = ../dpctl-capi/include
-    REPEAT_BRIEF=YES
-    OPTIMIZE_OUTPUT_FOR_C=YES
-    OPTIMIZE_OUTPUT_JAVA= NO
-    EXTRACT_ALL=YES
-    EXCLUDE= ../dpctl-capi/build
-    EXCLUDE+= ../dpctl-capi/install
-    EXCLUDE+= ../dpctl-capi/tests
-    EXCLUDE_PATTERNS = CMakeLists.txt
-    """
-    ),
-}
 
 highlight_language = "c"
 
