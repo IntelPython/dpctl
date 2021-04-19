@@ -19,22 +19,14 @@ Sub-modules
 Classes
 -------
 
-.. autoclass:: dpctl.SyclContext
-    :members:
-    :undoc-members:
+.. toctree::
+    :maxdepth: 1
 
-.. autoclass:: dpctl.SyclDevice
-    :members:
-    :inherited-members:
-    :undoc-members:
-
-.. autoclass:: dpctl.SyclEvent
-    :members:
-    :undoc-members:
-
-.. autoclass:: dpctl.SyclQueue
-    :members:
-    :undoc-members:
+    dpctl_pyapi/SyclContext
+    dpctl_pyapi/SyclDevice
+    dpctl_pyapi/SyclEvent
+    dpctl_pyapi/SyclPlatform
+    dpctl_pyapi/SyclQueue
 
 Enumerations
 ------------
