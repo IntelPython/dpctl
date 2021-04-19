@@ -165,7 +165,7 @@ to build and install
 Building using custom dpcpp
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. todo:
+.. todo::
 
     Instructions coming soon.
 

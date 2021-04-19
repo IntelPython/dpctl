@@ -98,7 +98,10 @@
 <li class="toctree-l3"><a class="reference internal" href="SyclContext.html">dpctl.SyclContext</a></li>
 <li class="toctree-l3"><a class="reference internal" href="SyclDevice.html">dpctl.SyclDevice</a></li>
 <li class="toctree-l3"><a class="reference internal" href="SyclEvent.html">dpctl.SyclEvent</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl.SyclPlatform</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl.SyclPlatform</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#detail">Detail</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="SyclQueue.html">dpctl.SyclQueue</a></li>
 </ul>
 </li>
@@ -182,9 +185,16 @@
 <dd><p>Python class representing cl::sycl::platform class.</p>
 <p>SyclPlatform() - create platform selected by sycl::default_selector
 SyclPlatform(filter_selector) - create platform selected by filter selector</p>
-<dl class="py attribute">
-<dt id="dpctl.SyclPlatform.backend">
-<code class="sig-name descname"><span class="pre">backend</span></code><a class="headerlink" href="#dpctl.SyclPlatform.backend" title="Permalink to this definition">¶</a></dt>
+</dd></dl>
+
+<div class="section" id="detail">
+<h2>Detail<a class="headerlink" href="#detail" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="public-methods">
+<h3>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="py attribute">
+<dt>
+<code class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></code><code class="sig-name descname"><span class="pre">backend</span></code></dt>
 <dd><p>Returns the backend_type enum value for this device</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -197,31 +207,32 @@ SyclPlatform(filter_selector) - create platform selected by filter selector</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="dpctl.SyclPlatform.name">
-<code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#dpctl.SyclPlatform.name" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></code><code class="sig-name descname"><span class="pre">name</span></code></dt>
 <dd><p>Returns the name of the platform as a string</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="dpctl.SyclPlatform.print_platform_info">
-<code class="sig-name descname"><span class="pre">print_platform_info</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclPlatform.print_platform_info" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></code><code class="sig-name descname"><span class="pre">print_platform_info</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd><p>Print information about the SYCL platform.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="dpctl.SyclPlatform.vendor">
-<code class="sig-name descname"><span class="pre">vendor</span></code><a class="headerlink" href="#dpctl.SyclPlatform.vendor" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></code><code class="sig-name descname"><span class="pre">vendor</span></code></dt>
 <dd><p>Returns the platform vendor name as a string.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="dpctl.SyclPlatform.version">
-<code class="sig-name descname"><span class="pre">version</span></code><a class="headerlink" href="#dpctl.SyclPlatform.version" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></code><code class="sig-name descname"><span class="pre">version</span></code></dt>
 <dd><p>Returns a backend-defined driver version as a string.</p>
 </dd></dl>
 
-</dd></dl>
-
+</div></blockquote>
+</div>
+</div>
 </div>
 
 
