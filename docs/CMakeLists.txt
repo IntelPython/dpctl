@@ -7,6 +7,13 @@ option(DPCTL_ENABLE_DOXYREST
     OFF
 )
 
+# Option to add verion links to the side bar. This option is primarily
+# intended to generate dpctl's docs for our github.io page.
+option(DPCTL_USE_MULTIVERSION_TEMPLATE
+    "Enable adding verion links to side bar"
+    OFF
+)
+
 # This function defines everything needed to generate Doxygen docs
 function(_setup_doxygen)
     # We generate doxygen only for the public headers to keep the Doxyrest
