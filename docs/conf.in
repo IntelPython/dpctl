@@ -32,6 +32,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
 ]
 
@@ -132,3 +133,91 @@ if generate_multiversion == "ON":
         html_context["versions"].append(
             (version, DOC_SITE_NAME + version + "/index.html")
         )
+
+
+from typing import Any, Optional, List, Tuple
+from sphinx.ext.autodoc import ClassDocumenter, ObjectMembers
+from sphinx.ext.autodoc.importer import get_class_members
+import types
+
+
+class ClassMembersDocumenter(ClassDocumenter):
+    """
+    Documenter for only class members and skips the class and __init__
+    docstrings.
+    """
+
+    objtype = "classmembers"
+
+    def add_directive_header(self, sig: str) -> None:
+        pass
+
+    def get_doc(
+        self, encoding: str = None, ignore: int = None
+    ) -> Optional[List[List[str]]]:
+        return None
+
+
+# See https://stackoverflow.com/questions/20569011/python-sphinx-autosummary-automated-listing-of-member-functions
+from sphinx.ext.autosummary import Autosummary
+from sphinx.ext.autosummary import get_documenter
+from docutils.parsers.rst import directives
+from sphinx.util.inspect import safe_getattr
+
+
+class AutoAutoSummary(Autosummary):
+    """Create a summary for methods and attributes (autosummary).
+    See https://stackoverflow.com/questions/20569011/python-sphinx-autosummary-automated-listing-of-member-functions
+    """
+
+    option_spec = {
+        "methods": directives.unchanged,
+        "private_methods": directives.unchanged,
+        "attributes": directives.unchanged,
+    }
+
+    required_arguments = 1
+
+    @staticmethod
+    def get_members(app, obj, typ, include_public=None):
+        if not include_public:
+            include_public = []
+        items = []
+        for name in sorted(obj.__dict__.keys()):
+            try:
+                documenter = get_documenter(app, safe_getattr(obj, name), obj)
+            except AttributeError:
+                continue
+            if documenter.objtype in typ:
+                items.append(name)
+        return items
+
+    def run(self):
+        clazz = str(self.arguments[0])
+        (module_name, class_name) = clazz.rsplit(".", 1)
+        m = __import__(module_name, globals(), locals(), [class_name])
+        c = getattr(m, class_name)
+        app = self.state.document.settings.env.app
+        if "methods" in self.options:
+            methods = self.get_members(app, c, ["method"], ["__init__"])
+            self.content = [
+                "%s" % method for method in methods if not method.startswith("_")
+            ]
+        if "private_methods" in self.options:
+            private_methods = self.get_members(app, c, ["method"], ["__init__"])
+            self.content = [
+                "%s" % method
+                for method in private_methods
+                if method.startswith("_") and not method.startswith("__")
+            ]
+        if "attributes" in self.options:
+            attribs = self.get_members(app, c, ["attribute", "property"])
+            self.content = [
+                "%s" % attrib for attrib in attribs if not attrib.startswith("_")
+            ]
+        return super().run()
+
+
+def setup(app):
+    app.add_directive("autoautosummary", AutoAutoSummary)
+    app.add_autodocumenter(ClassMembersDocumenter)
