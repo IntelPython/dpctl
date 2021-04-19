@@ -1,10 +1,20 @@
-.. _dpCtl_api:
+.. _dpctl_pyapi:
 
 ################
 dpctl Python API
 ################
 
 .. automodule:: dpctl
+
+Sub-modules
+-----------
+
+.. toctree::
+    :maxdepth: 1
+
+    dpctl.dptensor_api
+    dpctl.memory_api
+    dpctl.program_api
 
 Classes
 -------
