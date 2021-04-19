@@ -30,7 +30,7 @@ Private methods
 .. autoclassmembers:: dpctl.SyclQueue
     :noindex:
     :private-members: _get_capsule
-
+    :undoc-members:
 
 Public methods
 --------------
