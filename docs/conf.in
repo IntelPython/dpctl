@@ -35,6 +35,7 @@ extensions = [
     "sphinx.ext.napoleon",
 ]
 
+todo_include_todos = True
 use_doxyrest = "@DPCTL_ENABLE_DOXYREST@"
 
 if use_doxyrest == "ON":
