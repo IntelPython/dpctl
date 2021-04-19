@@ -29,8 +29,8 @@ from libcpp cimport bool as cpp_bool
 
 
 cdef class _SyclDevice:
-    ''' Wrapper data owner class for a Sycl Device
-    '''
+    """ A helper data-owner class to abstract a `cl::sycl::device` instance.
+    """
     cdef DPCTLSyclDeviceRef _device_ref
     cdef const char *_vendor
     cdef const char *_name
