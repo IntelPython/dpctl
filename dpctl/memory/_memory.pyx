@@ -35,6 +35,7 @@ from cpython cimport pycapsule
 
 import numpy as np
 import numbers
+import collections
 
 __all__ = [
     "MemoryUSMShared",
@@ -42,61 +43,7 @@ __all__ = [
     "MemoryUSMDevice"
 ]
 
-cdef object _sycl_usm_ary_iface_error():
-    return ValueError("__sycl_usm_array_interface__ is malformed")
-
-
-cdef DPCTLSyclQueueRef _queue_ref_copy_from_SyclQueue(SyclQueue q):
-    return DPCTLQueue_Copy(q.get_queue_ref())
-
-
-cdef DPCTLSyclQueueRef _queue_ref_copy_from_USMRef_and_SyclContext(
-    DPCTLSyclUSMRef ptr, SyclContext ctx):
-    """ Obtain device from pointer and sycl context, use
-        context and device to create a queue from which this memory
-        can be accessible.
-    """
-    cdef SyclDevice dev = _Memory.get_pointer_device(ptr, ctx)
-    cdef DPCTLSyclContextRef CRef = NULL
-    cdef DPCTLSyclDeviceRef DRef = NULL
-    CRef = ctx.get_context_ref()
-    DRef = dev.get_device_ref()
-    return DPCTLQueue_Create(CRef, DRef, NULL, 0)
-
-
-cdef DPCTLSyclQueueRef get_queue_ref_from_ptr_and_syclobj(
-    DPCTLSyclUSMRef ptr, object syclobj):
-    """ Constructs queue from pointer and syclobject from
-        __sycl_usm_array_interface__
-    """
-    cdef DPCTLSyclQueueRef QRef = NULL
-    cdef SyclContext ctx
-    if type(syclobj) is SyclQueue:
-        return _queue_ref_copy_from_SyclQueue(<SyclQueue> syclobj)
-    elif type(syclobj) is SyclContext:
-        ctx = <SyclContext>syclobj
-        return _queue_ref_copy_from_USMRef_and_SyclContext(ptr, ctx)
-    elif type(syclobj) is str:
-        q = SyclQueue(syclobj)
-        return _queue_ref_copy_from_SyclQueue(<SyclQueue> q)
-    elif pycapsule.PyCapsule_IsValid(syclobj, "SyclQueueRef"):
-        q = SyclQueue(syclobj)
-        return _queue_ref_copy_from_SyclQueue(<SyclQueue> q)
-    elif pycapsule.PyCapsule_IsValid(syclobj, "SyclContextRef"):
-        ctx = <SyclContext>SyclContext(syclobj)
-        return _queue_ref_copy_from_USMRef_and_SyclContext(ptr, ctx)
-    elif hasattr(syclobj, '_get_capsule'):
-        cap = syclobj._get_capsule()
-        if pycapsule.PyCapsule_IsValid(cap, "SyclQueueRef"):
-            q = SyclQueue(cap)
-            return _queue_ref_copy_from_SyclQueue(<SyclQueue> q)
-        elif pycapsule.PyCapsule_IsValid(cap, "SyclContexRef"):
-            ctx = <SyclContext>SyclContext(cap)
-            return _queue_ref_copy_from_USMRef_and_SyclContext(ptr, ctx)
-        else:
-            return QRef
-    else:
-        return QRef
+include "_sycl_usm_array_interface_utils.pxi"
 
 
 cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
@@ -124,66 +71,6 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
         <void *>&host_buf[0],
         nbytes
     )
-
-
-cdef class _BufferData:
-    """
-    Internal data struct populated from parsing
-    `__sycl_usm_array_interface__` dictionary
-    """
-    cdef DPCTLSyclUSMRef p
-    cdef int writeable
-    cdef object dt
-    cdef Py_ssize_t itemsize
-    cdef Py_ssize_t nbytes
-    cdef SyclQueue queue
-
-    @staticmethod
-    cdef _BufferData from_sycl_usm_ary_iface(dict ary_iface):
-        cdef object ary_data_tuple = ary_iface.get('data', None)
-        cdef object ary_typestr = ary_iface.get('typestr', None)
-        cdef object ary_shape = ary_iface.get('shape', None)
-        cdef object ary_strides = ary_iface.get('strides', None)
-        cdef object ary_syclobj = ary_iface.get('syclobj', None)
-        cdef Py_ssize_t ary_offset = ary_iface.get('offset', 0)
-        cdef int ary_version = ary_iface.get('version', 0)
-        cdef object dt
-        cdef _BufferData buf
-        cdef Py_ssize_t arr_data_ptr
-        cdef SyclDevice dev
-        cdef SyclContext ctx
-        cdef DPCTLSyclQueueRef QRef = NULL
-
-        if ary_version != 1:
-            raise _sycl_usm_ary_iface_error()
-        if not ary_data_tuple or len(ary_data_tuple) != 2:
-            raise _sycl_usm_ary_iface_error()
-        if not ary_shape or len(ary_shape) != 1 or ary_shape[0] < 1:
-            raise ValueError
-        try:
-            dt = np.dtype(ary_typestr)
-        except TypeError:
-            raise _sycl_usm_ary_iface_error()
-        if (ary_strides and len(ary_strides) != 1
-            and ary_strides[0] != dt.itemsize):
-            raise ValueError("Must be contiguous")
-
-        if (not ary_syclobj or
-            not isinstance(ary_syclobj,
-                           (dpctl.SyclQueue, dpctl.SyclContext))):
-            raise _sycl_usm_ary_iface_error()
-
-        buf = _BufferData.__new__(_BufferData)
-        arr_data_ptr = <Py_ssize_t>ary_data_tuple[0]
-        buf.p = <DPCTLSyclUSMRef>(<void*>arr_data_ptr)
-        buf.writeable = 1 if ary_data_tuple[1] else 0
-        buf.itemsize = <Py_ssize_t>(dt.itemsize)
-        buf.nbytes = (<Py_ssize_t>ary_shape[0]) * buf.itemsize
-
-        QRef = get_queue_ref_from_ptr_and_syclobj(buf.p, ary_syclobj)
-        buf.queue = SyclQueue._create(QRef)
-
-        return buf
 
 
 def _to_memory(unsigned char [::1] b, str usm_kind):
@@ -272,7 +159,7 @@ cdef class _Memory:
         elif hasattr(other, '__sycl_usm_array_interface__'):
             other_iface = other.__sycl_usm_array_interface__
             if isinstance(other_iface, dict):
-                other_buf = _BufferData.from_sycl_usm_ary_iface(other_iface)
+                other_buf = _USMBufferData.from_sycl_usm_ary_iface(other_iface)
                 self.memory_ptr = other_buf.p
                 self.nbytes = other_buf.nbytes
                 self.queue = other_buf.queue
@@ -433,7 +320,7 @@ cdef class _Memory:
     cpdef copy_from_device(self, object sycl_usm_ary):
         """Copy SYCL memory underlying the argument object into
         the memory of the instance"""
-        cdef _BufferData src_buf
+        cdef _USMBufferData src_buf
         cdef const char* kind
 
         if not hasattr(sycl_usm_ary, '__sycl_usm_array_interface__'):
@@ -441,7 +328,7 @@ cdef class _Memory:
                              "`__sycl_usm_array_interface__` protocol")
         sycl_usm_ary_iface = sycl_usm_ary.__sycl_usm_array_interface__
         if isinstance(sycl_usm_ary_iface, dict):
-            src_buf = _BufferData.from_sycl_usm_ary_iface(sycl_usm_ary_iface)
+            src_buf = _USMBufferData.from_sycl_usm_ary_iface(sycl_usm_ary_iface)
 
             if (src_buf.nbytes > self.nbytes):
                 raise ValueError("Source object is too large to "
