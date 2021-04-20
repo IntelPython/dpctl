@@ -48,12 +48,13 @@ class TestMemory(unittest.TestCase):
         self.assertEqual(mobj.nbytes, nbytes)
         self.assertTrue(hasattr(mobj, "__sycl_usm_array_interface__"))
 
-    @unittest.expectedFailure
     @unittest.skipUnless(
         has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_memory_create_with_np(self):
-        mobj = dpctl.memory.MemoryUSMShared(np.int64(16384))
+        nbytes = 16384
+        mobj = dpctl.memory.MemoryUSMShared(np.int64(nbytes))
+        self.assertEqual(mobj.nbytes, nbytes)
         self.assertTrue(hasattr(mobj, "__sycl_usm_array_interface__"))
 
     def _create_memory(self):
