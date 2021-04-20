@@ -25,10 +25,6 @@
 # LEVEL_ZERO_LIBRARY - the full path to the ze_loader library
 # TODO: Add a way to record the version of the level_zero library
 
-if(WIN32)
-    set L0_INCLUDE_DIR="%CD%\\level-zero\\include\\zet_api.h"
-endif()
-
 find_library(LEVEL_ZERO_LIBRARY ze_loader HINTS $ENV{L0_LIB_DIR})
 if(UNIX)
     find_path(LEVEL_ZERO_INCLUDE_DIR NAMES level_zero/zet_api.h HINTS $ENV{L0_INCLUDE_DIR})
