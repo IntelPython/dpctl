@@ -87,8 +87,8 @@ def populate_params(floating[:, ::1] option_params, pl, ph, sl, sh, tl, th, rl, 
 
     cdef c_dpctl.SyclQueue q
     cdef c_dpctl.DPCTLSyclQueueRef q_ptr
-    cdef double* dp
-    cdef float* fp
+    cdef double* dp = NULL
+    cdef float* fp = NULL
 
     if (n_params != 5):
         raise ValueError((
