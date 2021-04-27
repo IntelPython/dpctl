@@ -228,7 +228,7 @@ cdef class _Memory:
 
     def __repr__(self):
         return "<Intel(R) USM allocated memory block of {} bytes at {}>" \
-            .format(self.nbytes, hex(<object>(<Py_ssize_t>self.memory_ptr)))
+            .format(self.nbytes, hex(<object>(<size_t>self.memory_ptr)))
 
     def __len__(self):
         return self.nbytes
@@ -245,7 +245,7 @@ cdef class _Memory:
     property __sycl_usm_array_interface__:
         def __get__(self):
             cdef dict iface = {
-                "data": (<Py_ssize_t>(<void *>self.memory_ptr),
+                "data": (<size_t>(<void *>self.memory_ptr),
                          True), # bool(self.writeable)),
                 "shape": (self.nbytes,),
                 "strides": None,

@@ -121,7 +121,7 @@ cdef class _USMBufferData:
         cdef object ary_syclobj = ary_iface.get('syclobj', None)
         cdef Py_ssize_t ary_offset = ary_iface.get('offset', 0)
         cdef int ary_version = ary_iface.get('version', 0)
-        cdef Py_ssize_t arr_data_ptr = 0
+        cdef size_t arr_data_ptr = 0
         cdef DPCTLSyclUSMRef memRef = NULL
         cdef Py_ssize_t itemsize = -1
         cdef int writeable = -1
@@ -141,7 +141,7 @@ cdef class _USMBufferData:
             raise ValueError("__sycl_usm_array_interface__ is malformed:"
                              " 'data' field is required, and must be a tuple"
                              " (usm_pointer, is_writeable_boolean).")
-        arr_data_ptr = <Py_ssize_t>ary_data_tuple[0]
+        arr_data_ptr = <size_t>ary_data_tuple[0]
         writeable = 1 if ary_data_tuple[1] else 0
         # Check that memory and syclobj are consistent:
         # (USM pointer is bound to this sycl context)
