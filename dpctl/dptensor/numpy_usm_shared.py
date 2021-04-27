@@ -78,11 +78,15 @@ def _get_usm_base(ary):
             return None
 
 
-def convert_ndarray_to_np_ndarray(x):
+def convert_ndarray_to_np_ndarray(x, require_ndarray=False):
     if isinstance(x, ndarray):
-        return np.ndarray(x.shape, x.dtype, x)
+        return np.array(x, copy=False, subok=False)
     elif isinstance(x, tuple):
-        return tuple([convert_ndarray_to_np_ndarray(y) for y in x])
+        return tuple(
+            convert_ndarray_to_np_ndarray(y, require_ndarray=require_ndarray) for y in x
+        )
+    elif require_ndarray:
+        raise TypeError
     else:
         return x
 
@@ -243,7 +247,7 @@ class ndarray(np.ndarray):
 
     # Convert to a NumPy ndarray.
     def as_ndarray(self):
-        return np.copy(np.ndarray(self.shape, self.dtype, self))
+        return np.array(self, copy=True, subok=False)
 
     def __array__(self):
         return self
@@ -281,14 +285,22 @@ class ndarray(np.ndarray):
                 # maybe copy?
                 # deal with multiple returned arrays, so kwargs['out'] can be tuple
                 res_type = np.result_type(*typing)
-                out = empty(inputs[0].shape, dtype=res_type)
-                out_as_np = np.ndarray(out.shape, out.dtype, out)
+                out_arg = empty(inputs[0].shape, dtype=res_type)
+                out_as_np = convert_ndarray_to_np_ndarray(out_arg)
                 kwargs["out"] = out_as_np
             else:
                 # If they manually gave numpy_usm_shared as out kwarg then we
                 # have to also cast as regular NumPy ndarray to avoid recursion.
-                kwargs["out"] = convert_ndarray_to_np_ndarray(out_arg)
-            return ufunc(*scalars, **kwargs)
+                try:
+                    kwargs["out"] = convert_ndarray_to_np_ndarray(
+                        out_arg, require_ndarray=True
+                    )
+                except TypeError:
+                    raise TypeError(
+                        "Return arrays must each be {}".format(self.__class__)
+                    )
+            ufunc(*scalars, **kwargs)
+            return out_arg
         elif method == "reduce":
             N = None
             scalars = []
@@ -324,7 +336,11 @@ class ndarray(np.ndarray):
             cm = sys.modules[__name__]
             affunc = getattr(cm, fname)
             fargs = [x.view(np.ndarray) if isinstance(x, ndarray) else x for x in args]
-            return affunc(*fargs, **kwargs)
+            fkwargs = {
+                key: convert_ndarray_to_np_ndarray(val) for key, val in kwargs.items()
+            }
+            res = affunc(*fargs, **fkwargs)
+            return kwargs["out"] if "out" in kwargs else res
         return NotImplemented
 
 
