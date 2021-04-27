@@ -48,12 +48,13 @@ class TestMemory(unittest.TestCase):
         self.assertEqual(mobj.nbytes, nbytes)
         self.assertTrue(hasattr(mobj, "__sycl_usm_array_interface__"))
 
-    @unittest.expectedFailure
     @unittest.skipUnless(
         has_sycl_platforms(), "No SYCL devices except the default host device."
     )
     def test_memory_create_with_np(self):
-        mobj = dpctl.memory.MemoryUSMShared(np.int64(16384))
+        nbytes = 16384
+        mobj = dpctl.memory.MemoryUSMShared(np.int64(nbytes))
+        self.assertEqual(mobj.nbytes, nbytes)
         self.assertTrue(hasattr(mobj, "__sycl_usm_array_interface__"))
 
     def _create_memory(self):
@@ -166,7 +167,7 @@ class TestMemory(unittest.TestCase):
 
 
 class _TestMemoryUSMBase:
-    """ Base tests for MemoryUSM* """
+    """Base tests for MemoryUSM*"""
 
     def setUp(self):
         pass
@@ -219,7 +220,7 @@ class _TestMemoryUSMBase:
 
 
 class TestMemoryUSMShared(_TestMemoryUSMBase, unittest.TestCase):
-    """ Tests for MemoryUSMShared """
+    """Tests for MemoryUSMShared"""
 
     def setUp(self):
         self.MemoryUSMClass = MemoryUSMShared
@@ -227,7 +228,7 @@ class TestMemoryUSMShared(_TestMemoryUSMBase, unittest.TestCase):
 
 
 class TestMemoryUSMHost(_TestMemoryUSMBase, unittest.TestCase):
-    """ Tests for MemoryUSMHost """
+    """Tests for MemoryUSMHost"""
 
     def setUp(self):
         self.MemoryUSMClass = MemoryUSMHost
@@ -235,11 +236,88 @@ class TestMemoryUSMHost(_TestMemoryUSMBase, unittest.TestCase):
 
 
 class TestMemoryUSMDevice(_TestMemoryUSMBase, unittest.TestCase):
-    """ Tests for MemoryUSMDevice """
+    """Tests for MemoryUSMDevice"""
 
     def setUp(self):
         self.MemoryUSMClass = MemoryUSMDevice
         self.usm_type = "device"
+
+
+class View:
+    def __init__(self, buf, shape, strides, offset):
+        self.buffer = buf
+        self.shape = shape
+        self.strides = strides
+        self.offset = offset
+
+    @property
+    def __sycl_usm_array_interface__(self):
+        sua_iface = self.buffer.__sycl_usm_array_interface__
+        sua_iface["offset"] = self.offset
+        sua_iface["shape"] = self.shape
+        sua_iface["strides"] = self.strides
+        return sua_iface
+
+
+class TestMemoryWithView(unittest.TestCase):
+    def test_suai_non_contig_1D(self):
+        """Test of zero-copy using sycl_usm_array_interface with non-contiguous data"""
+
+        MemoryUSMClass = MemoryUSMShared
+        try:
+            buf = MemoryUSMClass(32)
+        except:
+            self.skipTest("MemoryUSMShared could not be allocated")
+        host_canary = np.full((buf.nbytes,), 77, dtype="|u1")
+        buf.copy_from_host(host_canary)
+        n1d = 10
+        step_1d = 2
+        offset = 8
+        v = View(buf, shape=(n1d,), strides=(step_1d,), offset=offset)
+        buf2 = MemoryUSMClass(v)
+        expected_nbytes = (
+            np.flip(host_canary[offset : offset + n1d * step_1d : step_1d]).ctypes.data
+            + 1
+            - host_canary[offset:].ctypes.data
+        )
+        self.assertEqual(buf2.nbytes, expected_nbytes)
+        inset_canary = np.arange(0, buf2.nbytes, dtype="|u1")
+        buf2.copy_from_host(inset_canary)
+        res = buf.copy_to_host()
+        del buf
+        del buf2
+        expected_res = host_canary.copy()
+        expected_res[offset : offset + (n1d - 1) * step_1d + 1] = inset_canary
+        self.assertTrue(np.array_equal(res, expected_res))
+
+    def test_suai_non_contig_2D(self):
+        MemoryUSMClass = MemoryUSMDevice
+        try:
+            buf = MemoryUSMClass(20)
+        except:
+            self.skipTest("MemoryUSMShared could not be allocated")
+        host_canary = np.arange(20, dtype="|u1")
+        buf.copy_from_host(host_canary)
+        shape_2d = (2, 2)
+        strides_2d = (10, -2)
+        offset = 9
+        idx = []
+        for i0 in range(shape_2d[0]):
+            for i1 in range(shape_2d[1]):
+                idx.append(offset + i0 * strides_2d[0] + i1 * strides_2d[1])
+        idx.sort()
+        v = View(buf, shape=shape_2d, strides=strides_2d, offset=offset)
+        buf2 = MemoryUSMClass(v)
+        expected_nbytes = idx[-1] - idx[0] + 1
+        self.assertEqual(buf2.nbytes, expected_nbytes)
+        inset_canary = np.full((buf2.nbytes), 255, dtype="|u1")
+        buf2.copy_from_host(inset_canary)
+        res = buf.copy_to_host()
+        del buf
+        del buf2
+        expected_res = host_canary.copy()
+        expected_res[idx[0] : idx[-1] + 1] = inset_canary
+        self.assertTrue(np.array_equal(res, expected_res))
 
 
 if __name__ == "__main__":

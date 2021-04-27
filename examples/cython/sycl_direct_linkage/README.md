@@ -26,7 +26,7 @@ To illustrate the queue creation overhead in each call, compare execution of def
 which is Intel Gen9 GPU on OpenCL backend:
 
 ```
-(idp) [11:24:38 ansatnuc04 sycl_direct_linkage]$ SYCL_BE=PI_OPENCL python bench.py
+(idp) [11:24:38 ansatnuc04 sycl_direct_linkage]$ SYCL_DEVICE_FILTER=opencl:gpu python bench.py
 ========== Executing warm-up ==========
 NumPy result:  [1. 1. 1. ... 1. 1. 1.]
 SYCL(default_device) result: [1. 1. 1. ... 1. 1. 1.]
@@ -37,7 +37,7 @@ Times for NumPy
 [3.5394036192446947, 3.498957809060812, 3.4925728561356664, 3.5036555202677846, 3.493739523924887]
 ```
 
-vs. timing when `dpctl`'s current queue is being reused:
+vs. timing when `dpctl`'s queue is being reused:
 
 ```
 (idp) [11:29:14 ansatnuc04 sycl_buffer]$ python bench.py

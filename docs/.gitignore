@@ -1,5 +1,8 @@
 docs
 generated_docs
+docfiles/dpctl-capi
 api
 build
 conf.py
+index.rst
+doxyrest-config.lua

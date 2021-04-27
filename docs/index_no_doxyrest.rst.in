@@ -1,0 +1,15 @@
+.. include:: ./docfiles/intro.rst
+
+.. toctree::
+   :maxdepth: 1
+   :caption: User Guides
+
+   docfiles/user_guides/QuickStart
+
+.. toctree::
+    :maxdepth: 1
+    :caption: API Documentation
+
+    docfiles/dpctl_pyapi
+
+.. include:: ./docfiles/boilerplate.rst

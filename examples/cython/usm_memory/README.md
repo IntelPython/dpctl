@@ -8,7 +8,8 @@ Make sure oneAPI is activated. Environment variable `$ONEAPI_ROOT` must be set.
 
 
 ```
-$ CC=clang CXX=dpcpp LD_SHARED="dpcpp -shared" python setup.py build_ext --inplace
+$ CC=clang CXX=dpcpp LD_SHARED="dpcpp -shared" \
+  CXXFLAGS=-fno-sycl-early-optimizations python setup.py build_ext --inplace
 ```
 
 #2 Running

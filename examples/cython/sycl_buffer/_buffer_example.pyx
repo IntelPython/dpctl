@@ -24,14 +24,19 @@ cdef extern from "use_sycl_buffer.h":
     int c_columnwise_total(c_dpctl.DPCTLSyclQueueRef q, size_t n, size_t m, double *m, double *ct) nogil
     int c_columnwise_total_no_mkl(c_dpctl.DPCTLSyclQueueRef q, size_t n, size_t m, double *m, double *ct) nogil
 
-def columnwise_total(double[:, ::1] v, method='mkl'):
+def columnwise_total(double[:, ::1] v, method='mkl', queue=None):
     cdef cnp.ndarray res_array = np.empty((v.shape[1],), dtype='d')
     cdef double[::1] res_memslice = res_array
     cdef int ret_status
     cdef c_dpctl.SyclQueue q
     cdef c_dpctl.DPCTLSyclQueueRef q_ref
 
-    q = c_dpctl.get_current_queue()
+    if (queue is None):
+        q = c_dpctl.SyclQueue()
+    elif isinstance(queue, dpctl.SyclQueue):
+        q = <c_dpctl.SyclQueue> queue
+    else:
+        q = c_dpctl.SyclQueue(queue)
     q_ref = q.get_queue_ref()
 
     if method == 'mkl':

@@ -34,6 +34,8 @@ from cpython.bytes cimport PyBytes_AS_STRING, PyBytes_FromStringAndSize
 from cpython cimport pycapsule
 
 import numpy as np
+import numbers
+import collections
 
 __all__ = [
     "MemoryUSMShared",
@@ -41,62 +43,8 @@ __all__ = [
     "MemoryUSMDevice"
 ]
 
-cdef object _sycl_usm_ary_iface_error():
-    return ValueError("__sycl_usm_array_interface__ is malformed")
+include "_sycl_usm_array_interface_utils.pxi"
 
-
-cdef DPCTLSyclQueueRef _queue_ref_copy_from_SyclQueue(SyclQueue q):
-    return DPCTLQueue_Copy(q.get_queue_ref())
-
-
-cdef DPCTLSyclQueueRef _queue_ref_copy_from_USMRef_and_SyclContext(
-    DPCTLSyclUSMRef ptr, SyclContext ctx):
-    """ Obtain device from pointer and sycl context, use 
-        context and device to create a queue from which this memory
-        can be accessible.
-    """
-    cdef SyclDevice dev = _Memory.get_pointer_device(ptr, ctx)
-    cdef DPCTLSyclContextRef CRef = NULL
-    cdef DPCTLSyclDeviceRef DRef = NULL    
-    CRef = ctx.get_context_ref()
-    DRef = dev.get_device_ref()
-    return DPCTLQueue_Create(CRef, DRef, NULL, 0)
-
-
-cdef DPCTLSyclQueueRef get_queue_ref_from_ptr_and_syclobj(
-    DPCTLSyclUSMRef ptr, object syclobj):
-    """ Constructs queue from pointer and syclobject from 
-        __sycl_usm_array_interface__
-    """
-    cdef DPCTLSyclQueueRef QRef = NULL
-    cdef SyclContext ctx
-    if type(syclobj) is SyclQueue:
-        return _queue_ref_copy_from_SyclQueue(<SyclQueue> syclobj)
-    elif type(syclobj) is SyclContext:
-        ctx = <SyclContext>syclobj
-        return _queue_ref_copy_from_USMRef_and_SyclContext(ptr, ctx)
-    elif type(syclobj) is str:
-        q = SyclQueue(syclobj)
-        return _queue_ref_copy_from_SyclQueue(<SyclQueue> q)
-    elif pycapsule.PyCapsule_IsValid(syclobj, "SyclQueueRef"):
-        q = SyclQueue(syclobj)
-        return _queue_ref_copy_from_SyclQueue(<SyclQueue> q)
-    elif pycapsule.PyCapsule_IsValid(syclobj, "SyclContextRef"):
-        ctx = <SyclContext>SyclContext(syclobj)
-        return _queue_ref_copy_from_USMRef_and_SyclContext(ptr, ctx)
-    elif hasattr(syclobj, '_get_capsule'):
-        cap = syclobj._get_capsule()
-        if pycapsule.PyCapsule_IsValid(cap, "SyclQueueRef"):
-            q = SyclQueue(cap)
-            return _queue_ref_copy_from_SyclQueue(<SyclQueue> q)
-        elif pycapsule.PyCapsule_IsValid(cap, "SyclContexRef"):
-            ctx = <SyclContext>SyclContext(cap)
-            return _queue_ref_copy_from_USMRef_and_SyclContext(ptr, ctx)
-        else:
-            return QRef
-    else:
-        return QRef
-    
 
 cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
                         void *src_ptr, SyclQueue src_queue, size_t nbytes):
@@ -125,66 +73,6 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
     )
 
 
-cdef class _BufferData:
-    """
-    Internal data struct populated from parsing
-    `__sycl_usm_array_interface__` dictionary
-    """
-    cdef DPCTLSyclUSMRef p
-    cdef int writeable
-    cdef object dt
-    cdef Py_ssize_t itemsize
-    cdef Py_ssize_t nbytes
-    cdef SyclQueue queue
-
-    @staticmethod
-    cdef _BufferData from_sycl_usm_ary_iface(dict ary_iface):
-        cdef object ary_data_tuple = ary_iface.get('data', None)
-        cdef object ary_typestr = ary_iface.get('typestr', None)
-        cdef object ary_shape = ary_iface.get('shape', None)
-        cdef object ary_strides = ary_iface.get('strides', None)
-        cdef object ary_syclobj = ary_iface.get('syclobj', None)
-        cdef Py_ssize_t ary_offset = ary_iface.get('offset', 0)
-        cdef int ary_version = ary_iface.get('version', 0)
-        cdef object dt
-        cdef _BufferData buf
-        cdef Py_ssize_t arr_data_ptr
-        cdef SyclDevice dev
-        cdef SyclContext ctx
-        cdef DPCTLSyclQueueRef QRef = NULL
-
-        if ary_version != 1:
-            raise _sycl_usm_ary_iface_error()
-        if not ary_data_tuple or len(ary_data_tuple) != 2:
-            raise _sycl_usm_ary_iface_error()
-        if not ary_shape or len(ary_shape) != 1 or ary_shape[0] < 1:
-            raise ValueError
-        try:
-            dt = np.dtype(ary_typestr)
-        except TypeError:
-            raise _sycl_usm_ary_iface_error()
-        if (ary_strides and len(ary_strides) != 1
-            and ary_strides[0] != dt.itemsize):
-            raise ValueError("Must be contiguous")
-
-        if (not ary_syclobj or
-            not isinstance(ary_syclobj,
-                           (dpctl.SyclQueue, dpctl.SyclContext))):
-            raise _sycl_usm_ary_iface_error()
-
-        buf = _BufferData.__new__(_BufferData)
-        arr_data_ptr = <Py_ssize_t>ary_data_tuple[0]
-        buf.p = <DPCTLSyclUSMRef>(<void*>arr_data_ptr)
-        buf.writeable = 1 if ary_data_tuple[1] else 0
-        buf.itemsize = <Py_ssize_t>(dt.itemsize)
-        buf.nbytes = (<Py_ssize_t>ary_shape[0]) * buf.itemsize
-
-        QRef = get_queue_ref_from_ptr_and_syclobj(buf.p, ary_syclobj)
-        buf.queue = SyclQueue._create(QRef)
-
-        return buf
-
-
 def _to_memory(unsigned char [::1] b, str usm_kind):
     """
     Constructs Memory of the same size as the argument
@@ -207,6 +95,9 @@ def _to_memory(unsigned char [::1] b, str usm_kind):
 
 
 cdef class _Memory:
+    """ Internal class implementing methods common to
+        MemoryUSMShared, MemoryUSMDevice, MemoryUSMHost
+    """
     cdef _cinit_empty(self):
         self.memory_ptr = NULL
         self.nbytes = 0
@@ -268,7 +159,7 @@ cdef class _Memory:
         elif hasattr(other, '__sycl_usm_array_interface__'):
             other_iface = other.__sycl_usm_array_interface__
             if isinstance(other_iface, dict):
-                other_buf = _BufferData.from_sycl_usm_ary_iface(other_iface)
+                other_buf = _USMBufferData.from_sycl_usm_ary_iface(other_iface)
                 self.memory_ptr = other_buf.p
                 self.nbytes = other_buf.nbytes
                 self.queue = other_buf.queue
@@ -411,13 +302,16 @@ cdef class _Memory:
         return obj
 
     cpdef copy_from_host(self, object obj):
-        """Copy content of Python buffer provided by `obj` to instance memory."""
+        """
+        Copy content of Python buffer provided by `obj` to instance memory.
+        """
         cdef const unsigned char[::1] host_buf = obj
         cdef Py_ssize_t buf_len = len(host_buf)
 
         if (buf_len > self.nbytes):
             raise ValueError("Source object is too large to be "
-                             "accommodated in {} bytes buffer".format(self.nbytes))
+                             "accommodated in {} bytes buffer".format(
+                                 self.nbytes))
         # call kernel to copy from
         DPCTLQueue_Memcpy(
             self.queue.get_queue_ref(),
@@ -429,7 +323,7 @@ cdef class _Memory:
     cpdef copy_from_device(self, object sycl_usm_ary):
         """Copy SYCL memory underlying the argument object into
         the memory of the instance"""
-        cdef _BufferData src_buf
+        cdef _USMBufferData src_buf
         cdef const char* kind
 
         if not hasattr(sycl_usm_ary, '__sycl_usm_array_interface__'):
@@ -437,11 +331,12 @@ cdef class _Memory:
                              "`__sycl_usm_array_interface__` protocol")
         sycl_usm_ary_iface = sycl_usm_ary.__sycl_usm_array_interface__
         if isinstance(sycl_usm_ary_iface, dict):
-            src_buf = _BufferData.from_sycl_usm_ary_iface(sycl_usm_ary_iface)
+            src_buf = _USMBufferData.from_sycl_usm_ary_iface(sycl_usm_ary_iface)
 
             if (src_buf.nbytes > self.nbytes):
                 raise ValueError("Source object is too large to "
-                                 "be accommondated in {} bytes buffer".format(self.nbytes))
+                                 "be accommondated in {} bytes buffer".format(
+                                     self.nbytes))
             kind = DPCTLUSM_GetPointerType(
                 src_buf.p, self.queue.get_sycl_context().get_context_ref())
             if (kind == b'unknown'):
@@ -473,46 +368,57 @@ cdef class _Memory:
 
     @staticmethod
     cdef SyclDevice get_pointer_device(DPCTLSyclUSMRef p, SyclContext ctx):
-        """Returns sycl device used to allocate given pointer `p` in given sycl context `ctx`"""
-        cdef DPCTLSyclDeviceRef dref = DPCTLUSM_GetPointerDevice(p, ctx.get_context_ref())
+        """
+        Returns sycl device used to allocate given pointer `p` in
+        given sycl context `ctx`
+        """
+        cdef DPCTLSyclDeviceRef dref = DPCTLUSM_GetPointerDevice(
+            p, ctx.get_context_ref())
 
         return SyclDevice._create(dref)
 
     @staticmethod
     cdef bytes get_pointer_type(DPCTLSyclUSMRef p, SyclContext ctx):
         """Returns USM-type of given pointer `p` in given sycl context `ctx`"""
-        cdef const char * usm_type = DPCTLUSM_GetPointerType(p, ctx.get_context_ref())
+        cdef const char * usm_type = DPCTLUSM_GetPointerType(
+            p, ctx.get_context_ref())
 
         return <bytes>usm_type
 
 
 cdef class MemoryUSMShared(_Memory):
     """
-    MemoryUSMShared(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
-    USM shared memory.
+    MemoryUSMShared(nbytes, alignment=0, queue=None, copy=False)
+    allocates nbytes of USM shared memory.
 
     Non-positive alignments are not used (malloc_shared is used instead).
     For the queue=None cast the `dpctl.SyclQueue()` is used to allocate memory.
 
-    MemoryUSMShared(usm_obj) constructor create instance from `usm_obj` expected to
-    implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of
-    USM memory of USM shared type. Using copy=True to perform a copy if USM type is other
-    than 'shared'.
+    MemoryUSMShared(usm_obj) constructor create instance from `usm_obj`
+    expected to implement `__sycl_usm_array_interface__` protocol and exposing
+    a contiguous block of USM memory of USM shared type. Using copy=True to
+    perform a copy if USM type is other than 'shared'.
     """
-    def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None, int copy=False):
-        if (isinstance(other, int)):
+    def __cinit__(self, other, *, Py_ssize_t alignment=0,
+                  SyclQueue queue=None, int copy=False):
+        if (isinstance(other, numbers.Integral)):
             self._cinit_alloc(alignment, <Py_ssize_t>other, b"shared", queue)
         else:
             self._cinit_other(other)
             if (self.get_usm_type() != "shared"):
                 if copy:
-                    self._cinit_alloc(0, <Py_ssize_t>self.nbytes, b"shared", queue)
+                    self._cinit_alloc(0, <Py_ssize_t>self.nbytes,
+                                      b"shared", queue)
                     self.copy_from_device(other)
                 else:
-                    raise ValueError("USM pointer in the argument {} is not a USM shared pointer. "
-                                     "Zero-copy operation is not possible with copy=False. "
-                                     "Either use copy=True, or use a constructor appropriate for "
-                                     "type '{}'".format(other, self.get_usm_type()))
+                    raise ValueError(
+                        "USM pointer in the argument {} is not a "
+                        "USM shared pointer. "
+                        "Zero-copy operation is not possible with "
+                        "copy=False. "
+                        "Either use copy=True, or use a constructor "
+                        "appropriate for "
+                        "type '{}'".format(other, self.get_usm_type()))
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         self._getbuffer(buffer, flags)
@@ -520,31 +426,36 @@ cdef class MemoryUSMShared(_Memory):
 
 cdef class MemoryUSMHost(_Memory):
     """
-    MemoryUSMHost(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
-    USM host memory.
+    MemoryUSMHost(nbytes, alignment=0, queue=None, copy=False)
+    allocates nbytes of USM host memory.
 
     Non-positive alignments are not used (malloc_host is used instead).
     For the queue=None case `dpctl.SyclQueue()` is used to allocate memory.
 
-    MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj` expected to
-    implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of
-    USM memory of USM host type. Using copy=True to perform a copy if USM type is other
-    than 'host'.
+    MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj`
+    expected to implement `__sycl_usm_array_interface__` protocol and exposing
+    a contiguous block of USM memory of USM host type. Using copy=True to
+    perform a copy if USM type is other than 'host'.
     """
-    def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None, int copy=False):
-        if (isinstance(other, int)):
+    def __cinit__(self, other, *, Py_ssize_t alignment=0,
+                  SyclQueue queue=None, int copy=False):
+        if (isinstance(other, numbers.Integral)):
             self._cinit_alloc(alignment, <Py_ssize_t>other, b"host", queue)
         else:
             self._cinit_other(other)
             if (self.get_usm_type() != "host"):
                 if copy:
-                    self._cinit_alloc(0, <Py_ssize_t>self.nbytes, b"host", queue)
+                    self._cinit_alloc(0, <Py_ssize_t>self.nbytes,
+                                      b"host", queue)
                     self.copy_from_device(other)
                 else:
-                    raise ValueError("USM pointer in the argument {} is not a USM host pointer. "
-                                     "Zero-copy operation is not possible with copy=False. "
-                                     "Either use copy=True, or use a constructor appropriate for "
-                                     "type '{}'".format(other, self.get_usm_type()))
+                    raise ValueError(
+                        "USM pointer in the argument {} is "
+                        "not a USM host pointer. "
+                        "Zero-copy operation is not possible with copy=False. "
+                        "Either use copy=True, or use a constructor "
+                        "appropriate for type '{}'".format(
+                            other, self.get_usm_type()))
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         self._getbuffer(buffer, flags)
@@ -552,28 +463,33 @@ cdef class MemoryUSMHost(_Memory):
 
 cdef class MemoryUSMDevice(_Memory):
     """
-    MemoryUSMDevice(nbytes, alignment=0, queue=None, copy=False) allocates nbytes of
-    USM device memory.
+    MemoryUSMDevice(nbytes, alignment=0, queue=None, copy=False)
+    allocates nbytes of USM device memory.
 
     Non-positive alignments are not used (malloc_device is used instead).
     For the queue=None cast the `dpctl.SyclQueue()` is used to allocate memory.
 
-    MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj` expected to
-    implement `__sycl_usm_array_interface__` protocol and exposing a contiguous block of
-    USM memory of USM device type. Using copy=True to perform a copy if USM type is other
-    than 'device'.
+    MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj`
+    expected to implement `__sycl_usm_array_interface__` protocol and exposing
+    a contiguous block of USM memory of USM device type. Using copy=True to
+    perform a copy if USM type is other than 'device'.
     """
-    def __cinit__(self, other, *, Py_ssize_t alignment=0, SyclQueue queue=None, int copy=False):
-        if (isinstance(other, int)):
+    def __cinit__(self, other, *, Py_ssize_t alignment=0,
+                  SyclQueue queue=None, int copy=False):
+        if (isinstance(other, numbers.Integral)):
             self._cinit_alloc(alignment, <Py_ssize_t>other, b"device", queue)
         else:
             self._cinit_other(other)
             if (self.get_usm_type() != "device"):
                 if copy:
-                    self._cinit_alloc(0, <Py_ssize_t>self.nbytes, b"device", queue)
+                    self._cinit_alloc(0, <Py_ssize_t>self.nbytes,
+                                      b"device", queue)
                     self.copy_from_device(other)
                 else:
-                    raise ValueError("USM pointer in the argument {} is not a USM device pointer. "
-                                     "Zero-copy operation is not possible with copy=False. "
-                                     "Either use copy=True, or use a constructor appropriate for "
-                                     "type '{}'".format(other, self.get_usm_type()))
+                    raise ValueError(
+                        "USM pointer in the argument {} is not "
+                        "a USM device pointer. "
+                        "Zero-copy operation is not possible with copy=False. "
+                        "Either use copy=True, or use a constructor "
+                        "appropriate for type '{}'".format(
+                            other, self.get_usm_type()))

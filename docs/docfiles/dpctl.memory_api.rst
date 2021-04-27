@@ -1,8 +1,8 @@
-.. _dpCtl.memory_api:
+.. _dpctl.memory_api:
 
-#######################
-dpCtl Memory Python API
-#######################
+############
+dpctl.memory
+############
 
 .. automodule:: dpctl.memory
 

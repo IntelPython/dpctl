@@ -16,23 +16,24 @@
 
 import syclbuffer as sb
 import numpy as np
+import dpctl
 
 X = np.random.randn(100, 4)
 
 print("Result computed by NumPy")
 print(X.sum(axis=0))
-print("Result computed by SYCL extension")
+print("Result computed by SYCL extension using default offloading target")
 print(sb.columnwise_total(X))
 
 
 print("")
+
 # controlling where to offload
-import dpctl
 
-with dpctl.device_context("opencl:gpu"):
-    print("Running on: ", dpctl.get_current_queue().sycl_device.name)
-    print(sb.columnwise_total(X))
+q = dpctl.SyclQueue("opencl:gpu")
+print("Running on: ", q.sycl_device.name)
+print(sb.columnwise_total(X, queue=q))
 
-with dpctl.device_context("opencl:cpu"):
-    print("Running on: ", dpctl.get_current_queue().sycl_device.name)
-    print(sb.columnwise_total(X))
+q = dpctl.SyclQueue("opencl:cpu")
+print("Running on: ", q.sycl_device.name)
+print(sb.columnwise_total(X, queue=q))

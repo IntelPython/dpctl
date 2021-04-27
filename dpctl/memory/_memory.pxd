@@ -51,18 +51,22 @@ cdef public class _Memory [object Py_MemoryObject, type Py_MemoryType]:
     cpdef bytes tobytes(self)
 
     @staticmethod
-    cdef public SyclDevice get_pointer_device(DPCTLSyclUSMRef p, SyclContext ctx)
+    cdef public SyclDevice get_pointer_device(
+        DPCTLSyclUSMRef p, SyclContext ctx)
     @staticmethod
     cdef public bytes get_pointer_type(DPCTLSyclUSMRef p, SyclContext ctx)
 
 
-cdef public class MemoryUSMShared(_Memory) [object PyMemoryUSMSharedObject, type PyMemoryUSMSharedType]:
+cdef public class MemoryUSMShared(_Memory) [object PyMemoryUSMSharedObject,
+                                            type PyMemoryUSMSharedType]:
     pass
 
 
-cdef public class MemoryUSMHost(_Memory) [object PyMemoryUSMHostObject, type PyMemoryUSMHostType]:
+cdef public class MemoryUSMHost(_Memory) [object PyMemoryUSMHostObject,
+                                          type PyMemoryUSMHostType]:
     pass
 
 
-cdef public class MemoryUSMDevice(_Memory) [object PyMemoryUSMDeviceObject, type PyMemoryUSMDeviceType]:
+cdef public class MemoryUSMDevice(_Memory) [object PyMemoryUSMDeviceObject,
+                                            type PyMemoryUSMDeviceType]:
     pass
