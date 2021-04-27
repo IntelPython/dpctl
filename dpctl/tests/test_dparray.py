@@ -14,11 +14,11 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-"""Unit test cases for dpctl.dptensor.numpy_usm_shared.
+"""Unit test cases for dpctl.tensor.numpy_usm_shared.
 """
 
 import unittest
-from dpctl.dptensor import numpy_usm_shared as dparray
+from dpctl.tensor import numpy_usm_shared as dparray
 import numpy
 
 
