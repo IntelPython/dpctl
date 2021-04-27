@@ -167,7 +167,7 @@ class TestMemory(unittest.TestCase):
 
 
 class _TestMemoryUSMBase:
-    """ Base tests for MemoryUSM* """
+    """Base tests for MemoryUSM*"""
 
     def setUp(self):
         pass
@@ -220,7 +220,7 @@ class _TestMemoryUSMBase:
 
 
 class TestMemoryUSMShared(_TestMemoryUSMBase, unittest.TestCase):
-    """ Tests for MemoryUSMShared """
+    """Tests for MemoryUSMShared"""
 
     def setUp(self):
         self.MemoryUSMClass = MemoryUSMShared
@@ -228,7 +228,7 @@ class TestMemoryUSMShared(_TestMemoryUSMBase, unittest.TestCase):
 
 
 class TestMemoryUSMHost(_TestMemoryUSMBase, unittest.TestCase):
-    """ Tests for MemoryUSMHost """
+    """Tests for MemoryUSMHost"""
 
     def setUp(self):
         self.MemoryUSMClass = MemoryUSMHost
@@ -236,7 +236,7 @@ class TestMemoryUSMHost(_TestMemoryUSMBase, unittest.TestCase):
 
 
 class TestMemoryUSMDevice(_TestMemoryUSMBase, unittest.TestCase):
-    """ Tests for MemoryUSMDevice """
+    """Tests for MemoryUSMDevice"""
 
     def setUp(self):
         self.MemoryUSMClass = MemoryUSMDevice
@@ -261,7 +261,7 @@ class View:
 
 class TestMemoryWithView(unittest.TestCase):
     def test_suai_non_contig_1D(self):
-        """ Test of zero-copy using sycl_usm_array_interface with non-contiguous data """
+        """Test of zero-copy using sycl_usm_array_interface with non-contiguous data"""
 
         MemoryUSMClass = MemoryUSMShared
         try:
