@@ -78,6 +78,19 @@ def _get_usm_base(ary):
             return None
 
 
+def convert_ndarray_to_np_ndarray(x, require_ndarray=False):
+    if isinstance(x, ndarray):
+        return np.array(x, copy=False, subok=False)
+    elif isinstance(x, tuple):
+        return tuple(
+            convert_ndarray_to_np_ndarray(y, require_ndarray=require_ndarray) for y in x
+        )
+    elif require_ndarray:
+        raise TypeError
+    else:
+        return x
+
+
 class ndarray(np.ndarray):
     """
     numpy.ndarray subclass whose underlying memory buffer is allocated
@@ -234,7 +247,7 @@ class ndarray(np.ndarray):
 
     # Convert to a NumPy ndarray.
     def as_ndarray(self):
-        return np.copy(np.ndarray(self.shape, self.dtype, self))
+        return np.array(self, copy=True, subok=False)
 
     def __array__(self):
         return self
@@ -267,23 +280,51 @@ class ndarray(np.ndarray):
             # USM memory.  However, if kwarg has numpy_usm_shared-typed out then
             # array_ufunc is called recursively so we cast out as regular
             # NumPy ndarray (having a USM data pointer).
-            if kwargs.get("out", None) is None:
+            out_arg = kwargs.get("out", None)
+            if out_arg is None:
                 # maybe copy?
                 # deal with multiple returned arrays, so kwargs['out'] can be tuple
                 res_type = np.result_type(*typing)
-                out = empty(inputs[0].shape, dtype=res_type)
-                out_as_np = np.ndarray(out.shape, out.dtype, out)
+                out_arg = empty(inputs[0].shape, dtype=res_type)
+                out_as_np = convert_ndarray_to_np_ndarray(out_arg)
                 kwargs["out"] = out_as_np
             else:
                 # If they manually gave numpy_usm_shared as out kwarg then we
                 # have to also cast as regular NumPy ndarray to avoid recursion.
-                if isinstance(kwargs["out"], ndarray):
-                    out = kwargs["out"]
-                    kwargs["out"] = np.ndarray(out.shape, out.dtype, out)
+                try:
+                    kwargs["out"] = convert_ndarray_to_np_ndarray(
+                        out_arg, require_ndarray=True
+                    )
+                except TypeError:
+                    raise TypeError(
+                        "Return arrays must each be {}".format(self.__class__)
+                    )
+            ufunc(*scalars, **kwargs)
+            return out_arg
+        elif method == "reduce":
+            N = None
+            scalars = []
+            typing = []
+            for inp in inputs:
+                if isinstance(inp, Number):
+                    scalars.append(inp)
+                    typing.append(inp)
+                elif isinstance(inp, (self.__class__, np.ndarray)):
+                    if isinstance(inp, self.__class__):
+                        scalars.append(np.ndarray(inp.shape, inp.dtype, inp))
+                        typing.append(np.ndarray(inp.shape, inp.dtype))
+                    else:
+                        scalars.append(inp)
+                        typing.append(inp)
+                    if N is not None:
+                        if N != inp.shape:
+                            raise TypeError("inconsistent sizes")
+                    else:
+                        N = inp.shape
                 else:
-                    out = kwargs["out"]
-            ret = ufunc(*scalars, **kwargs)
-            return out
+                    return NotImplemented
+            assert "out" not in kwargs
+            return super().__array_ufunc__(ufunc, method, *scalars, **kwargs)
         else:
             return NotImplemented
 
@@ -295,7 +336,11 @@ class ndarray(np.ndarray):
             cm = sys.modules[__name__]
             affunc = getattr(cm, fname)
             fargs = [x.view(np.ndarray) if isinstance(x, ndarray) else x for x in args]
-            return affunc(*fargs, **kwargs)
+            fkwargs = {
+                key: convert_ndarray_to_np_ndarray(val) for key, val in kwargs.items()
+            }
+            res = affunc(*fargs, **fkwargs)
+            return kwargs["out"] if "out" in kwargs else res
         return NotImplemented
 
 

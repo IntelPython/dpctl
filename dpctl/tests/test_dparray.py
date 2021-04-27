@@ -47,6 +47,9 @@ class Test_dparray(unittest.TestCase):
         C = self.X * 5
         self.assertIsInstance(C, dparray.ndarray)
 
+    def test_inplace_sub(self):
+        self.X -= 1
+
     def test_dparray_through_python_func(self):
         def func_operation_with_const(dpctl_array):
             return dpctl_array * 2.0 + 13
@@ -58,6 +61,7 @@ class Test_dparray(unittest.TestCase):
     def test_dparray_mixing_dpctl_and_numpy(self):
         dp_numpy = numpy.ones((256, 4), dtype="d")
         res = dp_numpy * self.X
+        self.assertIsInstance(self.X, dparray.ndarray)
         self.assertIsInstance(res, dparray.ndarray)
 
     def test_dparray_shape(self):
@@ -75,6 +79,20 @@ class Test_dparray(unittest.TestCase):
     def test_numpy_sum_with_dparray(self):
         res = numpy.sum(self.X)
         self.assertEqual(res, 1024.0)
+
+    def test_numpy_sum_with_dparray_out(self):
+        res = dparray.empty((self.X.shape[1],), dtype=self.X.dtype)
+        res2 = numpy.sum(self.X, axis=0, out=res)
+        self.assertTrue(res is res2)
+        self.assertIsInstance(res2, dparray.ndarray)
+
+    def test_frexp_with_out(self):
+        X = dparray.array([0.5, 4.7])
+        mant = dparray.empty((2,), dtype="d")
+        exp = dparray.empty((2,), dtype="i4")
+        res = numpy.frexp(X, out=(mant, exp))
+        self.assertTrue(res[0] is mant)
+        self.assertTrue(res[1] is exp)
 
 
 if __name__ == "__main__":
