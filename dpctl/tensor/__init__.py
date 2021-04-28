@@ -17,7 +17,7 @@
 """
     **Data Parallel Tensor Collection**
 
-    `dpctl.dptensor` is an experimental collection of tensor implementations
+    `dpctl.tensor` is an experimental collection of tensor implementations
     that will implement future Python data API (https://data-apis.github.io/array-api/latest/).
 
     Available tensor implementations:
@@ -27,4 +27,4 @@
 
 """
 
-import dpctl.dptensor.numpy_usm_shared
+import dpctl.tensor.numpy_usm_shared
