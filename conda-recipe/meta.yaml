@@ -23,11 +23,11 @@ requirements:
         - python
         - make  # [unix]
         - ninja  # [win]
-        - numpy >=1.17
+        - numpy 1.19.2
         - wheel
     run:
         - python
-        - numpy >=1.17
+        - numpy 1.19.2
         - dpcpp_cpp_rt >=2021.2
 
 test:
