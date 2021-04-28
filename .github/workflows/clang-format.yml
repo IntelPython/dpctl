@@ -1,6 +1,6 @@
 # This is a workflow to format C/C++ sources with clang-format
 
-name: clang-format Check
+name: C++ Code Style
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -11,7 +11,7 @@ on:
 
 jobs:
   formatting-check:
-    name: Formatting Check
+    name: clang-format
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2

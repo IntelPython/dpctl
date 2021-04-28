@@ -1,6 +1,6 @@
 # This is a workflow to format Python code with black formatter
 
-name: Code style Python
+name: Python Code Style
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -11,7 +11,7 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # The isort jon sort all imports in .py, .pyx, .pyd sources
+  # The isort job sorts all imports in .py, .pyx, .pxd files
   isort:
     runs-on: ubuntu-latest
     steps:
