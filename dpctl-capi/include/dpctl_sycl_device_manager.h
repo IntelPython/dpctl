@@ -116,10 +116,18 @@ DPCTL_API
 void DPCTLDeviceMgr_PrintDeviceInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
- * @brief Gives the index of the given device in the vector returned get_devices
- * for the platform associated with DRef for the device type of DRef.
+ * @brief Gives the index of the given device with respective to all the other
+ * devices of the same type in the device's platform.
+ *
+ * The relative device id of a device (Device) is computed by looking up the
+ * position of Device in the ``std::vector`` returned by calling the
+ * ``get_devices(Device.get_info<sycl::info::device::device_type>())`` function
+ * for Device's platform. A relative device id of -1 indicates that the relative
+ * id could not be computed.
  *
  * @param    DRef           A #DPCTLSyclDeviceRef opaque pointer.
+ * @return  A relative id corresponding to the device, -1 indicates that a
+ * relative id value could not be computed.
  * @ingroup DeviceManager
  */
 DPCTL_API

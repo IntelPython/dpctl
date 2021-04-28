@@ -45,10 +45,24 @@ DPCTL_DECLARE_VECTOR(Platform)
 
 /*!
  * @brief Prints out information about the sycl::platform argument.
+ *
+ * The helper function is used to print metadata about a given platform. The
+ * amount of information printed out is controlled by the verbosity level.
+ *
+ * Verbosity level 0: Prints only the name of the platform.
+ * Verbosity level 1: Prints the name, version, vendor, backend, number of
+ *                    devices in the platform.
+ * Verbosity level 2: Prints everything in level 1 and also prints the name,
+ *                    version, and filter string for each device in the
+ *                    platform.
+ *
  * @param    PRef           A #DPCTLSyclPlatformRef opaque pointer.
+ * @param    verbosity      Verbosilty level to control how much information is
+ *                          printed out.
  */
 DPCTL_API
-void DPCTLPlatformMgr_PrintInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef);
+void DPCTLPlatformMgr_PrintInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef,
+                                size_t verbosity);
 
 /*! @} */
 

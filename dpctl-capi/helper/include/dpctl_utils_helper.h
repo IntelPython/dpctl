@@ -178,3 +178,21 @@ DPCTL_DPCTLPartitionAffinityDomainTypeToSycl(
 DPCTL_API
 DPCTLPartitionAffinityDomainType DPCTL_SyclPartitionAffinityDomainToDPCTLType(
     sycl::info::partition_affinity_domain PartitionAffinityDomain);
+
+/*!
+ * @brief Gives the index of the given device with respective to all the other
+ * devices of the same type in the device's platform.
+ *
+ * The relative device id of a device (Device) is computed by looking up the
+ * position of Device in the ``std::vector`` returned by calling the
+ * ``get_devices(Device.get_info<sycl::info::device::device_type>())`` function
+ * for Device's platform. A relative device id of -1 indicates that the relative
+ * id could not be computed.
+ *
+ * @param    Device         A ``sycl::device`` object whose relative id is to be
+ *                          computed.
+ * @return   A relative id corresponding to the device, -1 indicates that a
+ * relative id value could not be computed.
+ */
+DPCTL_API
+int64_t DPCTL_GetRelativeDeviceId(const sycl::device &Device);

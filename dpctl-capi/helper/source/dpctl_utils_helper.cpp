@@ -37,22 +37,22 @@ std::string DPCTL_DeviceTypeToStr(info::device_type devTy)
     std::stringstream ss;
     switch (devTy) {
     case info::device_type::cpu:
-        ss << "cpu" << '\n';
+        ss << "cpu";
         break;
     case info::device_type::gpu:
-        ss << "gpu" << '\n';
+        ss << "gpu";
         break;
     case info::device_type::accelerator:
-        ss << "accelerator" << '\n';
+        ss << "accelerator";
         break;
     case info::device_type::custom:
-        ss << "custom" << '\n';
+        ss << "custom";
         break;
     case info::device_type::host:
-        ss << "host" << '\n';
+        ss << "host";
         break;
     default:
-        ss << "unknown" << '\n';
+        ss << "unknown";
     }
     return ss.str();
 }
@@ -169,58 +169,58 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
     std::stringstream ss;
     switch (aspectTy) {
     case aspect::host:
-        ss << "host" << '\n';
+        ss << "host";
         break;
     case aspect::cpu:
-        ss << "cpu" << '\n';
+        ss << "cpu";
         break;
     case aspect::gpu:
-        ss << "gpu" << '\n';
+        ss << "gpu";
         break;
     case aspect::accelerator:
-        ss << "accelerator" << '\n';
+        ss << "accelerator";
         break;
     case aspect::custom:
-        ss << "custom" << '\n';
+        ss << "custom";
         break;
     case aspect::fp16:
-        ss << "fp16" << '\n';
+        ss << "fp16";
         break;
     case aspect::fp64:
-        ss << "fp64" << '\n';
+        ss << "fp64";
         break;
     case aspect::int64_base_atomics:
-        ss << "int64_base_atomics" << '\n';
+        ss << "int64_base_atomics";
         break;
     case aspect::int64_extended_atomics:
-        ss << "int64_extended_atomics" << '\n';
+        ss << "int64_extended_atomics";
         break;
     case aspect::image:
-        ss << "image" << '\n';
+        ss << "image";
         break;
     case aspect::online_compiler:
-        ss << "online_compiler" << '\n';
+        ss << "online_compiler";
         break;
     case aspect::online_linker:
-        ss << "online_linker" << '\n';
+        ss << "online_linker";
         break;
     case aspect::queue_profiling:
-        ss << "queue_profiling" << '\n';
+        ss << "queue_profiling";
         break;
     case aspect::usm_device_allocations:
-        ss << "usm_device_allocations" << '\n';
+        ss << "usm_device_allocations";
         break;
     case aspect::usm_host_allocations:
-        ss << "usm_host_allocations" << '\n';
+        ss << "usm_host_allocations";
         break;
     case aspect::usm_shared_allocations:
-        ss << "usm_shared_allocations" << '\n';
+        ss << "usm_shared_allocations";
         break;
     case aspect::usm_restricted_shared_allocations:
-        ss << "usm_restricted_shared_allocations" << '\n';
+        ss << "usm_restricted_shared_allocations";
         break;
     case aspect::usm_system_allocator:
-        ss << "usm_system_allocator" << '\n';
+        ss << "usm_system_allocator";
         break;
     default:
         throw runtime_error("Unsupported aspect type", -1);
@@ -427,4 +427,19 @@ DPCTLPartitionAffinityDomainType DPCTL_SyclPartitionAffinityDomainToDPCTLType(
     default:
         throw runtime_error("Unsupported partition_affinity_domain type", -1);
     }
+}
+
+int64_t DPCTL_GetRelativeDeviceId(const device &Device)
+{
+    auto relid = -1;
+    auto p = Device.get_platform();
+    auto dt = Device.get_info<sycl::info::device::device_type>();
+    auto dev_vec = p.get_devices(dt);
+    int64_t id = 0;
+    for (const auto &d_i : dev_vec) {
+        if (Device == d_i)
+            relid = id;
+        ++id;
+    }
+    return relid;
 }

@@ -166,7 +166,7 @@ TEST_P(TestDPCTLSyclPlatformInterface, ChkCopy)
 
 TEST_P(TestDPCTLSyclPlatformInterface, ChkPrintInfo)
 {
-    EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(PRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(PRef, 0));
 }
 
 TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetName)
@@ -189,9 +189,24 @@ TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetBackend)
     check_platform_backend(PRef);
 }
 
-TEST_F(TestDPCTLSyclDefaultPlatform, ChkPrintInfo)
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkPrintInfo0)
 {
-    EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(PRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(PRef, 0));
+}
+
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkPrintInfo1)
+{
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(PRef, 1));
+}
+
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkPrintInfo2)
+{
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(PRef, 2));
+}
+
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkPrintInfo3)
+{
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(PRef, 3));
 }
 
 TEST(TestGetPlatforms, Chk)
