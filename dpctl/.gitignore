@@ -1,4 +1,6 @@
 *.so
 *.cpp
 *.c
+*.h
+memory/*.h
 include/*
