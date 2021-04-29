@@ -15,8 +15,11 @@
 # limitations under the License.
 
 cimport numpy as cnp
+
 import numpy as np
+
 from cython.operator cimport dereference as deref
+
 
 cdef extern from "CL/sycl.hpp" namespace "cl::sycl":
     cdef cppclass queue nogil:

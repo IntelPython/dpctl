@@ -17,8 +17,9 @@
 """ Defines unit test cases for the SyclQueue class.
 """
 
-import dpctl
 import pytest
+
+import dpctl
 
 list_of_standard_selectors = [
     dpctl.select_accelerator_device,

@@ -17,8 +17,10 @@
 """Defines unit test cases for the SyclQueueManager class.
 """
 
-import dpctl
 import unittest
+
+import dpctl
+
 from ._helper import has_cpu, has_gpu, has_sycl_platforms
 
 
@@ -52,7 +54,9 @@ class TestGetCurrentDevice(unittest.TestCase):
         self.assertNotEqual(dpctl.get_current_device_type(), None)
 
         with dpctl.device_context("opencl:gpu:0"):
-            self.assertEqual(dpctl.get_current_device_type(), dpctl.device_type.gpu)
+            self.assertEqual(
+                dpctl.get_current_device_type(), dpctl.device_type.gpu
+            )
 
         self.assertNotEqual(dpctl.get_current_device_type(), None)
 
@@ -61,11 +65,17 @@ class TestGetCurrentDevice(unittest.TestCase):
         self.assertNotEqual(dpctl.get_current_device_type(), None)
 
         with dpctl.device_context("opencl:cpu:0"):
-            self.assertEqual(dpctl.get_current_device_type(), dpctl.device_type.cpu)
+            self.assertEqual(
+                dpctl.get_current_device_type(), dpctl.device_type.cpu
+            )
 
             with dpctl.device_context("opencl:gpu:0"):
-                self.assertEqual(dpctl.get_current_device_type(), dpctl.device_type.gpu)
-            self.assertEqual(dpctl.get_current_device_type(), dpctl.device_type.cpu)
+                self.assertEqual(
+                    dpctl.get_current_device_type(), dpctl.device_type.gpu
+                )
+            self.assertEqual(
+                dpctl.get_current_device_type(), dpctl.device_type.cpu
+            )
 
         self.assertNotEqual(dpctl.get_current_device_type(), None)
 

@@ -17,9 +17,11 @@
 """Defines unit test cases for the SyclQueue.memcpy.
 """
 
+import unittest
+
 import dpctl
 import dpctl.memory
-import unittest
+
 from ._helper import has_sycl_platforms
 
 
@@ -65,7 +67,9 @@ class TestQueueMemcpy(unittest.TestCase):
             q.memcpy(mobj, None, 3)
 
         self.assertEqual(type(cm.exception), TypeError)
-        self.assertEqual(str(cm.exception), "Parameter `src` should have type _Memory.")
+        self.assertEqual(
+            str(cm.exception), "Parameter `src` should have type _Memory."
+        )
 
 
 if __name__ == "__main__":

@@ -17,8 +17,9 @@
 """ Defines unit test cases for the SyclDevice class.
 """
 
-import dpctl
 import pytest
+
+import dpctl
 from dpctl._sycl_device import SubDeviceCreationError
 
 list_of_standard_selectors = [
@@ -351,7 +352,9 @@ def check_create_sub_devices_equally(device):
         n = int(device.max_compute_units / 2)
         device.create_sub_devices(partition=n)
     except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
+        pytest.skip(
+            "create_sub_devices can't create sub-devices on this device"
+        )
     except Exception:
         pytest.fail("create_sub_devices failed")
 
@@ -361,7 +364,9 @@ def check_create_sub_devices_by_counts(device):
         n = device.max_compute_units / 2
         device.create_sub_devices(partition=(n, n))
     except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
+        pytest.skip(
+            "create_sub_devices can't create sub-devices on this device"
+        )
     except Exception:
         pytest.fail("create_sub_devices failed")
 
@@ -370,7 +375,9 @@ def check_create_sub_devices_by_affinity_not_applicable(device):
     try:
         device.create_sub_devices(partition="not_applicable")
     except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
+        pytest.skip(
+            "create_sub_devices can't create sub-devices on this device"
+        )
     except Exception:
         pytest.fail("create_sub_devices failed")
 
@@ -379,7 +386,9 @@ def check_create_sub_devices_by_affinity_numa(device):
     try:
         device.create_sub_devices(partition="numa")
     except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
+        pytest.skip(
+            "create_sub_devices can't create sub-devices on this device"
+        )
     except Exception:
         pytest.fail("create_sub_devices failed")
 
@@ -388,7 +397,9 @@ def check_create_sub_devices_by_affinity_L4_cache(device):
     try:
         device.create_sub_devices(partition="L4_cache")
     except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
+        pytest.skip(
+            "create_sub_devices can't create sub-devices on this device"
+        )
     except Exception:
         pytest.fail("create_sub_devices failed")
 
@@ -397,7 +408,9 @@ def check_create_sub_devices_by_affinity_L3_cache(device):
     try:
         device.create_sub_devices(partition="L3_cache")
     except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
+        pytest.skip(
+            "create_sub_devices can't create sub-devices on this device"
+        )
     except Exception:
         pytest.fail("create_sub_devices failed")
 
@@ -406,7 +419,9 @@ def check_create_sub_devices_by_affinity_L2_cache(device):
     try:
         device.create_sub_devices(partition="L2_cache")
     except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
+        pytest.skip(
+            "create_sub_devices can't create sub-devices on this device"
+        )
     except Exception:
         pytest.fail("create_sub_devices failed")
 
@@ -415,7 +430,9 @@ def check_create_sub_devices_by_affinity_L1_cache(device):
     try:
         device.create_sub_devices(partition="L1_cache")
     except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
+        pytest.skip(
+            "create_sub_devices can't create sub-devices on this device"
+        )
     except Exception:
         pytest.fail("create_sub_devices failed")
 
@@ -424,7 +441,9 @@ def check_create_sub_devices_by_affinity_next_partitionable(device):
     try:
         device.create_sub_devices(partition="next_partitionable")
     except SubDeviceCreationError:
-        pytest.skip("create_sub_devices can't create sub-devices on this device")
+        pytest.skip(
+            "create_sub_devices can't create sub-devices on this device"
+        )
     except Exception:
         pytest.fail("create_sub_devices failed")
 

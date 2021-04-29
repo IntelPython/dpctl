@@ -21,11 +21,11 @@
 """
 
 from __future__ import print_function
-from ._backend cimport(
-    _backend_type,
+
+from ._backend cimport (
     DPCTLCString_Delete,
-    DPCTLFilterSelector_Create,
     DPCTLDeviceSelector_Delete,
+    DPCTLFilterSelector_Create,
     DPCTLPlatform_Copy,
     DPCTLPlatform_Create,
     DPCTLPlatform_CreateFromSelector,
@@ -43,7 +43,9 @@ from ._backend cimport(
     DPCTLSyclBackendType,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclPlatformRef,
+    _backend_type,
 )
+
 from . import backend_type
 
 __all__ = [

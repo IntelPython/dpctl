@@ -21,31 +21,34 @@
 """
 
 from __future__ import print_function
+
 import logging
-from ._backend cimport(
-    DPCTLSyclContextRef,
-    DPCTLSyclDeviceRef,
+
+from cpython cimport pycapsule
+from cpython.mem cimport PyMem_Free, PyMem_Malloc
+
+from ._backend cimport (
+    DPCTLContext_AreEq,
+    DPCTLContext_Copy,
     DPCTLContext_Create,
     DPCTLContext_CreateFromDevices,
+    DPCTLContext_Delete,
     DPCTLContext_DeviceCount,
     DPCTLContext_GetDevices,
-    DPCTLContext_Copy,
-    DPCTLContext_Delete,
-    DPCTLContext_AreEq,
-    DPCTLDevice_Delete,
     DPCTLDevice_Copy,
-    DPCTLDeviceVectorRef,
+    DPCTLDevice_Delete,
+    DPCTLDeviceMgr_GetCachedContext,
     DPCTLDeviceVector_CreateFromArray,
+    DPCTLDeviceVector_Delete,
     DPCTLDeviceVector_GetAt,
     DPCTLDeviceVector_Size,
-    DPCTLDeviceVector_Delete,
+    DPCTLDeviceVectorRef,
+    DPCTLSyclContextRef,
+    DPCTLSyclDeviceRef,
     error_handler_callback,
-    DPCTLDeviceMgr_GetCachedContext,
 )
-from ._sycl_queue cimport default_async_error_handler
 from ._sycl_device cimport SyclDevice
-from cpython.mem cimport PyMem_Malloc, PyMem_Free
-from cpython cimport pycapsule
+from ._sycl_queue cimport default_async_error_handler
 
 __all__ = [
     "SyclContext",

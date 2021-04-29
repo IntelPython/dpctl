@@ -23,7 +23,9 @@ specific backend or device_type.
 """
 
 from libcpp cimport bool as cpp_bool
+
 from ._sycl_device cimport SyclDevice
+
 
 cpdef SyclDevice select_accelerator_device()
 cpdef SyclDevice select_cpu_device()

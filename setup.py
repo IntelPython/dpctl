@@ -16,17 +16,16 @@
 
 import os
 import os.path
-import sys
-import versioneer
 import subprocess
-
-import setuptools.command.install as orig_install
-import setuptools.command.develop as orig_develop
-
-from setuptools import setup, Extension, find_packages
-from Cython.Build import cythonize
+import sys
 
 import numpy as np
+import setuptools.command.develop as orig_develop
+import setuptools.command.install as orig_install
+from Cython.Build import cythonize
+from setuptools import Extension, find_packages, setup
+
+import versioneer
 
 IS_WIN = False
 IS_MAC = False

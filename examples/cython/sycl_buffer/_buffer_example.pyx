@@ -15,10 +15,13 @@
 # limitations under the License.
 
 cimport numpy as cnp
+
 import numpy as np
 
 cimport dpctl as c_dpctl
+
 import dpctl
+
 
 cdef extern from "use_sycl_buffer.h":
     int c_columnwise_total(c_dpctl.DPCTLSyclQueueRef q, size_t n, size_t m, double *m, double *ct) nogil

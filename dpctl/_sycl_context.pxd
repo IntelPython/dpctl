@@ -20,9 +20,11 @@
 """ This file declares the SyclContext extension type.
 """
 
+from libcpp cimport bool
+
 from ._backend cimport DPCTLSyclContextRef
 from ._sycl_device cimport SyclDevice
-from libcpp cimport bool
+
 
 cdef class _SyclContext:
     """ Data owner for SyclContext
