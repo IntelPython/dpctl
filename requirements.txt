@@ -1,0 +1,4 @@
+Cython
+numpy
+pytest
+pytest-cov
