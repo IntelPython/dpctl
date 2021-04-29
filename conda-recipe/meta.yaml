@@ -32,6 +32,7 @@ requirements:
 
 test:
     requires:
+        - gtest >=1.10
         - pytest
         - pytest-cov
 
