@@ -1,0 +1,8 @@
+[flake8]
+filename = *.py, *.pyx
+max_line_length = 80
+max-doc-length = 72
+show-source = True
+exclude =
+    versioneer.py
+    dpctl/_version.py
