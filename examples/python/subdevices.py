@@ -108,4 +108,6 @@ def create_subdevice_queue():
 if __name__ == "__main__":
     import _runner as runner
 
-    runner.run_examples("Examples for working with subdevices in dpctl.", globals())
+    runner.run_examples(
+        "Examples for working with subdevices in dpctl.", globals()
+    )

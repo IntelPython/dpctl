@@ -36,7 +36,10 @@ def run_examples(example_description, glbls_dict):
         help="Functions to execute. Use --run all to run all of them.",
     )
     parser.add_argument(
-        "-l", "--list", action="store_true", help="List available function names to run"
+        "-l",
+        "--list",
+        action="store_true",
+        help="List available function names to run",
     )
     parser.add_argument(
         "-q", "--quiet", action="store_true", help="Do not echo example name."
@@ -71,7 +74,9 @@ def run_examples(example_description, glbls_dict):
                 print("")
                 if has_nondefault_params(sgn):
                     if not args.quiet:
-                        print(f"INFO: Skip exectution of {fn} as it requires arguments")
+                        print(
+                            f"INFO: Skip exectution of {fn} as it requires arguments"
+                        )
                 else:
                     if not args.quiet:
                         print(f"INFO: Executing example {fn}")

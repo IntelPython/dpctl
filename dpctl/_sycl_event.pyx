@@ -21,8 +21,10 @@
 """
 
 from __future__ import print_function
+
 import logging
-from ._backend cimport DPCTLSyclEventRef, DPCTLEvent_Delete, DPCTLEvent_Wait
+
+from ._backend cimport DPCTLEvent_Delete, DPCTLEvent_Wait, DPCTLSyclEventRef
 
 __all__ = [
     "SyclEvent",

@@ -17,8 +17,10 @@
 """Defines unit test cases for the SyclPlatform class.
 """
 
-import dpctl
 import pytest
+
+import dpctl
+
 from ._helper import has_sycl_platforms
 
 list_of_valid_filter_selectors = [

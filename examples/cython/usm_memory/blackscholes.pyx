@@ -17,13 +17,16 @@
 # cython: language_level=3
 # distutils: language=c++
 
-cimport dpctl as c_dpctl
-cimport dpctl.memory as c_dpctl_mem
 cimport numpy as cnp
 from cython cimport floating
 
-import dpctl
+cimport dpctl as c_dpctl
+cimport dpctl.memory as c_dpctl_mem
+
 import numpy as np
+
+import dpctl
+
 
 cdef extern from "sycl_blackscholes.hpp":
     cdef void cpp_blackscholes[T](c_dpctl.DPCTLSyclQueueRef, size_t n_opts, T* option_params, T* callput) except +

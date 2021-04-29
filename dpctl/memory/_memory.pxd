@@ -22,7 +22,7 @@ in dpctl.memory._memory.pyx.
 
 """
 
-from .._backend cimport DPCTLSyclUSMRef, DPCTLSyclQueueRef
+from .._backend cimport DPCTLSyclQueueRef, DPCTLSyclUSMRef
 from .._sycl_context cimport SyclContext
 from .._sycl_device cimport SyclDevice
 from .._sycl_queue cimport SyclQueue

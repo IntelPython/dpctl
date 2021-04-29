@@ -17,9 +17,10 @@
 """Demonstrates host to device copy functions using dpctl.memory.
 """
 
+import numpy as np
+
 import dpctl
 import dpctl.memory as dpmem
-import numpy as np
 
 ms = dpmem.MemoryUSMShared(32)
 md = dpmem.MemoryUSMDevice(32)

@@ -26,6 +26,7 @@ a OpenCL source string or a SPIR-V binary file.
 
 
 from __future__ import print_function
+
 from dpctl._backend cimport *
 
 __all__ = [
@@ -157,6 +158,7 @@ cpdef create_program_from_source(SyclQueue q, unicode src, unicode copts=""):
     return SyclProgram._create(Pref)
 
 cimport cython.array
+
 
 cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
                                 unicode copts=""):

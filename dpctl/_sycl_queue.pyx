@@ -21,18 +21,16 @@
 """
 
 from __future__ import print_function
+
 from ._backend cimport (
-    _arg_data_type,
-    _backend_type,
-    _queue_property_type,
     DPCTLContext_Create,
     DPCTLContext_Delete,
     DPCTLDefaultSelector_Create,
+    DPCTLDevice_Copy,
     DPCTLDevice_CreateFromSelector,
+    DPCTLDevice_Delete,
     DPCTLDeviceMgr_GetCachedContext,
     DPCTLDeviceSelector_Delete,
-    DPCTLDevice_Copy,
-    DPCTLDevice_Delete,
     DPCTLFilterSelector_Create,
     DPCTLQueue_AreEq,
     DPCTLQueue_Copy,
@@ -41,26 +39,32 @@ from ._backend cimport (
     DPCTLQueue_GetBackend,
     DPCTLQueue_GetContext,
     DPCTLQueue_GetDevice,
+    DPCTLQueue_IsInOrder,
     DPCTLQueue_MemAdvise,
     DPCTLQueue_Memcpy,
     DPCTLQueue_Prefetch,
     DPCTLQueue_SubmitNDRange,
     DPCTLQueue_SubmitRange,
     DPCTLQueue_Wait,
-    DPCTLQueue_IsInOrder,
     DPCTLSyclBackendType,
     DPCTLSyclContextRef,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclEventRef,
+    _arg_data_type,
+    _backend_type,
+    _queue_property_type,
     error_handler_callback,
 )
 from .memory._memory cimport _Memory
-from . import backend_type
-import ctypes
-from libc.stdlib cimport malloc, free
-from cpython cimport pycapsule
-import logging
 
+import ctypes
+
+from . import backend_type
+
+from cpython cimport pycapsule
+from libc.stdlib cimport free, malloc
+
+import logging
 
 __all__ = [
     "SyclQueue",

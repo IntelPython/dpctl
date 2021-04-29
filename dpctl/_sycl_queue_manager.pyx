@@ -18,21 +18,23 @@
 # cython: language_level=3
 
 from __future__ import print_function
+
 import logging
+
 from . import backend_type, device_type
-from ._backend cimport(
-    _backend_type,
-    _device_type,
+
+from ._backend cimport (
     DPCTLQueueMgr_GetCurrentQueue,
+    DPCTLQueueMgr_GetQueueStackSize,
     DPCTLQueueMgr_GlobalQueueIsCurrent,
-    DPCTLQueueMgr_PushQueue,
     DPCTLQueueMgr_PopQueue,
+    DPCTLQueueMgr_PushQueue,
     DPCTLQueueMgr_SetGlobalQueue,
     DPCTLSyclQueueRef,
-    DPCTLQueueMgr_GetQueueStackSize,
+    _backend_type,
+    _device_type,
 )
 from ._sycl_context cimport SyclContext
-
 
 __all__ = [
     "device_context",

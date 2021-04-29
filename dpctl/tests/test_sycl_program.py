@@ -17,10 +17,12 @@
 """Defines unit test cases for the SyclProgram and SyclKernel classes
 """
 
+import os
+import unittest
+
 import dpctl
 import dpctl.program as dpctl_prog
-import unittest
-import os
+
 from ._helper import has_cpu, has_gpu
 
 

@@ -26,8 +26,6 @@
 """
 
 from ._backend cimport (
-    _backend_type,
-    _device_type,
     DPCTLAcceleratorSelector_Create,
     DPCTLCPUSelector_Create,
     DPCTLDefaultSelector_Create,
@@ -35,18 +33,22 @@ from ._backend cimport (
     DPCTLDeviceMgr_GetDevices,
     DPCTLDeviceMgr_GetNumDevices,
     DPCTLDeviceSelector_Delete,
-    DPCTLDeviceVectorRef,
     DPCTLDeviceVector_Delete,
     DPCTLDeviceVector_GetAt,
     DPCTLDeviceVector_Size,
+    DPCTLDeviceVectorRef,
     DPCTLGPUSelector_Create,
     DPCTLHostSelector_Create,
     DPCTLSyclBackendType,
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclDeviceType,
+    _backend_type,
+    _device_type,
 )
-from . import backend_type, device_type as device_type_t
+
+from . import backend_type
+from . import device_type as device_type_t
 
 __all__ = [
     "get_devices",

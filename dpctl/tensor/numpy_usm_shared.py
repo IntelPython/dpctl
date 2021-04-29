@@ -28,14 +28,16 @@ NumPy.
 
 """
 
-import numpy as np
-from inspect import getmembers, isfunction, isclass, isbuiltin
-from numbers import Number
-import sys
+import builtins
 import inspect
+import sys
+from inspect import getmembers, isbuiltin, isclass, isfunction
+from numbers import Number
+
+import numpy as np
+
 import dpctl
 from dpctl.memory import MemoryUSMShared
-import builtins
 
 debug = False
 
@@ -83,7 +85,8 @@ def convert_ndarray_to_np_ndarray(x, require_ndarray=False):
         return np.array(x, copy=False, subok=False)
     elif isinstance(x, tuple):
         return tuple(
-            convert_ndarray_to_np_ndarray(y, require_ndarray=require_ndarray) for y in x
+            convert_ndarray_to_np_ndarray(y, require_ndarray=require_ndarray)
+            for y in x
         )
     elif require_ndarray:
         raise TypeError
@@ -103,7 +106,13 @@ class ndarray(np.ndarray):
         ndarray.external_usm_checkers.append(func)
 
     def __new__(
-        subtype, shape, dtype=float, buffer=None, offset=0, strides=None, order=None
+        subtype,
+        shape,
+        dtype=float,
+        buffer=None,
+        offset=0,
+        strides=None,
+        order=None,
     ):
         # Create a new array.
         if buffer is None:
@@ -136,7 +145,10 @@ class ndarray(np.ndarray):
             return new_obj
         # zero copy if buffer is a usm backed array-like thing
         elif hasattr(buffer, array_interface_property):
-            dprint("numpy_usm_shared::ndarray __new__ buffer", array_interface_property)
+            dprint(
+                "numpy_usm_shared::ndarray __new__ buffer",
+                array_interface_property,
+            )
             # also check for array interface
             new_obj = np.ndarray.__new__(
                 subtype,
@@ -158,7 +170,9 @@ class ndarray(np.ndarray):
                 )
             return new_obj
         else:
-            dprint("numpy_usm_shared::ndarray __new__ buffer not None and not sycl_usm")
+            dprint(
+                "numpy_usm_shared::ndarray __new__ buffer not None and not sycl_usm"
+            )
             nelems = np.prod(shape)
             # must copy
             ar = np.ndarray(
@@ -335,9 +349,13 @@ class ndarray(np.ndarray):
         if has_func:
             cm = sys.modules[__name__]
             affunc = getattr(cm, fname)
-            fargs = [x.view(np.ndarray) if isinstance(x, ndarray) else x for x in args]
+            fargs = [
+                x.view(np.ndarray) if isinstance(x, ndarray) else x
+                for x in args
+            ]
             fkwargs = {
-                key: convert_ndarray_to_np_ndarray(val) for key, val in kwargs.items()
+                key: convert_ndarray_to_np_ndarray(val)
+                for key, val in kwargs.items()
             }
             res = affunc(*fargs, **fkwargs)
             return kwargs["out"] if "out" in kwargs else res

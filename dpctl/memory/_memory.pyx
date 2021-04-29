@@ -24,18 +24,20 @@ use in other Python modules.
 
 
 import dpctl
+
+from cpython cimport Py_buffer, pycapsule
+from cpython.bytes cimport PyBytes_AS_STRING, PyBytes_FromStringAndSize
+
 from dpctl._backend cimport *
+
 from .._sycl_context cimport SyclContext
 from .._sycl_device cimport SyclDevice
 from .._sycl_queue cimport SyclQueue
 
-from cpython cimport Py_buffer
-from cpython.bytes cimport PyBytes_AS_STRING, PyBytes_FromStringAndSize
-from cpython cimport pycapsule
+import collections
+import numbers
 
 import numpy as np
-import numbers
-import collections
 
 __all__ = [
     "MemoryUSMShared",

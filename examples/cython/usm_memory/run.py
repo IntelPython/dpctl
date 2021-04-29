@@ -15,10 +15,13 @@
 # limitations under the License.
 
 # coding: utf-8
-import dpctl.memory as dpctl_mem
+
 import blackscholes_usm as bs
-import numpy as np, dpctl
+import numpy as np
 from reference_black_scholes import ref_python_black_scholes
+
+import dpctl
+import dpctl.memory as dpctl_mem
 
 
 def gen_option_params(
@@ -52,7 +55,8 @@ Xgpu = bs.black_scholes_price(opts)
 X_ref = np.array([ref_python_black_scholes(*opt) for opt in opts], dtype="d")
 
 print(
-    "Correctness check: allclose(Xgpu, Xref) == ", np.allclose(Xgpu, X_ref, atol=1e-5)
+    "Correctness check: allclose(Xgpu, Xref) == ",
+    np.allclose(Xgpu, X_ref, atol=1e-5),
 )
 
 n_opts = 3 * 10 ** 6
@@ -62,12 +66,36 @@ import timeit
 
 cpu_q = dpctl.SyclQueue("opencl:cpu:0")
 opts1 = gen_option_params(
-    n_opts, 20.0, 30.0, 22.0, 29.0, 18.0, 24.0, 0.01, 0.05, 0.01, 0.05, "d", queue=cpu_q
+    n_opts,
+    20.0,
+    30.0,
+    22.0,
+    29.0,
+    18.0,
+    24.0,
+    0.01,
+    0.05,
+    0.01,
+    0.05,
+    "d",
+    queue=cpu_q,
 )
 
 gpu_q = dpctl.SyclQueue("level_zero:gpu:0")
 opts2 = gen_option_params(
-    n_opts, 20.0, 30.0, 22.0, 29.0, 18.0, 24.0, 0.01, 0.05, 0.01, 0.05, "d", queue=gpu_q
+    n_opts,
+    20.0,
+    30.0,
+    22.0,
+    29.0,
+    18.0,
+    24.0,
+    0.01,
+    0.05,
+    0.01,
+    0.05,
+    "d",
+    queue=gpu_q,
 )
 
 cpu_times = []

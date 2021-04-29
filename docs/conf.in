@@ -41,7 +41,8 @@ use_doxyrest = "@DPCTL_ENABLE_DOXYREST@"
 
 if use_doxyrest == "ON":
     # Specify the path to Doxyrest extensions for Sphinx:
-    import sys, os
+    import os
+    import sys
 
     sys.path.insert(
         1,
@@ -168,9 +169,8 @@ class ClassMembersDocumenter(ClassDocumenter):
 # members and attributes.
 # See https://stackoverflow.com/questions/20569011/python-sphinx-autosummary-automated-listing-of-member-functions
 
-from sphinx.ext.autosummary import Autosummary
-from sphinx.ext.autosummary import get_documenter
 from docutils.parsers.rst import directives
+from sphinx.ext.autosummary import Autosummary, get_documenter
 from sphinx.util.inspect import safe_getattr
 
 

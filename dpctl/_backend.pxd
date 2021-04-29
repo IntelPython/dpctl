@@ -21,8 +21,8 @@
 types defined by dpctl's C API.
 """
 
+from libc.stdint cimport int64_t, uint32_t
 from libcpp cimport bool
-from libc.stdint cimport uint32_t, int64_t
 
 
 cdef extern from "dpctl_error_handler_type.h":
