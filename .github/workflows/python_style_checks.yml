@@ -1,6 +1,6 @@
 # This is a workflow to format Python code with black formatter
 
-name: black
+name: Python Code Style
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -11,7 +11,14 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "black"
+  # The isort job sorts all imports in .py, .pyx, .pxd files
+  isort:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: jamescurtin/isort-action@master
+
   black:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
@@ -27,3 +34,23 @@ jobs:
       - uses: psf/black@20.8b1
         with:
           args: ". --check"
+
+  flake8:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.7]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+    - name: Lint with flake8
+      uses: py-actions/flake8@v1
