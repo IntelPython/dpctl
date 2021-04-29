@@ -10,12 +10,12 @@ source:
 build:
     number: {{ GIT_DESCRIBE_NUMBER }}
     script_env:
-        - ONEAPI_ROOT
         - WHEELS_OUTPUT_FOLDER
 
 requirements:
     build:
         - {{ compiler('cxx') }}
+        - {{ compiler('dpcpp') }}
     host:
         - setuptools
         - cython

@@ -7,7 +7,7 @@ pushd build
 INSTALL_PREFIX=`pwd`/../install
 rm -rf ${INSTALL_PREFIX}
 export ONEAPI_ROOT=/opt/intel/oneapi
-DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest/linux
+DPCPP_ROOT=${BUILD_PREFIX}
 
 cmake                                                       \
     -DCMAKE_BUILD_TYPE=Debug                                \

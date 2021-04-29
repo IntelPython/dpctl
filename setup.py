@@ -41,19 +41,21 @@ elif sys.platform in ["win32", "cygwin"]:
 else:
     assert False, sys.platform + " not supported"
 
+
 if IS_LIN:
-    DPCPP_ROOT = os.environ["ONEAPI_ROOT"] + "/compiler/latest/linux"
+    DPCPP_ROOT = os.environ["BUILD_PREFIX"]
     os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
     os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
     os.environ["CFLAGS"] = "-fPIC"
 
 elif IS_WIN:
+    DPCPP_ROOT = os.path.join(os.environ["BUILD_PREFIX"], "Library")
     os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
     os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl\include"
 
+sycl_lib = os.path.join(DPCPP_ROOT, 'lib')
 dpctl_sycl_interface_lib = os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"]
 dpctl_sycl_interface_include = os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"]
-sycl_lib = os.environ["ONEAPI_ROOT"] + "\compiler\latest\windows\lib"
 
 # Get long description
 with open("README.md", "r", encoding="utf-8") as file:

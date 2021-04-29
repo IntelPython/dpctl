@@ -34,13 +34,12 @@ elif sys.platform in ["win32", "cygwin"]:
 else:
     assert False, sys.platform + " not supported"
 
-ONEAPI_ROOT = os.environ.get("ONEAPI_ROOT")
 CODE_COVERAGE = os.environ.get("CODE_COVERAGE")
 
 if IS_LIN:
-    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, "compiler/latest/linux")
+    DPCPP_ROOT = os.environ.get("BUILD_PREFIX")
 if IS_WIN:
-    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, "compiler\latest\windows")
+    DPCPP_ROOT = os.path.join(os.environ.get("BUILD_PREFIX"), "Library")
 
 dpctl_dir = os.getcwd()
 build_cmake_dir = os.path.join(dpctl_dir, "build_cmake")
