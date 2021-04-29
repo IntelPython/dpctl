@@ -1,0 +1,22 @@
+# This is a workflow to format C/C++ sources with clang-format
+
+name: C++ Code Style
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  formatting-check:
+    name: clang-format
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run clang-format style check for C/C++ programs.
+      uses: jidicula/clang-format-action@v3.1.0
+      with:
+        clang-format-version: '11'
+        check-path: 'dpctl-capi'
