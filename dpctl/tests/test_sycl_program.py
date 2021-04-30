@@ -23,7 +23,7 @@ import unittest
 import dpctl
 import dpctl.program as dpctl_prog
 
-from ._helper import has_cpu, has_gpu
+from ._helper import has_gpu
 
 
 @unittest.skipUnless(has_gpu(), "No OpenCL GPU queues available")
@@ -100,7 +100,7 @@ class TestProgramForLevel0GPU(unittest.TestCase):
             spirv = fin.read()
             with dpctl.device_context("level_zero:gpu:0"):
                 q = dpctl.get_current_queue()
-                prog = dpctl_prog.create_program_from_spirv(q, spirv)
+                dpctl_prog.create_program_from_spirv(q, spirv)
 
     @unittest.expectedFailure
     def test_create_program_from_source(self):
@@ -115,7 +115,7 @@ class TestProgramForLevel0GPU(unittest.TestCase):
         }"
         with dpctl.device_context("level_zero:gpu:0"):
             q = dpctl.get_current_queue()
-            prog = dpctl_prog.create_program_from_source(q, oclSrc)
+            dpctl_prog.create_program_from_source(q, oclSrc)
 
 
 if __name__ == "__main__":

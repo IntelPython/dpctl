@@ -28,7 +28,23 @@ import dpctl
 from cpython cimport Py_buffer, pycapsule
 from cpython.bytes cimport PyBytes_AS_STRING, PyBytes_FromStringAndSize
 
-from dpctl._backend cimport *
+from dpctl._backend cimport (  # noqa: E211
+    DPCTLaligned_alloc_device,
+    DPCTLaligned_alloc_host,
+    DPCTLaligned_alloc_shared,
+    DPCTLfree_with_queue,
+    DPCTLmalloc_device,
+    DPCTLmalloc_host,
+    DPCTLmalloc_shared,
+    DPCTLQueue_Copy,
+    DPCTLQueue_Create,
+    DPCTLQueue_Delete,
+    DPCTLQueue_Memcpy,
+    DPCTLSyclContextRef,
+    DPCTLSyclDeviceRef,
+    DPCTLUSM_GetPointerDevice,
+    DPCTLUSM_GetPointerType,
+)
 
 from .._sycl_context cimport SyclContext
 from .._sycl_device cimport SyclDevice
@@ -75,7 +91,7 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
     )
 
 
-def _to_memory(unsigned char [::1] b, str usm_kind):
+def _to_memory(unsigned char[::1] b, str usm_kind):
     """
     Constructs Memory of the same size as the argument
     and copies data into it"""
@@ -118,25 +134,31 @@ cdef class _Memory:
 
             if (ptr_type == b"shared"):
                 if alignment > 0:
-                    p = DPCTLaligned_alloc_shared(alignment, nbytes,
-                                                 queue.get_queue_ref())
+                    p = DPCTLaligned_alloc_shared(
+                        alignment, nbytes, queue.get_queue_ref()
+                    )
                 else:
                     p = DPCTLmalloc_shared(nbytes, queue.get_queue_ref())
             elif (ptr_type == b"host"):
                 if alignment > 0:
-                    p = DPCTLaligned_alloc_host(alignment, nbytes,
-                                               queue.get_queue_ref())
+                    p = DPCTLaligned_alloc_host(
+                        alignment, nbytes, queue.get_queue_ref()
+                    )
                 else:
                     p = DPCTLmalloc_host(nbytes, queue.get_queue_ref())
             elif (ptr_type == b"device"):
                 if (alignment > 0):
-                    p = DPCTLaligned_alloc_device(alignment, nbytes,
-                                                  queue.get_queue_ref())
+                    p = DPCTLaligned_alloc_device(
+                        alignment, nbytes, queue.get_queue_ref()
+                    )
                 else:
                     p = DPCTLmalloc_device(nbytes, queue.get_queue_ref())
             else:
-                raise RuntimeError("Pointer type is unknown: {}" \
-                    .format(ptr_type.decode("UTF-8")))
+                raise RuntimeError(
+                    "Pointer type is unknown: {}".format(
+                        ptr_type.decode("UTF-8")
+                    )
+                )
 
             if (p):
                 self.memory_ptr = p
@@ -180,19 +202,20 @@ cdef class _Memory:
 
     def __dealloc__(self):
         if (self.refobj is None and self.memory_ptr):
-            DPCTLfree_with_queue(self.memory_ptr,
-                                self.queue.get_queue_ref())
+            DPCTLfree_with_queue(
+                self.memory_ptr, self.queue.get_queue_ref()
+            )
         self._cinit_empty()
 
     cdef _getbuffer(self, Py_buffer *buffer, int flags):
         # memory_ptr is Ref which is pointer to SYCL type. For USM it is void*.
         cdef SyclContext ctx = self._context
-        cdef const char * kind = DPCTLUSM_GetPointerType(
-            self.memory_ptr,
-            ctx.get_context_ref())
+        cdef const char *kind = DPCTLUSM_GetPointerType(
+            self.memory_ptr, ctx.get_context_ref()
+        )
         if kind == b'device':
             raise ValueError('USM Device memory is not host accessible')
-        buffer.buf = <char *>self.memory_ptr
+        buffer.buf = <char*>self.memory_ptr
         buffer.format = 'B'                     # byte
         buffer.internal = NULL                  # see References
         buffer.itemsize = 1
@@ -229,8 +252,10 @@ cdef class _Memory:
             return self.refobj
 
     def __repr__(self):
-        return "<Intel(R) USM allocated memory block of {} bytes at {}>" \
+        return (
+            "<Intel(R) USM allocated memory block of {} bytes at {}>"
             .format(self.nbytes, hex(<object>(<size_t>self.memory_ptr)))
+        )
 
     def __len__(self):
         return self.nbytes
@@ -248,7 +273,7 @@ cdef class _Memory:
         def __get__(self):
             cdef dict iface = {
                 "data": (<size_t>(<void *>self.memory_ptr),
-                         True), # bool(self.writeable)),
+                         True),  # bool(self.writeable)),
                 "shape": (self.nbytes,),
                 "strides": None,
                 "typestr": "|u1",
@@ -263,25 +288,32 @@ cdef class _Memory:
         cdef SyclQueue q
         if syclobj is None:
             ctx = self._context
-            kind = DPCTLUSM_GetPointerType(self.memory_ptr,
-                                          ctx.get_context_ref())
+            kind = DPCTLUSM_GetPointerType(
+                self.memory_ptr, ctx.get_context_ref()
+            )
         elif isinstance(syclobj, SyclContext):
             ctx = <SyclContext>(syclobj)
-            kind = DPCTLUSM_GetPointerType(self.memory_ptr,
-                                          ctx.get_context_ref())
+            kind = DPCTLUSM_GetPointerType(
+                self.memory_ptr, ctx.get_context_ref()
+            )
         elif isinstance(syclobj, SyclQueue):
             q = <SyclQueue>(syclobj)
             ctx = q.get_sycl_context()
-            kind = DPCTLUSM_GetPointerType(self.memory_ptr,
-                                          ctx.get_context_ref())
+            kind = DPCTLUSM_GetPointerType(
+                self.memory_ptr, ctx.get_context_ref()
+            )
         else:
-            raise ValueError("syclobj keyword can be either None, "
-                             "or an instance of SyclContext or SyclQueue")
+            raise ValueError(
+                "syclobj keyword can be either None, or an instance of "
+                "SyclContext or SyclQueue"
+            )
         return kind.decode('UTF-8')
 
     cpdef copy_to_host(self, obj=None):
-        """Copy content of instance's memory into memory of
-        `obj`, or allocate NumPy array of obj is None"""
+        """
+        Copy content of instance's memory into memory of ``obj``, or allocate
+        NumPy array of ``obj`` is ``None``.
+        """
         # Cython does the right thing here
         cdef unsigned char[::1] host_buf = obj
 
@@ -291,8 +323,10 @@ cdef class _Memory:
             obj = np.empty((self.nbytes,), dtype="|u1")
             host_buf = obj
         elif (<Py_ssize_t>len(host_buf) < self.nbytes):
-            raise ValueError("Destination object is too small to "
-                             "accommodate {} bytes".format(self.nbytes))
+            raise ValueError(
+                "Destination object is too small to accommodate {} bytes"
+                .format(self.nbytes)
+            )
         # call kernel to copy from
         DPCTLQueue_Memcpy(
             self.queue.get_queue_ref(),
@@ -311,9 +345,10 @@ cdef class _Memory:
         cdef Py_ssize_t buf_len = len(host_buf)
 
         if (buf_len > self.nbytes):
-            raise ValueError("Source object is too large to be "
-                             "accommodated in {} bytes buffer".format(
-                                 self.nbytes))
+            raise ValueError(
+                "Source object is too large to be accommodated in {} bytes "
+                "buffer".format(self.nbytes)
+            )
         # call kernel to copy from
         DPCTLQueue_Memcpy(
             self.queue.get_queue_ref(),
@@ -323,22 +358,27 @@ cdef class _Memory:
         )
 
     cpdef copy_from_device(self, object sycl_usm_ary):
-        """Copy SYCL memory underlying the argument object into
-        the memory of the instance"""
+        """
+        Copy SYCL memory underlying the argument object into
+        the memory of the instance
+        """
         cdef _USMBufferData src_buf
         cdef const char* kind
 
         if not hasattr(sycl_usm_ary, '__sycl_usm_array_interface__'):
-            raise ValueError("Object does not implement "
-                             "`__sycl_usm_array_interface__` protocol")
+            raise ValueError(
+                "Object does not implement "
+                "`__sycl_usm_array_interface__` protocol"
+            )
         sycl_usm_ary_iface = sycl_usm_ary.__sycl_usm_array_interface__
         if isinstance(sycl_usm_ary_iface, dict):
             src_buf = _USMBufferData.from_sycl_usm_ary_iface(sycl_usm_ary_iface)
 
             if (src_buf.nbytes > self.nbytes):
-                raise ValueError("Source object is too large to "
-                                 "be accommondated in {} bytes buffer".format(
-                                     self.nbytes))
+                raise ValueError(
+                    "Source object is too large to "
+                    "be accommondated in {} bytes buffer".format(self.nbytes)
+                )
             kind = DPCTLUSM_GetPointerType(
                 src_buf.p, self.queue.get_sycl_context().get_context_ref())
             if (kind == b'unknown'):
@@ -358,14 +398,16 @@ cdef class _Memory:
             raise TypeError
 
     cpdef bytes tobytes(self):
-        """Constructs bytes object populated with copy of USM memory"""
+        """
+        Constructs bytes object populated with copy of USM memory.
+        """
         cdef Py_ssize_t nb = self.nbytes
         cdef bytes b = PyBytes_FromStringAndSize(NULL, nb)
         # convert bytes to memory view
         cdef unsigned char* ptr = <unsigned char*>PyBytes_AS_STRING(b)
         # string is null terminated
         cdef unsigned char[::1] mv = (<unsigned char[:(nb + 1):1]>ptr)[:nb]
-        self.copy_to_host(mv) # output is discarded
+        self.copy_to_host(mv)  # output is discarded
         return b
 
     @staticmethod
@@ -375,7 +417,8 @@ cdef class _Memory:
         given sycl context `ctx`
         """
         cdef DPCTLSyclDeviceRef dref = DPCTLUSM_GetPointerDevice(
-            p, ctx.get_context_ref())
+            p, ctx.get_context_ref()
+        )
 
         return SyclDevice._create(dref)
 
@@ -383,7 +426,8 @@ cdef class _Memory:
     cdef bytes get_pointer_type(DPCTLSyclUSMRef p, SyclContext ctx):
         """Returns USM-type of given pointer `p` in given sycl context `ctx`"""
         cdef const char * usm_type = DPCTLUSM_GetPointerType(
-            p, ctx.get_context_ref())
+            p, ctx.get_context_ref()
+        )
 
         return <bytes>usm_type
 
@@ -420,7 +464,8 @@ cdef class MemoryUSMShared(_Memory):
                         "copy=False. "
                         "Either use copy=True, or use a constructor "
                         "appropriate for "
-                        "type '{}'".format(other, self.get_usm_type()))
+                        "type '{}'".format(other, self.get_usm_type())
+                    )
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         self._getbuffer(buffer, flags)
@@ -447,8 +492,9 @@ cdef class MemoryUSMHost(_Memory):
             self._cinit_other(other)
             if (self.get_usm_type() != "host"):
                 if copy:
-                    self._cinit_alloc(0, <Py_ssize_t>self.nbytes,
-                                      b"host", queue)
+                    self._cinit_alloc(
+                        0, <Py_ssize_t>self.nbytes, b"host", queue
+                    )
                     self.copy_from_device(other)
                 else:
                     raise ValueError(
@@ -457,7 +503,9 @@ cdef class MemoryUSMHost(_Memory):
                         "Zero-copy operation is not possible with copy=False. "
                         "Either use copy=True, or use a constructor "
                         "appropriate for type '{}'".format(
-                            other, self.get_usm_type()))
+                            other, self.get_usm_type()
+                        )
+                    )
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         self._getbuffer(buffer, flags)
@@ -484,8 +532,9 @@ cdef class MemoryUSMDevice(_Memory):
             self._cinit_other(other)
             if (self.get_usm_type() != "device"):
                 if copy:
-                    self._cinit_alloc(0, <Py_ssize_t>self.nbytes,
-                                      b"device", queue)
+                    self._cinit_alloc(
+                        0, <Py_ssize_t>self.nbytes, b"device", queue
+                    )
                     self.copy_from_device(other)
                 else:
                     raise ValueError(
@@ -494,4 +543,6 @@ cdef class MemoryUSMDevice(_Memory):
                         "Zero-copy operation is not possible with copy=False. "
                         "Either use copy=True, or use a constructor "
                         "appropriate for type '{}'".format(
-                            other, self.get_usm_type()))
+                            other, self.get_usm_type()
+                        )
+                    )

@@ -19,8 +19,11 @@
 
     Dpctl's Python API implements Python wrappers for a subset of DPC++/SYCL's
     API. The Python API exposes wrappers for the SYCL runtime classes (expect
-    `device_selector`) described in Section 4.6 of the SYCL 2020 spec (https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes).
-    Apart from the main SYCL runtime classes, dpctl includes a `memory` sub-module that exposes the SYCL USM allocators and deallocators.
+    ``device_selector``) described in Section 4.6 of the
+    [SYCL 2020 spec](https://www.khronos.org/registry/SYCL/specs/sycl-2020/
+html/sycl-2020.html#_sycl_runtime_classes).
+    Apart from the main SYCL runtime classes, dpctl includes a `memory`
+    sub-module that exposes the SYCL USM allocators and deallocators.
 """
 __author__ = "Intel Corp."
 
@@ -56,8 +59,8 @@ __all__ = (
 
 
 def get_include():
-    r"""
-    Return the directory that contains the dpctl \*.h header files.
+    """
+    Return the directory that contains the dpctl *.h header files.
 
     Extension modules that need to be compiled against dpctl should use
     this function to locate the appropriate include directory.

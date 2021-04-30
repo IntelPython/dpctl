@@ -53,6 +53,7 @@ list_of_invalid_filter_selectors = [
     "abc",
 ]
 
+
 # Unit test cases that will be run for every device
 def check_get_max_compute_units(device):
     max_compute_units = device.max_compute_units
@@ -553,7 +554,10 @@ def test_current_device(check):
 
 
 def test_valid_filter_selectors(valid_filter, check):
-    """Tests if we can create a SyclDevice using a supported filter selector string."""
+    """
+    Tests if we can create a SyclDevice using a supported filter selector
+    string.
+    """
     device = None
     try:
         device = dpctl.SyclDevice(valid_filter)
@@ -563,8 +567,8 @@ def test_valid_filter_selectors(valid_filter, check):
 
 
 def test_invalid_filter_selectors(invalid_filter):
-    """An invalid filter string should always be caught and a ValueError
-    raised.
+    """
+    An invalid filter string should always be caught and a ValueError raised.
     """
     with pytest.raises(ValueError):
-        device = dpctl.SyclDevice(invalid_filter)
+        dpctl.SyclDevice(invalid_filter)

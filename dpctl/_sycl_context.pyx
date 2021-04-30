@@ -27,7 +27,7 @@ import logging
 from cpython cimport pycapsule
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
-from ._backend cimport (
+from ._backend cimport (  # noqa: E211
     DPCTLContext_AreEq,
     DPCTLContext_Copy,
     DPCTLContext_Create,
@@ -59,7 +59,9 @@ _logger = logging.getLogger(__name__)
 cdef void _context_capsule_deleter(object o):
     cdef DPCTLSyclContextRef CRef = NULL
     if pycapsule.PyCapsule_IsValid(o, "SyclContextRef"):
-        CRef = <DPCTLSyclContextRef> pycapsule.PyCapsule_GetPointer(o, "SyclContextRef")
+        CRef = <DPCTLSyclContextRef> pycapsule.PyCapsule_GetPointer(
+            o, "SyclContextRef"
+        )
         DPCTLContext_Delete(CRef)
 
 
@@ -127,7 +129,7 @@ cdef class SyclContext(_SyclContext):
 
                 # Create a CPU device using the opencl driver
                 cpu_d = dpctl.SyclDevice("opencl:cpu")
-                # Partition the CPU device into sub-devices, each with two cores.
+                # Partition the CPU device into sub-devices with two cores each.
                 sub_devices = cpu_d.create_sub_devices(partition=2)
                 # Create a context common to all the sub-devices.
                 ctx = dpctl.SyclContext(sub_devices)
@@ -157,7 +159,7 @@ cdef class SyclContext(_SyclContext):
 
     @staticmethod
     cdef void _init_helper(_SyclContext context, DPCTLSyclContextRef CRef):
-         context._ctxt_ref = CRef
+        context._ctxt_ref = CRef
 
     @staticmethod
     cdef SyclContext _create(DPCTLSyclContextRef ctxt):
@@ -257,8 +259,8 @@ cdef class SyclContext(_SyclContext):
             return 0
         else:
             # __cinit__ checks that capsule is valid, so one can be here only
-            # if call to `_init_context_from_capsule` was made outside of __cinit__
-            # and the capsule was not checked to be valid
+            # if call to `_init_context_from_capsule` was made outside of
+            # __cinit__ and the capsule was not checked to be valid
             return -128
 
     def __cinit__(self, arg=None):
@@ -269,8 +271,8 @@ cdef class SyclContext(_SyclContext):
             ret = self._init_context_from_one_device(<SyclDevice> arg, 0)
         elif pycapsule.PyCapsule_IsValid(arg, "SyclContextRef"):
             status = self._init_context_from_capsule(arg)
-        elif isinstance(
-            arg, (list, tuple)) and all([isinstance(argi, SyclDevice) for argi in arg]
+        elif isinstance(arg, (list, tuple)) and all(
+            [isinstance(argi, SyclDevice) for argi in arg]
         ):
             ret = self._init_context_from_devices(arg, 0)
         else:
@@ -336,7 +338,7 @@ cdef class SyclContext(_SyclContext):
     cdef DPCTLSyclContextRef get_context_ref(self):
         return self._ctxt_ref
 
-    def addressof_ref (self):
+    def addressof_ref(self):
         """
         Returns the address of the ``DPCTLSyclContextRef`` pointer as a
         ``size_t``.
@@ -419,7 +421,8 @@ cdef class SyclContext(_SyclContext):
                 cpu_d = dpctl.SyclDevice("opencl:cpu")
                 sub_devices = create_sub_devices(partition=2)
                 ctx2 = dpctl.SyclContext(sub_devices)
-                print(ctx2) # E.g : <dpctl.SyclContext for 4 devices at 0x7f154d8ab070>
+                # prints: <dpctl.SyclContext for 4 devices at 0x7f154d8ab070>
+                print(ctx2)
 
         Returns:
             :obj:`str`: A string representation of the

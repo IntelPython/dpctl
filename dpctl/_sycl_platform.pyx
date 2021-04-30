@@ -22,7 +22,7 @@
 
 from __future__ import print_function
 
-from ._backend cimport (
+from ._backend cimport (  # noqa: E211
     DPCTLCString_Delete,
     DPCTLDeviceSelector_Delete,
     DPCTLFilterSelector_Create,
@@ -46,7 +46,7 @@ from ._backend cimport (
     _backend_type,
 )
 
-from . import backend_type
+from .enum_types import backend_type
 
 __all__ = [
     "get_platforms",
@@ -66,10 +66,11 @@ cdef class _SyclPlatform:
 
 
 cdef class SyclPlatform(_SyclPlatform):
-    """ Python class representing cl::sycl::platform class.
+    """ Python class representing ``cl::sycl::platform`` class.
 
         SyclPlatform() - create platform selected by sycl::default_selector
-        SyclPlatform(filter_selector) - create platform selected by filter selector
+        SyclPlatform(filter_selector) - create platform selected by filter
+        selector
     """
     @staticmethod
     cdef void _init_helper(_SyclPlatform platform, DPCTLSyclPlatformRef PRef):
@@ -81,7 +82,7 @@ cdef class SyclPlatform(_SyclPlatform):
     @staticmethod
     cdef SyclPlatform _create(DPCTLSyclPlatformRef pref):
         """
-        This function calls DPCTLPlatform_Delete(pref).
+        This function calls ``DPCTLPlatform_Delete(pref)``.
 
         The user of this function must pass a copy to keep the
         pref argument alive.
@@ -115,8 +116,8 @@ cdef class SyclPlatform(_SyclPlatform):
             SyclPlatform._init_helper(self, PRef)
             return 0
 
-    cdef DPCTLSyclPlatformRef get_platform_ref (self):
-        """ Returns the DPCTLSyclPlatformRef pointer for this class.
+    cdef DPCTLSyclPlatformRef get_platform_ref(self):
+        """ Returns the ``DPCTLSyclPlatformRef`` pointer for this class.
         """
         return self._platform_ref
 
@@ -125,9 +126,17 @@ cdef class SyclPlatform(_SyclPlatform):
         return "SyclPlatform"
 
     def __repr__(self):
-        return ("<dpctl." + self.__name__ + " [" +
-                self.name + ", " + self.vendor +", " +
-                " " + self.version + "] at {}>".format(hex(id(self))) )
+        return (
+            "<dpctl."
+            + self.__name__
+            + " ["
+            + self.name
+            + ", "
+            + self.vendor
+            + ", "
+            + " "
+            + self.version + "] at {}>".format(hex(id(self)))
+        )
 
     def __cinit__(self, arg=None):
         if type(arg) is unicode:
