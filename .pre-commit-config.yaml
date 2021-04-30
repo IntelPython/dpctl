@@ -35,4 +35,3 @@ repos:
     rev: v1.1.1
     hooks:
     -   id: clang-format
-    -   id: cppcheck
