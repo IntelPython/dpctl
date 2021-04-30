@@ -16,10 +16,10 @@
 
 """Provides an implementation of a SYCL malloc_shared allocator-aware Numpy.
 
-The modules includes a `numpy.ndarray` sub-class whose underlying memory buffer
-is allocated with a SYCL malloc_shared memory allocator. The malloc_shared
-allocated array is meant to be interoperable with Python extension modules that
-use SYCL and support USM.
+The modules includes a ``numpy.ndarray`` sub-class whose underlying memory
+buffer is allocated with a SYCL malloc_shared memory allocator. The
+``malloc_shared`` allocated array is meant to be interoperable with Python
+extension modules that use SYCL and support USM.
 
 The module also includes all NumPy classes and functions and the module can be
 used as a drop-in replacement for standard NumPy. Note that this module does
@@ -29,14 +29,12 @@ NumPy.
 """
 
 import builtins
-import inspect
 import sys
 from inspect import getmembers, isbuiltin, isclass, isfunction
 from numbers import Number
 
 import numpy as np
 
-import dpctl
 from dpctl.memory import MemoryUSMShared
 
 debug = False
@@ -171,7 +169,8 @@ class ndarray(np.ndarray):
             return new_obj
         else:
             dprint(
-                "numpy_usm_shared::ndarray __new__ buffer not None and not sycl_usm"
+                "numpy_usm_shared::ndarray __new__ buffer not None "
+                "and not sycl_usm"
             )
             nelems = np.prod(shape)
             # must copy
@@ -250,8 +249,8 @@ class ndarray(np.ndarray):
         # Just raise an exception since __array_ufunc__ makes all
         # reasonable cases not need the code below.
         raise ValueError(
-            "Non-USM allocated ndarray can not viewed as a USM-allocated \
-             one without a copy"
+            "Non-USM allocated ndarray can not viewed as a USM-allocated "
+            "one without a copy."
         )
 
     # Tell Numba to not treat this type just like a NumPy ndarray but to
@@ -290,14 +289,15 @@ class ndarray(np.ndarray):
                 else:
                     return NotImplemented
             # Have to avoid recursive calls to array_ufunc here.
-            # If no out kwarg then we create a numpy_usm_shared out so that we get
-            # USM memory.  However, if kwarg has numpy_usm_shared-typed out then
-            # array_ufunc is called recursively so we cast out as regular
+            # If no out kwarg then we create a numpy_usm_shared out so that we
+            # get USM memory.  However, if kwarg has numpy_usm_shared-typed out
+            # then array_ufunc is called recursively so we cast out as regular
             # NumPy ndarray (having a USM data pointer).
             out_arg = kwargs.get("out", None)
             if out_arg is None:
                 # maybe copy?
-                # deal with multiple returned arrays, so kwargs['out'] can be tuple
+                # deal with multiple returned arrays, so kwargs['out'] can be
+                # tuple.
                 res_type = np.result_type(*typing)
                 out_arg = empty(inputs[0].shape, dtype=res_type)
                 out_as_np = convert_ndarray_to_np_ndarray(out_arg)

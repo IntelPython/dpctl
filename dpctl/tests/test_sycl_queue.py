@@ -52,6 +52,7 @@ list_of_invalid_filter_selectors = [
     "abc",
 ]
 
+
 # Unit test cases that will be run for every device
 def check_get_max_compute_units(device):
     max_compute_units = device.max_compute_units
@@ -293,8 +294,8 @@ def check(request):
 
 
 def test_standard_selectors(device_selector, check):
-    """Tests if the standard SYCL device_selectors are able to select a
-    device.
+    """
+    Tests if the standard SYCL device_selectors are able to select a device.
     """
     try:
         device = device_selector()
@@ -307,7 +308,9 @@ def test_standard_selectors(device_selector, check):
 
 
 def test_current_device(check):
-    """Test is the device for the current queue is valid."""
+    """
+    Test is the device for the current queue is valid.
+    """
     try:
         q = dpctl.get_current_queue()
     except Exception:
@@ -317,7 +320,10 @@ def test_current_device(check):
 
 
 def test_valid_filter_selectors(valid_filter, check):
-    """Tests if we can create a SyclDevice using a supported filter selector string."""
+    """
+    Tests if we can create a SyclDevice using a supported filter selector
+    string.
+    """
     device = None
     try:
         q = dpctl.SyclQueue(valid_filter)
@@ -332,11 +338,12 @@ def test_valid_filter_selectors(valid_filter, check):
 
 
 def test_invalid_filter_selectors(invalid_filter):
-    """An invalid filter string should always be caught and a SyclQueueCreationError
-    raised.
+    """
+    An invalid filter string should always be caught and a
+    SyclQueueCreationError raised.
     """
     with pytest.raises(dpctl.SyclQueueCreationError):
-        q = dpctl.SyclQueue(invalid_filter)
+        dpctl.SyclQueue(invalid_filter)
 
 
 def test_context_not_equals():

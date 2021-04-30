@@ -38,25 +38,25 @@ cdef class SyclEvent:
     """
 
     @staticmethod
-    cdef SyclEvent _create (DPCTLSyclEventRef eref, list args):
+    cdef SyclEvent _create(DPCTLSyclEventRef eref, list args):
         cdef SyclEvent ret = SyclEvent.__new__(SyclEvent)
         ret._event_ref = eref
         ret._args = args
         return ret
 
-    def __dealloc__ (self):
+    def __dealloc__(self):
         self.wait()
         DPCTLEvent_Delete(self._event_ref)
 
-    cdef DPCTLSyclEventRef get_event_ref (self):
+    cdef DPCTLSyclEventRef get_event_ref(self):
         """ Returns the DPCTLSyclEventRef pointer for this class.
         """
         return self._event_ref
 
-    cpdef void wait (self):
+    cpdef void wait(self):
         DPCTLEvent_Wait(self._event_ref)
 
-    def addressof_ref (self):
+    def addressof_ref(self):
         """ Returns the address of the C API DPCTLSyclEventRef pointer as
         a size_t.
 

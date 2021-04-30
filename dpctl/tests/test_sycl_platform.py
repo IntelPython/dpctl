@@ -123,7 +123,7 @@ def test_invalid_platform_creation(invalid_filter, check):
     string.
     """
     with pytest.raises(ValueError):
-        platform = dpctl.SyclPlatform(invalid_filter)
+        dpctl.SyclPlatform(invalid_filter)
 
 
 def test_lsplatform():

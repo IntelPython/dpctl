@@ -20,10 +20,11 @@
 from __future__ import print_function
 
 import logging
+from contextlib import contextmanager
 
-from . import backend_type, device_type
+from .enum_types import backend_type, device_type
 
-from ._backend cimport (
+from ._backend cimport (  # noqa: E211
     DPCTLQueueMgr_GetCurrentQueue,
     DPCTLQueueMgr_GetQueueStackSize,
     DPCTLQueueMgr_GlobalQueueIsCurrent,
@@ -169,8 +170,8 @@ _mgr = _SyclQueueManager()
 
 # Global bound functions
 get_num_activated_queues = _mgr.get_num_activated_queues
-set_global_queue         = _mgr.set_global_queue
-is_in_device_context     = _mgr.is_in_device_context
+set_global_queue = _mgr.set_global_queue
+is_in_device_context = _mgr.is_in_device_context
 
 
 cpdef SyclQueue get_current_queue():
@@ -209,9 +210,6 @@ cpdef get_current_backend():
         backend_type: The SYCL backend for the currently selected queue.
     """
     return _mgr.get_current_backend()
-
-
-from contextlib import contextmanager
 
 
 @contextmanager

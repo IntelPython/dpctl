@@ -25,7 +25,7 @@
     backend_type combination.
 """
 
-from ._backend cimport (
+from ._backend cimport (  # noqa: E211
     DPCTLAcceleratorSelector_Create,
     DPCTLCPUSelector_Create,
     DPCTLDefaultSelector_Create,
@@ -47,8 +47,8 @@ from ._backend cimport (
     _device_type,
 )
 
-from . import backend_type
-from . import device_type as device_type_t
+from .enum_types import backend_type
+from .enum_types import device_type as device_type_t
 
 __all__ = [
     "get_devices",
@@ -161,7 +161,7 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
     else:
         raise TypeError(
             "backend should be specified as a str or an "
-            "enum_types.backend_type"
+            "``enum_types.backend_type``."
         )
 
     if isinstance(device_type, str):
@@ -171,7 +171,7 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
     else:
         raise TypeError(
             "device type should be specified as a str or an "
-            "enum_types.device_type"
+            "``enum_types.device_type``."
         )
 
     DVRef = DPCTLDeviceMgr_GetDevices(BTy | DTy)
@@ -194,8 +194,8 @@ cpdef int get_num_devices(
         BTy = _enum_to_dpctl_sycl_backend_ty(backend)
     else:
         raise TypeError(
-            "backend should be specified as a str or an "
-            "enum_types.backend_type"
+            "backend should be specified as a ``str`` or an "
+            "``enum_types.backend_type``"
         )
 
     if isinstance(device_type, str):
@@ -204,8 +204,8 @@ cpdef int get_num_devices(
         DTy = _enum_to_dpctl_sycl_device_ty(device_type)
     else:
         raise TypeError(
-            "device type should be specified as a str or an "
-            "enum_types.device_type"
+            "device type should be specified as a ``str`` or an "
+            "``enum_types.device_type``"
         )
 
     num_devices = DPCTLDeviceMgr_GetNumDevices(BTy | DTy)
@@ -214,42 +214,63 @@ cpdef int get_num_devices(
 
 
 cpdef cpp_bool has_cpu_devices():
-    """ Returns: True if `sycl::device_type::cpu` devices are present, False otherwise
+    """ A helper function to check if there are any SYCL CPU devices available.
+
+    Returns:
+        bool: ``True`` if ``sycl::device_type::cpu`` devices are present,
+        ``False`` otherwise.
     """
     cdef int num_cpu_dev = DPCTLDeviceMgr_GetNumDevices(_device_type._CPU)
     return <cpp_bool>num_cpu_dev
 
 
 cpdef cpp_bool has_gpu_devices():
-    """ Returns: True if `sycl::device_type::gpu` devices are present, False otherwise
+    """ A helper function to check if there are any SYCL GPU devices available.
+
+    Returns:
+        bool: ``True`` if ``sycl::device_type::gpu`` devices are present,
+        ``False`` otherwise.
     """
     cdef int num_gpu_dev = DPCTLDeviceMgr_GetNumDevices(_device_type._GPU)
     return <cpp_bool>num_gpu_dev
 
 
 cpdef cpp_bool has_accelerator_devices():
-    """ Returns: True if `sycl::device_type::accelerator` devices are present, False otherwise
+    """ A helper function to check if there are any SYCL Accelerator devices
+    available.
+
+    Returns:
+        bool: ``True`` if ``sycl::device_type::accelerator`` devices are
+        present, ``False`` otherwise.
     """
-    cdef int num_accelerator_dev = DPCTLDeviceMgr_GetNumDevices(_device_type._ACCELERATOR)
+    cdef int num_accelerator_dev = DPCTLDeviceMgr_GetNumDevices(
+        _device_type._ACCELERATOR
+    )
     return <cpp_bool>num_accelerator_dev
 
 
 cpdef cpp_bool has_host_device():
-    """ Returns: True if `sycl::device_type::host` devices are present, False otherwise
+    """ A helper function to check if there are any SYCL Host devices available.
+
+    Returns:
+        bool: ``True`` if ``sycl::device_type::host`` devices are present,
+        ``False`` otherwise.
     """
-    cdef int num_host_dev = DPCTLDeviceMgr_GetNumDevices(_device_type._HOST_DEVICE)
+    cdef int num_host_dev = DPCTLDeviceMgr_GetNumDevices(
+        _device_type._HOST_DEVICE
+    )
     return <cpp_bool>num_host_dev
 
 
 cpdef SyclDevice select_accelerator_device():
-    """ A wrapper for SYCL's `accelerator_selector` device_selector class.
+    """ A wrapper for SYCL's ``accelerator_selector`` class.
 
     Returns:
-        A new SyclDevice object containing the SYCL device returned by the
-        `accelerator_selector`.
+        A new class:`dpctl.SyclDevice` object containing the SYCL device
+        returned by the ``accelerator_selector``.
     Raises:
-        A ValueError is raised if the SYCL `accelerator_selector` is unable to
-        select a device.
+        A ``ValueError`` is raised if the SYCL ``accelerator_selector`` is
+        unable to select a device.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLAcceleratorSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
@@ -262,14 +283,14 @@ cpdef SyclDevice select_accelerator_device():
 
 
 cpdef SyclDevice select_cpu_device():
-    """ A wrapper for SYCL's `cpu_selector` device_selector class.
+    """ A wrapper for SYCL's ``cpu_selector`` class.
 
     Returns:
-        A new SyclDevice object containing the SYCL device returned by the
-        `cpu_selector`.
+        A new class:`dpctl.SyclDevice` object containing the SYCL device
+        returned by the ``cpu_selector``.
     Raises:
-        A ValueError is raised if the SYCL `cpu_seector` is unable to select a
-        device.
+        A ``ValueError`` is raised if the SYCL ``cpu_selector`` is unable to
+        select a device.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLCPUSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
@@ -282,13 +303,13 @@ cpdef SyclDevice select_cpu_device():
 
 
 cpdef SyclDevice select_default_device():
-    """ A wrapper for SYCL's `default_selector` device_selector class.
+    """ A wrapper for SYCL's ``default_selector`` class.
 
     Returns:
-        A new SyclDevice object containing the SYCL device returned by the
-        `default_selector`.
+        A new class:`dpctl.SyclDevice` object containing the SYCL device
+        returned by the ``default_selector``.
     Raises:
-        A ValueError is raised if the SYCL `default_seector` is unable to
+        A ``ValueError`` is raised if the SYCL ``default_selector`` is unable to
         select a device.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create()
@@ -302,14 +323,14 @@ cpdef SyclDevice select_default_device():
 
 
 cpdef SyclDevice select_gpu_device():
-    """ A wrapper for SYCL's `gpu_selector` device_selector class.
+    """ A wrapper for SYCL's ``gpu_selector`` class.
 
     Returns:
-        A new SyclDevice object containing the SYCL device returned by the
-        `gpu_selector`.
+        A new class:`dpctl.SyclDevice` object containing the SYCL device
+        returned by the ``gpu_selector``.
     Raises:
-        A ValueError is raised if the SYCL `gpu_seector` is unable to select a
-        device.
+        A ``ValueError`` is raised if the SYCL `gpu_selector` is unable to
+        select a device.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLGPUSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
@@ -322,14 +343,14 @@ cpdef SyclDevice select_gpu_device():
 
 
 cpdef SyclDevice select_host_device():
-    """ A wrapper for SYCL's `host_selector` device_selector class.
+    """ A wrapper for SYCL's ``host_selector`` class.
 
     Returns:
-        A new SyclDevice object containing the SYCL device returned by the
-        `host_selector`.
+        A new class:`dpctl.SyclDevice` object containing the SYCL device
+        returned by the ``host_selector``.
     Raises:
-        A ValueError is raised if the SYCL `host_seector` is unable to select a
-        device.
+        A ``ValueError`` is raised if the SYCL ``host_selector`` is unable to
+        select a device.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLHostSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)

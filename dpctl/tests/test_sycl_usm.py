@@ -29,7 +29,7 @@ from ._helper import has_cpu, has_gpu, has_sycl_platforms
 
 class Dummy(MemoryUSMShared):
     """
-    Class that exposes `__sycl_usm_array_interface__` with
+    Class that exposes ``__sycl_usm_array_interface__`` with
     SYCL context for sycl object, instead of Sycl queue.
     """
 
@@ -266,7 +266,10 @@ class View:
 
 class TestMemoryWithView(unittest.TestCase):
     def test_suai_non_contig_1D(self):
-        """Test of zero-copy using sycl_usm_array_interface with non-contiguous data"""
+        """
+        Test of zero-copy using sycl_usm_array_interface with non-contiguous
+        data.
+        """
 
         MemoryUSMClass = MemoryUSMShared
         try:
