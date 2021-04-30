@@ -41,18 +41,18 @@ else:
     assert False, sys.platform + " not supported"
 
 if IS_LIN:
-    DPCPP_ROOT = os.environ["ONEAPI_ROOT"] + "/compiler/latest/linux"
+    DPCPP_ROOT = os.environ["ONEAPI_ROOT"] + r"/compiler/latest/linux"
     os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
-    os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl/include"
+    os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = r"dpctl/include"
     os.environ["CFLAGS"] = "-fPIC"
 
 elif IS_WIN:
     os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
-    os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = "dpctl\include"
+    os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = r"dpctl\include"
 
 dpctl_sycl_interface_lib = os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"]
 dpctl_sycl_interface_include = os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"]
-sycl_lib = os.environ["ONEAPI_ROOT"] + "\compiler\latest\windows\lib"
+sycl_lib = os.environ["ONEAPI_ROOT"] + r"\compiler\latest\windows\lib"
 
 # Get long description
 with open("README.md", "r", encoding="utf-8") as file:
@@ -84,7 +84,7 @@ def get_sdl_ldflags():
     if IS_LIN:
         ldflags = ["-Wl,-z,noexecstack,-z,relro,-z,now"]
     elif IS_WIN:
-        ldflags = ["/NXCompat", "/DynamicBase"]
+        ldflags = [r"/NXCompat", r"/DynamicBase"]
     # Add ldflags from environment
     ldflags += remove_empty(os.getenv("LDFLAGS", "").split(" "))
 
@@ -99,7 +99,7 @@ def get_other_cxxflags():
     elif IS_WIN:
         # FIXME: These are specific to MSVC and we should first make sure
         # what compiler we are using.
-        return ["/Ox", "/std:c++17"]
+        return [r"/Ox", r"/std:c++17"]
 
 
 def get_suppressed_warning_flags():
