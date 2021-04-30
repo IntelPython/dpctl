@@ -14,24 +14,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
-from os.path import join, exists, abspath, dirname
-from os import getcwd
 from os import environ
+from os.path import dirname, join
+
 from Cython.Build import cythonize
 
 
 def configuration(parent_package="", top_path=None):
-    from numpy.distutils.misc_util import Configuration
-    from numpy.distutils.system_info import get_info
     import numpy as np
+    from numpy.distutils.misc_util import Configuration
+
     import dpctl
 
     config = Configuration("", parent_package, top_path)
 
     oneapi_root = environ.get("ONEAPI_ROOT", None)
     if not oneapi_root:
-        raise ValueError("ONEAPI_ROOT must be set, typical value is /opt/intel/oneapi")
+        raise ValueError(
+            "ONEAPI_ROOT must be set, typical value is /opt/intel/oneapi"
+        )
 
     mkl_info = {
         "include_dirs": [join(oneapi_root, "mkl", "include")],
@@ -65,7 +66,8 @@ def configuration(parent_package="", top_path=None):
             join(pdir, "sycl_function.cpp"),
             join(pdir, "sycl_function.hpp"),
         ],
-        include_dirs=[wdir, np.get_include(), dpctl.get_include()] + mkl_include_dirs,
+        include_dirs=[wdir, np.get_include(), dpctl.get_include()]
+        + mkl_include_dirs,
         libraries=["sycl"] + mkl_libraries,
         runtime_library_dirs=mkl_library_dirs,
         extra_compile_args=eca,  # + ['-O0', '-g', '-ggdb'],
@@ -73,7 +75,9 @@ def configuration(parent_package="", top_path=None):
         language="c++",
     )
 
-    config.ext_modules = cythonize(config.ext_modules, include_path=[pdir, wdir])
+    config.ext_modules = cythonize(
+        config.ext_modules, include_path=[pdir, wdir]
+    )
     return config
 
 

@@ -18,8 +18,10 @@
 """
 
 import unittest
-from dpctl.tensor import numpy_usm_shared as dparray
+
 import numpy
+
+from dpctl.tensor import numpy_usm_shared as dparray
 
 
 class Test_dparray(unittest.TestCase):

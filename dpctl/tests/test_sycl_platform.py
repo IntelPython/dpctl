@@ -17,8 +17,10 @@
 """Defines unit test cases for the SyclPlatform class.
 """
 
-import dpctl
 import pytest
+
+import dpctl
+
 from ._helper import has_sycl_platforms
 
 list_of_valid_filter_selectors = [
@@ -121,7 +123,7 @@ def test_invalid_platform_creation(invalid_filter, check):
     string.
     """
     with pytest.raises(ValueError):
-        platform = dpctl.SyclPlatform(invalid_filter)
+        dpctl.SyclPlatform(invalid_filter)
 
 
 def test_lsplatform():

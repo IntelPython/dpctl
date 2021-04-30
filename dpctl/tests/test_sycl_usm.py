@@ -18,15 +18,18 @@
 """
 
 import unittest
-import dpctl
-from dpctl.memory import MemoryUSMShared, MemoryUSMHost, MemoryUSMDevice
+
 import numpy as np
+
+import dpctl
+from dpctl.memory import MemoryUSMDevice, MemoryUSMHost, MemoryUSMShared
+
 from ._helper import has_cpu, has_gpu, has_sycl_platforms
 
 
 class Dummy(MemoryUSMShared):
     """
-    Class that exposes `__sycl_usm_array_interface__` with
+    Class that exposes ``__sycl_usm_array_interface__`` with
     SYCL context for sycl object, instead of Sycl queue.
     """
 
@@ -152,7 +155,9 @@ class TestMemory(unittest.TestCase):
 
         mobj_reconstructed = pickle.loads(pickle.dumps(mobj))
         self.assertEqual(
-            type(mobj), type(mobj_reconstructed), "Pickling should preserve type"
+            type(mobj),
+            type(mobj_reconstructed),
+            "Pickling should preserve type",
         )
         self.assertEqual(
             mobj.tobytes(),
@@ -261,7 +266,10 @@ class View:
 
 class TestMemoryWithView(unittest.TestCase):
     def test_suai_non_contig_1D(self):
-        """Test of zero-copy using sycl_usm_array_interface with non-contiguous data"""
+        """
+        Test of zero-copy using sycl_usm_array_interface with non-contiguous
+        data.
+        """
 
         MemoryUSMClass = MemoryUSMShared
         try:
@@ -276,7 +284,9 @@ class TestMemoryWithView(unittest.TestCase):
         v = View(buf, shape=(n1d,), strides=(step_1d,), offset=offset)
         buf2 = MemoryUSMClass(v)
         expected_nbytes = (
-            np.flip(host_canary[offset : offset + n1d * step_1d : step_1d]).ctypes.data
+            np.flip(
+                host_canary[offset : offset + n1d * step_1d : step_1d]
+            ).ctypes.data
             + 1
             - host_canary[offset:].ctypes.data
         )

@@ -14,8 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import syclbuffer as sb
 import numpy as np
+import syclbuffer as sb
+
 import dpctl
 
 X = np.random.randn(100, 4)

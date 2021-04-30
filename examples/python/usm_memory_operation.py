@@ -14,12 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Demonstrates host to device copy functions using dpctl.memory.
+"""
+Demonstrates host to device copy functions using dpctl.memory.
 """
 
-import dpctl
-import dpctl.memory as dpmem
 import numpy as np
+
+import dpctl.memory as dpmem
 
 ms = dpmem.MemoryUSMShared(32)
 md = dpmem.MemoryUSMDevice(32)
@@ -29,7 +30,8 @@ host_buf = np.random.randint(0, 42, dtype=np.uint8, size=32)
 # copy host byte-like object to USM-device buffer
 md.copy_from_host(host_buf)
 
-# copy USM-device buffer to USM-shared buffer in parallel (using sycl::queue::memcpy)
+# copy USM-device buffer to USM-shared buffer in parallel using
+# sycl::queue::memcpy.
 ms.copy_from_device(md)
 
 # build numpy array reusing host-accessible USM-shared memory

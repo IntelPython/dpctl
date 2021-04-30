@@ -21,10 +21,7 @@
     SYCL platform-related helper functions.
 """
 
-from ._backend cimport (
-    DPCTLSyclPlatformRef,
-    DPCTLSyclDeviceSelectorRef,
-)
+from ._backend cimport DPCTLSyclDeviceSelectorRef, DPCTLSyclPlatformRef
 
 
 cdef class _SyclPlatform:

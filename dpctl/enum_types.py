@@ -22,7 +22,6 @@ backend and device_type enumerations.
 """
 from enum import Enum, auto
 
-
 __all__ = [
     "device_type",
     "backend_type",

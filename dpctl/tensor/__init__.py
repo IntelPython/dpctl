@@ -17,14 +17,13 @@
 """
     **Data Parallel Tensor Collection**
 
-    `dpctl.tensor` is an experimental collection of tensor implementations
-    that will implement future Python data API (https://data-apis.github.io/array-api/latest/).
+    ``dpctl.tensor`` is an experimental collection of tensor implementations
+    that will implement future Python data API
+    (https://data-apis.github.io/array-api/latest/).
 
     Available tensor implementations:
 
-    * `numpy_usm_shared`: Provides a `numpy.ndarray` sub-class whose \
-    underlying memory buffer is allocated with a USM shared memory allocator.
+    * ``numpy_usm_shared``: Provides a ``numpy.ndarray`` sub-class whose
+       underlying memory buffer is allocated with a USM shared memory allocator.
 
 """
-
-import dpctl.tensor.numpy_usm_shared

@@ -20,16 +20,14 @@
 """ This file declares the SyclQueue extension type.
 """
 
-from ._backend cimport (
-    DPCTLSyclDeviceRef,
-    DPCTLKernelArgType,
-    DPCTLSyclQueueRef,
-)
-from ._sycl_context cimport SyclContext
-from ._sycl_event cimport SyclEvent
-from ._sycl_device cimport SyclDevice
-from .program._program cimport SyclKernel
 from libcpp cimport bool as cpp_bool
+
+from ._backend cimport DPCTLKernelArgType, DPCTLSyclDeviceRef, DPCTLSyclQueueRef
+from ._sycl_context cimport SyclContext
+from ._sycl_device cimport SyclDevice
+from ._sycl_event cimport SyclEvent
+from .program._program cimport SyclKernel
+
 
 cdef void default_async_error_handler(int) nogil except *
 

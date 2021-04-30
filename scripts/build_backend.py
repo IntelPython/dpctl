@@ -18,11 +18,11 @@
 """
 
 
-import os
-import sys
-import subprocess
-import shutil
 import glob
+import os
+import shutil
+import subprocess
+import sys
 
 IS_WIN = False
 IS_LIN = False
@@ -38,9 +38,9 @@ ONEAPI_ROOT = os.environ.get("ONEAPI_ROOT")
 CODE_COVERAGE = os.environ.get("CODE_COVERAGE")
 
 if IS_LIN:
-    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, "compiler/latest/linux")
+    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, r"compiler/latest/linux")
 if IS_WIN:
-    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, "compiler\latest\windows")
+    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, r"compiler\latest\windows")
 
 dpctl_dir = os.getcwd()
 build_cmake_dir = os.path.join(dpctl_dir, "build_cmake")
@@ -63,8 +63,10 @@ if IS_LIN:
             "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
             "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
             "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
-            "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
-            "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "dpcpp"),
+            "-DCMAKE_C_COMPILER:PATH="
+            + os.path.join(DPCPP_ROOT, "bin", "clang"),
+            "-DCMAKE_CXX_COMPILER:PATH="
+            + os.path.join(DPCPP_ROOT, "bin", "dpcpp"),
             "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON",
             "-DDPCTL_BUILD_CAPI_TESTS=ON",
             "-DDPCTL_GENERATE_COVERAGE=ON",
@@ -83,8 +85,10 @@ if IS_LIN:
             "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
             "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
             "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
-            "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang"),
-            "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "dpcpp"),
+            "-DCMAKE_C_COMPILER:PATH="
+            + os.path.join(DPCPP_ROOT, "bin", "clang"),
+            "-DCMAKE_CXX_COMPILER:PATH="
+            + os.path.join(DPCPP_ROOT, "bin", "dpcpp"),
             "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON",
             backends,
         ]
@@ -105,8 +109,10 @@ if IS_WIN:
         "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
         "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
         "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
-        "-DCMAKE_C_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "clang-cl.exe"),
-        "-DCMAKE_CXX_COMPILER:PATH=" + os.path.join(DPCPP_ROOT, "bin", "dpcpp.exe"),
+        "-DCMAKE_C_COMPILER:PATH="
+        + os.path.join(DPCPP_ROOT, "bin", "clang-cl.exe"),
+        "-DCMAKE_CXX_COMPILER:PATH="
+        + os.path.join(DPCPP_ROOT, "bin", "dpcpp.exe"),
         backends,
     ]
     subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=False)
