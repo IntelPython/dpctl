@@ -10,10 +10,12 @@ exclude =
     dpctl/_version.py
 
 per-file-ignores =
-    dpctl/_sycl_context.pyx: E999, E225
+    dpctl/_sycl_context.pyx: E999, E225, E227
     dpctl/_sycl_device.pyx: E999, E225
     dpctl/_sycl_device_factory.pyx: E999, E225
-    dpctl/_sycl_device_event.pyx: E999, E225
+    dpctl/_sycl_event.pyx: E999, E225
     dpctl/_sycl_platform.pyx: E999, E225
     dpctl/_sycl_queue.pyx: E999, E225, E226, E227
     dpctl/_sycl_queue_manager.pyx: E999, E225
+    dpctl/memory/_memory.pyx: E999, E225, E226, E227
+    dpctl/program/_program.pyx: E999, E225, E226, E227
