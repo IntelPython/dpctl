@@ -433,8 +433,11 @@ cdef class SyclContext(_SyclContext):
         if n == 1:
             return ("<dpctl." + self.__name__ + " at {}>".format(hex(id(self))))
         else:
-            return ("<dpctl." + self.__name__ + " for {} devices at {}>"
-            .format(n, hex(id(self))))
+            return (
+                "<dpctl."
+                + self.__name__
+                + " for {} devices at {}>".format(n, hex(id(self)))
+            )
 
     def _get_capsule(self):
         """
