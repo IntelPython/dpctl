@@ -27,35 +27,92 @@ html/sycl-2020.html#_sycl_runtime_classes).
 """
 __author__ = "Intel Corp."
 
-from dpctl._sycl_context import *
-from dpctl._sycl_context import __all__ as _sycl_context__all__
-from dpctl._sycl_device import *
-from dpctl._sycl_device import __all__ as _sycl_device__all__
-from dpctl._sycl_device_factory import *
-from dpctl._sycl_device_factory import __all__ as _sycl_device_factory__all__
-from dpctl._sycl_event import *
-from dpctl._sycl_event import __all__ as _sycl_event__all__
-from dpctl._sycl_platform import *
-from dpctl._sycl_platform import __all__ as _sycl_platform__all__
-from dpctl._sycl_queue import *
-from dpctl._sycl_queue import __all__ as _sycl_queue__all__
-from dpctl._sycl_queue_manager import *
-from dpctl._sycl_queue_manager import __all__ as _sycl_qm__all__
+from dpctl._sycl_context import SyclContext
+from dpctl._sycl_device import SyclDevice
+from dpctl._sycl_device_factory import (
+    get_devices,
+    get_num_devices,
+    has_accelerator_devices,
+    has_cpu_devices,
+    has_gpu_devices,
+    has_host_device,
+    select_accelerator_device,
+    select_cpu_device,
+    select_default_device,
+    select_gpu_device,
+    select_host_device,
+)
+from dpctl._sycl_event import SyclEvent
+from dpctl._sycl_platform import SyclPlatform, get_platforms, lsplatform
+from dpctl._sycl_queue import (
+    SyclKernelInvalidRangeError,
+    SyclKernelSubmitError,
+    SyclQueue,
+    SyclQueueCreationError,
+)
+from dpctl._sycl_queue_manager import (
+    device_context,
+    get_current_backend,
+    get_current_device_type,
+    get_current_queue,
+    get_num_activated_queues,
+    is_in_device_context,
+    set_global_queue,
+)
 
 from ._version import get_versions
-from .enum_types import *
-from .enum_types import __all__ as _enum_types_all__
+from .enum_types import backend_type, device_type
 
-__all__ = (
-    _sycl_context__all__
-    + _sycl_device__all__
-    + _sycl_device_factory__all__
-    + _sycl_event__all__
-    + _sycl_platform__all__
-    + _sycl_queue__all__
-    + _sycl_qm__all__
-    + _enum_types_all__
-)
+__all__ = [
+    "SyclContext",
+]
+__all__ += [
+    "SyclDevice",
+]
+
+__all__ += [
+    "get_devices",
+    "select_accelerator_device",
+    "select_cpu_device",
+    "select_default_device",
+    "select_gpu_device",
+    "select_host_device",
+    "get_num_devices",
+    "has_cpu_devices",
+    "has_gpu_devices",
+    "has_accelerator_devices",
+    "has_host_device",
+]
+__all__ += [
+    "SyclEvent",
+]
+__all__ += [
+    "get_platforms",
+    "lsplatform",
+    "SyclPlatform",
+]
+__all__ += [
+    "SyclQueue",
+    "SyclKernelInvalidRangeError",
+    "SyclKernelSubmitError",
+    "SyclQueueCreationError",
+]
+__all__ += [
+    "device_context",
+    "get_current_backend",
+    "get_current_device_type",
+    "get_current_queue",
+    "get_num_activated_queues",
+    "is_in_device_context",
+    "set_global_queue",
+]
+__all__ += [
+    "device_type",
+    "backend_type",
+]
+__all__ += [
+    "get_include",
+]
 
 
 def get_include():
@@ -72,11 +129,3 @@ def get_include():
 
 __version__ = get_versions()["version"]
 del get_versions
-del _sycl_context__all__
-del _sycl_device__all__
-del _sycl_device_factory__all__
-del _sycl_event__all__
-del _sycl_queue__all__
-del _sycl_qm__all__
-del _sycl_platform__all__
-del _enum_types_all__

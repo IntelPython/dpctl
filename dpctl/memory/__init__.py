@@ -31,6 +31,5 @@
 
 """
 from ._memory import MemoryUSMDevice, MemoryUSMHost, MemoryUSMShared
-from ._memory import __all__ as _memory__all__
 
-__all__ = _memory__all__
+__all__ = ["MemoryUSMDevice", "MemoryUSMHost", "MemoryUSMShared"]
