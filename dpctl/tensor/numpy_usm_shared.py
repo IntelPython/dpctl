@@ -359,7 +359,7 @@ for c in class_list:
     try:
         the_code = compile(new_func, "__init__", "exec")
         exec(the_code)
-    except:
+    except Exception:
         print("Failed to exec type propagation", cname)
         pass
 

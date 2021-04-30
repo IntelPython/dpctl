@@ -266,7 +266,7 @@ class TestMemoryWithView(unittest.TestCase):
         MemoryUSMClass = MemoryUSMShared
         try:
             buf = MemoryUSMClass(32)
-        except:
+        except Exception:
             self.skipTest("MemoryUSMShared could not be allocated")
         host_canary = np.full((buf.nbytes,), 77, dtype="|u1")
         buf.copy_from_host(host_canary)
@@ -294,7 +294,7 @@ class TestMemoryWithView(unittest.TestCase):
         MemoryUSMClass = MemoryUSMDevice
         try:
             buf = MemoryUSMClass(20)
-        except:
+        except Exception:
             self.skipTest("MemoryUSMShared could not be allocated")
         host_canary = np.arange(20, dtype="|u1")
         buf.copy_from_host(host_canary)
