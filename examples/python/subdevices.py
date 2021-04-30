@@ -72,7 +72,7 @@ def subdivide_by_affinity(affinity="numa"):
                 len(sub_devs), [d.max_compute_units for d in sub_devs]
             )
         )
-    except:
+    except Exception:
         print("Device partitioning by affinity was not successful.")
 
 
