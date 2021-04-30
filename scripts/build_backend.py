@@ -38,9 +38,9 @@ ONEAPI_ROOT = os.environ.get("ONEAPI_ROOT")
 CODE_COVERAGE = os.environ.get("CODE_COVERAGE")
 
 if IS_LIN:
-    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, "compiler/latest/linux")
+    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, r"compiler/latest/linux")
 if IS_WIN:
-    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, "compiler\latest\windows")
+    DPCPP_ROOT = os.path.join(ONEAPI_ROOT, r"compiler\latest\windows")
 
 dpctl_dir = os.getcwd()
 build_cmake_dir = os.path.join(dpctl_dir, "build_cmake")
