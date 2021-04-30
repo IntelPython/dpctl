@@ -67,7 +67,8 @@ def subdivide_by_affinity(affinity="numa"):
     try:
         sub_devs = cpu_d.create_sub_devices(partition=affinity)
         print(
-            "{} sub-devices were created with #EUs".format(
+            "{0} sub-devices were created with respective "
+            "#EUs being {1}".format(
                 len(sub_devs), [d.max_compute_units for d in sub_devs]
             )
         )
