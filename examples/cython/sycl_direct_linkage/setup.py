@@ -14,9 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
-from os import environ, getcwd
-from os.path import abspath, dirname, exists, join
+from os import environ
+from os.path import dirname, join
 
 from Cython.Build import cythonize
 
@@ -24,7 +23,6 @@ from Cython.Build import cythonize
 def configuration(parent_package="", top_path=None):
     import numpy as np
     from numpy.distutils.misc_util import Configuration
-    from numpy.distutils.system_info import get_info
 
     import dpctl
 

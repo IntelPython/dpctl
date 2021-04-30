@@ -16,6 +16,8 @@
 
 # coding: utf-8
 
+import timeit
+
 import blackscholes_usm as bs
 import numpy as np
 from reference_black_scholes import ref_python_black_scholes
@@ -62,8 +64,6 @@ print(
 n_opts = 3 * 10 ** 6
 
 # compute on CPU sycl device
-import timeit
-
 cpu_q = dpctl.SyclQueue("opencl:cpu:0")
 opts1 = gen_option_params(
     n_opts,
