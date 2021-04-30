@@ -1,5 +1,5 @@
 [tool.black]
-exclude = "version"
+exclude = "versioneer.py|dpctl/_version.py"
 line-length = 80
 
 [tool.isort]
