@@ -30,7 +30,6 @@
     `memoryview`, or `array.array` classes.
 
 """
-from ._memory import MemoryUSMShared, MemoryUSMDevice, MemoryUSMHost
-from ._memory import __all__ as _memory__all__
+from ._memory import MemoryUSMDevice, MemoryUSMHost, MemoryUSMShared
 
-__all__ = _memory__all__
+__all__ = ["MemoryUSMDevice", "MemoryUSMHost", "MemoryUSMShared"]

@@ -26,5 +26,3 @@
     underlying memory buffer is allocated with a USM shared memory allocator.
 
 """
-
-import dpctl.tensor.numpy_usm_shared
