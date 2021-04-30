@@ -7,3 +7,32 @@ repos:
     -   id: bandit
         pass_filenames: false
         args: ["-r", "dpctl", "-lll"]
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+-   repo: https://github.com/psf/black
+    rev: 21.4b2
+    hooks:
+    -   id: black
+        exclude: "versioneer.py|dpctl/_version.py"
+-   repo: https://github.com/pycqa/isort
+    rev: 5.8.0
+    hooks:
+    -   id: isort
+        name: isort (python)
+    -   id: isort
+        name: isort (cython)
+        types: [cython]
+    -   id: isort
+        name: isort (pyi)
+        types: [pyi]
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: 3.9.1
+    hooks:
+    -   id: flake8
+-   repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.1.1
+    hooks:
+    -   id: clang-format

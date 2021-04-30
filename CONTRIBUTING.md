@@ -15,12 +15,30 @@ Run before each commit: `clang-format -style=file -i dpctl-capi/include/*.h dpct
 
 ### Python code style
 
-We use [black](https://black.readthedocs.io/en/stable/) code formatter.
+We use the following Python code style tools:
+- [black](https://black.readthedocs.io/en/stable/) code formatter.
+    - Revision: `20.8b1`.
+- [flake8](https://flake8.pycqa.org/en/latest/) linter.
+    - Revision `3.9.1`.
+- [isort](https://pycqa.github.io/isort/) import sorter.
+    - Revision `5.8.0`.
 
-- Revision: `20.8b1`.
-- See configuration in `pyproject.toml`.
+- Refer `pyproject.toml` and `.flake8` config files for current configurations.
 
-Run before each commit: `black .`
+Please run these three tools before each commit. Although, you may choose to
+do so manually, but it is much easier and preferable to automate these checks.
+Refer your IDE docs to set them up in your IDE, or you can set up `pre-commit`
+to add git hooks.
+
+### Setting up pre-commit
+
+A `.pre-commit-config.yaml` is included to run various check before you
+commit your code. Here are the steps to setup `pre-commit` in your workflow:
+
+- Install `pre-commit`: `pip install pre-commit`
+- Install the git hook scripts: `pre-commit install`
+
+That should be it!
 
 ### C/C++ File Headers
 
@@ -61,8 +79,9 @@ Few things to note about this format:
 - The copyright year should be updated every calendar year.
 - Each comment line should be a max of 80 chars.
 - A Doxygen `\file` tag describing the contents of the file must be provided.
-  Also note that the `\file` tag is inside a Doxygen comment block (defined by `///`
-  comment marker instead of the `//` comment marker used in the rest of the header.
+  Also note that the `\file` tag is inside a Doxygen comment block (
+  defined by `///` comment marker instead of the `//` comment marker used in the
+  rest of the header.
 
 ### Python File Headers
 
@@ -91,7 +110,8 @@ The copyright year should be updated every calendar year.
 
 ### Bandit
 
-We use [Bandit](https://github.com/PyCQA/bandit) to find common security issues in Python code.
+We use [Bandit](https://github.com/PyCQA/bandit) to find common security issues
+in Python code.
 
 Install: `pip install bandit`
 
@@ -101,18 +121,21 @@ Run before each commit: `bandit -r dpctl -lll`
 
 ## Code Coverage
 
-Implement python, cython and c++ file coverage using `coverage` and `llvm-cov` packages on Linux.
+Implement python, cython and c++ file coverage using `coverage` and `llvm-cov`
+packages on Linux.
 
 ### Using Code Coverage
 
-You need to install additional packages and add an environment variable to cover:
+You need to install additional packages and add an environment variable to
+cover:
 - conda install cmake
 - conda install coverage
 - conda install conda-forge::lcov
 - conda install conda-forge::gtest
 - export CODE_COVERAGE=ON
 
-CODE_COVERAGE allows you to build a debug version of dpctl and enable string tracing, which allows you to analyze strings to create a coverage report.
+CODE_COVERAGE allows you to build a debug version of dpctl and enable string
+tracing, which allows you to analyze strings to create a coverage report.
 It was added for the convenience of configuring the CI in the future.
 
 Installing the dpctl package:
@@ -121,19 +144,24 @@ Installing the dpctl package:
 It is important that there are no files of the old build in the folder.
 Use `git clean -xdf` to clean up the working tree.
 
-The coverage report will appear during the build in the console. This report contains information about c++ file coverage.
-The `dpctl-c-api-coverage` folder will appear in the root folder after installation.
-The folder contains a report on the coverage of c++ files in html format.
+The coverage report will appear during the build in the console. This report
+contains information about c++ file coverage.
+The `dpctl-c-api-coverage` folder will appear in the root folder after
+installation. The folder contains a report on the coverage of c++ files in html
+format.
 
 You need to run tests to cover the cython and python files:
 - coverage run -m unittest dpctl.tests
 
-The required flags for the command coverage run are contained in the file `.coveragerc`.
+The required flags for the command coverage run are contained in the file
+`.coveragerc`.
 
 The simplest reporting is a textual summary produced with report:
 - coverage report
 
-For each module executed, the report shows the count of executable statements, the number of those statements missed, and the resulting coverage, expressed as a percentage.
+For each module executed, the report shows the count of executable statements,
+the number of those statements missed, and the resulting coverage, expressed as
+a percentage.
 
 The `-m` flag also shows the line numbers of missing statements:
 - coverage report -m
@@ -141,14 +169,16 @@ The `-m` flag also shows the line numbers of missing statements:
 To create an annotated HTML listings with coverage results:
 - coverage html
 
-The `htmlcov` folder will appear in the root folder of the project. It contains reports on the coverage of python and cython files in html format.
+The `htmlcov` folder will appear in the root folder of the project. It contains
+reports on the coverage of python and cython files in html format.
 
 Erase previously collected coverage data:
 - coverage erase
 
 ### Error in the build process
 
-An error occurs during the dcptl build with the CODE_COVERAGE environment variable:
+An error occurs during the dcptl build with the CODE_COVERAGE environment
+variable:
 ```
 error: '../compat/unistd.h' file not found, did you mean 'compat/unistd.h'?
 #   include "../compat/unistd.h"
