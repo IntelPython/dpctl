@@ -13,11 +13,6 @@ exclude =
     .git
 
 per-file-ignores =
-    dpctl/__init__.py: F403, F401
-    dpctl/memory/__init__.py: F403, F401
-    dpctl/program/__init__.py: F403, F401
-    dpctl/tensor/__init__.py: F403, F401
-    dpctl/tests/__init__.py: F403, F401
     dpctl/_sycl_context.pyx: E999, E225, E227
     dpctl/_sycl_device.pyx: E999, E225
     dpctl/_sycl_device_factory.pyx: E999, E225
