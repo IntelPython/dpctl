@@ -15,15 +15,22 @@
 # limitations under the License.
 
 cimport numpy as cnp
+
 import numpy as np
+
 from cython.operator cimport dereference as deref
+
 
 cdef extern from "CL/sycl.hpp" namespace "cl::sycl":
     cdef cppclass queue nogil:
-       pass
+        pass
+
 
 cdef extern from "sycl_function.hpp":
-    int c_columnwise_total(queue& q, size_t n, size_t m, double *m, double *ct) nogil
+    int c_columnwise_total(
+        queue& q, size_t n, size_t m, double *m, double *ct
+    ) nogil
+
 
 def columnwise_total(double[:, ::1] v):
     cdef cnp.ndarray res_array = np.empty((v.shape[1],), dtype='d')
@@ -34,7 +41,9 @@ def columnwise_total(double[:, ::1] v):
     q = new queue()
 
     with nogil:
-        ret_status = c_columnwise_total(deref(q), v.shape[0], v.shape[1], &v[0,0], &res_memslice[0])
+        ret_status = c_columnwise_total(
+            deref(q), v.shape[0], v.shape[1], &v[0, 0], &res_memslice[0]
+        )
 
     del q
 

@@ -24,9 +24,22 @@ a OpenCL source string or a SPIR-V binary file.
 
 """
 
+cimport cython.array
 
-from __future__ import print_function
-from dpctl._backend cimport *
+from dpctl._backend cimport (  # noqa: E211, E402
+    DPCTLCString_Delete,
+    DPCTLKernel_Delete,
+    DPCTLKernel_GetFunctionName,
+    DPCTLKernel_GetNumArgs,
+    DPCTLProgram_CreateFromOCLSource,
+    DPCTLProgram_CreateFromSpirv,
+    DPCTLProgram_Delete,
+    DPCTLProgram_GetKernel,
+    DPCTLProgram_HasKernel,
+    DPCTLSyclContextRef,
+    DPCTLSyclKernelRef,
+    DPCTLSyclProgramRef,
+)
 
 __all__ = [
     "create_program_from_source",
@@ -37,10 +50,11 @@ __all__ = [
 ]
 
 cdef class SyclProgramCompilationError(Exception):
-    """This exception is raised when a SYCL program could not be built from
+    """This exception is raised when a ``sycl::program`` could not be built from
        either a SPIR-V binary file or a string source.
     """
     pass
+
 
 cdef class SyclKernel:
     """
@@ -56,8 +70,8 @@ cdef class SyclKernel:
         DPCTLKernel_Delete(self._kernel_ref)
         DPCTLCString_Delete(self._function_name)
 
-    def get_function_name (self):
-        """ Returns the name of the Kernel function.
+    def get_function_name(self):
+        """ Returns the name of the ``sycl::kernel`` function.
         """
         return self._function_name.decode()
 
@@ -66,32 +80,33 @@ cdef class SyclKernel:
         """
         return DPCTLKernel_GetNumArgs(self._kernel_ref)
 
-    cdef DPCTLSyclKernelRef get_kernel_ref (self):
-        """ Returns the DPCTLSyclKernelRef pointer for this SyclKernel.
+    cdef DPCTLSyclKernelRef get_kernel_ref(self):
+        """ Returns the ``DPCTLSyclKernelRef`` pointer for this SyclKernel.
         """
         return self._kernel_ref
 
     def addressof_ref(self):
-        """ Returns the address of the C API DPCTLSyclKernelRef pointer
-        as a size_t.
+        """ Returns the address of the C API ``DPCTLSyclKernelRef`` pointer
+        as a ``size_t``.
 
         Returns:
-            The address of the DPCTLSyclKernelRef object used to create this
-            SyclKernel cast to a size_t.
+            The address of the ``DPCTLSyclKernelRef`` pointer used to create
+            this :class:`dpctl.SyclKernel` object cast to a ``size_t``.
         """
         return int(<size_t>self._kernel_ref)
 
+
 cdef class SyclProgram:
-    """ Wraps a sycl::program object created from an OpenCL interoperability
+    """ Wraps a ``sycl::program`` object created from an OpenCL interoperability
         program.
 
-        SyclProgram exposes the C API from dpctl_sycl_program_interface.h. A
+        SyclProgram exposes the C API from ``dpctl_sycl_program_interface.h``. A
         SyclProgram can be created from either a source string or a SPIR-V
         binary file.
     """
 
     @staticmethod
-    cdef SyclProgram _create (DPCTLSyclProgramRef pref):
+    cdef SyclProgram _create(DPCTLSyclProgramRef pref):
         cdef SyclProgram ret = SyclProgram.__new__(SyclProgram)
         ret._program_ref = pref
         return ret
@@ -99,7 +114,7 @@ cdef class SyclProgram:
     def __dealloc__(self):
         DPCTLProgram_Delete(self._program_ref)
 
-    cdef DPCTLSyclProgramRef get_program_ref (self):
+    cdef DPCTLSyclProgramRef get_program_ref(self):
         return self._program_ref
 
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name):
@@ -116,18 +131,19 @@ cdef class SyclProgram:
         as a long.
 
         Returns:
-            The address of the DPCTLSyclProgramRef object used to create this
-            SyclProgram cast to a long.
+            The address of the ``DPCTLSyclProgramRef`` pointer used to create
+            this :class:`dpctl.SyclProgram` object cast to a ``size_t``.
         """
         return int(<size_t>self._program_ref)
+
 
 cpdef create_program_from_source(SyclQueue q, unicode src, unicode copts=""):
     """
         Creates a Sycl interoperability program from an OpenCL source string.
 
-        We use the DPCTLProgram_CreateFromOCLSource() C API function to create
-        a Sycl progrma from an OpenCL source program that can contain multiple
-        kernels. Note currently only supported for OpenCL.
+        We use the ``DPCTLProgram_CreateFromOCLSource()`` C API function to
+        create a ``sycl::program`` from an OpenCL source program that can
+        contain multiple kernels. Note currently only supported for OpenCL.
 
         Parameters:
             q (SyclQueue)   : The :class:`SyclQueue` for which the
@@ -137,7 +153,8 @@ cpdef create_program_from_source(SyclQueue q, unicode src, unicode copts=""):
                               when compiling the program.
 
         Returns:
-            program (SyclProgram): A :class:`SyclProgram` object wrapping the  sycl::program returned by the C API.
+            program (SyclProgram): A :class:`SyclProgram` object wrapping the
+            ``sycl::program`` returned by the C API.
 
         Raises:
             SyclProgramCompilationError: If a SYCL program could not be created.
@@ -156,15 +173,14 @@ cpdef create_program_from_source(SyclQueue q, unicode src, unicode copts=""):
 
     return SyclProgram._create(Pref)
 
-cimport cython.array
 
 cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
                                 unicode copts=""):
     """
         Creates a Sycl interoperability program from an SPIR-V binary.
 
-        We use the DPCTLProgram_CreateFromOCLSpirv() C API function to create
-        a Sycl progrma from an compiled SPIR-V binary file.
+        We use the ``DPCTLProgram_CreateFromOCLSpirv()`` C API function to
+        create a ``sycl::program`` object from an compiled SPIR-V binary file.
 
         Parameters:
             q (SyclQueue): The :class:`SyclQueue` for which the
@@ -174,7 +190,8 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
                               when compiling the program.
 
         Returns:
-            program (SyclProgram): A :class:`SyclProgram` object wrapping the  sycl::program returned by the C API.
+            program (SyclProgram): A :class:`SyclProgram` object wrapping the
+            ``sycl::program`` returned by the C API.
 
         Raises:
             SyclProgramCompilationError: If a SYCL program could not be created.

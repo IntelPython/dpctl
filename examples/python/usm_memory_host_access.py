@@ -14,11 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Demonstrates how USM allocated memory can be accessed from the host in a
+"""
+Demonstrates how USM allocated memory can be accessed from the host in a
 Python program.
 """
 
-import dpctl
 import dpctl.memory as dpmem
 
 # USM-shared and USM-host pointers are host-accessible,
@@ -53,6 +53,7 @@ try:
 except Exception as e:
     print("")
     print(
-        "An expected exception was raised during attempted construction of memoryview from USM-device memory object."
+        "An expected exception was raised during attempted construction of "
+        "memoryview from USM-device memory object."
     )
     print("\t", e)

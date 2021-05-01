@@ -14,9 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import dpctl
-import syclbuffer as sb
+import timeit
+
 import numpy as np
+import syclbuffer as sb
+
+import dpctl
 
 X = np.full((10 ** 4, 4098), 1e-4, dtype="d")
 
@@ -40,14 +43,13 @@ print(
     )
 )
 
-import timeit
 
 print("Times for 'opencl:cpu'")
 print(
     timeit.repeat(
         stmt="sb.columnwise_total(X, queue=q)",
         setup='q = dpctl.SyclQueue("opencl:cpu"); '
-        "sb.columnwise_total(X, queue=q)",  # ensure JIT compilation is not counted
+        "sb.columnwise_total(X, queue=q)",  # do not count JIT compilation
         number=100,
         globals=globals(),
     )
@@ -57,7 +59,8 @@ print("Times for 'opencl:gpu'")
 print(
     timeit.repeat(
         stmt="sb.columnwise_total(X, queue=q)",
-        setup='q = dpctl.SyclQueue("opencl:gpu"); sb.columnwise_total(X, queue=q)',
+        setup='q = dpctl.SyclQueue("opencl:gpu"); '
+        "sb.columnwise_total(X, queue=q)",
         number=100,
         globals=globals(),
     )

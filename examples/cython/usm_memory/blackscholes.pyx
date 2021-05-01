@@ -17,17 +17,37 @@
 # cython: language_level=3
 # distutils: language=c++
 
-cimport dpctl as c_dpctl
-cimport dpctl.memory as c_dpctl_mem
 cimport numpy as cnp
 from cython cimport floating
 
-import dpctl
+cimport dpctl as c_dpctl
+cimport dpctl.memory as c_dpctl_mem
+
 import numpy as np
 
+import dpctl
+
+
 cdef extern from "sycl_blackscholes.hpp":
-    cdef void cpp_blackscholes[T](c_dpctl.DPCTLSyclQueueRef, size_t n_opts, T* option_params, T* callput) except +
-    cdef void cpp_populate_params[T](c_dpctl.DPCTLSyclQueueRef, size_t n_opts, T* option_params, T pl, T ph, T sl, T sh, T tl, T th, T rl, T rh, T vl, T vh, int seed) except +
+    cdef void cpp_blackscholes[T](
+        c_dpctl.DPCTLSyclQueueRef, size_t n_opts, T* option_params, T* callput
+    ) except +
+    cdef void cpp_populate_params[T](
+        c_dpctl.DPCTLSyclQueueRef,
+        size_t n_opts,
+        T* option_params,
+        T pl,
+        T ph,
+        T sl,
+        T sh,
+        T tl,
+        T th,
+        T rl,
+        T rh,
+        T vl,
+        T vh,
+        int seed
+    ) except +
 
 cdef c_dpctl.SyclQueue from_queue_keyword(queue):
     if (queue is None):
@@ -56,9 +76,11 @@ def black_scholes_price(floating[:, ::1] option_params, queue=None):
 
     if (n_params != 5):
         raise ValueError((
-            "Array of option parameters has unexpected number of columns {} != 5. "
-            "Each row must specify (current_price, strike_price, maturity, interest_rate, volatility)."
-            ).format(n_params))
+            "Array of option parameters has unexpected number of "
+            "columns {} != 5. Each row must specify (current_price, "
+            "strike_price, maturity, interest_rate, volatility)."
+            ).format(n_params)
+        )
 
     q = from_queue_keyword(queue)
     q_ptr = q.get_queue_ref()
@@ -67,21 +89,36 @@ def black_scholes_price(floating[:, ::1] option_params, queue=None):
         mobj = c_dpctl_mem.MemoryUSMShared(n_bytes, queue=q)
         callput_arr = np.ndarray((n_opts, 2), buffer=mobj, dtype='d')
         call_put_prices = callput_arr
-        dp1 = &option_params[0,0]
-        dp2 = &call_put_prices[0,0];
+        dp1 = &option_params[0, 0]
+        dp2 = &call_put_prices[0, 0]
         cpp_blackscholes[double](q_ptr, n_opts, dp1, dp2)
     elif (floating is float):
         n_bytes = 2*n_opts * sizeof(float)
         mobj = c_dpctl_mem.MemoryUSMShared(n_bytes, queue=q)
         callput_arr = np.ndarray((n_opts, 2), buffer=mobj, dtype='f')
         call_put_prices = callput_arr
-        fp1 = &option_params[0,0]
-        fp2 = &call_put_prices[0,0]
+        fp1 = &option_params[0, 0]
+        fp2 = &call_put_prices[0, 0]
         cpp_blackscholes[float](q_ptr, n_opts, fp1, fp2)
 
     return callput_arr
 
-def populate_params(floating[:, ::1] option_params, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, int seed, queue=None):
+
+def populate_params(
+        floating[:, ::1] option_params,
+        pl,
+        ph,
+        sl,
+        sh,
+        tl,
+        th,
+        rl,
+        rh,
+        vl,
+        vh,
+        int seed,
+        queue=None
+):
     cdef size_t n_opts = option_params.shape[0]
     cdef size_t n_params = option_params.shape[1]
 
@@ -91,16 +128,23 @@ def populate_params(floating[:, ::1] option_params, pl, ph, sl, sh, tl, th, rl, 
     cdef float* fp = NULL
 
     if (n_params != 5):
-        raise ValueError((
-            "Array of option parameters has unexpected number of columns {} != 5. "
-            "Each row must specify (current_price, strike_price, maturity, interest_rate, volatility)."
-            ).format(n_params))
+        raise ValueError(
+            "Array of option parameters has unexpected number of "
+            "columns {} != 5. Each row must specify (current_price, "
+            "strike_price, maturity, interest_rate, volatility).".format(
+                n_params
+            )
+        )
 
     q = from_queue_keyword(queue)
     q_ptr = q.get_queue_ref()
     if (floating is double):
-        dp = &option_params[0,0]
-        cpp_populate_params[double](q_ptr, n_opts, dp, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, seed)
+        dp = &option_params[0, 0]
+        cpp_populate_params[double](
+            q_ptr, n_opts, dp, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, seed
+        )
     elif (floating is float):
-        fp = &option_params[0,0]
-        cpp_populate_params[float](q_ptr, n_opts, fp, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, seed)
+        fp = &option_params[0, 0]
+        cpp_populate_params[float](
+            q_ptr, n_opts, fp, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, seed
+        )

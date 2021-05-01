@@ -20,12 +20,13 @@
 """ This file declares the SyclDevice extension type.
 """
 
+from libcpp cimport bool as cpp_bool
+
 from ._backend cimport (
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
-    _partition_affinity_domain_type
+    _partition_affinity_domain_type,
 )
-from libcpp cimport bool as cpp_bool
 
 
 cdef class _SyclDevice:

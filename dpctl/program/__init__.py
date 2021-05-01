@@ -21,7 +21,18 @@
     source string or SPIR-V binary file.
 
 """
-from ._program import *
-from ._program import __all__ as _program__all__
+from ._program import (
+    SyclKernel,
+    SyclProgram,
+    SyclProgramCompilationError,
+    create_program_from_source,
+    create_program_from_spirv,
+)
 
-__all__ = _program__all__
+__all__ = [
+    "create_program_from_source",
+    "create_program_from_spirv",
+    "SyclKernel",
+    "SyclProgram",
+    "SyclProgramCompilationError",
+]

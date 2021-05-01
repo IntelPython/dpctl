@@ -14,10 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Demonstrates SYCL USM memory usage in Python using dpctl.memory.
+"""
+Demonstrates SYCL USM memory usage in Python using dpctl.memory.
 """
 
-import dpctl
 import dpctl.memory as dpmem
 
 # allocate USM-shared byte-buffer

@@ -16,15 +16,3 @@
 
 """Top-level module of all dpctl Python unit test cases.
 """
-
-from .test_dparray import *
-from .test_sycl_device import *
-from .test_sycl_context import *
-from .test_sycl_kernel_submit import *
-from .test_sycl_platform import *
-from .test_sycl_program import *
-from .test_sycl_queue import *
-from .test_sycl_queue_manager import *
-from .test_sycl_queue_memcpy import *
-from .test_sycl_usm import *
-from .test_dparray import *

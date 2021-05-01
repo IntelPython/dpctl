@@ -17,9 +17,11 @@
 """ Defines unit test cases for the _sycl_device_factory module
 """
 
-import dpctl
-from dpctl import backend_type as bty, device_type as dty
 import pytest
+
+import dpctl
+from dpctl import backend_type as bty
+from dpctl import device_type as dty
 
 argument_list_1 = [
     (bty.level_zero, dty.gpu),

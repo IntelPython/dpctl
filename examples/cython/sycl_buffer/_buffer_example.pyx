@@ -15,14 +15,22 @@
 # limitations under the License.
 
 cimport numpy as cnp
+
 import numpy as np
 
 cimport dpctl as c_dpctl
+
 import dpctl
 
+
 cdef extern from "use_sycl_buffer.h":
-    int c_columnwise_total(c_dpctl.DPCTLSyclQueueRef q, size_t n, size_t m, double *m, double *ct) nogil
-    int c_columnwise_total_no_mkl(c_dpctl.DPCTLSyclQueueRef q, size_t n, size_t m, double *m, double *ct) nogil
+    int c_columnwise_total(
+        c_dpctl.DPCTLSyclQueueRef q, size_t n, size_t m, double *m, double *ct
+    ) nogil
+    int c_columnwise_total_no_mkl(
+        c_dpctl.DPCTLSyclQueueRef q, size_t n, size_t m, double *m, double *ct
+    ) nogil
+
 
 def columnwise_total(double[:, ::1] v, method='mkl', queue=None):
     cdef cnp.ndarray res_array = np.empty((v.shape[1],), dtype='d')
@@ -41,9 +49,13 @@ def columnwise_total(double[:, ::1] v, method='mkl', queue=None):
 
     if method == 'mkl':
         with nogil:
-            ret_status = c_columnwise_total(q_ref, v.shape[0], v.shape[1], &v[0,0], &res_memslice[0])
+            ret_status = c_columnwise_total(
+                q_ref, v.shape[0], v.shape[1], &v[0, 0], &res_memslice[0]
+            )
     else:
         with nogil:
-            ret_status = c_columnwise_total_no_mkl(q_ref, v.shape[0], v.shape[1], &v[0,0], &res_memslice[0])
+            ret_status = c_columnwise_total_no_mkl(
+                q_ref, v.shape[0], v.shape[1], &v[0, 0], &res_memslice[0]
+            )
 
     return res_array

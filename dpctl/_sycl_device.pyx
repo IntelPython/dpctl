@@ -20,71 +20,74 @@
 """ Implements SyclDevice Cython extension type.
 """
 
-from ._backend cimport (
-    _aspect_type,
-    _backend_type,
-    _device_type,
-    _partition_affinity_domain_type,
+from ._backend cimport (  # noqa: E211
     DPCTLCString_Delete,
     DPCTLDefaultSelector_Create,
+    DPCTLDevice_AreEq,
     DPCTLDevice_Copy,
     DPCTLDevice_CreateFromSelector,
+    DPCTLDevice_CreateSubDevicesByAffinity,
+    DPCTLDevice_CreateSubDevicesByCounts,
+    DPCTLDevice_CreateSubDevicesEqually,
     DPCTLDevice_Delete,
-    DPCTLDeviceVectorRef,
-    DPCTLDeviceVector_Delete,
-    DPCTLDeviceVector_GetAt,
-    DPCTLDeviceVector_Size,
     DPCTLDevice_GetBackend,
-    DPCTLDevice_AreEq,
     DPCTLDevice_GetDeviceType,
     DPCTLDevice_GetDriverVersion,
+    DPCTLDevice_GetImage2dMaxHeight,
+    DPCTLDevice_GetImage2dMaxWidth,
+    DPCTLDevice_GetImage3dMaxDepth,
+    DPCTLDevice_GetImage3dMaxHeight,
+    DPCTLDevice_GetImage3dMaxWidth,
     DPCTLDevice_GetMaxComputeUnits,
     DPCTLDevice_GetMaxNumSubGroups,
+    DPCTLDevice_GetMaxReadImageArgs,
     DPCTLDevice_GetMaxWorkGroupSize,
     DPCTLDevice_GetMaxWorkItemDims,
     DPCTLDevice_GetMaxWorkItemSizes,
-    DPCTLDevice_GetVendor,
+    DPCTLDevice_GetMaxWriteImageArgs,
     DPCTLDevice_GetName,
+    DPCTLDevice_GetParentDevice,
+    DPCTLDevice_GetPreferredVectorWidthChar,
+    DPCTLDevice_GetPreferredVectorWidthDouble,
+    DPCTLDevice_GetPreferredVectorWidthFloat,
+    DPCTLDevice_GetPreferredVectorWidthHalf,
+    DPCTLDevice_GetPreferredVectorWidthInt,
+    DPCTLDevice_GetPreferredVectorWidthLong,
+    DPCTLDevice_GetPreferredVectorWidthShort,
+    DPCTLDevice_GetSubGroupIndependentForwardProgress,
+    DPCTLDevice_GetVendor,
+    DPCTLDevice_HasAspect,
     DPCTLDevice_IsAccelerator,
     DPCTLDevice_IsCPU,
     DPCTLDevice_IsGPU,
     DPCTLDevice_IsHost,
-    DPCTLDeviceMgr_PrintDeviceInfo,
     DPCTLDeviceMgr_GetRelativeId,
-    DPCTLFilterSelector_Create,
+    DPCTLDeviceMgr_PrintDeviceInfo,
     DPCTLDeviceSelector_Delete,
     DPCTLDeviceSelector_Score,
+    DPCTLDeviceVector_Delete,
+    DPCTLDeviceVector_GetAt,
+    DPCTLDeviceVector_Size,
+    DPCTLDeviceVectorRef,
+    DPCTLFilterSelector_Create,
     DPCTLSize_t_Array_Delete,
     DPCTLSyclBackendType,
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
-    DPCTLDevice_HasAspect,
     DPCTLSyclDeviceType,
-    DPCTLDevice_GetMaxReadImageArgs,
-    DPCTLDevice_GetMaxWriteImageArgs,
-    DPCTLDevice_GetImage2dMaxWidth,
-    DPCTLDevice_GetImage2dMaxHeight,
-    DPCTLDevice_GetImage3dMaxWidth,
-    DPCTLDevice_GetImage3dMaxHeight,
-    DPCTLDevice_GetImage3dMaxDepth,
-    DPCTLDevice_GetSubGroupIndependentForwardProgress,
-    DPCTLDevice_GetPreferredVectorWidthChar,
-    DPCTLDevice_GetPreferredVectorWidthShort,
-    DPCTLDevice_GetPreferredVectorWidthInt,
-    DPCTLDevice_GetPreferredVectorWidthLong,
-    DPCTLDevice_GetPreferredVectorWidthFloat,
-    DPCTLDevice_GetPreferredVectorWidthDouble,
-    DPCTLDevice_GetPreferredVectorWidthHalf,
-    DPCTLDevice_CreateSubDevicesEqually,
-    DPCTLDevice_CreateSubDevicesByCounts,
-    DPCTLDevice_CreateSubDevicesByAffinity,
-    DPCTLDevice_GetParentDevice,
+    _aspect_type,
+    _backend_type,
+    _device_type,
+    _partition_affinity_domain_type,
 )
-from . import backend_type, device_type
-from libc.stdint cimport uint32_t, int64_t
-from libc.stdlib cimport malloc, free
-import warnings
+
+from .enum_types import backend_type, device_type
+
+from libc.stdint cimport int64_t, uint32_t
+from libc.stdlib cimport free, malloc
+
 import collections
+import warnings
 
 __all__ = [
     "SyclDevice",
@@ -101,7 +104,8 @@ cdef class SubDeviceCreationError(Exception):
 
 
 cdef class _SyclDevice:
-    """ A helper data-owner class to abstract a cl::sycl::device instance.
+    """
+    A helper data-owner class to abstract a cl::sycl::device instance.
     """
 
     def __dealloc__(self):
@@ -130,31 +134,31 @@ cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
 
 
 cdef str _backend_type_to_filter_string_part(DPCTLSyclBackendType BTy):
-   if BTy == _backend_type._CUDA:
-       return "cuda"
-   elif BTy == _backend_type._HOST:
-       return "host"
-   elif BTy == _backend_type._LEVEL_ZERO:
-       return "level_zero"
-   elif BTy == _backend_type._OPENCL:
-       return "opencl"
-   else:
-       return "unknown"
+    if BTy == _backend_type._CUDA:
+        return "cuda"
+    elif BTy == _backend_type._HOST:
+        return "host"
+    elif BTy == _backend_type._LEVEL_ZERO:
+        return "level_zero"
+    elif BTy == _backend_type._OPENCL:
+        return "opencl"
+    else:
+        return "unknown"
 
 
 cdef str _device_type_to_filter_string_part(DPCTLSyclDeviceType DTy):
-   if DTy == _device_type._ACCELERATOR:
-       return "accelerator"
-   elif DTy == _device_type._AUTOMATIC:
-       return "automatic"
-   elif DTy == _device_type._CPU:
-       return "cpu"
-   elif DTy == _device_type._GPU:
-       return "gpu"
-   elif DTy == _device_type._HOST_DEVICE:
-       return "host"
-   else:
-       return "unknown"
+    if DTy == _device_type._ACCELERATOR:
+        return "accelerator"
+    elif DTy == _device_type._AUTOMATIC:
+        return "automatic"
+    elif DTy == _device_type._CPU:
+        return "cpu"
+    elif DTy == _device_type._GPU:
+        return "gpu"
+    elif DTy == _device_type._HOST_DEVICE:
+        return "host"
+    else:
+        return "unknown"
 
 
 cdef class SyclDevice(_SyclDevice):
@@ -162,17 +166,17 @@ cdef class SyclDevice(_SyclDevice):
 
     There are two ways of creating a SyclDevice instance:
 
-        - by directly passing in a filter string to the class constructor. The
-          filter string needs to conform to the the `DPC++ filter selector SYCL
-          extension <https://bit.ly/37kqANT>`_.
+        - by directly passing in a filter string to the class
+          constructor. The filter string needs to conform to the
+          `DPC++ filter selector SYCL extension <https://bit.ly/37kqANT>`_.
 
         :Example:
             .. code-block:: python
 
                 import dpctl
 
-                # Create a SyclDevice with an explicit filter string, in
-                # this case the first level_zero gpu device.
+                # Create a SyclDevice with an explicit filter string,
+                # in this case the first level_zero gpu device.
                 level_zero_gpu = dpctl.SyclDevice("level_zero:gpu:0"):
                 level_zero_gpu.print_device_info()
 
@@ -224,7 +228,7 @@ cdef class SyclDevice(_SyclDevice):
             return -1
         self._name = DPCTLDevice_GetName(self._device_ref)
         self._driver_version = DPCTLDevice_GetDriverVersion(self._device_ref)
-        self._max_work_item_sizes =  (
+        self._max_work_item_sizes = (
             DPCTLDevice_GetMaxWorkItemSizes(self._device_ref)
         )
         self._vendor = DPCTLDevice_GetVendor(self._device_ref)
@@ -288,7 +292,7 @@ cdef class SyclDevice(_SyclDevice):
         """
         DPCTLDeviceMgr_PrintDeviceInfo(self._device_ref)
 
-    cdef DPCTLSyclDeviceRef get_device_ref (self):
+    cdef DPCTLSyclDeviceRef get_device_ref(self):
         """ Returns the DPCTLSyclDeviceRef pointer for this class.
         """
         return self._device_ref
@@ -539,10 +543,10 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def max_work_item_dims(self):
-        """ Returns the maximum dimensions that specify
-            the global and local work-item IDs used by the
-            data parallel execution model. The cb
-            value is 3 if this SYCL device is not of device
+        """ Returns the maximum dimensions that specify the global and local
+            work-item IDs used by the data parallel execution model.
+
+            The cb value is 3 if this SYCL device is not of device
             type ``info::device_type::custom``.
         """
         cdef uint32_t max_work_item_dims = 0
@@ -551,11 +555,10 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def max_work_item_sizes(self):
-        """ Returns the maximum number of work-items
-            that are permitted in each dimension of the
-            work-group of the nd_range. The minimum
-            value is (1; 1; 1) for devices that are not of
-            device type ``info::device_type::custom``.
+        """ Returns the maximum number of work-items that are permitted in each
+            dimension of the work-group of the nd_range. The minimum value is
+            `(1; 1; 1)` for devices that are not of device type
+            ``info::device_type::custom``.
         """
         return (
             self._max_work_item_sizes[0],
@@ -565,8 +568,8 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def max_compute_units(self):
-        """ Returns the number of parallel compute units
-            available to the device. The minimum value is 1.
+        """ Returns the number of parallel compute units available to the
+            device. The minimum value is 1.
         """
         cdef uint32_t max_compute_units = 0
         max_compute_units = DPCTLDevice_GetMaxComputeUnits(self._device_ref)
@@ -601,7 +604,9 @@ cdef class SyclDevice(_SyclDevice):
         """ Returns true if the device supports independent forward progress of
             sub-groups with respect to other sub-groups in the same work-group.
         """
-        return DPCTLDevice_GetSubGroupIndependentForwardProgress(self._device_ref)
+        return DPCTLDevice_GetSubGroupIndependentForwardProgress(
+            self._device_ref
+        )
 
     @property
     def preferred_vector_width_char(self):
@@ -675,17 +680,28 @@ cdef class SyclDevice(_SyclDevice):
         return "SyclDevice"
 
     def __repr__(self):
-        return ("<dpctl." + self.__name__ + " [" +
-                str(self.backend) + ", " + str(self.device_type) +", " +
-                " " + self.name + "] at {}>".format(hex(id(self))) )
+        return (
+            "<dpctl."
+            + self.__name__
+            + " ["
+            + str(self.backend)
+            + ", "
+            + str(self.device_type)
+            + ", "
+            + " "
+            + self.name
+            + "] at {}>".format(hex(id(self)))
+        )
 
     cdef list create_sub_devices_equally(self, size_t count):
-        """ Returns a vector of sub devices partitioned from this SYCL device
-            based on the count parameter. The returned
-            vector contains as many sub devices as can be created such that each sub
-            device contains count compute units. If the device’s total number of compute
-            units is not evenly divided by count, then the remaining compute units are
-            not included in any of the sub devices.
+        """ Returns a list of sub-devices partitioned from this SYCL device
+            based on the ``count`` parameter.
+
+            The returned list contains as many sub-devices as can be created
+            such that each sub-device contains count compute units. If the
+            device’s total number of compute units is not evenly divided by
+            count, then the remaining compute units are not included in any of
+            the sub-devices.
         """
         cdef DPCTLDeviceVectorRef DVRef = NULL
         DVRef = DPCTLDevice_CreateSubDevicesEqually(self._device_ref, count)
@@ -694,33 +710,41 @@ cdef class SyclDevice(_SyclDevice):
         return _get_devices(DVRef)
 
     cdef list create_sub_devices_by_counts(self, object counts):
-        """ Returns a vector of sub devices
-            partitioned from this SYCL device based on the counts parameter. For each
-            non-zero value M in the counts vector, a sub device with M compute units
-            is created.
+        """ Returns a list of sub-devices partitioned from this SYCL device
+            based on the ``counts`` parameter.
+
+            For each non-zero value ``M`` in the counts vector, a sub-device
+            with ``M`` compute units is created.
         """
         cdef int ncounts = len(counts)
         cdef size_t *counts_buff = NULL
         cdef DPCTLDeviceVectorRef DVRef = NULL
         cdef int i
 
-        if (ncounts == 0):
-            raise TypeError("Non-empty object representing list of counts is expected.")
+        if ncounts == 0:
+            raise TypeError(
+                "Non-empty object representing list of counts is expected."
+            )
         counts_buff = <size_t *> malloc((<size_t> ncounts) * sizeof(size_t))
-        if (counts_buff is NULL):
-            raise MemoryError("Allocation of counts array of size {} failed.".format(ncounts))
+        if counts_buff is NULL:
+            raise MemoryError(
+                "Allocation of counts array of size {} failed.".format(ncounts)
+            )
         for i in range(ncounts):
             counts_buff[i] = counts[i]
-        DVRef = DPCTLDevice_CreateSubDevicesByCounts(self._device_ref, counts_buff, ncounts)
+        DVRef = DPCTLDevice_CreateSubDevicesByCounts(
+            self._device_ref, counts_buff, ncounts
+        )
         free(counts_buff)
         if DVRef is NULL:
             raise SubDeviceCreationError("Sub-devices were not created.")
         return _get_devices(DVRef)
 
-    cdef list create_sub_devices_by_affinity(self, _partition_affinity_domain_type domain):
-        """ Returns a vector of sub devices
-            partitioned from this SYCL device by affinity domain based on the domain
-            parameter.
+    cdef list create_sub_devices_by_affinity(
+        self, _partition_affinity_domain_type domain
+    ):
+        """ Returns a list of sub-devices partitioned from this SYCL device by
+            affinity domain based on the ``domain`` parameter.
         """
         cdef DPCTLDeviceVectorRef DVRef = NULL
         DVRef = DPCTLDevice_CreateSubDevicesByAffinity(self._device_ref, domain)
@@ -729,11 +753,15 @@ cdef class SyclDevice(_SyclDevice):
         return _get_devices(DVRef)
 
     def create_sub_devices(self, **kwargs):
-        if not kwargs.has_key('partition'):
-            raise TypeError("create_sub_devices(partition=parition_spec) is expected.")
-        partition = kwargs.pop('partition')
-        if (kwargs):
-            raise TypeError("create_sub_devices(partition=parition_spec) is expected.")
+        if "partition" not in kwargs:
+            raise TypeError(
+                "create_sub_devices(partition=parition_spec) is expected."
+            )
+        partition = kwargs.pop("partition")
+        if kwargs:
+            raise TypeError(
+                "create_sub_devices(partition=parition_spec) is expected."
+            )
         if isinstance(partition, int) and partition > 0:
             return self.create_sub_devices_equally(partition)
         elif isinstance(partition, str):
@@ -750,19 +778,28 @@ cdef class SyclDevice(_SyclDevice):
             elif partition == "L1_cache":
                 domain_type = _partition_affinity_domain_type._L1_cache
             elif partition == "next_partitionable":
-                domain_type = _partition_affinity_domain_type._next_partitionable
+                domain_type = (
+                    _partition_affinity_domain_type._next_partitionable
+                )
             else:
-                raise TypeError("Partition affinity domain {} is not understood.".format(partition))
+                raise TypeError(
+                    "Partition affinity domain {} is not understood.".format(
+                        partition
+                    )
+                )
             return self.create_sub_devices_by_affinity(domain_type)
-        elif (isinstance(partition, collections.abc.Sized) and
-              isinstance(partition, collections.abc.Iterable)):
+        elif isinstance(partition, collections.abc.Sized) and isinstance(
+            partition, collections.abc.Iterable
+        ):
             return self.create_sub_devices_by_counts(partition)
         else:
             try:
                 partition = int(partition)
                 return self.create_sub_devices_equally(partition)
             except Exception as e:
-                raise TypeError("Unsupported type of sub-device argument") from e
+                raise TypeError(
+                    "Unsupported type of sub-device argument"
+                ) from e
 
     @property
     def parent_device(self):
@@ -788,8 +825,8 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def filter_string(self):
-        """ For a parent device returns a tuple (backend, device_kind, relative_id).
-            Raises an exception for sub-devices.
+        """ For a parent device, returns a ``tuple (backend, device_kind,
+            relative_id)``. Raises an exception for sub-devices.
         """
         cdef DPCTLSyclDeviceRef pDRef = NULL
         cdef DPCTLSyclBackendType BTy

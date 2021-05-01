@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import syclbuffer_naive as sb
 import numpy as np
+import syclbuffer_naive as sb
 
 X = np.random.randn(20, 10)
 

@@ -18,21 +18,24 @@
 # cython: language_level=3
 
 from __future__ import print_function
+
 import logging
-from . import backend_type, device_type
-from ._backend cimport(
-    _backend_type,
-    _device_type,
+from contextlib import contextmanager
+
+from .enum_types import backend_type, device_type
+
+from ._backend cimport (  # noqa: E211
     DPCTLQueueMgr_GetCurrentQueue,
+    DPCTLQueueMgr_GetQueueStackSize,
     DPCTLQueueMgr_GlobalQueueIsCurrent,
-    DPCTLQueueMgr_PushQueue,
     DPCTLQueueMgr_PopQueue,
+    DPCTLQueueMgr_PushQueue,
     DPCTLQueueMgr_SetGlobalQueue,
     DPCTLSyclQueueRef,
-    DPCTLQueueMgr_GetQueueStackSize,
+    _backend_type,
+    _device_type,
 )
 from ._sycl_context cimport SyclContext
-
 
 __all__ = [
     "device_context",
@@ -167,8 +170,8 @@ _mgr = _SyclQueueManager()
 
 # Global bound functions
 get_num_activated_queues = _mgr.get_num_activated_queues
-set_global_queue         = _mgr.set_global_queue
-is_in_device_context     = _mgr.is_in_device_context
+set_global_queue = _mgr.set_global_queue
+is_in_device_context = _mgr.is_in_device_context
 
 
 cpdef SyclQueue get_current_queue():
@@ -207,9 +210,6 @@ cpdef get_current_backend():
         backend_type: The SYCL backend for the currently selected queue.
     """
     return _mgr.get_current_backend()
-
-
-from contextlib import contextmanager
 
 
 @contextmanager

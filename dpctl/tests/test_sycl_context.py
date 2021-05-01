@@ -17,9 +17,9 @@
 """ Defines unit test cases for the SyclContxt class.
 """
 
-import dpctl
 import pytest
 
+import dpctl
 
 list_of_standard_selectors = [
     dpctl.select_accelerator_device,
@@ -51,6 +51,7 @@ list_of_invalid_filter_selectors = [
     "level_zero:cpu:0",
     "abc",
 ]
+
 
 # Unit test cases that will be run for every device
 def check_get_max_compute_units(device):
@@ -293,8 +294,8 @@ def check(request):
 
 
 def test_standard_selectors(device_selector, check):
-    """Tests if the standard SYCL device_selectors are able to select a
-    device.
+    """
+    Tests if the standard SYCL device_selectors are able to select a device.
     """
     try:
         device = device_selector()
@@ -309,12 +310,13 @@ def test_standard_selectors(device_selector, check):
 
 
 def test_current_device(check):
-    """Test is the device for the current queue is valid."""
+    """
+    Test is the device for the current queue is valid.
+    """
     try:
         q = dpctl.get_current_queue()
     except Exception:
         pytest.fail("Encountered an exception inside get_current_queue().")
-    device = q.get_sycl_device()
     ctx = q.get_sycl_context()
     devs = ctx.get_devices()
     # add check that device is among devs
@@ -322,7 +324,10 @@ def test_current_device(check):
 
 
 def test_valid_filter_selectors(valid_filter, check):
-    """Tests if we can create a SyclDevice using a supported filter selector string."""
+    """
+    Tests if we can create a SyclDevice using a supported filter selector
+    string.
+    """
     device = None
     try:
         ctx = dpctl.SyclContext(valid_filter)
@@ -333,11 +338,12 @@ def test_valid_filter_selectors(valid_filter, check):
 
 
 def test_invalid_filter_selectors(invalid_filter):
-    """An invalid filter string should always be caught and a SyclQueueCreationError
-    raised.
+    """
+    An invalid filter string should always be caught and a
+    SyclQueueCreationError raised.
     """
     with pytest.raises(ValueError):
-        q = dpctl.SyclContext(invalid_filter)
+        dpctl.SyclContext(invalid_filter)
 
 
 def test_context_not_equals():
@@ -369,7 +375,7 @@ def test_context_can_be_used_in_queue(valid_filter):
     devs = ctx.get_devices()
     assert len(devs) == ctx.device_count
     for d in devs:
-        q = dpctl.SyclQueue(ctx, d)
+        dpctl.SyclQueue(ctx, d)
 
 
 def test_context_can_be_used_in_queue2(valid_filter):
@@ -381,7 +387,7 @@ def test_context_can_be_used_in_queue2(valid_filter):
         # skip test for devices rejected by default selector
         pytest.skip()
     ctx = dpctl.SyclContext(d)
-    q = dpctl.SyclQueue(ctx, d)
+    dpctl.SyclQueue(ctx, d)
 
 
 def test_context_multi_device():
