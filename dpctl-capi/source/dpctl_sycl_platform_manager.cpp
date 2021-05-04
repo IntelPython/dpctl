@@ -40,46 +40,60 @@ namespace
 {
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef);
 
-void platform_print_info_impl(const platform &p)
+void platform_print_info_impl(const platform &p, size_t verbosity)
 {
     std::stringstream ss;
 
-    auto vendor = p.get_info<info::platform::vendor>();
-    if (vendor.empty())
-        vendor = "unknown";
-
-    ss << std::setw(4) << " " << std::left << std::setw(12) << "Name"
-       << p.get_info<info::platform::name>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(12) << "Version"
-       << p.get_info<info::platform::version>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(12) << "Vendor"
-       << vendor << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(12) << "Profile"
-       << p.get_info<info::platform::profile>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(12) << "Backend";
-    p.is_host() ? (ss << "unknown") : (ss << p.get_backend());
-    ss << '\n';
-
-    // Get number of devices on the platform
-    auto devices = p.get_devices();
-
-    ss << std::setw(4) << " " << std::left << std::setw(12) << "Devices"
-       << devices.size() << '\n';
-    // Print some of the device information
-    for (auto dn = 0ul; dn < devices.size(); ++dn) {
-        ss << std::setw(6) << " " << std::left << std::setw(12) << "Device "
-           << dn << '\n';
-        ss << std::setw(8) << " " << std::left << std::setw(20) << "Name"
-           << devices[dn].get_info<info::device::name>() << '\n';
-        ss << std::setw(8) << " " << std::left << std::setw(20)
-           << "Driver version"
-           << devices[dn].get_info<info::device::driver_version>() << '\n';
-        ss << std::setw(8) << " " << std::left << std::setw(20)
-           << "Device type";
-
-        auto devTy = devices[dn].get_info<info::device::device_type>();
-        ss << DPCTL_DeviceTypeToStr(devTy);
+    if (verbosity > 2) {
+        std::cerr << "Illegal verbosity level. Accepted values are 0, 1, or 2. "
+                     "Defaulting to verbosity level 0.\n";
+        verbosity = 0;
     }
+
+    if (verbosity == 0)
+        ss << p.get_info<info::platform::name>() << " "
+           << p.get_info<info::platform::version>() << '\n';
+
+    if (verbosity > 0) {
+        auto vendor = p.get_info<info::platform::vendor>();
+        if (vendor.empty())
+            vendor = "unknown";
+
+        ss << std::setw(4) << " " << std::left << std::setw(12) << "Name"
+           << p.get_info<info::platform::name>() << '\n'
+           << std::setw(4) << " " << std::left << std::setw(12) << "Version"
+           << p.get_info<info::platform::version>() << '\n'
+           << std::setw(4) << " " << std::left << std::setw(12) << "Vendor"
+           << vendor << '\n'
+           << std::setw(4) << " " << std::left << std::setw(12) << "Backend";
+        p.is_host() ? (ss << "unknown") : (ss << p.get_backend());
+        ss << '\n';
+
+        // Get number of devices on the platform
+        auto devices = p.get_devices();
+        ss << std::setw(4) << " " << std::left << std::setw(12) << "Num Devices"
+           << devices.size() << '\n';
+
+        if (verbosity == 2)
+            // Print some of the device information
+            for (auto dn = 0ul; dn < devices.size(); ++dn) {
+                ss << std::setw(6) << " " << std::left << "# " << dn << '\n'
+                   << std::setw(8) << " " << std::left << std::setw(20)
+                   << "Name" << devices[dn].get_info<info::device::name>()
+                   << '\n'
+                   << std::setw(8) << " " << std::left << std::setw(20)
+                   << "Version"
+                   << devices[dn].get_info<info::device::driver_version>()
+                   << '\n'
+                   << std::setw(8) << " " << std::left << std::setw(20)
+                   << "Filter string"
+                   << devices[dn].get_platform().get_backend() << ":"
+                   << DPCTL_DeviceTypeToStr(
+                          devices[dn].get_info<info::device::device_type>())
+                   << ":" << DPCTL_GetRelativeDeviceId(devices[dn]) << '\n';
+            }
+    }
+
     std::cout << ss.str();
 }
 
@@ -90,25 +104,12 @@ void platform_print_info_impl(const platform &p)
 #include "dpctl_vector_templ.cpp"
 #undef EL
 
-/*!
- * Prints out the following sycl::info::platform attributes for the platform:
- *      - info::platform::name
- *      - info::platform::version
- *      - info::platform::vendor
- *      - info::platform::profile
- *      - backend (opencl, cuda, level-zero, host)
- *      - number of devices on the platform
- *
- * Additionally, for each device associated with the platform print out:
- *      - info::device::name
- *      - info::device::driver_version
- *      - type of the device based on the aspects cpu, gpu, accelerator.
- */
-void DPCTLPlatformMgr_PrintInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef)
+void DPCTLPlatformMgr_PrintInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef,
+                                size_t verbosity)
 {
     auto p = unwrap(PRef);
     if (p) {
-        platform_print_info_impl(*p);
+        platform_print_info_impl(*p, verbosity);
     }
     else {
         std::cout << "Platform reference is NULL.\n";

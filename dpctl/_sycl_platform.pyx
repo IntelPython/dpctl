@@ -46,6 +46,8 @@ from ._backend cimport (  # noqa: E211
     _backend_type,
 )
 
+import warnings
+
 from .enum_types import backend_type
 
 __all__ = [
@@ -175,10 +177,43 @@ cdef class SyclPlatform(_SyclPlatform):
                 "a SYCL filter selector string."
             )
 
-    def print_platform_info(self):
+    def print_platform_info(self, verbosity=0):
         """ Print information about the SYCL platform.
+
+        The level of information printed out by the function can be controlled
+        by the optional ``vebosity`` setting.
+
+            - **Verbosity level 0**: Prints out the list of platforms and their
+              names.
+            - **Verbosity level 1**: Prints out the name, version, vendor,
+              backend, number of devices for each platform.
+            - **Verbosity level 2**: At the highest level of verbosity
+              everything in the previous levels along with the name, version,
+              and filter string for each device is printed.
+
+        Args:
+            verbosity (optional): Defaults to 0.
+                The verbosity controls how much information is printed by the
+                function. 0 is the lowest level set by default and 2 is the
+                highest level to print the most verbose output.
+
         """
-        DPCTLPlatformMgr_PrintInfo(self._platform_ref)
+        cdef size_t v = 0
+
+        if not isinstance(verbosity, int):
+            warnings.warn(
+                "Illegal verbosity level. Accepted values are 0, 1, or 2. "
+                "Using the default verbosity level of 0."
+            )
+        else:
+            v = <size_t>(verbosity)
+            if v > 2:
+                warnings.warn(
+                    "Illegal verbosity level. Accepted values are 0, 1, or 2. "
+                    "Using the default verbosity level of 0."
+                )
+                v = 0
+        DPCTLPlatformMgr_PrintInfo(self._platform_ref, v)
 
     @property
     def vendor(self):
@@ -220,13 +255,22 @@ cdef class SyclPlatform(_SyclPlatform):
             raise ValueError("Unknown backend type.")
 
 
-def lsplatform():
+def lsplatform(verbosity=0):
     """
-    Prints out the list of available SYCL platforms and various information
-    about each platform.
+    Prints out the list of available SYCL platforms, and optionally extra
+    metadata about each platform.
 
-    Currently, this function prints a list of all SYCL platforms that
-    are available on the system and the list of devices for each platform.
+    The level of information printed out by the function can be controlled by
+    the optional ``vebosity`` setting.
+
+    - **Verbosity level 0**: Prints out the list of platforms and their names.
+    - **Verbosity level 1**: Prints out the name, version, vendor, backend,
+      number of devices for each platform.
+    - **Verbosity level 2**: At the highest level of verbosity everything in the
+      previous levels along with the name, version, and filter string for each
+      device is printed.
+
+    At verbosity level 2 (highest level) the following output is generated.
 
     :Example:
         On a system with an OpenCL CPU driver, OpenCL GPU driver,
@@ -270,19 +314,40 @@ def lsplatform():
                     Driver version  1.0.18513
                     Device type     gpu
 
+    Args:
+        verbosity (optional): Defaults to 0.
+            The verbosity controls how much information is printed by the
+            function. 0 is the lowest level set by default and 2 is the highest
+            level to print the most verbose output.
     """
     cdef DPCTLPlatformVectorRef PVRef = NULL
+    cdef size_t v = 0
     cdef size_t size = 0
     cdef DPCTLSyclPlatformRef PRef = NULL
+
+    if not isinstance(verbosity, int):
+        print(
+            "Illegal verbosity level. Accepted values are 0, 1, or 2. "
+            "Using the default verbosity level of 0."
+        )
+    else:
+        v = <size_t>(verbosity)
+        if v > 2:
+            warnings.warn(
+                "Illegal verbosity level. Accepted values are 0, 1, or 2. "
+                "Using the default verbosity level of 0."
+            )
+            v = 0
 
     PVRef = DPCTLPlatform_GetPlatforms()
 
     if PVRef is not NULL:
         size = DPCTLPlatformVector_Size(PVRef)
         for i in range(size):
-            print("Platform ", i, "::")
+            if v != 0:
+                print("Platform ", i, "::")
             PRef = DPCTLPlatformVector_GetAt(PVRef, i)
-            DPCTLPlatformMgr_PrintInfo(PRef)
+            DPCTLPlatformMgr_PrintInfo(PRef, v)
             DPCTLPlatform_Delete(PRef)
     DPCTLPlatformVector_Delete(PVRef)
 

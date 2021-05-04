@@ -49,17 +49,17 @@ void print_device_info(const device &Device)
     std::stringstream ss;
 
     ss << std::setw(4) << " " << std::left << std::setw(16) << "Name"
-       << Device.get_info<info::device::name>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(16) << "Driver version"
-       << Device.get_info<info::device::driver_version>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(16) << "Vendor"
-       << Device.get_info<info::device::vendor>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(16) << "Profile"
-       << Device.get_info<info::device::profile>() << '\n';
-    ss << std::setw(4) << " " << std::left << std::setw(16) << "Device type";
-
-    auto devTy = Device.get_info<info::device::device_type>();
-    ss << DPCTL_DeviceTypeToStr(devTy);
+       << Device.get_info<info::device::name>() << '\n'
+       << std::setw(4) << " " << std::left << std::setw(16) << "Driver version"
+       << Device.get_info<info::device::driver_version>() << '\n'
+       << std::setw(4) << " " << std::left << std::setw(16) << "Vendor"
+       << Device.get_info<info::device::vendor>() << '\n'
+       << std::setw(4) << " " << std::left << std::setw(16) << "Profile"
+       << Device.get_info<info::device::profile>() << '\n'
+       << std::setw(4) << " " << std::left << std::setw(16) << "Filter string"
+       << Device.get_platform().get_backend() << ":"
+       << DPCTL_DeviceTypeToStr(Device.get_info<info::device::device_type>())
+       << ":" << DPCTL_GetRelativeDeviceId(Device) << '\n';
 
     std::cout << ss.str();
 }
@@ -67,15 +67,16 @@ void print_device_info(const device &Device)
 struct DeviceCacheBuilder
 {
     using DeviceCache = std::unordered_map<device, context>;
-    /* This function implements a workaround to the current lack of a default
-     * context per root device in DPC++. The map stores a "default" context for
-     * each root device, and the QMgrHelper uses the map whenever it creates a
-     * new queue for a root device. By doing so, we avoid the performance
-     * overhead of context creation for every queue.
+    /* This function implements a workaround to the current lack of a
+     * default context per root device in DPC++. The map stores a "default"
+     * context for each root device, and the QMgrHelper uses the map
+     * whenever it creates a new queue for a root device. By doing so, we
+     * avoid the performance overhead of context creation for every queue.
      *
-     * The singleton pattern implemented here ensures that the map is created
-     * once in a thread-safe manner. Since, the map is ony read post-creation we
-     * do not need any further protection to ensure thread-safety.
+     * The singleton pattern implemented here ensures that the map is
+     * created once in a thread-safe manner. Since, the map is ony read
+     * post-creation we do not need any further protection to ensure
+     * thread-safety.
      */
     static const DeviceCache &getDeviceCache()
     {
@@ -190,26 +191,16 @@ void DPCTLDeviceMgr_PrintDeviceInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     auto Device = unwrap(DRef);
     if (Device)
         print_device_info(*Device);
-    else {
+    else
         std::cout << "Device is not valid (NULL). Cannot print device info.\n";
-    }
 }
 
 int64_t DPCTLDeviceMgr_GetRelativeId(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto Device = unwrap(DRef);
 
-    if (Device) {
-        auto p = Device->get_platform();
-        auto dt = Device->get_info<sycl::info::device::device_type>();
-        auto dev_vec = p.get_devices(dt);
-        int64_t id = 0;
-        for (auto &d_i : dev_vec) {
-            if (*Device == d_i)
-                return id;
-            ++id;
-        }
-        return -1;
-    }
+    if (Device)
+        return DPCTL_GetRelativeDeviceId(*Device);
+
     return -1;
 }

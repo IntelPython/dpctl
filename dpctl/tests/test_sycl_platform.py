@@ -133,6 +133,34 @@ def test_lsplatform():
         pytest.fail("Encountered an exception inside lsplatform().")
 
 
+def test_lsplatform0():
+    try:
+        dpctl.lsplatform(0)
+    except Exception:
+        pytest.fail("Encountered an exception inside lsplatform().")
+
+
+def test_lsplatform1():
+    try:
+        dpctl.lsplatform(1)
+    except Exception:
+        pytest.fail("Encountered an exception inside lsplatform().")
+
+
+def test_lsplatform2():
+    try:
+        dpctl.lsplatform(2)
+    except Exception:
+        pytest.fail("Encountered an exception inside lsplatform().")
+
+
+def test_lsplatform3():
+    try:
+        dpctl.lsplatform(3)
+    except Exception:
+        pytest.fail("Encountered an exception inside lsplatform().")
+
+
 def test_get_platforms():
     try:
         platforms = dpctl.get_platforms()
