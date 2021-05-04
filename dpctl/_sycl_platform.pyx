@@ -46,6 +46,8 @@ from ._backend cimport (  # noqa: E211
     _backend_type,
 )
 
+import warnings
+
 from .enum_types import backend_type
 
 __all__ = [
@@ -199,14 +201,14 @@ cdef class SyclPlatform(_SyclPlatform):
         cdef size_t v = 0
 
         if not isinstance(verbosity, int):
-            print(
+            warnings.warn(
                 "Illegal verbosity level. Accepted values are 0, 1, or 2. "
                 "Using the default verbosity level of 0."
             )
         else:
             v = <size_t>(verbosity)
             if v > 2:
-                print(
+                warnings.warn(
                     "Illegal verbosity level. Accepted values are 0, 1, or 2. "
                     "Using the default verbosity level of 0."
                 )
@@ -331,7 +333,7 @@ def lsplatform(verbosity=0):
     else:
         v = <size_t>(verbosity)
         if v > 2:
-            print(
+            warnings.warn(
                 "Illegal verbosity level. Accepted values are 0, 1, or 2. "
                 "Using the default verbosity level of 0."
             )
