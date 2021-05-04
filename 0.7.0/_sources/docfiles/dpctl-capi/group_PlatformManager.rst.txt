@@ -1,0 +1,251 @@
+.. index:: pair: group; Platform class helper functions
+.. _doxid-d7/d69/group__PlatformManager:
+
+Platform class helper functions
+===============================
+
+.. toctree::
+	:hidden:
+
+Overview
+~~~~~~~~
+
+Helper functions for ``sycl::platform`` objects that do not directly map to any ``sycl::platform`` member function. :ref:`More...<details-d7/d69/group__PlatformManager>`
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	
+	// typedefs
+
+	typedef struct DPCTLPlatformVector* :target:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>`;
+
+	// global functions
+
+	DPCTL_API void
+	:ref:`DPCTLPlatformMgr_PrintInfo<doxid-d7/d69/group__PlatformManager_1ga43dde9c2dda7a74ba44d7cba6d1e5d7f>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
+
+	DPCTL_API void
+	:ref:`DPCTLPlatformVector_Clear<doxid-d7/d69/group__PlatformManager_1ga89b9b23802931f2354d8acb91f72ba6c>`(__dpctl_keep :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>` VRef);
+
+	__dpctl_give :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>`
+	:ref:`DPCTLPlatformVector_Create<doxid-d7/d69/group__PlatformManager_1ga0d40f7b5b223e7a373489ad2878a5788>`();
+
+	DPCTL_API __dpctl_give :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>`
+	:ref:`DPCTLPlatformVector_CreateFromArray<doxid-d7/d69/group__PlatformManager_1gac4e4722d083773b839113fb32cca632c>`(
+		size_t len,
+		__dpctl_keep :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`* elems
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLPlatformVector_Delete<doxid-d7/d69/group__PlatformManager_1gaef25f3448c038f7a8ac3dd99a3d69249>`(__dpctl_take :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>` VRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
+	:ref:`DPCTLPlatformVector_GetAt<doxid-d7/d69/group__PlatformManager_1ga131427438ea4f1cbca1fe4c93e11e21a>`(
+		__dpctl_keep :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>` VRef,
+		size_t index
+		);
+
+	DPCTL_API size_t
+	:ref:`DPCTLPlatformVector_Size<doxid-d7/d69/group__PlatformManager_1ga713c99c0d385de070ae32d4d7657401e>`(__dpctl_keep :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>` VRef);
+
+.. _details-d7/d69/group__PlatformManager:
+
+Detailed Documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+Helper functions for ``sycl::platform`` objects that do not directly map to any ``sycl::platform`` member function.
+
+Global Functions
+----------------
+
+.. index:: pair: function; DPCTLPlatformMgr_PrintInfo
+.. _doxid-d7/d69/group__PlatformManager_1ga43dde9c2dda7a74ba44d7cba6d1e5d7f:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLPlatformMgr_PrintInfo(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef)
+
+Prints out information about the sycl::platform argument.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- PRef
+
+		- A :ref:`DPCTLSyclPlatformRef <doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` opaque pointer.
+
+.. index:: pair: function; DPCTLPlatformVector_Clear
+.. _doxid-d7/d69/group__PlatformManager_1ga89b9b23802931f2354d8acb91f72ba6c:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLPlatformVector_Clear(__dpctl_keep :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>` VRef)
+
+Delete all the elements of the std::vector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- VRef
+
+		- Opaque pointer to a vector.
+
+.. index:: pair: function; DPCTLPlatformVector_Create
+.. _doxid-d7/d69/group__PlatformManager_1ga0d40f7b5b223e7a373489ad2878a5788:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	__dpctl_give :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>`
+	DPCTLPlatformVector_Create()
+
+Create an opaque pointer to a std::vector of opaque pointers wrapping the SYCL data type.
+
+
+
+.. rubric:: Returns:
+
+Returns a new opaque pointer to a vector.
+
+.. index:: pair: function; DPCTLPlatformVector_CreateFromArray
+.. _doxid-d7/d69/group__PlatformManager_1gac4e4722d083773b839113fb32cca632c:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>`
+	DPCTLPlatformVector_CreateFromArray(
+		size_t len,
+		__dpctl_keep :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`* elems
+		)
+
+Create an opaque pointer to a std::vector created from the input raw array. The elements of the input array are deep copied before inserting the copies into the vector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- len
+
+		- Number of elements in the input array.
+
+	*
+		- elems
+
+		- A C array whose elements will be copied into the returned vector.
+
+
+
+.. rubric:: Returns:
+
+Returns a new opaque pointer to a vector.
+
+.. index:: pair: function; DPCTLPlatformVector_Delete
+.. _doxid-d7/d69/group__PlatformManager_1gaef25f3448c038f7a8ac3dd99a3d69249:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLPlatformVector_Delete(__dpctl_take :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>` VRef)
+
+Delete all elements in the vector and then delete the vector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- VRef
+
+		- Opaque pointer to a vector to be deleted.
+
+.. index:: pair: function; DPCTLPlatformVector_GetAt
+.. _doxid-d7/d69/group__PlatformManager_1ga131427438ea4f1cbca1fe4c93e11e21a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
+	DPCTLPlatformVector_GetAt(
+		__dpctl_keep :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>` VRef,
+		size_t index
+		)
+
+Returns the element at the specified index.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- VRef
+
+		- Opaque pointer to a vector.
+
+	*
+		- index
+
+		- The index postion of the element to be returned.
+
+
+
+.. rubric:: Returns:
+
+The element at the specified postion, if the index position is out of bounds then a nullptr is returned.
+
+.. index:: pair: function; DPCTLPlatformVector_Size
+.. _doxid-d7/d69/group__PlatformManager_1ga713c99c0d385de070ae32d4d7657401e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLPlatformVector_Size(__dpctl_keep :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>` VRef)
+
+Returns the number of elements in the vector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- VRef
+
+		- Opaque pointer to a vector.
+
+
+
+.. rubric:: Returns:
+
+The current size of the vector.
+

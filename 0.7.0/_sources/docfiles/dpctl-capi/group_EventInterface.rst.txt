@@ -1,0 +1,83 @@
+.. index:: pair: group; Event class C wrapper
+.. _doxid-d6/d8a/group__EventInterface:
+
+Event class C wrapper
+=====================
+
+.. toctree::
+	:hidden:
+
+Overview
+~~~~~~~~
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	
+	// global functions
+
+	DPCTL_API void
+	:ref:`DPCTLEvent_Delete<doxid-d6/d8a/group__EventInterface_1gae16fbf7465ec6d86a63e042100feba77>`(__dpctl_take :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
+	DPCTL_API void
+	:ref:`DPCTLEvent_Wait<doxid-d6/d8a/group__EventInterface_1ga3befe2587ca487628646214b7cf3b96e>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
+.. _details-d6/d8a/group__EventInterface:
+
+Detailed Documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+Global Functions
+----------------
+
+.. index:: pair: function; DPCTLEvent_Delete
+.. _doxid-d6/d8a/group__EventInterface_1gae16fbf7465ec6d86a63e042100feba77:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLEvent_Delete(__dpctl_take :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef)
+
+Deletes the DPCTLSyclEventRef after casting it to a sycl::event.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- ERef
+
+		- An opaque DPCTLSyclEventRef pointer that would be freed.
+
+.. index:: pair: function; DPCTLEvent_Wait
+.. _doxid-d6/d8a/group__EventInterface_1ga3befe2587ca487628646214b7cf3b96e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLEvent_Wait(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef)
+
+C-API wrapper for sycl::event.wait.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- ERef
+
+		- An opaque DPCTLSyclEventRef pointer on which to wait.
+

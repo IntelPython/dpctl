@@ -1,0 +1,199 @@
+.. index:: pair: group; Queue class helper functions
+.. _doxid-d9/db6/group__QueueManager:
+
+Queue class helper functions
+============================
+
+.. toctree::
+	:hidden:
+
+Overview
+~~~~~~~~
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	
+	// global functions
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
+	:ref:`DPCTLQueueMgr_GetCurrentQueue<doxid-d9/db6/group__QueueManager_1ga26661176513ae63e098b03fc98ba57f3>`();
+
+	DPCTL_API size_t
+	:ref:`DPCTLQueueMgr_GetQueueStackSize<doxid-d9/db6/group__QueueManager_1gac4657ff143d478b46dfce4a1634334b7>`();
+
+	DPCTL_API bool
+	:ref:`DPCTLQueueMgr_GlobalQueueIsCurrent<doxid-d9/db6/group__QueueManager_1ga232dadaad24034ea9121db864e2ab15e>`();
+
+	DPCTL_API bool
+	:ref:`DPCTLQueueMgr_IsCurrentQueue<doxid-d9/db6/group__QueueManager_1ga77d39c59561d3f427a1dde1ce81652db>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+
+	DPCTL_API void
+	:ref:`DPCTLQueueMgr_PopQueue<doxid-d9/db6/group__QueueManager_1ga60e20b64f0c70866e2e08442962fd621>`();
+
+	DPCTL_API void
+	:ref:`DPCTLQueueMgr_PushQueue<doxid-d9/db6/group__QueueManager_1gac9c2b3d22c3bfb0797c0b35551d331b7>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+
+	DPCTL_API void
+	:ref:`DPCTLQueueMgr_SetGlobalQueue<doxid-d9/db6/group__QueueManager_1gaf767ec0189383390b6bc63835eef1543>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+
+.. _details-d9/db6/group__QueueManager:
+
+Detailed Documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+Global Functions
+----------------
+
+.. index:: pair: function; DPCTLQueueMgr_GetCurrentQueue
+.. _doxid-d9/db6/group__QueueManager_1ga26661176513ae63e098b03fc98ba57f3:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
+	DPCTLQueueMgr_GetCurrentQueue()
+
+Get the current sycl::queue for the thread of execution.
+
+Dpctl lets an application access a "current queue" as soon as the application loads dpctl. The initial current queue also termed the global queue is a queue created using SYCL's default_selector. The current queue is set per thread and can be changed for a specific execution scope using the PushQueue and PopQueue functions in this module. The global queue can also be changed by using SetGlobalQueue.
+
+The DPCTLQueueMgr_GetCurrentQueue function returns the current queue in the current scope from where the function was called.
+
+
+
+.. rubric:: Returns:
+
+An opaque DPCTLSyclQueueRef pointer wrapping a sycl::queue\*.
+
+.. index:: pair: function; DPCTLQueueMgr_GetQueueStackSize
+.. _doxid-d9/db6/group__QueueManager_1gac4657ff143d478b46dfce4a1634334b7:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLQueueMgr_GetQueueStackSize()
+
+A helper function meant for unit testing. Returns the current number of queues pushed to the queue manager's internal stack of sycl::queue objects.
+
+
+
+.. rubric:: Returns:
+
+The current size of the queue manager's stack of queues.
+
+.. index:: pair: function; DPCTLQueueMgr_GlobalQueueIsCurrent
+.. _doxid-d9/db6/group__QueueManager_1ga232dadaad24034ea9121db864e2ab15e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLQueueMgr_GlobalQueueIsCurrent()
+
+Returns true if the global queue set for the queue manager is also the current queue.
+
+The default current queue provided by the queue manager is termed as the global queue. If DPCTLQueueMgr_PushQueue is used to make another queue the current queue, then the global queue no longer remains the current queue till all pushed queues are popped using DPCTLQueueMgr_PopQueue. The DPCTLQueueMgr_GlobalQueueIsCurrent checks if the global queue is also the current queue, i.e., no queues have been pushed and are yet to be popped.
+
+
+
+.. rubric:: Returns:
+
+True if the global queue is the current queue, else false.
+
+.. index:: pair: function; DPCTLQueueMgr_IsCurrentQueue
+.. _doxid-d9/db6/group__QueueManager_1ga77d39c59561d3f427a1dde1ce81652db:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
+
+Check if the queue argument is also the current queue.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to a sycl::queue.
+
+
+
+.. rubric:: Returns:
+
+True if QRef argument is the the current queue, else False.
+
+.. index:: pair: function; DPCTLQueueMgr_PopQueue
+.. _doxid-d9/db6/group__QueueManager_1ga60e20b64f0c70866e2e08442962fd621:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLQueueMgr_PopQueue()
+
+Pops the top of stack sycl::queue object from the queue manager's \* internal stack of queues and makes the next queue in the stack the current queue.
+
+DPCTLPopSyclQueue removes the top of stack queue and changes the current queue. If no queue was previously pushed, then a DPCTLQueueMgr_PopQueue call is a no-op.
+
+.. index:: pair: function; DPCTLQueueMgr_PushQueue
+.. _doxid-d9/db6/group__QueueManager_1gac9c2b3d22c3bfb0797c0b35551d331b7:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLQueueMgr_PushQueue(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
+
+Pushes the passed in sycl::queue object to the queue manager's internal stack of queues and makes the queue the current queue.
+
+The queue manager maintains a thread-local stack of sycl::queue objects. The :ref:`DPCTLQueueMgr_PushQueue() <doxid-d9/db6/group__QueueManager_1gac9c2b3d22c3bfb0797c0b35551d331b7>` function pushes to the stack and sets the passed in DPCTLSyclQueueRef object as the current queue. The current queue is the queue returned by the :ref:`DPCTLQueueMgr_GetCurrentQueue() <doxid-d9/db6/group__QueueManager_1ga26661176513ae63e098b03fc98ba57f3>` function.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque reference to a syc::queue.
+
+.. index:: pair: function; DPCTLQueueMgr_SetGlobalQueue
+.. _doxid-d9/db6/group__QueueManager_1gaf767ec0189383390b6bc63835eef1543:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLQueueMgr_SetGlobalQueue(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
+
+Resets the global queue using the passed in DPCTLSyclQueueRef the previous global queue is deleted.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque reference to a sycl::device.
+
