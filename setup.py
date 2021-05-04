@@ -41,11 +41,9 @@ else:
     assert False, sys.platform + " not supported"
 
 if IS_LIN:
-    DPCPP_ROOT = os.environ["ONEAPI_ROOT"] + r"/compiler/latest/linux"
     os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
     os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = r"dpctl/include"
     os.environ["CFLAGS"] = "-fPIC"
-
 elif IS_WIN:
     os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
     os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = r"dpctl\include"
