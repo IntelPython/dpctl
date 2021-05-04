@@ -245,7 +245,7 @@ multiple sub-devices.</p></li>
 
 <span class="c1"># Create a CPU device using the opencl driver</span>
 <span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;opencl:cpu&quot;</span><span class="p">)</span>
-<span class="c1"># Partition the CPU device into sub-devices with two cores each.</span>
+<span class="c1"># Partition the CPU device into sub-devices, each with two cores.</span>
 <span class="n">sub_devices</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="c1"># Create a context common to all the sub-devices.</span>
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclContext</span><span class="p">(</span><span class="n">sub_devices</span><span class="p">)</span>

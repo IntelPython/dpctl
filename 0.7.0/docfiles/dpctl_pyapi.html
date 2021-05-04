@@ -306,19 +306,16 @@ string is invalid, or the backend or device type values are not supported.</p>
 <dl class="py function">
 <dt id="dpctl.select_accelerator_device">
 <code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">select_accelerator_device</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.select_accelerator_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for SYCL’s <code class="docutils literal notranslate"><span class="pre">accelerator_selector</span></code> class.</p>
+<dd><p>A wrapper for SYCL’s <cite>accelerator_selector</cite> device_selector class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><cite>dpctl.SyclDevice</cite> object containing the SYCL device
-returned by the <code class="docutils literal notranslate"><span class="pre">accelerator_selector</span></code>.</p>
+<dd class="field-odd"><p>A new SyclDevice object containing the SYCL device returned by the
+<cite>accelerator_selector</cite>.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>A new class</p>
-</dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A ValueError is raised if the SYCL accelerator_selector is</strong> – </p></li>
-<li><p><strong>unable to select a device.</strong> – </p></li>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>A ValueError is raised if the SYCL accelerator_selector is unable to</strong> – </p></li>
+<li><p><strong>select a device.</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -327,19 +324,16 @@ returned by the <code class="docutils literal notranslate"><span class="pre">acc
 <dl class="py function">
 <dt id="dpctl.select_cpu_device">
 <code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">select_cpu_device</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.select_cpu_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for SYCL’s <code class="docutils literal notranslate"><span class="pre">cpu_selector</span></code> class.</p>
+<dd><p>A wrapper for SYCL’s <cite>cpu_selector</cite> device_selector class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><cite>dpctl.SyclDevice</cite> object containing the SYCL device
-returned by the <code class="docutils literal notranslate"><span class="pre">cpu_selector</span></code>.</p>
+<dd class="field-odd"><p>A new SyclDevice object containing the SYCL device returned by the
+<cite>cpu_selector</cite>.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>A new class</p>
-</dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A ValueError is raised if the SYCL cpu_selector is unable to</strong> – </p></li>
-<li><p><strong>select a device.</strong> – </p></li>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>A ValueError is raised if the SYCL cpu_seector is unable to select a</strong> – </p></li>
+<li><p><strong>device.</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -348,18 +342,15 @@ returned by the <code class="docutils literal notranslate"><span class="pre">cpu
 <dl class="py function">
 <dt id="dpctl.select_default_device">
 <code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">select_default_device</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.select_default_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for SYCL’s <code class="docutils literal notranslate"><span class="pre">default_selector</span></code> class.</p>
+<dd><p>A wrapper for SYCL’s <cite>default_selector</cite> device_selector class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><cite>dpctl.SyclDevice</cite> object containing the SYCL device
-returned by the <code class="docutils literal notranslate"><span class="pre">default_selector</span></code>.</p>
+<dd class="field-odd"><p>A new SyclDevice object containing the SYCL device returned by the
+<cite>default_selector</cite>.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>A new class</p>
-</dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A ValueError is raised if the SYCL default_selector is unable to</strong> – </p></li>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>A ValueError is raised if the SYCL default_seector is unable to</strong> – </p></li>
 <li><p><strong>select a device.</strong> – </p></li>
 </ul>
 </dd>
@@ -369,19 +360,16 @@ returned by the <code class="docutils literal notranslate"><span class="pre">def
 <dl class="py function">
 <dt id="dpctl.select_gpu_device">
 <code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">select_gpu_device</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.select_gpu_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for SYCL’s <code class="docutils literal notranslate"><span class="pre">gpu_selector</span></code> class.</p>
+<dd><p>A wrapper for SYCL’s <cite>gpu_selector</cite> device_selector class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><cite>dpctl.SyclDevice</cite> object containing the SYCL device
-returned by the <code class="docutils literal notranslate"><span class="pre">gpu_selector</span></code>.</p>
+<dd class="field-odd"><p>A new SyclDevice object containing the SYCL device returned by the
+<cite>gpu_selector</cite>.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>A new class</p>
-</dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A ValueError is raised if the SYCL gpu_selector is unable to</strong> – </p></li>
-<li><p><strong>select a device.</strong> – </p></li>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>A ValueError is raised if the SYCL gpu_seector is unable to select a</strong> – </p></li>
+<li><p><strong>device.</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -390,19 +378,16 @@ returned by the <code class="docutils literal notranslate"><span class="pre">gpu
 <dl class="py function">
 <dt id="dpctl.select_host_device">
 <code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">select_host_device</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.select_host_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for SYCL’s <code class="docutils literal notranslate"><span class="pre">host_selector</span></code> class.</p>
+<dd><p>A wrapper for SYCL’s <cite>host_selector</cite> device_selector class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><cite>dpctl.SyclDevice</cite> object containing the SYCL device
-returned by the <code class="docutils literal notranslate"><span class="pre">host_selector</span></code>.</p>
+<dd class="field-odd"><p>A new SyclDevice object containing the SYCL device returned by the
+<cite>host_selector</cite>.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>A new class</p>
-</dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A ValueError is raised if the SYCL host_selector is unable to</strong> – </p></li>
-<li><p><strong>select a device.</strong> – </p></li>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>A ValueError is raised if the SYCL host_seector is unable to select a</strong> – </p></li>
+<li><p><strong>device.</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -416,62 +401,25 @@ returned by the <code class="docutils literal notranslate"><span class="pre">hos
 <dl class="py function">
 <dt id="dpctl.has_cpu_devices">
 <code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">has_cpu_devices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.has_cpu_devices" title="Permalink to this definition">¶</a></dt>
-<dd><p>A helper function to check if there are any SYCL CPU devices available.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">sycl::device_type::cpu</span></code> devices are present,
-<code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
+<dd><p>Returns: True if <cite>sycl::device_type::cpu</cite> devices are present, False otherwise</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpctl.has_gpu_devices">
 <code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">has_gpu_devices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.has_gpu_devices" title="Permalink to this definition">¶</a></dt>
-<dd><p>A helper function to check if there are any SYCL GPU devices available.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">sycl::device_type::gpu</span></code> devices are present,
-<code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
+<dd><p>Returns: True if <cite>sycl::device_type::gpu</cite> devices are present, False otherwise</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpctl.has_accelerator_devices">
 <code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">has_accelerator_devices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.has_accelerator_devices" title="Permalink to this definition">¶</a></dt>
-<dd><p>A helper function to check if there are any SYCL Accelerator devices
-available.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">sycl::device_type::accelerator</span></code> devices are
-present, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
+<dd><p>Returns: True if <cite>sycl::device_type::accelerator</cite> devices are present, False otherwise</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpctl.has_host_device">
 <code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">has_host_device</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.has_host_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>A helper function to check if there are any SYCL Host devices available.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">sycl::device_type::host</span></code> devices are present,
-<code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
+<dd><p>Returns: True if <cite>sycl::device_type::host</cite> devices are present, False otherwise</p>
 </dd></dl>
 
 <dl class="py function">
@@ -491,19 +439,10 @@ present, <code class="docutils literal notranslate"><span class="pre">False</spa
 <dl class="py function">
 <dt id="dpctl.lsplatform">
 <code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">lsplatform</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.lsplatform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints out the list of available SYCL platforms, and optionally extra
-metadata about each platform.</p>
-<p>The level of information printed out by the function can be controlled by
-the optional <code class="docutils literal notranslate"><span class="pre">vebosity</span></code> setting.</p>
-<ul class="simple">
-<li><p><strong>Verbosity level 0</strong>: Prints out the list of platforms and their names.</p></li>
-<li><p><strong>Verbosity level 1</strong>: Prints out the name, version, vendor, backend,
-number of devices for each platform.</p></li>
-<li><p><strong>Verbosity level 2</strong>: At the highest level of verbosity everything in the
-previous levels along with the name, version, and filter string for each
-device is printed.</p></li>
-</ul>
-<p>At verbosity level 2 (highest level) the following output is generated.</p>
+<dd><p>Prints out the list of available SYCL platforms and various information
+about each platform.</p>
+<p>Currently, this function prints a list of all SYCL platforms that
+are available on the system and the list of devices for each platform.</p>
 <dl class="field-list">
 <dt class="field-odd">Example</dt>
 <dd class="field-odd"><p>On a system with an OpenCL CPU driver, OpenCL GPU driver,
@@ -547,12 +486,6 @@ Level Zero GPU driver, running the command.</p>
         <span class="n">Device</span> <span class="nb">type</span>     <span class="n">gpu</span>
 </pre></div>
 </div>
-</dd>
-<dt class="field-even">Parameters</dt>
-<dd class="field-even"><p><strong>verbosity</strong> (<em>optional</em>) – Defaults to 0.
-The verbosity controls how much information is printed by the
-function. 0 is the lowest level set by default and 2 is the highest
-level to print the most verbose output.</p>
 </dd>
 </dl>
 </dd></dl>
