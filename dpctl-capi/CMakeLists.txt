@@ -1,6 +1,22 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("dpctl C API - A C wrapper for a subset of SYCL")
 
+# Load our CMake modules to search for DPCPP and Level Zero
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
+find_package(Git REQUIRED)
+    include(GetProjectVersion)
+# the get_version function is defined in the GetProjectVersion module and
+# defines: VERSION, SEMVER, MAJOR, MINOR, PATCH. These variables are populated
+# by parsing the output of git describe.
+get_version()
+project(
+    "libDPCTLSYCLInterface"
+    DESCRIPTION "A C API for a subset of SYCL"
+)
+
+option(DPCTL_CUSTOM_DPCPP_INSTALL_DIR
+    "Use a custom version of DPCPP installed at the provided location."
+    OFF
+)
 # Option to turn on support for creating Level Zero interoperability programs
 # from a SPIR-V binary file.
 option(DPCTL_ENABLE_LO_PROGRAM_CREATION
@@ -23,40 +39,82 @@ option(DPCTL_BUILD_CAPI_TESTS
     OFF
 )
 
-# Load our CMake modules to search for DPCPP and Level Zero
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
-find_package(DPCPP 2021.2.0 REQUIRED)
+# Minimum version requirement only when oneAPI dpcpp is used.
+if(DPCTL_CUSTOM_DPCPP_INSTALL_DIR)
+    find_package(IntelSycl REQUIRED)
+else()
+    find_package(IntelSycl 2021.2.0 REQUIRED)
+endif()
 
 if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
     set(DPCTL_ENABLE_LO_PROGRAM_CREATION 1)
-    find_package(LevelZero REQUIRED)
+    include(GetLevelZeroHeaders)
+    get_level_zero_headers()
 endif()
 
-configure_file(${CMAKE_SOURCE_DIR}/include/Config/dpctl_config.h.in
-               ${CMAKE_SOURCE_DIR}/include/Config/dpctl_config.h)
+configure_file(
+    ${CMAKE_SOURCE_DIR}/include/Config/dpctl_config.h.in
+    ${CMAKE_SOURCE_DIR}/include/Config/dpctl_config.h
+)
+
+# Set the C++ standard to C++17
+set(CMAKE_CXX_STANDARD 17)
 
 if(WIN32)
-    set(CMAKE_CXX_COMPILER:PATH "${DPCPP_ROOT}/bin/dpcpp")
-    set(CMAKE_C_COMPILER:PATH "${DPCPP_ROOT}/bin/clang-cl")
-    set(CMAKE_LINKER:PATH "${DPCPP_ROOT}/bin/lld-link")
-    message(STATUS "Resetting CXX compiler to: " ${CMAKE_CXX_COMPILER})
-    message(STATUS "Resetting C compiler to: " ${CMAKE_C_COMPILER})
-    message(STATUS "Resetting Linker to: " ${CMAKE_LINKER})
-    set(WARNING_FLAGS "-Wall -Wextra -Winit-self -Wunused-function -Wuninitialized -Wmissing-declarations")
+    string(CONCAT WARNING_FLAGS
+        "-Wall "
+        "-Wextra "
+        "-Winit-self "
+        "-Wunused-function "
+        "-Wuninitialized "
+        "-Wmissing-declarations "
+    )
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WARNING_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS} -Qstd=c++17")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG -Qstd=c++17")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS}")
+    set(CMAKE_C_FLAGS_DEBUG
+        "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG"
+    )
+    set(CMAKE_CXX_FLAGS_DEBUG
+        "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG"
+    )
 elseif(UNIX)
-    set(CMAKE_CXX_COMPILER:PATH "${DPCPP_ROOT}/bin/dpcpp")
-    set(CMAKE_C_COMPILER:PATH "${DPCPP_ROOT}/bin/clang")
-    set(CMAKE_LINKER:PATH "${DPCPP_ROOT}/bin/lld")
-    set(SDL_FLAGS "-fstack-protector -fstack-protector-all -fpic -fPIC -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -fno-strict-overflow -fno-delete-null-pointer-checks")
-    set(WARNING_FLAGS "-Wall -Wextra -Winit-self -Wunused-function -Wuninitialized -Wmissing-declarations -fdiagnostics-color=auto")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WARNING_FLAGS} ${SDL_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS} ${SDL_FLAGS} -std=c++17 -fsycl")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG -std=c++17 -fsycl")
+    string(CONCAT WARNING_FLAGS
+        "-Wall "
+        "-Wextra "
+        "-Winit-self "
+        "-Wunused-function "
+        "-Wuninitialized "
+        "-Wmissing-declarations "
+        "-fdiagnostics-color=auto "
+    )
+    string(CONCAT SDL_FLAGS
+        "-fstack-protector "
+        "-fstack-protector-all "
+        "-fpic "
+        "-fPIC "
+        "-D_FORTIFY_SOURCE=2 "
+        "-Wformat "
+        "-Wformat-security "
+        "-fno-strict-overflow "
+        "-fno-delete-null-pointer-checks "
+    )
+    string(CONCAT CFLAGS
+        "${WARNING_FLAGS}"
+        "${SDL_FLAGS}"
+    )
+    string(CONCAT CXXFLAGS
+        "${WARNING_FLAGS}"
+        "${SDL_FLAGS}"
+        "-fsycl "
+    )
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CFLAGS}")
+    set(CMAKE_CXX_FLAGS "${CXXFLAGS}")
+    set(CMAKE_C_FLAGS_DEBUG
+        "${CMAKE_C_FLAGS_DEBUG} ${CFLAGS} -ggdb3 -DDEBUG"
+    )
+    set(CMAKE_CXX_FLAGS_DEBUG
+        "${CMAKE_CXX_FLAGS_DEBUG} ${CXXFLAGS} -ggdb3 -DDEBUG"
+    )
 else()
     message(FATAL_ERROR "Unsupported system.")
 endif()
@@ -85,31 +143,30 @@ target_include_directories(DPCTLSyclInterface
     PRIVATE
     ${CMAKE_SOURCE_DIR}/include/
     ${CMAKE_SOURCE_DIR}/helper/include/
-    ${DPCPP_SYCL_INCLUDE_DIR}
+    ${IntelSycl_SYCL_INCLUDE_DIR}
 )
 
 target_link_libraries(DPCTLSyclInterface
-    PRIVATE ${DPCPP_SYCL_LIBRARY}
-    PRIVATE ${DPCPP_OPENCL_LIBRARY}
+    PRIVATE ${IntelSycl_SYCL_LIBRARY}
+    PRIVATE ${IntelSycl_OPENCL_LIBRARY}
 )
 
 if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
-    if(UNIX)
-        target_include_directories(DPCTLSyclInterface
-            PRIVATE
-            ${LEVEL_ZERO_INCLUDE_DIR}
-        )
-    else()
-        message(WARNING
-            "DPCTL support Level Zero program creation not supported "
-            "on this system."
-        )
-    endif()
+    target_include_directories(DPCTLSyclInterface
+        PRIVATE
+        ${LEVEL_ZERO_INCLUDE_DIR}
+    )
 endif()
 
-install(
-  TARGETS DPCTLSyclInterface
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
+# NOTE: Till we hit 1.0.0 we will keep using the MINOR version to set the API
+# version of the library.
+set_target_properties(DPCTLSyclInterface PROPERTIES VERSION ${VERSION_MINOR})
+set_target_properties(DPCTLSyclInterface PROPERTIES SOVERSION 1)
+
+install(TARGETS
+    DPCTLSyclInterface
+    LIBRARY
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
 )
 
 # Install all headers
@@ -132,16 +189,14 @@ endforeach()
 
 # Enable code coverage related settings
 if(DPCTL_GENERATE_COVERAGE)
-    # check if llvm-cov and lcov are available
+    # check if lcov is available
     find_package(Lcov REQUIRED)
-    # These flags are set inside FindDPCPP
-    if(NOT (${LLVM_COV_FOUND} AND ${LLVM_PROFDATA_FOUND}))
-        message(FATAL_ERROR
-            "llvm-cov and llvm-profdata are needed to generate coverage."
-        )
-    endif()
+    # check if llvm-cov version 11 is available
+    find_package(LLVMCov 11 REQUIRED)
+    # check if llvm-profdata is available
+    find_package(LLVMProfdata REQUIRED)
     # Turn on DPCTL_BUILD_CAPI_TESTS as building tests is needed to generate
-    # coverage reports
+    # coverage reports.
     set(DPCTL_BUILD_CAPI_TESTS "ON")
     if(DPCTL_COVERAGE_REPORT_OUTPUT_DIR)
         set(COVERAGE_OUTPUT_DIR ${DPCTL_COVERAGE_REPORT_OUTPUT_DIR})
