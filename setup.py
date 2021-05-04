@@ -16,7 +16,6 @@
 
 import os
 import os.path
-import subprocess
 import sys
 
 import numpy as np
@@ -103,8 +102,15 @@ def get_suppressed_warning_flags():
 
 
 def build_backend():
-    build_script = os.path.join(os.getcwd(), "scripts", "build_backend.py")
-    subprocess.check_call([sys.executable, build_script])
+    import os.path
+    from importlib.util import module_from_spec, spec_from_file_location
+
+    spec = spec_from_file_location(
+        "build_backend", os.path.join("scripts", "build_backend.py")
+    )
+    builder_module = module_from_spec(spec)
+    spec.loader.exec_module(builder_module)
+    builder_module.build_backend(l0_support=True)
 
 
 def extensions():
