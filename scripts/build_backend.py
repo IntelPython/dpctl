@@ -45,8 +45,20 @@ if IS_WIN:
 dpctl_dir = os.getcwd()
 build_cmake_dir = os.path.join(dpctl_dir, "build_cmake")
 if os.path.exists(build_cmake_dir):
-    shutil.rmtree(build_cmake_dir)
-os.mkdir(build_cmake_dir)
+    for f in os.listdir(build_cmake_dir):
+        f_path = os.path.join(build_cmake_dir, f)
+        if os.path.isdir(f_path):
+            if (f == "level-zero") and os.path.isdir(
+                os.path.join(f_path, ".git")
+            ):
+                # do not delete Git checkout of level zero headers
+                pass
+            else:
+                shutil.rmtree(f_path)
+        else:
+            os.remove(f_path)
+else:
+    os.mkdir(build_cmake_dir)
 os.chdir(build_cmake_dir)
 
 INSTALL_PREFIX = os.path.join(dpctl_dir, "install")
@@ -97,7 +109,7 @@ if IS_LIN:
         subprocess.check_call(["make", "install"])
 
     os.chdir(dpctl_dir)
-    for file in glob.glob(os.path.join(dpctl_dir, "install", "lib", "*.so")):
+    for file in glob.glob(os.path.join(dpctl_dir, "install", "lib", "*.so*")):
         shutil.copy(file, os.path.join(dpctl_dir, "dpctl"))
 
 if IS_WIN:
@@ -113,6 +125,7 @@ if IS_WIN:
         + os.path.join(DPCPP_ROOT, "bin", "clang-cl.exe"),
         "-DCMAKE_CXX_COMPILER:PATH="
         + os.path.join(DPCPP_ROOT, "bin", "dpcpp.exe"),
+        "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON",
         backends,
     ]
     subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=False)
