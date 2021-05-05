@@ -433,13 +433,15 @@ int64_t DPCTL_GetRelativeDeviceId(const device &Device)
 {
     auto relid = -1;
     auto p = Device.get_platform();
+    auto be = p.get_backend();
     auto dt = Device.get_info<sycl::info::device::device_type>();
-    auto dev_vec = p.get_devices(dt);
+    auto dev_vec = device::get_devices(dt);
     int64_t id = 0;
     for (const auto &d_i : dev_vec) {
         if (Device == d_i)
             relid = id;
-        ++id;
+        if (d_i.get_platform().get_backend() == be)
+            ++id;
     }
     return relid;
 }
