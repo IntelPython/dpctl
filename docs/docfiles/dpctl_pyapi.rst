@@ -18,7 +18,7 @@ Sub-modules
         2020's ``kernel_bundle`` feature and the wrapper for the ``program``
         class is going to be removed.
     :mod:`dpctl.tensor`
-        Implementation of different types of tensor classes tht use USM memory.
+        Implementation of different types of tensor classes that use USM memory.
 
 Classes
 -------
