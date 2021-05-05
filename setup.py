@@ -150,14 +150,15 @@ def extensions():
             dpctl_sycl_interface_include,
         ],
         "include_dirs": [np.get_include(), dpctl_sycl_interface_include],
-        "extra_compile_args": eca
-        + get_other_cxxflags()
-        + get_suppressed_warning_flags(),
+        "extra_compile_args": (
+            eca + get_other_cxxflags() + get_suppressed_warning_flags()
+        ),
         "extra_link_args": ela,
         "libraries": libs,
         "library_dirs": librarys,
         "runtime_library_dirs": runtime_library_dirs,
         "language": "c++",
+        "define_macros": [],
     }
 
     if CODE_COVERAGE:
@@ -175,69 +176,92 @@ def extensions():
             [
                 os.path.join("dpctl", "_sycl_context.pyx"),
             ],
-            **extension_args
+            **extension_args,
         ),
         Extension(
             "dpctl._sycl_device",
             [
                 os.path.join("dpctl", "_sycl_device.pyx"),
             ],
-            **extension_args
+            **extension_args,
         ),
         Extension(
             "dpctl._sycl_device_factory",
             [
                 os.path.join("dpctl", "_sycl_device_factory.pyx"),
             ],
-            **extension_args
+            **extension_args,
         ),
         Extension(
             "dpctl._sycl_event",
             [
                 os.path.join("dpctl", "_sycl_event.pyx"),
             ],
-            **extension_args
+            **extension_args,
         ),
         Extension(
             "dpctl._sycl_platform",
             [
                 os.path.join("dpctl", "_sycl_platform.pyx"),
             ],
-            **extension_args
+            **extension_args,
         ),
         Extension(
             "dpctl._sycl_queue",
             [
                 os.path.join("dpctl", "_sycl_queue.pyx"),
             ],
-            **extension_args
+            **extension_args,
         ),
         Extension(
             "dpctl._sycl_queue_manager",
             [
                 os.path.join("dpctl", "_sycl_queue_manager.pyx"),
             ],
-            **extension_args
+            **extension_args,
         ),
         Extension(
             "dpctl.memory._memory",
             [
                 os.path.join("dpctl", "memory", "_memory.pyx"),
             ],
-            **extension_args
+            **extension_args,
         ),
         Extension(
             "dpctl.program._program",
             [
                 os.path.join("dpctl", "program", "_program.pyx"),
             ],
-            **extension_args
+            **extension_args,
+        ),
+        Extension(
+            "dpctl.tensor._usmarray",
+            [
+                os.path.join("dpctl", "tensor", "_usmarray.pyx"),
+            ],
+            depends=extension_args["depends"]
+            + [os.path.join("libtensor", "include", "usm_array.hpp")],
+            language="c++",
+            include_dirs=(
+                extension_args["include_dirs"]
+                + [os.path.join("libtensor", "include")]
+            ),
+            extra_compile_args=extension_args["extra_compile_args"],
+            extra_link_args=extension_args["extra_link_args"],
+            libraries=extension_args["libraries"],
+            library_dirs=extension_args["library_dirs"],
+            runtime_library_dirs=extension_args["runtime_library_dirs"],
+            define_macros=extension_args["define_macros"],
         ),
     ]
     if CODE_COVERAGE:
-        exts = cythonize(extensions, compiler_directives={"linetrace": True})
+        exts = cythonize(
+            extensions,
+            compiler_directives={"linetrace": True},
+            language_level=3,
+        )
     else:
-        exts = cythonize(extensions)
+        exts = cythonize(extensions, language_level=3)
     return exts
 
 

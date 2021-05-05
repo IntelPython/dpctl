@@ -96,3 +96,4 @@ dpctl/_sycl_event.h
 dpctl/_sycl_queue.h
 dpctl/_sycl_queue_manager.h
 dpctl/memory/_memory.h
+dpctl/tensor/_usmarray.h

@@ -22,6 +22,7 @@ per-file-ignores =
     dpctl/_sycl_queue_manager.pyx: E999, E225
     dpctl/memory/_memory.pyx: E999, E225, E226, E227
     dpctl/program/_program.pyx: E999, E225, E226, E227
+    dpctl/tensor/_usmarray.pyx: E999, E225, E226, E227
     dpctl/tensor/numpy_usm_shared.py: F821
     examples/cython/sycl_buffer/_buffer_example.pyx: E999, E225, E402
     examples/cython/sycl_direct_linkage/_buffer_example.pyx: E999, E225, E402
