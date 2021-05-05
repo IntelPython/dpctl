@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #                       Data Parallel Control (dpctl)
 #
 #  Copyright 2020-2021 Intel Corporation
@@ -14,6 +15,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+=======
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 # distutils: language = c++
 # cython: language_level=3
 
@@ -22,6 +25,7 @@ import numpy as np
 import dpctl
 import dpctl.memory as dpmem
 
+<<<<<<< HEAD
 from ._device import Device
 
 from cpython.mem cimport PyMem_Free
@@ -30,11 +34,20 @@ from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
 
+=======
+from cpython.mem cimport PyMem_Free
+from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
+
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
 cdef extern from "usm_array.hpp" namespace "usm_array":
     cdef cppclass usm_array:
         usm_array(char *, int, size_t*, Py_ssize_t *,
+<<<<<<< HEAD
                   int, int, c_dpctl.DPCTLSyclQueueRef) except +
+=======
+                  int, int, DPCTLSyclQueueRef) except +
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
 
 include "_stride_utils.pxi"
@@ -74,6 +87,7 @@ cdef class usm_ndarray:
         """
         Initializes member fields
         """
+<<<<<<< HEAD
         self.base_ = None
         self.nd_ = -1
         self.data_ = <char *>0
@@ -106,6 +120,42 @@ cdef class usm_ndarray:
         )
         res.flags_ = self.flags_
         if (res.data_ != self.data_):
+=======
+        self.base = None
+        self.nd = -1
+        self.data = <char *>0
+        self.shape = <Py_ssize_t *>0
+        self.strides = <Py_ssize_t *>0
+        self.flags = 0
+
+    cdef void _cleanup(usm_ndarray self):
+        if (self.shape):
+            PyMem_Free(self.shape)
+        if (self.strides):
+            PyMem_Free(self.strides)
+        self._reset()
+
+    cdef usm_ndarray _clone(self):
+        """
+        Provides a copy of Python object pointing to the same data
+        """
+        cdef int item_size = type_bytesize(self.typenum)
+        cdef Py_ssize_t offset_bytes = (
+            (<char *> self.data) -
+            (<char *>(<size_t>self.base._pointer)))
+        cdef usm_ndarray res = usm_ndarray.__new__(
+            usm_ndarray, _make_int_tuple(self.nd, self.shape),
+            dtype=_make_typestr(self.typenum),
+            strides=(
+                _make_int_tuple(self.nd, self.strides) if (self.strides)
+                else None),
+            buffer=self.base,
+            offset=(offset_bytes // item_size),
+            order=('C' if (self.flags & USM_ARRAY_C_CONTIGUOUS) else 'F')
+        )
+        res.flags = self.flags
+        if (res.data != self.data):
+>>>>>>> Added dpctl/tensor/_usmarray submodule
             raise InternalUSMArrayError(
                 "Data pointers of cloned and original objects are different.")
         return res
@@ -183,8 +233,13 @@ cdef class usm_ndarray:
                 raise ValueError(
                     "buffer='{}' is not understood. "
                     "Recognized values are 'device', 'shared',  'host', "
+<<<<<<< HEAD
                     "an instance of `MemoryUSM*` object, or a usm_ndarray"
                     "".format(buffer))
+=======
+                    "or an object with __sycl_usm_array_interface__ "
+                    "property".format(buffer))
+>>>>>>> Added dpctl/tensor/_usmarray submodule
         elif isinstance(buffer, usm_ndarray):
             _buffer = buffer.usm_data
         else:
@@ -195,6 +250,7 @@ cdef class usm_ndarray:
             self._cleanup()
             raise ValueError("buffer='{}' can not accomodate the requested "
                              "array.".format(buffer))
+<<<<<<< HEAD
         self.base_ = _buffer
         self.data_ = (<char *> (<size_t> _buffer._pointer)) + itemsize * _offset
         self.shape_ = shape_ptr
@@ -202,21 +258,38 @@ cdef class usm_ndarray:
         self.typenum_ = typenum
         self.flags_ = contig_flag
         self.nd_ = nd
+=======
+        self.base = _buffer
+        self.data = (<char *> (<size_t> _buffer._pointer)) + itemsize * _offset
+        self.shape = shape_ptr
+        self.strides = strides_ptr
+        self.typenum = typenum
+        self.flags = contig_flag
+        self.nd = nd
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
     def __dealloc__(self):
         self._cleanup()
 
     cdef Py_ssize_t get_offset(self) except *:
         cdef char *mem_ptr = NULL
+<<<<<<< HEAD
         cdef char *ary_ptr = self.get_data()
         mem_ptr = <char *>(<size_t> self.base_._pointer)
         byte_offset = ary_ptr - mem_ptr
         item_size = self.get_itemsize()
+=======
+        cdef char *ary_ptr = self.data
+        mem_ptr = <char *>(<size_t> self.base._pointer)
+        byte_offset = ary_ptr - mem_ptr
+        item_size = type_bytesize(self.typenum)
+>>>>>>> Added dpctl/tensor/_usmarray submodule
         if (byte_offset % item_size):
             raise InternalUSMArrayError(
                 "byte_offset is not a multiple of item_size.")
         return byte_offset // item_size
 
+<<<<<<< HEAD
     cdef char* get_data(self):
         """Returns the USM pointer for this array."""
         return self.data_
@@ -286,6 +359,8 @@ cdef class usm_ndarray:
                 "Memory owner of this array is corrupted"
             )
 
+=======
+>>>>>>> Added dpctl/tensor/_usmarray submodule
     @property
     def __sycl_usm_array_interface__(self):
         """
@@ -296,6 +371,7 @@ cdef class usm_ndarray:
         cdef Py_ssize_t elem_offset = -1
         cdef char *mem_ptr = NULL
         cdef char *ary_ptr = NULL
+<<<<<<< HEAD
         if (not isinstance(self.base_, dpmem._memory._Memory)):
             raise ValueError("Invalid instance of usm_ndarray ecountered")
         ary_iface = self.base_.__sycl_usm_array_interface__
@@ -317,6 +393,29 @@ cdef class usm_ndarray:
         ary_iface['typestr'] = _make_typestr(self.typenum_)
         byte_offset = ary_ptr - mem_ptr
         item_size = self.get_itemsize()
+=======
+        if (not isinstance(self.base, dpmem._memory._Memory)):
+            raise ValueError("Invalid instance of usm_ndarray ecountered")
+        ary_iface = self.base.__sycl_usm_array_interface__
+        mem_ptr = <char *>(<size_t> ary_iface['data'][0])
+        ary_ptr = <char *>(<size_t> self.data)
+        ro_flag = False if (self.flags & USM_ARRAY_WRITEABLE) else True
+        ary_iface['data'] = (<size_t> ary_ptr, ro_flag)
+        ary_iface['shape'] = _make_int_tuple(self.nd, self.shape)
+        if (self.strides):
+            ary_iface['strides'] = _make_int_tuple(self.nd, self.strides)
+        else:
+            if (self.flags & USM_ARRAY_C_CONTIGUOUS):
+                ary_iface['strides'] = None
+            elif (self.flags & USM_ARRAY_F_CONTIGUOUS):
+                ary_iface['strides'] = _f_contig_strides(self.nd, self.shape)
+            else:
+                raise ValueError("USM Array is not contiguous and "
+                                 "has empty strides")
+        ary_iface['typestr'] = _make_typestr(self.typenum)
+        byte_offset = ary_ptr - mem_ptr
+        item_size = type_bytesize(self.typenum)
+>>>>>>> Added dpctl/tensor/_usmarray submodule
         if (byte_offset % item_size):
             raise InternalUSMArrayError(
                 "byte_offset is not a multiple of item_size.")
@@ -329,14 +428,22 @@ cdef class usm_ndarray:
         """
         Gives the number of indices needed to address elements of this array.
         """
+<<<<<<< HEAD
         return int(self.nd_)
+=======
+        return int(self.nd)
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
     @property
     def usm_data(self):
         """
         Gives USM memory object underlying usm_array instance.
         """
+<<<<<<< HEAD
         return self.base_
+=======
+        return self.base
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
     @property
     def shape(self):
@@ -344,10 +451,14 @@ cdef class usm_ndarray:
         Elements of the shape tuple give the lengths of the
         respective array dimensions.
         """
+<<<<<<< HEAD
         if self.nd_ > 0:
             return _make_int_tuple(self.nd_, self.shape_)
         else:
             return tuple()
+=======
+        return _make_int_tuple(self.nd, self.shape) if self.nd > 0 else tuple()
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
     @property
     def strides(self):
@@ -359,6 +470,7 @@ cdef class usm_ndarray:
 
            a[i1, i2, i3] == (&a[0,0,0])[ s1*s1 + s2*i2 + s3*i3]
         """
+<<<<<<< HEAD
         if (self.strides_):
             return _make_int_tuple(self.nd_, self.strides_)
         else:
@@ -366,6 +478,15 @@ cdef class usm_ndarray:
                 return _c_contig_strides(self.nd_, self.shape_)
             elif (self.flags_ & USM_ARRAY_F_CONTIGUOUS):
                 return _f_contig_strides(self.nd_, self.shape_)
+=======
+        if (self.strides):
+            return _make_int_tuple(self.nd, self.strides)
+        else:
+            if (self.flags & USM_ARRAY_C_CONTIGUOUS):
+                return _c_contig_strides(self.nd, self.shape)
+            elif (self.flags & USM_ARRAY_F_CONTIGUOUS):
+                return _f_contig_strides(self.nd, self.shape)
+>>>>>>> Added dpctl/tensor/_usmarray submodule
             else:
                 raise ValueError("Inconsitent usm_ndarray data")
 
@@ -374,7 +495,11 @@ cdef class usm_ndarray:
         """
         Currently returns integer whose bits correspond to the flags.
         """
+<<<<<<< HEAD
         return self.flags_
+=======
+        return int(self.flags)
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
     @property
     def usm_type(self):
@@ -383,14 +508,22 @@ cdef class usm_ndarray:
 
         See: https://docs.oneapi.com/versions/latest/dpcpp/iface/usm.html
         """
+<<<<<<< HEAD
         return self.base_.get_usm_type()
+=======
+        return self.base.get_usm_type()
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
     @property
     def itemsize(self):
         """
         Size of array element in bytes.
         """
+<<<<<<< HEAD
         return self.get_itemsize()
+=======
+        return type_bytesize(self.typenum)
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
     @property
     def nbytes(self):
@@ -398,35 +531,53 @@ cdef class usm_ndarray:
         Total bytes consumed by the elements of the array.
         """
         return (
+<<<<<<< HEAD
             shape_to_elem_count(self.nd_, self.shape_) *
             self.get_itemsize())
+=======
+            shape_to_elem_count(self.nd, self.shape) *
+            type_bytesize(self.typenum))
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
     @property
     def size(self):
         """
         Number of elements in the array.
         """
+<<<<<<< HEAD
         return shape_to_elem_count(self.nd_, self.shape_)
+=======
+        return shape_to_elem_count(self.nd, self.shape)
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
     @property
     def dtype(self):
         """
         Returns NumPy's dtype corresponding to the type of the array elements.
         """
+<<<<<<< HEAD
         return np.dtype(_make_typestr(self.typenum_))
+=======
+        return np.dtype(_make_typestr(self.typenum))
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
     @property
     def sycl_queue(self):
         """
         Returns `dpctl.SyclQueue` object associated with USM data.
         """
+<<<<<<< HEAD
         return self.get_sycl_queue()
+=======
+        return self.base._queue
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
     @property
     def sycl_device(self):
         """
         Returns `dpctl.SyclDevice` object on which USM data was allocated.
         """
+<<<<<<< HEAD
         q = self.sycl_queue
         return q.sycl_device
 
@@ -436,36 +587,61 @@ cdef class usm_ndarray:
         Returns data-API object representing residence of the array data.
         """
         return Device.create_device(self.sycl_queue)
+=======
+        return self.base._queue.sycl_device
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
     @property
     def sycl_context(self):
         """
         Returns `dpctl.SyclContext` object to which USM data is bound.
         """
+<<<<<<< HEAD
         q = self.sycl_queue
         return q.sycl_context
 
     @property
     def T(self):
         if self.nd_ < 2:
+=======
+        return self.base._queue.sycl_context
+
+    @property
+    def T(self):
+        if self.nd < 2:
+>>>>>>> Added dpctl/tensor/_usmarray submodule
             return self
         else:
             return _transpose(self)
 
     @property
     def real(self):
+<<<<<<< HEAD
         if (self.typenum_ < UAR_CFLOAT):
             # elements are real
             return self
         if (self.typenum_ < UAR_TYPE_SENTINEL):
+=======
+        if (self.typenum < UAR_CFLOAT):
+            # elements are real
+            return self
+        if (self.typenum < UAR_TYPE_SENTINEL):
+>>>>>>> Added dpctl/tensor/_usmarray submodule
             return _real_view(self)
 
     @property
     def imag(self):
+<<<<<<< HEAD
         if (self.typenum_ < UAR_CFLOAT):
             # elements are real
             return _zero_like(self)
         if (self.typenum_ < UAR_TYPE_SENTINEL):
+=======
+        if (self.typenum < UAR_CFLOAT):
+            # elements are real
+            return _zero_like(self)
+        if (self.typenum < UAR_TYPE_SENTINEL):
+>>>>>>> Added dpctl/tensor/_usmarray submodule
             return _imag_view(self)
 
     def __getitem__(self, ind):
@@ -476,6 +652,7 @@ cdef class usm_ndarray:
 
         res = usm_ndarray.__new__(
             usm_ndarray, _meta[0],
+<<<<<<< HEAD
             dtype=_make_typestr(self.typenum_),
             strides=_meta[1],
             buffer=self.base_,
@@ -517,16 +694,33 @@ cdef class usm_ndarray:
             res.flags_ = self.flags
             return res
 
+=======
+            dtype=_make_typestr(self.typenum),
+            strides=_meta[1],
+            buffer=self.base,
+            offset=_meta[2]
+        )
+        res.flags |= (self.flags & USM_ARRAY_WRITEABLE)
+        return res
+
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
 cdef usm_ndarray _real_view(usm_ndarray ary):
     """
     View into real parts of a complex type array
     """
     cdef usm_ndarray r = ary._clone()
+<<<<<<< HEAD
     if (ary.typenum_ == UAR_CFLOAT):
         r.typenum_ = UAR_FLOAT
     elif (ary.typenum_ == UAR_CDOUBLE):
         r.typenum_ = UAR_DOUBLE
+=======
+    if (ary.typenum == UAR_CFLOAT):
+        r.typenum = UAR_FLOAT
+    elif (ary.typenum == UAR_CDOUBLE):
+        r.typenum = UAR_DOUBLE
+>>>>>>> Added dpctl/tensor/_usmarray submodule
     else:
         raise InternalUSMArrayError(
             "_real_view call on array of non-complex type.")
@@ -538,15 +732,26 @@ cdef usm_ndarray _imag_view(usm_ndarray ary):
     View into imaginary parts of a complex type array
     """
     cdef usm_ndarray r = ary._clone()
+<<<<<<< HEAD
     if (ary.typenum_ == UAR_CFLOAT):
         r.typenum_ = UAR_FLOAT
     elif (ary.typenum_ == UAR_CDOUBLE):
         r.typenum_ = UAR_DOUBLE
+=======
+    if (ary.typenum == UAR_CFLOAT):
+        r.typenum = UAR_FLOAT
+    elif (ary.typenum == UAR_CDOUBLE):
+        r.typenum = UAR_DOUBLE
+>>>>>>> Added dpctl/tensor/_usmarray submodule
     else:
         raise InternalUSMArrayError(
             "_real_view call on array of non-complex type.")
     # displace pointer to imaginary part
+<<<<<<< HEAD
     r.data_ = r.data_ + type_bytesize(r.typenum_)
+=======
+    r.data = r.data + type_bytesize(r.typenum)
+>>>>>>> Added dpctl/tensor/_usmarray submodule
     return r
 
 
@@ -556,6 +761,7 @@ cdef usm_ndarray _transpose(usm_ndarray ary):
     """
     cdef usm_ndarray r = usm_ndarray.__new__(
         usm_ndarray,
+<<<<<<< HEAD
         _make_reversed_int_tuple(ary.nd_, ary.shape_),
         dtype=_make_typestr(ary.typenum_),
         strides=(
@@ -565,6 +771,17 @@ cdef usm_ndarray _transpose(usm_ndarray ary):
         order=('F' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'C')
     )
     r.flags_ |= (ary.flags_ & USM_ARRAY_WRITEABLE)
+=======
+        _make_reversed_int_tuple(ary.nd, ary.shape),
+        dtype=_make_typestr(ary.typenum),
+        strides=(
+            _make_reversed_int_tuple(ary.nd, ary.strides)
+            if (ary.strides) else None),
+        buffer=ary.base,
+        order=('F' if (ary.flags & USM_ARRAY_C_CONTIGUOUS) else 'C')
+    )
+    r.flags |= (ary.flags & USM_ARRAY_WRITEABLE)
+>>>>>>> Added dpctl/tensor/_usmarray submodule
     return r
 
 
@@ -574,9 +791,15 @@ cdef usm_ndarray _zero_like(usm_ndarray ary):
     and type as ary.
     """
     cdef usm_ndarray r = usm_ndarray(
+<<<<<<< HEAD
         _make_int_tuple(ary.nd_, ary.shape_),
         dtype=_make_typestr(ary.typenum_),
         buffer=ary.base_.get_usm_type()
+=======
+        _make_int_tuple(ary.nd, ary.shape),
+        dtype=_make_typestr(ary.typenum),
+        buffer=ary.base.get_usm_type()
+>>>>>>> Added dpctl/tensor/_usmarray submodule
     )
     # TODO: call function to set array elements to zero
     return r

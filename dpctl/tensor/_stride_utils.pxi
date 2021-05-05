@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #                       Data Parallel Control (dpctl)
 #
 #  Copyright 2020-2021 Intel Corporation
@@ -14,6 +15,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+=======
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 # distutils: language = c++
 # cython: language_level=3
 

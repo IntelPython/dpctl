@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #                       Data Parallel Control (dpctl)
 #
 #  Copyright 2020-2021 Intel Corporation
@@ -14,6 +15,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+=======
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 import numpy as np
 
 
@@ -88,7 +91,11 @@ cdef int type_bytesize(int typenum):
     return type_to_bytesize[typenum]
 
 
+<<<<<<< HEAD
 cdef int typenum_from_format(str s) except *:
+=======
+cdef int typenum_from_format(str s):
+>>>>>>> Added dpctl/tensor/_usmarray submodule
     """
     Internal utility to convert string describing type format
 
@@ -106,7 +113,11 @@ cdef int typenum_from_format(str s) except *:
     return dt.num
 
 
+<<<<<<< HEAD
 cdef int dtype_to_typenum(dtype) except *:
+=======
+cdef int dtype_to_typenum(dtype):
+>>>>>>> Added dpctl/tensor/_usmarray submodule
     if isinstance(dtype, str):
         return typenum_from_format(dtype)
     elif isinstance(dtype, bytes):
@@ -121,6 +132,10 @@ cdef int dtype_to_typenum(dtype) except *:
         obj = obj[1]
         if not isinstance(obj, str):
             return -1
+<<<<<<< HEAD
         return typenum_from_format(obj)
+=======
+        return typenum_from_format(dtype)
+>>>>>>> Added dpctl/tensor/_usmarray submodule
     else:
         return -1

@@ -71,7 +71,10 @@ def test_allocate_usm_ndarray(shape, usm_type):
         "f8",
         "c8",
         "c16",
+<<<<<<< HEAD
         np.dtype("d"),
+=======
+>>>>>>> Added dpctl/tensor/_usmarray submodule
     ],
 )
 def test_dtypes(dtype):

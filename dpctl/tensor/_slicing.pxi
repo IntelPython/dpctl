@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #                       Data Parallel Control (dpctl)
 #
 #  Copyright 2020-2021 Intel Corporation
@@ -14,18 +15,24 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+=======
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 import numbers
 
 
 cdef object _basic_slice_meta(object ind, tuple shape,
                               tuple strides, Py_ssize_t offset):
     """
+<<<<<<< HEAD
     Give basic slicing index `ind` and array layout information produce
     a tuple (resulting_shape, resulting_strides, resultin_offset)
     used to contruct a view into underlying array.
 
     Raises IndexError for invalid index `ind`, and NotImplementedError
     if `ind` is an array.
+=======
+
+>>>>>>> Added dpctl/tensor/_usmarray submodule
     """
     if ind is Ellipsis:
         return (shape, strides, offset)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 //===----------- usm_array.hpp - class representing an array  -*-C++-*- ===//
 //
 //                      Data Parallel Control (dpctl)
@@ -22,6 +23,8 @@
 /// This file defines classes for strided_array, and usm_array
 //===----------------------------------------------------------------------===//
 
+=======
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 #pragma once
 
 #include "dpctl_sycl_types.h"
@@ -33,6 +36,7 @@ namespace usm_array
 class strided_array
 {
 public:
+<<<<<<< HEAD
     /* strided_array is data only class encapsulating information about
      * type homogeneous nd-array.
      *    ptr     : pointer to memory block storing array values
@@ -43,6 +47,9 @@ public:
      *    typenum : an integer (enum), encoding value type of array elements
      *    flags   : field to encode additional array attributes
      */
+=======
+    strided_array() {}
+>>>>>>> Added dpctl/tensor/_usmarray submodule
     explicit strided_array(char *ptr, int nd, size_t *shape, int typenum)
         : ptr_(ptr), nd_(nd), shape_(shape), typenum_(typenum){};
     explicit strided_array(char *ptr,
@@ -60,6 +67,12 @@ public:
                            int flags)
         : ptr_(ptr), nd_(nd), shape_(shape), strides_(strides),
           typenum_(typenum), flags_(flags){};
+<<<<<<< HEAD
+=======
+    strided_array(const strided_array &other) = default;
+    strided_array(strided_array &&other) = default;
+    ~strided_array() = default;
+>>>>>>> Added dpctl/tensor/_usmarray submodule
 
     // member access functions
     char *get_data_ptr() const
@@ -108,10 +121,13 @@ private:
 class usm_array : public strided_array
 {
 public:
+<<<<<<< HEAD
     /*
      * usm_array additionally carries DPCTLSyclQueueRef
      * recording Sycl context the data USM pointer is bound to
      */
+=======
+>>>>>>> Added dpctl/tensor/_usmarray submodule
     explicit usm_array(char *data,
                        int nd,
                        size_t *shape,
@@ -121,6 +137,13 @@ public:
                        DPCTLSyclQueueRef qref)
         : strided_array(data, nd, shape, strides, typenum, flags), q_(qref){};
 
+<<<<<<< HEAD
+=======
+    usm_array(const usm_array &other) = default;
+    usm_array(usm_array &&other) = default;
+    ~usm_array() = default;
+
+>>>>>>> Added dpctl/tensor/_usmarray submodule
     DPCTLSyclQueueRef get_queue_ref() const
     {
         return q_;
