@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "dpctl_sycl_types.h"
+#include "dpctl_capi.h"
 #include <cstdlib>
 
 namespace usm_array
@@ -110,7 +110,7 @@ class usm_array : public strided_array
 public:
     /*
      * usm_array additionally carries DPCTLSyclQueueRef
-     * recording Sycl context the data USM pointer is bound to
+     * recording Sycl context the USM pointer `data` is bound to
      */
     explicit usm_array(char *data,
                        int nd,

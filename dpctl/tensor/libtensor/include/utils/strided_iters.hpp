@@ -1,0 +1,394 @@
+#pragma once
+
+#include <algorithm> // sort
+#include <array>
+#include <numeric> // std::iota
+#include <vector>
+
+/* An N-dimensional array can be stored in a single
+ * contiguous chunk of memory by contiguously laying
+ * array elements in lexicographinc order of their
+ * array indices. Such a layout is called C-contiguous.
+ *
+ * E.g. for (2, 3, 2) array `a` with zero-based indexing convention
+ * the C-array's elements are
+ * { a[0,0,0], a[0,0,1], a[0,1,0], a[0,1,1], a[0,2,0], a[0,2,1],
+ *   a[1,0,0], a[1,0,1], a[1,1,0], a[1,1,1], a[1,2,0], a[1,2,1] }
+ *
+ * Indexer maps zero-based index in C-array to a multi-index
+ * for the purpose of computing element displacement in the
+ * strided array, i.e. in the above example for k = 5, the displacement
+ * is (s0*0 + s1*2 + s2*1), and for k = 7 it is (s0*1 + s1*0 + s2*1)
+ * for N-dimensional array with strides (s0, s1, s2).
+ *
+ * Cindexer_vector need not know array rank `dim` at compile time.
+ * Shape and strides are stored in std::vector, which are not trivially
+ * copyable.
+ *
+ * For the class to be trivially copyable for offloading displacement
+ * computation methods take accessor/pointer arguments of type T for
+ * shape and stride and modify displacement argument passed by reference.
+ */
+class CIndexer_vector
+{
+    int nd;
+
+public:
+    CIndexer_vector(int dim) : nd(dim) {}
+
+    template <class ShapeTy> std::ptrdiff_t size(const ShapeTy &shape) const
+    {
+        std::ptrdiff_t s = static_cast<std::ptrdiff_t>(1);
+        for (int i = 0; i < nd; ++i) {
+            s *= shape[i];
+        }
+        return s;
+    }
+
+    template <class ShapeTy, class StridesTy>
+    void get_displacement(size_t i,
+                          const ShapeTy &shape,
+                          const StridesTy &stride,
+                          std::ptrdiff_t &disp) const
+    {
+        if (nd == 1) {
+            disp = i * stride[0];
+            return;
+        }
+
+        std::ptrdiff_t i_ = i;
+        std::ptrdiff_t d = 0;
+        for (int dim = nd; --dim > 0;) {
+            const std::ptrdiff_t si = shape[dim];
+            const std::ptrdiff_t q = i_ / si;
+            const std::ptrdiff_t r = (i_ - q * si);
+            d += r * stride[dim];
+            i_ = q;
+        }
+        disp = d + i_ * stride[0];
+    }
+
+    template <class ShapeTy, class StridesTy>
+    void get_displacement(size_t i,
+                          const ShapeTy &shape,
+                          const StridesTy &stride1,
+                          const StridesTy &stride2,
+                          std::ptrdiff_t &disp1,
+                          std::ptrdiff_t &disp2) const
+    {
+        if (nd == 1) {
+            disp1 = i * stride1[0];
+            disp2 = i * stride2[0];
+            return;
+        }
+
+        std::ptrdiff_t i_ = i;
+        std::ptrdiff_t d1 = 0, d2 = 0;
+        for (int dim = nd; --dim > 0;) {
+            const std::ptrdiff_t si = shape[dim];
+            const std::ptrdiff_t q = i_ / si;
+            const std::ptrdiff_t r = (i_ - q * si);
+            i_ = q;
+            d1 += r * stride1[dim];
+            d2 += r * stride2[dim];
+        }
+        disp1 = d1 + i_ * stride1[0];
+        disp2 = d2 + i_ * stride2[0];
+        return;
+    }
+
+    template <class ShapeTy, class StridesTy>
+    void get_displacement(size_t i,
+                          const ShapeTy &shape,
+                          const StridesTy &stride1,
+                          const StridesTy &stride2,
+                          const StridesTy &stride3,
+                          std::ptrdiff_t &disp1,
+                          std::ptrdiff_t &disp2,
+                          std::ptrdiff_t &disp3) const
+    {
+        if (nd == 1) {
+            disp1 = i * stride1[0];
+            disp2 = i * stride2[0];
+            disp3 = i * stride3[0];
+            return;
+        }
+
+        std::ptrdiff_t i_ = i;
+        std::ptrdiff_t d1 = 0, d2 = 0, d3 = 0;
+        for (int dim = nd; --dim > 0;) {
+            const std::ptrdiff_t si = shape[dim];
+            const std::ptrdiff_t q = i_ / si;
+            const std::ptrdiff_t r = (i_ - q * si);
+            i_ = q;
+            d1 += r * stride1[dim];
+            d2 += r * stride2[dim];
+            d3 += r * stride3[dim];
+        };
+        disp1 = d1 + i_ * stride1[0];
+        disp2 = d2 + i_ * stride2[0];
+        disp3 = d3 + i_ * stride3[0];
+        return;
+    }
+
+    template <class ShapeTy, class StridesTy>
+    void get_displacement(size_t i,
+                          const ShapeTy &shape,
+                          const StridesTy &stride1,
+                          const StridesTy &stride2,
+                          const StridesTy &stride3,
+                          const StridesTy &stride4,
+                          std::ptrdiff_t &disp1,
+                          std::ptrdiff_t &disp2,
+                          std::ptrdiff_t &disp3,
+                          std::ptrdiff_t &disp4) const
+    {
+        if (nd == 1) {
+            disp1 = i * stride1[0];
+            disp2 = i * stride2[0];
+            disp3 = i * stride3[0];
+            disp4 = i * stride4[0];
+            return;
+        }
+
+        std::ptrdiff_t i_ = i;
+        std::ptrdiff_t d1 = 0, d2 = 0, d3 = 0, d4 = 0;
+        for (int dim = nd; --dim > 0;) {
+            const std::ptrdiff_t si = shape[dim];
+            const std::ptrdiff_t q = i_ / si;
+            const std::ptrdiff_t r = (i_ - q * si);
+            i_ = q;
+            d1 += r * stride1[dim];
+            d2 += r * stride2[dim];
+            d3 += r * stride3[dim];
+            d4 += r * stride4[dim];
+        }
+        disp1 = d1 + i_ * stride1[0];
+        disp2 = d2 + i_ * stride2[0];
+        disp3 = d3 + i_ * stride3[0];
+        disp4 = d4 + i_ * stride4[0];
+        return;
+    }
+
+    template <class ShapeTy, class StridesTy, int nstrides>
+    void get_displacement(size_t i,
+                          const ShapeTy &shape,
+                          const std::array<StridesTy, nstrides> &strides,
+                          std::array<std::ptrdiff_t, nstrides> &disps) const
+    {
+        if (nd == 1) {
+            for (int k = 0; k < nstrides; ++k) {
+                disps[k] = i * strides[k][0];
+            }
+            return;
+        }
+
+        std::ptrdiff_t i_ = i;
+        std::array<std::ptrdiff_t, nstrides> ds;
+        for (int k = 0; k < nstrides; ++k) {
+            ds[k] = 0;
+        }
+
+        for (int dim = nd; --dim > 0;) {
+            const std::ptrdiff_t si = shape[dim];
+            const std::ptrdiff_t q = i_ / si;
+            const std::ptrdiff_t r = (i_ - q * si);
+            for (int k = 0; k < nstrides; ++k) {
+                ds[k] += r * strides[k][dim];
+            }
+            i_ = q;
+        };
+        for (int k = 0; k < nstrides; ++k) {
+            disps[k] = ds[k] + i_ * strides[k][0];
+        }
+        return;
+    }
+
+    /*
+    template <class T>
+    void _displacement_va(size_t i, const T &shape,
+                         const T &strides...,
+                         std::ptrdiff_t& disps...) {
+        if (nd == 1) {
+            disp1 = i * stride1[0];
+            disp2 = i * stride2[0];
+            disp3 = i * stride3[0];
+            disp4 = i * stride4[0];
+            return;
+        }
+
+        std::ptrdiff_t i_ = i;
+        std::ptrdiff_t d1 = 0, d2 = 0, d3 = 0, d4 = 0;
+        for(int dim = nd; --dim > 0; ) {
+            std::ptrdiff_t si = shape[dim];
+            std::ptrdiff_t q = i_ / si;
+            const std::ptrdiff_t r = (i_ - q * si);
+            d1 += r * stride1[dim];
+            d2 += r * stride2[dim];
+            d3 += r * stride3[dim];
+            d4 += r * stride4[dim];
+            i_ = q;
+        }
+        disp1 = d1; disp2 = d2; disp3 = d3; disp4 = d4;
+        return;
+    }
+    */
+};
+
+/*
+ * CIndexer is for arrays whose array-rank is known at compile time.
+ * Statically allocated shape and multi_index arrays are members of
+ * the class instance, and it remains trivially copyable.
+ *
+ * Method `set(k)` populates work-item private array multi_index, which
+ * can be accessed using `get()` to compute the displacement as needed.
+ */
+
+template <int _ndim> class CIndexer_array
+{
+    static const int ndim = _ndim;
+
+private:
+    typedef std::array<std::ptrdiff_t, ndim> index_t;
+
+    std::ptrdiff_t elem_count;
+    index_t shape;
+    index_t multi_index;
+
+public:
+    CIndexer_array(index_t &input_shape)
+    {
+        std::ptrdiff_t s = static_cast<std::ptrdiff_t>(1);
+        for (int i = 0; i < ndim; ++i) {
+            shape[i] = input_shape[i];
+            s *= input_shape[i];
+        }
+        elem_count = s;
+    }
+
+    std::ptrdiff_t size() const
+    {
+        return elem_count;
+    }
+    std::ptrdiff_t rank() const
+    {
+        return ndim;
+    }
+
+    void set(std::ptrdiff_t i)
+    {
+        if (ndim == 1) {
+            multi_index[0] = i;
+            return;
+        }
+
+        std::ptrdiff_t i_ = i;
+        for (int dim = ndim; --dim > 0;) {
+            std::ptrdiff_t si = shape[dim];
+            std::ptrdiff_t q = i_ / si;
+            multi_index[dim] = i_ - q * si;
+            i_ = q;
+        }
+        multi_index[0] = i_;
+    }
+
+    const index_t &get() const
+    {
+        return multi_index;
+    }
+};
+
+/*
+    For purposes of iterating over elements of array with
+    `shape` and `strides` give as pointers
+    `simplify_iteration_strides(nd, shape_ptr, strides_ptr, disp)`
+    may modify memory and returns new length of these arrays.
+
+    The new shape and new strides, as well as the offset
+    `(new_shape, new_strides, disp)` are such that iterating over
+    them will traverse the same elements, possibly in
+    different order.
+
+    ..Example: python
+        import itertools
+        # for some array Y over whose elements we iterate
+        csh, cst, cp = contract_iter(Y.shape, Y.strides)
+        def pointers_set(sh, st, p):
+            citers = itertools.product(*map(lambda s: range(s), sh))
+            dot = lambda st, it: sum(st[k]*it[k] for k in range(len(st)))
+            return set(p + dot(st, it) for it in citers)
+        ps1 = pointers_set(csh, cst, cp)
+        ps2 = pointers_set(Y.shape, Y.strides, 0)
+        assert ps1 == ps2
+
+ */
+template <class ShapeTy, class StridesTy>
+int simplify_iteration_stride(const int nd,
+                              ShapeTy *shape,
+                              StridesTy *strides,
+                              StridesTy &disp)
+{
+    disp = std::ptrdiff_t(0);
+    if (nd < 2)
+        return nd;
+
+    std::vector<int> pos(nd);
+    std::iota(pos.begin(), pos.end(), 0);
+
+    std::stable_sort(
+        pos.begin(), pos.end(), [&strides, &shape](int i1, int i2) {
+            auto abs_str1 = (strides[i1] < 0) ? -strides[i1] : strides[i1];
+            auto abs_str2 = (strides[i2] < 0) ? -strides[i2] : strides[i2];
+            return (abs_str1 > abs_str2) ||
+                   (abs_str1 == abs_str2 && shape[i1] > shape[i2]);
+        });
+
+    std::vector<ShapeTy> shape_w;
+    std::vector<StridesTy> strides_w;
+    int nd_ = nd;
+    shape_w.reserve(nd_);
+    strides_w.reserve(nd_);
+
+    for (int i = 0; i < nd; ++i) {
+        auto p = pos[i];
+        auto sh_p = shape[p];
+        auto str_p = strides[p];
+        shape_w.push_back(sh_p);
+        if (str_p < 0) {
+            disp += str_p * (sh_p - 1);
+            str_p = -str_p;
+        }
+        strides_w.push_back(str_p);
+    }
+
+    {
+        bool changed;
+        do {
+            changed = false;
+            for (int i = 0; i + 1 < nd_; ++i) {
+                StridesTy step = strides_w[i + 1];
+                StridesTy jump = strides_w[i] - (shape_w[i + 1] - 1) * step;
+                if (jump == step) {
+                    changed = true;
+                    for (int k = i; k + 1 < nd_; ++k) {
+                        strides_w[k] = strides_w[k + 1];
+                    }
+                    shape_w[i] *= shape_w[i + 1];
+                    for (int k = i + 1; k + 1 < nd_; ++k) {
+                        shape_w[k] = shape_w[k + 1];
+                    }
+                    --nd_;
+                }
+            }
+        } while (changed);
+    }
+
+    for (int i = 0; i < nd_; ++i) {
+        shape[i] = shape_w[i];
+    }
+    for (int i = 0; i < nd_; ++i) {
+        strides[i] = strides_w[i];
+    }
+
+    return nd_;
+}
