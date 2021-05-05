@@ -266,11 +266,11 @@ cpdef SyclDevice select_accelerator_device():
     """ A wrapper for SYCL's ``accelerator_selector`` class.
 
     Returns:
-        A new class:`dpctl.SyclDevice` object containing the SYCL device
-        returned by the ``accelerator_selector``.
+        dpctl.SyclDevice: A Python object wrapping the SYCL ``device``
+        returned by the SYCL ``accelerator_selector``.
     Raises:
-        A ``ValueError`` is raised if the SYCL ``accelerator_selector`` is
-        unable to select a device.
+        ValueError: If the SYCL ``accelerator_selector`` is unable to select a
+                    ``device``.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLAcceleratorSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
@@ -286,11 +286,11 @@ cpdef SyclDevice select_cpu_device():
     """ A wrapper for SYCL's ``cpu_selector`` class.
 
     Returns:
-        A new class:`dpctl.SyclDevice` object containing the SYCL device
-        returned by the ``cpu_selector``.
+        dpctl.SyclDevice: A Python object wrapping the SYCL ``device``
+        returned by the SYCL ``cpu_selector``.
     Raises:
-        A ``ValueError`` is raised if the SYCL ``cpu_selector`` is unable to
-        select a device.
+        ValueError: If the SYCL ``cpu_selector`` is unable to select a
+                    ``device``.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLCPUSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
@@ -306,11 +306,11 @@ cpdef SyclDevice select_default_device():
     """ A wrapper for SYCL's ``default_selector`` class.
 
     Returns:
-        A new class:`dpctl.SyclDevice` object containing the SYCL device
-        returned by the ``default_selector``.
+        dpctl.SyclDevice: A Python object wrapping the SYCL ``device``
+        returned by the SYCL ``default_selector``.
     Raises:
-        A ``ValueError`` is raised if the SYCL ``default_selector`` is unable to
-        select a device.
+        ValueError: If the SYCL ``default_selector`` is unable to select a
+            ``device``.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
@@ -326,11 +326,11 @@ cpdef SyclDevice select_gpu_device():
     """ A wrapper for SYCL's ``gpu_selector`` class.
 
     Returns:
-        A new class:`dpctl.SyclDevice` object containing the SYCL device
-        returned by the ``gpu_selector``.
+        dpctl.SyclDevice: A Python object wrapping the SYCL ``device``
+        returned by the SYCL ``gpu_selector``.
     Raises:
-        A ``ValueError`` is raised if the SYCL `gpu_selector` is unable to
-        select a device.
+        ValueError: If the SYCL ``gpu_selector`` is unable to select a
+                    ``device``.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLGPUSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
@@ -346,11 +346,11 @@ cpdef SyclDevice select_host_device():
     """ A wrapper for SYCL's ``host_selector`` class.
 
     Returns:
-        A new class:`dpctl.SyclDevice` object containing the SYCL device
-        returned by the ``host_selector``.
+        dpctl.SyclDevice: A Python object wrapping the SYCL ``device``
+        returned by the SYCL ``host_selector``.
     Raises:
-        A ``ValueError`` is raised if the SYCL ``host_selector`` is unable to
-        select a device.
+        ValueError: If the SYCL ``host_selector`` is unable to select a
+            ``device``.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLHostSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)

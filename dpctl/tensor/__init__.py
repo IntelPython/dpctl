@@ -23,7 +23,8 @@
 
     Available tensor implementations:
 
-    * ``numpy_usm_shared``: Provides a ``numpy.ndarray`` sub-class whose
-       underlying memory buffer is allocated with a USM shared memory allocator.
+    ``numpy_usm_shared``:
+        Provides a ``numpy.ndarray`` sub-class whose underlying memory buffer
+        is allocated with a USM shared memory allocator.
 
 """
