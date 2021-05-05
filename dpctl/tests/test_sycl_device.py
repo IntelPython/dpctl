@@ -572,3 +572,32 @@ def test_invalid_filter_selectors(invalid_filter):
     """
     with pytest.raises(ValueError):
         dpctl.SyclDevice(invalid_filter)
+
+
+def test_filter_string(valid_filter):
+    """
+    Test that filter_string reconstructs the same device.
+    """
+    device = None
+    try:
+        device = dpctl.SyclDevice(valid_filter)
+    except ValueError:
+        pytest.skip("Failed to create device with supported filter")
+    dev_id = device.filter_string
+    assert (
+        dpctl.SyclDevice(dev_id) == device
+    ), "Reconstructed device is different, ({}, {})".format(
+        valid_filter, dev_id
+    )
+
+
+def test_filter_string2():
+    """
+    Test that filter_string reconstructs the same device.
+    """
+    devices = dpctl.get_devices()
+    for d in devices:
+        if d.default_selector_score > 0:
+            dev_id = d.filter_string
+            d_r = dpctl.SyclDevice(dev_id)
+            assert d == d_r
