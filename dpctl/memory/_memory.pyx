@@ -32,6 +32,7 @@ from dpctl._backend cimport (  # noqa: E211
     DPCTLaligned_alloc_device,
     DPCTLaligned_alloc_host,
     DPCTLaligned_alloc_shared,
+    DPCTLContext_Delete,
     DPCTLfree_with_queue,
     DPCTLmalloc_device,
     DPCTLmalloc_host,
@@ -39,9 +40,11 @@ from dpctl._backend cimport (  # noqa: E211
     DPCTLQueue_Copy,
     DPCTLQueue_Create,
     DPCTLQueue_Delete,
+    DPCTLQueue_GetContext,
     DPCTLQueue_Memcpy,
     DPCTLSyclContextRef,
     DPCTLSyclDeviceRef,
+    DPCTLSyclUSMRef,
     DPCTLUSM_GetPointerDevice,
     DPCTLUSM_GetPointerType,
 )
@@ -106,7 +109,8 @@ def _to_memory(unsigned char[::1] b, str usm_kind):
     else:
         raise ValueError(
             "Unrecognized usm_kind={} stored in the "
-            "pickle".format(usm_kind))
+            "pickle".format(usm_kind)
+        )
     res.copy_from_host(b)
 
     return res
@@ -214,7 +218,7 @@ cdef class _Memory:
             self.memory_ptr, ctx.get_context_ref()
         )
         if kind == b'device':
-            raise ValueError('USM Device memory is not host accessible')
+            raise ValueError("USM Device memory is not host accessible")
         buffer.buf = <char*>self.memory_ptr
         buffer.format = 'B'                     # byte
         buffer.internal = NULL                  # see References
@@ -430,6 +434,65 @@ cdef class _Memory:
         )
 
         return <bytes>usm_type
+
+    @staticmethod
+    cdef object create_from_usm_pointer_size_qref(
+        DPCTLSyclUSMRef USMRef, Py_ssize_t nbytes,
+        DPCTLSyclQueueRef QRef, object memory_owner=None
+    ):
+        r"""
+        Create appropriate `MemoryUSM*` object from pre-allocated
+        USM memory bound to SYCL context in the reference SYCL queue.
+
+        Memory will be freed by `MemoryUSM*` object for default
+        value of memory_owner keyword. The non-default value should
+        be an object whose dealloc slot frees the memory.
+
+        The object may not be a no-op dummy Python object to
+        delay freeing the memory until later times.
+        """
+        cdef const char *usm_type
+        cdef DPCTLSyclContextRef CRef = NULL
+        cdef DPCTLSyclQueueRef QRef_copy = NULL
+        cdef _Memory _mem
+        cdef object mem_ty
+        if nbytes <= 0:
+            raise ValueError("Number of bytes must must be positive")
+        if (QRef is NULL):
+            raise TypeError("Argument DPCTLSyclQueueRef is NULL")
+        CRef = DPCTLQueue_GetContext(QRef)
+        if (CRef is NULL):
+            raise ValueError("Could not retrieve context from QRef")
+        usm_type = DPCTLUSM_GetPointerType(USMRef, CRef)
+        DPCTLContext_Delete(CRef)
+        if usm_type == b"shared":
+            mem_ty = MemoryUSMShared
+        elif usm_type == b"device":
+            mem_ty = MemoryUSMDevice
+        elif usm_type == b"host":
+            mem_ty = MemoryUSMHost
+        else:
+            raise ValueError(
+                "Argument pointer is not bound to "
+                "context in the given queue"
+            )
+        res = _Memory.__new__(_Memory)
+        _mem = <_Memory> res
+        _mem._cinit_empty()
+        _mem.memory_ptr = USMRef
+        _mem.nbytes = nbytes
+        QRef_copy = DPCTLQueue_Copy(QRef)
+        if QRef_copy is NULL:
+            raise ValueError("Referenced queue could not be copied.")
+        try:
+            _mem.queue = SyclQueue._create(QRef_copy)  # consumes the copy
+        except dpctl.SyclQueueCreationError as sqce:
+            raise ValueError(
+                "SyclQueue object could not be created from "
+                "copy of referenced queue"
+            ) from sqce
+        _mem.refobj = memory_owner
+        return mem_ty(res)
 
 
 cdef class MemoryUSMShared(_Memory):
