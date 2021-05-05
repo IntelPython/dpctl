@@ -310,7 +310,7 @@ cpdef SyclDevice select_default_device():
         returned by the SYCL ``default_selector``.
     Raises:
         ValueError: If the SYCL ``default_selector`` is unable to select a
-                    ``device``.
+            ``device``.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
@@ -350,7 +350,7 @@ cpdef SyclDevice select_host_device():
         returned by the SYCL ``host_selector``.
     Raises:
         ValueError: If the SYCL ``host_selector`` is unable to select a
-                    ``device``.
+            ``device``.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLHostSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
