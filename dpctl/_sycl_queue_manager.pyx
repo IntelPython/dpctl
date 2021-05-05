@@ -144,10 +144,9 @@ cdef class _SyclQueueManager:
         or created from given arguments.
 
         Args:
-            A SyclQueue instance to be used as a global queue.
-            Alternatively, a filter selector string, or a SyclDevice
-            instance to be used to construct SyclQueue.
-
+            arg: An instance of :class:`dpctl.SyclQueue` or a filter selector
+                string to be used to construct a :class:`dpctl.SyclQueue`. The
+                queue is stored in the dpctl queue manager as the default queue.
         Raises:
             SyclQueueCreationError: If a SYCL queue could not be created.
         """
