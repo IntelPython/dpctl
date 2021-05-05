@@ -107,7 +107,9 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#enumerations">Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#exceptions">Exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#functions">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#device-selection-functions">Device Selection Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#dpctl-queue-management-functions">DPCTL Queue Management Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#other-helper-functions">Other Helper Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../dpctl-capi/index.html">dpctl C API</a></li>
@@ -186,16 +188,16 @@
 <p>There are two ways of creating a SyclDevice instance:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>by directly passing in a filter string to the class constructor. The
-filter string needs to conform to the the <a class="reference external" href="https://bit.ly/37kqANT">DPC++ filter selector SYCL
-extension</a>.</p></li>
+<li><p>by directly passing in a filter string to the class
+constructor. The filter string needs to conform to the
+<a class="reference external" href="https://bit.ly/37kqANT">DPC++ filter selector SYCL extension</a>.</p></li>
 </ul>
 <dl class="field-list">
 <dt class="field-odd">Example</dt>
 <dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
 
-<span class="c1"># Create a SyclDevice with an explicit filter string, in</span>
-<span class="c1"># this case the first level_zero gpu device.</span>
+<span class="c1"># Create a SyclDevice with an explicit filter string,</span>
+<span class="c1"># in this case the first level_zero gpu device.</span>
 <span class="n">level_zero_gpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;level_zero:gpu:0&quot;</span><span class="p">):</span>
 <span class="n">level_zero_gpu</span><span class="o">.</span><span class="n">print_device_info</span><span class="p">()</span>
 </pre></div>
@@ -244,7 +246,7 @@ extension</a>.</p></li>
 <td><p>Returns a backend-defined driver version as a string.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_string</span></code></p></td>
-<td><p>For a parent device returns a tuple (backend, device_kind, relative_id).</p></td>
+<td><p>For a parent device, returns a <code class="docutils literal notranslate"><span class="pre">tuple</span> <span class="pre">(backend,</span> <span class="pre">device_kind,</span> <span class="pre">relative_id)</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_accelerator</span></code></p></td>
 <td><p></p></td>
@@ -473,8 +475,8 @@ this SyclDevice cast to a size_t.</p>
 <dl class="py attribute">
 <dt>
 <code class="sig-prename descclassname"><span class="pre">SyclDevice.</span></code><code class="sig-name descname"><span class="pre">filter_string</span></code></dt>
-<dd><p>For a parent device returns a tuple (backend, device_kind, relative_id).
-Raises an exception for sub-devices.</p>
+<dd><p>For a parent device, returns a <code class="docutils literal notranslate"><span class="pre">tuple</span> <span class="pre">(backend,</span> <span class="pre">device_kind,</span>
+<span class="pre">relative_id)</span></code>. Raises an exception for sub-devices.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -663,8 +665,8 @@ else False.</p>
 <dl class="py attribute">
 <dt>
 <code class="sig-prename descclassname"><span class="pre">SyclDevice.</span></code><code class="sig-name descname"><span class="pre">max_compute_units</span></code></dt>
-<dd><p>Returns the number of parallel compute units
-available to the device. The minimum value is 1.</p>
+<dd><p>Returns the number of parallel compute units available to the
+device. The minimum value is 1.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -695,21 +697,19 @@ value is 1.</p>
 <dl class="py attribute">
 <dt>
 <code class="sig-prename descclassname"><span class="pre">SyclDevice.</span></code><code class="sig-name descname"><span class="pre">max_work_item_dims</span></code></dt>
-<dd><p>Returns the maximum dimensions that specify
-the global and local work-item IDs used by the
-data parallel execution model. The cb
-value is 3 if this SYCL device is not of device
+<dd><p>Returns the maximum dimensions that specify the global and local
+work-item IDs used by the data parallel execution model.</p>
+<p>The cb value is 3 if this SYCL device is not of device
 type <code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt>
 <code class="sig-prename descclassname"><span class="pre">SyclDevice.</span></code><code class="sig-name descname"><span class="pre">max_work_item_sizes</span></code></dt>
-<dd><p>Returns the maximum number of work-items
-that are permitted in each dimension of the
-work-group of the nd_range. The minimum
-value is (1; 1; 1) for devices that are not of
-device type <code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
+<dd><p>Returns the maximum number of work-items that are permitted in each
+dimension of the work-group of the nd_range. The minimum value is
+<cite>(1; 1; 1)</cite> for devices that are not of device type
+<code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -851,6 +851,10 @@ sub-groups with respect to other sub-groups in the same work-group.</p>
       
       <dl>
         <dt>Versions</dt>
+        
+          
+          <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>
+          
         
           
           <dd><a href="https://intelpython.github.io/dpctl/0.6.1/index.html">0.6.1</a></dd>

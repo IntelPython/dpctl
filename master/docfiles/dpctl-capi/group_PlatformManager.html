@@ -197,7 +197,10 @@
 <span class="c1">// global functions</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
-DPCTLPlatformMgr_PrintInfo<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">);</span>
+DPCTLPlatformMgr_PrintInfo<span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">verbosity</span>
+    <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
 DPCTLPlatformVector_Clear<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">);</span>
@@ -228,9 +231,14 @@ DPCTLPlatformVector_Size<span></span><span class="p">(</span><span class="n">__d
 <p>Helper functions for <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> objects that do not directly map to any <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> member function.</p>
 <div class="section" id="global-functions">
 <h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this headline">¶</a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d7-d69-group-platformmanager-1ga43dde9c2dda7a74ba44d7cba6d1e5d7f"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
-<span class="n">DPCTLPlatformMgr_PrintInfo</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d7-d69-group-platformmanager-1ga8e44adac75e0ecf8705b089404a8fb86"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<span class="n">DPCTLPlatformMgr_PrintInfo</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">verbosity</span>
+    <span class="p">)</span></pre>
 <p>Prints out information about the sycl::platform argument.</p>
+<p>The helper function is used to print metadata about a given platform. The amount of information printed out is controlled by the verbosity level.</p>
+<p>Verbosity level 0: Prints only the name of the platform. Verbosity level 1: Prints the name, version, vendor, backend, number of devices in the platform. Verbosity level 2: Prints everything in level 1 and also prints the name, version, and filter string for each device in the platform.</p>
 <p class="rubric">Parameters:</p>
 <table class="colwidths-given docutils align-default">
 <colgroup>
@@ -240,6 +248,9 @@ DPCTLPlatformVector_Size<span></span><span class="p">(</span><span class="n">__d
 <tbody>
 <tr class="row-odd"><td><p>PRef</p></td>
 <td><p>A <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a> opaque pointer.</p></td>
+</tr>
+<tr class="row-even"><td><p>verbosity</p></td>
+<td><p>Verbosilty level to control how much information is printed out.</p></td>
 </tr>
 </tbody>
 </table>
@@ -391,6 +402,10 @@ DPCTLPlatformVector_Size<span></span><span class="p">(</span><span class="n">__d
       
       <dl>
         <dt>Versions</dt>
+        
+          
+          <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>
+          
         
           
           <dd><a href="https://intelpython.github.io/dpctl/0.6.1/index.html">0.6.1</a></dd>

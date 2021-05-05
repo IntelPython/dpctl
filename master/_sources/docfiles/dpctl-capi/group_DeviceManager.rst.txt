@@ -182,7 +182,9 @@ The number of available devices satisfying the condition specified by the device
 	DPCTL_API int64_t
 	DPCTLDeviceMgr_GetRelativeId(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Gives the index of the given device in the vector returned get_devices for the platform associated with DRef for the device type of DRef.
+Gives the index of the given device with respective to all the other devices of the same type in the device's platform.
+
+The relative device id of a device (Device) is computed by looking up the position of Device in the ``std::vector`` returned by calling the ``get_devices(Device.get_info<sycl::info::device::device_type>())`` function for Device's platform. A relative device id of -1 indicates that the relative id could not be computed.
 
 
 
@@ -195,6 +197,12 @@ Gives the index of the given device in the vector returned get_devices for the p
 		- DRef
 
 		- A :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` opaque pointer.
+
+
+
+.. rubric:: Returns:
+
+A relative id corresponding to the device, -1 indicates that a relative id value could not be computed.
 
 .. index:: pair: function; DPCTLDeviceMgr_PrintDeviceInfo
 .. _doxid-d0/d15/group__DeviceManager_1ga4d424acf4bfc1365804d43aad4238846:

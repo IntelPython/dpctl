@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpctl.SyclDevice" href="SyclDevice.html" />
-    <link rel="prev" title="dpctl.program" href="../dpctl.program_api.html" /> 
+    <link rel="prev" title="dpctl Python API" href="../dpctl_pyapi.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -107,7 +107,9 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#enumerations">Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#exceptions">Exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#functions">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#device-selection-functions">Device Selection Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#dpctl-queue-management-functions">DPCTL Queue Management Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#other-helper-functions">Other Helper Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../dpctl-capi/index.html">dpctl C API</a></li>
@@ -245,7 +247,7 @@ multiple sub-devices.</p></li>
 
 <span class="c1"># Create a CPU device using the opencl driver</span>
 <span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;opencl:cpu&quot;</span><span class="p">)</span>
-<span class="c1"># Partition the CPU device into sub-devices, each with two cores.</span>
+<span class="c1"># Partition the CPU device into sub-devices with two cores each.</span>
 <span class="n">sub_devices</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="c1"># Create a context common to all the sub-devices.</span>
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclContext</span><span class="p">(</span><span class="n">sub_devices</span><span class="p">)</span>
@@ -427,7 +429,7 @@ that belong to this context.</p>
         <a href="SyclDevice.html" class="btn btn-neutral float-right" title="dpctl.SyclDevice" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../dpctl.program_api.html" class="btn btn-neutral float-left" title="dpctl.program" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../dpctl_pyapi.html" class="btn btn-neutral float-left" title="dpctl Python API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -462,6 +464,10 @@ that belong to this context.</p>
       
       <dl>
         <dt>Versions</dt>
+        
+          
+          <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>
+          
         
           
           <dd><a href="https://intelpython.github.io/dpctl/0.6.1/index.html">0.6.1</a></dd>

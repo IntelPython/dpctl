@@ -9,12 +9,16 @@ dpctl Python API
 Sub-modules
 -----------
 
-.. toctree::
-    :maxdepth: 1
-
-    dpctl.dptensor_api
-    dpctl.memory_api
-    dpctl.program_api
+    :mod:`dpctl.memory`
+        USM allocators and deallocators and classes that implement Python's
+        `buffer protocol`_.
+    :mod:`dpctl.program`
+        Experimental wrappers for SYCL 1.2 ``program`` and ``kernel`` classes.
+        The module is going to be refactored in the future to support SYCL
+        2020's ``kernel_bundle`` feature and the wrapper for the ``program``
+        class is going to be removed.
+    :mod:`dpctl.tensor`
+        Implementation of different types of tensor classes tht use USM memory.
 
 Classes
 -------
@@ -44,8 +48,8 @@ Exceptions
 .. autoexception:: dpctl.SyclKernelSubmitError
 .. autoexception:: dpctl.SyclQueueCreationError
 
-Functions
----------
+Device Selection Functions
+--------------------------
 
 .. autofunction:: get_devices
 .. autofunction:: select_accelerator_device
@@ -58,8 +62,10 @@ Functions
 .. autofunction:: has_gpu_devices
 .. autofunction:: has_accelerator_devices
 .. autofunction:: has_host_device
-.. autofunction:: get_platforms
-.. autofunction:: lsplatform
+
+DPCTL Queue Management Functions
+--------------------------------
+
 .. autofunction:: device_context
 .. autofunction:: get_current_backend
 .. autofunction:: get_current_device_type
@@ -67,3 +73,12 @@ Functions
 .. autofunction:: get_num_activated_queues
 .. autofunction:: is_in_device_context
 .. autofunction:: set_global_queue
+
+Other Helper Functions
+----------------------
+.. autofunction:: get_platforms
+.. autofunction:: lsplatform
+
+.. _Section 4.6: https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes
+.. _SYCL 2020 spec: https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html
+.. _buffer protocol: https://docs.python.org/3/c-api/buffer.html

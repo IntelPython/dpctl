@@ -336,7 +336,10 @@ Overview
 	:ref:`DPCTLPlatform_GetVersion<doxid-db/df8/group__PlatformInterface_1ga794fb8c5be5cf2a48f63c407cb05bc1f>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
 
 	DPCTL_API void
-	:ref:`DPCTLPlatformMgr_PrintInfo<doxid-d7/d69/group__PlatformManager_1ga43dde9c2dda7a74ba44d7cba6d1e5d7f>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
+	:ref:`DPCTLPlatformMgr_PrintInfo<doxid-d7/d69/group__PlatformManager_1ga8e44adac75e0ecf8705b089404a8fb86>`(
+		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
+		size_t verbosity
+		);
 
 	DPCTL_API void
 	:ref:`DPCTLPlatformVector_Clear<doxid-d7/d69/group__PlatformManager_1ga89b9b23802931f2354d8acb91f72ba6c>`(__dpctl_keep :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>` VRef);

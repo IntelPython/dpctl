@@ -303,7 +303,8 @@ DPCTLDeviceVector_Size<span></span><span class="p">(</span><span class="n">__dpc
 <p>The number of available devices satisfying the condition specified by the device_identifier bit flag.</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1ga38db5431168d0d9883a62681b139762a"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">int64_t</span>
 <span class="n">DPCTLDeviceMgr_GetRelativeId</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
-<p>Gives the index of the given device in the vector returned get_devices for the platform associated with DRef for the device type of DRef.</p>
+<p>Gives the index of the given device with respective to all the other devices of the same type in the device’s platform.</p>
+<p>The relative device id of a device (Device) is computed by looking up the position of Device in the <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> returned by calling the <code class="docutils literal notranslate"><span class="pre">get_devices(Device.get_info&lt;sycl::info::device::device_type&gt;())</span></code> function for Device’s platform. A relative device id of -1 indicates that the relative id could not be computed.</p>
 <p class="rubric">Parameters:</p>
 <table class="colwidths-given docutils align-default">
 <colgroup>
@@ -316,6 +317,8 @@ DPCTLDeviceVector_Size<span></span><span class="p">(</span><span class="n">__dpc
 </tr>
 </tbody>
 </table>
+<p class="rubric">Returns:</p>
+<p>A relative id corresponding to the device, -1 indicates that a relative id value could not be computed.</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1ga4d424acf4bfc1365804d43aad4238846"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLDeviceMgr_PrintDeviceInfo</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Prints out the <a class="reference external" href="info::deivice">info::deivice</a> attributes for the device that are currently supported by dpctl.</p>
@@ -479,6 +482,10 @@ DPCTLDeviceVector_Size<span></span><span class="p">(</span><span class="n">__dpc
       
       <dl>
         <dt>Versions</dt>
+        
+          
+          <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>
+          
         
           
           <dd><a href="https://intelpython.github.io/dpctl/0.6.1/index.html">0.6.1</a></dd>

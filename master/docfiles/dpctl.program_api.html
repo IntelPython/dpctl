@@ -36,9 +36,7 @@
   <link rel="stylesheet" href="../_static/doxyrest-pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="dpctl.SyclContext" href="dpctl_pyapi/SyclContext.html" />
-    <link rel="prev" title="dpctl.memory" href="dpctl.memory_api.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -91,25 +89,8 @@
 <li class="toctree-l1"><a class="reference internal" href="user_guides/QuickStart.html">Quick Start Guide</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="dpctl_pyapi.html">dpctl Python API</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="dpctl_pyapi.html#sub-modules">Sub-modules</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="dpctl.dptensor_api.html">dpctl.dptensor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl.memory_api.html">dpctl.memory</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl.program</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#classes">Classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#exceptions">Exceptions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#functions">Functions</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#classes">Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#enumerations">Enumerations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#exceptions">Exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#functions">Functions</a></li>
-</ul>
-</li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi.html">dpctl Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dpctl-capi/index.html">dpctl C API</a></li>
 </ul>
 
@@ -156,8 +137,6 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="dpctl_pyapi.html">dpctl Python API</a> &raquo;</li>
-        
       <li>dpctl.program</li>
     
     
@@ -190,12 +169,12 @@ source string or SPIR-V binary file.</p>
 <dd><dl class="py method">
 <dt id="dpctl.program.SyclKernel.addressof_ref">
 <code class="sig-name descname"><span class="pre">addressof_ref</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclKernel.addressof_ref" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the address of the C API DPCTLSyclKernelRef pointer
-as a size_t.</p>
+<dd><p>Returns the address of the C API <code class="docutils literal notranslate"><span class="pre">DPCTLSyclKernelRef</span></code> pointer
+as a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The address of the DPCTLSyclKernelRef object used to create this
-SyclKernel cast to a size_t.</p>
+<dd class="field-odd"><p>The address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclKernelRef</span></code> pointer used to create
+this <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclKernel</span></code> object cast to a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -203,7 +182,7 @@ SyclKernel cast to a size_t.</p>
 <dl class="py method">
 <dt id="dpctl.program.SyclKernel.get_function_name">
 <code class="sig-name descname"><span class="pre">get_function_name</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclKernel.get_function_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the name of the Kernel function.</p>
+<dd><p>Returns the name of the <code class="docutils literal notranslate"><span class="pre">sycl::kernel</span></code> function.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -217,9 +196,9 @@ SyclKernel cast to a size_t.</p>
 <dl class="py class">
 <dt id="dpctl.program.SyclProgram">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dpctl.program.</span></code><code class="sig-name descname"><span class="pre">SyclProgram</span></code><a class="headerlink" href="#dpctl.program.SyclProgram" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wraps a sycl::program object created from an OpenCL interoperability
+<dd><p>Wraps a <code class="docutils literal notranslate"><span class="pre">sycl::program</span></code> object created from an OpenCL interoperability
 program.</p>
-<p>SyclProgram exposes the C API from dpctl_sycl_program_interface.h. A
+<p>SyclProgram exposes the C API from <code class="docutils literal notranslate"><span class="pre">dpctl_sycl_program_interface.h</span></code>. A
 SyclProgram can be created from either a source string or a SPIR-V
 binary file.</p>
 <dl class="py method">
@@ -229,8 +208,8 @@ binary file.</p>
 as a long.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The address of the DPCTLSyclProgramRef object used to create this
-SyclProgram cast to a long.</p>
+<dd class="field-odd"><p>The address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclProgramRef</span></code> pointer used to create
+this <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclProgram</span></code> object cast to a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -253,7 +232,7 @@ SyclProgram cast to a long.</p>
 <dl class="py exception">
 <dt id="dpctl.program.SyclProgramCompilationError">
 <em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">dpctl.program.</span></code><code class="sig-name descname"><span class="pre">SyclProgramCompilationError</span></code><a class="headerlink" href="#dpctl.program.SyclProgramCompilationError" title="Permalink to this definition">¶</a></dt>
-<dd><p>This exception is raised when a SYCL program could not be built from
+<dd><p>This exception is raised when a <code class="docutils literal notranslate"><span class="pre">sycl::program</span></code> could not be built from
 either a SPIR-V binary file or a string source.</p>
 </dd></dl>
 
@@ -264,9 +243,9 @@ either a SPIR-V binary file or a string source.</p>
 <dt id="dpctl.program.create_program_from_source">
 <code class="sig-prename descclassname"><span class="pre">dpctl.program.</span></code><code class="sig-name descname"><span class="pre">create_program_from_source</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.create_program_from_source" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Sycl interoperability program from an OpenCL source string.</p>
-<p>We use the DPCTLProgram_CreateFromOCLSource() C API function to create
-a Sycl progrma from an OpenCL source program that can contain multiple
-kernels. Note currently only supported for OpenCL.</p>
+<p>We use the <code class="docutils literal notranslate"><span class="pre">DPCTLProgram_CreateFromOCLSource()</span></code> C API function to
+create a <code class="docutils literal notranslate"><span class="pre">sycl::program</span></code> from an OpenCL source program that can
+contain multiple kernels. Note currently only supported for OpenCL.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -278,7 +257,8 @@ when compiling the program.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A <a class="reference internal" href="#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the  sycl::program returned by the C API.</p>
+<dd class="field-even"><p>A <a class="reference internal" href="#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the
+<code class="docutils literal notranslate"><span class="pre">sycl::program</span></code> returned by the C API.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>program (<a class="reference internal" href="#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram">SyclProgram</a>)</p>
@@ -293,8 +273,8 @@ when compiling the program.</p></li>
 <dt id="dpctl.program.create_program_from_spirv">
 <code class="sig-prename descclassname"><span class="pre">dpctl.program.</span></code><code class="sig-name descname"><span class="pre">create_program_from_spirv</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.create_program_from_spirv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Sycl interoperability program from an SPIR-V binary.</p>
-<p>We use the DPCTLProgram_CreateFromOCLSpirv() C API function to create
-a Sycl progrma from an compiled SPIR-V binary file.</p>
+<p>We use the <code class="docutils literal notranslate"><span class="pre">DPCTLProgram_CreateFromOCLSpirv()</span></code> C API function to
+create a <code class="docutils literal notranslate"><span class="pre">sycl::program</span></code> object from an compiled SPIR-V binary file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -306,7 +286,8 @@ when compiling the program.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A <a class="reference internal" href="#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the  sycl::program returned by the C API.</p>
+<dd class="field-even"><p>A <a class="reference internal" href="#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the
+<code class="docutils literal notranslate"><span class="pre">sycl::program</span></code> returned by the C API.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>program (<a class="reference internal" href="#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram">SyclProgram</a>)</p>
@@ -325,15 +306,6 @@ when compiling the program.</p></li>
            
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="dpctl_pyapi/SyclContext.html" class="btn btn-neutral float-right" title="dpctl.SyclContext" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="dpctl.memory_api.html" class="btn btn-neutral float-left" title="dpctl.memory" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>
@@ -366,6 +338,10 @@ when compiling the program.</p></li>
       
       <dl>
         <dt>Versions</dt>
+        
+          
+          <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>
+          
         
           
           <dd><a href="https://intelpython.github.io/dpctl/0.6.1/index.html">0.6.1</a></dd>

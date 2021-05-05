@@ -107,7 +107,9 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#enumerations">Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#exceptions">Exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#functions">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#device-selection-functions">Device Selection Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#dpctl-queue-management-functions">DPCTL Queue Management Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#other-helper-functions">Other Helper Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../dpctl-capi/index.html">dpctl C API</a></li>
@@ -244,7 +246,7 @@ device.</p></li>
 
 <span class="c1"># Create a CPU device using the opencl driver</span>
 <span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;opencl:cpu&quot;</span><span class="p">)</span>
-<span class="c1"># Partition the CPU device into sub-devices, each with two cores.</span>
+<span class="c1"># Partition the CPU device into sub-devices with two cores each.</span>
 <span class="n">sub_devices</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="c1"># Create a context common to all the sub-devices.</span>
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclContext</span><span class="p">(</span><span class="n">sub_devices</span><span class="p">)</span>
@@ -285,10 +287,11 @@ The argument can be either “default”, “in_order”,
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="../dpctl_pyapi.html#dpctl.SyclQueueCreationError" title="dpctl.SyclQueueCreationError"><strong>SyclQueueCreationError</strong></a> – If the <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object creation failed.</p></li>
-<li><p><strong>TypeError</strong> – In case of incorrect arguments given to constructors, unexpected types
-    of input arguments, or in the case the input capsule contained a null
-    pointer or could not be renamed.</p></li>
+<li><p><a class="reference internal" href="../dpctl_pyapi.html#dpctl.SyclQueueCreationError" title="dpctl.SyclQueueCreationError"><strong>SyclQueueCreationError</strong></a> – If the <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object
+    creation failed.</p></li>
+<li><p><strong>TypeError</strong> – In case of incorrect arguments given to constructors,
+    unexpected types of input arguments, or in the case the input
+    capsule contained a null pointer or could not be renamed.</p></li>
 </ul>
 </dd>
 </dl>
@@ -330,7 +333,7 @@ The argument can be either “default”, “in_order”,
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></p></td>
-<td><p>Returns the address of the C API DPCTLSyclQueueRef pointer as a size_t.</p></td>
+<td><p>Returns the address of the C API DPCTLSyclQueueRef pointer as a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_backend</span></code></p></td>
 <td><p>Returns the Sycl backend associated with the queue.</p></td>
@@ -378,11 +381,12 @@ The argument can be either “default”, “in_order”,
 <div><dl class="py method">
 <dt>
 <code class="sig-prename descclassname"><span class="pre">SyclQueue.</span></code><code class="sig-name descname"><span class="pre">addressof_ref</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>Returns the address of the C API DPCTLSyclQueueRef pointer as a size_t.</p>
+<dd><p>Returns the address of the C API DPCTLSyclQueueRef pointer as a
+<code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The address of the DPCTLSyclQueueRef object used to create this
-SyclQueue cast to a size_t.</p>
+<dd class="field-odd"><p>The address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclQueueRef</span></code> object used to create this
+<a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> cast to a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -495,6 +499,10 @@ SyclQueue cast to a size_t.</p>
       
       <dl>
         <dt>Versions</dt>
+        
+          
+          <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>
+          
         
           
           <dd><a href="https://intelpython.github.io/dpctl/0.6.1/index.html">0.6.1</a></dd>

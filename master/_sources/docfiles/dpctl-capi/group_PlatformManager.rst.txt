@@ -24,7 +24,10 @@ Helper functions for ``sycl::platform`` objects that do not directly map to any 
 	// global functions
 
 	DPCTL_API void
-	:ref:`DPCTLPlatformMgr_PrintInfo<doxid-d7/d69/group__PlatformManager_1ga43dde9c2dda7a74ba44d7cba6d1e5d7f>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
+	:ref:`DPCTLPlatformMgr_PrintInfo<doxid-d7/d69/group__PlatformManager_1ga8e44adac75e0ecf8705b089404a8fb86>`(
+		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
+		size_t verbosity
+		);
 
 	DPCTL_API void
 	:ref:`DPCTLPlatformVector_Clear<doxid-d7/d69/group__PlatformManager_1ga89b9b23802931f2354d8acb91f72ba6c>`(__dpctl_keep :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>` VRef);
@@ -61,15 +64,22 @@ Global Functions
 ----------------
 
 .. index:: pair: function; DPCTLPlatformMgr_PrintInfo
-.. _doxid-d7/d69/group__PlatformManager_1ga43dde9c2dda7a74ba44d7cba6d1e5d7f:
+.. _doxid-d7/d69/group__PlatformManager_1ga8e44adac75e0ecf8705b089404a8fb86:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
 	DPCTL_API void
-	DPCTLPlatformMgr_PrintInfo(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef)
+	DPCTLPlatformMgr_PrintInfo(
+		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
+		size_t verbosity
+		)
 
 Prints out information about the sycl::platform argument.
+
+The helper function is used to print metadata about a given platform. The amount of information printed out is controlled by the verbosity level.
+
+Verbosity level 0: Prints only the name of the platform. Verbosity level 1: Prints the name, version, vendor, backend, number of devices in the platform. Verbosity level 2: Prints everything in level 1 and also prints the name, version, and filter string for each device in the platform.
 
 
 
@@ -82,6 +92,11 @@ Prints out information about the sycl::platform argument.
 		- PRef
 
 		- A :ref:`DPCTLSyclPlatformRef <doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` opaque pointer.
+
+	*
+		- verbosity
+
+		- Verbosilty level to control how much information is printed out.
 
 .. index:: pair: function; DPCTLPlatformVector_Clear
 .. _doxid-d7/d69/group__PlatformManager_1ga89b9b23802931f2354d8acb91f72ba6c:

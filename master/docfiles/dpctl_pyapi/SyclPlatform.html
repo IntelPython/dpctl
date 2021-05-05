@@ -107,7 +107,9 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#enumerations">Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#exceptions">Exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#functions">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#device-selection-functions">Device Selection Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#dpctl-queue-management-functions">DPCTL Queue Management Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#other-helper-functions">Other Helper Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../dpctl-capi/index.html">dpctl C API</a></li>
@@ -182,9 +184,10 @@
 <dl class="py class">
 <dt id="dpctl.SyclPlatform">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">SyclPlatform</span></code><a class="headerlink" href="#dpctl.SyclPlatform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Python class representing cl::sycl::platform class.</p>
+<dd><p>Python class representing <code class="docutils literal notranslate"><span class="pre">cl::sycl::platform</span></code> class.</p>
 <p>SyclPlatform() - create platform selected by sycl::default_selector
-SyclPlatform(filter_selector) - create platform selected by filter selector</p>
+SyclPlatform(filter_selector) - create platform selected by filter
+selector</p>
 </dd></dl>
 
 <div class="section" id="detail">
@@ -216,6 +219,27 @@ SyclPlatform(filter_selector) - create platform selected by filter selector</p>
 <dt>
 <code class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></code><code class="sig-name descname"><span class="pre">print_platform_info</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd><p>Print information about the SYCL platform.</p>
+<p>The level of information printed out by the function can be controlled
+by the optional <code class="docutils literal notranslate"><span class="pre">vebosity</span></code> setting.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Verbosity level 0</strong>: Prints out the list of platforms and their
+names.</p></li>
+<li><p><strong>Verbosity level 1</strong>: Prints out the name, version, vendor,
+backend, number of devices for each platform.</p></li>
+<li><p><strong>Verbosity level 2</strong>: At the highest level of verbosity
+everything in the previous levels along with the name, version,
+and filter string for each device is printed.</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>verbosity</strong> (<em>optional</em>) – Defaults to 0.
+The verbosity controls how much information is printed by the
+function. 0 is the lowest level set by default and 2 is the
+highest level to print the most verbose output.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -281,6 +305,10 @@ SyclPlatform(filter_selector) - create platform selected by filter selector</p>
       
       <dl>
         <dt>Versions</dt>
+        
+          
+          <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>
+          
         
           
           <dd><a href="https://intelpython.github.io/dpctl/0.6.1/index.html">0.6.1</a></dd>
