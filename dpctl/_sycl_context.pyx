@@ -142,7 +142,7 @@ cdef class SyclContext(_SyclContext):
           using :func:`dpctl.SyclContext._get_capsule` method.
 
     Args:
-        arg (optional): Defaults to None.
+        arg (optional): Defaults to ``None``.
             The argument can be a selector string, a :class:`dpctl.SyclDevice`
             instance, a :obj:`list` of :class:`dpctl.SyclDevice` objects, or a
             named ``PyCapsule`` called **"SyclContextRef"**.
