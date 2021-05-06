@@ -55,6 +55,13 @@ cdef public class _Memory [object Py_MemoryObject, type Py_MemoryType]:
         DPCTLSyclUSMRef p, SyclContext ctx)
     @staticmethod
     cdef public bytes get_pointer_type(DPCTLSyclUSMRef p, SyclContext ctx)
+    @staticmethod
+    cdef public object create_from_usm_pointer_size_qref(
+        DPCTLSyclUSMRef USMRef,
+        Py_ssize_t nbytes,
+        DPCTLSyclQueueRef QRef,
+        object memory_owner=*
+    )
 
 
 cdef public class MemoryUSMShared(_Memory) [object PyMemoryUSMSharedObject,
