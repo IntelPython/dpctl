@@ -1,3 +1,27 @@
+//===----------- usm_array.hpp - class representing an array  -*-C++-*- ===//
+//
+//                      Data Parallel Control (dpctl)
+//
+// Copyright 2020-2021 Intel Corporation
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file defines classes for strided_array, and usm_array
+//===----------------------------------------------------------------------===//
+
 #pragma once
 
 #include "dpctl_sycl_types.h"
@@ -9,7 +33,16 @@ namespace usm_array
 class strided_array
 {
 public:
-    strided_array() {}
+    /* strided_array is data only class encapsulating information about
+     * type homogeneous nd-array.
+     *    ptr     : pointer to memory block storing array values
+     *    nd      : number of indices needed to reference an array element
+     *    shape   : pointer to C-array of length `nd` of array dimensions
+     *    strides : pointer to C-array of length `nd` of memory displacements
+     *              for unit increment of each index
+     *    typenum : an integer (enum), encoding value type of array elements
+     *    flags   : field to encode additional array attributes
+     */
     explicit strided_array(char *ptr, int nd, size_t *shape, int typenum)
         : ptr_(ptr), nd_(nd), shape_(shape), typenum_(typenum){};
     explicit strided_array(char *ptr,
@@ -27,9 +60,6 @@ public:
                            int flags)
         : ptr_(ptr), nd_(nd), shape_(shape), strides_(strides),
           typenum_(typenum), flags_(flags){};
-    strided_array(const strided_array &other) = default;
-    strided_array(strided_array &&other) = default;
-    ~strided_array() = default;
 
     // member access functions
     char *get_data_ptr() const
@@ -78,6 +108,10 @@ private:
 class usm_array : public strided_array
 {
 public:
+    /*
+     * usm_array additionally carries DPCTLSyclQueueRef
+     * recording Sycl context the data USM pointer is bound to
+     */
     explicit usm_array(char *data,
                        int nd,
                        size_t *shape,
@@ -86,10 +120,6 @@ public:
                        int flags,
                        DPCTLSyclQueueRef qref)
         : strided_array(data, nd, shape, strides, typenum, flags), q_(qref){};
-
-    usm_array(const usm_array &other) = default;
-    usm_array(usm_array &&other) = default;
-    ~usm_array() = default;
 
     DPCTLSyclQueueRef get_queue_ref() const
     {
