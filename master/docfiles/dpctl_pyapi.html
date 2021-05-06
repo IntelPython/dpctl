@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#enumerations">Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#device-selection-functions">Device Selection Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#dpctl-queue-management-functions">DPCTL Queue Management Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#queue-management-functions">Queue Management Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#other-helper-functions">Other Helper Functions</a></li>
 </ul>
 </li>
@@ -314,7 +314,8 @@ string is invalid, or the backend or device type values are not supported.</p>
 <dd><p>Returns a list of <a class="reference internal" href="dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instances selected based on
 the given <a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> and <a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> values.</p>
 <p>The function is analogous to <code class="docutils literal notranslate"><span class="pre">sycl::devices::get_devices()</span></code>, but with an
-additional functionality that allows filtering SYCL devices based on <code class="docutils literal notranslate"><span class="pre">backend</span></code> in addition to only <code class="docutils literal notranslate"><span class="pre">device_type</span></code>.</p>
+additional functionality that allows filtering SYCL devices based on
+<code class="docutils literal notranslate"><span class="pre">backend</span></code> in addition to only <code class="docutils literal notranslate"><span class="pre">device_type</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -524,8 +525,8 @@ present, <code class="docutils literal notranslate"><span class="pre">False</spa
 </dd></dl>
 
 </div>
-<div class="section" id="dpctl-queue-management-functions">
-<h2>DPCTL Queue Management Functions<a class="headerlink" href="#dpctl-queue-management-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="queue-management-functions">
+<h2>Queue Management Functions<a class="headerlink" href="#queue-management-functions" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="dpctl.device_context">
 <code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">device_context</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.device_context" title="Permalink to this definition">¶</a></dt>
