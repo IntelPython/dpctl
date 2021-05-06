@@ -311,7 +311,33 @@ string is invalid, or the backend or device type values are not supported.</p>
 <dl class="py function">
 <dt id="dpctl.get_devices">
 <code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">get_devices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_devices" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a list of <a class="reference internal" href="dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instances selected based on
+the given <a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> and <a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> values.</p>
+<p>The function is analogous to <code class="docutils literal notranslate"><span class="pre">sycl::devices::get_devices()</span></code>, but with an
+additional functionality that allows filtering SYCL devices based on <code class="docutils literal notranslate"><span class="pre">backend</span></code> in addition to only <code class="docutils literal notranslate"><span class="pre">device_type</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>backend</strong> (<em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">dpctl.backend_type.all</span></code>.
+A <a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> enum value or a string that
+specifies a SYCL backend. Currently, accepted values are: “cuda”,
+“opencl”, “level_zero”, or “all”.</p></li>
+<li><p><strong>device_type</strong> (<em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">dpctl.device_type.all</span></code>.
+A <a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> enum value or a string that
+specifies a SYCL device type. Currently, accepted values are:
+“gpu”, “cpu”, “accelerator”, “host_device”, or “all”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of available <a class="reference internal" href="dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instances that
+satisfy the provided <a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> and
+<a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="dpctl.select_accelerator_device">
@@ -411,7 +437,30 @@ returned by the SYCL <code class="docutils literal notranslate"><span class="pre
 <dl class="py function">
 <dt id="dpctl.get_num_devices">
 <code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">get_num_devices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_devices" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A helper function to return the number of SYCL devices of a given
+<a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> and <a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>backend</strong> (<em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">dpctl.backend_type.all</span></code>.
+A <a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> enum value or a string that
+specifies a SYCL backend. Currently, accepted values are: “cuda”,
+“opencl”, “level_zero”, or “all”.</p></li>
+<li><p><strong>device_type</strong> (<em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">dpctl.device_type.all</span></code>.
+A <a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> enum value or a string that
+specifies a SYCL device type. Currently, accepted values are:
+“gpu”, “cpu”, “accelerator”, “host_device”, or “all”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The number of available SYCL devices that satisfy the provided
+<a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> and <a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="dpctl.has_cpu_devices">
