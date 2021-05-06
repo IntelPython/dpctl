@@ -37,8 +37,9 @@ include(FindPackageHandleStandardArgs)
 # Check if a specific DPC++ installation directory was provided then set
 # IntelSycl_ROOT to that path.
 if(DPCTL_CUSTOM_DPCPP_INSTALL_DIR)
-    set(IntelSycl_ROOT ${DPCTL_CUSTOM_IntelSycl_INSTALL_DIR})
+    set(IntelSycl_ROOT ${DPCTL_CUSTOM_DPCPP_INSTALL_DIR})
     set(USING_ONEAPI_DPCPP False)
+    message(STATUS "Not using oneAPI, but IntelSycl at " ${IntelSycl_ROOT})
 # If DPC++ installation was not specified, check for ONEAPI_ROOT
 elseif(DEFINED ENV{ONEAPI_ROOT})
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
