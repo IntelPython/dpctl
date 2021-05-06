@@ -438,8 +438,10 @@ int64_t DPCTL_GetRelativeDeviceId(const device &Device)
     auto dev_vec = device::get_devices(dt);
     int64_t id = 0;
     for (const auto &d_i : dev_vec) {
-        if (Device == d_i)
+        if (Device == d_i) {
             relid = id;
+            break;
+        }
         if (d_i.get_platform().get_backend() == be)
             ++id;
     }
