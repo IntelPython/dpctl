@@ -49,7 +49,7 @@ endif()
 
 # Check if a specific version of llvm-cov is required.
 if(LLVMCov_FIND_VERSION AND (DEFINED LLVMCov_VERSION))
-    string(COMPARE EQUAL
+    string(COMPARE LESS_EQUAL
         ${LLVMCov_FIND_VERSION_MAJOR}
         ${LLVMCov_VERSION_MAJOR}
         VERSION_MATCH
