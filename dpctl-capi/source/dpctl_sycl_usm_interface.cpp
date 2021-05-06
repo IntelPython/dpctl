@@ -44,9 +44,18 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPCTLSyclUSMRef)
 __dpctl_give DPCTLSyclUSMRef
 DPCTLmalloc_shared(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
-    auto Q = unwrap(QRef);
-    auto Ptr = malloc_shared(size, *Q);
-    return wrap(Ptr);
+    if (!QRef) {
+        std::cerr << "Input QRef is nullptr\n";
+        return nullptr;
+    }
+    try {
+        auto Q = unwrap(QRef);
+        auto Ptr = malloc_shared(size, *Q);
+        return wrap(Ptr);
+    } catch (feature_not_supported const &fns) {
+        std::cerr << fns.what() << '\n';
+        return nullptr;
+    }
 }
 
 __dpctl_give DPCTLSyclUSMRef
@@ -54,14 +63,29 @@ DPCTLaligned_alloc_shared(size_t alignment,
                           size_t size,
                           __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
-    auto Q = unwrap(QRef);
-    auto Ptr = aligned_alloc_shared(alignment, size, *Q);
-    return wrap(Ptr);
+    if (!QRef) {
+        std::cerr << "Input QRef is nullptr\n";
+        return nullptr;
+    }
+    try {
+        auto Q = unwrap(QRef);
+        auto Ptr = aligned_alloc_shared(alignment, size, *Q);
+        return wrap(Ptr);
+    } catch (feature_not_supported const &fns) {
+        std::cerr << fns.what() << '\n';
+        return nullptr;
+    }
 }
 
 __dpctl_give DPCTLSyclUSMRef
 DPCTLmalloc_host(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
+    if (!QRef) {
+        std::cerr << "Input QRef is nullptr\n";
+        return nullptr;
+    }
+    // SYCL 2020 spec: for devices without aspect::usm_host_allocations:
+    // undefined behavior
     auto Q = unwrap(QRef);
     auto Ptr = malloc_host(size, *Q);
     return wrap(Ptr);
@@ -72,6 +96,12 @@ DPCTLaligned_alloc_host(size_t alignment,
                         size_t size,
                         __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
+    if (!QRef) {
+        std::cerr << "Input QRef is nullptr\n";
+        return nullptr;
+    }
+    // SYCL 2020 spec: for devices without aspect::usm_host_allocations:
+    // undefined behavior
     auto Q = unwrap(QRef);
     auto Ptr = aligned_alloc_host(alignment, size, *Q);
     return wrap(Ptr);
@@ -80,9 +110,18 @@ DPCTLaligned_alloc_host(size_t alignment,
 __dpctl_give DPCTLSyclUSMRef
 DPCTLmalloc_device(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
-    auto Q = unwrap(QRef);
-    auto Ptr = malloc_device(size, *Q);
-    return wrap(Ptr);
+    if (!QRef) {
+        std::cerr << "Input QRef is nullptr\n";
+        return nullptr;
+    }
+    try {
+        auto Q = unwrap(QRef);
+        auto Ptr = malloc_device(size, *Q);
+        return wrap(Ptr);
+    } catch (feature_not_supported const &fns) {
+        std::cerr << fns.what() << '\n';
+        return nullptr;
+    }
 }
 
 __dpctl_give DPCTLSyclUSMRef
@@ -90,14 +129,31 @@ DPCTLaligned_alloc_device(size_t alignment,
                           size_t size,
                           __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
-    auto Q = unwrap(QRef);
-    auto Ptr = aligned_alloc_device(alignment, size, *Q);
-    return wrap(Ptr);
+    if (!QRef) {
+        std::cerr << "Input QRef is nullptr\n";
+        return nullptr;
+    }
+    try {
+        auto Q = unwrap(QRef);
+        auto Ptr = aligned_alloc_device(alignment, size, *Q);
+        return wrap(Ptr);
+    } catch (feature_not_supported const &fns) {
+        std::cerr << fns.what() << '\n';
+        return nullptr;
+    }
 }
 
 void DPCTLfree_with_queue(__dpctl_take DPCTLSyclUSMRef MRef,
                           __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
+    if (!QRef) {
+        std::cerr << "Input QRef is nullptr\n";
+        return;
+    }
+    if (!MRef) {
+        std::cerr << "Input MRef is nullptr, nothing to free\n";
+        return;
+    }
     auto Ptr = unwrap(MRef);
     auto Q = unwrap(QRef);
     free(Ptr, *Q);
@@ -106,6 +162,14 @@ void DPCTLfree_with_queue(__dpctl_take DPCTLSyclUSMRef MRef,
 void DPCTLfree_with_context(__dpctl_take DPCTLSyclUSMRef MRef,
                             __dpctl_keep const DPCTLSyclContextRef CRef)
 {
+    if (!CRef) {
+        std::cerr << "Input CRef is nullptr\n";
+        return;
+    }
+    if (!MRef) {
+        std::cerr << "Input MRef is nullptr, nothing to free\n";
+        return;
+    }
     auto Ptr = unwrap(MRef);
     auto C = unwrap(CRef);
     free(Ptr, *C);
@@ -114,6 +178,14 @@ void DPCTLfree_with_context(__dpctl_take DPCTLSyclUSMRef MRef,
 const char *DPCTLUSM_GetPointerType(__dpctl_keep const DPCTLSyclUSMRef MRef,
                                     __dpctl_keep const DPCTLSyclContextRef CRef)
 {
+    if (!CRef) {
+        std::cerr << "Input CRef is nullptr\n";
+        return "unknown";
+    }
+    if (!MRef) {
+        std::cerr << "Input MRef is nullptr\n";
+        return "unknown";
+    }
     auto Ptr = unwrap(MRef);
     auto C = unwrap(CRef);
 
@@ -134,6 +206,15 @@ DPCTLSyclDeviceRef
 DPCTLUSM_GetPointerDevice(__dpctl_keep const DPCTLSyclUSMRef MRef,
                           __dpctl_keep const DPCTLSyclContextRef CRef)
 {
+    if (!CRef) {
+        std::cerr << "Input CRef is nullptr\n";
+        return nullptr;
+    }
+    if (!MRef) {
+        std::cerr << "Input MRef is nullptr\n";
+        return nullptr;
+    }
+
     auto Ptr = unwrap(MRef);
     auto C = unwrap(CRef);
 
