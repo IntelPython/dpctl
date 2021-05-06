@@ -28,3 +28,9 @@
         is allocated with a USM shared memory allocator.
 
 """
+
+from dpctl.tensor._usmarray import usm_ndarray
+
+__all__ = [
+    "usm_ndarray",
+]
