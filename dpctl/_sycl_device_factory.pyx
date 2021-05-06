@@ -149,6 +149,27 @@ cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
 
 
 cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
+    """ Returns a list of :class:`dpctl.SyclDevice` instances selected based on
+    the given :class:`dpctl.device_type` and :class:`dpctl.backend_type` values.
+
+    The function is analogous to ``sycl::devices::get_devices()``, but with an
+    additional functionality that allows filtering SYCL devices based on
+    ``backend`` in addition to only ``device_type``.
+
+    Args:
+        backend (optional): Defaults to ``dpctl.backend_type.all``.
+            A :class:`dpctl.backend_type` enum value or a string that
+            specifies a SYCL backend. Currently, accepted values are: "cuda",
+            "opencl", "level_zero", or "all".
+        device_type (optional): Defaults to ``dpctl.device_type.all``.
+            A :class:`dpctl.device_type` enum value or a string that
+            specifies a SYCL device type. Currently, accepted values are:
+            "gpu", "cpu", "accelerator", "host_device", or "all".
+    Returns:
+        list: A list of available :class:`dpctl.SyclDevice` instances that
+        satisfy the provided :class:`dpctl.backend_type` and
+        :class:`dpctl.device_type` values.
+    """
     cdef DPCTLSyclBackendType BTy = _backend_type._ALL_BACKENDS
     cdef DPCTLSyclDeviceType DTy = _device_type._ALL_DEVICES
     cdef DPCTLDeviceVectorRef DVRef = NULL
@@ -184,6 +205,22 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
 cpdef int get_num_devices(
     backend=backend_type.all, device_type=device_type_t.all
 ):
+    """ A helper function to return the number of SYCL devices of a given
+    :class:`dpctl.device_type` and :class:`dpctl.backend_type`.
+
+    Args:
+        backend (optional): Defaults to ``dpctl.backend_type.all``.
+            A :class:`dpctl.backend_type` enum value or a string that
+            specifies a SYCL backend. Currently, accepted values are: "cuda",
+            "opencl", "level_zero", or "all".
+        device_type (optional): Defaults to ``dpctl.device_type.all``.
+            A :class:`dpctl.device_type` enum value or a string that
+            specifies a SYCL device type. Currently, accepted values are:
+            "gpu", "cpu", "accelerator", "host_device", or "all".
+    Returns:
+        int: The number of available SYCL devices that satisfy the provided
+        :class:`dpctl.backend_type` and :class:`dpctl.device_type` values.
+    """
     cdef DPCTLSyclBackendType BTy = _backend_type._ALL_BACKENDS
     cdef DPCTLSyclDeviceType DTy = _device_type._ALL_DEVICES
     cdef int num_devices = 0

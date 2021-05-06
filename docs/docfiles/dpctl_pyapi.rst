@@ -63,8 +63,8 @@ Device Selection Functions
 .. autofunction:: has_accelerator_devices
 .. autofunction:: has_host_device
 
-DPCTL Queue Management Functions
---------------------------------
+Queue Management Functions
+--------------------------
 
 .. autofunction:: device_context
 .. autofunction:: get_current_backend
