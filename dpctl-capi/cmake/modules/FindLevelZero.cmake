@@ -26,7 +26,11 @@
 # TODO: Add a way to record the version of the level_zero library
 
 find_library(LEVEL_ZERO_LIBRARY ze_loader HINTS $ENV{L0_LIB_DIR})
-find_path(LEVEL_ZERO_INCLUDE_DIR NAMES level_zero/zet_api.h HINTS $ENV{L0_INCLUDE_DIR})
+if(UNIX)
+    find_path(LEVEL_ZERO_INCLUDE_DIR NAMES level_zero/zet_api.h HINTS $ENV{L0_INCLUDE_DIR})
+elif(WIN32)
+    find_path(LEVEL_ZERO_INCLUDE_DIR NAMES zet_api.h HINTS $ENV{L0_INCLUDE_DIR})
+endif()
 
 find_package_handle_standard_args(LevelZero DEFAULT_MSG
     LEVEL_ZERO_INCLUDE_DIR

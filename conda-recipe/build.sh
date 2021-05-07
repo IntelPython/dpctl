@@ -9,6 +9,9 @@ else
     exit 1
 fi
 
+git clone -b v1.2.3 https://github.com/oneapi-src/level-zero.git
+mv "$(pwd)/level-zero/include/zet_api.h" "$(pwd)/dpctl-capi/include/zet_api.h"
+
 ${PYTHON} setup.py clean --all
 ${PYTHON} setup.py install
 

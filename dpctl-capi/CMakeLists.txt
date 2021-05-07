@@ -94,7 +94,7 @@ target_link_libraries(DPCTLSyclInterface
 )
 
 if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
-    if(UNIX)
+    if(WIN32 OR UNIX)
         target_include_directories(DPCTLSyclInterface
             PRIVATE
             ${LEVEL_ZERO_INCLUDE_DIR}

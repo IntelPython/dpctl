@@ -4,6 +4,10 @@ if errorlevel 1 (
     exit /b 1
 )
 
+git clone -b v1.2.3 https://github.com/oneapi-src/level-zero.git
+copy "%CD%\\level-zero\\include\\zet_api.h" "%CD%\\dpctl-capi\\include\\zet_api.h"
+set L0_INCLUDE_DIR="%CD%"
+
 "%PYTHON%" setup.py clean --all
 "%PYTHON%" setup.py install
 if errorlevel 1 exit 1

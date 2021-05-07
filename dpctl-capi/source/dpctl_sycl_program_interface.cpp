@@ -47,6 +47,9 @@ namespace
 #ifdef __linux__
 static const char *zeLoaderName = "libze_loader.so";
 static const int libLoadFlags = RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL;
+#elif defined(_WIN64)
+static const char *zeLoaderName = "ze_loader.dll";
+static const int libLoadFlags = 0;
 #else
 #error "Level Zero program compilation is unavailable for this platform"
 #endif
