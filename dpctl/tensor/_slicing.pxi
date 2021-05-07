@@ -20,7 +20,12 @@ import numbers
 cdef object _basic_slice_meta(object ind, tuple shape,
                               tuple strides, Py_ssize_t offset):
     """
+    Give basic slicing index `ind` and array layout information produce
+    a tuple (resulting_shape, resulting_strides, resultin_offset)
+    used to contruct a view into underlying array.
 
+    Raises IndexError for invalid index `ind`, and NotImplementedError
+    if `ind` is an array.
     """
     if ind is Ellipsis:
         return (shape, strides, offset)
