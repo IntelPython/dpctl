@@ -25,11 +25,14 @@ import dpctl.memory as dpmem
 from cpython.mem cimport PyMem_Free
 from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 
+cimport dpctl as c_dpctl
+cimport dpctl.memory as c_dpmem
+
 
 cdef extern from "usm_array.hpp" namespace "usm_array":
     cdef cppclass usm_array:
         usm_array(char *, int, size_t*, Py_ssize_t *,
-                  int, int, DPCTLSyclQueueRef) except +
+                  int, int, c_dpctl.DPCTLSyclQueueRef) except +
 
 
 include "_stride_utils.pxi"
@@ -69,40 +72,38 @@ cdef class usm_ndarray:
         """
         Initializes member fields
         """
-        self.base = None
-        self.nd = -1
-        self.data = <char *>0
-        self.shape = <Py_ssize_t *>0
-        self.strides = <Py_ssize_t *>0
-        self.flags = 0
+        self.base_ = None
+        self.nd_ = -1
+        self.data_ = <char *>0
+        self.shape_ = <Py_ssize_t *>0
+        self.strides_ = <Py_ssize_t *>0
+        self.flags_ = 0
 
     cdef void _cleanup(usm_ndarray self):
-        if (self.shape):
-            PyMem_Free(self.shape)
-        if (self.strides):
-            PyMem_Free(self.strides)
+        if (self.shape_):
+            PyMem_Free(self.shape_)
+        if (self.strides_):
+            PyMem_Free(self.strides_)
         self._reset()
 
-    cdef usm_ndarray _clone(self):
+    cdef usm_ndarray _clone(usm_ndarray self):
         """
         Provides a copy of Python object pointing to the same data
         """
-        cdef int item_size = type_bytesize(self.typenum)
-        cdef Py_ssize_t offset_bytes = (
-            (<char *> self.data) -
-            (<char *>(<size_t>self.base._pointer)))
+        cdef int item_size = self.get_itemsize()
+        cdef Py_ssize_t offset_elems = self.get_offset()
         cdef usm_ndarray res = usm_ndarray.__new__(
-            usm_ndarray, _make_int_tuple(self.nd, self.shape),
-            dtype=_make_typestr(self.typenum),
+            usm_ndarray, _make_int_tuple(self.nd_, self.shape_),
+            dtype=_make_typestr(self.typenum_),
             strides=(
-                _make_int_tuple(self.nd, self.strides) if (self.strides)
+                _make_int_tuple(self.nd_, self.strides_) if (self.strides_)
                 else None),
-            buffer=self.base,
-            offset=(offset_bytes // item_size),
-            order=('C' if (self.flags & USM_ARRAY_C_CONTIGUOUS) else 'F')
+            buffer=self.base_,
+            offset=offset_elems,
+            order=('C' if (self.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'F')
         )
-        res.flags = self.flags
-        if (res.data != self.data):
+        res.flags_ = self.flags_
+        if (res.data_ != self.data_):
             raise InternalUSMArrayError(
                 "Data pointers of cloned and original objects are different.")
         return res
@@ -192,27 +193,96 @@ cdef class usm_ndarray:
             self._cleanup()
             raise ValueError("buffer='{}' can not accomodate the requested "
                              "array.".format(buffer))
-        self.base = _buffer
-        self.data = (<char *> (<size_t> _buffer._pointer)) + itemsize * _offset
-        self.shape = shape_ptr
-        self.strides = strides_ptr
-        self.typenum = typenum
-        self.flags = contig_flag
-        self.nd = nd
+        self.base_ = _buffer
+        self.data_ = (<char *> (<size_t> _buffer._pointer)) + itemsize * _offset
+        self.shape_ = shape_ptr
+        self.strides_ = strides_ptr
+        self.typenum_ = typenum
+        self.flags_ = contig_flag
+        self.nd_ = nd
 
     def __dealloc__(self):
         self._cleanup()
 
     cdef Py_ssize_t get_offset(self) except *:
         cdef char *mem_ptr = NULL
-        cdef char *ary_ptr = self.data
-        mem_ptr = <char *>(<size_t> self.base._pointer)
+        cdef char *ary_ptr = self.get_data()
+        mem_ptr = <char *>(<size_t> self.base_._pointer)
         byte_offset = ary_ptr - mem_ptr
-        item_size = type_bytesize(self.typenum)
+        item_size = self.get_itemsize()
         if (byte_offset % item_size):
             raise InternalUSMArrayError(
                 "byte_offset is not a multiple of item_size.")
         return byte_offset // item_size
+
+    cdef char* get_data(self):
+        """Returns the USM pointer for this array."""
+        return self.data_
+
+    cdef int get_ndim(self):
+        """
+        Returns the number of indices needed to address
+        an element of this array.
+        """
+        return self.nd_
+
+    cdef Py_ssize_t* get_shape(self):
+        """
+        Returns pointer to shape C-array for this array.
+
+        C-array has at least `ndim` non-negative elements,
+        which determine the range of permissible indices
+        addressing individual elements of this array.
+        """
+        return self.shape_
+
+    cdef Py_ssize_t* get_strides(self):
+        """
+        Returns pointer to strides C-array for this array.
+
+        The pointer can be NULL (contiguous array), or the
+        array size is at least `ndim` elements
+        """
+        return self.strides_
+
+    cdef int get_typenum(self):
+        """Returns typenum corresponding to values of this array"""
+        return self.typenum_
+
+    cdef int get_itemsize(self):
+        """
+        Returns itemsize of this arrays in bytes
+        """
+        return type_bytesize(self.typenum_)
+
+    cdef int get_flags(self):
+        """Returns flags of this array"""
+        return self.flags_
+
+    cdef object get_base(self):
+        """Returns the object owning the USM data addressed by this array"""
+        return self.base_
+
+    cdef c_dpctl.SyclQueue get_sycl_queue(self):
+        cdef c_dpmem._Memory mem
+        if not isinstance(self.base_, dpctl.memory._Memory):
+            raise InternalUSMArrayError(
+                "This array has unexpected memory owner"
+            )
+        mem = <c_dpmem._Memory> self.base_
+        return mem.queue
+
+    cdef c_dpctl.DPCTLSyclQueueRef get_queue_ref(self) except *:
+        cdef c_dpctl.SyclQueue q = self.get_sycl_queue()
+        cdef c_dpctl.DPCTLSyclQueueRef QRef = q.get_queue_ref()
+        cdef c_dpctl.DPCTLSyclQueueRef QRefCopy = NULL
+        if QRef is not NULL:
+            QRefCopy = c_dpctl.DPCTLQueue_Copy(QRef)
+            return QRefCopy
+        else:
+            raise InternalUSMArrayError(
+                "Memory owner of this array is corrupted"
+            )
 
     @property
     def __sycl_usm_array_interface__(self):
@@ -224,27 +294,27 @@ cdef class usm_ndarray:
         cdef Py_ssize_t elem_offset = -1
         cdef char *mem_ptr = NULL
         cdef char *ary_ptr = NULL
-        if (not isinstance(self.base, dpmem._memory._Memory)):
+        if (not isinstance(self.base_, dpmem._memory._Memory)):
             raise ValueError("Invalid instance of usm_ndarray ecountered")
-        ary_iface = self.base.__sycl_usm_array_interface__
+        ary_iface = self.base_.__sycl_usm_array_interface__
         mem_ptr = <char *>(<size_t> ary_iface['data'][0])
-        ary_ptr = <char *>(<size_t> self.data)
-        ro_flag = False if (self.flags & USM_ARRAY_WRITEABLE) else True
+        ary_ptr = <char *>(<size_t> self.data_)
+        ro_flag = False if (self.flags_ & USM_ARRAY_WRITEABLE) else True
         ary_iface['data'] = (<size_t> ary_ptr, ro_flag)
-        ary_iface['shape'] = _make_int_tuple(self.nd, self.shape)
-        if (self.strides):
-            ary_iface['strides'] = _make_int_tuple(self.nd, self.strides)
+        ary_iface['shape'] = _make_int_tuple(self.nd_, self.shape_)
+        if (self.strides_):
+            ary_iface['strides'] = _make_int_tuple(self.nd_, self.strides_)
         else:
-            if (self.flags & USM_ARRAY_C_CONTIGUOUS):
+            if (self.flags_ & USM_ARRAY_C_CONTIGUOUS):
                 ary_iface['strides'] = None
-            elif (self.flags & USM_ARRAY_F_CONTIGUOUS):
-                ary_iface['strides'] = _f_contig_strides(self.nd, self.shape)
+            elif (self.flags_ & USM_ARRAY_F_CONTIGUOUS):
+                ary_iface['strides'] = _f_contig_strides(self.nd_, self.shape_)
             else:
                 raise ValueError("USM Array is not contiguous and "
                                  "has empty strides")
-        ary_iface['typestr'] = _make_typestr(self.typenum)
+        ary_iface['typestr'] = _make_typestr(self.typenum_)
         byte_offset = ary_ptr - mem_ptr
-        item_size = type_bytesize(self.typenum)
+        item_size = self.get_itemsize()
         if (byte_offset % item_size):
             raise InternalUSMArrayError(
                 "byte_offset is not a multiple of item_size.")
@@ -257,14 +327,14 @@ cdef class usm_ndarray:
         """
         Gives the number of indices needed to address elements of this array.
         """
-        return int(self.nd)
+        return int(self.nd_)
 
     @property
     def usm_data(self):
         """
         Gives USM memory object underlying usm_array instance.
         """
-        return self.base
+        return self.base_
 
     @property
     def shape(self):
@@ -272,7 +342,10 @@ cdef class usm_ndarray:
         Elements of the shape tuple give the lengths of the
         respective array dimensions.
         """
-        return _make_int_tuple(self.nd, self.shape) if self.nd > 0 else tuple()
+        if self.nd_ > 0:
+            return _make_int_tuple(self.nd_, self.shape_)
+        else:
+            return tuple()
 
     @property
     def strides(self):
@@ -284,13 +357,13 @@ cdef class usm_ndarray:
 
            a[i1, i2, i3] == (&a[0,0,0])[ s1*s1 + s2*i2 + s3*i3]
         """
-        if (self.strides):
-            return _make_int_tuple(self.nd, self.strides)
+        if (self.strides_):
+            return _make_int_tuple(self.nd_, self.strides_)
         else:
-            if (self.flags & USM_ARRAY_C_CONTIGUOUS):
-                return _c_contig_strides(self.nd, self.shape)
-            elif (self.flags & USM_ARRAY_F_CONTIGUOUS):
-                return _f_contig_strides(self.nd, self.shape)
+            if (self.flags_ & USM_ARRAY_C_CONTIGUOUS):
+                return _c_contig_strides(self.nd_, self.shape_)
+            elif (self.flags_ & USM_ARRAY_F_CONTIGUOUS):
+                return _f_contig_strides(self.nd_, self.shape_)
             else:
                 raise ValueError("Inconsitent usm_ndarray data")
 
@@ -299,7 +372,7 @@ cdef class usm_ndarray:
         """
         Currently returns integer whose bits correspond to the flags.
         """
-        return int(self.flags)
+        return self.flags_
 
     @property
     def usm_type(self):
@@ -308,14 +381,14 @@ cdef class usm_ndarray:
 
         See: https://docs.oneapi.com/versions/latest/dpcpp/iface/usm.html
         """
-        return self.base.get_usm_type()
+        return self.base_.get_usm_type()
 
     @property
     def itemsize(self):
         """
         Size of array element in bytes.
         """
-        return type_bytesize(self.typenum)
+        return self.get_itemsize()
 
     @property
     def nbytes(self):
@@ -323,65 +396,67 @@ cdef class usm_ndarray:
         Total bytes consumed by the elements of the array.
         """
         return (
-            shape_to_elem_count(self.nd, self.shape) *
-            type_bytesize(self.typenum))
+            shape_to_elem_count(self.nd_, self.shape_) *
+            self.get_itemsize())
 
     @property
     def size(self):
         """
         Number of elements in the array.
         """
-        return shape_to_elem_count(self.nd, self.shape)
+        return shape_to_elem_count(self.nd_, self.shape_)
 
     @property
     def dtype(self):
         """
         Returns NumPy's dtype corresponding to the type of the array elements.
         """
-        return np.dtype(_make_typestr(self.typenum))
+        return np.dtype(_make_typestr(self.typenum_))
 
     @property
     def sycl_queue(self):
         """
         Returns `dpctl.SyclQueue` object associated with USM data.
         """
-        return self.base._queue
+        return self.get_sycl_queue()
 
     @property
     def sycl_device(self):
         """
         Returns `dpctl.SyclDevice` object on which USM data was allocated.
         """
-        return self.base._queue.sycl_device
+        q = self.sycl_queue
+        return q.sycl_device
 
     @property
     def sycl_context(self):
         """
         Returns `dpctl.SyclContext` object to which USM data is bound.
         """
-        return self.base._queue.sycl_context
+        q = self.sycl_queue
+        return q.sycl_context
 
     @property
     def T(self):
-        if self.nd < 2:
+        if self.nd_ < 2:
             return self
         else:
             return _transpose(self)
 
     @property
     def real(self):
-        if (self.typenum < UAR_CFLOAT):
+        if (self.typenum_ < UAR_CFLOAT):
             # elements are real
             return self
-        if (self.typenum < UAR_TYPE_SENTINEL):
+        if (self.typenum_ < UAR_TYPE_SENTINEL):
             return _real_view(self)
 
     @property
     def imag(self):
-        if (self.typenum < UAR_CFLOAT):
+        if (self.typenum_ < UAR_CFLOAT):
             # elements are real
             return _zero_like(self)
-        if (self.typenum < UAR_TYPE_SENTINEL):
+        if (self.typenum_ < UAR_TYPE_SENTINEL):
             return _imag_view(self)
 
     def __getitem__(self, ind):
@@ -392,12 +467,12 @@ cdef class usm_ndarray:
 
         res = usm_ndarray.__new__(
             usm_ndarray, _meta[0],
-            dtype=_make_typestr(self.typenum),
+            dtype=_make_typestr(self.typenum_),
             strides=_meta[1],
-            buffer=self.base,
+            buffer=self.base_,
             offset=_meta[2]
         )
-        res.flags |= (self.flags & USM_ARRAY_WRITEABLE)
+        res.flags_ |= (self.flags_ & USM_ARRAY_WRITEABLE)
         return res
 
 
@@ -406,10 +481,10 @@ cdef usm_ndarray _real_view(usm_ndarray ary):
     View into real parts of a complex type array
     """
     cdef usm_ndarray r = ary._clone()
-    if (ary.typenum == UAR_CFLOAT):
-        r.typenum = UAR_FLOAT
-    elif (ary.typenum == UAR_CDOUBLE):
-        r.typenum = UAR_DOUBLE
+    if (ary.typenum_ == UAR_CFLOAT):
+        r.typenum_ = UAR_FLOAT
+    elif (ary.typenum_ == UAR_CDOUBLE):
+        r.typenum_ = UAR_DOUBLE
     else:
         raise InternalUSMArrayError(
             "_real_view call on array of non-complex type.")
@@ -421,15 +496,15 @@ cdef usm_ndarray _imag_view(usm_ndarray ary):
     View into imaginary parts of a complex type array
     """
     cdef usm_ndarray r = ary._clone()
-    if (ary.typenum == UAR_CFLOAT):
-        r.typenum = UAR_FLOAT
-    elif (ary.typenum == UAR_CDOUBLE):
-        r.typenum = UAR_DOUBLE
+    if (ary.typenum_ == UAR_CFLOAT):
+        r.typenum_ = UAR_FLOAT
+    elif (ary.typenum_ == UAR_CDOUBLE):
+        r.typenum_ = UAR_DOUBLE
     else:
         raise InternalUSMArrayError(
             "_real_view call on array of non-complex type.")
     # displace pointer to imaginary part
-    r.data = r.data + type_bytesize(r.typenum)
+    r.data_ = r.data_ + type_bytesize(r.typenum_)
     return r
 
 
@@ -439,15 +514,15 @@ cdef usm_ndarray _transpose(usm_ndarray ary):
     """
     cdef usm_ndarray r = usm_ndarray.__new__(
         usm_ndarray,
-        _make_reversed_int_tuple(ary.nd, ary.shape),
-        dtype=_make_typestr(ary.typenum),
+        _make_reversed_int_tuple(ary.nd_, ary.shape_),
+        dtype=_make_typestr(ary.typenum_),
         strides=(
-            _make_reversed_int_tuple(ary.nd, ary.strides)
-            if (ary.strides) else None),
-        buffer=ary.base,
-        order=('F' if (ary.flags & USM_ARRAY_C_CONTIGUOUS) else 'C')
+            _make_reversed_int_tuple(ary.nd_, ary.strides_)
+            if (ary.strides_) else None),
+        buffer=ary.base_,
+        order=('F' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'C')
     )
-    r.flags |= (ary.flags & USM_ARRAY_WRITEABLE)
+    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITEABLE)
     return r
 
 
@@ -457,9 +532,9 @@ cdef usm_ndarray _zero_like(usm_ndarray ary):
     and type as ary.
     """
     cdef usm_ndarray r = usm_ndarray(
-        _make_int_tuple(ary.nd, ary.shape),
-        dtype=_make_typestr(ary.typenum),
-        buffer=ary.base.get_usm_type()
+        _make_int_tuple(ary.nd_, ary.shape_),
+        dtype=_make_typestr(ary.typenum_),
+        buffer=ary.base_.get_usm_type()
     )
     # TODO: call function to set array elements to zero
     return r
