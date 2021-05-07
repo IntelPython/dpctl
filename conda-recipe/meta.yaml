@@ -34,6 +34,9 @@ test:
     requires:
         - pytest
         - pytest-cov
+        - cython
+    source_files:
+        - .coveragerc
 
 about:
     home: https://github.com/IntelPython/dpctl.git
