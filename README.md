@@ -50,7 +50,8 @@ installed:
 - `cmake` - for building C API
 - `ninja` - only on Windows
 
-Activate DPC++ compiler:
+You need DPC++ to build dpctl. If you want to build using the DPC++ in a
+oneAPI distribution, activate DPC++ compiler as follows:
 ```bash
 export ONEAPI_ROOT=/opt/intel/oneapi
 source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh

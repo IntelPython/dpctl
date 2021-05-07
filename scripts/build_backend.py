@@ -62,12 +62,7 @@ if IS_LIN:
             "-DCMAKE_BUILD_TYPE=Debug",
             "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
             "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
-            "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
-            "-DCMAKE_C_COMPILER:PATH="
-            + os.path.join(DPCPP_ROOT, "bin", "clang"),
-            "-DCMAKE_CXX_COMPILER:PATH="
-            + os.path.join(DPCPP_ROOT, "bin", "dpcpp"),
-            "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON",
+            "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON"
             "-DDPCTL_BUILD_CAPI_TESTS=ON",
             "-DDPCTL_GENERATE_COVERAGE=ON",
             "-DDPCTL_COVERAGE_REPORT_OUTPUT_DIR=" + dpctl_dir,
@@ -84,11 +79,6 @@ if IS_LIN:
             "-DCMAKE_BUILD_TYPE=Release",
             "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
             "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
-            "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
-            "-DCMAKE_C_COMPILER:PATH="
-            + os.path.join(DPCPP_ROOT, "bin", "clang"),
-            "-DCMAKE_CXX_COMPILER:PATH="
-            + os.path.join(DPCPP_ROOT, "bin", "dpcpp"),
             "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON",
             backends,
         ]
@@ -99,8 +89,7 @@ if IS_LIN:
     os.chdir(dpctl_dir)
     for file in glob.glob(os.path.join(dpctl_dir, "install", "lib", "*.so")):
         shutil.copy(file, os.path.join(dpctl_dir, "dpctl"))
-
-if IS_WIN:
+elif IS_WIN:
     cmake_args = [
         "cmake",
         "-G",
@@ -108,11 +97,6 @@ if IS_WIN:
         "-DCMAKE_BUILD_TYPE=Release",
         "-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX,
         "-DCMAKE_PREFIX_PATH=" + INSTALL_PREFIX,
-        "-DDPCPP_INSTALL_DIR=" + DPCPP_ROOT,
-        "-DCMAKE_C_COMPILER:PATH="
-        + os.path.join(DPCPP_ROOT, "bin", "clang-cl.exe"),
-        "-DCMAKE_CXX_COMPILER:PATH="
-        + os.path.join(DPCPP_ROOT, "bin", "dpcpp.exe"),
         backends,
     ]
     subprocess.check_call(cmake_args, stderr=subprocess.STDOUT, shell=False)
