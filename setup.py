@@ -16,7 +16,6 @@
 
 import os
 import os.path
-import subprocess
 import sys
 
 import numpy as np
@@ -38,21 +37,10 @@ elif sys.platform == "darwin":
 elif sys.platform in ["win32", "cygwin"]:
     IS_WIN = True
 else:
-    assert False, sys.platform + " not supported"
+    assert False, "We currently do not build for " + sys.platform
 
-if IS_LIN:
-    DPCPP_ROOT = os.environ["ONEAPI_ROOT"] + r"/compiler/latest/linux"
-    os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
-    os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = r"dpctl/include"
-    os.environ["CFLAGS"] = "-fPIC"
-
-elif IS_WIN:
-    os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
-    os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = r"dpctl\include"
-
-dpctl_sycl_interface_lib = os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"]
-dpctl_sycl_interface_include = os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"]
-sycl_lib = os.environ["ONEAPI_ROOT"] + r"\compiler\latest\windows\lib"
+dpctl_sycl_interface_lib = "dpctl"
+dpctl_sycl_interface_include = r"dpctl/include"
 
 # Get long description
 with open("README.md", "r", encoding="utf-8") as file:
@@ -114,8 +102,15 @@ def get_suppressed_warning_flags():
 
 
 def build_backend():
-    build_script = os.path.join(os.getcwd(), "scripts", "build_backend.py")
-    subprocess.check_call([sys.executable, build_script])
+    import os.path
+    from importlib.util import module_from_spec, spec_from_file_location
+
+    spec = spec_from_file_location(
+        "build_backend", os.path.join("scripts", "build_backend.py")
+    )
+    builder_module = module_from_spec(spec)
+    spec.loader.exec_module(builder_module)
+    builder_module.build_backend(l0_support=True)
 
 
 def extensions():
@@ -131,12 +126,12 @@ def extensions():
     elif IS_MAC:
         pass
     elif IS_WIN:
-        libs += ["DPCTLSyclInterface", "sycl"]
+        libs += ["DPCTLSyclInterface"]
 
     if IS_LIN:
         librarys = [dpctl_sycl_interface_lib]
     elif IS_WIN:
-        librarys = [dpctl_sycl_interface_lib, sycl_lib]
+        librarys = [dpctl_sycl_interface_lib]
     elif IS_MAC:
         librarys = [dpctl_sycl_interface_lib]
 
