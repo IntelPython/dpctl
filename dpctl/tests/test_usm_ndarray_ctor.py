@@ -71,6 +71,7 @@ def test_allocate_usm_ndarray(shape, usm_type):
         "f8",
         "c8",
         "c16",
+        np.dtype("d"),
     ],
 )
 def test_dtypes(dtype):

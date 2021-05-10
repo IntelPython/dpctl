@@ -88,7 +88,7 @@ cdef int type_bytesize(int typenum):
     return type_to_bytesize[typenum]
 
 
-cdef int typenum_from_format(str s):
+cdef int typenum_from_format(str s) except *:
     """
     Internal utility to convert string describing type format
 
@@ -106,7 +106,7 @@ cdef int typenum_from_format(str s):
     return dt.num
 
 
-cdef int dtype_to_typenum(dtype):
+cdef int dtype_to_typenum(dtype) except *:
     if isinstance(dtype, str):
         return typenum_from_format(dtype)
     elif isinstance(dtype, bytes):
@@ -121,6 +121,6 @@ cdef int dtype_to_typenum(dtype):
         obj = obj[1]
         if not isinstance(obj, str):
             return -1
-        return typenum_from_format(dtype)
+        return typenum_from_format(obj)
     else:
         return -1
