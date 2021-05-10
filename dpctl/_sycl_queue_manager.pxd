@@ -20,6 +20,6 @@
 from ._sycl_queue cimport SyclQueue
 
 
-cpdef public SyclQueue get_current_queue()
+cpdef SyclQueue get_current_queue()
 cpdef get_current_device_type ()
 cpdef get_current_backend()
