@@ -18,15 +18,15 @@ import dpctl
 
 class Device:
     """
-    Class representing Data-API concept of Device
+    Class representing Data-API concept of device.
 
-    This is a wrapper around `dpctl.SyclQueue` with custom
+    This is a wrapper around :class:`dpctl.SyclQueue` with custom
     formatting. The class does not have public constructor,
     but a class method to construct it from device= keyword
     in Array-API functions.
 
-    Instance can be queries for `sycl_queue`, `sycl_context`,
-    or `sycl_device`
+    Instance can be queried for ``sycl_queue``, ``sycl_context``,
+    or ``sycl_device``.
     """
 
     def __new__(cls, *args, **kwargs):
@@ -34,6 +34,21 @@ class Device:
 
     @classmethod
     def create_device(cls, dev):
+        """
+        Device.create_device(device)
+
+        Creates instance of Device from argument.
+
+        Args:
+            device: None, :class:`.Device`, :class:`dpctl.SyclQueue`, or
+                    a :class:`dpctl.SyclDevice` corresponding to a root
+                    SYCL device.
+        Raises:
+            ValueError: if an instance of :class:`dpctl.SycDevice` corresponding
+                        to a sub-device was specified as the argument
+            SyclQueueCreationError: if :class:`dpctl.SyclQueue` could not be
+                                    created from the argument
+        """
         obj = super().__new__(cls)
         if isinstance(dev, Device):
             obj.sycl_queue_ = dev.sycl_queue
@@ -55,14 +70,23 @@ class Device:
 
     @property
     def sycl_queue(self):
+        """
+        :class:`dpctl.SyclQueue` used to offload to this :class:`.Device`.
+        """
         return self.sycl_queue_
 
     @property
     def sycl_context(self):
+        """
+        :class:`dpctl.SyclContext` associated with this :class:`.Device`.
+        """
         return self.sycl_queue_.sycl_context
 
     @property
     def sycl_device(self):
+        """
+        :class:`dpctl.SyclDevice` targed by this :class:`.Device`.
+        """
         return self.sycl_queue_.sycl_device
 
     def __repr__(self):
