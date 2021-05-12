@@ -17,12 +17,14 @@
 import numbers
 
 import numpy as np
+import numpy.lib.stride_tricks as np_st
 import pytest
 
 import dpctl
 
 # import dpctl.memory as dpmem
 import dpctl.tensor as dpt
+from dpctl.tensor._usmarray import Device
 
 
 @pytest.mark.parametrize(
@@ -112,6 +114,8 @@ def test_properties():
         (2, 2, None, 3, 4),
         (Ellipsis,),
         (None, slice(0, None, 2), Ellipsis, slice(0, None, 3)),
+        (None, slice(1, None, 2), Ellipsis, slice(1, None, 3)),
+        (None, slice(None, -1, -2), Ellipsis, slice(2, None, 3)),
         (
             slice(None, None, -1),
             slice(None, None, -1),
@@ -121,10 +125,86 @@ def test_properties():
     ],
 )
 def test_basic_slice(ind):
-    X = dpt.usm_ndarray((2 * 3, 2 * 4, 3 * 5, 3 * 7), dtype="u1")
+    X = dpt.usm_ndarray((2 * 3, 2 * 4, 3 * 5, 2 * 7), dtype="u1")
     Xnp = np.empty(X.shape, dtype=X.dtype)
     S = X[ind]
     Snp = Xnp[ind]
     assert S.shape == Snp.shape
     assert S.strides == Snp.strides
     assert S.dtype == X.dtype
+
+
+def _from_numpy(np_ary, device=None, usm_type="shared"):
+    if type(np_ary) is np.ndarray:
+        if np_ary.flags["FORC"]:
+            x = np_ary
+        else:
+            x = np.ascontiguous(np_ary)
+        R = dpt.usm_ndarray(
+            np_ary.shape,
+            dtype=np_ary.dtype,
+            buffer=usm_type,
+            buffer_ctor_kwargs={
+                "queue": Device.create_device(device).sycl_queue
+            },
+        )
+        R.usm_data.copy_from_host(x.reshape((-1)).view("|u1"))
+        return R
+    else:
+        raise ValueError("Expected numpy.ndarray, got {}".format(type(np_ary)))
+
+
+def _to_numpy(usm_ary):
+    if type(usm_ary) is dpt.usm_ndarray:
+        usm_buf = usm_ary.usm_data
+        s = usm_buf.nbytes
+        host_buf = usm_buf.copy_to_host().view(usm_ary.dtype)
+        usm_ary_itemsize = usm_ary.itemsize
+        R_offset = (
+            usm_ary.__sycl_usm_array_interface__["offset"] * usm_ary_itemsize
+        )
+        R = np.ndarray((s,), dtype="u1", buffer=host_buf)
+        R = R[R_offset:].view(usm_ary.dtype)
+        R_strides = (usm_ary_itemsize * si for si in usm_ary.strides)
+        return np_st.as_strided(R, shape=usm_ary.shape, strides=R_strides)
+    else:
+        raise ValueError(
+            "Expected dpctl.tensor.usm_ndarray, got {}".format(type(usm_ary))
+        )
+
+
+def test_slice_constructor_1d():
+    Xh = np.arange(37, dtype="i4")
+    Xusm = _from_numpy(Xh, device="gpu", usm_type="device")
+    for ind in [
+        slice(1, None, 2),
+        slice(0, None, 3),
+        slice(1, None, 3),
+        slice(2, None, 3),
+        slice(None, None, -1),
+        slice(-2, 2, -2),
+        slice(-1, 1, -2),
+        slice(None, None, -13),
+    ]:
+        assert np.array_equal(
+            _to_numpy(Xusm[ind]), Xh[ind]
+        ), "Failed for {}".format(ind)
+
+
+def test_slice_constructor_3d():
+    Xh = np.empty((37, 24, 35), dtype="i4")
+    Xusm = _from_numpy(Xh, device="gpu", usm_type="device")
+    for ind in [
+        slice(1, None, 2),
+        slice(0, None, 3),
+        slice(1, None, 3),
+        slice(2, None, 3),
+        slice(None, None, -1),
+        slice(-2, 2, -2),
+        slice(-1, 1, -2),
+        slice(None, None, -13),
+        (slice(None, None, -2), Ellipsis, None, 15),
+    ]:
+        assert np.array_equal(
+            _to_numpy(Xusm[ind]), Xh[ind]
+        ), "Failed for {}".format(ind)

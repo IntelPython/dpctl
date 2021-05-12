@@ -475,7 +475,8 @@ cdef class usm_ndarray:
         cdef usm_ndarray res
 
         res = usm_ndarray.__new__(
-            usm_ndarray, _meta[0],
+            usm_ndarray,
+            _meta[0],
             dtype=_make_typestr(self.typenum_),
             strides=_meta[1],
             buffer=self.base_,

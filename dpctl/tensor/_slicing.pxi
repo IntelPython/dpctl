@@ -17,6 +17,23 @@
 import numbers
 
 
+cdef Py_ssize_t _slice_len(
+    Py_ssize_t sl_start,
+    Py_ssize_t sl_stop,
+    Py_ssize_t sl_step
+):
+    """
+    Compute len(range(sl_start, sl_stop, sl_step))
+    """
+    if sl_start == sl_stop:
+        return 0
+    if sl_step > 0:
+        # 1 + argmax k such htat sl_start + sl_step*k < sl_stop
+        return 1 + ((sl_stop - sl_start - 1) // sl_step)
+    else:
+        return 1 + ((sl_stop - sl_start + 1) // sl_step)
+
+
 cdef object _basic_slice_meta(object ind, tuple shape,
                               tuple strides, Py_ssize_t offset):
     """
@@ -33,9 +50,9 @@ cdef object _basic_slice_meta(object ind, tuple shape,
         return ((1,) + shape, (0,) + strides, offset)
     elif isinstance(ind, slice):
         sl_start, sl_stop, sl_step = ind.indices(shape[0])
-        sh0 = (sl_stop - sl_start) // sl_step
+        sh0 = _slice_len(sl_start, sl_stop, sl_step)
         str0 = sl_step * strides[0]
-        new_strides = strides if (sl_step == 1) else (str0,) + strides[1:]
+        new_strides = strides if (sl_step == 1 or sh0 == 0) else (str0,) + strides[1:]
         return (
             (sh0, ) + shape[1:],
             new_strides,
@@ -101,8 +118,8 @@ cdef object _basic_slice_meta(object ind, tuple shape,
             elif isinstance(ind_i, slice):
                 k_new = k + 1
                 sl_start, sl_stop, sl_step = ind_i.indices(shape[k])
-                sh_i = (sl_stop - sl_start) // sl_step
-                str_i = sl_step * strides[k]
+                sh_i = _slice_len(sl_start, sl_stop, sl_step)
+                str_i = (1 if sh_i == 0 else sl_step) * strides[k]
                 new_shape.append(sh_i)
                 new_strides.append(str_i)
                 new_offset = new_offset + sl_start * strides[k]
