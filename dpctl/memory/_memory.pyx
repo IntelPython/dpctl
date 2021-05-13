@@ -232,33 +232,62 @@ cdef class _Memory:
         buffer.suboffsets = NULL                # for pointer arrays only
 
     property nbytes:
+        """ Extent of this USM buffer in bytes. """
         def __get__(self):
             return self.nbytes
 
     property size:
+        """ Extent of this USM buffer in bytes. """
         def __get__(self):
             return self.nbytes
 
     property _pointer:
+        """
+        USM pointer at the start of this buffer
+        represented in Python integer.
+        """
         def __get__(self):
             return <size_t>(self.memory_ptr)
 
     property _context:
+        """ :class:`dpctl.SyclContext` the USM pointer is bound to. """
         def __get__(self):
             return self.queue.get_sycl_context()
 
     property _queue:
+        """
+        :class:`dpctl.SyclQueue` with :class:`dpctl.SyclContext` the
+        USM pointer is bound to and :class:`dpctl.SyclDevice` it was
+        allocated on.
+        """
         def __get__(self):
             return self.queue
 
     property reference_obj:
+        """
+        Reference to the Python object owning this USM buffer.
+        """
         def __get__(self):
             return self.refobj
 
+    property sycl_context:
+        """ :class:`dpctl.SyclContext` the USM pointer is bound to. """
+        def __get__(self):
+            return self.queue.get_sycl_context()
+
+    property sycl_device:
+        """ :class:`dpctl.SyclDevice` the USM pointer is bound to. """
+        def __get__(self):
+            return self.queue.get_sycl_device()
+
     def __repr__(self):
         return (
-            "<Intel(R) USM allocated memory block of {} bytes at {}>"
-            .format(self.nbytes, hex(<object>(<size_t>self.memory_ptr)))
+            "<SYCL(TM) USM-{} allocated memory block of {} bytes at {}>"
+            .format(
+                self.get_usm_type(),
+                self.nbytes,
+                hex(<object>(<size_t>self.memory_ptr))
+            )
         )
 
     def __len__(self):
