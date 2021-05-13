@@ -116,6 +116,49 @@ def _to_memory(unsigned char[::1] b, str usm_kind):
     return res
 
 
+def get_usm_pointer_type(ptr, syclobj):
+    """
+    get_usm_pointer_type(ptr, syclobj)
+
+    Gives the SYCL(TM) USM pointer type, using ``sycl::get_pointer_type``,
+    returning one of 4 possible strings: 'shared', 'host', 'device',
+    or 'unknown'.
+
+    Args:
+       ptr: int
+          A pointer stored as size_t Python integer.
+       syclobj: :class:`dpctl.SyclContext` or :class:`dpctl.SyclQueue`
+          Python object providing :class:`dpctl.SyclContext` against which
+          to query for the pointer type.
+    Returns:
+       'unknown' if the pointer does not represent USM allocation made using
+       the given context. Otherwise, returns 'shared', 'device', or 'host'
+       type of the allocation.
+    """
+    cdef const char* kind
+    cdef SyclContext ctx
+    cdef SyclQueue q
+    cdef DPCTLSyclUSMRef USMRef = NULL
+    try:
+        USMRef = <DPCTLSyclUSMRef>(<size_t> ptr)
+    except Exception as e:
+        raise TypeError(
+            "First argument {} could not be converted to Python integer of "
+            "size_t".format(ptr)
+        ) from e
+    if isinstance(syclobj, SyclContext):
+        ctx = <SyclContext>(syclobj)
+        return _Memory.get_pointer_type(USMRef, ctx).decode("UTF-8")
+    elif isinstance(syclobj, SyclQueue):
+        q = <SyclQueue>(syclobj)
+        ctx = q.get_sycl_context()
+        return _Memory.get_pointer_type(USMRef, ctx).decode("UTF-8")
+    raise TypeError(
+        "Second argument {} is expected to be an instance of "
+        "SyclContext or SyclQueue".format(syclobj)
+    )
+
+
 cdef class _Memory:
     """ Internal class implementing methods common to
         MemoryUSMShared, MemoryUSMDevice, MemoryUSMHost
@@ -316,31 +359,37 @@ cdef class _Memory:
             return iface
 
     def get_usm_type(self, syclobj=None):
+        """
+        get_usm_type(syclobj=None)
+
+        Returns the type of USM allocation using Sycl context carried by
+        `syclobj` keyword argument. Value of None is understood to query
+        against `self.sycl_context` - the context used to create the
+        allocation.
+        """
         cdef const char* kind
         cdef SyclContext ctx
         cdef SyclQueue q
         if syclobj is None:
             ctx = self._context
-            kind = DPCTLUSM_GetPointerType(
-                self.memory_ptr, ctx.get_context_ref()
-            )
+            return _Memory.get_pointer_type(
+                self.memory_ptr, ctx
+            ).decode("UTF-8")
         elif isinstance(syclobj, SyclContext):
             ctx = <SyclContext>(syclobj)
-            kind = DPCTLUSM_GetPointerType(
-                self.memory_ptr, ctx.get_context_ref()
-            )
+            return _Memory.get_pointer_type(
+                self.memory_ptr, ctx
+            ).decode("UTF-8")
         elif isinstance(syclobj, SyclQueue):
             q = <SyclQueue>(syclobj)
             ctx = q.get_sycl_context()
-            kind = DPCTLUSM_GetPointerType(
-                self.memory_ptr, ctx.get_context_ref()
-            )
-        else:
-            raise ValueError(
-                "syclobj keyword can be either None, or an instance of "
-                "SyclContext or SyclQueue"
-            )
-        return kind.decode('UTF-8')
+            return _Memory.get_pointer_type(
+                self.memory_ptr, ctx
+            ).decode("UTF-8")
+        raise TypeError(
+            "syclobj keyword can be either None, or an instance of "
+            "SyclContext or SyclQueue"
+        )
 
     cpdef copy_to_host(self, obj=None):
         """
@@ -457,7 +506,24 @@ cdef class _Memory:
 
     @staticmethod
     cdef bytes get_pointer_type(DPCTLSyclUSMRef p, SyclContext ctx):
-        """Returns USM-type of given pointer `p` in given sycl context `ctx`"""
+        """
+        get_pointer_type(p, ctx)
+
+        Gives the SYCL(TM) USM pointer type, using ``sycl::get_pointer_type``,
+        returning one of 4 possible strings: 'shared', 'host', 'device', or
+        'unknown'.
+
+        Args:
+            p: DPCTLSyclUSMRef
+                A pointer to test the type of.
+            ctx: :class:`dpctl.SyclContext`
+                Python object providing :class:`dpctl.SyclContext` against
+                which to query for the pointer type.
+        Returns:
+            b'unknown' if the pointer does not represent USM allocation made
+            using the given context. Otherwise, returns b'shared', b'device',
+            or b'host' type of the allocation.
+        """
         cdef const char * usm_type = DPCTLUSM_GetPointerType(
             p, ctx.get_context_ref()
         )
