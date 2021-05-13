@@ -22,6 +22,8 @@ import numpy as np
 import dpctl
 import dpctl.memory as dpmem
 
+from ._device import Device
+
 from cpython.mem cimport PyMem_Free
 from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 
@@ -181,8 +183,8 @@ cdef class usm_ndarray:
                 raise ValueError(
                     "buffer='{}' is not understood. "
                     "Recognized values are 'device', 'shared',  'host', "
-                    "or an object with __sycl_usm_array_interface__ "
-                    "property".format(buffer))
+                    "an instance of `MemoryUSM*` object, or a usm_ndarray"
+                    "".format(buffer))
         elif isinstance(buffer, usm_ndarray):
             _buffer = buffer.usm_data
         else:
@@ -429,6 +431,13 @@ cdef class usm_ndarray:
         return q.sycl_device
 
     @property
+    def device(self):
+        """
+        Returns data-API object representing residence of the array data.
+        """
+        return Device.create_device(self.sycl_queue)
+
+    @property
     def sycl_context(self):
         """
         Returns `dpctl.SyclContext` object to which USM data is bound.
@@ -474,6 +483,39 @@ cdef class usm_ndarray:
         )
         res.flags_ |= (self.flags_ & USM_ARRAY_WRITEABLE)
         return res
+
+    def to_device(self, target_device):
+        """
+        Transfer array to target device
+        """
+        d = Device.create_device(target_device)
+        if (d.sycl_device == self.sycl_device):
+            return self
+        elif (d.sycl_context == self.sycl_context):
+            res = usm_ndarray(
+                self.shape,
+                self.dtype,
+                buffer=self.usm_data,
+                strides=self.strides,
+                offset=self.get_offset()
+            )
+            res.flags_ = self.flags
+            return res
+        else:
+            nbytes = self.usm_data.nbytes
+            new_buffer = type(self.usm_data)(
+                nbytes, queue=d.sycl_queue
+            )
+            new_buffer.copy_from_device(self.usm_data)
+            res = usm_ndarray(
+                self.shape,
+                self.dtype,
+                buffer=new_buffer,
+                strides=self.strides,
+                offset=self.get_offset()
+            )
+            res.flags_ = self.flags
+            return res
 
 
 cdef usm_ndarray _real_view(usm_ndarray ary):
