@@ -325,7 +325,7 @@ cdef class _Memory:
 
     def __repr__(self):
         return (
-            "<SYCL(TM) USM-{} allocated memory block of {} bytes at {}>"
+            "<SYCL(TM) USM-{} allocation of {} bytes at {}>"
             .format(
                 self.get_usm_type(),
                 self.nbytes,
