@@ -89,6 +89,8 @@ cdef object _pointers_from_shape_and_stride(
             for i in range(nd):
                 str_i = int(ary_strides[i])
                 sh_i = int(ary_shape[i])
+                if (sh_i <= 0):
+                    raise ValueError("Array shape elements need to be positive")
                 if (str_i > 0):
                     max_disp += str_i * (sh_i - 1)
                 else:
