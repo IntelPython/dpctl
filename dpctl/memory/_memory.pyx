@@ -596,12 +596,14 @@ cdef class MemoryUSMShared(_Memory):
     allocates nbytes of USM shared memory.
 
     Non-positive alignments are not used (malloc_shared is used instead).
-    For the queue=None cast the `dpctl.SyclQueue()` is used to allocate memory.
+    For the queue=None case the ``dpctl.SyclQueue()`` is used to allocate
+    memory.
 
-    MemoryUSMShared(usm_obj) constructor create instance from `usm_obj`
-    expected to implement `__sycl_usm_array_interface__` protocol and exposing
-    a contiguous block of USM memory of USM shared type. Using copy=True to
-    perform a copy if USM type is other than 'shared'.
+    MemoryUSMShared(usm_obj) constructor creates instance from `usm_obj`
+    expected to implement `__sycl_usm_array_interface__` protocol and to expose
+    a contiguous block of USM shared allocation. Use `copy=True` to
+    perform a copy if USM type of the allocation represented by the argument
+    is other than 'shared'.
     """
     def __cinit__(self, other, *, Py_ssize_t alignment=0,
                   SyclQueue queue=None, int copy=False):
@@ -635,12 +637,14 @@ cdef class MemoryUSMHost(_Memory):
     allocates nbytes of USM host memory.
 
     Non-positive alignments are not used (malloc_host is used instead).
-    For the queue=None case `dpctl.SyclQueue()` is used to allocate memory.
+    For the queue=None case the ``dpctl.SyclQueue()`` is used to allocate
+    memory.
 
     MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj`
-    expected to implement `__sycl_usm_array_interface__` protocol and exposing
-    a contiguous block of USM memory of USM host type. Using copy=True to
-    perform a copy if USM type is other than 'host'.
+    expected to implement `__sycl_usm_array_interface__` protocol and to expose
+    a contiguous block of USM host allocation. Use `copy=True` to
+    perform a copy if USM type of the allocation represented by the argument
+    is other than 'host'.
     """
     def __cinit__(self, other, *, Py_ssize_t alignment=0,
                   SyclQueue queue=None, int copy=False):
@@ -675,12 +679,14 @@ cdef class MemoryUSMDevice(_Memory):
     allocates nbytes of USM device memory.
 
     Non-positive alignments are not used (malloc_device is used instead).
-    For the queue=None cast the `dpctl.SyclQueue()` is used to allocate memory.
+    For the queue=None case the ``dpctl.SyclQueue()`` is used to allocate
+    memory.
 
     MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj`
     expected to implement `__sycl_usm_array_interface__` protocol and exposing
-    a contiguous block of USM memory of USM device type. Using copy=True to
-    perform a copy if USM type is other than 'device'.
+    a contiguous block of USM device allocation. Use `copy=True` to
+    perform a copy if USM type of the allocation represented by the argument
+    is other than 'device'.
     """
     def __cinit__(self, other, *, Py_ssize_t alignment=0,
                   SyclQueue queue=None, int copy=False):
@@ -704,3 +710,41 @@ cdef class MemoryUSMDevice(_Memory):
                             other, self.get_usm_type()
                         )
                     )
+
+
+def create_MemoryUSM(obj):
+    """
+    create_MemoryUSM(obj)
+
+    Converts Python object with `__sycl_usm_array_interface__` property
+    to one of :class:`.MemoryUSMShared`, :class:`.MemoryUSMDevice`, or
+    :class:`.MemoryUSMHost` instances depending on the type of USM allocation
+    they represent.
+
+    Raises:
+        ValueError
+            When object does not expose the `__sycl_usm_array_interface__`,
+            or it is malformed
+        TypeError
+            When unexpected types of entries in the interface are encountered
+        SyclQueueCreationError
+            When a :class:`dpctl.SyclQueue` could not be created from the
+            information given by the interface
+    """
+    cdef _Memory res = _Memory.__new__(_Memory)
+    cdef str kind
+    res._cinit_empty()
+    res._cinit_other(obj)
+    kind = res.get_usm_type()
+    if kind == "shared":
+        return MemoryUSMShared(res)
+    elif kind == "device":
+        return MemoryUSMDevice(res)
+    elif kind == "host":
+        return MemoryUSMHost(res)
+    else:
+        raise ValueError(
+            "Could not determine the type "
+            "USM allocation represented by argument {}".
+            format(obj)
+        )
