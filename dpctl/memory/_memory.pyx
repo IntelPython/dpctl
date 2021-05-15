@@ -712,9 +712,9 @@ cdef class MemoryUSMDevice(_Memory):
                     )
 
 
-def create_MemoryUSM(obj):
+def as_usm_memory(obj):
     """
-    create_MemoryUSM(obj)
+    as_usm_memory(obj)
 
     Converts Python object with `__sycl_usm_array_interface__` property
     to one of :class:`.MemoryUSMShared`, :class:`.MemoryUSMDevice`, or

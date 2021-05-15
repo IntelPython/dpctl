@@ -34,12 +34,12 @@ from ._memory import (
     MemoryUSMDevice,
     MemoryUSMHost,
     MemoryUSMShared,
-    create_MemoryUSM,
+    as_usm_memory,
 )
 
 __all__ = [
     "MemoryUSMDevice",
     "MemoryUSMHost",
     "MemoryUSMShared",
-    "create_MemoryUSM",
+    "as_usm_memory",
 ]
