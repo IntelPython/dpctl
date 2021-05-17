@@ -41,7 +41,7 @@ cdef str _make_typestr(int typenum):
     Make typestring from type number
     """
     cdef type_to_str = ['|b1', '|i1', '|u1', '|i2', '|u2',
-                        '|i4', '|u4', '', '', '|i8', '|u8',
+                        '|i4', '|u4', '|i4', '|u4', '|i8', '|u8',
                         '|f4', '|f8', '', '|c8', '|c16', '']
 
     if (typenum < 0):
@@ -63,8 +63,8 @@ cdef int type_bytesize(int typenum):
     NPY_USHORT=4       : 2
     NPY_INT=5          : 4
     NPY_UINT=6         : 4
-    NPY_LONG=7         :
-    NPY_ULONG=8        :
+    NPY_LONG=7         : 4
+    NPY_ULONG=8        : 4
     NPY_LONGLONG=9     : 8
     NPY_ULONGLONG=10   : 8
     NPY_FLOAT=11       : 4
@@ -76,7 +76,7 @@ cdef int type_bytesize(int typenum):
     NPY_HALF=23        : 2
     """
     cdef int *type_to_bytesize = [
-        1, 1, 1, 2, 2, 4, 4, 8, 8, 8, 8, 4, 8, -1, 8, 16, -1]
+        1, 1, 1, 2, 2, 4, 4, 4, 4, 8, 8, 4, 8, -1, 8, 16, -1]
 
     if typenum < 0:
         return -1

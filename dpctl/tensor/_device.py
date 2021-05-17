@@ -65,7 +65,10 @@ class Device:
                     "targeting this device".format(dev)
                 )
         else:
-            obj.sycl_queue_ = dpctl.SyclQueue(dev)
+            if dev is None:
+                obj.sycl_queue_ = dpctl.SyclQueue()
+            else:
+                obj.sycl_queue_ = dpctl.SyclQueue(dev)
         return obj
 
     @property

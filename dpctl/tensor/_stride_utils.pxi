@@ -72,7 +72,7 @@ cdef int _from_input_shape_strides(
 
     # 0-d array
     if (nd == 0):
-        contig[0] = USM_ARRAY_C_CONTIGUOUS
+        contig[0] = (USM_ARRAY_C_CONTIGUOUS | USM_ARRAY_F_CONTIGUOUS)
         nelems[0] = 1
         min_disp[0] = 0
         max_disp[0] = 0
@@ -88,17 +88,28 @@ cdef int _from_input_shape_strides(
         shape_arr[i] = <Py_ssize_t> shape[i]
         elem_count *= shape_arr[i]
     if elem_count == 0:
-        contig[0] = USM_ARRAY_C_CONTIGUOUS
+        contig[0] = (USM_ARRAY_C_CONTIGUOUS | USM_ARRAY_F_CONTIGUOUS)
         nelems[0] = 1
         min_disp[0] = 0
         max_disp[0] = 0
-        strides_ptr[0] = <Py_ssize_t *>(<size_t>0)
+        if strides is None:
+            strides_ptr[0] = <Py_ssize_t *>(<size_t>0)
+        else:
+            strides_arr = <Py_ssize_t*>PyMem_Malloc(nd * sizeof(Py_ssize_t))
+            if (not strides_arr):
+                PyMem_Free(shape_ptr[0]);
+                shape_ptr[0] = <Py_ssize_t *>(<size_t>0)
+                return ERROR_MALLOC
+            strides_ptr[0] = strides_arr
+            for i in range(0, nd):
+                strides_arr[i] = <Py_ssize_t> strides[i]
         return 0
     nelems[0] = elem_count
-
     if (strides is None):
         # no need to allocate and populate strides
         if (int(order) not in [ord('C'), ord('F'), ord('c'), ord('f')]):
+            PyMem_Free(shape_ptr[0]);
+            shape_ptr[0] = <Py_ssize_t *>(<size_t>0)
             return ERROR_INCORRECT_ORDER
         if order == <char> ord('C') or order == <char> ord('c'):
             contig[0] = USM_ARRAY_C_CONTIGUOUS
@@ -112,6 +123,8 @@ cdef int _from_input_shape_strides(
           and len(strides) == nd):
         strides_arr = <Py_ssize_t*>PyMem_Malloc(nd * sizeof(Py_ssize_t))
         if (not strides_arr):
+            PyMem_Free(shape_ptr[0]);
+            shape_ptr[0] = <Py_ssize_t *>(<size_t>0)
             return ERROR_MALLOC
         strides_ptr[0] = strides_arr
         for i in range(0, nd):
@@ -143,6 +156,8 @@ cdef int _from_input_shape_strides(
             contig[0] = 0  # non-contiguous
         return 0
     else:
+        PyMem_Free(shape_ptr[0]);
+        shape_ptr[0] = <Py_ssize_t *>(<size_t>0)
         return ERROR_UNEXPECTED_STRIDES
     # return ERROR_INTERNAL
 
