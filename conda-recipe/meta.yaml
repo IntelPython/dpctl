@@ -23,7 +23,7 @@ requirements:
         - python
         - make  # [unix]
         - ninja  # [win]
-        - numpy >=1.17
+        - numpy 1.17
         - wheel
     run:
         - python
