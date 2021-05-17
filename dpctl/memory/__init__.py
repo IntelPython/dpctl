@@ -30,6 +30,16 @@
     `memoryview`, or `array.array` classes.
 
 """
-from ._memory import MemoryUSMDevice, MemoryUSMHost, MemoryUSMShared
+from ._memory import (
+    MemoryUSMDevice,
+    MemoryUSMHost,
+    MemoryUSMShared,
+    as_usm_memory,
+)
 
-__all__ = ["MemoryUSMDevice", "MemoryUSMHost", "MemoryUSMShared"]
+__all__ = [
+    "MemoryUSMDevice",
+    "MemoryUSMHost",
+    "MemoryUSMShared",
+    "as_usm_memory",
+]
