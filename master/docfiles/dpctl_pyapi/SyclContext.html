@@ -1,26 +1,39 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>dpctl.SyclContext &mdash; Data-parallel Control (dpctl) master documentation</title>
   
 
   
-  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+
   
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
@@ -29,12 +42,6 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpctl.SyclDevice" href="SyclDevice.html" />
@@ -79,6 +86,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -118,6 +126,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -152,11 +161,13 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../dpctl_pyapi.html">dpctl Python API</a> &raquo;</li>
         
@@ -165,7 +176,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../../_sources/docfiles/dpctl_pyapi/SyclContext.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -182,8 +193,8 @@
   <div class="section" id="dpctl-syclcontext">
 <span id="syclcontext-api"></span><h1>dpctl.SyclContext<a class="headerlink" href="#dpctl-syclcontext" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="dpctl.SyclContext">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">SyclContext</span></code><a class="headerlink" href="#dpctl.SyclContext" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dpctl.SyclContext">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclContext</span></span><a class="headerlink" href="#dpctl.SyclContext" title="Permalink to this definition">¶</a></dt>
 <dd><p>Python class representing <code class="docutils literal notranslate"><span class="pre">cl::sycl::context</span></code>. There are multiple
 ways to create a <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> object:</p>
 <blockquote>
@@ -329,8 +340,8 @@ named <code class="docutils literal notranslate"><span class="pre">PyCapsule</sp
 <h3>Private methods<a class="headerlink" href="#private-methods" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="py method">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclContext.</span></code><code class="sig-name descname"><span class="pre">_get_capsule</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">SyclContext.</span></span><span class="sig-name descname"><span class="pre">_get_capsule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd><p>Returns a copy of the underlying <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> pointer as a void
 pointer inside a named <code class="docutils literal notranslate"><span class="pre">PyCapsule</span></code> that has the name
 <strong>SyclContextRef</strong>. The ownership of the pointer inside the capsule is
@@ -358,8 +369,8 @@ of scope.</p>
 <h3>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="py method">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclContext.</span></code><code class="sig-name descname"><span class="pre">addressof_ref</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">SyclContext.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd><p>Returns the address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclContextRef</span></code> pointer as a
 <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 <dl class="field-list simple">
@@ -375,8 +386,8 @@ used to create this <a class="reference internal" href="#dpctl.SyclContext" titl
 </dd></dl>
 
 <dl class="py attribute">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclContext.</span></code><code class="sig-name descname"><span class="pre">device_count</span></code></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">SyclContext.</span></span><span class="sig-name descname"><span class="pre">device_count</span></span></dt>
 <dd><p>The number of sycl devices associated with the
 <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> instance.</p>
 <dl class="field-list simple">
@@ -394,8 +405,8 @@ used to create this <a class="reference internal" href="#dpctl.SyclContext" titl
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclContext.</span></code><code class="sig-name descname"><span class="pre">get_devices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">SyclContext.</span></span><span class="sig-name descname"><span class="pre">get_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd><p>Returns the list of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> objects associated with
 <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> instance.</p>
 <dl class="field-list simple">
@@ -423,29 +434,29 @@ that belong to this context.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="SyclDevice.html" class="btn btn-neutral float-right" title="dpctl.SyclDevice" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../dpctl_pyapi.html" class="btn btn-neutral float-left" title="dpctl Python API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="SyclDevice.html" class="btn btn-neutral float-right" title="dpctl.SyclDevice" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../dpctl_pyapi.html" class="btn btn-neutral float-left" title="dpctl Python API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Intel Corp.
+        &#169; Copyright 2020, Intel Corp..
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
