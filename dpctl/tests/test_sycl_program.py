@@ -38,21 +38,20 @@ class TestProgramFromOCLSource(unittest.TestCase):
             size_t index = get_global_id(0);                                   \
             c[index] = a[index] + d*b[index];                                  \
         }"
-        with dpctl.device_context("opencl:gpu:0"):
-            q = dpctl.get_current_queue()
-            prog = dpctl_prog.create_program_from_source(q, oclSrc)
-            self.assertIsNotNone(prog)
+        q = dpctl.SyclQueue("opencl:gpu")
+        prog = dpctl_prog.create_program_from_source(q, oclSrc)
+        self.assertIsNotNone(prog)
 
-            self.assertTrue(prog.has_sycl_kernel("add"))
-            self.assertTrue(prog.has_sycl_kernel("axpy"))
+        self.assertTrue(prog.has_sycl_kernel("add"))
+        self.assertTrue(prog.has_sycl_kernel("axpy"))
 
-            addKernel = prog.get_sycl_kernel("add")
-            axpyKernel = prog.get_sycl_kernel("axpy")
+        addKernel = prog.get_sycl_kernel("add")
+        axpyKernel = prog.get_sycl_kernel("axpy")
 
-            self.assertEqual(addKernel.get_function_name(), "add")
-            self.assertEqual(axpyKernel.get_function_name(), "axpy")
-            self.assertEqual(addKernel.get_num_args(), 3)
-            self.assertEqual(axpyKernel.get_num_args(), 4)
+        self.assertEqual(addKernel.get_function_name(), "add")
+        self.assertEqual(axpyKernel.get_function_name(), "axpy")
+        self.assertEqual(addKernel.get_num_args(), 3)
+        self.assertEqual(axpyKernel.get_num_args(), 4)
 
 
 @unittest.skipUnless(has_gpu(), "No OpenCL GPU queues available")
@@ -63,20 +62,19 @@ class TestProgramFromSPRIV(unittest.TestCase):
         spirv_file = os.path.join(CURR_DIR, "input_files/multi_kernel.spv")
         with open(spirv_file, "rb") as fin:
             spirv = fin.read()
-            with dpctl.device_context("opencl:gpu:0"):
-                q = dpctl.get_current_queue()
-                prog = dpctl_prog.create_program_from_spirv(q, spirv)
-                self.assertIsNotNone(prog)
-                self.assertTrue(prog.has_sycl_kernel("add"))
-                self.assertTrue(prog.has_sycl_kernel("axpy"))
+            q = dpctl.SyclQueue("opencl:gpu")
+            prog = dpctl_prog.create_program_from_spirv(q, spirv)
+            self.assertIsNotNone(prog)
+            self.assertTrue(prog.has_sycl_kernel("add"))
+            self.assertTrue(prog.has_sycl_kernel("axpy"))
 
-                addKernel = prog.get_sycl_kernel("add")
-                axpyKernel = prog.get_sycl_kernel("axpy")
+            addKernel = prog.get_sycl_kernel("add")
+            axpyKernel = prog.get_sycl_kernel("axpy")
 
-                self.assertEqual(addKernel.get_function_name(), "add")
-                self.assertEqual(axpyKernel.get_function_name(), "axpy")
-                self.assertEqual(addKernel.get_num_args(), 3)
-                self.assertEqual(axpyKernel.get_num_args(), 4)
+            self.assertEqual(addKernel.get_function_name(), "add")
+            self.assertEqual(axpyKernel.get_function_name(), "axpy")
+            self.assertEqual(addKernel.get_num_args(), 3)
+            self.assertEqual(axpyKernel.get_num_args(), 4)
 
 
 @unittest.skipUnless(
@@ -98,9 +96,8 @@ class TestProgramForLevel0GPU(unittest.TestCase):
         spirv_file = os.path.join(CURR_DIR, "input_files/multi_kernel.spv")
         with open(spirv_file, "rb") as fin:
             spirv = fin.read()
-            with dpctl.device_context("level_zero:gpu:0"):
-                q = dpctl.get_current_queue()
-                dpctl_prog.create_program_from_spirv(q, spirv)
+            q = dpctl.SyclQueue("level_zero:gpu")
+            dpctl_prog.create_program_from_spirv(q, spirv)
 
     @unittest.expectedFailure
     def test_create_program_from_source(self):
@@ -113,9 +110,8 @@ class TestProgramForLevel0GPU(unittest.TestCase):
             size_t index = get_global_id(0);                                   \
             c[index] = a[index] + d*b[index];                                  \
         }"
-        with dpctl.device_context("level_zero:gpu:0"):
-            q = dpctl.get_current_queue()
-            dpctl_prog.create_program_from_source(q, oclSrc)
+        q = dpctl.SyclQueue("level_zero:gpu")
+        dpctl_prog.create_program_from_source(q, oclSrc)
 
 
 if __name__ == "__main__":
