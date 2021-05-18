@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - doc-deployment-action
 
 jobs:
   build-and-deploy:
