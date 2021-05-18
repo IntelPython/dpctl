@@ -419,6 +419,29 @@ allocation.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.memory.as_usm_memory">
+<span class="sig-prename descclassname"><span class="pre">dpctl.memory.</span></span><span class="sig-name descname"><span class="pre">as_usm_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.as_usm_memory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts Python object with <cite>__sycl_usm_array_interface__</cite> property
+to one of <a class="reference internal" href="#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMShared</span></code></a>, <a class="reference internal" href="#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMDevice</span></code></a>, or
+<a class="reference internal" href="#dpctl.memory.MemoryUSMHost" title="dpctl.memory.MemoryUSMHost"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMHost</span></code></a> instances depending on the type of USM allocation
+they represent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – When object does not expose the <cite>__sycl_usm_array_interface__</cite>,
+    or it is malformed</p></li>
+<li><p><strong>TypeError</strong> – When unexpected types of entries in the interface are encountered</p></li>
+<li><p><a class="reference internal" href="dpctl_pyapi.html#dpctl.SyclQueueCreationError" title="dpctl.SyclQueueCreationError"><strong>SyclQueueCreationError</strong></a> – When a <a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> could not be created from the
+    information given by the interface</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 <div class="section" id="comparison-with-rapids-memory-manager-rmm">
 <h2>Comparison with Rapids Memory Manager (RMM)<a class="headerlink" href="#comparison-with-rapids-memory-manager-rmm" title="Permalink to this headline">¶</a></h2>
 <p>RMM implements DeviceBuffer which is Cython native class wrapping around something similar to <code class="docutils literal notranslate"><span class="pre">std::vector&lt;unsigned</span> <span class="pre">char,</span> <span class="pre">custom_cuda_allocator</span> <span class="pre">(calls</span> <span class="pre">resource</span> <span class="pre">manager)&gt;</span></code> which is called device_buffer.</p>
