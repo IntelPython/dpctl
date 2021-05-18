@@ -24,6 +24,11 @@ Classes
     :inherited-members:
     :undoc-members:
 
+Functions
+---------
+
+.. autofunction:: dpctl.memory.as_usm_memory
+
 Comparison with Rapids Memory Manager (RMM)
 -------------------------------------------
 
