@@ -1,0 +1,94 @@
+name: Generate documentation
+on:
+  push:
+    branches:
+      - master
+      - doc-deployment-action
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Documentation
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+      - name: Add Intel repository
+        run: |
+          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+          sudo apt-get update
+      - name: Install Intel OneAPI
+        run: |
+          sudo apt-get install intel-oneapi-dpcpp-cpp-compiler
+      - name: Install Level-Zero headers
+        run: |
+          sudo apt-get install -y gpg-agent wget
+          wget -qO - https://repositories.intel.com/graphics/intel-graphics.key |
+            sudo apt-key add -
+            sudo apt-add-repository \
+              'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main'
+          sudo apt-get install level-zero level-zero-dev
+      - name: Install Lua
+        run: |
+          sudo apt-get install liblua5.2-dev
+      - name: Install Doxygen
+        run: |
+          sudo apt-get install doxygen
+      - name: Install CMake
+        run: |
+          sudo apt-get install cmake
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+          architecture: x64
+      - name: Install sphinx dependencies
+        shell: bash -l {0}
+        run: |
+          pip install numpy cython setuptools sphinx sphinx_rtd_theme pydot graphviz
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Build dpctl
+        shell: bash -l {0}
+        run: |
+          source /opt/intel/oneapi/setvars.sh
+          python setup.py develop
+          python -c "import dpctl; print(dpctl.__version__)"
+      - name: Build docs
+        shell: bash -l {0}
+        run: |
+          # Ensure that SYCL libraries are on LD_LIBRARY_PATH
+          source /opt/intel/oneapi/setvars.sh
+          cd docs
+          mkdir -p build && cd build && rm -rf *
+          wget https://github.com/vovkos/doxyrest/releases/download/doxyrest-2.1.2/doxyrest-2.1.2-linux-amd64.tar.xz
+          tar xf doxyrest-2.1.2-linux-amd64.tar.xz
+          cmake .. -DDPCTL_USE_MULTIVERSION_TEMPLATE=ON \
+                   -DDPCTL_ENABLE_DOXYREST=ON \
+                   -DDoxyrest_DIR=`pwd`/doxyrest-2.1.2-linux-amd64
+          make Sphinx
+          cd ..
+          mv generated_docs/docs ~/docs
+          git clean -dfx
+          cd ..
+      - name: Publish docs
+        shell: bash -l {0}
+        run: |
+          git remote add tokened_docs https://IntelPython:${{ secrets.GITHUB_TOKEN }}@github.com/IntelPython/dpctl.git
+          git fetch tokened_docs
+          git checkout --track tokened_docs/gh-pages
+          echo `pwd`
+          cd master
+          git rm -rf *
+          mv ~/docs/* .
+          git add .
+          git config --global user.name 'github-actions[doc-deploy-bot]'
+          git config --gloabl user.email 'github-actions[doc-deploy-bot]@users.noreply.github.com'
+          git commit -m "Latest docs."
+          git push tokened_docs gh-pages
