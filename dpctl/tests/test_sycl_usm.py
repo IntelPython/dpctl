@@ -22,7 +22,12 @@ import unittest
 import numpy as np
 
 import dpctl
-from dpctl.memory import MemoryUSMDevice, MemoryUSMHost, MemoryUSMShared
+from dpctl.memory import (
+    MemoryUSMDevice,
+    MemoryUSMHost,
+    MemoryUSMShared,
+    as_usm_memory,
+)
 
 from ._helper import has_cpu, has_gpu, has_sycl_platforms
 
@@ -249,18 +254,21 @@ class TestMemoryUSMDevice(_TestMemoryUSMBase, unittest.TestCase):
 
 
 class View:
-    def __init__(self, buf, shape, strides, offset):
-        self.buffer = buf
-        self.shape = shape
-        self.strides = strides
-        self.offset = offset
+    def __init__(self, buf, shape, strides, offset, syclobj=None):
+        self.buffer_ = buf
+        self.shape_ = shape
+        self.strides_ = strides
+        self.offset_ = offset
+        self.syclobj_ = syclobj
 
     @property
     def __sycl_usm_array_interface__(self):
-        sua_iface = self.buffer.__sycl_usm_array_interface__
-        sua_iface["offset"] = self.offset
-        sua_iface["shape"] = self.shape
-        sua_iface["strides"] = self.strides
+        sua_iface = self.buffer_.__sycl_usm_array_interface__
+        sua_iface["offset"] = self.offset_
+        sua_iface["shape"] = self.shape_
+        sua_iface["strides"] = self.strides_
+        if self.syclobj_:
+            sua_iface["syclobj"] = self.syclobj_
         return sua_iface
 
 
@@ -328,6 +336,75 @@ class TestMemoryWithView(unittest.TestCase):
         expected_res = host_canary.copy()
         expected_res[idx[0] : idx[-1] + 1] = inset_canary
         self.assertTrue(np.array_equal(res, expected_res))
+
+
+class TestAsUSMMemory(unittest.TestCase):
+    def _with_constructor(self, buffer_cls):
+        try:
+            buf = buffer_cls(64)
+        except Exception:
+            self.SkipTest(
+                "{} could not be allocated".format(buffer_cls.__name__)
+            )
+        # reuse queue from buffer's SUAI
+        v = View(buf, shape=(64,), strides=(1,), offset=0)
+        m = as_usm_memory(v)
+        self.assertTrue(m.get_usm_type() == buf.get_usm_type())
+        self.assertTrue(m._pointer == buf._pointer)
+        self.assertTrue(m.sycl_device == buf.sycl_device)
+        # Use SyclContext
+        v = View(
+            buf, shape=(64,), strides=(1,), offset=0, syclobj=buf.sycl_context
+        )
+        m = as_usm_memory(v)
+        self.assertTrue(m.get_usm_type() == buf.get_usm_type())
+        self.assertTrue(m._pointer == buf._pointer)
+        self.assertTrue(m.sycl_device == buf.sycl_device)
+        # Use queue capsule
+        v = View(
+            buf,
+            shape=(64,),
+            strides=(1,),
+            offset=0,
+            syclobj=buf._queue._get_capsule(),
+        )
+        m = as_usm_memory(v)
+        self.assertTrue(m.get_usm_type() == buf.get_usm_type())
+        self.assertTrue(m._pointer == buf._pointer)
+        self.assertTrue(m.sycl_device == buf.sycl_device)
+        # Use context capsule
+        v = View(
+            buf,
+            shape=(64,),
+            strides=(1,),
+            offset=0,
+            syclobj=buf.sycl_context._get_capsule(),
+        )
+        m = as_usm_memory(v)
+        self.assertTrue(m.get_usm_type() == buf.get_usm_type())
+        self.assertTrue(m._pointer == buf._pointer)
+        self.assertTrue(m.sycl_device == buf.sycl_device)
+        # Use filter string
+        v = View(
+            buf,
+            shape=(64,),
+            strides=(1,),
+            offset=0,
+            syclobj=buf.sycl_device.filter_string,
+        )
+        m = as_usm_memory(v)
+        self.assertTrue(m.get_usm_type() == buf.get_usm_type())
+        self.assertTrue(m._pointer == buf._pointer)
+        self.assertTrue(m.sycl_device == buf.sycl_device)
+
+    def test_from_device(self):
+        self._with_constructor(MemoryUSMDevice)
+
+    def test_from_shared(self):
+        self._with_constructor(MemoryUSMShared)
+
+    def test_from_host(self):
+        self._with_constructor(MemoryUSMHost)
 
 
 if __name__ == "__main__":
