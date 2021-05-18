@@ -14,11 +14,21 @@ option(DPCTL_USE_MULTIVERSION_TEMPLATE
     OFF
 )
 
+# Option to generate HTML from dpxygen
+option(DPCTL_ENABLE_DOXYGEN_HTML
+    "Enable generation of html files for C API using Doxygen"
+    OFF
+)
+
 # This function defines everything needed to generate Doxygen docs
 function(_setup_doxygen)
     # We generate doxygen only for the public headers to keep the Doxyrest
     # generated rst files clean.
     # FIXME: make it possible to generate doxygen for all files.
+    set(GENERATE_HTML "NO")
+    if(DPCTL_ENABLE_DOXYGEN_HTML)
+        set(GENERATE_HTML "YES")
+    endif()
     set(DOXYGEN_INPUT_DIR ../dpctl-capi/include)
     set(DOXYGEN_OUTPUT_DIR ${DOC_OUTPUT_DIR}/doxygen)
     set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/xml/index.xml)
