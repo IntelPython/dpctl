@@ -32,7 +32,7 @@
 
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 #include "../helper/include/dpctl_dynamic_lib_helper.h"
-#include <level_zero/zet_api.h> /* Level Zero headers */
+#include <zet_api.h> /* Level Zero headers */
 // Note: include ze_api.h before level_zero.hpp. Make sure clang-format does
 // not reorder the includes.
 #include <CL/sycl/backend/level_zero.hpp>
@@ -47,6 +47,9 @@ namespace
 #ifdef __linux__
 static const char *zeLoaderName = "libze_loader.so";
 static const int libLoadFlags = RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL;
+#elif defined(_WIN64)
+static const char *zeLoaderName = "ze_loader.dll";
+static const int libLoadFlags = 0;
 #else
 #error "Level Zero program compilation is unavailable for this platform"
 #endif
