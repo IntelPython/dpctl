@@ -146,15 +146,18 @@ DPCTLDeviceMgr_GetDevices(int device_identifier)
     } catch (std::bad_alloc const &ba) {
         return nullptr;
     }
-    auto &cache = DeviceCacheBuilder::getDeviceCache();
+    const auto &root_devices = device::get_devices();
+    default_selector mRanker;
 
-    for (const auto &entry : cache) {
+    for (const auto &root_device : root_devices) {
+        if (mRanker(root_device) < 0)
+            continue;
         auto Bty(DPCTL_SyclBackendToDPCTLBackendType(
-            entry.first.get_platform().get_backend()));
+            root_device.get_platform().get_backend()));
         auto Dty(DPCTL_SyclDeviceTypeToDPCTLDeviceType(
-            entry.first.get_info<info::device::device_type>()));
+            root_device.get_info<info::device::device_type>()));
         if ((device_identifier & Bty) && (device_identifier & Dty)) {
-            Devices->emplace_back(wrap(new device(entry.first)));
+            Devices->emplace_back(wrap(new device(root_device)));
         }
     }
     // the wrap function is defined inside dpctl_vector_templ.cpp
