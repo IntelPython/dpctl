@@ -177,10 +177,17 @@ def test_get_devices_with_device_type_enum(device_type):
 
 
 def test_get_devices_with_device_type_str(device_type_str):
-    devices = dpctl.get_devices(device_type=device_type_str)
-    if len(devices):
-        d = string_to_device_type(device_type_str)
-        check_if_device_type_matches(devices, d)
+    num_devices = dpctl.get_num_devices(device_type=device_type_str)
+    if num_devices > 0:
+        devices = dpctl.get_devices(device_type=device_type_str)
+        assert len(devices) == num_devices
+        dty = string_to_device_type(device_type_str)
+        check_if_device_type_matches(devices, dty)
         check_if_device_type_is_valid(devices)
+        # check for consistency of ordering between filter selector
+        # where backend is omitted, but device type and id is specified
+        for i in range(num_devices):
+            dev = dpctl.SyclDevice(":".join((device_type_str, str(i))))
+            assert dev == devices[i]
     else:
         pytest.skip()
