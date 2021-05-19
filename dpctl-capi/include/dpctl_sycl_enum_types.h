@@ -38,12 +38,12 @@ DPCTL_C_EXTERN_C_BEGIN
 enum DPCTLSyclBackendType
 {
     // clang-format off
-    DPCTL_CUDA            = 1 << 13,
-    DPCTL_HOST            = 1 << 14,
-    DPCTL_LEVEL_ZERO      = 1 << 15,
-    DPCTL_OPENCL          = 1 << 16,
+    DPCTL_CUDA            = 1 << 16,
+    DPCTL_HOST            = 1 << 17,
+    DPCTL_LEVEL_ZERO      = 1 << 18,
+    DPCTL_OPENCL          = 1 << 19,
     DPCTL_UNKNOWN_BACKEND = 0,
-    DPCTL_ALL_BACKENDS    = ((1<<10)-1) << 7
+    DPCTL_ALL_BACKENDS    = ((1<<5)-1) << 16
     // clang-format on
 };
 
@@ -57,13 +57,13 @@ enum DPCTLSyclDeviceType
     // The values should not overlap.
 
     // clang-format off
-    DPCTL_ACCELERATOR    = 1 << 1,
-    DPCTL_AUTOMATIC      = 1 << 2,
-    DPCTL_CPU            = 1 << 3,
-    DPCTL_CUSTOM         = 1 << 4,
-    DPCTL_GPU            = 1 << 5,
-    DPCTL_HOST_DEVICE    = 1 << 6,
-    DPCTL_ALL            = (1 << 7) -1 ,
+    DPCTL_ACCELERATOR    = 1 << 0,
+    DPCTL_AUTOMATIC      = 1 << 1,
+    DPCTL_CPU            = 1 << 2,
+    DPCTL_CUSTOM         = 1 << 3,
+    DPCTL_GPU            = 1 << 4,
+    DPCTL_HOST_DEVICE    = 1 << 5,
+    DPCTL_ALL            = (1 << 6) - 1,
     DPCTL_UNKNOWN_DEVICE = 0
     // clang-format on
 };
