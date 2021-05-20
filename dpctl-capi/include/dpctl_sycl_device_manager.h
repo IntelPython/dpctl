@@ -77,6 +77,26 @@ __dpctl_give DPCTLDeviceVectorRef
 DPCTLDeviceMgr_GetDevices(int device_identifier);
 
 /*!
+ * @brief Returns an index on the given device in the vector returned by
+ * #DPCTLDeviceMgr_GetDevices if found, -1 otherwise.
+ *
+ * The device_identifier can be a combination of #DPCTLSyclBackendType and
+ * #DPCTLSyclDeviceType bit flags. The function returns all devices that
+ * match the specified bit flags.
+ *
+ * @param    DRef              A #DPCTLSyclDeviceRef opaque pointer.
+ * @param    device_identifier A bitflag that can be any combination of
+ *                             #DPCTLSyclBackendType and #DPCTLSyclDeviceType
+ *                             enum values.
+ * @return   If found, returns the position of the given device in the
+ * vector that would be returned by #DPCTLDeviceMgr_GetDevices if called
+ * with the same device_identifier argument.
+ */
+DPCTL_API
+int DPCTLDeviceMgr_GetPositionInDevices(__dpctl_keep DPCTLSyclDeviceRef DRef,
+                                        int device_identifier);
+
+/*!
  * @brief If the DPCTLSyclDeviceRef argument is a root device, then this
  * function returns a cached default SYCL context for that device.
  *

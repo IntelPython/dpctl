@@ -146,12 +146,12 @@ struct TestDPCTLGetDevicesOrdering : public ::testing::TestWithParam<int>
 {
     DPCTLDeviceVectorRef DV = nullptr;
     size_t nDevices = 0;
+    int device_type_mask;
 
     TestDPCTLGetDevicesOrdering()
     {
-        const int device_type_mask =
-            (GetParam() & DPCTLSyclDeviceType::DPCTL_ALL) |
-            DPCTLSyclBackendType::DPCTL_ALL_BACKENDS;
+        device_type_mask = (GetParam() & DPCTLSyclDeviceType::DPCTL_ALL) |
+                           DPCTLSyclBackendType::DPCTL_ALL_BACKENDS;
         EXPECT_NO_FATAL_FAILURE(
             DV = DPCTLDeviceMgr_GetDevices(device_type_mask));
         EXPECT_TRUE(DV != nullptr);
@@ -179,6 +179,7 @@ TEST_P(TestDPCTLGetDevicesOrdering, ChkConsistencyWithFilterSelector)
         std::string fs_device_type, fs;
         DPCTLSyclDeviceRef DRef = nullptr, D0Ref = nullptr;
         DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+        int j = -1;
         EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDeviceVector_GetAt(DV, i));
         EXPECT_NO_FATAL_FAILURE(Dty = DPCTLDevice_GetDeviceType(DRef));
         EXPECT_NO_FATAL_FAILURE(
@@ -189,6 +190,10 @@ TEST_P(TestDPCTLGetDevicesOrdering, ChkConsistencyWithFilterSelector)
         EXPECT_NO_FATAL_FAILURE(D0Ref = DPCTLDevice_CreateFromSelector(DSRef));
         EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
         EXPECT_TRUE(DPCTLDevice_AreEq(DRef, D0Ref));
+        EXPECT_NO_FATAL_FAILURE(
+            j = DPCTLDeviceMgr_GetPositionInDevices(DRef, device_type_mask));
+        EXPECT_TRUE(j >= 0);
+        EXPECT_TRUE(i == static_cast<decltype(i)>(j));
         EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(D0Ref));
         EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
     }
