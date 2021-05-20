@@ -208,6 +208,9 @@ cdef extern from "dpctl_sycl_device_manager.h":
         DPCTLDeviceVectorRef DVRef,
         size_t index)
     cdef DPCTLDeviceVectorRef DPCTLDeviceMgr_GetDevices(int device_identifier)
+    cdef int DPCTLDeviceMgr_GetPositionInDevices(
+        const DPCTLSyclDeviceRef DRef,
+        int device_identifier)
     cdef size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier)
     cdef void DPCTLDeviceMgr_PrintDeviceInfo(const DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclContextRef DPCTLDeviceMgr_GetCachedContext(

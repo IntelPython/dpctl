@@ -61,6 +61,8 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_IsCPU,
     DPCTLDevice_IsGPU,
     DPCTLDevice_IsHost,
+    DPCTLDeviceMgr_GetDevices,
+    DPCTLDeviceMgr_GetPositionInDevices,
     DPCTLDeviceMgr_GetRelativeId,
     DPCTLDeviceMgr_PrintDeviceInfo,
     DPCTLDeviceSelector_Delete,
@@ -825,8 +827,23 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def filter_string(self):
-        """ For a parent device, returns a ``tuple (backend, device_kind,
-            relative_id)``. Raises an exception for sub-devices.
+        """
+        For a parent device, returns a fully specified filter selector
+        string``backend:device_type:relative_id`` selecting the device.
+
+        Raises an exception for sub-devices.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create a SyclDevice with an explicit filter string,
+                # in this case the first level_zero gpu device.
+                level_zero_gpu = dpctl.SyclDevice("level_zero:gpu:0")
+                # filter_string property should be "level_zero:gpu:0"
+                dev = dpctl.SyclDevice(level_zero_gpu.filter_string)
+                assert level_zero_gpu == dev
         """
         cdef DPCTLSyclDeviceRef pDRef = NULL
         cdef DPCTLSyclBackendType BTy
@@ -846,3 +863,134 @@ cdef class SyclDevice(_SyclDevice):
             # this a sub-device, free it, and raise an exception
             DPCTLDevice_Delete(pDRef)
             raise TypeError("This SyclDevice is not a root device")
+
+    cdef int get_backend_and_device_type_ordinal(self):
+        """
+        If this device is a root ``sycl::device`` returns the ordinal
+        position of this device in the vector
+        ``sycl::device::get_devices(device_type_of_this_device)``
+        filtered to contain only devices with the same backend as this
+        device.
+
+        Returns -1 if the device is a sub-device, or the device could not
+        be found in the vector.
+        """
+        cdef int64_t relId = DPCTLDeviceMgr_GetRelativeId(self._device_ref)
+        return relId
+
+    cdef int get_device_type_ordinal(self):
+        """
+        If this device is a root ``sycl::device`` returns the ordinal
+        position of this device in the vector
+        ``sycl::device::get_devices(device_type_of_this_device)``
+
+        Returns -1 if the device is a sub-device, or the device could not
+        be found in the vector.
+        """
+        cdef DPCTLSyclDeviceType DTy
+        cdef int64_t relId = -1
+
+        DTy = DPCTLDevice_GetDeviceType(self._device_ref)
+        relId = DPCTLDeviceMgr_GetPositionInDevices(
+            self._device_ref, _backend_type._ALL_BACKENDS | DTy)
+        return relId
+
+    cdef int get_backend_ordinal(self):
+        """
+        If this device is a root ``sycl::device`` returns the ordinal
+        position of this device in the vector ``sycl::device::get_devices()``
+        filtered to contain only devices with the same backend as this
+        device.
+
+        Returns -1 if the device is a sub-device, or the device could not
+        be found in the vector.
+        """
+        cdef DPCTLSyclBackendType BTy
+        cdef int64_t relId = -1
+
+        BTy = DPCTLDevice_GetBackend(self._device_ref)
+        relId = DPCTLDeviceMgr_GetPositionInDevices(
+            self._device_ref, BTy | _device_type._ALL_DEVICES)
+        return relId
+
+    cdef int get_overall_ordinal(self):
+        """
+        If this device is a root ``sycl::device`` returns the ordinal
+        position of this device in the vector ``sycl::device::get_devices()``
+        filtered to contain only devices with the same backend as this
+        device.
+
+        Returns -1 if the device is a sub-device, or the device could not
+        be found in the vector.
+        """
+        cdef int64_t relId = -1
+
+        relId = DPCTLDeviceMgr_GetPositionInDevices(
+            self._device_ref,
+            (_backend_type._ALL_BACKENDS | _device_type._ALL_DEVICES)
+        )
+        return relId
+
+    def get_filter_string(self, include_backend=True, include_device_type=True):
+        """
+        For a parent device returns a filter selector string
+        that includes backend or device type based on the value
+        of the given keyword arguments.
+
+        Raises a TypeError if this devices is a sub-device, or
+        a ValueError if no match was found in the vector returned
+        by ``sycl::device::get_devices()``.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create a GPU SyclDevice
+                gpu_dev = dpctl.SyclDevice("gpu:0")
+                # filter string should be "gpu:0"
+                fs = gpu_dev.get_filter_string(use_backend=False)
+                dev = dpctl.SyclDevice(fs)
+                assert gpu _dev == dev
+        """
+        cdef int relId = -1
+        cdef DPCTLSyclDeviceRef pDRef = NULL
+        cdef DPCTLSyclDeviceType DTy
+        cdef DPCTLSyclBackendType BTy
+
+        if include_backend:
+            if include_device_type:
+                relId = self.get_backend_and_device_type_ordinal()
+            else:
+                relId = self.get_backend_ordinal()
+        else:
+            if include_device_type:
+                relId = self.get_device_type_ordinal()
+            else:
+                relId = self.get_overall_ordinal()
+
+        if relId < 0:
+            pDRef = DPCTLDevice_GetParentDevice(self._device_ref)
+            if (pDRef is NULL):
+                raise ValueError
+            else:
+                # this a sub-device, free it, and raise an exception
+                DPCTLDevice_Delete(pDRef)
+                raise TypeError("This SyclDevice is not a root device")
+        else:
+            if include_backend:
+                BTy = DPCTLDevice_GetBackend(self._device_ref)
+                be_str = _backend_type_to_filter_string_part(BTy)
+                if include_device_type:
+                    DTy = DPCTLDevice_GetDeviceType(self._device_ref)
+                    dt_str = _device_type_to_filter_string_part(DTy)
+                    return ":".join((be_str, dt_str, str(relId)))
+                else:
+                    return ":".join((be_str, str(relId)))
+            else:
+                if include_device_type:
+                    DTy = DPCTLDevice_GetDeviceType(self._device_ref)
+                    dt_str = _device_type_to_filter_string_part(DTy)
+                    return ":".join((dt_str, str(relId)))
+                else:
+                    return str(relId)
