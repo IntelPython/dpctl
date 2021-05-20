@@ -164,6 +164,35 @@ DPCTLDeviceMgr_GetDevices(int device_identifier)
     return wrap(Devices);
 }
 
+int DPCTLDeviceMgr_GetPositionInDevices(__dpctl_keep DPCTLSyclDeviceRef DRef,
+                                        int device_identifier)
+{
+    constexpr int not_found = -1;
+    if (!DRef) {
+        return not_found;
+    }
+
+    const auto &root_devices = device::get_devices();
+    default_selector mRanker;
+    int index = not_found;
+    auto reference_device = *(unwrap(DRef));
+
+    for (const auto &root_device : root_devices) {
+        if (mRanker(root_device) < 0)
+            continue;
+        auto Bty(DPCTL_SyclBackendToDPCTLBackendType(
+            root_device.get_platform().get_backend()));
+        auto Dty(DPCTL_SyclDeviceTypeToDPCTLDeviceType(
+            root_device.get_info<info::device::device_type>()));
+        if ((device_identifier & Bty) && (device_identifier & Dty)) {
+            ++index;
+            if (root_device == reference_device)
+                return index;
+        }
+    }
+    return not_found;
+}
+
 /*!
  * Returns the number of available devices for a specific backend and device
  * type combination.

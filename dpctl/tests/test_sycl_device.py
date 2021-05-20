@@ -591,13 +591,29 @@ def test_filter_string(valid_filter):
     )
 
 
-def test_filter_string2():
+def test_filter_string_property():
     """
     Test that filter_string reconstructs the same device.
     """
     devices = dpctl.get_devices()
     for d in devices:
-        if d.default_selector_score > 0:
+        if d.default_selector_score >= 0:
             dev_id = d.filter_string
             d_r = dpctl.SyclDevice(dev_id)
             assert d == d_r
+
+
+def test_filter_string_method():
+    """
+    Test that filter_string reconstructs the same device.
+    """
+    devices = dpctl.get_devices()
+    for d in devices:
+        for be in [True, False]:
+            for dt in [True, False]:
+                if d.default_selector_score >= 0:
+                    dev_id = d.get_filter_string(
+                        include_backend=be, include_device_type=dt
+                    )
+                    d_r = dpctl.SyclDevice(dev_id)
+                    assert d == d_r, "Failed "
