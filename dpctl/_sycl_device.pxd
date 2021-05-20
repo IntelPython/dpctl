@@ -51,3 +51,7 @@ cdef public class SyclDevice(_SyclDevice) [object PySyclDeviceObject, type PySyc
     cdef list create_sub_devices_by_counts(self, object counts)
     cdef list create_sub_devices_by_affinity(self, _partition_affinity_domain_type domain)
     cdef cpp_bool equals(self, SyclDevice q)
+    cdef int get_device_type_ordinal(self)
+    cdef int get_overall_ordinal(self)
+    cdef int get_backend_ordinal(self)
+    cdef int get_backend_and_device_type_ordinal(self)
