@@ -6,6 +6,7 @@ __pycache__/
 # C extensions and binary files
 *.o
 *.so
+*.so.*
 *.exe
 *.lib
 *.dll
