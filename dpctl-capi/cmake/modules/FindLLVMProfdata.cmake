@@ -14,21 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# CMake find_package() module for the Level Zero loader library and headers.
+# CMake find_package() module for llvm-cov.
 #
 # Example usage:
 #
-# find_package(LevelZero)
+# find_package(LLVMCov)
 #
 # If successful, the following variables will be defined:
-# LEVEL_ZERO_INCLUDE_DIR
-# LEVEL_ZERO_LIBRARY - the full path to the ze_loader library
-# TODO: Add a way to record the version of the level_zero library
+# LLVMProfdata_EXE The path to llvm-cov executable
+# LLVMProfdata_FOUND
 
-find_library(LEVEL_ZERO_LIBRARY ze_loader HINTS $ENV{L0_LIB_DIR})
-find_path(LEVEL_ZERO_INCLUDE_DIR NAMES level_zero/zet_api.h HINTS $ENV{L0_INCLUDE_DIR})
+find_program(LLVMProfdata_EXE llvm-profdata)
 
-find_package_handle_standard_args(LevelZero DEFAULT_MSG
-    LEVEL_ZERO_INCLUDE_DIR
-    LEVEL_ZERO_LIBRARY
+find_package_handle_standard_args(LLVMProfdata DEFAULT_MSG
+    LLVMProfdata_EXE
 )
