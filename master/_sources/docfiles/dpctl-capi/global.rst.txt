@@ -236,6 +236,12 @@ Overview
 	DPCTL_API size_t
 	:ref:`DPCTLDeviceMgr_GetNumDevices<doxid-d0/d15/group__DeviceManager_1ga2578ffe4d41ef3adbb690ea99bb5f664>`(int device_identifier);
 
+	DPCTL_API int
+	:ref:`DPCTLDeviceMgr_GetPositionInDevices<doxid-d0/d15/group__DeviceManager_1ga1f86861af1da6e44aa917f1c20285325>`(
+		__dpctl_keep :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		int device_identifier
+		);
+
 	DPCTL_API int64_t
 	:ref:`DPCTLDeviceMgr_GetRelativeId<doxid-d0/d15/group__DeviceManager_1ga38db5431168d0d9883a62681b139762a>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
