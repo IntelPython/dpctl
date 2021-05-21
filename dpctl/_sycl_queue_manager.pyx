@@ -16,6 +16,7 @@
 #
 # distutils: language = c++
 # cython: language_level=3
+# cython: linetrace=True
 
 from __future__ import print_function
 
