@@ -190,22 +190,22 @@
 <div class="contents local topic" id="table-of-contents">
 <p class="topic-title">Table of contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#installing-from-oneapi" id="id3">Installing from oneAPI</a></p></li>
-<li><p><a class="reference internal" href="#install-wheel-package-from-pypi" id="id4">Install Wheel package from Pypi</a></p></li>
-<li><p><a class="reference internal" href="#building-from-source" id="id5">Building from source</a></p>
+<li><p><a class="reference internal" href="#installing-from-oneapi" id="id2">Installing from oneAPI</a></p></li>
+<li><p><a class="reference internal" href="#install-wheel-package-from-pypi" id="id3">Install Wheel package from Pypi</a></p></li>
+<li><p><a class="reference internal" href="#building-from-source" id="id4">Building from source</a></p>
 <ul>
-<li><p><a class="reference internal" href="#building-using-oneapi-dpcpp" id="id6">Building using oneAPI dpcpp</a></p></li>
-<li><p><a class="reference internal" href="#building-using-custom-dpcpp" id="id7">Building using custom dpcpp</a></p></li>
+<li><p><a class="reference internal" href="#building-using-oneapi-dpcpp" id="id5">Building using oneAPI dpcpp</a></p></li>
+<li><p><a class="reference internal" href="#building-using-custom-dpcpp" id="id6">Building using custom dpcpp</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#using-dpctl" id="id8">Using dpctl</a></p></li>
-<li><p><a class="reference internal" href="#running-examples-and-tests" id="id9">Running examples and tests</a></p>
+<li><p><a class="reference internal" href="#using-dpctl" id="id7">Using dpctl</a></p></li>
+<li><p><a class="reference internal" href="#running-examples-and-tests" id="id8">Running examples and tests</a></p>
 <ul>
-<li><p><a class="reference internal" href="#running-the-examples" id="id10">Running the examples</a></p></li>
-<li><p><a class="reference internal" href="#running-the-python-tests" id="id11">Running the Python tests</a></p></li>
+<li><p><a class="reference internal" href="#running-the-examples" id="id9">Running the examples</a></p></li>
+<li><p><a class="reference internal" href="#running-the-python-tests" id="id10">Running the Python tests</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#building-the-c-api-shared-library" id="id12">Building the C API shared library</a></p></li>
+<li><p><a class="reference internal" href="#building-the-c-api-shared-library" id="id11">Building the C API shared library</a></p></li>
 </ul>
 </div>
 <div class="section" id="installing-from-oneapi">
@@ -335,10 +335,16 @@ usual steps</p>
 </div>
 <div class="section" id="building-using-custom-dpcpp">
 <h3>Building using custom dpcpp<a class="headerlink" href="#building-using-custom-dpcpp" title="Permalink to this headline">¶</a></h3>
-<div class="admonition-todo admonition" id="id2">
-<p class="admonition-title">Todo</p>
-<p>Instructions coming soon.</p>
+<p>It is possible to build dpctl from source using .. _DPC++ toolchain: <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md">https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md</a>
+instead of the DPC++ compiler that comes with oneAPI. One reason for doing this
+may be to enable support for CUDA devices.</p>
+<p>Following steps in <span class="xref std std-ref">Build and Install with setuptools</span> use command line
+option <code class="code docutils literal notranslate"><span class="pre">--sycl-compiler-prefix</span></code>, for example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop --sycl-compiler-prefix<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/llvm/build
+</pre></div>
 </div>
+<p>Available options and their descriptions can be retrieved using option
+<code class="code docutils literal notranslate"><span class="pre">--help</span></code>.</p>
 </div>
 </div>
 <div class="section" id="using-dpctl">

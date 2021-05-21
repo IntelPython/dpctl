@@ -165,9 +165,19 @@ to build and install
 Building using custom dpcpp
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. todo::
+It is possible to build dpctl from source using .. _DPC++ toolchain: https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md
+instead of the DPC++ compiler that comes with oneAPI. One reason for doing this
+may be to enable support for CUDA devices.
 
-    Instructions coming soon.
+Following steps in :ref:`Build and Install with setuptools` use command line
+option :code:`--sycl-compiler-prefix`, for example:
+
+.. code-block:: bash
+
+    python setup.py develop --sycl-compiler-prefix=${DPCPP_ROOT}/llvm/build
+
+Available options and their descriptions can be retrieved using option
+:code:`--help`.
 
 Using dpctl
 -----------
