@@ -19,9 +19,9 @@ import os.path
 import sys
 
 import numpy as np
+import setuptools.command.build_ext as orig_build_ext
 import setuptools.command.develop as orig_develop
 import setuptools.command.install as orig_install
-from Cython.Build import cythonize
 from setuptools import Extension, find_packages, setup
 
 import versioneer
@@ -39,6 +39,9 @@ elif sys.platform in ["win32", "cygwin"]:
 else:
     assert False, "We currently do not build for " + sys.platform
 
+# global variable used to pass value of --coverage option of develop command
+# to build_ext command
+_coverage = False
 dpctl_sycl_interface_lib = "dpctl"
 dpctl_sycl_interface_include = r"dpctl/include"
 
@@ -123,7 +126,6 @@ def extensions():
     ela = get_sdl_ldflags()
     libs = []
     libraries = []
-    CODE_COVERAGE = os.environ.get("CODE_COVERAGE")
 
     if IS_LIN:
         libs += ["rt", "DPCTLSyclInterface"]
@@ -159,15 +161,6 @@ def extensions():
         "language": "c++",
         "define_macros": [],
     }
-
-    if CODE_COVERAGE:
-        extension_args.update(
-            {
-                "define_macros": [
-                    ("CYTHON_TRACE", "1"),
-                ]
-            }
-        )
 
     extensions = [
         Extension(
@@ -253,15 +246,25 @@ def extensions():
             define_macros=extension_args["define_macros"],
         ),
     ]
-    if CODE_COVERAGE:
-        exts = cythonize(
-            extensions,
-            compiler_directives={"linetrace": True},
-            language_level=3,
-        )
-    else:
-        exts = cythonize(extensions, language_level=3)
-    return exts
+    # ext = cythonize(extensions, language_level=3)
+    return extensions
+
+
+class build_ext(orig_build_ext.build_ext):
+    description = "Build dpctl native extensions"
+
+    def finalize_options(self):
+        global _coverage
+        if _coverage:
+            pre_d = getattr(self, "define", None)
+            if pre_d is None:
+                self.define = "CYTHON_TRACE"
+            else:
+                self.define = ",".join((pre_d, "CYTHON_TRACE"))
+        super().finalize_options()
+
+    def run(self):
+        return super().run()
 
 
 class install(orig_install.install):
@@ -279,18 +282,11 @@ class install(orig_install.install):
             "Path to SYCL compiler installation. None means "
             "read it off ONEAPI_ROOT environment variable or fail.",
         ),
-        (
-            "coverage=",
-            None,
-            "Whether to generate coverage report "
-            "when building the backend library",
-        ),
     ]
 
     def initialize_options(self):
         super().initialize_options()
         self.level_zero_support = "True"
-        self.coverage = os.getenv("CODE_COVERAGE", "False")
         self.sycl_compiler_prefix = None
 
     def finalize_options(self):
@@ -302,12 +298,6 @@ class install(orig_install.install):
             raise ValueError(
                 "--level-zero-support value is invalid, use True/False"
             )
-        if isinstance(self.coverage, str):
-            self.coverage = self.coverage.capitalize()
-        if self.coverage in ["True", "False", "0", "1"]:
-            self.coverage = bool(eval(self.coverage))
-        else:
-            raise ValueError("--coverage value is invalid, use True/False")
         if isinstance(self.sycl_compiler_prefix, str):
             if not os.path.exists(os.path.join(self.sycl_compiler_prefix)):
                 raise ValueError(
@@ -326,9 +316,7 @@ class install(orig_install.install):
         super().finalize_options()
 
     def run(self):
-        build_backend(
-            self.level_zero_support, self.coverage, self.sycl_compiler_prefix
-        )
+        build_backend(self.level_zero_support, False, self.sycl_compiler_prefix)
         return super().run()
 
 
@@ -358,7 +346,7 @@ class develop(orig_develop.develop):
     def initialize_options(self):
         super().initialize_options()
         self.level_zero_support = "True"
-        self.coverage = os.getenv("CODE_COVERAGE", "False")
+        self.coverage = "False"
         self.sycl_compiler_prefix = None
 
     def finalize_options(self):
@@ -374,6 +362,8 @@ class develop(orig_develop.develop):
             self.coverage = self.coverage.capitalize()
         if self.coverage in ["True", "False", "0", "1"]:
             self.coverage = bool(eval(self.coverage))
+            global _coverage
+            _coverage = self.coverage
         else:
             raise ValueError("--coverage value is invalid, use True/False")
         if isinstance(self.sycl_compiler_prefix, str):
@@ -404,6 +394,7 @@ def _get_cmdclass():
     cmdclass = versioneer.get_cmdclass()
     cmdclass["install"] = install
     cmdclass["develop"] = develop
+    cmdclass["build_ext"] = build_ext
     return cmdclass
 
 
