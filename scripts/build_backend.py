@@ -143,7 +143,11 @@ def build_backend(
         for file in glob.glob(
             os.path.join(dpctl_dir, "install", "lib", "*.so*")
         ):
-            shutil.copy(file, os.path.join(dpctl_dir, "dpctl"))
+            shutil.copy(
+                src=file,
+                dst=os.path.join(dpctl_dir, "dpctl"),
+                follow_symlinks=False,
+            )
     elif IS_WIN:
         if os.path.exists(os.path.join(DPCPP_ROOT, "bin", "dpcpp.exe")):
             cmake_compiler_args = [
