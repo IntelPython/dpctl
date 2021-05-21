@@ -16,6 +16,7 @@
 
 # distutils: language = c++
 # cython: language_level=3
+# cython: linetrace=True
 
 """ This module implements several device creation helper functions:
 

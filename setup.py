@@ -16,13 +16,12 @@
 
 import os
 import os.path
-import subprocess
 import sys
 
 import numpy as np
+import setuptools.command.build_ext as orig_build_ext
 import setuptools.command.develop as orig_develop
 import setuptools.command.install as orig_install
-from Cython.Build import cythonize
 from setuptools import Extension, find_packages, setup
 
 import versioneer
@@ -38,21 +37,13 @@ elif sys.platform == "darwin":
 elif sys.platform in ["win32", "cygwin"]:
     IS_WIN = True
 else:
-    assert False, sys.platform + " not supported"
+    assert False, "We currently do not build for " + sys.platform
 
-if IS_LIN:
-    DPCPP_ROOT = os.environ["ONEAPI_ROOT"] + r"/compiler/latest/linux"
-    os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
-    os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = r"dpctl/include"
-    os.environ["CFLAGS"] = "-fPIC"
-
-elif IS_WIN:
-    os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"] = "dpctl"
-    os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"] = r"dpctl\include"
-
-dpctl_sycl_interface_lib = os.environ["DPCTL_SYCL_INTERFACE_LIBDIR"]
-dpctl_sycl_interface_include = os.environ["DPCTL_SYCL_INTERFACE_INCLDIR"]
-sycl_lib = os.environ["ONEAPI_ROOT"] + r"\compiler\latest\windows\lib"
+# global variable used to pass value of --coverage option of develop command
+# to build_ext command
+_coverage = False
+dpctl_sycl_interface_lib = "dpctl"
+dpctl_sycl_interface_include = r"dpctl/include"
 
 # Get long description
 with open("README.md", "r", encoding="utf-8") as file:
@@ -113,9 +104,20 @@ def get_suppressed_warning_flags():
         return []
 
 
-def build_backend():
-    build_script = os.path.join(os.getcwd(), "scripts", "build_backend.py")
-    subprocess.check_call([sys.executable, build_script])
+def build_backend(l0_support, coverage, sycl_compiler_prefix):
+    import os.path
+    from importlib.util import module_from_spec, spec_from_file_location
+
+    spec = spec_from_file_location(
+        "build_backend", os.path.join("scripts", "build_backend.py")
+    )
+    builder_module = module_from_spec(spec)
+    spec.loader.exec_module(builder_module)
+    builder_module.build_backend(
+        l0_support=l0_support,
+        code_coverage=coverage,
+        sycl_compiler_prefix=sycl_compiler_prefix,
+    )
 
 
 def extensions():
@@ -123,22 +125,21 @@ def extensions():
     eca = get_sdl_cflags()
     ela = get_sdl_ldflags()
     libs = []
-    librarys = []
-    CODE_COVERAGE = os.environ.get("CODE_COVERAGE")
+    libraries = []
 
     if IS_LIN:
         libs += ["rt", "DPCTLSyclInterface"]
     elif IS_MAC:
         pass
     elif IS_WIN:
-        libs += ["DPCTLSyclInterface", "sycl"]
+        libs += ["DPCTLSyclInterface"]
 
     if IS_LIN:
-        librarys = [dpctl_sycl_interface_lib]
+        libraries = [dpctl_sycl_interface_lib]
     elif IS_WIN:
-        librarys = [dpctl_sycl_interface_lib, sycl_lib]
+        libraries = [dpctl_sycl_interface_lib]
     elif IS_MAC:
-        librarys = [dpctl_sycl_interface_lib]
+        libraries = [dpctl_sycl_interface_lib]
 
     if IS_LIN or IS_MAC:
         runtime_library_dirs = ["$ORIGIN"]
@@ -155,20 +156,11 @@ def extensions():
         ),
         "extra_link_args": ela,
         "libraries": libs,
-        "library_dirs": librarys,
+        "library_dirs": libraries,
         "runtime_library_dirs": runtime_library_dirs,
         "language": "c++",
         "define_macros": [],
     }
-
-    if CODE_COVERAGE:
-        extension_args.update(
-            {
-                "define_macros": [
-                    ("CYTHON_TRACE", "1"),
-                ]
-            }
-        )
 
     extensions = [
         Extension(
@@ -254,26 +246,147 @@ def extensions():
             define_macros=extension_args["define_macros"],
         ),
     ]
-    if CODE_COVERAGE:
-        exts = cythonize(
-            extensions,
-            compiler_directives={"linetrace": True},
-            language_level=3,
-        )
-    else:
-        exts = cythonize(extensions, language_level=3)
-    return exts
+    # ext = cythonize(extensions, language_level=3)
+    return extensions
+
+
+class build_ext(orig_build_ext.build_ext):
+    description = "Build dpctl native extensions"
+
+    def finalize_options(self):
+        global _coverage
+        if _coverage:
+            pre_d = getattr(self, "define", None)
+            if pre_d is None:
+                self.define = "CYTHON_TRACE"
+            else:
+                self.define = ",".join((pre_d, "CYTHON_TRACE"))
+        super().finalize_options()
+
+    def run(self):
+        return super().run()
 
 
 class install(orig_install.install):
+    description = "Installs dpctl into Python prefix"
+    user_options = orig_install.install.user_options + [
+        (
+            "level-zero-support=",
+            None,
+            "Whether to enable support for program creation "
+            "for Level-zero backend",
+        ),
+        (
+            "sycl-compiler-prefix=",
+            None,
+            "Path to SYCL compiler installation. None means "
+            "read it off ONEAPI_ROOT environment variable or fail.",
+        ),
+    ]
+
+    def initialize_options(self):
+        super().initialize_options()
+        self.level_zero_support = "True"
+        self.sycl_compiler_prefix = None
+
+    def finalize_options(self):
+        if isinstance(self.level_zero_support, str):
+            self.level_zero_support = self.level_zero_support.capitalize()
+        if self.level_zero_support in ["True", "False", "0", "1"]:
+            self.level_zero_support = bool(eval(self.level_zero_support))
+        else:
+            raise ValueError(
+                "--level-zero-support value is invalid, use True/False"
+            )
+        if isinstance(self.sycl_compiler_prefix, str):
+            if not os.path.exists(os.path.join(self.sycl_compiler_prefix)):
+                raise ValueError(
+                    "--sycl-compiler-prefix expects a path "
+                    "to an existing directory"
+                )
+        elif self.sycl_compiler_prefix is None:
+            pass
+        else:
+            raise ValueError(
+                "--sycl-compiler-prefix value is invalid, use a "
+                "path to compiler intallation. To use oneAPI, use the "
+                "default value, but remember to activate the compiler "
+                "environment"
+            )
+        super().finalize_options()
+
     def run(self):
-        build_backend()
+        build_backend(self.level_zero_support, False, self.sycl_compiler_prefix)
         return super().run()
 
 
 class develop(orig_develop.develop):
+    description = "Installs dpctl in place"
+    user_options = orig_develop.develop.user_options + [
+        (
+            "level-zero-support=",
+            None,
+            "Whether to enable support for program creation "
+            "for Level-zero backend",
+        ),
+        (
+            "sycl-compiler-prefix=",
+            None,
+            "Path to SYCL compiler installation. None means "
+            "read it off ONEAPI_ROOT environment variable or fail.",
+        ),
+        (
+            "coverage=",
+            None,
+            "Whether to generate coverage report "
+            "when building the backend library",
+        ),
+    ]
+
+    def initialize_options(self):
+        super().initialize_options()
+        self.level_zero_support = "True"
+        self.coverage = "False"
+        self.sycl_compiler_prefix = None
+
+    def finalize_options(self):
+        if isinstance(self.level_zero_support, str):
+            self.level_zero_support = self.level_zero_support.capitalize()
+        if self.level_zero_support in ["True", "False", "0", "1"]:
+            self.level_zero_support = bool(eval(self.level_zero_support))
+        else:
+            raise ValueError(
+                "--level-zero-support value is invalid, use True/False"
+            )
+        if isinstance(self.coverage, str):
+            self.coverage = self.coverage.capitalize()
+        if self.coverage in ["True", "False", "0", "1"]:
+            self.coverage = bool(eval(self.coverage))
+            global _coverage
+            _coverage = self.coverage
+        else:
+            raise ValueError("--coverage value is invalid, use True/False")
+        if isinstance(self.sycl_compiler_prefix, str):
+            if not os.path.exists(os.path.join(self.sycl_compiler_prefix)):
+                raise ValueError(
+                    "--sycl-compiler-prefix expects a path "
+                    "to an existing directory"
+                )
+        elif self.sycl_compiler_prefix is None:
+            pass
+        else:
+            raise ValueError(
+                "--sycl-compiler-prefix value is invalid, use a "
+                "path to compiler intallation. To use oneAPI, use the "
+                "default value, but remember to activate the compiler "
+                "environment"
+            )
+        super().finalize_options()
+
     def run(self):
-        build_backend()
+        build_backend(
+            self.level_zero_support, self.coverage, self.sycl_compiler_prefix
+        )
         return super().run()
 
 
@@ -281,6 +394,7 @@ def _get_cmdclass():
     cmdclass = versioneer.get_cmdclass()
     cmdclass["install"] = install
     cmdclass["develop"] = develop
+    cmdclass["build_ext"] = build_ext
     return cmdclass
 
 
