@@ -67,6 +67,14 @@ For development:
 python setup.py develop
 ```
 
+It is also possible to build dpctl using [DPC++ toolchain](https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md) instead of oneAPI DPC++. Instead of activating the oneAPI environment, indicate the toolchain installation prefix with `--sycl-compiler-prefix` option, e.g.
+
+```cmd
+python setup.py develop --sycl-compiler-prefix=${DPCPP_ROOT}/llvm/build
+```
+
+Please use `python setup.py develop --help` for more details.
+
 Install Wheel Package from Pypi
 ==================================
 1. Install dpctl
