@@ -27,13 +27,10 @@ from setuptools import Extension, find_packages, setup
 import versioneer
 
 IS_WIN = False
-IS_MAC = False
 IS_LIN = False
 
 if "linux" in sys.platform:
     IS_LIN = True
-elif sys.platform == "darwin":
-    IS_MAC = True
 elif sys.platform in ["win32", "cygwin"]:
     IS_WIN = True
 else:
@@ -56,7 +53,7 @@ def remove_empty(li):
 
 def get_sdl_cflags():
     cflags = []
-    if IS_LIN or IS_MAC:
+    if IS_LIN:
         cflags = [
             "-fstack-protector",
             "-fPIC",
@@ -85,8 +82,6 @@ def get_sdl_ldflags():
 def get_other_cxxflags():
     if IS_LIN:
         return ["-O3", "-std=c++17"]
-    elif IS_MAC:
-        return []
     elif IS_WIN:
         # FIXME: These are specific to MSVC and we should first make sure
         # what compiler we are using.
@@ -129,8 +124,6 @@ def extensions():
 
     if IS_LIN:
         libs += ["rt", "DPCTLSyclInterface"]
-    elif IS_MAC:
-        pass
     elif IS_WIN:
         libs += ["DPCTLSyclInterface"]
 
@@ -138,10 +131,8 @@ def extensions():
         libraries = [dpctl_sycl_interface_lib]
     elif IS_WIN:
         libraries = [dpctl_sycl_interface_lib]
-    elif IS_MAC:
-        libraries = [dpctl_sycl_interface_lib]
 
-    if IS_LIN or IS_MAC:
+    if IS_LIN:
         runtime_library_dirs = ["$ORIGIN"]
     elif IS_WIN:
         runtime_library_dirs = []
@@ -309,7 +300,7 @@ class install(orig_install.install):
         else:
             raise ValueError(
                 "--sycl-compiler-prefix value is invalid, use a "
-                "path to compiler intallation. To use oneAPI, use the "
+                "path to compiler installation. To use oneAPI, use the "
                 "default value, but remember to activate the compiler "
                 "environment"
             )
@@ -377,7 +368,7 @@ class develop(orig_develop.develop):
         else:
             raise ValueError(
                 "--sycl-compiler-prefix value is invalid, use a "
-                "path to compiler intallation. To use oneAPI, use the "
+                "path to compiler installation. To use oneAPI, use the "
                 "default value, but remember to activate the compiler "
                 "environment"
             )
@@ -402,7 +393,7 @@ setup(
     name="dpctl",
     version=versioneer.get_version(),
     cmdclass=_get_cmdclass(),
-    description="A lightweight Python wrapper for a subset of OpenCL and SYCL.",
+    description="A lightweight Python wrapper for a subset of SYCL.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="Apache 2.0",
