@@ -14,15 +14,16 @@ Installing from oneAPI
 ----------------------
 
 Dpctl is available as part of the oneAPI Intel Distribution of Python (IDP).
-Please follow `oneAPI installation guide`_ to install oneAPI. In this guide it
-is assumed oneAPI is installed in the standard location and the environment
-variable ``ONEAPI_ROOT`` points to the following installation root directory:
+Please follow `oneAPI installation guide`_ to install oneAPI. In this quick
+start guide, it is assumed oneAPI is installed in the standard location and the
+environment variable ``ONEAPI_ROOT`` points to the following installation root
+directory:
 
     - Windows: ``C:\Program Files (x86)\Intel\oneAPI\``
     - Linux: ``/opt/intel/oneapi``
 
-Once oneAPI is installed, dpctl is ready to be used by setting up the IDP that
-is available inside oneAPI. IDP can be set up as follows:
+Once oneAPI is installed, dpctl is ready to be used by setting up IDP from
+the oneAPI installation. IDP can be set up as follows:
 
 On Linux
 
@@ -44,13 +45,14 @@ On Windows
     The ``dpctl.lsplatform()`` function is new in dpctl 0.7 and will be
     available in oneAPI 2021.3. If you are following the guide on an older
     oneAPI installation, use ``dpctl.dump()``. If no GPU platforms are shown,
-    make source your system has a GPU and has the necessary GPU drivers. You can
-    install GPU drivers by following the `GPU driver installation guide`_.
+    make sure your system has a supported GPU and has the necessary GPU drivers
+    installed. You can install GPU drivers by following the
+    `GPU driver installation guide`_.
 
 Install Wheel package from Pypi
 -------------------------------
 
-1. Install dpctl
+Dpctl can also be istalled from Pypi.
 
 .. code-block:: bash
 
@@ -58,12 +60,11 @@ Install Wheel package from Pypi
 
 .. note::
 
-    Dpctl wheel package is placed on Pypi, but some of its dependencies
-    (like Intel numpy) are available only in Anaconda Cloud. That is why install
-    command requires additional Intel Pypi channel from Anaconda Cloud.
-
-2. Set path to Performance Libraries in case of using ``venv`` or system Python.
-
+    The dpctl wheel package is available on Pypi, but some of the dependencies
+    (like Intel numpy) are available only in Anaconda Cloud. For this reason,
+    please install the extra packages needed by dpctl from the Intel channel in
+    Anaconda cloud. Additionally, you will need to set the ``LD_LIBRARY_PATH``
+    or ``PATH`` correctly.
 
 On Linux
 
@@ -82,8 +83,8 @@ Building from source
 
 To build dpctl from source, we need dpcpp and GPU drivers (and optionally CPU
 OpenCL drivers). It is preferable to use the dpcpp compiler packaged as part of
-oneAPI. However, it is possible to use a custom build of dpcpp and use that to
-build dpctl, especially if you want to enable CUDA support.
+oneAPI. However, it is possible to use a custom build of dpcpp to build dpctl,
+especially if you want to enable CUDA support.
 
 Building using oneAPI dpcpp
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
