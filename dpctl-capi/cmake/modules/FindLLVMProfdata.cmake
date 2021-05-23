@@ -24,7 +24,20 @@
 # LLVMProfdata_EXE The path to llvm-cov executable
 # LLVMProfdata_FOUND
 
-find_program(LLVMProfdata_EXE llvm-profdata)
+if(DEFINED ENV{LLVM_TOOLS_HOME})
+    find_program(LLVMProfdata_EXE
+        llvm-profdata
+        PATHS $ENV{LLVM_TOOLS_HOME}
+        NO_DEFAULT_PATH
+    )
+    if(${LLVMProfdata_EXE} STREQUAL "LLVMProfdata_EXE-NOTFOUND")
+        message(WARN
+            "$ENV{LLVM_TOOLS_HOME} does not have an llvm-profdata executable"
+        )
+    endif()
+else()
+    find_program(LLVMProfdata_EXE llvm-profdata)
+endif()
 
 find_package_handle_standard_args(LLVMProfdata DEFAULT_MSG
     LLVMProfdata_EXE
