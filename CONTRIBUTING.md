@@ -11,7 +11,20 @@ Install: `conda install clang-tools`
 - Revision: `10.0.1`
 - See the default configuration used by dpctl in `.clang-format`.
 
-Run before each commit: `clang-format -style=file -i dpctl-capi/include/*.h dpctl-capi/include/Support/*.h dpctl-capi/source/*.cpp dpctl-capi/tests/*.cpp dpctl-capi/helper/include/*.h dpctl-capi/helper/source/*.cpp`
+Run before each commit:
+
+```bash
+clang-format -style=file -i         \
+     dpctl-capi/include/*.h         \
+     dpctl-capi/include/Support/*.h \
+     dpctl-capi/source/*.cpp        \
+     dpctl-capi/tests/*.cpp         \
+     dpctl-capi/helper/include/*.h  \
+     dpctl-capi/helper/source/*.cpp
+```
+
+> **_NOTE:_** A much simpler option is to use `pre-commit` and the
+> `clang-format` hook that we provide.
 
 ### Python code style
 
@@ -121,61 +134,51 @@ Run before each commit: `bandit -r dpctl -lll`
 
 ## Code Coverage
 
-Implement python, cython and c++ file coverage using `coverage` and `llvm-cov`
-packages on Linux.
+Code coverage for both C and Python sources in dpctl is generated for each
+pull request (PR). A PR cannot be merged if it leads to a drop in the code
+coverage by more than five percentage points. *Ergo, do not forget to write
+unit tests for your changes.* To check the code coverage for your code, follow
+these steps:
 
-### Using Code Coverage
+1. Install dependencies for C/C++ source.
 
-You need to install additional packages and add an environment variable to
-cover:
-- conda install cmake
-- conda install coverage
-- conda install conda-forge::lcov
-- conda install conda-forge::gtest
-- export CODE_COVERAGE=ON
+    For C/C++ source we require `lcov`, `llvm-cov`, and `llvm-profdata`. Note
+    that `llvm-cov` and `llvm-profdata` should be version 11.0 or higher. If you
+    have multiple `llvm-cov` tools installed, most likely because you have
+    multiple llvm installations, you should set the `LLVM_TOOLS_HOME`
+    environment variable to make sure the correct one is used to generate
+    coverage.
 
-CODE_COVERAGE allows you to build a debug version of dpctl and enable string
-tracing, which allows you to analyze strings to create a coverage report.
-It was added for the convenience of configuring the CI in the future.
+2. Install dependencies for Python sources.
 
-Installing the dpctl package:
-- python setup.py develop
+    To generate the coverage data for dpctl's Python sources, you only need to
+    install `coverage`.
 
-It is important that there are no files of the old build in the folder.
-Use `git clean -xdf` to clean up the working tree.
+3. Build dpctl with code coverage support.
 
-The coverage report will appear during the build in the console. This report
-contains information about c++ file coverage.
-The `dpctl-c-api-coverage` folder will appear in the root folder after
-installation. The folder contains a report on the coverage of c++ files in html
-format.
+    ```bash
+    python setup.py develop --coverage=True
+    pytest -q -ra --disable-warnings --cov dpctl --cov-report term-missing --pyargs dpctl -vv
+    coverage html
+    ```
 
-You need to run tests to cover the cython and python files:
-- coverage run -m unittest dpctl.tests
+    Note that code coverage builds the C sources with debug symbols. For this
+    reason, the coverage flag is only available with the `develop` mode of
+    `setup.py`.
 
-The required flags for the command coverage run are contained in the file
-`.coveragerc`.
+    The coverage results for the C and Python sources will be printed to the
+    terminal during the build (C API) and during the pytest execution (Python).
+    The detailed coverage reports for the C API is saved to the
+    `dpctl-c-api-coverage` directory. The Python coverage reports are saved to
+    the `htmlcov` directory.
 
-The simplest reporting is a textual summary produced with report:
-- coverage report
+    The coverage data for every PR is also available online at
+    [coveralls.io](https://coveralls.io/github/IntelPython/dpctl).
 
-For each module executed, the report shows the count of executable statements,
-the number of those statements missed, and the resulting coverage, expressed as
-a percentage.
+> **_NOTE:_**  Run `git clean -xdf` to clean up the working tree before running
+> a fresh build with code coverage data generation.
 
-The `-m` flag also shows the line numbers of missing statements:
-- coverage report -m
-
-To create an annotated HTML listings with coverage results:
-- coverage html
-
-The `htmlcov` folder will appear in the root folder of the project. It contains
-reports on the coverage of python and cython files in html format.
-
-Erase previously collected coverage data:
-- coverage erase
-
-### Error in the build process
+## Error in the build process
 
 An error occurs during the dcptl build with the CODE_COVERAGE environment
 variable:
