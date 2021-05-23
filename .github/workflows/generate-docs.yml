@@ -23,14 +23,6 @@ jobs:
       - name: Install Intel OneAPI
         run: |
           sudo apt-get install intel-oneapi-dpcpp-cpp-compiler
-      - name: Install Level-Zero headers
-        run: |
-          sudo apt-get install -y gpg-agent wget
-          wget -qO - https://repositories.intel.com/graphics/intel-graphics.key |
-            sudo apt-key add -
-            sudo apt-add-repository \
-              'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main'
-          sudo apt-get install level-zero level-zero-dev
       - name: Install Lua
         run: |
           sudo apt-get install liblua5.2-dev
