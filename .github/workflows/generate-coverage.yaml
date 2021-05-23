@@ -1,0 +1,117 @@
+name: Generate coverage data
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  generate-coverage:
+    name: Generate coverage and push to Coveralls.io
+    runs-on: ubuntu-20.04
+
+    env:
+      ONEAPI_ROOT: /opt/intel/oneapi
+      GTEST_ROOT: /home/runner/work/googletest-release-1.10.0/install
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Add Intel repository
+        run: |
+          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+          sudo apt-get update
+
+      - name: Install Intel OneAPI
+        run: |
+          sudo apt-get install intel-oneapi-dpcpp-cpp-compiler
+          sudo apt-get install intel-oneapi-tbb
+
+      - name: Install CMake
+        run: |
+          sudo apt-get install cmake
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+          architecture: x64
+
+      - name: Cache Gtest
+        id: cache-gtest
+        uses: actions/cache@v2
+        with:
+          path: |
+            /home/runner/work/googletest-release-1.10.0/install
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/home/runner/work/googletest-release-1.10.0/install/include/gtest/*') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install Gtest
+        if: steps.cache-gtest.outputs.cache-hit != 'true'
+        shell: bash -l {0}
+        run: |
+          cd /home/runner/work
+          wget https://github.com/google/googletest/archive/refs/tags/release-1.10.0.tar.gz
+          tar xf release-1.10.0.tar.gz
+          cd googletest-release-1.10.0
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_INSTALL_PREFIX=/home/runner/work/googletest-release-1.10.0/install
+          make && make install
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install Lcov
+        run: |
+          sudo apt-get install lcov
+
+      - name: Install dpctl dependencies
+        shell: bash -l {0}
+        run: |
+          pip install numpy cython setuptools pytest pytest-cov coverage
+
+      - name: Build dpctl with coverage
+        shell: bash -l {0}
+        run: |
+          source /opt/intel/oneapi/setvars.sh
+          python setup.py develop --coverage=True
+          python -c "import dpctl; print(dpctl.__version__); dpctl.lsplatform()"
+          pytest -q -ra --disable-warnings --cov dpctl --cov-report term-missing --pyargs dpctl -vv
+
+      - name: Install coverall dependencies
+        shell: bash -l {0}
+        run: |
+          sudo gem install coveralls-lcov
+          pip install coveralls
+
+      - name: Upload coverage data to coveralls.io
+        run: |
+          coveralls-lcov -v -n build_cmake/tests/dpctl.lcov > dpctl-c-api-coverage.json
+          coveralls --service=github --merge=dpctl-c-api-coverage.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_PARALLEL: true
+
+  coveralls:
+    name: Indicate completion to coveralls.io
+    needs: generate-coverage
+    runs-on: ubuntu-latest
+    container: python:3-slim
+    steps:
+    - name: Finished
+      run: |
+        pip3 install --upgrade coveralls
+        coveralls --finish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
