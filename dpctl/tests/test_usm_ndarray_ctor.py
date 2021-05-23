@@ -175,7 +175,8 @@ def _to_numpy(usm_ary):
 
 def test_slice_constructor_1d():
     Xh = np.arange(37, dtype="i4")
-    Xusm = _from_numpy(Xh, device="gpu", usm_type="device")
+    default_device = dpctl.select_default_device()
+    Xusm = _from_numpy(Xh, device=default_device, usm_type="device")
     for ind in [
         slice(1, None, 2),
         slice(0, None, 3),
@@ -193,7 +194,8 @@ def test_slice_constructor_1d():
 
 def test_slice_constructor_3d():
     Xh = np.empty((37, 24, 35), dtype="i4")
-    Xusm = _from_numpy(Xh, device="gpu", usm_type="device")
+    default_device = dpctl.select_default_device()
+    Xusm = _from_numpy(Xh, device=default_device, usm_type="device")
     for ind in [
         slice(1, None, 2),
         slice(0, None, 3),

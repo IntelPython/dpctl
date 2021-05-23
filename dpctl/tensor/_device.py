@@ -40,9 +40,9 @@ class Device:
         Creates instance of Device from argument.
 
         Args:
-            device: None, :class:`.Device`, :class:`dpctl.SyclQueue`, or
-                    a :class:`dpctl.SyclDevice` corresponding to a root
-                    SYCL device.
+            dev: None, :class:`.Device`, :class:`dpctl.SyclQueue`, or
+                 a :class:`dpctl.SyclDevice` corresponding to a root SYCL
+                 device.
         Raises:
             ValueError: if an instance of :class:`dpctl.SycDevice` corresponding
                         to a sub-device was specified as the argument
