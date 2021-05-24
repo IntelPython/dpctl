@@ -1,5 +1,5 @@
 include versioneer.py
-recursive-include dpctl/include *.h *.hpp
+recursive-include dpctl/include *.h
 recursive-include dpctl *.pxd
 include dpctl/_sycl_context.h
 include dpctl/_sycl_device.h
@@ -9,4 +9,3 @@ include dpctl/_sycl_event.h
 include dpctl/memory/_memory.h
 include dpctl/*DPCTL*Interface.*
 include dpctl/tests/input_files/*
-global-exclude *.cpp
