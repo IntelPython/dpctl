@@ -234,10 +234,13 @@ DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     // will be the case for non-root devices, i.e., sub-devices, a new context
     // will be allocated. Note that any newly allocated context is not cached.
     if (!CRef) {
+        context *ContextPtr = nullptr;
         try {
-            CRef = wrap(new context(*Device));
+            ContextPtr = new context(*Device);
+            CRef = wrap(ContextPtr);
         } catch (std::bad_alloc const &ba) {
             std::cerr << ba.what() << std::endl;
+            delete ContextPtr;
             return QRef;
         }
     }
