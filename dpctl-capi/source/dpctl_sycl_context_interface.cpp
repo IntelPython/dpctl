@@ -141,10 +141,12 @@ DPCTLContext_GetDevices(__dpctl_keep const DPCTLSyclContextRef CRef)
         }
         return wrap(DevicesVectorPtr);
     } catch (std::bad_alloc const &ba) {
+        delete DevicesVectorPtr;
         // \todo log error
         std::cerr << ba.what() << '\n';
         return nullptr;
     } catch (const runtime_error &re) {
+        delete DevicesVectorPtr;
         // \todo log error
         std::cerr << re.what() << '\n';
         return nullptr;

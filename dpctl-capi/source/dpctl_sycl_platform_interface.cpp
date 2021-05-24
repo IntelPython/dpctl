@@ -79,14 +79,16 @@ __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
     DPCTLSyclPlatformRef PRef = nullptr;
     auto DS = unwrap(DSRef);
     if (DS) {
+        platform *P = nullptr;
         try {
-            auto P = new platform(*DS);
+            P = new platform(*DS);
             PRef = wrap(P);
         } catch (std::bad_alloc const &ba) {
+            delete P;
             std::cerr << ba.what() << '\n';
         } catch (runtime_error const &re) {
+            delete P;
             std::cerr << re.what() << '\n';
-            return nullptr;
         }
     }
     else {
