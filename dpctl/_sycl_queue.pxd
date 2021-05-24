@@ -22,7 +22,7 @@
 
 from libcpp cimport bool as cpp_bool
 
-from ._backend cimport DPCTLKernelArgType, DPCTLSyclDeviceRef, DPCTLSyclQueueRef
+from ._backend cimport DPCTLSyclDeviceRef, DPCTLSyclQueueRef, _arg_data_type
 from ._sycl_context cimport SyclContext
 from ._sycl_device cimport SyclDevice
 from ._sycl_event cimport SyclEvent
@@ -55,7 +55,7 @@ cdef public class SyclQueue (_SyclQueue) [object PySyclQueueObject, type PySyclQ
         self,
         list args,
         void **kargs,
-        DPCTLKernelArgType *kargty
+        _arg_data_type *kargty
     )
     cdef int _populate_range(self, size_t Range[3], list gS, size_t nGS)
     @staticmethod
