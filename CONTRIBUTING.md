@@ -175,18 +175,15 @@ these steps:
     The coverage data for every PR is also available online at
     [coveralls.io](https://coveralls.io/github/IntelPython/dpctl).
 
-> **_NOTE:_**  Run `git clean -xdf` to clean up the working tree before running
+> **_NOTE:_**
+> 1. Run `git clean -xdf` to clean up the working tree before running
 > a fresh build with code coverage data generation.
-
-## Error in the build process
-
-An error occurs during the dcptl build with the CODE_COVERAGE environment
-variable:
-```
-error: '../compat/unistd.h' file not found, did you mean 'compat/unistd.h'?
-#   include "../compat/unistd.h"
-            ^
-1 error generated.
-```
-The error is related to the `tcl` package.
-You need to remove the tcl package to resolve this error.
+> 2. You may encounter the following error when generating coverage data:
+>    ```
+>    error: '../compat/unistd.h' file not found, did you mean 'compat/unistd.h'?
+>    #   include "../compat/unistd.h"
+>        ^
+>    1 error generated.
+>    ```
+>    The error is related to the `tcl` package. You should uninstall the `tcl`
+> package to resolve the error.
