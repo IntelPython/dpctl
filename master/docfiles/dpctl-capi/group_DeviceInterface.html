@@ -212,7 +212,7 @@ DPCTLDevice_AreEq<span></span><span class="p">(</span>
 DPCTLDevice_Copy<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
-DPCTLDevice_Create<span></span><span class="p">();</span>
+DPCTLDevice_Create<span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
 DPCTLDevice_CreateFromSelector<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span> <span class="n">DSRef</span><span class="p">);</span>
@@ -361,8 +361,8 @@ DPCTLDevice_IsHostUnifiedMemory<span></span><span class="p">(</span><span class=
 </table>
 <p class="rubric">Returns:</p>
 <p>A new DPCTLSyclDeviceRef created by copying the passed in DPCTLSyclDeviceRef object.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-de9-group-deviceinterface-1ga71e1a01764bd7d02441a2cce8ca54d91"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
-<span class="n">DPCTLDevice_Create</span><span class="p">()</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-de9-group-deviceinterface-1gaa0f24449bcf7721e2a23cc6b2c1d291a"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
+<span class="n">DPCTLDevice_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
 <p>Returns a new DPCTLSyclDeviceRef opaque object wrapping a SYCL device instance as a host device.</p>
 <p class="rubric">Returns:</p>
 <p>An opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code> created as an instance of the host device.</p>

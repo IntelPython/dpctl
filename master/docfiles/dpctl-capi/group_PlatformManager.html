@@ -217,7 +217,7 @@ DPCTLPlatformMgr_PrintInfo<span></span><span class="p">(</span>
 DPCTLPlatformVector_Clear<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">);</span>
 
 <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
-DPCTLPlatformVector_Create<span></span><span class="p">();</span>
+DPCTLPlatformVector_Create<span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
 DPCTLPlatformVector_CreateFromArray<span></span><span class="p">(</span>
@@ -280,8 +280,8 @@ DPCTLPlatformVector_Size<span></span><span class="p">(</span><span class="n">__d
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d7-d69-group-platformmanager-1ga0d40f7b5b223e7a373489ad2878a5788"><span id="index-3"></span><span></span><span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
-<span class="n">DPCTLPlatformVector_Create</span><span class="p">()</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d7-d69-group-platformmanager-1ga9d5773827c527bc445bf60ffbf6a6e60"><span id="index-3"></span><span></span><span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
+<span class="n">DPCTLPlatformVector_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
 <p>Create an opaque pointer to a std::vector of opaque pointers wrapping the SYCL data type.</p>
 <p class="rubric">Returns:</p>
 <p>Returns a new opaque pointer to a vector.</p>

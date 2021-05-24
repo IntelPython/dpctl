@@ -232,7 +232,7 @@ DPCTLDeviceMgr_PrintDeviceInfo<span></span><span class="p">(</span><span class="
 DPCTLDeviceVector_Clear<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">);</span>
 
 <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
-DPCTLDeviceVector_Create<span></span><span class="p">();</span>
+DPCTLDeviceVector_Create<span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
 DPCTLDeviceVector_CreateFromArray<span></span><span class="p">(</span>
@@ -390,8 +390,8 @@ DPCTLDeviceVector_Size<span></span><span class="p">(</span><span class="n">__dpc
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1ga574c840aab7f26bf689c3c7c8f04f571"><span id="index-8"></span><span></span><span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
-<span class="n">DPCTLDeviceVector_Create</span><span class="p">()</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-d15-group-devicemanager-1ga6be92e91b53eaff1bedf7f333bac3f88"><span id="index-8"></span><span></span><span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
+<span class="n">DPCTLDeviceVector_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
 <p>Create an opaque pointer to a std::vector of opaque pointers wrapping the SYCL data type.</p>
 <p class="rubric">Returns:</p>
 <p>Returns a new opaque pointer to a vector.</p>

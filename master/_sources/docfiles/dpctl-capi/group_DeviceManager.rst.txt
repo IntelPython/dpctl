@@ -48,7 +48,7 @@ Helper functions for sycl::device objects that do not directly map to any sycl::
 	:ref:`DPCTLDeviceVector_Clear<doxid-d0/d15/group__DeviceManager_1gad1a650d77c292d10e48f76b5d10ec37f>`(__dpctl_keep :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` VRef);
 
 	__dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
-	:ref:`DPCTLDeviceVector_Create<doxid-d0/d15/group__DeviceManager_1ga574c840aab7f26bf689c3c7c8f04f571>`();
+	:ref:`DPCTLDeviceVector_Create<doxid-d0/d15/group__DeviceManager_1ga6be92e91b53eaff1bedf7f333bac3f88>`(void);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
 	:ref:`DPCTLDeviceVector_CreateFromArray<doxid-d0/d15/group__DeviceManager_1ga5d498e683c8a82f38b74bccf89ab85df>`(
@@ -296,13 +296,13 @@ Delete all the elements of the std::vector.
 		- Opaque pointer to a vector.
 
 .. index:: pair: function; DPCTLDeviceVector_Create
-.. _doxid-d0/d15/group__DeviceManager_1ga574c840aab7f26bf689c3c7c8f04f571:
+.. _doxid-d0/d15/group__DeviceManager_1ga6be92e91b53eaff1bedf7f333bac3f88:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
 	__dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
-	DPCTLDeviceVector_Create()
+	DPCTLDeviceVector_Create(void)
 
 Create an opaque pointer to a std::vector of opaque pointers wrapping the SYCL data type.
 

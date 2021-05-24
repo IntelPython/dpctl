@@ -206,7 +206,7 @@
 DPCTLPlatform_Copy<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span>
-DPCTLPlatform_Create<span></span><span class="p">();</span>
+DPCTLPlatform_Create<span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span>
 DPCTLPlatform_CreateFromSelector<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span> <span class="n">DSRef</span><span class="p">);</span>
@@ -221,7 +221,7 @@ DPCTLPlatform_GetBackend<span></span><span class="p">(</span><span class="n">__d
 DPCTLPlatform_GetName<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="group_PlatformManager.html#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
-DPCTLPlatform_GetPlatforms<span></span><span class="p">();</span>
+DPCTLPlatform_GetPlatforms<span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="k">const</span> <span class="n">__dpctl_give</span> <span class="kt">char</span><span class="o">*</span>
 DPCTLPlatform_GetVendor<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">);</span>
@@ -250,8 +250,8 @@ DPCTLPlatform_GetVersion<span></span><span class="p">(</span><span class="n">__d
 </table>
 <p class="rubric">Returns:</p>
 <p>A new DPCTLSyclPlatformRef created by copying the passed in DPCTLSyclPlatformRef object.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-df8-group-platforminterface-1gacd673cdf058cee9a7422cc55ea0d0357"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span>
-<span class="n">DPCTLPlatform_Create</span><span class="p">()</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-df8-group-platforminterface-1ga6b3412dfc90659a68beb778747211115"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span>
+<span class="n">DPCTLPlatform_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
 <p>Creates a new DPCTLSyclPlatformRef for a SYCL platform constructed using SYCL’s default_selector.</p>
 <p class="rubric">Returns:</p>
 <p>A new DPCTLSyclPlatformRef pointer wrapping a SYCL platform object.</p>
@@ -321,8 +321,8 @@ DPCTLPlatform_GetVersion<span></span><span class="p">(</span><span class="n">__d
 </table>
 <p class="rubric">Returns:</p>
 <p>A C string containing the name of the sycl::platform.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-df8-group-platforminterface-1ga91988efbe3617c0edf35d3a0bc2bcf86"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="group_PlatformManager.html#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
-<span class="n">DPCTLPlatform_GetPlatforms</span><span class="p">()</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-df8-group-platforminterface-1gacdbf951bfb74e4578af431fa2a7063cb"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="group_PlatformManager.html#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
+<span class="n">DPCTLPlatform_GetPlatforms</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
 <p>Returns an opaque pointer to a vector of SYCL platforms available on the system.</p>
 <p class="rubric">Returns:</p>
 <p>A <span class="xref std std-ref">DPCTLPlatformVectorRef</span> containing <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a> objects.</p>
