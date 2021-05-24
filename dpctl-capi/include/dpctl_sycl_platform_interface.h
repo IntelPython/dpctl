@@ -59,7 +59,7 @@ DPCTLPlatform_Copy(__dpctl_keep const DPCTLSyclPlatformRef PRef);
  * @ingroup PlatformInterface
  */
 DPCTL_API
-__dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_Create();
+__dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_Create(void);
 
 /*!
  * @brief Creates a new DPCTLSyclPlatformRef for a SYCL platform constructed
@@ -140,6 +140,6 @@ DPCTLPlatform_GetVersion(__dpctl_keep const DPCTLSyclPlatformRef PRef);
  * @ingroup PlatformInterface
  */
 DPCTL_API
-__dpctl_give DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms();
+__dpctl_give DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms(void);
 
 DPCTL_C_EXTERN_C_END

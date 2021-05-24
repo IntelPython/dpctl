@@ -35,7 +35,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * @brief Redefinition of DPC++-specific Sycl backend types.
  *
  */
-enum DPCTLSyclBackendType
+typedef enum
 {
     // clang-format off
     DPCTL_CUDA            = 1 << 16,
@@ -45,13 +45,13 @@ enum DPCTLSyclBackendType
     DPCTL_UNKNOWN_BACKEND = 0,
     DPCTL_ALL_BACKENDS    = ((1<<5)-1) << 16
     // clang-format on
-};
+} DPCTLSyclBackendType;
 
 /*!
  * @brief DPCTL device types that are equivalent to Sycl's device_type.
  *
  */
-enum DPCTLSyclDeviceType
+typedef enum
 {
     // Note: before adding new values here look at DPCTLSyclBackendType enum.
     // The values should not overlap.
@@ -66,7 +66,7 @@ enum DPCTLSyclDeviceType
     DPCTL_ALL            = (1 << 6) - 1,
     DPCTL_UNKNOWN_DEVICE = 0
     // clang-format on
-};
+} DPCTLSyclDeviceType;
 
 /*!
  * @brief Supported types for kernel arguments to be passed to a Sycl kernel
@@ -100,7 +100,7 @@ typedef enum
  * characteristics of the device.
  *
  */
-enum DPCTLSyclAspectType
+typedef enum
 {
     host,
     cpu,
@@ -120,13 +120,13 @@ enum DPCTLSyclAspectType
     usm_shared_allocations,
     usm_restricted_shared_allocations,
     usm_system_allocator
-};
+} DPCTLSyclAspectType;
 
 /*!
  * @brief DPCTL analogue of ``sycl::info::partition_affinity_domain`` enum.
  *
  */
-enum DPCTLPartitionAffinityDomainType
+typedef enum
 {
     not_applicable,
     numa,
@@ -135,7 +135,7 @@ enum DPCTLPartitionAffinityDomainType
     L2_cache,
     L1_cache,
     next_partitionable
-};
+} DPCTLPartitionAffinityDomainType;
 
 /*!
  * @brief Enums to depict the properties that can be passed to a sycl::queue

@@ -74,10 +74,8 @@ from ._backend cimport (  # noqa: E211
     DPCTLDeviceVectorRef,
     DPCTLFilterSelector_Create,
     DPCTLSize_t_Array_Delete,
-    DPCTLSyclBackendType,
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
-    DPCTLSyclDeviceType,
     _aspect_type,
     _backend_type,
     _device_type,
@@ -136,7 +134,7 @@ cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
     return devices
 
 
-cdef str _backend_type_to_filter_string_part(DPCTLSyclBackendType BTy):
+cdef str _backend_type_to_filter_string_part(_backend_type BTy):
     if BTy == _backend_type._CUDA:
         return "cuda"
     elif BTy == _backend_type._HOST:
@@ -149,7 +147,7 @@ cdef str _backend_type_to_filter_string_part(DPCTLSyclBackendType BTy):
         return "unknown"
 
 
-cdef str _device_type_to_filter_string_part(DPCTLSyclDeviceType DTy):
+cdef str _device_type_to_filter_string_part(_device_type DTy):
     if DTy == _device_type._ACCELERATOR:
         return "accelerator"
     elif DTy == _device_type._AUTOMATIC:
@@ -317,7 +315,7 @@ cdef class SyclDevice(_SyclDevice):
         Returns:
             backend_type: The backend for the device.
         """
-        cdef DPCTLSyclBackendType BTy = (
+        cdef _backend_type BTy = (
             DPCTLDevice_GetBackend(self._device_ref)
         )
         if BTy == _backend_type._CUDA:
@@ -340,7 +338,7 @@ cdef class SyclDevice(_SyclDevice):
         Raises:
             A ValueError is raised if the device type is not recognized.
         """
-        cdef DPCTLSyclDeviceType DTy = (
+        cdef _device_type DTy = (
             DPCTLDevice_GetDeviceType(self._device_ref)
         )
         if DTy == _device_type._ACCELERATOR:
@@ -847,8 +845,8 @@ cdef class SyclDevice(_SyclDevice):
                 assert level_zero_gpu == dev
         """
         cdef DPCTLSyclDeviceRef pDRef = NULL
-        cdef DPCTLSyclBackendType BTy
-        cdef DPCTLSyclDeviceType DTy
+        cdef _backend_type BTy
+        cdef _device_type DTy
         cdef int64_t relId = -1
         pDRef = DPCTLDevice_GetParentDevice(self._device_ref)
         if (pDRef is NULL):
@@ -888,7 +886,7 @@ cdef class SyclDevice(_SyclDevice):
         Returns -1 if the device is a sub-device, or the device could not
         be found in the vector.
         """
-        cdef DPCTLSyclDeviceType DTy
+        cdef _device_type DTy
         cdef int64_t relId = -1
 
         DTy = DPCTLDevice_GetDeviceType(self._device_ref)
@@ -906,7 +904,7 @@ cdef class SyclDevice(_SyclDevice):
         Returns -1 if the device is a sub-device, or the device could not
         be found in the vector.
         """
-        cdef DPCTLSyclBackendType BTy
+        cdef _backend_type BTy
         cdef int64_t relId = -1
 
         BTy = DPCTLDevice_GetBackend(self._device_ref)
@@ -956,8 +954,8 @@ cdef class SyclDevice(_SyclDevice):
         """
         cdef int relId = -1
         cdef DPCTLSyclDeviceRef pDRef = NULL
-        cdef DPCTLSyclDeviceType DTy
-        cdef DPCTLSyclBackendType BTy
+        cdef _device_type DTy
+        cdef _backend_type BTy
 
         if include_backend:
             if include_device_type:

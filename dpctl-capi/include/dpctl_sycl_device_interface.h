@@ -62,7 +62,7 @@ DPCTLDevice_Copy(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_give DPCTLSyclDeviceRef DPCTLDevice_Create();
+__dpctl_give DPCTLSyclDeviceRef DPCTLDevice_Create(void);
 
 /*!
  * @brief Returns a new DPCTLSyclDeviceRef opaque object created using the
