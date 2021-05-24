@@ -22,6 +22,7 @@ import numpy as np
 import setuptools.command.build_ext as orig_build_ext
 import setuptools.command.develop as orig_develop
 import setuptools.command.install as orig_install
+from Cython.Build import cythonize
 from setuptools import Extension, find_packages, setup
 
 import versioneer
@@ -124,17 +125,11 @@ def extensions():
 
     if IS_LIN:
         libs += ["rt", "DPCTLSyclInterface"]
-    elif IS_WIN:
-        libs += ["DPCTLSyclInterface"]
-
-    if IS_LIN:
         libraries = [dpctl_sycl_interface_lib]
-    elif IS_WIN:
-        libraries = [dpctl_sycl_interface_lib]
-
-    if IS_LIN:
         runtime_library_dirs = ["$ORIGIN"]
     elif IS_WIN:
+        libs += ["DPCTLSyclInterface"]
+        libraries = [dpctl_sycl_interface_lib]
         runtime_library_dirs = []
 
     extension_args = {
@@ -237,7 +232,6 @@ def extensions():
             define_macros=extension_args["define_macros"],
         ),
     ]
-    # ext = cythonize(extensions, language_level=3)
     return extensions
 
 
@@ -245,7 +239,6 @@ class build_ext(orig_build_ext.build_ext):
     description = "Build dpctl native extensions"
 
     def finalize_options(self):
-        global _coverage
         if _coverage:
             pre_d = getattr(self, "define", None)
             if pre_d is None:
@@ -308,6 +301,13 @@ class install(orig_install.install):
 
     def run(self):
         build_backend(self.level_zero_support, False, self.sycl_compiler_prefix)
+        if _coverage:
+            pre_d = getattr(self, "define", None)
+            if pre_d is None:
+                self.define = "CYTHON_TRACE"
+            else:
+                self.define = ",".join((pre_d, "CYTHON_TRACE"))
+        cythonize(self.distribution.ext_modules)
         return super().run()
 
 
@@ -378,6 +378,13 @@ class develop(orig_develop.develop):
         build_backend(
             self.level_zero_support, self.coverage, self.sycl_compiler_prefix
         )
+        if _coverage:
+            pre_d = getattr(self, "define", None)
+            if pre_d is None:
+                self.define = "CYTHON_TRACE"
+            else:
+                self.define = ",".join((pre_d, "CYTHON_TRACE"))
+        cythonize(self.distribution.ext_modules)
         return super().run()
 
 
