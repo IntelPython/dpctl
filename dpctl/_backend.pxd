@@ -34,7 +34,7 @@ cdef extern from "dpctl_utils.h":
 
 
 cdef extern from "dpctl_sycl_enum_types.h":
-    cdef enum _backend_type 'DPCTLSyclBackendType':
+    ctypedef enum _backend_type 'DPCTLSyclBackendType':
         _ALL_BACKENDS    'DPCTL_ALL_BACKENDS'
         _CUDA            'DPCTL_CUDA'
         _HOST            'DPCTL_HOST'
@@ -42,9 +42,7 @@ cdef extern from "dpctl_sycl_enum_types.h":
         _OPENCL          'DPCTL_OPENCL'
         _UNKNOWN_BACKEND 'DPCTL_UNKNOWN_BACKEND'
 
-    ctypedef _backend_type DPCTLSyclBackendType
-
-    cdef enum _device_type 'DPCTLSyclDeviceType':
+    ctypedef enum _device_type 'DPCTLSyclDeviceType':
         _ACCELERATOR    'DPCTL_ACCELERATOR'
         _ALL_DEVICES    'DPCTL_ALL'
         _AUTOMATIC      'DPCTL_AUTOMATIC'
@@ -54,9 +52,7 @@ cdef extern from "dpctl_sycl_enum_types.h":
         _HOST_DEVICE    'DPCTL_HOST_DEVICE'
         _UNKNOWN_DEVICE 'DPCTL_UNKNOWN_DEVICE'
 
-    ctypedef _device_type DPCTLSyclDeviceType
-
-    cdef enum _arg_data_type 'DPCTLKernelArgType':
+    ctypedef enum _arg_data_type 'DPCTLKernelArgType':
         _CHAR               'DPCTL_CHAR',
         _SIGNED_CHAR        'DPCTL_SIGNED_CHAR',
         _UNSIGNED_CHAR      'DPCTL_UNSIGNED_CHAR',
@@ -74,14 +70,12 @@ cdef extern from "dpctl_sycl_enum_types.h":
         _LONG_DOUBLE        'DPCTL_DOUBLE',
         _VOID_PTR           'DPCTL_VOID_PTR'
 
-    ctypedef _arg_data_type DPCTLKernelArgType
-
     ctypedef enum _queue_property_type 'DPCTLQueuePropertyType':
         _DEFAULT_PROPERTY   'DPCTL_DEFAULT_PROPERTY'
         _ENABLE_PROFILING   'DPCTL_ENABLE_PROFILING'
         _IN_ORDER           'DPCTL_IN_ORDER'
 
-    cdef enum _aspect_type 'DPCTLSyclAspectType':
+    ctypedef enum _aspect_type 'DPCTLSyclAspectType':
         _host                               'host',
         _cpu                                'cpu',
         _gpu                                'gpu',
@@ -101,10 +95,7 @@ cdef extern from "dpctl_sycl_enum_types.h":
         _usm_restricted_shared_allocations  'usm_restricted_shared_allocations',
         _usm_system_allocator               'usm_system_allocator'
 
-    ctypedef _aspect_type DPCTLSyclAspectType
-
-
-    cdef enum _partition_affinity_domain_type 'DPCTLPartitionAffinityDomainType':
+    ctypedef enum _partition_affinity_domain_type 'DPCTLPartitionAffinityDomainType':
         _not_applicable                     'not_applicable',
         _numa                               'numa',
         _L4_cache                           'L4_cache',
@@ -112,8 +103,6 @@ cdef extern from "dpctl_sycl_enum_types.h":
         _L2_cache                           'L2_cache',
         _L1_cache                           'L1_cache',
         _next_partitionable                 'next_partitionable',
-
-    ctypedef _partition_affinity_domain_type DPCTLPartitionAffinityDomainType
 
 
 cdef extern from "dpctl_sycl_types.h":
@@ -151,10 +140,8 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
         const DPCTLSyclDeviceSelectorRef DSRef)
     cdef void DPCTLDevice_Delete(DPCTLSyclDeviceRef DRef)
-    cdef DPCTLSyclBackendType DPCTLDevice_GetBackend(
-        const DPCTLSyclDeviceRef DRef)
-    cdef DPCTLSyclDeviceType DPCTLDevice_GetDeviceType(
-        const DPCTLSyclDeviceRef DRef)
+    cdef _backend_type DPCTLDevice_GetBackend(const DPCTLSyclDeviceRef)
+    cdef _device_type DPCTLDevice_GetDeviceType(const DPCTLSyclDeviceRef)
     cdef const char *DPCTLDevice_GetDriverVersion(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetMaxComputeUnits(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetMaxNumSubGroups(const DPCTLSyclDeviceRef DRef)
@@ -178,8 +165,7 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef uint32_t DPCTLDevice_GetPreferredVectorWidthFloat(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetPreferredVectorWidthDouble(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(const DPCTLSyclDeviceRef DRef)
-    cpdef bool DPCTLDevice_HasAspect(
-        const DPCTLSyclDeviceRef DRef, DPCTLSyclAspectType AT)
+    cpdef bool DPCTLDevice_HasAspect(const DPCTLSyclDeviceRef, _aspect_type)
     cdef uint32_t DPCTLDevice_GetMaxReadImageArgs(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetMaxWriteImageArgs(const DPCTLSyclDeviceRef DRef)
     cdef size_t DPCTLDevice_GetImage2dMaxWidth(const DPCTLSyclDeviceRef DRef)
@@ -193,7 +179,7 @@ cdef extern from "dpctl_sycl_device_interface.h":
         const DPCTLSyclDeviceRef DRef, size_t *counts, size_t ncounts)
     cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
         const DPCTLSyclDeviceRef DRef,
-        DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy)
+        _partition_affinity_domain_type PartitionAffinityDomainTy)
     cdef DPCTLSyclDeviceRef DPCTLDevice_GetParentDevice(const DPCTLSyclDeviceRef DRef)
 
 
@@ -259,8 +245,7 @@ cdef extern from "dpctl_sycl_platform_interface.h":
     cdef DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
         const DPCTLSyclDeviceSelectorRef)
     cdef void DPCTLPlatform_Delete(DPCTLSyclPlatformRef)
-    cdef DPCTLSyclBackendType DPCTLPlatform_GetBackend(
-        const DPCTLSyclPlatformRef)
+    cdef _backend_type DPCTLPlatform_GetBackend(const DPCTLSyclPlatformRef)
     cdef const char *DPCTLPlatform_GetName(const DPCTLSyclPlatformRef)
     cdef const char *DPCTLPlatform_GetVendor(const DPCTLSyclPlatformRef)
     cdef const char *DPCTLPlatform_GetVersion(const DPCTLSyclPlatformRef)
@@ -283,8 +268,7 @@ cdef extern from "dpctl_sycl_context_interface.h":
     cdef size_t DPCTLContext_DeviceCount(const DPCTLSyclContextRef CRef)
     cdef bool DPCTLContext_AreEq(const DPCTLSyclContextRef CtxRef1,
                                  const DPCTLSyclContextRef CtxRef2)
-    cdef DPCTLSyclBackendType DPCTLContext_GetBackend(
-        const DPCTLSyclContextRef CtxRef)
+    cdef _backend_type DPCTLContext_GetBackend(const DPCTLSyclContextRef)
     cdef void DPCTLContext_Delete(DPCTLSyclContextRef CtxRef)
 
 
@@ -320,14 +304,14 @@ cdef extern from "dpctl_sycl_queue_interface.h":
         int properties)
     cdef void DPCTLQueue_Delete(DPCTLSyclQueueRef QRef)
     cdef DPCTLSyclQueueRef DPCTLQueue_Copy(DPCTLSyclQueueRef QRef)
-    cdef DPCTLSyclBackendType DPCTLQueue_GetBackend(const DPCTLSyclQueueRef Q)
+    cdef _backend_type DPCTLQueue_GetBackend(const DPCTLSyclQueueRef Q)
     cdef DPCTLSyclContextRef DPCTLQueue_GetContext(const DPCTLSyclQueueRef Q)
     cdef DPCTLSyclDeviceRef DPCTLQueue_GetDevice(const DPCTLSyclQueueRef Q)
     cdef DPCTLSyclEventRef  DPCTLQueue_SubmitRange(
         const DPCTLSyclKernelRef Ref,
         const DPCTLSyclQueueRef QRef,
         void **Args,
-        const DPCTLKernelArgType *ArgTypes,
+        const _arg_data_type *ArgTypes,
         size_t NArgs,
         const size_t Range[3],
         size_t NDims,
@@ -337,7 +321,7 @@ cdef extern from "dpctl_sycl_queue_interface.h":
         const DPCTLSyclKernelRef Ref,
         const DPCTLSyclQueueRef QRef,
         void **Args,
-        const DPCTLKernelArgType *ArgTypes,
+        const _arg_data_type *ArgTypes,
         size_t NArgs,
         const size_t gRange[3],
         const size_t lRange[3],

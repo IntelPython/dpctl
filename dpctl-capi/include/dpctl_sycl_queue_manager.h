@@ -55,7 +55,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * @ingroup QueueManager
  */
 DPCTL_API
-__dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue();
+__dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue(void);
 
 /*!
  * @brief Returns true if the global queue set for the queue manager is also the
@@ -72,7 +72,7 @@ __dpctl_give DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue();
  * @ingroup QueueManager
  */
 DPCTL_API
-bool DPCTLQueueMgr_GlobalQueueIsCurrent();
+bool DPCTLQueueMgr_GlobalQueueIsCurrent(void);
 
 /*!
  * @brief Check if the queue argument is also the current queue.
@@ -121,7 +121,7 @@ void DPCTLQueueMgr_PushQueue(__dpctl_keep const DPCTLSyclQueueRef QRef);
  * @ingroup QueueManager
  */
 DPCTL_API
-void DPCTLQueueMgr_PopQueue();
+void DPCTLQueueMgr_PopQueue(void);
 
 /*!
  * @brief A helper function meant for unit testing. Returns the current number
@@ -132,6 +132,6 @@ void DPCTLQueueMgr_PopQueue();
  * @ingroup QueueManager
  */
 DPCTL_API
-size_t DPCTLQueueMgr_GetQueueStackSize();
+size_t DPCTLQueueMgr_GetQueueStackSize(void);
 
 DPCTL_C_EXTERN_C_END

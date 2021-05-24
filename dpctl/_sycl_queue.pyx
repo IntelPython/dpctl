@@ -47,7 +47,6 @@ from ._backend cimport (  # noqa: E211
     DPCTLQueue_SubmitNDRange,
     DPCTLQueue_SubmitRange,
     DPCTLQueue_Wait,
-    DPCTLSyclBackendType,
     DPCTLSyclContextRef,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclEventRef,
@@ -639,7 +638,7 @@ cdef class SyclQueue(_SyclQueue):
     def get_sycl_backend(self):
         """ Returns the Sycl backend associated with the queue.
         """
-        cdef DPCTLSyclBackendType BE = DPCTLQueue_GetBackend(self._queue_ref)
+        cdef _backend_type BE = DPCTLQueue_GetBackend(self._queue_ref)
         if BE == _backend_type._OPENCL:
             return backend_type.opencl
         elif BE == _backend_type._LEVEL_ZERO:

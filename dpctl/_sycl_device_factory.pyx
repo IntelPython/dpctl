@@ -40,10 +40,8 @@ from ._backend cimport (  # noqa: E211
     DPCTLDeviceVectorRef,
     DPCTLGPUSelector_Create,
     DPCTLHostSelector_Create,
-    DPCTLSyclBackendType,
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
-    DPCTLSyclDeviceType,
     _backend_type,
     _device_type,
 )
@@ -171,8 +169,8 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
         satisfy the provided :class:`dpctl.backend_type` and
         :class:`dpctl.device_type` values.
     """
-    cdef DPCTLSyclBackendType BTy = _backend_type._ALL_BACKENDS
-    cdef DPCTLSyclDeviceType DTy = _device_type._ALL_DEVICES
+    cdef _backend_type BTy = _backend_type._ALL_BACKENDS
+    cdef _device_type DTy = _device_type._ALL_DEVICES
     cdef DPCTLDeviceVectorRef DVRef = NULL
     cdef list devices
 
@@ -222,8 +220,8 @@ cpdef int get_num_devices(
         int: The number of available SYCL devices that satisfy the provided
         :class:`dpctl.backend_type` and :class:`dpctl.device_type` values.
     """
-    cdef DPCTLSyclBackendType BTy = _backend_type._ALL_BACKENDS
-    cdef DPCTLSyclDeviceType DTy = _device_type._ALL_DEVICES
+    cdef _backend_type BTy = _backend_type._ALL_BACKENDS
+    cdef _device_type DTy = _device_type._ALL_DEVICES
     cdef int num_devices = 0
 
     if isinstance(backend, str):
