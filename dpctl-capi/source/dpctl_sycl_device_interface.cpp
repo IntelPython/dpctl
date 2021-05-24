@@ -587,13 +587,18 @@ DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                 Devices->emplace_back(wrap(new device(sd)));
             }
         } catch (std::bad_alloc const &ba) {
+            delete Devices;
             std::cerr << ba.what() << '\n';
             return nullptr;
         } catch (feature_not_supported const &fnse) {
+            delete Devices;
             std::cerr << fnse.what() << '\n';
+            return nullptr;
         } catch (runtime_error const &re) {
+            delete Devices;
             // \todo log error
             std::cerr << re.what() << '\n';
+            return nullptr;
         }
     }
     return wrap(Devices);
@@ -617,13 +622,18 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                 Devices->emplace_back(wrap(new device(sd)));
             }
         } catch (std::bad_alloc const &ba) {
+            delete Devices;
             std::cerr << ba.what() << '\n';
             return nullptr;
         } catch (feature_not_supported const &fnse) {
+            delete Devices;
             std::cerr << fnse.what() << '\n';
+            return nullptr;
         } catch (runtime_error const &re) {
+            delete Devices;
             // \todo log error
             std::cerr << re.what() << '\n';
+            return nullptr;
         }
     }
     return wrap(Devices);
@@ -646,13 +656,18 @@ __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
                 Devices->emplace_back(wrap(new device(sd)));
             }
         } catch (std::bad_alloc const &ba) {
+            delete Devices;
             std::cerr << ba.what() << '\n';
             return nullptr;
         } catch (feature_not_supported const &fnse) {
+            delete Devices;
             std::cerr << fnse.what() << '\n';
+            return nullptr;
         } catch (runtime_error const &re) {
+            delete Devices;
             // \todo log error
             std::cerr << re.what() << '\n';
+            return nullptr;
         }
     }
     return wrap(Devices);

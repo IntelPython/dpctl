@@ -39,10 +39,12 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<SYCLREF(EL)>, VECTOR(EL))
  */
 __dpctl_give VECTOR(EL) FN(EL, Create)()
 {
+    vector_class<SYCLREF(EL)> *Vec = nullptr;
     try {
-        auto Vec = new vector_class<SYCLREF(EL)>();
+        Vec = new vector_class<SYCLREF(EL)>();
         return wrap(Vec);
     } catch (std::bad_alloc const &ba) {
+        delete Vec;
         return nullptr;
     }
 }
@@ -56,8 +58,9 @@ __dpctl_give VECTOR(EL) FN(EL, Create)()
 __dpctl_give VECTOR(EL)
     FN(EL, CreateFromArray)(size_t n, __dpctl_keep SYCLREF(EL) * elems)
 {
+    vector_class<SYCLREF(EL)> *Vec = nullptr;
     try {
-        auto Vec = new vector_class<SYCLREF(EL)>();
+        Vec = new vector_class<SYCLREF(EL)>();
         for (size_t i = 0; i < n; ++i) {
             auto Ref = unwrap(elems[i]);
             Vec->emplace_back(
@@ -65,6 +68,7 @@ __dpctl_give VECTOR(EL)
         }
         return wrap(Vec);
     } catch (std::bad_alloc const &ba) {
+        delete Vec;
         return nullptr;
     }
 }
@@ -125,13 +129,20 @@ SYCLREF(EL) FN(EL, GetAt)(__dpctl_keep VECTOR(EL) VRef, size_t index)
     auto Vec = unwrap(VRef);
     SYCLREF(EL) copy = nullptr;
     if (Vec) {
+        SYCLREF(EL) ret;
         try {
-            auto ret = Vec->at(index);
-            auto Ref = unwrap(ret);
-            copy = wrap(new std::remove_pointer<decltype(Ref)>::type(*Ref));
+            ret = Vec->at(index);
         } catch (std::out_of_range const &oor) {
             std::cerr << oor.what() << '\n';
+            return nullptr;
+        }
+        auto Ref = unwrap(ret);
+        std::remove_pointer<decltype(Ref)>::type *elPtr = nullptr;
+        try {
+            elPtr = new std::remove_pointer<decltype(Ref)>::type(*Ref);
+            copy = wrap(elPtr);
         } catch (std::bad_alloc const &ba) {
+            delete elPtr;
             // \todo log error
             std::cerr << ba.what() << '\n';
             return nullptr;

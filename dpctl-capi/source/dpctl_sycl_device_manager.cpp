@@ -123,10 +123,13 @@ DPCTLDeviceMgr_GetCachedContext(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     auto &cache = DeviceCacheBuilder::getDeviceCache();
     auto entry = cache.find(*Device);
     if (entry != cache.end()) {
+        context *ContextPtr = nullptr;
         try {
-            CRef = wrap(new context(entry->second));
+            ContextPtr = new context(entry->second);
+            CRef = wrap(ContextPtr);
         } catch (std::bad_alloc const &ba) {
             std::cerr << ba.what() << std::endl;
+            delete ContextPtr;
             CRef = nullptr;
         }
     }
@@ -144,6 +147,7 @@ DPCTLDeviceMgr_GetDevices(int device_identifier)
     try {
         Devices = new vector_class<DPCTLSyclDeviceRef>();
     } catch (std::bad_alloc const &ba) {
+        delete Devices;
         return nullptr;
     }
     const auto &root_devices = device::get_devices();
