@@ -41,7 +41,6 @@ from ._backend cimport (  # noqa: E211
     DPCTLPlatformVector_GetAt,
     DPCTLPlatformVector_Size,
     DPCTLPlatformVectorRef,
-    DPCTLSyclBackendType,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclPlatformRef,
     _backend_type,
@@ -241,7 +240,7 @@ cdef class SyclPlatform(_SyclPlatform):
         Returns:
             backend_type: The backend for the device.
         """
-        cdef DPCTLSyclBackendType BTy = (
+        cdef _backend_type BTy = (
             DPCTLPlatform_GetBackend(self._platform_ref)
         )
         if BTy == _backend_type._CUDA:

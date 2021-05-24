@@ -47,7 +47,6 @@ from ._backend cimport (  # noqa: E211
     DPCTLQueue_SubmitNDRange,
     DPCTLQueue_SubmitRange,
     DPCTLQueue_Wait,
-    DPCTLSyclBackendType,
     DPCTLSyclContextRef,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclEventRef,
@@ -547,7 +546,7 @@ cdef class SyclQueue(_SyclQueue):
         self,
         list args,
         void **kargs,
-        DPCTLKernelArgType *kargty
+        _arg_data_type *kargty
     ):
         cdef int ret = 0
         for idx, arg in enumerate(args):
@@ -639,7 +638,7 @@ cdef class SyclQueue(_SyclQueue):
     def get_sycl_backend(self):
         """ Returns the Sycl backend associated with the queue.
         """
-        cdef DPCTLSyclBackendType BE = DPCTLQueue_GetBackend(self._queue_ref)
+        cdef _backend_type BE = DPCTLQueue_GetBackend(self._queue_ref)
         if BE == _backend_type._OPENCL:
             return backend_type.opencl
         elif BE == _backend_type._LEVEL_ZERO:
@@ -688,7 +687,7 @@ cdef class SyclQueue(_SyclQueue):
         list dEvents=None
     ):
         cdef void **kargs = NULL
-        cdef DPCTLKernelArgType *kargty = NULL
+        cdef _arg_data_type *kargty = NULL
         cdef DPCTLSyclEventRef *depEvents = NULL
         cdef DPCTLSyclEventRef Eref = NULL
         cdef int ret
@@ -703,7 +702,7 @@ cdef class SyclQueue(_SyclQueue):
         if not kargs:
             raise MemoryError()
         kargty = (
-            <DPCTLKernelArgType*>malloc(len(args)*sizeof(DPCTLKernelArgType))
+            <_arg_data_type*>malloc(len(args)*sizeof(_arg_data_type))
         )
         if not kargty:
             free(kargs)

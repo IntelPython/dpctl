@@ -44,7 +44,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * @ingroup DeviceSelectors
  */
 DPCTL_API
-__dpctl_give DPCTLSyclDeviceSelectorRef DPCTLAcceleratorSelector_Create();
+__dpctl_give DPCTLSyclDeviceSelectorRef DPCTLAcceleratorSelector_Create(void);
 
 /*!
  * @brief Returns an opaque wrapper for sycl::default_selector object.
@@ -53,7 +53,7 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLAcceleratorSelector_Create();
  * @ingroup DeviceSelectors
  */
 DPCTL_API
-__dpctl_give DPCTLSyclDeviceSelectorRef DPCTLDefaultSelector_Create();
+__dpctl_give DPCTLSyclDeviceSelectorRef DPCTLDefaultSelector_Create(void);
 
 /*!
  * @brief Returns an opaque wrapper for sycl::cpu_selector object.
@@ -62,7 +62,7 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLDefaultSelector_Create();
  * @ingroup DeviceSelectors
  */
 DPCTL_API
-__dpctl_give DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create();
+__dpctl_give DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create(void);
 
 /*!
  * @brief Returns an opaque wrapper for sycl::ONEAPI::filter_selector object
@@ -84,7 +84,7 @@ DPCTLFilterSelector_Create(__dpctl_keep const char *filter_str);
  * @ingroup DeviceSelectors
  */
 DPCTL_API
-__dpctl_give DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create();
+__dpctl_give DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create(void);
 
 /*!
  * @brief Returns an opaque wrapper for sycl::host_selector object.
@@ -93,7 +93,7 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create();
  * @ingroup DeviceSelectors
  */
 DPCTL_API
-__dpctl_give DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create();
+__dpctl_give DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create(void);
 
 /*!
  * @brief Deletes the DPCTLSyclDeviceSelectorRef after casting it to a

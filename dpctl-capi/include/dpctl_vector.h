@@ -47,7 +47,7 @@ DPCTL_C_EXTERN_C_BEGIN
        @return Returns a new opaque pointer to a vector.                       \
      */                                                                        \
     DPCTL_API                                                                  \
-    __dpctl_give DPCTL##EL##VectorRef DPCTL##EL##Vector_Create();              \
+    __dpctl_give DPCTL##EL##VectorRef DPCTL##EL##Vector_Create(void);          \
     /*!                                                                        \
        @brief Create an opaque pointer to a std::vector created from the       \
        input raw array. The elements of the input array are deep copied before \
