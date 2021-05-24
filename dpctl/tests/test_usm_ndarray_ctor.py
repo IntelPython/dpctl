@@ -77,7 +77,8 @@ def test_allocate_usm_ndarray(shape, usm_type):
     ],
 )
 def test_dtypes(dtype):
-    dpt.usm_ndarray((1,), dtype=dtype)
+    Xusm = dpt.usm_ndarray((1,), dtype=dtype)
+    assert Xusm.itemsize == np.dtype(dtype).itemsize
 
 
 def test_properties():

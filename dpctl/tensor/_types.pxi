@@ -36,24 +36,6 @@ cdef int UAR_CDOUBLE = 15
 cdef int UAR_TYPE_SENTINEL = 17
 cdef int UAR_HALF = 23
 
-cdef str _make_typestr(int typenum):
-    """
-    Make typestring from type number
-    """
-    cdef type_to_str = ['|b1', '|i1', '|u1', '|i2', '|u2',
-                        '|i4', '|u4', '|i4', '|u4', '|i8', '|u8',
-                        '|f4', '|f8', '', '|c8', '|c16', '']
-
-    if (typenum < 0):
-        return ""
-    if (typenum > 16):
-        if (typenum == 23):
-            return "|f2"
-        return ""
-
-    return type_to_str[typenum]
-
-
 cdef int type_bytesize(int typenum):
     """
     NPY_BOOL=0         : 1
@@ -61,10 +43,10 @@ cdef int type_bytesize(int typenum):
     NPY_UBYTE=2        : 1
     NPY_SHORT=3        : 2
     NPY_USHORT=4       : 2
-    NPY_INT=5          : 4
-    NPY_UINT=6         : 4
-    NPY_LONG=7         : 4
-    NPY_ULONG=8        : 4
+    NPY_INT=5          : sizeof(int)
+    NPY_UINT=6         : sizeof(unsigned int)
+    NPY_LONG=7         : sizeof(long)
+    NPY_ULONG=8        : sizeof(unsigned long)
     NPY_LONGLONG=9     : 8
     NPY_ULONGLONG=10   : 8
     NPY_FLOAT=11       : 4
@@ -76,7 +58,21 @@ cdef int type_bytesize(int typenum):
     NPY_HALF=23        : 2
     """
     cdef int *type_to_bytesize = [
-        1, 1, 1, 2, 2, 4, 4, 4, 4, 8, 8, 4, 8, -1, 8, 16, -1]
+        1,
+        sizeof(char),
+        sizeof(unsigned char),
+        sizeof(short),
+        sizeof(unsigned short),
+        sizeof(int),
+        sizeof(unsigned int),
+        sizeof(long),
+        sizeof(unsigned long),
+        sizeof(long long),
+        sizeof(unsigned long long),
+        sizeof(float),
+        sizeof(double), -1,
+        sizeof(float complex),
+        sizeof(double complex), -1]
 
     if typenum < 0:
         return -1
@@ -86,6 +82,24 @@ cdef int type_bytesize(int typenum):
         return -1
 
     return type_to_bytesize[typenum]
+
+
+cdef str _make_typestr(int typenum):
+    """
+    Make typestring from type number
+    """
+    cdef type_to_str = ["|b", "|i", "|u", "|i", "|u",
+                        "|i", "|u", "|i", "|u", "|i", "|u",
+                        "|f", "|f", "", "|c", "|c", ""]
+
+    if (typenum < 0):
+        return ""
+    if (typenum > 16):
+        if (typenum == 23):
+            return "|f2"
+        return ""
+
+    return type_to_str[typenum] + str(type_bytesize(typenum))
 
 
 cdef int typenum_from_format(str s) except *:
