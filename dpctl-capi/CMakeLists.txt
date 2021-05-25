@@ -1,17 +1,13 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# Load our CMake modules to search for DPCPP and Level Zero
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
-find_package(Git REQUIRED)
-    include(GetProjectVersion)
-# the get_version function is defined in the GetProjectVersion module and
-# defines: VERSION, SEMVER, MAJOR, MINOR, PATCH. These variables are populated
-# by parsing the output of git describe.
-get_version()
 project(
     "libDPCTLSYCLInterface"
     DESCRIPTION "A C API for a subset of SYCL"
 )
+
+# Load our CMake modules to search for DPCPP and Level Zero
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
+find_package(Git REQUIRED)
 
 option(DPCTL_CUSTOM_DPCPP_INSTALL_DIR
     "Use a custom version of DPCPP installed at the provided location."
@@ -158,10 +154,16 @@ if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
     )
 endif()
 
+# FIXME: Turning off for release until conda build can be packaging symbolic links
 # NOTE: Till we hit 1.0.0 we will keep using the MINOR version to set the API
 # version of the library.
-set_target_properties(DPCTLSyclInterface PROPERTIES VERSION ${VERSION_MINOR})
-set_target_properties(DPCTLSyclInterface PROPERTIES SOVERSION 1)
+# include(GetProjectVersion)
+# the get_version function is defined in the GetProjectVersion module and
+# defines: VERSION, SEMVER, MAJOR, MINOR, PATCH. These variables are populated
+# by parsing the output of git describe.
+# get_version()
+# set_target_properties(DPCTLSyclInterface PROPERTIES VERSION ${VERSION_MINOR})
+# set_target_properties(DPCTLSyclInterface PROPERTIES SOVERSION 1)
 
 install(TARGETS
     DPCTLSyclInterface
