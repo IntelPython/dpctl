@@ -4,7 +4,9 @@
 dpctl.SyclDevice
 ################
 
-.. autoclass:: dpctl.SyclDevice
+.. currentmodule:: dpctl
+
+.. autoclass:: SyclDevice
 
     .. rubric:: Attributes:
 

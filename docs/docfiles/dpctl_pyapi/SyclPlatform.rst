@@ -4,6 +4,7 @@
 dpctl.SyclPlatform
 ##################
 
+.. currentmodule:: dpctl
 
 .. autoclass:: dpctl.SyclPlatform
 
@@ -11,11 +12,6 @@ dpctl.SyclPlatform
 
     .. autoautosummary:: dpctl.SyclPlatform
         :attributes:
-
-    .. rubric:: Private methods:
-
-    .. autoautosummary:: dpctl.SyclPlatform
-        :private_methods:
 
     .. rubric:: Public methods:
 

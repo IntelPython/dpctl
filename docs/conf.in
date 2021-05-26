@@ -8,7 +8,10 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-import textwrap
+from docutils.parsers.rst import directives
+from sphinx.ext.autosummary import Autosummary, get_documenter
+from sphinx.util.inspect import safe_getattr
+import dpctl
 
 # -- Project information -----------------------------------------------------
 
@@ -16,9 +19,9 @@ project = "Data-parallel Control (dpctl)"
 copyright = "2020, Intel Corp."
 author = "Intel Corp."
 
-version = "@CURRENT_RELEASE@"
+version = dpctl.__version__.strip(".dirty")
 # The full version, including alpha/beta/rc tags
-release = "@CURRENT_RELEASE@"
+release = dpctl.__version__.strip(".dirty")
 
 
 # -- General configuration ---------------------------------------------------
@@ -53,7 +56,9 @@ if use_doxyrest == "ON":
     # rst files.
     import fileinput
 
-    with fileinput.FileInput("@DOXYREST_OUTPUT_DIR@/global.rst", inplace=True) as file:
+    with fileinput.FileInput(
+        "@DOXYREST_OUTPUT_DIR@/global.rst", inplace=True
+    ) as file:
         for line in file:
             print(line.replace("typedefDPCTL_C_EXTERN_C_BEGIN", ""), end="")
 
@@ -143,36 +148,6 @@ if generate_multiversion == "ON":
             (version, DOC_SITE_NAME + version + "/index.html")
         )
 
-# Add an "autoclassmembers" directive that acts the same way as
-# "autoclass", but does not print out the class doc.
-
-from sphinx.ext.autodoc import ClassDocumenter, ObjectMembers
-from sphinx.ext.autodoc.importer import get_class_members
-
-
-class ClassMembersDocumenter(ClassDocumenter):
-    """
-    Documenter for only class members and skips the class and __init__
-    docstrings.
-    """
-
-    objtype = "classmembers"
-
-    def add_directive_header(self, sig):
-        pass
-
-    def get_doc(self, encoding=None, ignore=None):
-        return None
-
-
-# Add an "autoautosummary" directive to add a summary table of class
-# members and attributes.
-# See https://stackoverflow.com/questions/20569011/python-sphinx-autosummary-automated-listing-of-member-functions
-
-from docutils.parsers.rst import directives
-from sphinx.ext.autosummary import Autosummary, get_documenter
-from sphinx.util.inspect import safe_getattr
-
 
 class AutoAutoSummary(Autosummary):
     """Create a summary for methods and attributes (autosummary).
@@ -210,7 +185,9 @@ class AutoAutoSummary(Autosummary):
         if "methods" in self.options:
             methods = self.get_members(app, c, ["method"], ["__init__"])
             self.content = [
-                "%s" % method for method in methods if not method.startswith("_")
+                "%s" % method
+                for method in methods
+                if not method.startswith("_")
             ]
         if "private_methods" in self.options:
             private_methods = self.get_members(app, c, ["method"], ["__init__"])
@@ -222,11 +199,12 @@ class AutoAutoSummary(Autosummary):
         if "attributes" in self.options:
             attribs = self.get_members(app, c, ["attribute", "property"])
             self.content = [
-                "%s" % attrib for attrib in attribs if not attrib.startswith("_")
+                "%s" % attrib
+                for attrib in attribs
+                if not attrib.startswith("_")
             ]
         return super().run()
 
 
 def setup(app):
     app.add_directive("autoautosummary", AutoAutoSummary)
-    app.add_autodocumenter(ClassMembersDocumenter)

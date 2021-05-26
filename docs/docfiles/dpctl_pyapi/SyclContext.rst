@@ -4,6 +4,8 @@
 dpctl.SyclContext
 #################
 
+.. currentmodule:: dpctl
+
 .. autoclass:: dpctl.SyclContext
 
     .. rubric:: Attributes:
