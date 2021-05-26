@@ -155,20 +155,15 @@ get_version()
 set_target_properties(DPCTLSyclInterface
     PROPERTIES
         VERSION ${VERSION_MAJOR}.${VERSION_MINOR}
-        SOVERSION ${VERSION_MAJOR}
+        SOVERSION ${VERSION_MAJOR}.${VERSION_MINOR}
 )
 
 set(linker_script1
-    "INPUT(libDPCTLSyclInterface.so libDPCTLSyclInterface.so.${VERSION_MAJOR})"
-)
-set(linker_script2
-    "INPUT(libDPCTLSyclInterface.so.${VERSION_MAJOR} libDPCTLSyclInterface.so.${VERSION_MAJOR}.${VERSION_MINOR})"
+    "INPUT(libDPCTLSyclInterface.so.${VERSION_MAJOR}.${VERSION_MINOR})"
 )
 add_custom_command(TARGET DPCTLSyclInterface POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E remove "libDPCTLSyclInterface.so"
     COMMAND "${CMAKE_COMMAND}" -E echo "${linker_script1}" > "libDPCTLSyclInterface.so"
-    COMMAND "${CMAKE_COMMAND}" -E remove "libDPCTLSyclInterface.so.${VERSION_MAJOR}"
-    COMMAND "${CMAKE_COMMAND}" -E echo "${linker_script2}" > "libDPCTLSyclInterface.so.${VERSION_MAJOR}"
     VERBATIM
 )
 
