@@ -105,7 +105,10 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../dpctl_pyapi.html#classes">Classes</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="SyclContext.html">dpctl.SyclContext</a></li>
 <li class="toctree-l3"><a class="reference internal" href="SyclDevice.html">dpctl.SyclDevice</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl.SyclEvent</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl.SyclEvent</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#detail">Detail</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="SyclPlatform.html">dpctl.SyclPlatform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="SyclQueue.html">dpctl.SyclQueue</a></li>
 </ul>
@@ -193,9 +196,28 @@
 <dt class="sig sig-object py" id="dpctl.SyclEvent">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclEvent</span></span><a class="headerlink" href="#dpctl.SyclEvent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Python wrapper class for cl::sycl::event.</p>
-<dl class="py method">
+<p class="rubric">Public methods:</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclEvent.addressof_ref" title="dpctl.SyclEvent.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a></p></td>
+<td><p>Returns the address of the C API DPCTLSyclEventRef pointer as a size_t.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclEvent.wait" title="dpctl.SyclEvent.wait"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="detail">
+<h2>Detail<a class="headerlink" href="#detail" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclEvent.addressof_ref">
-<span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent.addressof_ref" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclEvent.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent.addressof_ref" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the address of the C API DPCTLSyclEventRef pointer as
 a size_t.</p>
 <dl class="field-list simple">
@@ -206,13 +228,12 @@ SyclEvent cast to a size_t.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclEvent.wait">
-<span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent.wait" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclEvent.</span></span><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent.wait" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</dd></dl>
-
+</div>
 </div>
 
 

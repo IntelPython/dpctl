@@ -194,7 +194,7 @@
 <span id="sycldevice-api"></span><h1>dpctl.SyclDevice<a class="headerlink" href="#dpctl-sycldevice" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.SyclDevice">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclDevice</span></span><a class="headerlink" href="#dpctl.SyclDevice" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Python equivalent for cl::sycl::device class.</p>
 <p>There are two ways of creating a SyclDevice instance:</p>
 <blockquote>
@@ -244,154 +244,154 @@ constructor. The filter string needs to conform to the
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">backend</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.backend" title="dpctl.SyclDevice.backend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">backend</span></code></a></p></td>
 <td><p>Returns the backend_type enum value for this device</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_selector_score</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.default_selector_score" title="dpctl.SyclDevice.default_selector_score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_selector_score</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">device_type</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.device_type" title="dpctl.SyclDevice.device_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">device_type</span></code></a></p></td>
 <td><p>Returns the type of the device as a <cite>device_type</cite> enum.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">driver_version</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.driver_version" title="dpctl.SyclDevice.driver_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">driver_version</span></code></a></p></td>
 <td><p>Returns a backend-defined driver version as a string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_string</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.filter_string" title="dpctl.SyclDevice.filter_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_string</span></code></a></p></td>
 <td><p>For a parent device, returns a fully specified filter selector string``backend:device_type:relative_id`` selecting the device.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_accelerator</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_accelerator" title="dpctl.SyclDevice.has_aspect_accelerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_accelerator</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_cpu</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_cpu" title="dpctl.SyclDevice.has_aspect_cpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_cpu</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_custom</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_custom" title="dpctl.SyclDevice.has_aspect_custom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_custom</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_fp16</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_fp16" title="dpctl.SyclDevice.has_aspect_fp16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_fp16</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_fp64</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_fp64" title="dpctl.SyclDevice.has_aspect_fp64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_fp64</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_gpu</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_gpu" title="dpctl.SyclDevice.has_aspect_gpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_gpu</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_host</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_host" title="dpctl.SyclDevice.has_aspect_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_host</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_image</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_image" title="dpctl.SyclDevice.has_aspect_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_image</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_int64_base_atomics</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_int64_base_atomics" title="dpctl.SyclDevice.has_aspect_int64_base_atomics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_int64_base_atomics</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_int64_extended_atomics</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_int64_extended_atomics" title="dpctl.SyclDevice.has_aspect_int64_extended_atomics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_int64_extended_atomics</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_online_compiler</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_online_compiler" title="dpctl.SyclDevice.has_aspect_online_compiler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_online_compiler</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_online_linker</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_online_linker" title="dpctl.SyclDevice.has_aspect_online_linker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_online_linker</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_queue_profiling</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_queue_profiling" title="dpctl.SyclDevice.has_aspect_queue_profiling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_queue_profiling</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_device_allocations</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_device_allocations" title="dpctl.SyclDevice.has_aspect_usm_device_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_device_allocations</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_host_allocations</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_host_allocations" title="dpctl.SyclDevice.has_aspect_usm_host_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_host_allocations</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_restricted_shared_allocations</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations" title="dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_restricted_shared_allocations</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_shared_allocations</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_shared_allocations" title="dpctl.SyclDevice.has_aspect_usm_shared_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_shared_allocations</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_system_allocator</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_system_allocator" title="dpctl.SyclDevice.has_aspect_usm_system_allocator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_system_allocator</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_2d_max_height</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_2d_max_height" title="dpctl.SyclDevice.image_2d_max_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_2d_max_height</span></code></a></p></td>
 <td><p>Returns the maximum height of a 2D image or 1D image in pixels.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_2d_max_width</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_2d_max_width" title="dpctl.SyclDevice.image_2d_max_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_2d_max_width</span></code></a></p></td>
 <td><p>Returns the maximum width of a 2D image or 1D image in pixels.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_3d_max_depth</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_3d_max_depth" title="dpctl.SyclDevice.image_3d_max_depth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_3d_max_depth</span></code></a></p></td>
 <td><p>Returns the maximum depth of a 3D image in pixels.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_3d_max_height</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_3d_max_height" title="dpctl.SyclDevice.image_3d_max_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_3d_max_height</span></code></a></p></td>
 <td><p>Returns the maximum height of a 3D image in pixels.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_3d_max_width</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_3d_max_width" title="dpctl.SyclDevice.image_3d_max_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_3d_max_width</span></code></a></p></td>
 <td><p>Returns the maximum width of a 3D image in pixels.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_accelerator</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.is_accelerator" title="dpctl.SyclDevice.is_accelerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_accelerator</span></code></a></p></td>
 <td><p>Returns True if the SyclDevice instance is a SYCL accelerator device.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_cpu</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.is_cpu" title="dpctl.SyclDevice.is_cpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_cpu</span></code></a></p></td>
 <td><p>Returns True if the SyclDevice instance is a SYCL CPU device.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_gpu</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.is_gpu" title="dpctl.SyclDevice.is_gpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_gpu</span></code></a></p></td>
 <td><p>Returns True if the SyclDevice instance is a SYCL GPU device.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_host</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.is_host" title="dpctl.SyclDevice.is_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_host</span></code></a></p></td>
 <td><p>Returns True if the SyclDevice instance is a SYCL host device.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_compute_units</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_compute_units" title="dpctl.SyclDevice.max_compute_units"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_compute_units</span></code></a></p></td>
 <td><p>Returns the number of parallel compute units available to the device.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_num_sub_groups</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_num_sub_groups" title="dpctl.SyclDevice.max_num_sub_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_num_sub_groups</span></code></a></p></td>
 <td><p>Returns the maximum number of sub-groups in a work-group for any kernel executed on the device.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_read_image_args</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_read_image_args" title="dpctl.SyclDevice.max_read_image_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_read_image_args</span></code></a></p></td>
 <td><p>Returns the maximum number of simultaneous image objects that can be read from by a kernel.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_group_size</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_group_size" title="dpctl.SyclDevice.max_work_group_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_group_size</span></code></a></p></td>
 <td><p>Returns the maximum number of work-items that are permitted in a work-group executing a kernel on a single compute unit.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_dims</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_item_dims" title="dpctl.SyclDevice.max_work_item_dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_dims</span></code></a></p></td>
 <td><p>Returns the maximum dimensions that specify the global and local work-item IDs used by the data parallel execution model.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_sizes</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_item_sizes" title="dpctl.SyclDevice.max_work_item_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_sizes</span></code></a></p></td>
 <td><p>Returns the maximum number of work-items that are permitted in each dimension of the work-group of the nd_range.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_write_image_args</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_write_image_args" title="dpctl.SyclDevice.max_write_image_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_write_image_args</span></code></a></p></td>
 <td><p>Returns the maximum number of simultaneous image objects that can be written to by a kernel.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.name" title="dpctl.SyclDevice.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
 <td><p>Returns the name of the device as a string</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">parent_device</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.parent_device" title="dpctl.SyclDevice.parent_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parent_device</span></code></a></p></td>
 <td><p>Parent device for a sub-device, or None for a root device.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_char</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_char" title="dpctl.SyclDevice.preferred_vector_width_char"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_char</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_double</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_double" title="dpctl.SyclDevice.preferred_vector_width_double"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_double</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_float</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_float" title="dpctl.SyclDevice.preferred_vector_width_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_float</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_half</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_half" title="dpctl.SyclDevice.preferred_vector_width_half"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_half</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_int</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_int" title="dpctl.SyclDevice.preferred_vector_width_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_int</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_long</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_long" title="dpctl.SyclDevice.preferred_vector_width_long"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_long</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_short</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_short" title="dpctl.SyclDevice.preferred_vector_width_short"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_short</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_independent_forward_progress</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="dpctl.SyclDevice.sub_group_independent_forward_progress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_independent_forward_progress</span></code></a></p></td>
 <td><p>Returns true if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vendor</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.vendor" title="dpctl.SyclDevice.vendor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vendor</span></code></a></p></td>
 <td><p>Returns the device vendor name as a string.</p></td>
 </tr>
 </tbody>
@@ -403,16 +403,16 @@ constructor. The filter string needs to conform to the
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.addressof_ref" title="dpctl.SyclDevice.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a></p></td>
 <td><p>Returns the address of the DPCTLSyclDeviceRef pointer as a size_t.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_sub_devices</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.create_sub_devices" title="dpctl.SyclDevice.create_sub_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_sub_devices</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_filter_string</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.get_filter_string" title="dpctl.SyclDevice.get_filter_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_filter_string</span></code></a></p></td>
 <td><p>For a parent device returns a filter selector string that includes backend or device type based on the value of the given keyword arguments.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_device_info</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.print_device_info" title="dpctl.SyclDevice.print_device_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_device_info</span></code></a></p></td>
 <td><p>Print information about the SYCL device.</p></td>
 </tr>
 </tbody>
@@ -421,27 +421,11 @@ constructor. The filter string needs to conform to the
 
 <div class="section" id="detail">
 <h2>Detail<a class="headerlink" href="#detail" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="public-methods">
-<h3>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline">¶</a></h3>
-<blockquote>
-<div><dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>Returns the address of the DPCTLSyclDeviceRef pointer as a size_t.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The address of the DPCTLSyclDeviceRef object used to create
-this SyclDevice cast to a size_t.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
+<div class="section" id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">backend</span></span></dt>
+<dt class="sig sig-object py" id="dpctl.SyclDevice.backend">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">backend</span></span><a class="headerlink" href="#dpctl.SyclDevice.backend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the backend_type enum value for this device</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -453,19 +437,14 @@ this SyclDevice cast to a size_t.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">create_sub_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.default_selector_score">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">default_selector_score</span></span><a class="headerlink" href="#dpctl.SyclDevice.default_selector_score" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">default_selector_score</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">device_type</span></span></dt>
+<dt class="sig sig-object py" id="dpctl.SyclDevice.device_type">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">device_type</span></span><a class="headerlink" href="#dpctl.SyclDevice.device_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the type of the device as a <cite>device_type</cite> enum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -481,14 +460,14 @@ this SyclDevice cast to a size_t.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">driver_version</span></span></dt>
+<dt class="sig sig-object py" id="dpctl.SyclDevice.driver_version">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">driver_version</span></span><a class="headerlink" href="#dpctl.SyclDevice.driver_version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a backend-defined driver version as a string.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">filter_string</span></span></dt>
+<dt class="sig sig-object py" id="dpctl.SyclDevice.filter_string">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">filter_string</span></span><a class="headerlink" href="#dpctl.SyclDevice.filter_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>For a parent device, returns a fully specified filter selector
 string``backend:device_type:relative_id`` selecting the device.</p>
 <p>Raises an exception for sub-devices.</p>
@@ -508,9 +487,347 @@ string``backend:device_type:relative_id`` selecting the device.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">get_filter_string</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_accelerator">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_accelerator</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_accelerator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_cpu">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_cpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_cpu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_custom">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_custom</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_custom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_fp16">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_fp16</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_fp16" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_fp64">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_fp64</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_fp64" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_gpu">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_gpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_gpu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_host">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_host</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_host" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_image">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_image</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_int64_base_atomics">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_int64_base_atomics</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_int64_base_atomics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_int64_extended_atomics">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_int64_extended_atomics</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_int64_extended_atomics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_online_compiler">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_online_compiler</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_online_compiler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_online_linker">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_online_linker</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_online_linker" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_queue_profiling">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_queue_profiling</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_queue_profiling" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_device_allocations">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_device_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_device_allocations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_host_allocations">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_host_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_host_allocations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_restricted_shared_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_shared_allocations">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_shared_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_shared_allocations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_system_allocator">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_system_allocator</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_system_allocator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.image_2d_max_height">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_2d_max_height</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_2d_max_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum height of a 2D image or 1D image in pixels.
+The minimum value is 8192 if the SYCL device has aspect::image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.image_2d_max_width">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_2d_max_width</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_2d_max_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum width of a 2D image or 1D image in pixels.
+The minimum value is 8192 if the SYCL device has aspect::image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.image_3d_max_depth">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_3d_max_depth</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_3d_max_depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum depth of a 3D image in pixels.
+The minimum value is 2048 if the SYCL device has aspect::image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.image_3d_max_height">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_3d_max_height</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_3d_max_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum height of a 3D image in pixels.
+The minimum value is 2048 if the SYCL device has aspect::image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.image_3d_max_width">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_3d_max_width</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_3d_max_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum width of a 3D image in pixels.
+The minimum value is 2048 if the SYCL device has aspect::image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.is_accelerator">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_accelerator</span></span><a class="headerlink" href="#dpctl.SyclDevice.is_accelerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the SyclDevice instance is a SYCL accelerator
+device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the SyclDevice is a SYCL accelerator device,
+else False.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.is_cpu">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_cpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.is_cpu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the SyclDevice instance is a SYCL CPU device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the SyclDevice is a SYCL CPU device, else False.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.is_gpu">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_gpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.is_gpu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the SyclDevice instance is a SYCL GPU device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the SyclDevice is a SYCL GPU device, else False.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.is_host">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_host</span></span><a class="headerlink" href="#dpctl.SyclDevice.is_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the SyclDevice instance is a SYCL host device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the SyclDevice is a SYCL host device, else False.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.max_compute_units">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_compute_units</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_compute_units" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of parallel compute units available to the
+device. The minimum value is 1.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.max_num_sub_groups">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_num_sub_groups</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_num_sub_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum number of sub-groups
+in a work-group for any kernel executed on the
+device. The minimum value is 1.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.max_read_image_args">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_read_image_args</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_read_image_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum number of simultaneous image objects that
+can be read from by a kernel. The minimum value is 128 if the
+SYCL device has aspect::image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.max_work_group_size">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_group_size</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_group_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum number of work-items
+that are permitted in a work-group executing a
+kernel on a single compute unit. The minimum
+value is 1.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.max_work_item_dims">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_dims</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_dims" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum dimensions that specify the global and local
+work-item IDs used by the data parallel execution model.</p>
+<p>The cb value is 3 if this SYCL device is not of device
+type <code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.max_work_item_sizes">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_sizes</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_sizes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum number of work-items that are permitted in each
+dimension of the work-group of the nd_range. The minimum value is
+<cite>(1; 1; 1)</cite> for devices that are not of device type
+<code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.max_write_image_args">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_write_image_args</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_write_image_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum number of simultaneous image objects that
+can be written to by a kernel. The minimum value is 8 if the SYCL
+device has aspect::image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.name">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#dpctl.SyclDevice.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of the device as a string</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.parent_device">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">parent_device</span></span><a class="headerlink" href="#dpctl.SyclDevice.parent_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parent device for a sub-device, or None for a root device.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.preferred_vector_width_char">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_char</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_char" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the preferred native vector width size for built-in scalar
+types that can be put into vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.preferred_vector_width_double">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_double</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_double" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the preferred native vector width size for built-in scalar
+types that can be put into vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.preferred_vector_width_float">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_float</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_float" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the preferred native vector width size for built-in scalar
+types that can be put into vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.preferred_vector_width_half">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_half</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_half" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the preferred native vector width size for built-in scalar
+types that can be put into vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.preferred_vector_width_int">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_int</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the preferred native vector width size for built-in scalar
+types that can be put into vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.preferred_vector_width_long">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_long</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_long" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the preferred native vector width size for built-in scalar
+types that can be put into vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.preferred_vector_width_short">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_short</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_short" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the preferred native vector width size for built-in scalar
+types that can be put into vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.sub_group_independent_forward_progress">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">sub_group_independent_forward_progress</span></span><a class="headerlink" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if the device supports independent forward progress of
+sub-groups with respect to other sub-groups in the same work-group.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.vendor">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">vendor</span></span><a class="headerlink" href="#dpctl.SyclDevice.vendor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the device vendor name as a string.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="public-methods">
+<h3>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.addressof_ref">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.addressof_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the address of the DPCTLSyclDeviceRef pointer as a size_t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The address of the DPCTLSyclDeviceRef object used to create
+this SyclDevice cast to a size_t.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.create_sub_devices">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">create_sub_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.create_sub_devices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.get_filter_string">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">get_filter_string</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_filter_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>For a parent device returns a filter selector string
 that includes backend or device type based on the value
 of the given keyword arguments.</p>
@@ -533,328 +850,12 @@ by <code class="docutils literal notranslate"><span class="pre">sycl::device::ge
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_accelerator</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_cpu</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_custom</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_fp16</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_fp64</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_gpu</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_host</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_image</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_int64_base_atomics</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_int64_extended_atomics</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_online_compiler</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_online_linker</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_queue_profiling</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_device_allocations</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_host_allocations</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_restricted_shared_allocations</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_shared_allocations</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_system_allocator</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_2d_max_height</span></span></dt>
-<dd><p>Returns the maximum height of a 2D image or 1D image in pixels.
-The minimum value is 8192 if the SYCL device has aspect::image.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_2d_max_width</span></span></dt>
-<dd><p>Returns the maximum width of a 2D image or 1D image in pixels.
-The minimum value is 8192 if the SYCL device has aspect::image.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_3d_max_depth</span></span></dt>
-<dd><p>Returns the maximum depth of a 3D image in pixels.
-The minimum value is 2048 if the SYCL device has aspect::image.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_3d_max_height</span></span></dt>
-<dd><p>Returns the maximum height of a 3D image in pixels.
-The minimum value is 2048 if the SYCL device has aspect::image.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_3d_max_width</span></span></dt>
-<dd><p>Returns the maximum width of a 3D image in pixels.
-The minimum value is 2048 if the SYCL device has aspect::image.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_accelerator</span></span></dt>
-<dd><p>Returns True if the SyclDevice instance is a SYCL accelerator
-device.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if the SyclDevice is a SYCL accelerator device,
-else False.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_cpu</span></span></dt>
-<dd><p>Returns True if the SyclDevice instance is a SYCL CPU device.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if the SyclDevice is a SYCL CPU device, else False.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_gpu</span></span></dt>
-<dd><p>Returns True if the SyclDevice instance is a SYCL GPU device.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if the SyclDevice is a SYCL GPU device, else False.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_host</span></span></dt>
-<dd><p>Returns True if the SyclDevice instance is a SYCL host device.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if the SyclDevice is a SYCL host device, else False.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_compute_units</span></span></dt>
-<dd><p>Returns the number of parallel compute units available to the
-device. The minimum value is 1.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_num_sub_groups</span></span></dt>
-<dd><p>Returns the maximum number of sub-groups
-in a work-group for any kernel executed on the
-device. The minimum value is 1.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_read_image_args</span></span></dt>
-<dd><p>Returns the maximum number of simultaneous image objects that
-can be read from by a kernel. The minimum value is 128 if the
-SYCL device has aspect::image.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_group_size</span></span></dt>
-<dd><p>Returns the maximum number of work-items
-that are permitted in a work-group executing a
-kernel on a single compute unit. The minimum
-value is 1.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_dims</span></span></dt>
-<dd><p>Returns the maximum dimensions that specify the global and local
-work-item IDs used by the data parallel execution model.</p>
-<p>The cb value is 3 if this SYCL device is not of device
-type <code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_sizes</span></span></dt>
-<dd><p>Returns the maximum number of work-items that are permitted in each
-dimension of the work-group of the nd_range. The minimum value is
-<cite>(1; 1; 1)</cite> for devices that are not of device type
-<code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_write_image_args</span></span></dt>
-<dd><p>Returns the maximum number of simultaneous image objects that
-can be written to by a kernel. The minimum value is 8 if the SYCL
-device has aspect::image.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">name</span></span></dt>
-<dd><p>Returns the name of the device as a string</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">parent_device</span></span></dt>
-<dd><p>Parent device for a sub-device, or None for a root device.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_char</span></span></dt>
-<dd><p>Returns the preferred native vector width size for built-in scalar
-types that can be put into vectors.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_double</span></span></dt>
-<dd><p>Returns the preferred native vector width size for built-in scalar
-types that can be put into vectors.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_float</span></span></dt>
-<dd><p>Returns the preferred native vector width size for built-in scalar
-types that can be put into vectors.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_half</span></span></dt>
-<dd><p>Returns the preferred native vector width size for built-in scalar
-types that can be put into vectors.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_int</span></span></dt>
-<dd><p>Returns the preferred native vector width size for built-in scalar
-types that can be put into vectors.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_long</span></span></dt>
-<dd><p>Returns the preferred native vector width size for built-in scalar
-types that can be put into vectors.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_short</span></span></dt>
-<dd><p>Returns the preferred native vector width size for built-in scalar
-types that can be put into vectors.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">print_device_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.print_device_info">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">print_device_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.print_device_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print information about the SYCL device.</p>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">sub_group_independent_forward_progress</span></span></dt>
-<dd><p>Returns true if the device supports independent forward progress of
-sub-groups with respect to other sub-groups in the same work-group.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">vendor</span></span></dt>
-<dd><p>Returns the device vendor name as a string.</p>
-</dd></dl>
-
-</div></blockquote>
 </div>
 </div>
 </div>
