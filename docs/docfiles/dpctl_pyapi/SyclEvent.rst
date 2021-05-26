@@ -4,13 +4,14 @@
 dpctl.SyclEvent
 ###############
 
+.. currentmodule:: dpctl
+
 .. autoclass:: dpctl.SyclEvent
 
     .. rubric:: Public methods:
 
     .. autoautosummary:: dpctl.SyclEvent
         :methods:
-
 
 Detail
 ======

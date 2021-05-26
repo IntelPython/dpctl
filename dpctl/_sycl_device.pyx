@@ -301,11 +301,12 @@ cdef class SyclDevice(_SyclDevice):
 
     def addressof_ref(self):
         """
-        Returns the address of the DPCTLSyclDeviceRef pointer as a size_t.
+        Returns the address of the ``DPCTLSyclDeviceRef`` pointer as a
+        ``size_t``.
 
         Returns:
-            int: The address of the DPCTLSyclDeviceRef object used to create
-            this SyclDevice cast to a size_t.
+            int: The address of the ``DPCTLSyclDeviceRef`` object used to create
+            this :class:`dpctl.SyclDevice` cast to a ``size_t``.
         """
         return <size_t>self._device_ref
 
@@ -593,6 +594,10 @@ cdef class SyclDevice(_SyclDevice):
         """ Returns the maximum number of sub-groups
             in a work-group for any kernel executed on the
             device. The minimum value is 1.
+
+            Returns:
+                int: The maximum number of sub-groups support per work-group by
+                the device.
         """
         cdef uint32_t max_num_sub_groups = 0
         if (not self.is_host):
@@ -662,18 +667,27 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def vendor(self):
         """ Returns the device vendor name as a string.
+
+        Returns:
+            str: The vendor name for the device as a string.
         """
         return self._vendor.decode()
 
     @property
     def driver_version(self):
         """ Returns a backend-defined driver version as a string.
+
+        Returns:
+            str: The driver version of the device as a string.
         """
         return self._driver_version.decode()
 
     @property
     def name(self):
         """ Returns the name of the device as a string
+
+        Returns:
+            str: The name of the device as a string.
         """
         return self._name.decode()
 
@@ -755,6 +769,64 @@ cdef class SyclDevice(_SyclDevice):
         return _get_devices(DVRef)
 
     def create_sub_devices(self, **kwargs):
+        """create_sub_devices(partition=parition_spec)
+        Creates a list of sub-devices by partitioning a root device based on the
+        provided partion specifier.
+
+        A partition specifier must be provided using a "partition"
+        keyword argument. Possible values for the specifier are: an int, a
+        string specifying the affinity domain, or a collection of ints.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                cpu_d = dpctl.SyclDevice("cpu")
+                cpu_count = cpu_d.max_compute_units
+                sub_devs = cpu_d.create_sub_devices(partition=cpu_count // 2)
+                for d in sub_devs:
+                    d.print_device_info()
+
+                #Create sub-devices partitioning by affinity.
+                try:
+                    sd = cpu_d.create_sub_devices(partition="numa")
+                    print(
+                        "{0} sub-devices were created with respective "
+                        "#EUs being {1}".format(
+                            len(sd), [d.max_compute_units for d in sd]
+                        )
+                    )
+                except Exception:
+                    print("Device partitioning by affinity was not successful.")
+
+        Args:
+            partition: Specification to partition the device as follows:
+
+                - Specifying an int (`count`). The returned list contains as
+                  many sub-devices as can be created such that each sub-device
+                  contains `count` compute units. If the device’s total number
+                  of compute units is not evenly divided by `count`, then the
+                  remaining compute units are not included in any of the
+                  sub-devices.
+
+                - Specifying an affinity domain as a string. The supported
+                  values are: `numa`, `L4_cache`, `L3_cache`, `L2_cache`,
+                  `L1_cache`, `next_partitionable`.
+
+                - Specifying a collection of int values. For each non-zero value
+                  `M` in the collection, a sub-device with `M` compute units is
+                  created.
+
+        Returns:
+            list: List of :class:`dpctl.SyclDevice` objects
+
+        Raises:
+            TypeError: If the "partition" keyword arg is not specified or the
+                       affinity domain string is not legal or is not one of the
+                       three supported options.
+
+        """
         if "partition" not in kwargs:
             raise TypeError(
                 "create_sub_devices(partition=parition_spec) is expected."
@@ -806,6 +878,10 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def parent_device(self):
         """ Parent device for a sub-device, or None for a root device.
+
+        Returns:
+            dpctl.SyclDevice: A parent :class:`dpctl.SyclDevice` instance if the
+            device is a sub-device, ``None`` otherwise.
         """
         cdef DPCTLSyclDeviceRef pDRef = NULL
         pDRef = DPCTLDevice_GetParentDevice(self._device_ref)
@@ -814,8 +890,16 @@ cdef class SyclDevice(_SyclDevice):
         return SyclDevice._create(pDRef)
 
     cdef cpp_bool equals(self, SyclDevice other):
-        """ Returns true if the SyclDevice argument has the same _device_ref
-            as this SyclDevice.
+        """ Returns ``True`` if the :class:`dpctl.SyclDevice` argument has the
+        same _device_ref as this SyclDevice.
+
+        Args:
+            other (dpctl.SyclDevice): A :class:`dpctl.SyclDevice` instance to
+            compare against.
+
+        Returns:
+            bool: ``True`` if the devices point to the same underlying
+            ``sycl::device``, otherwise ``False``.
         """
         return DPCTLDevice_AreEq(self._device_ref, other.get_device_ref())
 
@@ -831,7 +915,11 @@ cdef class SyclDevice(_SyclDevice):
         For a parent device, returns a fully specified filter selector
         string``backend:device_type:relative_id`` selecting the device.
 
-        Raises an exception for sub-devices.
+        Returns:
+            str: A Python string representing a filter selector string.
+
+        Raises:
+            TypeError: If the device is a sub-devices.
 
         :Example:
             .. code-block:: python
@@ -866,7 +954,7 @@ cdef class SyclDevice(_SyclDevice):
 
     cdef int get_backend_and_device_type_ordinal(self):
         """
-        If this device is a root ``sycl::device`` returns the ordinal
+        If this device is a root ``sycl::device``, returns the ordinal
         position of this device in the vector
         ``sycl::device::get_devices(device_type_of_this_device)``
         filtered to contain only devices with the same backend as this
@@ -880,7 +968,7 @@ cdef class SyclDevice(_SyclDevice):
 
     cdef int get_device_type_ordinal(self):
         """
-        If this device is a root ``sycl::device`` returns the ordinal
+        If this device is a root ``sycl::device``, returns the ordinal
         position of this device in the vector
         ``sycl::device::get_devices(device_type_of_this_device)``
 
@@ -897,7 +985,7 @@ cdef class SyclDevice(_SyclDevice):
 
     cdef int get_backend_ordinal(self):
         """
-        If this device is a root ``sycl::device`` returns the ordinal
+        If this device is a root ``sycl::device``, returns the ordinal
         position of this device in the vector ``sycl::device::get_devices()``
         filtered to contain only devices with the same backend as this
         device.
@@ -915,7 +1003,7 @@ cdef class SyclDevice(_SyclDevice):
 
     cdef int get_overall_ordinal(self):
         """
-        If this device is a root ``sycl::device`` returns the ordinal
+        If this device is a root ``sycl::device``, returns the ordinal
         position of this device in the vector ``sycl::device::get_devices()``
         filtered to contain only devices with the same backend as this
         device.
@@ -933,13 +1021,27 @@ cdef class SyclDevice(_SyclDevice):
 
     def get_filter_string(self, include_backend=True, include_device_type=True):
         """
-        For a parent device returns a filter selector string
+        get_filter_string(include_backend=True, include_device_type=True)
+
+        For a parent device, returns a filter selector string
         that includes backend or device type based on the value
         of the given keyword arguments.
 
-        Raises a TypeError if this devices is a sub-device, or
-        a ValueError if no match was found in the vector returned
-        by ``sycl::device::get_devices()``.
+        Args:
+            include_backend (optional): Defaults to ``True``.
+                A boolean flag indicating if the backend should be included in
+                the filter string.
+            include_device_type (optional): Defaults to ``True``.
+                A boolean flag indicating if the device type should be included
+                in the filter string.
+
+        Returns:
+            str: A Python string representing a filter selector string.
+
+        Raises:
+            TypeError: If the device is a sub-device.
+            ValueError: If no match for the device was found in the vector
+                returned by ``sycl::device::get_devices()``
 
         :Example:
             .. code-block:: python

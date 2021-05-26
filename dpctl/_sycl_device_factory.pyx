@@ -148,7 +148,8 @@ cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
 
 
 cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
-    """ Returns a list of :class:`dpctl.SyclDevice` instances selected based on
+    """ get_devices(backend=backend_type.all, device_type=device_type_t.all)
+    Returns a list of :class:`dpctl.SyclDevice` instances selected based on
     the given :class:`dpctl.device_type` and :class:`dpctl.backend_type` values.
 
     The function is analogous to ``sycl::devices::get_devices()``, but with an
@@ -204,7 +205,8 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
 cpdef int get_num_devices(
     backend=backend_type.all, device_type=device_type_t.all
 ):
-    """ A helper function to return the number of SYCL devices of a given
+    """ get_num_devices(backend=backend_type.all, device_type=device_type_t.all)
+    A helper function to return the number of SYCL devices of a given
     :class:`dpctl.device_type` and :class:`dpctl.backend_type`.
 
     Args:

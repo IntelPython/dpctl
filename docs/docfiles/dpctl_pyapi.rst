@@ -4,6 +4,8 @@
 dpctl Python API
 ################
 
+.. currentmodule:: dpctl
+
 .. automodule:: dpctl
 
 Sub-modules
@@ -26,11 +28,11 @@ Classes
 .. toctree::
     :maxdepth: 1
 
-    dpctl_pyapi/SyclContext
-    dpctl_pyapi/SyclDevice
-    dpctl_pyapi/SyclEvent
-    dpctl_pyapi/SyclPlatform
-    dpctl_pyapi/SyclQueue
+    dpctl.SyclContext : A Python class representing cl::sycl::context <dpctl_pyapi/SyclContext>
+    dpctl.SyclDevice : A Python class representing cl::sycl::device <dpctl_pyapi/SyclDevice>
+    dpctl.SyclEvent : A Python class representing cl::sycl::event <dpctl_pyapi/SyclEvent>
+    dpctl.SyclPlatform : A Python class representing cl::sycl::event <dpctl_pyapi/SyclPlatform>
+    dpctl.SyclQueue : A Python class representing cl::sycl::event <dpctl_pyapi/SyclQueue>
 
 Enumerations
 ------------
