@@ -11,6 +11,7 @@
 from docutils.parsers.rst import directives
 from sphinx.ext.autosummary import Autosummary, get_documenter
 from sphinx.util.inspect import safe_getattr
+
 import dpctl
 
 # -- Project information -----------------------------------------------------
