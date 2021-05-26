@@ -158,14 +158,17 @@ set_target_properties(DPCTLSyclInterface
         SOVERSION ${VERSION_MAJOR}.${VERSION_MINOR}
 )
 
-set(linker_script1
-    "INPUT(libDPCTLSyclInterface.so.${VERSION_MAJOR}.${VERSION_MINOR})"
-)
-add_custom_command(TARGET DPCTLSyclInterface POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E remove "libDPCTLSyclInterface.so"
-    COMMAND "${CMAKE_COMMAND}" -E echo "${linker_script1}" > "libDPCTLSyclInterface.so"
-    VERBATIM
-)
+if(UNIX)
+    set(linker_script1
+        "INPUT(libDPCTLSyclInterface.so.${VERSION_MAJOR}.${VERSION_MINOR})"
+    )
+    add_custom_command(TARGET DPCTLSyclInterface POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E remove "libDPCTLSyclInterface.so"
+        COMMAND "${CMAKE_COMMAND}"
+            -E echo "${linker_script1}" > "libDPCTLSyclInterface.so"
+        VERBATIM
+    )
+endif()
 
 if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
     target_include_directories(DPCTLSyclInterface
