@@ -117,49 +117,6 @@ def _to_memory(unsigned char[::1] b, str usm_kind):
     return res
 
 
-def get_usm_pointer_type(ptr, syclobj):
-    """
-    get_usm_pointer_type(ptr, syclobj)
-
-    Gives the SYCL(TM) USM pointer type, using ``sycl::get_pointer_type``,
-    returning one of 4 possible strings: 'shared', 'host', 'device',
-    or 'unknown'.
-
-    Args:
-       ptr: int
-          A pointer stored as size_t Python integer.
-       syclobj: :class:`dpctl.SyclContext` or :class:`dpctl.SyclQueue`
-          Python object providing :class:`dpctl.SyclContext` against which
-          to query for the pointer type.
-    Returns:
-       'unknown' if the pointer does not represent USM allocation made using
-       the given context. Otherwise, returns 'shared', 'device', or 'host'
-       type of the allocation.
-    """
-    cdef const char* kind
-    cdef SyclContext ctx
-    cdef SyclQueue q
-    cdef DPCTLSyclUSMRef USMRef = NULL
-    try:
-        USMRef = <DPCTLSyclUSMRef>(<size_t> ptr)
-    except Exception as e:
-        raise TypeError(
-            "First argument {} could not be converted to Python integer of "
-            "size_t".format(ptr)
-        ) from e
-    if isinstance(syclobj, SyclContext):
-        ctx = <SyclContext>(syclobj)
-        return _Memory.get_pointer_type(USMRef, ctx).decode("UTF-8")
-    elif isinstance(syclobj, SyclQueue):
-        q = <SyclQueue>(syclobj)
-        ctx = q.get_sycl_context()
-        return _Memory.get_pointer_type(USMRef, ctx).decode("UTF-8")
-    raise TypeError(
-        "Second argument {} is expected to be an instance of "
-        "SyclContext or SyclQueue".format(syclobj)
-    )
-
-
 cdef class _Memory:
     """ Internal class implementing methods common to
         MemoryUSMShared, MemoryUSMDevice, MemoryUSMHost
