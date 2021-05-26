@@ -4,8 +4,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.8.0] - 05/26/2021
 
+### Added
+- Implemented support for constructing MemoryUSM* from object with
+  __sycl_usm_array_interface__ when array-info is not contiguous (#400)
+- Print the backend as part of SyclDevice.print_device_info function (#409)
+- Added dpctl/tensor/_usmarray submodule (#427)
+- Added arg checking to functions in dpctl_sycl_usm_interface.cpp (#430)
+- A static method of _Memory to create from external allocation (#430)
+- Added usm_ndarray accessors (#435)
+- Added Device class representing Data-API notion of device (#440)
+- Added free Python function as_usm_memory(obj) (#443) and associated unit
+  tests (#449)
+- Dependency for numpy 1.17 (#445)
+- Add a flag to make doxygen HTML generation optional (#450)
+- Added a feature to get the filter string for a device from Python using the
+  new dpctl.SyclDevice.get_filter_string method. Also added the corresponding
+  DPCTLDeviceMgr_GetPositionInDevices(DRef, device_mask) C API function (#453)
+- New options to setup.py to specify which dpcpp compiler to use, if L0
+  program creation is to be supported, and to generate code coverage (#426)
+- Github action to check Python code quality (#422)
+- Github action to auto-publish Sphinx docs for master (#446)
+- Github action to generate coverage report and publish to coveralls.io (#459)
+
+### Changed
+- Rename dpctl.dptensor to dpctl.tensor (#407)
+- Changed repr for Memory objects (#442)
+- Used dpctl.SyclQueue instead of manager and get current queue in tests for
+  SyclProgram (#448)
+-
+
+### Fixed
+- Issue #189 dpctl.memory.MemoryUSMShared(np.int64(16)) should work (#392)
+- Use size_t instead of Py_ssize_t to fit device USM pointer (#405)
+- Various code quality issues identified by flake8 (#417, #419, #420, #422)
+- Fixed issues in slicing and array construction (#441)
+- Fixed an issue (#447) where dpctl.get_devices does not return devices in the
+  same order as sycl::device::get_devices (#451)
+- L0 program creation support on Windows (#319)
+
+### Removed
+- Removing public keyword to get_current_queue Cython declaration (#437)
+
+## [0.7.0] - 05/03/2021
 ### Added
 - Complete support for `sycl::ONEAPI::filter_selector` in dpctl.
 - C API for `sycl::queue` (#323), `syc::context` (#331), and `sycl::platform` (#298)
