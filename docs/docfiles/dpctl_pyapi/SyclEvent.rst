@@ -5,6 +5,15 @@ dpctl.SyclEvent
 ###############
 
 .. autoclass:: dpctl.SyclEvent
-    :members:
-    :inherited-members:
-    :undoc-members:
+
+    .. rubric:: Public methods:
+
+    .. autoautosummary:: dpctl.SyclEvent
+        :methods:
+
+
+Detail
+======
+
+.. autofunction:: dpctl.SyclEvent.addressof_ref
+.. autofunction:: dpctl.SyclEvent.wait
