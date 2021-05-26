@@ -68,7 +68,8 @@ cdef class _SyclPlatform:
 
 
 cdef class SyclPlatform(_SyclPlatform):
-    """ Python class representing ``cl::sycl::platform`` class.
+    """ SyclPlatform(self, arg=None)
+        Python class representing ``cl::sycl::platform`` class.
 
         SyclPlatform() - create platform selected by sycl::default_selector
         SyclPlatform(filter_selector) - create platform selected by filter

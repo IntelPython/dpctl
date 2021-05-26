@@ -163,7 +163,8 @@ cdef str _device_type_to_filter_string_part(_device_type DTy):
 
 
 cdef class SyclDevice(_SyclDevice):
-    """ Python equivalent for cl::sycl::device class.
+    """ SyclDevice(arg=None)
+    Python equivalent for cl::sycl::device class.
 
     There are two ways of creating a SyclDevice instance:
 

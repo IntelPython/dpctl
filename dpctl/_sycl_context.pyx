@@ -76,6 +76,7 @@ cdef class _SyclContext:
 
 cdef class SyclContext(_SyclContext):
     """
+    SyclContext(arg=None)
     Python class representing ``cl::sycl::context``. There are multiple
     ways to create a :class:`dpctl.SyclContext` object:
 

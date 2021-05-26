@@ -24,18 +24,20 @@ dpctl.SyclContext
 Detail
 ======
 
+Attributes
+----------
+
+.. autoattribute:: dpctl.SyclContext.device_count
+
+
 Private methods
 ---------------
 
-.. autoclassmembers:: dpctl.SyclContext
-    :noindex:
-    :private-members: _get_capsule
+.. autofunction:: dpctl.SyclContext._get_capsule
 
 
 Public methods
 --------------
 
-.. autoclassmembers:: dpctl.SyclContext
-    :noindex:
-    :members:
-    :undoc-members:
+.. autofunction:: dpctl.SyclContext.addressof_ref
+.. autofunction:: dpctl.SyclContext.get_devices

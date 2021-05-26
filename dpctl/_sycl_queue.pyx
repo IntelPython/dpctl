@@ -170,6 +170,7 @@ cdef class _SyclQueue:
 
 cdef class SyclQueue(_SyclQueue):
     """
+    SyclQueue(*args, **kwargs)
     Python class representing ``cl::sycl::queue``. There are multiple
     ways to create a :class:`dpctl.SyclQueue` object:
 

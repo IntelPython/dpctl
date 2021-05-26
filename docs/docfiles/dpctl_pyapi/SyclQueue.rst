@@ -24,18 +24,28 @@ dpctl.SyclQueue
 Detail
 ======
 
+Attributes
+----------
+
+.. autoattribute:: dpctl.SyclQueue.is_in_order
+.. autoattribute:: dpctl.SyclQueue.sycl_context
+.. autoattribute:: dpctl.SyclQueue.sycl_device
+
 Private methods
 ---------------
 
-.. autoclassmembers:: dpctl.SyclQueue
-    :noindex:
-    :private-members: _get_capsule
-    :undoc-members:
+.. autofunction:: dpctl.SyclQueue._get_capsule
+
 
 Public methods
 --------------
 
-.. autoclassmembers:: dpctl.SyclQueue
-    :noindex:
-    :members:
-    :undoc-members:
+.. autofunction:: dpctl.SyclQueue.addressof_ref
+.. autofunction:: dpctl.SyclQueue.get_sycl_backend
+.. autofunction:: dpctl.SyclQueue.get_sycl_context
+.. autofunction:: dpctl.SyclQueue.get_sycl_device
+.. autofunction:: dpctl.SyclQueue.mem_advise
+.. autofunction:: dpctl.SyclQueue.memcpy
+.. autofunction:: dpctl.SyclQueue.prefetch
+.. autofunction:: dpctl.SyclQueue.submit
+.. autofunction:: dpctl.SyclQueue.wait
