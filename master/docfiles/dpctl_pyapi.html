@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl Python API &mdash; Data-parallel Control (dpctl) master documentation</title>
+  <title>dpctl Python API &mdash; Data-parallel Control (dpctl) 0.8.0rc3+2.gb38750 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                master
+                0.8.0rc3+2.gb38750
               </div>
             
           
@@ -103,11 +103,11 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">dpctl Python API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#sub-modules">Sub-modules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#classes">Classes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="dpctl_pyapi/SyclContext.html">dpctl.SyclContext</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl_pyapi/SyclDevice.html">dpctl.SyclDevice</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl_pyapi/SyclEvent.html">dpctl.SyclEvent</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl_pyapi/SyclPlatform.html">dpctl.SyclPlatform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl_pyapi/SyclQueue.html">dpctl.SyclQueue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl_pyapi/SyclContext.html">dpctl.SyclContext : A Python class representing cl::sycl::context</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl_pyapi/SyclDevice.html">dpctl.SyclDevice : A Python class representing cl::sycl::device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl_pyapi/SyclEvent.html">dpctl.SyclEvent : A Python class representing cl::sycl::event</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl_pyapi/SyclPlatform.html">dpctl.SyclPlatform : A Python class representing cl::sycl::event</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl_pyapi/SyclQueue.html">dpctl.SyclQueue : A Python class representing cl::sycl::event</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#enumerations">Enumerations</a></li>
@@ -219,11 +219,11 @@ class is going to be removed.</p>
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi/SyclContext.html">dpctl.SyclContext</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi/SyclDevice.html">dpctl.SyclDevice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi/SyclEvent.html">dpctl.SyclEvent</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi/SyclPlatform.html">dpctl.SyclPlatform</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi/SyclQueue.html">dpctl.SyclQueue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi/SyclContext.html">dpctl.SyclContext : A Python class representing cl::sycl::context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi/SyclDevice.html">dpctl.SyclDevice : A Python class representing cl::sycl::device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi/SyclEvent.html">dpctl.SyclEvent : A Python class representing cl::sycl::event</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi/SyclPlatform.html">dpctl.SyclPlatform : A Python class representing cl::sycl::event</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi/SyclQueue.html">dpctl.SyclQueue : A Python class representing cl::sycl::event</a></li>
 </ul>
 </div>
 </div>
@@ -321,7 +321,7 @@ string is invalid, or the backend or device type values are not supported.</p>
 <h2>Device Selection Functions<a class="headerlink" href="#device-selection-functions" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.get_devices">
-<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_devices" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">backend_type.all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">device_type_t.all</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_devices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of <a class="reference internal" href="dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instances selected based on
 the given <a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> and <a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> values.</p>
 <p>The function is analogous to <code class="docutils literal notranslate"><span class="pre">sycl::devices::get_devices()</span></code>, but with an
@@ -448,7 +448,7 @@ returned by the SYCL <code class="docutils literal notranslate"><span class="pre
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.get_num_devices">
-<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_num_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_devices" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_num_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">backend_type.all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">device_type_t.all</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_devices" title="Permalink to this definition">¶</a></dt>
 <dd><p>A helper function to return the number of SYCL devices of a given
 <a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> and <a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a>.</p>
 <dl class="field-list simple">
@@ -804,13 +804,17 @@ level to print the most verbose output.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: master
+      v: 0.8.0rc3+2.gb38750
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
       
       <dl>
         <dt>Versions</dt>
+        
+          
+          <dd><a href="https://intelpython.github.io/dpctl/0.8.0/index.html">0.8.0</a></dd>
+          
         
           
           <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>

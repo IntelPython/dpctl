@@ -4,6 +4,8 @@
 dpctl.SyclQueue
 ###############
 
+.. currentmodule:: dpctl
+
 .. autoclass:: dpctl.SyclQueue
 
     .. rubric:: Attributes:

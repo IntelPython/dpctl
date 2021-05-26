@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl.memory &mdash; Data-parallel Control (dpctl) master documentation</title>
+  <title>dpctl.memory &mdash; Data-parallel Control (dpctl) 0.8.0rc3+2.gb38750 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                master
+                0.8.0rc3+2.gb38750
               </div>
             
           
@@ -442,23 +442,6 @@ they represent.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="comparison-with-rapids-memory-manager-rmm">
-<h2>Comparison with Rapids Memory Manager (RMM)<a class="headerlink" href="#comparison-with-rapids-memory-manager-rmm" title="Permalink to this headline">¶</a></h2>
-<p>RMM implements DeviceBuffer which is Cython native class wrapping around something similar to <code class="docutils literal notranslate"><span class="pre">std::vector&lt;unsigned</span> <span class="pre">char,</span> <span class="pre">custom_cuda_allocator</span> <span class="pre">(calls</span> <span class="pre">resource</span> <span class="pre">manager)&gt;</span></code> which is called device_buffer.</p>
-<p>DeviceBuffer stores a unique pointer to an instance of this class. DeviceBuffer implements <code class="docutils literal notranslate"><span class="pre">__cuda_array_interface__</span></code>. Direct constructors always allocate
-new memory and copy provided inputs into the newly allocated array.</p>
-<p>Zero-copy construction is possible from a <code class="docutils literal notranslate"><span class="pre">unique_ptr&lt;device_</span> <span class="pre">buffer&gt;</span></code>, with
-the ownership being moved to the Cython extension instance.</p>
-<p>DeviceBuffer provides <code class="docutils literal notranslate"><span class="pre">__reduce__</span></code> method to support pickling (which works by copying content of the device buffer to host) and provides the following set of routines, among others:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">copy_to_host(host_buf_obj)</span></code> to copy content of the underlying device_buffer to a host buffer</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">copy_from_host(host_buf_obf)</span></code> to copy content of the host buffer into memory of underlying device_buffer</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">copy_from_device(cuda_ary_obj)</span></code> to copy device memory underlying cuda_ary_obj Python object implementing <code class="docutils literal notranslate"><span class="pre">__cuda_array_interface__</span></code> to the memory underlying DeviceBuffer instance.</p></li>
-</ul>
-</div></blockquote>
-<p>RMM’s methods are declared nogil.</p>
-</div>
 </div>
 
 
@@ -496,13 +479,17 @@ the ownership being moved to the Cython extension instance.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: master
+      v: 0.8.0rc3+2.gb38750
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
       
       <dl>
         <dt>Versions</dt>
+        
+          
+          <dd><a href="https://intelpython.github.io/dpctl/0.8.0/index.html">0.8.0</a></dd>
+          
         
           
           <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>
