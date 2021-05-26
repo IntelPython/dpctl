@@ -147,23 +147,37 @@ target_link_libraries(DPCTLSyclInterface
     PRIVATE ${IntelSycl_OPENCL_LIBRARY}
 )
 
+include(GetProjectVersion)
+# the get_version function is defined in the GetProjectVersion module and
+# defines: VERSION, SEMVER, MAJOR, MINOR, PATCH. These variables are populated
+# by parsing the output of git describe.
+get_version()
+set_target_properties(DPCTLSyclInterface
+    PROPERTIES
+        VERSION ${VERSION_MAJOR}.${VERSION_MINOR}
+        SOVERSION ${VERSION_MAJOR}
+)
+
+set(linker_script1
+    "INPUT(libDPCTLSyclInterface.so libDPCTLSyclInterface.so.${VERSION_MAJOR})"
+)
+set(linker_script2
+    "INPUT(libDPCTLSyclInterface.so.${VERSION_MAJOR} libDPCTLSyclInterface.so.${VERSION_MAJOR}.${VERSION_MINOR})"
+)
+add_custom_command(TARGET DPCTLSyclInterface POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E remove "libDPCTLSyclInterface.so"
+    COMMAND "${CMAKE_COMMAND}" -E echo "${linker_script1}" > "libDPCTLSyclInterface.so"
+    COMMAND "${CMAKE_COMMAND}" -E remove "libDPCTLSyclInterface.so.${VERSION_MAJOR}"
+    COMMAND "${CMAKE_COMMAND}" -E echo "${linker_script2}" > "libDPCTLSyclInterface.so.${VERSION_MAJOR}"
+    VERBATIM
+)
+
 if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
     target_include_directories(DPCTLSyclInterface
         PRIVATE
         ${LEVEL_ZERO_INCLUDE_DIR}
     )
 endif()
-
-# FIXME: Turning off for release until conda build can be packaging symbolic links
-# NOTE: Till we hit 1.0.0 we will keep using the MINOR version to set the API
-# version of the library.
-# include(GetProjectVersion)
-# the get_version function is defined in the GetProjectVersion module and
-# defines: VERSION, SEMVER, MAJOR, MINOR, PATCH. These variables are populated
-# by parsing the output of git describe.
-# get_version()
-# set_target_properties(DPCTLSyclInterface PROPERTIES VERSION ${VERSION_MINOR})
-# set_target_properties(DPCTLSyclInterface PROPERTIES SOVERSION 1)
 
 install(TARGETS
     DPCTLSyclInterface
