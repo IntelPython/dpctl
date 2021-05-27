@@ -360,6 +360,13 @@ def check_create_sub_devices_equally(device):
         pytest.fail("create_sub_devices failed")
 
 
+def check_create_sub_devices_equally_zeros(device):
+    try:
+        device.create_sub_devices(partition=0)
+    except TypeError:
+        pass
+
+
 def check_create_sub_devices_by_counts(device):
     try:
         n = device.max_compute_units / 2
@@ -370,6 +377,13 @@ def check_create_sub_devices_by_counts(device):
         )
     except Exception:
         pytest.fail("create_sub_devices failed")
+
+
+def check_create_sub_devices_by_counts_zeros(device):
+    try:
+        device.create_sub_devices(partition=(0, 1))
+    except TypeError:
+        pass
 
 
 def check_create_sub_devices_by_affinity_not_applicable(device):

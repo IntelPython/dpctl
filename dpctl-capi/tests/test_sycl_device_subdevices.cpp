@@ -92,6 +92,9 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesEqually)
             EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(pDRef));
             EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
         }
+        EXPECT_NO_FATAL_FAILURE(
+            DVRef = DPCTLDevice_CreateSubDevicesEqually(DRef, 0));
+        EXPECT_TRUE(DVRef == nullptr);
     }
 }
 
@@ -114,7 +117,12 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByCounts)
         if (DVRef) {
             EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) > 0);
             EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
+            DVRef = nullptr;
         }
+        counts[n - 1] = 0;
+        EXPECT_NO_FATAL_FAILURE(
+            DVRef = DPCTLDevice_CreateSubDevicesByCounts(DRef, counts, n));
+        EXPECT_TRUE(DVRef == nullptr);
     }
 }
 
