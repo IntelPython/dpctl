@@ -33,7 +33,7 @@ Helper functions for ``sycl::platform`` objects that do not directly map to any 
 	:ref:`DPCTLPlatformVector_Clear<doxid-d7/d69/group__PlatformManager_1ga89b9b23802931f2354d8acb91f72ba6c>`(__dpctl_keep :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>` VRef);
 
 	__dpctl_give :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>`
-	:ref:`DPCTLPlatformVector_Create<doxid-d7/d69/group__PlatformManager_1ga0d40f7b5b223e7a373489ad2878a5788>`();
+	:ref:`DPCTLPlatformVector_Create<doxid-d7/d69/group__PlatformManager_1ga9d5773827c527bc445bf60ffbf6a6e60>`(void);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>`
 	:ref:`DPCTLPlatformVector_CreateFromArray<doxid-d7/d69/group__PlatformManager_1gac4e4722d083773b839113fb32cca632c>`(
@@ -122,13 +122,13 @@ Delete all the elements of the std::vector.
 		- Opaque pointer to a vector.
 
 .. index:: pair: function; DPCTLPlatformVector_Create
-.. _doxid-d7/d69/group__PlatformManager_1ga0d40f7b5b223e7a373489ad2878a5788:
+.. _doxid-d7/d69/group__PlatformManager_1ga9d5773827c527bc445bf60ffbf6a6e60:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
 	__dpctl_give :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>`
-	DPCTLPlatformVector_Create()
+	DPCTLPlatformVector_Create(void)
 
 Create an opaque pointer to a std::vector of opaque pointers wrapping the SYCL data type.
 

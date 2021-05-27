@@ -1,26 +1,39 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl.SyclPlatform &mdash; Data-parallel Control (dpctl) master documentation</title>
+  <title>dpctl.SyclPlatform &mdash; Data-parallel Control (dpctl) 0.8.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+
+  
   
 
   
   
-  
+
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
@@ -29,12 +42,6 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpctl.SyclQueue" href="SyclQueue.html" />
@@ -62,7 +69,7 @@
             
             
               <div class="version">
-                master
+                0.8.0
               </div>
             
           
@@ -79,6 +86,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -95,14 +103,14 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../dpctl_pyapi.html">dpctl Python API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#sub-modules">Sub-modules</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../dpctl_pyapi.html#classes">Classes</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="SyclContext.html">dpctl.SyclContext</a></li>
-<li class="toctree-l3"><a class="reference internal" href="SyclDevice.html">dpctl.SyclDevice</a></li>
-<li class="toctree-l3"><a class="reference internal" href="SyclEvent.html">dpctl.SyclEvent</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl.SyclPlatform</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="SyclContext.html">dpctl.SyclContext : A Python class representing cl::sycl::context</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclDevice.html">dpctl.SyclDevice : A Python class representing cl::sycl::device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclEvent.html">dpctl.SyclEvent : A Python class representing cl::sycl::event</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl.SyclPlatform : A Python class representing cl::sycl::event</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#detail">Detail</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="SyclQueue.html">dpctl.SyclQueue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclQueue.html">dpctl.SyclQueue : A Python class representing cl::sycl::event</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#enumerations">Enumerations</a></li>
@@ -118,6 +126,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -152,11 +161,13 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../dpctl_pyapi.html">dpctl Python API</a> &raquo;</li>
         
@@ -165,7 +176,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../../_sources/docfiles/dpctl_pyapi/SyclPlatform.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -182,22 +193,54 @@
   <div class="section" id="dpctl-syclplatform">
 <span id="syclplatform-api"></span><h1>dpctl.SyclPlatform<a class="headerlink" href="#dpctl-syclplatform" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="dpctl.SyclPlatform">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">SyclPlatform</span></code><a class="headerlink" href="#dpctl.SyclPlatform" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dpctl.SyclPlatform">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclPlatform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclPlatform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Python class representing <code class="docutils literal notranslate"><span class="pre">cl::sycl::platform</span></code> class.</p>
 <p>SyclPlatform() - create platform selected by sycl::default_selector
 SyclPlatform(filter_selector) - create platform selected by filter
 selector</p>
+<p class="rubric">Attributes:</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclPlatform.backend" title="dpctl.SyclPlatform.backend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">backend</span></code></a></p></td>
+<td><p>Returns the backend_type enum value for this device</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclPlatform.name" title="dpctl.SyclPlatform.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<td><p>Returns the name of the platform as a string</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclPlatform.vendor" title="dpctl.SyclPlatform.vendor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vendor</span></code></a></p></td>
+<td><p>Returns the platform vendor name as a string.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclPlatform.version" title="dpctl.SyclPlatform.version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">version</span></code></a></p></td>
+<td><p>Returns a backend-defined driver version as a string.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Public methods:</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclPlatform.print_platform_info" title="dpctl.SyclPlatform.print_platform_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_platform_info</span></code></a></p></td>
+<td><p>Print information about the SYCL platform.</p></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <div class="section" id="detail">
 <h2>Detail<a class="headerlink" href="#detail" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="public-methods">
-<h3>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline">¶</a></h3>
-<blockquote>
-<div><dl class="py attribute">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></code><code class="sig-name descname"><span class="pre">backend</span></code></dt>
+<div class="section" id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclPlatform.backend">
+<span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">backend</span></span><a class="headerlink" href="#dpctl.SyclPlatform.backend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the backend_type enum value for this device</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -210,14 +253,29 @@ selector</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></code><code class="sig-name descname"><span class="pre">name</span></code></dt>
+<dt class="sig sig-object py" id="dpctl.SyclPlatform.name">
+<span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#dpctl.SyclPlatform.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the name of the platform as a string</p>
 </dd></dl>
 
-<dl class="py method">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></code><code class="sig-name descname"><span class="pre">print_platform_info</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclPlatform.vendor">
+<span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">vendor</span></span><a class="headerlink" href="#dpctl.SyclPlatform.vendor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the platform vendor name as a string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclPlatform.version">
+<span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#dpctl.SyclPlatform.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a backend-defined driver version as a string.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="public-methods">
+<h3>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclPlatform.print_platform_info">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">print_platform_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclPlatform.print_platform_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print information about the SYCL platform.</p>
 <p>The level of information printed out by the function can be controlled
 by the optional <code class="docutils literal notranslate"><span class="pre">vebosity</span></code> setting.</p>
@@ -242,19 +300,6 @@ highest level to print the most verbose output.</p>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></code><code class="sig-name descname"><span class="pre">vendor</span></code></dt>
-<dd><p>Returns the platform vendor name as a string.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></code><code class="sig-name descname"><span class="pre">version</span></code></dt>
-<dd><p>Returns a backend-defined driver version as a string.</p>
-</dd></dl>
-
-</div></blockquote>
 </div>
 </div>
 </div>
@@ -264,29 +309,29 @@ highest level to print the most verbose output.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="SyclQueue.html" class="btn btn-neutral float-right" title="dpctl.SyclQueue" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="SyclEvent.html" class="btn btn-neutral float-left" title="dpctl.SyclEvent" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="SyclQueue.html" class="btn btn-neutral float-right" title="dpctl.SyclQueue" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="SyclEvent.html" class="btn btn-neutral float-left" title="dpctl.SyclEvent" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Intel Corp.
+        &#169; Copyright 2020, Intel Corp..
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -298,13 +343,17 @@ highest level to print the most verbose output.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: master
+      v: 0.8.0
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
       
       <dl>
         <dt>Versions</dt>
+        
+           <strong> 
+          <dd><a href="https://intelpython.github.io/dpctl/0.8.0/index.html">0.8.0</a></dd>
+           </strong> 
         
           
           <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>

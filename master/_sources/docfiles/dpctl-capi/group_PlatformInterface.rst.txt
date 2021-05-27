@@ -23,7 +23,7 @@ Overview
 	:ref:`DPCTLPlatform_Copy<doxid-db/df8/group__PlatformInterface_1ga5bddf303912d4344608af42735dfd6f8>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
-	:ref:`DPCTLPlatform_Create<doxid-db/df8/group__PlatformInterface_1gacd673cdf058cee9a7422cc55ea0d0357>`();
+	:ref:`DPCTLPlatform_Create<doxid-db/df8/group__PlatformInterface_1ga6b3412dfc90659a68beb778747211115>`(void);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
 	:ref:`DPCTLPlatform_CreateFromSelector<doxid-db/df8/group__PlatformInterface_1ga71cf26d634573b7cc86b013f65374015>`(__dpctl_keep const :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>` DSRef);
@@ -38,7 +38,7 @@ Overview
 	:ref:`DPCTLPlatform_GetName<doxid-db/df8/group__PlatformInterface_1ga41ed6567a6cd47bc50a099d7a18e93e3>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>`
-	:ref:`DPCTLPlatform_GetPlatforms<doxid-db/df8/group__PlatformInterface_1ga91988efbe3617c0edf35d3a0bc2bcf86>`();
+	:ref:`DPCTLPlatform_GetPlatforms<doxid-db/df8/group__PlatformInterface_1gacdbf951bfb74e4578af431fa2a7063cb>`(void);
 
 	DPCTL_API const __dpctl_give char*
 	:ref:`DPCTLPlatform_GetVendor<doxid-db/df8/group__PlatformInterface_1ga06c2a3e1b352081fcc0cd7ae55b97766>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
@@ -86,13 +86,13 @@ Returns a copy of the DPCTLSyclPlatformRef object.
 A new DPCTLSyclPlatformRef created by copying the passed in DPCTLSyclPlatformRef object.
 
 .. index:: pair: function; DPCTLPlatform_Create
-.. _doxid-db/df8/group__PlatformInterface_1gacd673cdf058cee9a7422cc55ea0d0357:
+.. _doxid-db/df8/group__PlatformInterface_1ga6b3412dfc90659a68beb778747211115:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
-	DPCTLPlatform_Create()
+	DPCTLPlatform_Create(void)
 
 Creates a new DPCTLSyclPlatformRef for a SYCL platform constructed using SYCL's default_selector.
 
@@ -213,13 +213,13 @@ Returns a C string for the platform name.
 A C string containing the name of the sycl::platform.
 
 .. index:: pair: function; DPCTLPlatform_GetPlatforms
-.. _doxid-db/df8/group__PlatformInterface_1ga91988efbe3617c0edf35d3a0bc2bcf86:
+.. _doxid-db/df8/group__PlatformInterface_1gacdbf951bfb74e4578af431fa2a7063cb:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
 	DPCTL_API __dpctl_give :ref:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>`
-	DPCTLPlatform_GetPlatforms()
+	DPCTLPlatform_GetPlatforms(void)
 
 Returns an opaque pointer to a vector of SYCL platforms available on the system.
 

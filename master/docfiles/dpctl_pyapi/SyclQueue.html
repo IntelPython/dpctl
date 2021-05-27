@@ -1,26 +1,39 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl.SyclQueue &mdash; Data-parallel Control (dpctl) master documentation</title>
+  <title>dpctl.SyclQueue &mdash; Data-parallel Control (dpctl) 0.8.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+
+  
   
 
   
   
-  
+
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
@@ -29,12 +42,6 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpctl C API" href="../dpctl-capi/index.html" />
@@ -62,7 +69,7 @@
             
             
               <div class="version">
-                master
+                0.8.0
               </div>
             
           
@@ -79,6 +86,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -95,11 +103,11 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../dpctl_pyapi.html">dpctl Python API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pyapi.html#sub-modules">Sub-modules</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../dpctl_pyapi.html#classes">Classes</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="SyclContext.html">dpctl.SyclContext</a></li>
-<li class="toctree-l3"><a class="reference internal" href="SyclDevice.html">dpctl.SyclDevice</a></li>
-<li class="toctree-l3"><a class="reference internal" href="SyclEvent.html">dpctl.SyclEvent</a></li>
-<li class="toctree-l3"><a class="reference internal" href="SyclPlatform.html">dpctl.SyclPlatform</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl.SyclQueue</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="SyclContext.html">dpctl.SyclContext : A Python class representing cl::sycl::context</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclDevice.html">dpctl.SyclDevice : A Python class representing cl::sycl::device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclEvent.html">dpctl.SyclEvent : A Python class representing cl::sycl::event</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclPlatform.html">dpctl.SyclPlatform : A Python class representing cl::sycl::event</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl.SyclQueue : A Python class representing cl::sycl::event</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#detail">Detail</a></li>
 </ul>
 </li>
@@ -118,6 +126,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -152,11 +161,13 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../dpctl_pyapi.html">dpctl Python API</a> &raquo;</li>
         
@@ -165,7 +176,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../../_sources/docfiles/dpctl_pyapi/SyclQueue.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -182,8 +193,8 @@
   <div class="section" id="dpctl-syclqueue">
 <span id="syclqueue-api"></span><h1>dpctl.SyclQueue<a class="headerlink" href="#dpctl-syclqueue" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="dpctl.SyclQueue">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dpctl.</span></code><code class="sig-name descname"><span class="pre">SyclQueue</span></code><a class="headerlink" href="#dpctl.SyclQueue" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dpctl.SyclQueue">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclQueue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Python class representing <code class="docutils literal notranslate"><span class="pre">cl::sycl::queue</span></code>. There are multiple
 ways to create a <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object:</p>
 <blockquote>
@@ -261,7 +272,7 @@ device.</p></li>
 <strong>“SyclQueueRef”</strong> that carries a pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>
 object. The capsule will be renamed upon successful consumption
 to ensure one-time use. A new named capsule can be constructed by
-using <code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.SyclQueue._get_capsule()</span></code> method.</p></li>
+using <a class="reference internal" href="#dpctl.SyclQueue._get_capsule" title="dpctl.SyclQueue._get_capsule"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.SyclQueue._get_capsule()</span></code></a> method.</p></li>
 </ul>
 </div></blockquote>
 <dl class="field-list simple">
@@ -302,13 +313,13 @@ The argument can be either “default”, “in_order”,
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_in_order</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.is_in_order" title="dpctl.SyclQueue.is_in_order"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_in_order</span></code></a></p></td>
 <td><p>True if SyclQueue is in-order, False if it is out-of-order.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_context</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.sycl_context" title="dpctl.SyclQueue.sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_context</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_device</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.sycl_device" title="dpctl.SyclQueue.sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_device</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -320,7 +331,7 @@ The argument can be either “default”, “in_order”,
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_capsule</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue._get_capsule" title="dpctl.SyclQueue._get_capsule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_capsule</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -332,31 +343,31 @@ The argument can be either “default”, “in_order”,
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.addressof_ref" title="dpctl.SyclQueue.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a></p></td>
 <td><p>Returns the address of the C API DPCTLSyclQueueRef pointer as a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_backend</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.get_sycl_backend" title="dpctl.SyclQueue.get_sycl_backend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_backend</span></code></a></p></td>
 <td><p>Returns the Sycl backend associated with the queue.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_context</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.get_sycl_context" title="dpctl.SyclQueue.get_sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_context</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_device</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.get_sycl_device" title="dpctl.SyclQueue.get_sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_device</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mem_advise</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.mem_advise" title="dpctl.SyclQueue.mem_advise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mem_advise</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">memcpy</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.memcpy" title="dpctl.SyclQueue.memcpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memcpy</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefetch</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.prefetch" title="dpctl.SyclQueue.prefetch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefetch</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.submit" title="dpctl.SyclQueue.submit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.wait" title="dpctl.SyclQueue.wait"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -365,22 +376,38 @@ The argument can be either “default”, “in_order”,
 
 <div class="section" id="detail">
 <h2>Detail<a class="headerlink" href="#detail" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="private-methods">
-<h3>Private methods<a class="headerlink" href="#private-methods" title="Permalink to this headline">¶</a></h3>
-<blockquote>
-<div><dl class="py method">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclQueue.</span></code><code class="sig-name descname"><span class="pre">_get_capsule</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<div class="section" id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.is_in_order">
+<span class="sig-prename descclassname"><span class="pre">SyclQueue.</span></span><span class="sig-name descname"><span class="pre">is_in_order</span></span><a class="headerlink" href="#dpctl.SyclQueue.is_in_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if SyclQueue is in-order, False if it is out-of-order.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.sycl_context">
+<span class="sig-prename descclassname"><span class="pre">SyclQueue.</span></span><span class="sig-name descname"><span class="pre">sycl_context</span></span><a class="headerlink" href="#dpctl.SyclQueue.sycl_context" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.sycl_device">
+<span class="sig-prename descclassname"><span class="pre">SyclQueue.</span></span><span class="sig-name descname"><span class="pre">sycl_device</span></span><a class="headerlink" href="#dpctl.SyclQueue.sycl_device" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="private-methods">
+<h3>Private methods<a class="headerlink" href="#private-methods" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclQueue._get_capsule">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">_get_capsule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue._get_capsule" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="public-methods">
 <h3>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline">¶</a></h3>
-<blockquote>
-<div><dl class="py method">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclQueue.</span></code><code class="sig-name descname"><span class="pre">addressof_ref</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.addressof_ref">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.addressof_ref" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the address of the C API DPCTLSyclQueueRef pointer as a
 <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 <dl class="field-list simple">
@@ -391,64 +418,47 @@ The argument can be either “default”, “in_order”,
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclQueue.</span></code><code class="sig-name descname"><span class="pre">get_sycl_backend</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.get_sycl_backend">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">get_sycl_backend</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.get_sycl_backend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the Sycl backend associated with the queue.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclQueue.</span></code><code class="sig-name descname"><span class="pre">get_sycl_context</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.get_sycl_context">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">get_sycl_context</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.get_sycl_context" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclQueue.</span></code><code class="sig-name descname"><span class="pre">get_sycl_device</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.get_sycl_device">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">get_sycl_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.get_sycl_device" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclQueue.</span></code><code class="sig-name descname"><span class="pre">is_in_order</span></code></dt>
-<dd><p>True if SyclQueue is in-order, False if it is out-of-order.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclQueue.</span></code><code class="sig-name descname"><span class="pre">mem_advise</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.mem_advise">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">mem_advise</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.mem_advise" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclQueue.</span></code><code class="sig-name descname"><span class="pre">memcpy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.memcpy">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">memcpy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.memcpy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclQueue.</span></code><code class="sig-name descname"><span class="pre">prefetch</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.prefetch">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">prefetch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.prefetch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclQueue.</span></code><code class="sig-name descname"><span class="pre">submit</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.submit">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">submit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.submit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclQueue.</span></code><code class="sig-name descname"><span class="pre">sycl_context</span></code></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.wait">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.wait" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclQueue.</span></code><code class="sig-name descname"><span class="pre">sycl_device</span></code></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">SyclQueue.</span></code><code class="sig-name descname"><span class="pre">wait</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
-
-</div></blockquote>
 </div>
 </div>
 </div>
@@ -458,29 +468,29 @@ The argument can be either “default”, “in_order”,
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../dpctl-capi/index.html" class="btn btn-neutral float-right" title="dpctl C API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="SyclPlatform.html" class="btn btn-neutral float-left" title="dpctl.SyclPlatform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="../dpctl-capi/index.html" class="btn btn-neutral float-right" title="dpctl C API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="SyclPlatform.html" class="btn btn-neutral float-left" title="dpctl.SyclPlatform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Intel Corp.
+        &#169; Copyright 2020, Intel Corp..
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -492,13 +502,17 @@ The argument can be either “default”, “in_order”,
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: master
+      v: 0.8.0
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
       
       <dl>
         <dt>Versions</dt>
+        
+           <strong> 
+          <dd><a href="https://intelpython.github.io/dpctl/0.8.0/index.html">0.8.0</a></dd>
+           </strong> 
         
           
           <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>

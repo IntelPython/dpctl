@@ -29,7 +29,7 @@ Overview
 	:ref:`DPCTLDevice_Copy<doxid-d8/de9/group__DeviceInterface_1ga02c7b900248b1aac0fe096c874c71c2b>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
-	:ref:`DPCTLDevice_Create<doxid-d8/de9/group__DeviceInterface_1ga71e1a01764bd7d02441a2cce8ca54d91>`();
+	:ref:`DPCTLDevice_Create<doxid-d8/de9/group__DeviceInterface_1gaa0f24449bcf7721e2a23cc6b2c1d291a>`(void);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
 	:ref:`DPCTLDevice_CreateFromSelector<doxid-d8/de9/group__DeviceInterface_1ga371463122c4ec271be68364d1e9a284d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>` DSRef);
@@ -211,13 +211,13 @@ Returns a copy of the DPCTLSyclDeviceRef object.
 A new DPCTLSyclDeviceRef created by copying the passed in DPCTLSyclDeviceRef object.
 
 .. index:: pair: function; DPCTLDevice_Create
-.. _doxid-d8/de9/group__DeviceInterface_1ga71e1a01764bd7d02441a2cce8ca54d91:
+.. _doxid-d8/de9/group__DeviceInterface_1gaa0f24449bcf7721e2a23cc6b2c1d291a:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
-	DPCTLDevice_Create()
+	DPCTLDevice_Create(void)
 
 Returns a new DPCTLSyclDeviceRef opaque object wrapping a SYCL device instance as a host device.
 
