@@ -29,6 +29,7 @@
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_device_manager.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
+#include <algorithm>
 #include <cstring>
 
 using namespace cl::sycl;
@@ -577,8 +578,8 @@ DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                     size_t count)
 {
     vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
-    auto D = unwrap(DRef);
-    if (D) {
+    if (DRef && count) {
+        auto D = unwrap(DRef);
         try {
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_equally>(count);
@@ -612,11 +613,22 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
     std::vector<size_t> vcounts;
     vcounts.assign(counts, counts + ncounts);
-    auto D = unwrap(DRef);
-    if (D) {
+    size_t min_elem = *std::min_element(vcounts.begin(), vcounts.end());
+    if (DRef && min_elem) {
+        auto D = unwrap(DRef);
+        vector_class<std::remove_pointer<decltype(D)>::type> subDevices;
         try {
-            auto subDevices = D->create_sub_devices<
+            subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_counts>(vcounts);
+        } catch (feature_not_supported const &fnse) {
+            std::cerr << fnse.what() << '\n';
+            return nullptr;
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+            return nullptr;
+        }
+        try {
             Devices = new vector_class<DPCTLSyclDeviceRef>();
             for (const auto &sd : subDevices) {
                 Devices->emplace_back(wrap(new device(sd)));
@@ -624,10 +636,6 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         } catch (std::bad_alloc const &ba) {
             delete Devices;
             std::cerr << ba.what() << '\n';
-            return nullptr;
-        } catch (feature_not_supported const &fnse) {
-            delete Devices;
-            std::cerr << fnse.what() << '\n';
             return nullptr;
         } catch (runtime_error const &re) {
             delete Devices;
