@@ -9,9 +9,13 @@ project(
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 find_package(Git REQUIRED)
 
-option(DPCTL_CUSTOM_DPCPP_INSTALL_DIR
-    "Use a custom version of DPCPP installed at the provided location."
+option(DPCTL_DPCPP_HOME_DIR
+    "The installation home for the DPC++ toolchain compiler."
     OFF
+)
+option(DPCTL_DPCPP_FROM_ONEAPI
+    "Indicates whether DPCTL_DPCPP_HOME_DIR points to a oneAPI installation."
+    ON
 )
 # Option to turn on support for creating Level Zero interoperability programs
 # from a SPIR-V binary file.
@@ -36,10 +40,10 @@ option(DPCTL_BUILD_CAPI_TESTS
 )
 
 # Minimum version requirement only when oneAPI dpcpp is used.
-if(DPCTL_CUSTOM_DPCPP_INSTALL_DIR)
-    find_package(IntelSycl REQUIRED)
-else()
+if(DPCTL_DPCPP_FROM_ONEAPI)
     find_package(IntelSycl 2021.2.0 REQUIRED)
+else()
+    find_package(IntelSycl REQUIRED)
 endif()
 
 if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
