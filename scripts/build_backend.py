@@ -81,6 +81,8 @@ def build_backend(
     if IS_LIN:
         if os.path.exists(os.path.join(DPCPP_ROOT, "bin", "dpcpp")):
             cmake_compiler_args = [
+                "-DDPCTL_DPCPP_HOME_DIR=" + DPCPP_ROOT,
+                "-DDPCTL_DPCPP_FROM_ONEAPI=ON",
                 "-DCMAKE_C_COMPILER:PATH="
                 + os.path.join(DPCPP_ROOT, "bin", "clang"),
                 "-DCMAKE_CXX_COMPILER:PATH="
@@ -88,7 +90,8 @@ def build_backend(
             ]
         else:
             cmake_compiler_args = [
-                "-DDPCTL_CUSTOM_DPCPP_INSTALL_DIR=" + DPCPP_ROOT,
+                "-DDPCTL_DPCPP_HOME_DIR=" + DPCPP_ROOT,
+                "-DDPCTL_DPCPP_FROM_ONEAPI=OFF",
                 "-DCMAKE_C_COMPILER:PATH="
                 + os.path.join(DPCPP_ROOT, "bin", "clang"),
                 "-DCMAKE_CXX_COMPILER:PATH="

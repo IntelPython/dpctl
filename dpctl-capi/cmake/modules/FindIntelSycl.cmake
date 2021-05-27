@@ -36,10 +36,9 @@ include(FindPackageHandleStandardArgs)
 
 # Check if a specific DPC++ installation directory was provided then set
 # IntelSycl_ROOT to that path.
-if(DPCTL_CUSTOM_DPCPP_INSTALL_DIR)
-    set(IntelSycl_ROOT ${DPCTL_CUSTOM_DPCPP_INSTALL_DIR})
-    set(USING_ONEAPI_DPCPP False)
-    message(STATUS "Not using oneAPI, but IntelSycl at " ${IntelSycl_ROOT})
+if(DPCTL_DPCPP_HOME_DIR)
+    set(IntelSycl_ROOT ${DPCTL_DPCPP_HOME_DIR})
+    message(STATUS "Not using standard oneAPI installation, but IntelSycl at " ${IntelSycl_ROOT})
 # If DPC++ installation was not specified, check for ONEAPI_ROOT
 elseif(DEFINED ENV{ONEAPI_ROOT})
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -49,38 +48,31 @@ elseif(DEFINED ENV{ONEAPI_ROOT})
     else()
         message(FATAL_ERROR "Unsupported system.")
     endif()
-    set(USING_ONEAPI_DPCPP True)
 else()
     message(FATAL_ERROR,
         "Could not locate a DPC++ installation. Either pass the path to a "
-        "custom location using CUSTOM_IntelSycl_INSTALL_DIR or set the "
+        "custom location using DPCTL_DPCPP_HOME_DIR or set the "
         " ONEAPI_ROOT environment variable."
     )
     return()
 endif()
 
 # We will extract the version information from the compiler
-if(USING_ONEAPI_DPCPP)
-    set(dpcpp_cmd "${IntelSycl_ROOT}/bin/dpcpp")
-    set(dpcpp_arg "--version")
-else()
-    set(dpcpp_cmd "${IntelSycl_ROOT}/bin/clang++")
-    set(dpcpp_arg "--version")
-endif()
+set(clangxx_cmd "${IntelSycl_ROOT}/bin/clang++")
+set(clangxx_arg "--version")
 
 # Check if dpcpp is available
 execute_process(
-    COMMAND ${dpcpp_cmd} ${dpcpp_arg}
+    COMMAND ${clangxx_cmd} ${clangxx_arg}
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-    RESULT_VARIABLE dpcpp_result
-    OUTPUT_VARIABLE dpcpp_ver
+    RESULT_VARIABLE clangxx_result
+    OUTPUT_VARIABLE clangxx_ver
 )
 
 # If dpcpp is found then set the package variables
-if(${dpcpp_result} MATCHES "0")
-    string(REPLACE "\n" ";" IntelSycl_VERSION_LIST "${dpcpp_ver}")
+if(${clangxx_result} MATCHES "0")
+    string(REPLACE "\n" ";" IntelSycl_VERSION_LIST "${clangxx_ver}")
     set(IDX 0)
-    list(GET IntelSycl_VERSION_LIST 0 dpcpp_ver_line)
     foreach(X ${IntelSycl_VERSION_LIST})
         message(STATUS "dpcpp ver[${IDX}]: ${X}")
         MATH(EXPR IDX "${IDX}+1")
