@@ -706,7 +706,12 @@ cdef class SyclDevice(_SyclDevice):
             the sub-devices.
         """
         cdef DPCTLDeviceVectorRef DVRef = NULL
-        DVRef = DPCTLDevice_CreateSubDevicesEqually(self._device_ref, count)
+        if count > 0:
+            DVRef = DPCTLDevice_CreateSubDevicesEqually(self._device_ref, count)
+        else:
+            raise ValueError(
+                "Creating sub-devices with zero compute units is requested"
+            )
         if DVRef is NULL:
             raise SubDeviceCreationError("Sub-devices were not created.")
         return _get_devices(DVRef)
@@ -720,6 +725,7 @@ cdef class SyclDevice(_SyclDevice):
         """
         cdef int ncounts = len(counts)
         cdef size_t *counts_buff = NULL
+        cdef size_t min_count = 1
         cdef DPCTLDeviceVectorRef DVRef = NULL
         cdef int i
 
@@ -734,10 +740,17 @@ cdef class SyclDevice(_SyclDevice):
             )
         for i in range(ncounts):
             counts_buff[i] = counts[i]
-        DVRef = DPCTLDevice_CreateSubDevicesByCounts(
-            self._device_ref, counts_buff, ncounts
-        )
+            if counts_buff[i] == 0:
+                min_count = 0
+        if min_count:
+            DVRef = DPCTLDevice_CreateSubDevicesByCounts(
+                self._device_ref, counts_buff, ncounts
+            )
         free(counts_buff)
+        if min_count == 0:
+            raise ValueError(
+                "Targeted sub-device execution units must positive"
+            )
         if DVRef is NULL:
             raise SubDeviceCreationError("Sub-devices were not created.")
         return _get_devices(DVRef)
