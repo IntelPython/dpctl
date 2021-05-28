@@ -14,17 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import glob
 import os
 import os.path
-import sys
-import glob
 import shutil
+import sys
 
 import numpy as np
 import setuptools.command.build_ext as orig_build_ext
+import setuptools.command.build_py as orig_build_py
 import setuptools.command.develop as orig_develop
 import setuptools.command.install as orig_install
-import setuptools.command.build_py as orig_build_py
 from Cython.Build import cythonize
 from setuptools import Extension, find_packages, setup
 
@@ -260,13 +260,11 @@ class build_py(orig_build_py.build_py):
         dpctl_build_dir = os.path.join(self.build_lib, "dpctl")
         os.makedirs(dpctl_build_dir, exist_ok=True)
         if IS_LIN:
-            for fn in glob.glob(
-                    os.path.join(dpctl_src_dir, "*.so*")
-            ):
+            for fn in glob.glob(os.path.join(dpctl_src_dir, "*.so*")):
                 # Check if the file already exists before copying. The check is
                 # needed when dealing with symlinks.
                 if not os.path.exists(
-                        os.path.join(dpctl_build_dir, os.path.basename(fn))
+                    os.path.join(dpctl_build_dir, os.path.basename(fn))
                 ):
                     shutil.copy(
                         src=fn,
@@ -274,18 +272,15 @@ class build_py(orig_build_py.build_py):
                         follow_symlinks=False,
                     )
         elif IS_WIN:
-            for fn in glob.glob(
-                    os.path.join(dpctl_src_dir, "*.lib")
-            ):
+            for fn in glob.glob(os.path.join(dpctl_src_dir, "*.lib")):
                 shutil.copy(src=fn, dst=dpctl_build_dir)
 
-            for fn in glob.glob(
-                    os.path.join(dpctl_src_dir, "*.dll")
-            ):
+            for fn in glob.glob(os.path.join(dpctl_src_dir, "*.dll")):
                 shutil.copy(src=fn, dst=dpctl_build_dir)
         else:
             raise NotImplementedError("Unsupported platform")
         return super().run()
+
 
 class install(orig_install.install):
     description = "Installs dpctl into Python prefix"
@@ -347,13 +342,11 @@ class install(orig_install.install):
         ret = super().run()
         if IS_LIN:
             dpctl_build_dir = os.path.join(
-                os.path.dirname(__file__),
-                self.build_lib,
-                "dpctl"
+                os.path.dirname(__file__), self.build_lib, "dpctl"
             )
             dpctl_install_dir = os.path.join(self.install_libbase, "dpctl")
             for fn in glob.glob(
-                    os.path.join(dpctl_install_dir, "*DPCTLSyclInterface.so*")
+                os.path.join(dpctl_install_dir, "*DPCTLSyclInterface.so*")
             ):
                 os.remove(fn)
                 shutil.copy(
