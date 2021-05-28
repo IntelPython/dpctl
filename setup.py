@@ -14,12 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import glob
 import os
 import os.path
+import shutil
 import sys
 
 import numpy as np
 import setuptools.command.build_ext as orig_build_ext
+import setuptools.command.build_py as orig_build_py
 import setuptools.command.develop as orig_develop
 import setuptools.command.install as orig_install
 from Cython.Build import cythonize
@@ -251,6 +254,34 @@ class build_ext(orig_build_ext.build_ext):
         return super().run()
 
 
+class build_py(orig_build_py.build_py):
+    def run(self):
+        dpctl_src_dir = self.get_package_dir("dpctl")
+        dpctl_build_dir = os.path.join(self.build_lib, "dpctl")
+        os.makedirs(dpctl_build_dir, exist_ok=True)
+        if IS_LIN:
+            for fn in glob.glob(os.path.join(dpctl_src_dir, "*.so*")):
+                # Check if the file already exists before copying. The check is
+                # needed when dealing with symlinks.
+                if not os.path.exists(
+                    os.path.join(dpctl_build_dir, os.path.basename(fn))
+                ):
+                    shutil.copy(
+                        src=fn,
+                        dst=dpctl_build_dir,
+                        follow_symlinks=False,
+                    )
+        elif IS_WIN:
+            for fn in glob.glob(os.path.join(dpctl_src_dir, "*.lib")):
+                shutil.copy(src=fn, dst=dpctl_build_dir)
+
+            for fn in glob.glob(os.path.join(dpctl_src_dir, "*.dll")):
+                shutil.copy(src=fn, dst=dpctl_build_dir)
+        else:
+            raise NotImplementedError("Unsupported platform")
+        return super().run()
+
+
 class install(orig_install.install):
     description = "Installs dpctl into Python prefix"
     user_options = orig_install.install.user_options + [
@@ -308,7 +339,22 @@ class install(orig_install.install):
             else:
                 self.define = ",".join((pre_d, "CYTHON_TRACE"))
         cythonize(self.distribution.ext_modules)
-        return super().run()
+        ret = super().run()
+        if IS_LIN:
+            dpctl_build_dir = os.path.join(
+                os.path.dirname(__file__), self.build_lib, "dpctl"
+            )
+            dpctl_install_dir = os.path.join(self.install_libbase, "dpctl")
+            for fn in glob.glob(
+                os.path.join(dpctl_install_dir, "*DPCTLSyclInterface.so*")
+            ):
+                os.remove(fn)
+                shutil.copy(
+                    src=os.path.join(dpctl_build_dir, os.path.basename(fn)),
+                    dst=dpctl_install_dir,
+                    follow_symlinks=False,
+                )
+        return ret
 
 
 class develop(orig_develop.develop):
@@ -393,6 +439,7 @@ def _get_cmdclass():
     cmdclass["install"] = install
     cmdclass["develop"] = develop
     cmdclass["build_ext"] = build_ext
+    cmdclass["build_py"] = build_py
     return cmdclass
 
 
