@@ -7,5 +7,4 @@ include dpctl/_sycl_queue.h
 include dpctl/_sycl_queue_manager.h
 include dpctl/_sycl_event.h
 include dpctl/memory/_memory.h
-include dpctl/*DPCTL*Interface.*
 include dpctl/tests/input_files/*
