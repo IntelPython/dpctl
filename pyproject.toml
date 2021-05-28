@@ -10,3 +10,32 @@ use_parentheses = true
 ensure_newline_before_comments = true
 line_length = 80
 skip = ["versioneer.py", "dpctl/_version.py"]
+
+[tool.coverage.run]
+plugins = [
+    "Cython.Coverage"
+]
+branch = true
+source = [
+    "dpctl"
+]
+omit = [
+    "dpctl/tests/*",
+    "dpctl/_version.py",
+]
+
+[tool.pytest.ini.options]
+minversion = "6.0"
+norecursedirs= [
+    ".*", "*.egg*", "build", "dist", "conda.recipe",
+]
+addopts = [
+    "--junitxml=junit.xml",
+    "--ignore setup.py",
+    "--ignore run_test.py",
+    "--cov-report term-missing",
+    "--tb native",
+    "--strict",
+    "--durations=20",
+    "-q -ra",
+]
