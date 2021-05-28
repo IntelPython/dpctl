@@ -18,8 +18,6 @@
 # cython: language_level=3
 # cython: linetrace=True
 
-from __future__ import print_function
-
 import logging
 from contextlib import contextmanager
 

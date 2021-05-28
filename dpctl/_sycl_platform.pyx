@@ -21,8 +21,6 @@
 """ Implements SyclPlatform Cython extension type.
 """
 
-from __future__ import print_function
-
 from ._backend cimport (  # noqa: E211
     DPCTLCString_Delete,
     DPCTLDeviceSelector_Delete,

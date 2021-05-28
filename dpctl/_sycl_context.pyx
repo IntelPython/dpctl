@@ -21,8 +21,6 @@
 """ Implements SyclContext Cython extension type.
 """
 
-from __future__ import print_function
-
 import logging
 
 from cpython cimport pycapsule
