@@ -76,13 +76,12 @@ __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_Create()
 __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
     __dpctl_keep const DPCTLSyclDeviceSelectorRef DSRef)
 {
-    DPCTLSyclPlatformRef PRef = nullptr;
-    auto DS = unwrap(DSRef);
-    if (DS) {
+    if (DSRef) {
+        auto DS = unwrap(DSRef);
         platform *P = nullptr;
         try {
             P = new platform(*DS);
-            PRef = wrap(P);
+            return wrap(P);
         } catch (std::bad_alloc const &ba) {
             std::cerr << ba.what() << '\n';
             return nullptr;
@@ -96,7 +95,7 @@ __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
         std::cerr << "Device selector pointer cannot be NULL\n";
     }
 
-    return PRef;
+    return nullptr;
 }
 
 void DPCTLPlatform_Delete(__dpctl_take DPCTLSyclPlatformRef PRef)
