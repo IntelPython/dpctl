@@ -79,7 +79,7 @@ jobs:
       - name: Install dpctl dependencies
         shell: bash -l {0}
         run: |
-          pip install numpy cython setuptools pytest pytest-cov coverage
+          pip install numpy cython setuptools pytest pytest-cov coverage[toml]
 
       - name: Build dpctl with coverage
         shell: bash -l {0}
