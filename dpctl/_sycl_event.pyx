@@ -21,8 +21,6 @@
 """ Implements SyclEvent Cython extension type.
 """
 
-from __future__ import print_function
-
 import logging
 
 from ._backend cimport DPCTLEvent_Delete, DPCTLEvent_Wait, DPCTLSyclEventRef

@@ -21,8 +21,6 @@
 """ Implements SyclQueue Cython extension type.
 """
 
-from __future__ import print_function
-
 from ._backend cimport (  # noqa: E211
     DPCTLContext_Create,
     DPCTLContext_Delete,
