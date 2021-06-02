@@ -350,7 +350,7 @@ cdef class SyclContext(_SyclContext):
             used to create this :class:`dpctl.SyclContext` cast to a
             ``size_t``.
         """
-        return int(<size_t>self._ctx_ref)
+        return int(<size_t>self._ctxt_ref)
 
     def get_devices(self):
         """
