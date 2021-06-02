@@ -58,6 +58,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetSubGroupIndependentForwardProgress,
     DPCTLDevice_GetVendor,
     DPCTLDevice_HasAspect,
+    DPCTLDevice_Hash,
     DPCTLDevice_IsAccelerator,
     DPCTLDevice_IsCPU,
     DPCTLDevice_IsGPU,
@@ -708,6 +709,13 @@ cdef class SyclDevice(_SyclDevice):
             + self.name
             + "] at {}>".format(hex(id(self)))
         )
+
+    def __hash__(self):
+        """
+        Returns hash value corresponding to ``self._device_ref``.
+
+        """
+        return DPCTLDevice_Hash(self._device_ref)
 
     cdef list create_sub_devices_equally(self, size_t count):
         """ Returns a list of sub-devices partitioned from this SYCL device

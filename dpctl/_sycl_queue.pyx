@@ -38,6 +38,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLQueue_GetBackend,
     DPCTLQueue_GetContext,
     DPCTLQueue_GetDevice,
+    DPCTLQueue_Hash,
     DPCTLQueue_IsInOrder,
     DPCTLQueue_MemAdvise,
     DPCTLQueue_Memcpy,
@@ -862,6 +863,13 @@ cdef class SyclQueue(_SyclQueue):
             )
         else:
             return "<dpctl." + self.__name__ + " at {}>".format(hex(id(self)))
+
+    def __hash__(self):
+        """
+        Returns hash value corresponding to ``self._queue_ref``.
+
+        """
+        return DPCTLQueue_Hash(self._queue_ref)
 
     def _get_capsule(self):
         cdef DPCTLSyclQueueRef QRef = NULL
