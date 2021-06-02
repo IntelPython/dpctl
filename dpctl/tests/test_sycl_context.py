@@ -412,3 +412,12 @@ def test_context_multi_device():
     shmem_1 = dpmem.MemoryUSMShared(256, queue=q1)
     shmem_2 = dpmem.MemoryUSMDevice(256, queue=q2)
     shmem_2.copy_from_device(shmem_1)
+
+
+def test_hashing_of_context():
+    """
+    Test that a SyclContext object can be used as a dictionary key.
+
+    """
+    ctx_dict = {dpctl.SyclContext(): "default_context"}
+    assert ctx_dict

@@ -337,6 +337,14 @@ cdef class SyclContext(_SyclContext):
         else:
             return False
 
+    def __hash__(self):
+        """
+        Return a Py_ssize_t hash value by using the address of the
+        ``DPCTLSyclContextRef`` pointer stored in ``self._ctxt_ref``.
+
+        """
+        return hash(self.addressof_ref())
+
     cdef DPCTLSyclContextRef get_context_ref(self):
         return self._ctxt_ref
 

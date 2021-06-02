@@ -709,6 +709,14 @@ cdef class SyclDevice(_SyclDevice):
             + "] at {}>".format(hex(id(self)))
         )
 
+    def __hash__(self):
+        """
+        Return a Py_ssize_t hash value by using the address of the
+        ``DPCTLSyclDeviceRef`` pointer stored in ``self._device_ref``.
+
+        """
+        return hash(self.addressof_ref())
+
     cdef list create_sub_devices_equally(self, size_t count):
         """ Returns a list of sub-devices partitioned from this SYCL device
             based on the ``count`` parameter.

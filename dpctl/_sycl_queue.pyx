@@ -865,6 +865,14 @@ cdef class SyclQueue(_SyclQueue):
         else:
             return "<dpctl." + self.__name__ + " at {}>".format(hex(id(self)))
 
+    def __hash__(self):
+        """
+        Return a Py_ssize_t hash value by using the address of the
+        ``DPCTLSyclQueueRef`` pointer stored in ``self._queue_ref``.
+
+        """
+        return hash(self.addressof_ref())
+
     def _get_capsule(self):
         cdef DPCTLSyclQueueRef QRef = NULL
         QRef = DPCTLQueue_Copy(self._queue_ref)
