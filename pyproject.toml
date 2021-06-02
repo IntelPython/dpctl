@@ -27,7 +27,7 @@ omit = [
 [tool.pytest.ini.options]
 minversion = "6.0"
 norecursedirs= [
-    ".*", "*.egg*", "build", "dist", "conda.recipe",
+    ".*", "*.egg*", "build", "dist", "conda-recipe",
 ]
 addopts = [
     "--junitxml=junit.xml",
