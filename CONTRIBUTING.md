@@ -154,6 +154,10 @@ these steps:
     To generate the coverage data for dpctl's Python sources, you only need to
     install `coverage`.
 
+    ```bash
+    python -m pip install coverage[toml]
+    ```
+
 3. Build dpctl with code coverage support.
 
     ```bash
