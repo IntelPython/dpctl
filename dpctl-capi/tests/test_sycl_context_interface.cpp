@@ -177,6 +177,8 @@ TEST_P(TestDPCTLContextInterface, ChkAreEq)
     EXPECT_NO_FATAL_FAILURE(are_not_eq = DPCTLContext_AreEq(CRef1, CRef3));
     EXPECT_TRUE(are_eq);
     EXPECT_FALSE(are_not_eq);
+    EXPECT_TRUE(DPCTLContext_Hash(CRef1) == DPCTLContext_Hash(CRef2));
+    EXPECT_FALSE(DPCTLContext_Hash(CRef1) == DPCTLContext_Hash(CRef3));
 
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef1));
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef2));
