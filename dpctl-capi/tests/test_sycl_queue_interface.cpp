@@ -166,11 +166,13 @@ TEST_F(TestDPCTLSyclQueueInterface, CheckAreEq)
     }
 
     EXPECT_TRUE(DPCTLQueue_AreEq(Q1, Q2));
+    EXPECT_TRUE(DPCTLQueue_Hash(Q1) == DPCTLQueue_Hash(Q2));
     auto Q3 = DPCTLQueue_CreateForDevice(DRef, nullptr, 0);
     auto Q4 = DPCTLQueue_CreateForDevice(DRef, nullptr, 0);
 
     // These are different queues
     EXPECT_FALSE(DPCTLQueue_AreEq(Q3, Q4));
+    EXPECT_FALSE(DPCTLQueue_Hash(Q3) == DPCTLQueue_Hash(Q4));
 
     auto C0 = DPCTLQueue_GetContext(Q3);
     auto C1 = DPCTLQueue_GetContext(Q4);

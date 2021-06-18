@@ -331,4 +331,14 @@ void DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
 DPCTL_API
 bool DPCTLQueue_IsInOrder(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
+/*!
+ * @brief C-API wrapper for std::hash<sycl::queue>'s operator().
+ *
+ * @param    QRef         An opaque pointer to the sycl queue.
+ * @return   Hash value.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+size_t DPCTLQueue_Hash(__dpctl_keep const DPCTLSyclQueueRef QRef);
+
 DPCTL_C_EXTERN_C_END
