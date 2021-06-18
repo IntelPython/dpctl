@@ -76,6 +76,7 @@ def test_context_not_equals():
     except ValueError:
         pytest.skip()
     assert ctx_cpu != ctx_gpu
+    assert hash(ctx_cpu) != hash(ctx_gpu)
 
 
 def test_context_not_equals2():
@@ -94,6 +95,7 @@ def test_context_equals():
     except ValueError:
         pytest.skip()
     assert ctx0 == ctx1
+    assert hash(ctx0) == hash(ctx1)
 
 
 def test_name():
