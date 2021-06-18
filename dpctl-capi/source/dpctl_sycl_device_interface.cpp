@@ -690,3 +690,18 @@ __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
     }
     return wrap(Devices);
 }
+
+size_t DPCTLDevice_Hash(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    if (DRef) {
+        auto D = unwrap(DRef);
+        std::hash<device> hash_fn;
+        return hash_fn(*D);
+    }
+    else {
+        // todo: log error
+        std::cerr << "Argument DRef is null"
+                  << "/n";
+        return 0;
+    }
+}
