@@ -55,6 +55,9 @@ Overview
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
 	:ref:`DPCTLQueue_GetDevice<doxid-d9/db1/group__QueueInterface_1ga44095b28dfb5c357e6c065749e9aa8c0>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
+	DPCTL_API size_t
+	:ref:`DPCTLQueue_Hash<doxid-d9/db1/group__QueueInterface_1ga17f54699da3f3ab226cf8e3c9c57a7dc>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+
 	DPCTL_API bool
 	:ref:`DPCTLQueue_IsInOrder<doxid-d9/db1/group__QueueInterface_1ga0738e262108a1ac8f43f227548724f07>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
@@ -133,7 +136,7 @@ Global Functions
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef2
 		)
 
-Checks if two DPCTLSyclQueueRef objects point to the same sycl::queue.
+Checks if two DPCTLSyclQueueRef objects point to the same ``sycl::queue``.
 
 
 
@@ -145,12 +148,12 @@ Checks if two DPCTLSyclQueueRef objects point to the same sycl::queue.
 	*
 		- QRef1
 
-		- First opaque pointer to the sycl queue.
+		- First opaque pointer to the ``sycl::queue``.
 
 	*
 		- QRef2
 
-		- Second opaque pointer to the sycl queue.
+		- Second opaque pointer to the ``sycl::queue``.
 
 
 
@@ -401,6 +404,35 @@ returns the Sycl device for the queue.
 
 A DPCTLSyclDeviceRef pointer to the sycl device for the queue.
 
+.. index:: pair: function; DPCTLQueue_Hash
+.. _doxid-d9/db1/group__QueueInterface_1ga17f54699da3f3ab226cf8e3c9c57a7dc:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLQueue_Hash(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
+
+C-API wrapper for std::hash<sycl::queue>'s operator().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to the ``sycl::queue``.
+
+
+
+.. rubric:: Returns:
+
+Hash value of the underlying ``sycl::queue`` instance.
+
 .. index:: pair: function; DPCTLQueue_IsInOrder
 .. _doxid-d9/db1/group__QueueInterface_1ga0738e262108a1ac8f43f227548724f07:
 
@@ -422,7 +454,7 @@ C-API wrapper for sycl::queue::is_in_order that indicates whether the referenced
 	*
 		- QRef
 
-		- An opaque pointer to the sycl queue.
+		- An opaque pointer to the ``sycl::queue``.
 
 .. index:: pair: function; DPCTLQueue_MemAdvise
 .. _doxid-d9/db1/group__QueueInterface_1ga0ef8f0c4ee3fd1e0289633ffe3d283dc:
@@ -450,7 +482,7 @@ C-API wrapper for sycl::queue::mem_advise, the function waits on an event till t
 	*
 		- QRef
 
-		- An opaque pointer to the sycl queue.
+		- An opaque pointer to the ``sycl::queue``.
 
 	*
 		- Ptr
@@ -481,7 +513,7 @@ C-API wrapper for sycl::queue::mem_advise, the function waits on an event till t
 		size_t Count
 		)
 
-C-API wrapper for sycl::queue::memcpy, the function waits on an event till the memcpy operation completes.
+C-API wrapper for ``sycl::queue::memcpy``, the function waits on an event till the memcpy operation completes.
 
 
 
@@ -493,7 +525,7 @@ C-API wrapper for sycl::queue::memcpy, the function waits on an event till the m
 	*
 		- QRef
 
-		- An opaque pointer to the sycl queue.
+		- An opaque pointer to the ``sycl::queue``.
 
 	*
 		- Dest
@@ -523,7 +555,7 @@ C-API wrapper for sycl::queue::memcpy, the function waits on an event till the m
 		size_t Count
 		)
 
-C-API wrapper for sycl::queue::prefetch, the function waits on an event till the prefetch operation completes.
+C-API wrapper for ``sycl::queue::prefetch``, the function waits on an event till the prefetch operation completes.
 
 
 
@@ -535,7 +567,7 @@ C-API wrapper for sycl::queue::prefetch, the function waits on an event till the
 	*
 		- QRef
 
-		- An opaque pointer to the sycl queue.
+		- An opaque pointer to the ``sycl::queue``.
 
 	*
 		- Ptr
@@ -569,7 +601,7 @@ C-API wrapper for sycl::queue::prefetch, the function waits on an event till the
 
 Submits the kernel to the specified queue with the provided nd_range argument.
 
-A wrapper over sycl::queue.submit(). The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as parallel_for(nd_range<NRange>, \*unwrap(KRef)).
+A wrapper over ``sycl::queue.submit()``. The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as ``parallel_for(nd_range<NRange>, *unwrap(KRef))``.
 
 Todo sycl::buffer arguments are not supported yet.
 
@@ -625,7 +657,7 @@ Add support for id<Dims> WorkItemOffset
 	*
 		- DepEvents
 
-		- List of dependent DPCTLSyclEventRef objects (events) for the kernel. We call sycl::handler.depends_on for each of the provided events.
+		- List of dependent DPCTLSyclEventRef objects (events) for the kernel. We call ``sycl::handler.depends_on`` for each of the provided events.
 
 	*
 		- NDepEvents
@@ -636,7 +668,7 @@ Add support for id<Dims> WorkItemOffset
 
 .. rubric:: Returns:
 
-An opaque pointer to the sycl::event returned by the sycl::queue.submit() function.
+An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue.submit()`` function.
 
 .. index:: pair: function; DPCTLQueue_SubmitRange
 .. _doxid-d9/db1/group__QueueInterface_1ga9ed0d59f789b4fb0959b0af022fdbe23:
@@ -659,9 +691,9 @@ An opaque pointer to the sycl::event returned by the sycl::queue.submit() functi
 
 Submits the kernel to the specified queue with the provided range argument.
 
-A wrapper over sycl::queue.submit(). The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as parallel_for(range<NRange>, \*unwrap(KRef)).
+A wrapper over ``sycl::queue.submit()``. The function takes an interoperability kernel, the kernel arguments, and a ``sycl::queue`` as input. The kernel is submitted as ``parallel_for(range<NRange>, *unwrap(KRef))``.
 
-Todo sycl::buffer arguments are not supported yet.
+Todo ``sycl::buffer`` arguments are not supported yet.
 
 Add support for id<Dims> WorkItemOffset
 
@@ -710,7 +742,7 @@ Add support for id<Dims> WorkItemOffset
 	*
 		- DepEvents
 
-		- List of dependent DPCTLSyclEventRef objects (events) for the kernel. We call sycl::handler.depends_on for each of the provided events.
+		- List of dependent DPCTLSyclEventRef objects (events) for the kernel. We call ``sycl::handler.depends_on`` for each of the provided events.
 
 	*
 		- NDepEvents
@@ -721,7 +753,7 @@ Add support for id<Dims> WorkItemOffset
 
 .. rubric:: Returns:
 
-An opaque pointer to the sycl::event returned by the sycl::queue.submit() function.
+An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue.submit()`` function.
 
 .. index:: pair: function; DPCTLQueue_Wait
 .. _doxid-d9/db1/group__QueueInterface_1ga3411357b2a09bad80be5b4fee8a8ed44:
@@ -732,7 +764,7 @@ An opaque pointer to the sycl::event returned by the sycl::queue.submit() functi
 	DPCTL_API void
 	DPCTLQueue_Wait(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
 
-Calls the sycl::queue.submit function to do a blocking wait on all enqueued tasks in the queue.
+Calls the ``sycl::queue.submit`` function to do a blocking wait on all enqueued tasks in the queue.
 
 
 
@@ -744,5 +776,5 @@ Calls the sycl::queue.submit function to do a blocking wait on all enqueued task
 	*
 		- QRef
 
-		- Opaque pointer to a sycl::queue.
+		- Opaque pointer to a ``sycl::queue``.
 

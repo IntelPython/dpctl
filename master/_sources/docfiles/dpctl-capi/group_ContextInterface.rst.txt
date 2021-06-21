@@ -54,6 +54,9 @@ Overview
 	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
 	:ref:`DPCTLContext_GetDevices<doxid-da/df7/group__ContextInterface_1gaba52414ec6b07a3a3364f7a5a2c72b13>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef);
 
+	DPCTL_API size_t
+	:ref:`DPCTLContext_Hash<doxid-da/df7/group__ContextInterface_1ga8bf9355c979e31f4714a0c2208f1ed14>`(__dpctl_take :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
+
 	DPCTL_API bool
 	:ref:`DPCTLContext_IsHost<doxid-da/df7/group__ContextInterface_1ga24db0f38d9acb63c50c686f848b21a53>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
 
@@ -328,6 +331,35 @@ Returns a vector of devices associated with sycl::context referenced by DPCTLSyc
 .. rubric:: Returns:
 
 A DPCTLDeviceVectorRef with devices associated with given CRef.
+
+.. index:: pair: function; DPCTLContext_Hash
+.. _doxid-da/df7/group__ContextInterface_1ga8bf9355c979e31f4714a0c2208f1ed14:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLContext_Hash(__dpctl_take :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef)
+
+Wrapper over std::hash<sycl::context>'s operator()
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- CtxRef
+
+		- The DPCTLSyclContextRef pointer.
+
+
+
+.. rubric:: Returns:
+
+Hash value of the underlying ``sycl::context`` instance.
 
 .. index:: pair: function; DPCTLContext_IsHost
 .. _doxid-da/df7/group__ContextInterface_1ga24db0f38d9acb63c50c686f848b21a53:

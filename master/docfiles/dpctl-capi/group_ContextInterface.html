@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Context class C wrapper &mdash; Data-parallel Control (dpctl) 0.8.0+11.gca5697c documentation</title>
+  <title>Context class C wrapper &mdash; Data-parallel Control (dpctl) 0.8.0+12.g227a126 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.8.0+11.gca5697c
+                0.8.0+12.g227a126
               </div>
             
           
@@ -236,6 +236,9 @@ DPCTLContext_GetBackend<span></span><span class="p">(</span><span class="n">__dp
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="group_DeviceManager.html#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span>
 DPCTLContext_GetDevices<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+DPCTLContext_Hash<span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CtxRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">bool</span>
 DPCTLContext_IsHost<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CtxRef</span><span class="p">);</span></pre>
@@ -404,7 +407,24 @@ DPCTLContext_IsHost<span></span><span class="p">(</span><span class="n">__dpctl_
 </table>
 <p class="rubric">Returns:</p>
 <p>A DPCTLDeviceVectorRef with devices associated with given CRef.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df7-group-contextinterface-1ga24db0f38d9acb63c50c686f848b21a53"><span id="index-9"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df7-group-contextinterface-1ga8bf9355c979e31f4714a0c2208f1ed14"><span id="index-9"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<span class="n">DPCTLContext_Hash</span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CtxRef</span><span class="p">)</span></pre>
+<p>Wrapper over std::hash&lt;sycl::context&gt;’s operator()</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>CtxRef</p></td>
+<td><p>The DPCTLSyclContextRef pointer.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>Hash value of the underlying <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> instance.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df7-group-contextinterface-1ga24db0f38d9acb63c50c686f848b21a53"><span id="index-10"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
 <span class="n">DPCTLContext_IsHost</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CtxRef</span><span class="p">)</span></pre>
 <p>Returns true if this SYCL context is a host context.</p>
 <p class="rubric">Parameters:</p>
@@ -464,7 +484,7 @@ DPCTLContext_IsHost<span></span><span class="p">(</span><span class="n">__dpctl_
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.8.0+11.gca5697c
+      v: 0.8.0+12.g227a126
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

@@ -22,7 +22,7 @@ Todo List
 	*
 		- Global :ref:`DPCTLQueue_SubmitRange <doxid-d9/db1/group__QueueInterface_1ga9ed0d59f789b4fb0959b0af022fdbe23>` (\__dpctl_keep const DPCTLSyclKernelRef KRef, \__dpctl_keep const DPCTLSyclQueueRef QRef, \__dpctl_keep void \*\*Args, \__dpctl_keep const DPCTLKernelArgType \*ArgTypes, size_t NArgs, \__dpctl_keep const size_t Range[3], size_t NRange, \__dpctl_keep const DPCTLSyclEventRef \*DepEvents, size_t NDepEvents)
 
-		- :target:`doxid-dd/da0/todo_1_todo000002` sycl::buffer arguments are not supported yet.
+		- :target:`doxid-dd/da0/todo_1_todo000002` ``sycl::buffer`` arguments are not supported yet.
 		  
 		  Add support for id<Dims> WorkItemOffset
 
