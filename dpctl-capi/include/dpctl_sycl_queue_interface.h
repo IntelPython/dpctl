@@ -126,10 +126,11 @@ __dpctl_give DPCTLSyclQueueRef
 DPCTLQueue_Copy(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
- * @brief Checks if two DPCTLSyclQueueRef objects point to the same sycl::queue.
+ * @brief Checks if two DPCTLSyclQueueRef objects point to the
+ * same ``sycl::queue``.
  *
- * @param    QRef1          First opaque pointer to the sycl queue.
- * @param    QRef2          Second opaque pointer to the sycl queue.
+ * @param    QRef1          First opaque pointer to the ``sycl::queue``.
+ * @param    QRef2          Second opaque pointer to the ``sycl::queue``.
  * @return   True if the underlying sycl::queue are same, false otherwise.
  * @ingroup QueueInterface
  */
@@ -174,11 +175,12 @@ DPCTLQueue_GetDevice(__dpctl_keep const DPCTLSyclQueueRef QRef);
  * @brief Submits the kernel to the specified queue with the provided range
  * argument.
  *
- * A wrapper over sycl::queue.submit(). The function takes an interoperability
- * kernel, the kernel arguments, and a Sycl queue as input. The kernel is
- * submitted as parallel_for(range<NRange>, *unwrap(KRef)).
+ * A wrapper over ``sycl::queue.submit()``. The function takes an
+ * interoperability kernel, the kernel arguments, and a ``sycl::queue`` as
+ * input. The kernel is submitted as
+ * ``parallel_for(range<NRange>, *unwrap(KRef))``.
  *
- * \todo sycl::buffer arguments are not supported yet.
+ * \todo ``sycl::buffer`` arguments are not supported yet.
  * \todo Add support for id<Dims> WorkItemOffset
  *
  * @param    KRef           Opaque pointer to an OpenCL interoperability kernel
@@ -195,11 +197,11 @@ DPCTLQueue_GetDevice(__dpctl_keep const DPCTLSyclQueueRef QRef);
  *                          dimensions.
  * @param    NRange         Size of the gRange array.
  * @param    DepEvents      List of dependent DPCTLSyclEventRef objects (events)
- *                          for the kernel. We call sycl::handler.depends_on for
- *                          each of the provided events.
+ *                          for the kernel. We call ``sycl::handler.depends_on``
+ *                          for each of the provided events.
  * @param    NDepEvents     Size of the DepEvents list.
- * @return   An opaque pointer to the sycl::event returned by the
- *           sycl::queue.submit() function.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue.submit()`` function.
  * @ingroup QueueInterface
  */
 DPCTL_API
@@ -218,9 +220,9 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
  * @brief Submits the kernel to the specified queue with the provided nd_range
  * argument.
  *
- * A wrapper over sycl::queue.submit(). The function takes an interoperability
- * kernel, the kernel arguments, and a Sycl queue as input. The kernel is
- * submitted as parallel_for(nd_range<NRange>, *unwrap(KRef)).
+ * A wrapper over ``sycl::queue.submit()``. The function takes an
+ * interoperability kernel, the kernel arguments, and a Sycl queue as input.
+ * The kernel is submitted as ``parallel_for(nd_range<NRange>, *unwrap(KRef))``.
  *
  * \todo sycl::buffer arguments are not supported yet.
  * \todo Add support for id<Dims> WorkItemOffset
@@ -243,11 +245,11 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
  * @param    NDims          The number of dimensions for both local and global
  *                          ranges.
  * @param    DepEvents      List of dependent DPCTLSyclEventRef objects (events)
- *                          for the kernel. We call sycl::handler.depends_on for
- *                          each of the provided events.
+ *                          for the kernel. We call ``sycl::handler.depends_on``
+ *                          for each of the provided events.
  * @param    NDepEvents     Size of the DepEvents list.
- * @return   An opaque pointer to the sycl::event returned by the
- *           sycl::queue.submit() function.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue.submit()`` function.
  * @ingroup QueueInterface
  */
 DPCTL_API
@@ -264,20 +266,20 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                          size_t NDepEvents);
 
 /*!
- * @brief Calls the sycl::queue.submit function to do a blocking wait on all
- * enqueued tasks in the queue.
+ * @brief Calls the ``sycl::queue.submit`` function to do a blocking wait on
+ * all enqueued tasks in the queue.
  *
- * @param    QRef           Opaque pointer to a sycl::queue.
+ * @param    QRef           Opaque pointer to a ``sycl::queue``.
  * @ingroup QueueInterface
  */
 DPCTL_API
 void DPCTLQueue_Wait(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
- * @brief C-API wrapper for sycl::queue::memcpy, the function waits on an event
- * till the memcpy operation completes.
+ * @brief C-API wrapper for ``sycl::queue::memcpy``, the function waits on an
+ * event till the memcpy operation completes.
  *
- * @param    QRef           An opaque pointer to the sycl queue.
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
  * @param    Dest           An USM pointer to the destination memory.
  * @param    Src            An USM pointer to the source memory.
  * @param    Count          A number of bytes to copy.
@@ -290,10 +292,10 @@ void DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
                        size_t Count);
 
 /*!
- * @brief C-API wrapper for sycl::queue::prefetch, the function waits on an
+ * @brief C-API wrapper for ``sycl::queue::prefetch``, the function waits on an
  * event till the prefetch operation completes.
  *
- * @param    QRef           An opaque pointer to the sycl queue.
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
  * @param    Ptr            An USM pointer to memory.
  * @param    Count          A number of bytes to prefetch.
  * @ingroup QueueInterface
@@ -307,7 +309,7 @@ void DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
  * @brief C-API wrapper for sycl::queue::mem_advise, the function waits on an
  * event till the operation completes.
  *
- * @param    QRef           An opaque pointer to the sycl queue.
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
  * @param    Ptr            An USM pointer to memory.
  * @param    Count          A number of bytes to prefetch.
  * @param    Advice         Device-defined advice for the specified allocation.
@@ -325,10 +327,20 @@ void DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
  * @brief C-API wrapper for sycl::queue::is_in_order that indicates whether
  * the referenced queue is in-order or out-of-order.
  *
- * @param    QRef         An opaque pointer to the sycl queue.
+ * @param    QRef         An opaque pointer to the ``sycl::queue``.
  * @ingroup QueueInterface
  */
 DPCTL_API
 bool DPCTLQueue_IsInOrder(__dpctl_keep const DPCTLSyclQueueRef QRef);
+
+/*!
+ * @brief C-API wrapper for std::hash<sycl::queue>'s operator().
+ *
+ * @param    QRef         An opaque pointer to the ``sycl::queue``.
+ * @return   Hash value of the underlying ``sycl::queue`` instance.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+size_t DPCTLQueue_Hash(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 DPCTL_C_EXTERN_C_END

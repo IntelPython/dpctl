@@ -34,6 +34,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLContext_Delete,
     DPCTLContext_DeviceCount,
     DPCTLContext_GetDevices,
+    DPCTLContext_Hash,
     DPCTLDevice_Copy,
     DPCTLDevice_Delete,
     DPCTLDeviceMgr_GetCachedContext,
@@ -334,6 +335,13 @@ cdef class SyclContext(_SyclContext):
             return self.equals(<SyclContext> other)
         else:
             return False
+
+    def __hash__(self):
+        """
+        Returns a hash value by hashing the underlying ``sycl::context`` object.
+
+        """
+        return DPCTLContext_Hash(self._ctxt_ref)
 
     cdef DPCTLSyclContextRef get_context_ref(self):
         return self._ctxt_ref

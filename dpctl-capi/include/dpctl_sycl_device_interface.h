@@ -555,3 +555,13 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(
 DPCTL_API
 __dpctl_give DPCTLSyclDeviceRef
 DPCTLDevice_GetParentDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * std::hash<sycl::device>'s operator()
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns hash value.
+ */
+DPCTL_API
+size_t DPCTLDevice_Hash(__dpctl_keep const DPCTLSyclDeviceRef DRef);

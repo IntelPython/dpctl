@@ -615,6 +615,7 @@ def test_filter_string_property():
             dev_id = d.filter_string
             d_r = dpctl.SyclDevice(dev_id)
             assert d == d_r
+            assert hash(d) == hash(d_r)
 
 
 def test_filter_string_method():
@@ -631,3 +632,16 @@ def test_filter_string_method():
                     )
                     d_r = dpctl.SyclDevice(dev_id)
                     assert d == d_r, "Failed "
+                    assert hash(d) == hash(
+                        d_r
+                    ), "Hash equality is inconsistent with __eq__"
+
+
+def test_hashing_of_device():
+    """
+    Test that a :class:`dpctl.SyclDevice` object can be used as
+    a dictionary key.
+
+    """
+    device_dict = {dpctl.SyclDevice(): "default_device"}
+    assert device_dict

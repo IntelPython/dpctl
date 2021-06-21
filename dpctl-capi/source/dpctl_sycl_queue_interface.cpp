@@ -454,9 +454,15 @@ void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
 {
     // \todo what happens if the QRef is null or a pointer to a valid sycl
     // queue
-    auto SyclQueue = unwrap(QRef);
-    if (SyclQueue)
-        SyclQueue->wait();
+    if (QRef) {
+        auto SyclQueue = unwrap(QRef);
+        if (SyclQueue)
+            SyclQueue->wait();
+    }
+    else {
+        // todo: log error
+        std::cerr << "Argument QRef is NULL" << '\n';
+    }
 }
 
 void DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
@@ -503,4 +509,18 @@ bool DPCTLQueue_IsInOrder(__dpctl_keep const DPCTLSyclQueueRef QRef)
     }
     else
         return false;
+}
+
+size_t DPCTLQueue_Hash(__dpctl_keep const DPCTLSyclQueueRef QRef)
+{
+    auto Q = unwrap(QRef);
+    if (Q) {
+        std::hash<queue> hash_fn;
+        return hash_fn(*Q);
+    }
+    else {
+        // todo: log error
+        std::cerr << "Argument QRef is null" << '\n';
+        return 0;
+    }
 }

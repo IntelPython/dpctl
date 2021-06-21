@@ -152,6 +152,7 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef DPCTLSyclPlatformRef DPCTLDevice_GetPlatform(
         const DPCTLSyclDeviceRef DRef)
     cdef const char *DPCTLDevice_GetVendor(const DPCTLSyclDeviceRef DRef)
+    cdef size_t DPCTLDevice_Hash(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsAccelerator(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsCPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
@@ -268,6 +269,7 @@ cdef extern from "dpctl_sycl_context_interface.h":
     cdef size_t DPCTLContext_DeviceCount(const DPCTLSyclContextRef CRef)
     cdef bool DPCTLContext_AreEq(const DPCTLSyclContextRef CtxRef1,
                                  const DPCTLSyclContextRef CtxRef2)
+    cdef size_t DPCTLContext_Hash(const DPCTLSyclContextRef CRef)
     cdef _backend_type DPCTLContext_GetBackend(const DPCTLSyclContextRef)
     cdef void DPCTLContext_Delete(DPCTLSyclContextRef CtxRef)
 
@@ -307,6 +309,7 @@ cdef extern from "dpctl_sycl_queue_interface.h":
     cdef _backend_type DPCTLQueue_GetBackend(const DPCTLSyclQueueRef Q)
     cdef DPCTLSyclContextRef DPCTLQueue_GetContext(const DPCTLSyclQueueRef Q)
     cdef DPCTLSyclDeviceRef DPCTLQueue_GetDevice(const DPCTLSyclQueueRef Q)
+    cdef size_t DPCTLQueue_Hash(const DPCTLSyclQueueRef Q)
     cdef DPCTLSyclEventRef  DPCTLQueue_SubmitRange(
         const DPCTLSyclKernelRef Ref,
         const DPCTLSyclQueueRef QRef,

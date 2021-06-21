@@ -197,3 +197,17 @@ DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef)
         return DPCTL_UNKNOWN_BACKEND;
     }
 }
+
+size_t DPCTLContext_Hash(__dpctl_keep const DPCTLSyclContextRef CtxRef)
+{
+    if (CtxRef) {
+        auto C = unwrap(CtxRef);
+        std::hash<context> hash_fn;
+        return hash_fn(*C);
+    }
+    else {
+        std::cerr << "Argument CtxRef is null"
+                  << "/n";
+        return 0;
+    }
+}

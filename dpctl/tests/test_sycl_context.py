@@ -76,6 +76,7 @@ def test_context_not_equals():
     except ValueError:
         pytest.skip()
     assert ctx_cpu != ctx_gpu
+    assert hash(ctx_cpu) != hash(ctx_gpu)
 
 
 def test_context_not_equals2():
@@ -94,6 +95,7 @@ def test_context_equals():
     except ValueError:
         pytest.skip()
     assert ctx0 == ctx1
+    assert hash(ctx0) == hash(ctx1)
 
 
 def test_name():
@@ -157,3 +159,13 @@ def test_context_multi_device():
     shmem_1 = dpmem.MemoryUSMShared(256, queue=q1)
     shmem_2 = dpmem.MemoryUSMDevice(256, queue=q2)
     shmem_2.copy_from_device(shmem_1)
+
+
+def test_hashing_of_context():
+    """
+    Test that a :class:`dpctl.SyclContext` object can be used
+    as a dictionary key.
+
+    """
+    ctx_dict = {dpctl.SyclContext(): "default_context"}
+    assert ctx_dict

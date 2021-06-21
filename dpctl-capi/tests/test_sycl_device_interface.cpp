@@ -68,6 +68,8 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCopy)
     DPCTLSyclDeviceRef Copied_DRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(Copied_DRef = DPCTLDevice_Copy(DRef));
     EXPECT_TRUE(bool(Copied_DRef));
+    EXPECT_TRUE(DPCTLDevice_AreEq(DRef, Copied_DRef));
+    EXPECT_TRUE(DPCTLDevice_Hash(DRef) == DPCTLDevice_Hash(Copied_DRef));
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(Copied_DRef));
 }
 

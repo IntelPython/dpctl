@@ -161,4 +161,14 @@ DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef);
 DPCTL_API
 void DPCTLContext_Delete(__dpctl_take DPCTLSyclContextRef CtxRef);
 
+/*!
+ * @brief Wrapper over std::hash<sycl::context>'s operator()
+ *
+ * @param    CtxRef        The DPCTLSyclContextRef pointer.
+ * @return   Hash value of the underlying ``sycl::context`` instance.
+ * @ingroup ContextInterface
+ */
+DPCTL_API
+size_t DPCTLContext_Hash(__dpctl_take DPCTLSyclContextRef CtxRef);
+
 DPCTL_C_EXTERN_C_END
