@@ -639,7 +639,8 @@ def test_filter_string_method():
 
 def test_hashing_of_device():
     """
-    Test that a SyclDevice object can be used as a dictionary key.
+    Test that a :class:`dpctl.SyclDevice` object can be used as
+    a dictionary key.
 
     """
     device_dict = {dpctl.SyclDevice(): "default_device"}

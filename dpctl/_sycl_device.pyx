@@ -712,7 +712,7 @@ cdef class SyclDevice(_SyclDevice):
 
     def __hash__(self):
         """
-        Returns hash value corresponding to ``self._device_ref``.
+        Returns a hash value by hashing the underlying ``sycl::device`` object.
 
         """
         return DPCTLDevice_Hash(self._device_ref)

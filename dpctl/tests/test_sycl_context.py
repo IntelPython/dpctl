@@ -163,7 +163,8 @@ def test_context_multi_device():
 
 def test_hashing_of_context():
     """
-    Test that a SyclContext object can be used as a dictionary key.
+    Test that a :class:`dpctl.SyclContext` object can be used
+    as a dictionary key.
 
     """
     ctx_dict = {dpctl.SyclContext(): "default_context"}

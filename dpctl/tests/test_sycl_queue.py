@@ -375,7 +375,8 @@ def test_context_equals():
 
 def test_hashing_of_queue():
     """
-    Test that a SyclQueue object can be used as a dictionary key.
+    Test that a :class:`dpctl.SyclQueue` object can be used as
+    a dictionary key.
 
     """
     queue_dict = {dpctl.SyclQueue(): "default_queue"}

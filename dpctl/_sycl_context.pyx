@@ -338,7 +338,7 @@ cdef class SyclContext(_SyclContext):
 
     def __hash__(self):
         """
-        Returns hash value corresponding to ``self._ctxt_ref``.
+        Returns a hash value by hashing the underlying ``sycl::context`` object.
 
         """
         return DPCTLContext_Hash(self._ctxt_ref)

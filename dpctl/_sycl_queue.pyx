@@ -866,7 +866,7 @@ cdef class SyclQueue(_SyclQueue):
 
     def __hash__(self):
         """
-        Returns hash value corresponding to ``self._queue_ref``.
+        Returns a hash value by hashing the underlying ``sycl::queue`` object.
 
         """
         return DPCTLQueue_Hash(self._queue_ref)
