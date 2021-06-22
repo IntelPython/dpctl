@@ -30,11 +30,8 @@
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_event_interface.h"
-#include "dpctl_sycl_kernel_interface.h"
-#include "dpctl_sycl_program_interface.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
-#include "dpctl_sycl_usm_interface.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 
@@ -42,71 +39,25 @@ using namespace cl::sycl;
 
 namespace
 {
-constexpr size_t SIZE = 1024;
-
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPCTLSyclUSMRef);
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPCTLSyclQueueRef);
-
-void add_kernel_checker(const float *a, const float *b, const float *c)
-{
-    // Validate the data
-    for (auto i = 0ul; i < SIZE; ++i) {
-        EXPECT_EQ(c[i], a[i] + b[i]);
-    }
-}
-
-void axpy_kernel_checker(const float *a,
-                         const float *b,
-                         const float *c,
-                         float d)
-{
-    for (auto i = 0ul; i < SIZE; ++i) {
-        EXPECT_EQ(c[i], a[i] + d * b[i]);
-    }
-}
-
-} /* End of anonymous namespace */
-
-struct TestDPCTLSyclQueueInterface : public ::testing::Test
-{
-    const char *CLProgramStr = R"CLC(
-        kernel void init_arr (global float *a) {
-            size_t index = get_global_id(0);
-            a[index] = (float)index;
-        }
-
-        kernel void add (global float* a, global float* b, global float* c) {
-            size_t index = get_global_id(0);
-            c[index] = a[index] + b[index];
-        }
-
-        kernel void axpy (global float* a, global float* b,
-                          global float* c, float d) {
-            size_t index = get_global_id(0);
-            c[index] = a[index] + d*b[index];
-        }
-    )CLC";
-    const char *CompileOpts = "-cl-fast-relaxed-math";
-
-    TestDPCTLSyclQueueInterface() {}
-
-    ~TestDPCTLSyclQueueInterface() {}
-};
 
 struct TestDPCTLQueueMemberFunctions
     : public ::testing::TestWithParam<const char *>
 {
 protected:
-    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
-    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLSyclQueueRef QRef = nullptr;
 
     TestDPCTLQueueMemberFunctions()
     {
-        DSRef = DPCTLFilterSelector_Create(GetParam());
-        DRef = DPCTLDevice_CreateFromSelector(DSRef);
-        QRef =
-            DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY);
+        auto DS = DPCTLFilterSelector_Create(GetParam());
+        DPCTLSyclDeviceRef DRef = nullptr;
+        if (DS) {
+            EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DS));
+            EXPECT_NO_FATAL_FAILURE(QRef = DPCTLQueue_CreateForDevice(
+                                        DRef, nullptr, DPCTL_DEFAULT_PROPERTY));
+        }
+        DPCTLDevice_Delete(DRef);
+        DPCTLDeviceSelector_Delete(DS);
     }
 
     void SetUp()
@@ -120,15 +71,15 @@ protected:
 
     ~TestDPCTLQueueMemberFunctions()
     {
-        DPCTLQueue_Delete(QRef);
-        DPCTLDeviceSelector_Delete(DSRef);
-        DPCTLDevice_Delete(DRef);
+        EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(QRef));
     }
 };
 
-TEST_F(TestDPCTLSyclQueueInterface, CheckCreateForDevice)
+} /* End of anonymous namespace */
+
+TEST(TestDPCTLSyclQueueInterface, CheckCreateForDevice)
 {
-    /* We are testing that we do not crash even when input is garbage. */
+    /* We are testing that we do not crash even when input is NULL. */
     DPCTLSyclQueueRef QRef = nullptr;
 
     EXPECT_NO_FATAL_FAILURE(
@@ -136,88 +87,164 @@ TEST_F(TestDPCTLSyclQueueInterface, CheckCreateForDevice)
     ASSERT_TRUE(QRef == nullptr);
 }
 
-TEST_F(TestDPCTLSyclQueueInterface, CheckCopy)
+TEST(TestDPCTLSyclQueueInterface, CheckCopy)
 {
     DPCTLSyclQueueRef Q1 = nullptr;
     DPCTLSyclQueueRef Q2 = nullptr;
-    EXPECT_NO_FATAL_FAILURE(Q1 = DPCTLQueueMgr_GetCurrentQueue());
+    DPCTLSyclDeviceRef DRef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_Create());
+    EXPECT_NO_FATAL_FAILURE(
+        Q1 = DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY));
     ASSERT_TRUE(Q1);
     EXPECT_NO_FATAL_FAILURE(Q2 = DPCTLQueue_Copy(Q1));
     EXPECT_TRUE(bool(Q2));
     EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q1));
     EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q2));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDPCTLSyclQueueInterface, CheckAreEq)
+TEST(TestDPCTLSyclQueueInterface, CheckCopy_Invalid)
 {
-    auto FSRef = DPCTLFilterSelector_Create("opencl:gpu:0");
-    auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
-    if (!DRef)
-        GTEST_SKIP_("Skipping: No OpenCL GPUs available.\n");
+    DPCTLSyclQueueRef Q1 = nullptr;
+    DPCTLSyclQueueRef Q2 = nullptr;
 
-    auto Q1 = DPCTLQueueMgr_GetCurrentQueue();
-    auto Q2 = DPCTLQueueMgr_GetCurrentQueue();
+    EXPECT_NO_FATAL_FAILURE(Q2 = DPCTLQueue_Copy(Q1));
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q1));
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q2));
+}
 
-    EXPECT_TRUE(Q1 && Q2);
-    if (!(Q1 && Q2)) {
-        DPCTLDeviceSelector_Delete(FSRef);
-        DPCTLDevice_Delete(DRef);
-        GTEST_SKIP_("No current queue exists. Skip everything else.");
-    }
+TEST(TestDPCTLSyclQueueInterface, CheckAreEq_False)
+{
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclQueueRef Q1 = nullptr;
+    DPCTLSyclQueueRef Q2 = nullptr;
 
-    EXPECT_TRUE(DPCTLQueue_AreEq(Q1, Q2));
-    EXPECT_TRUE(DPCTLQueue_Hash(Q1) == DPCTLQueue_Hash(Q2));
-    auto Q3 = DPCTLQueue_CreateForDevice(DRef, nullptr, 0);
-    auto Q4 = DPCTLQueue_CreateForDevice(DRef, nullptr, 0);
-
-    // These are different queues
-    EXPECT_FALSE(DPCTLQueue_AreEq(Q3, Q4));
-    EXPECT_FALSE(DPCTLQueue_Hash(Q3) == DPCTLQueue_Hash(Q4));
-
-    auto C0 = DPCTLQueue_GetContext(Q3);
-    auto C1 = DPCTLQueue_GetContext(Q4);
-
+    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    EXPECT_NO_FATAL_FAILURE(
+        Q1 = DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY));
+    EXPECT_NO_FATAL_FAILURE(
+        Q2 = DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY));
+    EXPECT_FALSE(DPCTLQueue_AreEq(Q1, Q2));
+    EXPECT_FALSE(DPCTLQueue_Hash(Q1) == DPCTLQueue_Hash(Q2));
+    auto C0 = DPCTLQueue_GetContext(Q1);
+    auto C1 = DPCTLQueue_GetContext(Q2);
     // All the queues should share the same context
     EXPECT_TRUE(DPCTLContext_AreEq(C0, C1));
-
-    DPCTLContext_Delete(C0);
-    DPCTLContext_Delete(C1);
-    DPCTLQueue_Delete(Q1);
-    DPCTLQueue_Delete(Q2);
-    DPCTLQueue_Delete(Q3);
-    DPCTLQueue_Delete(Q4);
-    DPCTLDeviceSelector_Delete(FSRef);
-    DPCTLDevice_Delete(DRef);
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(C0));
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(C1));
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q1));
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q2));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
 }
 
-TEST_F(TestDPCTLSyclQueueInterface, CheckAreEq2)
+TEST(TestDPCTLSyclQueueInterface, CheckAreEq_True)
 {
-    auto FSRef = DPCTLFilterSelector_Create("opencl:gpu:0");
-    auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
-    auto FSRef2 = DPCTLFilterSelector_Create("opencl:cpu:0");
-    auto DRef2 = DPCTLDevice_CreateFromSelector(FSRef2);
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclQueueRef Q1 = nullptr;
+    DPCTLSyclQueueRef Q2 = nullptr;
 
-    if (!(DRef && DRef2)) {
-        DPCTLDeviceSelector_Delete(FSRef);
-        DPCTLDevice_Delete(DRef);
-        DPCTLDeviceSelector_Delete(FSRef2);
-        DPCTLDevice_Delete(DRef2);
-        GTEST_SKIP_("OpenCL GPUs and CPU not available.\n");
-    }
+    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    EXPECT_NO_FATAL_FAILURE(
+        Q1 = DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY));
+    EXPECT_NO_FATAL_FAILURE(Q2 = DPCTLQueue_Copy(Q1));
+    EXPECT_TRUE(DPCTLQueue_AreEq(Q1, Q2));
+    EXPECT_TRUE(DPCTLQueue_Hash(Q1) == DPCTLQueue_Hash(Q2));
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q1));
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q2));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+}
 
-    auto GPU_Q =
-        DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY);
-    auto CPU_Q =
-        DPCTLQueue_CreateForDevice(DRef2, nullptr, DPCTL_DEFAULT_PROPERTY);
+TEST(TestDPCTLSyclQueueInterface, CheckAreEq_Invalid)
+{
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclQueueRef Q1 = nullptr;
+    DPCTLSyclQueueRef Q2 = nullptr;
 
-    EXPECT_FALSE(DPCTLQueue_AreEq(GPU_Q, CPU_Q));
+    EXPECT_FALSE(DPCTLQueue_AreEq(Q1, Q2));
+    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    EXPECT_NO_FATAL_FAILURE(
+        Q1 = DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY));
+    EXPECT_FALSE(DPCTLQueue_AreEq(Q1, Q2));
+    EXPECT_FALSE(DPCTLQueue_Hash(Q1) == DPCTLQueue_Hash(Q2));
 
-    DPCTLQueue_Delete(GPU_Q);
-    DPCTLQueue_Delete(CPU_Q);
-    DPCTLDeviceSelector_Delete(FSRef);
-    DPCTLDevice_Delete(DRef);
-    DPCTLDeviceSelector_Delete(FSRef2);
-    DPCTLDevice_Delete(DRef2);
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q1));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckHash_Invalid)
+{
+    DPCTLSyclQueueRef Q1 = nullptr;
+    DPCTLSyclQueueRef Q2 = nullptr;
+    EXPECT_TRUE(DPCTLQueue_Hash(Q1) == 0);
+    EXPECT_TRUE(DPCTLQueue_Hash(Q2) == 0);
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckGetBackend_Invalid)
+{
+    DPCTLSyclQueueRef Q = nullptr;
+    DPCTLSyclBackendType Bty = DPCTL_UNKNOWN_BACKEND;
+    EXPECT_NO_FATAL_FAILURE(Bty = DPCTLQueue_GetBackend(Q));
+    EXPECT_TRUE(Bty == DPCTL_UNKNOWN_BACKEND);
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckGetContext_Invalid)
+{
+    DPCTLSyclQueueRef Q = nullptr;
+    DPCTLSyclContextRef CRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLQueue_GetContext(Q));
+    EXPECT_TRUE(CRef == nullptr);
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckGetDevice_Invalid)
+{
+    DPCTLSyclQueueRef Q = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLQueue_GetDevice(Q));
+    EXPECT_TRUE(DRef == nullptr);
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckIsInOrder)
+{
+    bool ioq = true;
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclQueueRef Q1 = nullptr;
+    DPCTLSyclQueueRef Q2 = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    EXPECT_NO_FATAL_FAILURE(
+        Q1 = DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY));
+    EXPECT_NO_FATAL_FAILURE(ioq = DPCTLQueue_IsInOrder(Q1));
+    EXPECT_FALSE(ioq);
+
+    EXPECT_NO_FATAL_FAILURE(
+        Q2 = DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_IN_ORDER));
+    EXPECT_NO_FATAL_FAILURE(ioq = DPCTLQueue_IsInOrder(Q2));
+    EXPECT_TRUE(ioq);
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q1));
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q2));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckIsInOrder_Invalid)
+{
+    bool ioq = true;
+    DPCTLSyclQueueRef Q1 = nullptr;
+    EXPECT_NO_FATAL_FAILURE(ioq = DPCTLQueue_IsInOrder(Q1));
+    EXPECT_FALSE(ioq);
 }
 
 TEST_P(TestDPCTLQueueMemberFunctions, CheckGetBackend)
@@ -247,30 +274,14 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckGetContext)
 {
     auto Ctx = DPCTLQueue_GetContext(QRef);
     ASSERT_TRUE(Ctx != nullptr);
-    DPCTLContext_Delete(Ctx);
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(Ctx));
 }
 
 TEST_P(TestDPCTLQueueMemberFunctions, CheckGetDevice)
 {
     auto D = DPCTLQueue_GetDevice(QRef);
     ASSERT_TRUE(D != nullptr);
-    DPCTLDevice_Delete(D);
-}
-
-TEST_P(TestDPCTLQueueMemberFunctions, CheckIsInOrder)
-{
-    bool ioq = true;
-
-    EXPECT_NO_FATAL_FAILURE(ioq = DPCTLQueue_IsInOrder(QRef));
-    EXPECT_FALSE(ioq);
-
-    DPCTLSyclQueueRef QRef_ioq = nullptr;
-    EXPECT_NO_FATAL_FAILURE(
-        QRef_ioq = DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_IN_ORDER));
-    EXPECT_TRUE(QRef_ioq);
-    EXPECT_NO_FATAL_FAILURE(ioq = DPCTLQueue_IsInOrder(QRef_ioq));
-    EXPECT_TRUE(ioq);
-    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(QRef_ioq));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(D));
 }
 
 INSTANTIATE_TEST_SUITE_P(DPCTLQueueMemberFuncTests,
@@ -278,96 +289,3 @@ INSTANTIATE_TEST_SUITE_P(DPCTLQueueMemberFuncTests,
                          ::testing::Values("opencl:gpu:0",
                                            "opencl:cpu:0",
                                            "level_zero:gpu:0"));
-
-TEST_F(TestDPCTLSyclQueueInterface, CheckSubmit)
-{
-    auto FSRef = DPCTLFilterSelector_Create("opencl:gpu:0");
-    auto DRef = DPCTLDevice_CreateFromSelector(FSRef);
-    if (!DRef) {
-        DPCTLDeviceSelector_Delete(FSRef);
-        DPCTLDevice_Delete(DRef);
-        GTEST_SKIP_("Skipping: No OpenCL GPU device.\n");
-    }
-    auto Queue =
-        DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY);
-    auto CtxRef = DPCTLQueue_GetContext(Queue);
-    auto PRef =
-        DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr, CompileOpts);
-    ASSERT_TRUE(PRef != nullptr);
-    ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "init_arr"));
-    ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "add"));
-    ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "axpy"));
-
-    auto InitKernel = DPCTLProgram_GetKernel(PRef, "init_arr");
-    auto AddKernel = DPCTLProgram_GetKernel(PRef, "add");
-    auto AxpyKernel = DPCTLProgram_GetKernel(PRef, "axpy");
-
-    // Create the input args
-    auto a = DPCTLmalloc_shared(SIZE, Queue);
-    ASSERT_TRUE(a != nullptr);
-    auto b = DPCTLmalloc_shared(SIZE, Queue);
-    ASSERT_TRUE(b != nullptr);
-    auto c = DPCTLmalloc_shared(SIZE, Queue);
-    ASSERT_TRUE(c != nullptr);
-
-    // Initialize a,b
-    DPCTLKernelArgType argTypes[] = {DPCTL_VOID_PTR};
-    size_t Range[] = {SIZE};
-    void *arg1[1] = {unwrap(a)};
-    void *arg2[1] = {unwrap(b)};
-
-    auto E1 = DPCTLQueue_SubmitRange(InitKernel, Queue, arg1, argTypes, 1,
-                                     Range, 1, nullptr, 0);
-    auto E2 = DPCTLQueue_SubmitRange(InitKernel, Queue, arg2, argTypes, 1,
-                                     Range, 1, nullptr, 0);
-    ASSERT_TRUE(E1 != nullptr);
-    ASSERT_TRUE(E2 != nullptr);
-
-    DPCTLQueue_Wait(Queue);
-
-    // Submit the add kernel
-    void *args[3] = {unwrap(a), unwrap(b), unwrap(c)};
-    DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR, DPCTL_VOID_PTR,
-                                              DPCTL_VOID_PTR};
-
-    auto E3 = DPCTLQueue_SubmitRange(AddKernel, Queue, args, addKernelArgTypes,
-                                     3, Range, 1, nullptr, 0);
-    ASSERT_TRUE(E3 != nullptr);
-    DPCTLQueue_Wait(Queue);
-
-    // Verify the result of "add"
-    add_kernel_checker((float *)a, (float *)b, (float *)c);
-
-    // Create kernel args for axpy
-    float d = 10.0;
-    void *args2[4] = {unwrap(a), unwrap(b), unwrap(c), (void *)&d};
-    DPCTLKernelArgType addKernelArgTypes2[] = {DPCTL_VOID_PTR, DPCTL_VOID_PTR,
-                                               DPCTL_VOID_PTR, DPCTL_FLOAT};
-    auto E4 = DPCTLQueue_SubmitRange(
-        AxpyKernel, Queue, args2, addKernelArgTypes2, 4, Range, 1, nullptr, 0);
-    ASSERT_TRUE(E4 != nullptr);
-    DPCTLQueue_Wait(Queue);
-
-    // Verify the result of "axpy"
-    axpy_kernel_checker((float *)a, (float *)b, (float *)c, d);
-
-    // clean ups
-    DPCTLEvent_Delete(E1);
-    DPCTLEvent_Delete(E2);
-    DPCTLEvent_Delete(E3);
-    DPCTLEvent_Delete(E4);
-
-    DPCTLKernel_Delete(AddKernel);
-    DPCTLKernel_Delete(AxpyKernel);
-    DPCTLKernel_Delete(InitKernel);
-
-    DPCTLfree_with_queue((DPCTLSyclUSMRef)a, Queue);
-    DPCTLfree_with_queue((DPCTLSyclUSMRef)b, Queue);
-    DPCTLfree_with_queue((DPCTLSyclUSMRef)c, Queue);
-
-    DPCTLQueue_Delete(Queue);
-    DPCTLContext_Delete(CtxRef);
-    DPCTLProgram_Delete(PRef);
-    DPCTLDeviceSelector_Delete(FSRef);
-    DPCTLDevice_Delete(DRef);
-}
