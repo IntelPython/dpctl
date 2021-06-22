@@ -164,13 +164,16 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
 
     auto stZeModuleCreateF = getZeModuleCreateFn();
 
-    if (!stZeModuleCreateF)
+    if (!stZeModuleCreateF) {
+        std::cerr << "ZeModuleCreateFn is invalid.\n";
         return nullptr;
+    }
 
     auto ret =
         stZeModuleCreateF(ZeCtx, ZeDevice, &ZeModuleDesc, &ZeModule, nullptr);
     if (ret != ZE_RESULT_SUCCESS) {
         // TODO: handle error
+        std::cerr << "ZeModule creation failed.\n";
         return nullptr;
     }
 
@@ -199,6 +202,8 @@ DPCTLProgram_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
     context *SyclCtx = nullptr;
     if (!CtxRef) {
         // \todo handle error
+        std::cerr << "Cannot create program from SPIR-V as the supplied SYCL "
+                     "context is NULL.\n";
         return Pref;
     }
     SyclCtx = unwrap(CtxRef);
