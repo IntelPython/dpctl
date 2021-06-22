@@ -294,14 +294,18 @@ bool DPCTLQueue_AreEq(__dpctl_keep const DPCTLSyclQueueRef QRef1,
 DPCTLSyclBackendType DPCTLQueue_GetBackend(__dpctl_keep DPCTLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
-    try {
-        auto C = Q->get_context();
-        return DPCTLContext_GetBackend(wrap(&C));
-    } catch (runtime_error &re) {
-        std::cerr << re.what() << '\n';
-        // store error message
-        return DPCTL_UNKNOWN_BACKEND;
+    if (Q) {
+        try {
+            auto C = Q->get_context();
+            return DPCTLContext_GetBackend(wrap(&C));
+        } catch (runtime_error &re) {
+            std::cerr << re.what() << '\n';
+            // store error message
+            return DPCTL_UNKNOWN_BACKEND;
+        }
     }
+    else
+        return DPCTL_UNKNOWN_BACKEND;
 }
 
 __dpctl_give DPCTLSyclDeviceRef
@@ -327,8 +331,13 @@ __dpctl_give DPCTLSyclContextRef
 DPCTLQueue_GetContext(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);
-    auto Context = new context(Q->get_context());
-    return wrap(Context);
+    DPCTLSyclContextRef CRef = nullptr;
+    if (Q)
+        CRef = wrap(new context(Q->get_context()));
+    else {
+        std::cerr << "Could not get the context for this queue.\n";
+    }
+    return CRef;
 }
 
 __dpctl_give DPCTLSyclEventRef
