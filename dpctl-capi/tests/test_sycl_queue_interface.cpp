@@ -41,20 +41,30 @@ namespace
 {
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPCTLSyclQueueRef);
 
+void error_handler_fn(int /*err*/)
+{
+    return;
+}
+
 struct TestDPCTLQueueMemberFunctions
-    : public ::testing::TestWithParam<const char *>
+    : public ::testing::TestWithParam<
+          std::tuple<const char *, DPCTLQueuePropertyType, bool>>
 {
 protected:
     DPCTLSyclQueueRef QRef = nullptr;
 
     TestDPCTLQueueMemberFunctions()
     {
-        auto DS = DPCTLFilterSelector_Create(GetParam());
+        auto param_tuple = GetParam();
+        auto DS = DPCTLFilterSelector_Create(std::get<0>(param_tuple));
         DPCTLSyclDeviceRef DRef = nullptr;
         if (DS) {
             EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DS));
-            EXPECT_NO_FATAL_FAILURE(QRef = DPCTLQueue_CreateForDevice(
-                                        DRef, nullptr, DPCTL_DEFAULT_PROPERTY));
+            EXPECT_NO_FATAL_FAILURE(
+                QRef = DPCTLQueue_CreateForDevice(
+                    DRef,
+                    (std::get<2>(param_tuple)) ? &error_handler_fn : nullptr,
+                    std::get<1>(param_tuple)));
         }
         DPCTLDevice_Delete(DRef);
         DPCTLDeviceSelector_Delete(DS);
@@ -63,8 +73,9 @@ protected:
     void SetUp()
     {
         if (!QRef) {
+            auto param_tuple = GetParam();
             auto message = "Skipping as no device of type " +
-                           std::string(GetParam()) + ".";
+                           std::string(std::get<0>(param_tuple)) + ".";
             GTEST_SKIP_(message.c_str());
         }
     }
@@ -284,8 +295,14 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckGetDevice)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(D));
 }
 
-INSTANTIATE_TEST_SUITE_P(DPCTLQueueMemberFuncTests,
-                         TestDPCTLQueueMemberFunctions,
-                         ::testing::Values("opencl:gpu:0",
-                                           "opencl:cpu:0",
-                                           "level_zero:gpu:0"));
+INSTANTIATE_TEST_SUITE_P(
+    DPCTLQueueMemberFuncTests,
+    TestDPCTLQueueMemberFunctions,
+    ::testing::Combine(
+        ::testing::Values("opencl:gpu", "opencl:cpu", "level_zero:gpu"),
+        ::testing::Values(DPCTL_DEFAULT_PROPERTY,
+                          DPCTL_ENABLE_PROFILING,
+                          DPCTL_IN_ORDER,
+                          static_cast<DPCTLQueuePropertyType>(
+                              DPCTL_ENABLE_PROFILING | DPCTL_IN_ORDER)),
+        ::testing::Bool()));
