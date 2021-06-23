@@ -93,6 +93,7 @@ struct TestDPCTLGetDevices : public ::testing::TestWithParam<int>
         EXPECT_NO_FATAL_FAILURE(DV = DPCTLDeviceMgr_GetDevices(GetParam()));
         EXPECT_TRUE(DV != nullptr);
         EXPECT_NO_FATAL_FAILURE(nDevices = DPCTLDeviceVector_Size(DV));
+        EXPECT_TRUE(nDevices == DPCTLDeviceMgr_GetNumDevices(GetParam()));
     }
 
     void SetUp()
@@ -206,3 +207,26 @@ INSTANTIATE_TEST_SUITE_P(
                       DPCTLSyclDeviceType::DPCTL_ACCELERATOR,
                       DPCTLSyclDeviceType::DPCTL_GPU,
                       DPCTLSyclDeviceType::DPCTL_CPU));
+
+struct TestDPCTLDeviceMgrNullReference : public ::testing::Test
+{
+    DPCTLSyclDeviceRef nullDRef = nullptr;
+};
+
+TEST_F(TestDPCTLDeviceMgrNullReference, ChkPrintDeviceInfo)
+{
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(nullDRef));
+}
+
+TEST_F(TestDPCTLDeviceMgrNullReference, ChkGetRelativeId)
+{
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_GetRelativeId(nullDRef));
+}
+
+TEST_F(TestDPCTLDeviceMgrNullReference, ChkGetPositionInDevices)
+{
+    int mask = DPCTLSyclDeviceType::DPCTL_ALL |
+               DPCTLSyclBackendType::DPCTL_ALL_BACKENDS;
+    EXPECT_NO_FATAL_FAILURE(
+        DPCTLDeviceMgr_GetPositionInDevices(nullDRef, mask));
+}
