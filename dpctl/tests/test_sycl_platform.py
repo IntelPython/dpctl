@@ -156,7 +156,8 @@ def test_lsplatform2():
 
 def test_lsplatform3():
     try:
-        dpctl.lsplatform(3)
+        with pytest.warns(UserWarning):
+            dpctl.lsplatform(3)
     except Exception:
         pytest.fail("Encountered an exception inside lsplatform().")
 
