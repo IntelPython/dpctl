@@ -57,6 +57,15 @@ void common_test_body(size_t nbytes,
     EXPECT_TRUE(DPCTLDevice_AreEq(Dev, QueueDev));
 
     EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Prefetch(Q, Ptr, nbytes));
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_MemAdvise(Q, Ptr, nbytes, 0));
+
+    try {
+        unsigned short *host_ptr = new unsigned short[nbytes];
+        EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Memcpy(Q, host_ptr, Ptr, nbytes));
+        delete[] host_ptr;
+    } catch (std::bad_alloc const &ba) {
+        // pass
+    }
 
     DPCTLDevice_Delete(QueueDev);
     DPCTLDevice_Delete(Dev);
