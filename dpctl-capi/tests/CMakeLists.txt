@@ -21,6 +21,11 @@ foreach(tf ${spirv-test-files})
     file(COPY ${tf} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
 
+add_library(dpcpp_kernels
+    STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/dpcpp_kernels.cpp
+)
+
 if(DPCTL_GENERATE_COVERAGE)
     file(GLOB_RECURSE
         sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
@@ -35,11 +40,12 @@ if(DPCTL_GENERATE_COVERAGE)
     list(REMOVE_ITEM
         dpctl_sources
         "${CMAKE_CURRENT_SOURCE_DIR}/../source/dpctl_vector_templ.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../source/dpcpp_kernels.cpp"
     )
 
     # Add profiling flags
     set(CMAKE_CXX_FLAGS
-        "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping"
+        "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping -DDPCTL_COVERAGE"
     )
 
     # Add all dpctl sources into a single executable so that we can run coverage
@@ -55,6 +61,7 @@ if(DPCTL_GENERATE_COVERAGE)
         GTest::GTest
         ${IntelSycl_OPENCL_LIBRARY}
         ${CMAKE_DL_LIBS}
+	    dpcpp_kernels
     )
     add_custom_target(llvm-cov
         COMMAND ${CMAKE_MAKE_PROGRAM} dpctl_c_api_tests
@@ -96,6 +103,7 @@ else()
         GTest::GTest
         DPCTLSyclInterface
         ${LEVEL_ZERO_LIBRARY}
+	    dpcpp_kernels
     )
 endif()
 

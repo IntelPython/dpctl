@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "Support/CBindingWrapping.h"
+#include "dpcpp_kernels.hpp"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
@@ -123,3 +124,96 @@ TEST_F(TestQueueSubmit, CheckSubmitRange_saxpy)
     DPCTLDevice_Delete(DRef);
     DPCTLDeviceSelector_Delete(DSRef);
 }
+
+#ifndef DPCTL_COVERAGE
+namespace
+{
+
+template <typename T,
+          DPCTLKernelArgType katT,
+          typename scT,
+          DPCTLKernelArgType katscT>
+bool common_submit_range_fn(sycl::queue &q, size_t n, scT val)
+{
+    T *a = sycl::malloc_device<T>(n, q);
+    T *b = sycl::malloc_device<T>(n, q);
+    T *c = sycl::malloc_device<T>(n, q);
+    T fill_val = 1;
+    size_t Range[] = {n};
+
+    auto popA_kernel = dpcpp_kernels::get_fill_kernel<T>(q, n, a, fill_val);
+    auto popB_kernel = dpcpp_kernels::get_range_kernel<T>(q, n, b);
+    auto mad_kernel = dpcpp_kernels::get_mad_kernel<T, scT>(q, n, a, b, c, val);
+
+    DPCTLSyclKernelRef popAKernRef =
+        reinterpret_cast<DPCTLSyclKernelRef>(&popA_kernel);
+    DPCTLSyclKernelRef popBKernRef =
+        reinterpret_cast<DPCTLSyclKernelRef>(&popB_kernel);
+    DPCTLSyclKernelRef madKernRef =
+        reinterpret_cast<DPCTLSyclKernelRef>(&mad_kernel);
+
+    DPCTLSyclQueueRef QRef = reinterpret_cast<DPCTLSyclQueueRef>(&q);
+    void *popAArgs[] = {reinterpret_cast<void *>(a),
+                        reinterpret_cast<void *>(&fill_val)};
+    DPCTLKernelArgType popAKernelArgTypes[] = {DPCTL_VOID_PTR, katT};
+
+    DPCTLSyclEventRef popAERef =
+        DPCTLQueue_SubmitRange(popAKernRef, QRef, popAArgs, popAKernelArgTypes,
+                               2, Range, 1, nullptr, 0);
+
+    void *popBArgs[] = {reinterpret_cast<void *>(b)};
+    DPCTLKernelArgType popBKernelArgTypes[] = {DPCTL_VOID_PTR};
+
+    DPCTLSyclEventRef popBERef =
+        DPCTLQueue_SubmitRange(popBKernRef, QRef, popBArgs, popBKernelArgTypes,
+                               1, Range, 1, nullptr, 0);
+
+    void *madArgs[] = {reinterpret_cast<void *>(a), reinterpret_cast<void *>(b),
+                       reinterpret_cast<void *>(c),
+                       reinterpret_cast<void *>(&val)};
+    DPCTLKernelArgType madKernelArgTypes[] = {DPCTL_VOID_PTR, DPCTL_VOID_PTR,
+                                              DPCTL_VOID_PTR, katscT};
+
+    DPCTLSyclEventRef deps[2] = {popAERef, popBERef};
+    DPCTLSyclEventRef madRef = DPCTLQueue_SubmitRange(
+        madKernRef, QRef, madArgs, madKernelArgTypes, 4, Range, 1, deps, 2);
+
+    DPCTLQueue_Wait(QRef);
+    DPCTLEvent_Delete(madRef);
+    DPCTLEvent_Delete(popBERef);
+    DPCTLEvent_Delete(popAERef);
+
+    bool worked = true;
+    T *host_data = new T[n];
+    q.memcpy(host_data, c, n * sizeof(T)).wait();
+    for (size_t i = 0; i < n; ++i) {
+        worked = worked && (host_data[i] == T(fill_val) + T(i) * T(val));
+    }
+    delete[] host_data;
+
+    sycl::free(c, q);
+    sycl::free(b, q);
+    sycl::free(a, q);
+
+    return worked;
+}
+
+} // namespace
+
+struct TestQueueSubmitRange : public ::testing::Test
+{
+    sycl::queue q;
+    size_t n_elems = 512;
+
+    TestQueueSubmitRange() : q(sycl::default_selector{}) {}
+    ~TestQueueSubmitRange() {}
+};
+
+TEST_F(TestQueueSubmitRange, ChkSubmitRangeInt)
+{
+    bool worked = false;
+    worked = common_submit_range_fn<int, DPCTL_INT, int, DPCTL_INT>(q, n_elems,
+                                                                    int(-1));
+    EXPECT_TRUE(worked);
+}
+#endif
