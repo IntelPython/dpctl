@@ -21,11 +21,6 @@ foreach(tf ${spirv-test-files})
     file(COPY ${tf} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
 
-add_library(dpcpp_kernels
-    STATIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/dpcpp_kernels.cpp
-)
-
 if(DPCTL_GENERATE_COVERAGE)
     file(GLOB_RECURSE
         sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
@@ -61,7 +56,6 @@ if(DPCTL_GENERATE_COVERAGE)
         GTest::GTest
         ${IntelSycl_OPENCL_LIBRARY}
         ${CMAKE_DL_LIBS}
-	    dpcpp_kernels
     )
     add_custom_target(llvm-cov
         COMMAND ${CMAKE_MAKE_PROGRAM} dpctl_c_api_tests
@@ -96,6 +90,10 @@ if(DPCTL_GENERATE_COVERAGE)
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 else()
+    add_library(dpcpp_kernels
+        STATIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/dpcpp_kernels.cpp
+    )
     file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
     add_executable(dpctl_c_api_tests EXCLUDE_FROM_ALL ${sources})
     target_link_libraries(dpctl_c_api_tests
@@ -103,7 +101,7 @@ else()
         GTest::GTest
         DPCTLSyclInterface
         ${LEVEL_ZERO_LIBRARY}
-	    dpcpp_kernels
+        dpcpp_kernels
     )
 endif()
 

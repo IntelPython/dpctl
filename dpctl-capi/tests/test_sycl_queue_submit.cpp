@@ -24,7 +24,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "Support/CBindingWrapping.h"
+#ifndef DPCTL_COVERAGE
 #include "dpcpp_kernels.hpp"
+#endif
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
