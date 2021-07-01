@@ -36,6 +36,18 @@ namespace
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(event, DPCTLSyclEventRef)
 } /* end of anonymous namespace */
 
+__dpctl_give DPCTLSyclEventRef DPCTLEvent_Create()
+{
+    DPCTLSyclEventRef ERef = nullptr;
+    try {
+        auto E = new event();
+        ERef = wrap(E);
+    } catch (std::bad_alloc const &ba) {
+        std::cerr << ba.what() << '\n';
+    }
+    return ERef;
+}
+
 void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef)
 {
     // \todo How to handle errors? E.g. when ERef is null or not a valid event.
@@ -46,4 +58,22 @@ void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef)
 void DPCTLEvent_Delete(__dpctl_take DPCTLSyclEventRef ERef)
 {
     delete unwrap(ERef);
+}
+
+__dpctl_give DPCTLSyclEventRef
+DPCTLEvent_Copy(__dpctl_keep DPCTLSyclEventRef ERef)
+{
+    auto SyclEvent = unwrap(ERef);
+    if (!SyclEvent) {
+        std::cerr << "Cannot copy DPCTLSyclEventRef as input is a nullptr\n";
+        return nullptr;
+    }
+    try {
+        auto CopiedSyclEvent = new event(*SyclEvent);
+        return wrap(CopiedSyclEvent);
+    } catch (std::bad_alloc const &ba) {
+        // \todo log error
+        std::cerr << ba.what() << '\n';
+        return nullptr;
+    }
 }

@@ -38,6 +38,15 @@ DPCTL_C_EXTERN_C_BEGIN
  */
 
 /*!
+ * @brief A wrapper for ``sycl::event`` contructor to construct a new event.
+ *
+ * @return   An opaque DPCTLSyclEventRef pointer wrapping a ``sycl::event``.
+ * @ingroup EventInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclEventRef DPCTLEvent_Create(void);
+
+/*!
  * @brief C-API wrapper for sycl::event.wait.
  *
  * @param    ERef           An opaque DPCTLSyclEventRef pointer on which to
@@ -48,7 +57,7 @@ DPCTL_API
 void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef);
 
 /*!
- * @brief Deletes the DPCTLSyclEventRef after casting it to a sycl::event.
+ * @brief Deletes the DPCTLSyclEventRef after casting it to a ``sycl::event``.
  *
  * @param    ERef           An opaque DPCTLSyclEventRef pointer that would be
  *                          freed.
@@ -56,5 +65,17 @@ void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef);
  */
 DPCTL_API
 void DPCTLEvent_Delete(__dpctl_take DPCTLSyclEventRef ERef);
+
+/*!
+ * @brief Returns a copy of the DPCTLSyclEventRef object.
+ *
+ * @param    ERef           DPCTLSyclEventRef object to be copied.
+ * @return   A new DPCTLSyclEventRef created by copying the passed in
+ * DPCTLSyclEventRef object.
+ * @ingroup EventInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclEventRef
+DPCTLEvent_Copy(__dpctl_keep const DPCTLSyclEventRef ERef);
 
 DPCTL_C_EXTERN_C_END
