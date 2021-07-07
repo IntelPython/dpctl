@@ -1,6 +1,6 @@
 # This is a workflow to format Python code with black formatter
 
-name: Python Code Style
+name: My Code Style
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
