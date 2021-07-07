@@ -86,6 +86,7 @@ elseif(UNIX)
         "-Wuninitialized "
         "-Wmissing-declarations "
         "-fdiagnostics-color=auto "
+        "-Wno-deprecated-declarations "
     )
     string(CONCAT SDL_FLAGS
         "-fstack-protector "

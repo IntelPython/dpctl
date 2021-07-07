@@ -13,7 +13,7 @@ cmake                                                       \
     -DCMAKE_CXX_COMPILER=dpcpp                              \
     -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}                \
     -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX}                   \
-    -DDPCTL_ENABLE_LO_PROGRAM_CREATION=${USE_LO_HEADERS}    \
+    -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON                   \
     -DDPCTL_BUILD_CAPI_TESTS=ON                             \
     -DDPCTL_GENERATE_COVERAGE=ON                            \
     ..

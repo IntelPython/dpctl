@@ -35,11 +35,12 @@ if(DPCTL_GENERATE_COVERAGE)
     list(REMOVE_ITEM
         dpctl_sources
         "${CMAKE_CURRENT_SOURCE_DIR}/../source/dpctl_vector_templ.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../source/dpcpp_kernels.cpp"
     )
 
     # Add profiling flags
     set(CMAKE_CXX_FLAGS
-        "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping"
+        "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping -DDPCTL_COVERAGE"
     )
 
     # Add all dpctl sources into a single executable so that we can run coverage
@@ -89,6 +90,10 @@ if(DPCTL_GENERATE_COVERAGE)
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 else()
+    add_library(dpcpp_kernels
+        STATIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/dpcpp_kernels.cpp
+    )
     file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
     add_executable(dpctl_c_api_tests EXCLUDE_FROM_ALL ${sources})
     target_link_libraries(dpctl_c_api_tests
@@ -96,6 +101,7 @@ else()
         GTest::GTest
         DPCTLSyclInterface
         ${LEVEL_ZERO_LIBRARY}
+        dpcpp_kernels
     )
 endif()
 
