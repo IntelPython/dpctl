@@ -305,6 +305,12 @@ Overview
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
 	:ref:`DPCTLHostSelector_Create<doxid-db/ddf/group__DeviceSelectors_1ga3034644611fde17dd85949705d61e25d>`(void);
 
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	:ref:`DPCTLEvent_Copy<doxid-d6/d8a/group__EventInterface_1ga0e67256b553c86cc2c01b8ba2ed18378>`(__dpctl_keep const :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	:ref:`DPCTLEvent_Create<doxid-d6/d8a/group__EventInterface_1ga9e1f10306d442c2253fd549fec3a045f>`(void);
+
 	DPCTL_API void
 	:ref:`DPCTLEvent_Delete<doxid-d6/d8a/group__EventInterface_1gae16fbf7465ec6d86a63e042100feba77>`(__dpctl_take :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
 

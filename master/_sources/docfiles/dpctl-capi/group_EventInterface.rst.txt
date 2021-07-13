@@ -19,6 +19,12 @@ Overview
 	
 	// global functions
 
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	:ref:`DPCTLEvent_Copy<doxid-d6/d8a/group__EventInterface_1ga0e67256b553c86cc2c01b8ba2ed18378>`(__dpctl_keep const :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	:ref:`DPCTLEvent_Create<doxid-d6/d8a/group__EventInterface_1ga9e1f10306d442c2253fd549fec3a045f>`(void);
+
 	DPCTL_API void
 	:ref:`DPCTLEvent_Delete<doxid-d6/d8a/group__EventInterface_1gae16fbf7465ec6d86a63e042100feba77>`(__dpctl_take :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
 
@@ -35,6 +41,52 @@ Detailed Documentation
 Global Functions
 ----------------
 
+.. index:: pair: function; DPCTLEvent_Copy
+.. _doxid-d6/d8a/group__EventInterface_1ga0e67256b553c86cc2c01b8ba2ed18378:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	DPCTLEvent_Copy(__dpctl_keep const :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef)
+
+Returns a copy of the DPCTLSyclEventRef object.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- ERef
+
+		- DPCTLSyclEventRef object to be copied.
+
+
+
+.. rubric:: Returns:
+
+A new DPCTLSyclEventRef created by copying the passed in DPCTLSyclEventRef object.
+
+.. index:: pair: function; DPCTLEvent_Create
+.. _doxid-d6/d8a/group__EventInterface_1ga9e1f10306d442c2253fd549fec3a045f:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	DPCTLEvent_Create(void)
+
+A wrapper for ``sycl::event`` contructor to construct a new event.
+
+
+
+.. rubric:: Returns:
+
+An opaque DPCTLSyclEventRef pointer wrapping a ``sycl::event``.
+
 .. index:: pair: function; DPCTLEvent_Delete
 .. _doxid-d6/d8a/group__EventInterface_1gae16fbf7465ec6d86a63e042100feba77:
 
@@ -44,7 +96,7 @@ Global Functions
 	DPCTL_API void
 	DPCTLEvent_Delete(__dpctl_take :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef)
 
-Deletes the DPCTLSyclEventRef after casting it to a sycl::event.
+Deletes the DPCTLSyclEventRef after casting it to a ``sycl::event``.
 
 
 

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Event class C wrapper &mdash; Data-parallel Control (dpctl) 0.8.0+26.g8c099d8 documentation</title>
+  <title>Event class C wrapper &mdash; Data-parallel Control (dpctl) 0.8.0+27.g91e869 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.8.0+26.g8c099d8
+                0.8.0+27.g91e869
               </div>
             
           
@@ -94,11 +94,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">User Guides</span></p>
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../dpctl_pyapi.html">dpctl Python API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">dpctl C API</a><ul class="current">
@@ -202,6 +202,12 @@
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// global functions</span>
 
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+DPCTLEvent_Copy<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+DPCTLEvent_Create<span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
 DPCTLEvent_Delete<span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
@@ -212,9 +218,31 @@ DPCTLEvent_Wait<span></span><span class="p">(</span><span class="n">__dpctl_keep
 <span id="details-d6-d8a-group-eventinterface"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="global-functions">
 <h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this headline">¶</a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1gae16fbf7465ec6d86a63e042100feba77"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga0e67256b553c86cc2c01b8ba2ed18378"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<span class="n">DPCTLEvent_Copy</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
+<p>Returns a copy of the DPCTLSyclEventRef object.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>ERef</p></td>
+<td><p>DPCTLSyclEventRef object to be copied.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>A new DPCTLSyclEventRef created by copying the passed in DPCTLSyclEventRef object.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga9e1f10306d442c2253fd549fec3a045f"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<span class="n">DPCTLEvent_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
+<p>A wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> contructor to construct a new event.</p>
+<p class="rubric">Returns:</p>
+<p>An opaque DPCTLSyclEventRef pointer wrapping a <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code>.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1gae16fbf7465ec6d86a63e042100feba77"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLEvent_Delete</span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
-<p>Deletes the DPCTLSyclEventRef after casting it to a sycl::event.</p>
+<p>Deletes the DPCTLSyclEventRef after casting it to a <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code>.</p>
 <p class="rubric">Parameters:</p>
 <table class="colwidths-given docutils align-default">
 <colgroup>
@@ -227,7 +255,7 @@ DPCTLEvent_Wait<span></span><span class="p">(</span><span class="n">__dpctl_keep
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga3befe2587ca487628646214b7cf3b96e"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga3befe2587ca487628646214b7cf3b96e"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLEvent_Wait</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
 <p>C-API wrapper for sycl::event.wait.</p>
 <p class="rubric">Parameters:</p>
@@ -285,7 +313,7 @@ DPCTLEvent_Wait<span></span><span class="p">(</span><span class="n">__dpctl_keep
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.8.0+26.g8c099d8
+      v: 0.8.0+27.g91e869
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
