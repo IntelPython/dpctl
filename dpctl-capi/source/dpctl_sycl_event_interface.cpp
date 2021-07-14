@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_event_interface.h"
+#include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 
@@ -76,4 +77,17 @@ DPCTLEvent_Copy(__dpctl_keep DPCTLSyclEventRef ERef)
         std::cerr << ba.what() << '\n';
         return nullptr;
     }
+}
+
+DPCTLSyclBackendType DPCTLEvent_GetBackend(__dpctl_keep DPCTLSyclEventRef ERef)
+{
+    DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
+    auto E = unwrap(ERef);
+    if (E) {
+        BTy = DPCTL_SyclBackendToDPCTLBackendType(E->get_backend());
+    }
+    else {
+        std::cerr << "Backend cannot be looked up for a NULL event\n";
+    }
+    return BTy;
 }
