@@ -314,6 +314,9 @@ Overview
 	DPCTL_API void
 	:ref:`DPCTLEvent_Delete<doxid-d6/d8a/group__EventInterface_1gae16fbf7465ec6d86a63e042100feba77>`(__dpctl_take :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
 
+	DPCTL_API :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`
+	:ref:`DPCTLEvent_GetBackend<doxid-d6/d8a/group__EventInterface_1ga30a3bc34163bac7dcb7d03b5666e157c>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
 	DPCTL_API void
 	:ref:`DPCTLEvent_Wait<doxid-d6/d8a/group__EventInterface_1ga3befe2587ca487628646214b7cf3b96e>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
 
