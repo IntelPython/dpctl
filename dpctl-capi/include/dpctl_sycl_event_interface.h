@@ -29,6 +29,7 @@
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_data_types.h"
+#include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
@@ -77,5 +78,17 @@ void DPCTLEvent_Delete(__dpctl_take DPCTLSyclEventRef ERef);
 DPCTL_API
 __dpctl_give DPCTLSyclEventRef
 DPCTLEvent_Copy(__dpctl_keep const DPCTLSyclEventRef ERef);
+
+/*!
+ * @brief  Returns a DPCTLSyclBackendType enum value identifying the SYCL
+ * backend associated with the event.
+ *
+ * @param    ERef           Opaque pointer to a ``sycl::event``
+ * @return   A DPCTLSyclBackendType enum value identifying the SYCL backend
+ * associated with the event.
+ * @ingroup EventInterface
+ */
+DPCTL_API
+DPCTLSyclBackendType DPCTLEvent_GetBackend(__dpctl_keep DPCTLSyclEventRef ERef);
 
 DPCTL_C_EXTERN_C_END

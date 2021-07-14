@@ -72,3 +72,31 @@ TEST_F(TestDPCTLSyclEventInterface, CheckCopy_Invalid)
     EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Delete(E1));
     EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Delete(E2));
 }
+
+TEST_F(TestDPCTLSyclEventInterface, CheckEvent_GetBackend)
+{
+    DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
+    EXPECT_NO_FATAL_FAILURE(BTy = DPCTLEvent_GetBackend(ERef));
+    EXPECT_TRUE([BTy] {
+        switch (BTy) {
+        case DPCTLSyclBackendType::DPCTL_CUDA:
+            return true;
+        case DPCTLSyclBackendType::DPCTL_HOST:
+            return true;
+        case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO:
+            return true;
+        case DPCTLSyclBackendType::DPCTL_OPENCL:
+            return true;
+        default:
+            return false;
+        }
+    }());
+}
+
+TEST_F(TestDPCTLSyclEventInterface, CheckGetBackend_Invalid)
+{
+    DPCTLSyclEventRef E = nullptr;
+    DPCTLSyclBackendType Bty = DPCTL_UNKNOWN_BACKEND;
+    EXPECT_NO_FATAL_FAILURE(Bty = DPCTLEvent_GetBackend(E));
+    EXPECT_TRUE(Bty == DPCTL_UNKNOWN_BACKEND);
+}
