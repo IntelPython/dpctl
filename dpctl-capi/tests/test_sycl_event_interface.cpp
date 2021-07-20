@@ -56,6 +56,18 @@ struct TestDPCTLSyclEventInterface : public ::testing::Test
     }
 };
 
+TEST_F(TestDPCTLSyclEventInterface, CheckEvent_Wait)
+{
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+}
+
+TEST_F(TestDPCTLSyclEventInterface, CheckWait_Invalid)
+{
+    DPCTLSyclEventRef E = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Wait(E));
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Delete(E));
+}
+
 TEST_F(TestDPCTLSyclEventInterface, CheckEvent_Copy)
 {
     DPCTLSyclEventRef Copied_ERef = nullptr;

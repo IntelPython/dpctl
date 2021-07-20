@@ -52,8 +52,15 @@ __dpctl_give DPCTLSyclEventRef DPCTLEvent_Create()
 void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef)
 {
     // \todo How to handle errors? E.g. when ERef is null or not a valid event.
-    auto SyclEvent = unwrap(ERef);
-    SyclEvent->wait();
+    if (ERef) {
+        auto SyclEvent = unwrap(ERef);
+        if (SyclEvent)
+            SyclEvent->wait();
+    }
+    else {
+        std::cerr << "Cannot wait for the event. DPCTLSyclEventRef as input is "
+                     "a nullptr\n";
+    }
 }
 
 void DPCTLEvent_Delete(__dpctl_take DPCTLSyclEventRef ERef)
