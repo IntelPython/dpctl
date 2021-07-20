@@ -72,7 +72,7 @@ __dpctl_give DPCTLSyclProgramRef
 createOpenCLInterOpProgram(const context &SyclCtx,
                            __dpctl_keep const void *IL,
                            size_t length,
-                           const char * /* */)
+                           const char *CompileOpts)
 {
     cl_int err;
     auto CLCtx = SyclCtx.get();
@@ -93,7 +93,7 @@ createOpenCLInterOpProgram(const context &SyclCtx,
 
     // Build the OpenCL interoperability program
     err = clBuildProgram(CLProgram, (cl_uint)(SyclDevices.size()), CLDevices,
-                         nullptr, nullptr, nullptr);
+                         CompileOpts, nullptr, nullptr);
     // free the CLDevices array
     delete[] CLDevices;
 
