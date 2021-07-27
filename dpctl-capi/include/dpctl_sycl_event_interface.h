@@ -58,6 +58,15 @@ DPCTL_API
 void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef);
 
 /*!
+ * @brief C-API wrapper for 'sycl::event.wait_and_throw'.
+ *
+ * @param    ERef           Opaque pointer to a ``sycl::event``
+ * @ingroup EventInterface
+ */
+DPCTL_API
+void DPCTLEvent_WaitAndThrow(__dpctl_keep DPCTLSyclEventRef ERef);
+
+/*!
  * @brief Deletes the DPCTLSyclEventRef after casting it to a ``sycl::event``.
  *
  * @param    ERef           An opaque DPCTLSyclEventRef pointer that would be

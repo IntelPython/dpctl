@@ -63,6 +63,20 @@ void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef)
     }
 }
 
+void DPCTLEvent_WaitAndThrow(__dpctl_keep DPCTLSyclEventRef ERef)
+{
+    if (ERef) {
+        auto SyclEvent = unwrap(ERef);
+        if (SyclEvent)
+            SyclEvent->wait_and_throw();
+    }
+    else {
+        std::cerr << "Cannot wait_and_throw for the event. DPCTLSyclEventRef "
+                     "as input is "
+                     "a nullptr\n";
+    }
+}
+
 void DPCTLEvent_Delete(__dpctl_take DPCTLSyclEventRef ERef)
 {
     delete unwrap(ERef);

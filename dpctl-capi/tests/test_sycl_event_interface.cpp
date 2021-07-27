@@ -68,6 +68,18 @@ TEST_F(TestDPCTLSyclEventInterface, CheckWait_Invalid)
     EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Delete(E));
 }
 
+TEST_F(TestDPCTLSyclEventInterface, CheckEvent_WaitAndThrow)
+{
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_WaitAndThrow(ERef));
+}
+
+TEST_F(TestDPCTLSyclEventInterface, CheckWaitAndThrow_Invalid)
+{
+    DPCTLSyclEventRef E = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_WaitAndThrow(E));
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Delete(E));
+}
+
 TEST_F(TestDPCTLSyclEventInterface, CheckEvent_Copy)
 {
     DPCTLSyclEventRef Copied_ERef = nullptr;
