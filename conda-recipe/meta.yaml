@@ -1,7 +1,5 @@
-{% set name = "dpctl" %}
-
 package:
-    name: {{ name|lower }}
+    name: dpctl
     version: {{ GIT_DESCRIBE_TAG }}
 
 source:
@@ -10,12 +8,13 @@ source:
 build:
     number: {{ GIT_DESCRIBE_NUMBER }}
     script_env:
-        - ONEAPI_ROOT
+        - ONEAPI_ROOT  # [not linux]
         - WHEELS_OUTPUT_FOLDER
 
 requirements:
     build:
         - {{ compiler('cxx') }}
+        - {{ compiler('dpcpp') }}  # [linux]
     host:
         - setuptools
         - cython
@@ -29,7 +28,7 @@ requirements:
     run:
         - python
         - numpy >=1.17
-        - dpcpp_cpp_rt >=2021.2
+        - dpcpp_cpp_rt >=2021.2  # [not linux]
 
 test:
     requires:
