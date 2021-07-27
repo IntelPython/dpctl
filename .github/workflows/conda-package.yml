@@ -1,0 +1,115 @@
+name: Conda package
+
+on: push
+
+env:
+  PACKAGE_NAME: dpctl
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set pkgs_dirs
+        run: |
+          echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
+      - name: Cache conda packages
+        uses: actions/cache@v2
+        env:
+          CACHE_NUMBER: 0  # Increase to reset cache
+        with:
+          path: ~/.conda/pkgs
+          key:
+            ${{ runner.os }}-conda-build-${{ env.CACHE_NUMBER }}-${{hashFiles('**/meta.yaml') }}
+
+      - name: Add conda to system path
+        run: echo $CONDA/bin >> $GITHUB_PATH
+      - name: Install conda-build
+        run: conda install conda-build
+      - name: Build conda package
+        run: |
+          CHANNELS="-c intel -c defaults --override-channels"
+          VERSIONS="--python 3.8"
+          TEST="--no-test"
+
+          conda build \
+            $TEST \
+            $VERSIONS \
+            $CHANNELS \
+            conda-recipe
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }}
+          path: /usr/share/miniconda/conda-bld/linux-64/${{ env.PACKAGE_NAME }}-*.tar.bz2
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }}
+      - name: Add conda to system path
+        run: echo $CONDA/bin >> $GITHUB_PATH
+      - name: Install conda-build
+        run: conda install conda-build
+      - name: Create conda channel
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/channel/linux-64
+          mv ${PACKAGE_NAME}-*.tar.bz2 $GITHUB_WORKSPACE/channel/linux-64
+          conda index $GITHUB_WORKSPACE/channel
+          # Test channel
+          conda search $PACKAGE_NAME -c $GITHUB_WORKSPACE/channel --override-channels
+      - name: Collect dependencies
+        run: |
+          CHANNELS="-c $GITHUB_WORKSPACE/channel -c intel -c defaults --override-channels"
+          conda install $PACKAGE_NAME $CHANNELS --only-deps --dry-run > lockfile
+      - name: Set pkgs_dirs
+        run: |
+          echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
+      - name: Cache conda packages
+        uses: actions/cache@v2
+        env:
+          CACHE_NUMBER: 0  # Increase to reset cache
+        with:
+          path: ~/.conda/pkgs
+          key:
+            ${{ runner.os }}-conda-test-${{ env.CACHE_NUMBER }}-${{hashFiles('lockfile') }}
+      - name: Install ${{ env.PACKAGE_NAME }}
+        run: |
+          CHANNELS="-c $GITHUB_WORKSPACE/channel -c intel -c defaults --override-channels"
+          conda install $PACKAGE_NAME pytest $CHANNELS
+          # Test installed packages
+          conda list
+      - name: Run tests
+        run: |
+          # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
+          export OCL_ICD_FILENAMES=libintelocl.so
+          python -m pytest --pyargs $PACKAGE_NAME
+
+  upload:
+    needs: test
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }}
+
+      - name: Install anaconda-client
+        run: conda install anaconda-client
+      - name: Add conda to system path
+        run: echo $CONDA/bin >> $GITHUB_PATH
+
+      - name: Upload
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        run: |
+          conda install anaconda-client
+          anaconda --token $ANACONDA_TOKEN upload --user dppy --label dev ${PACKAGE_NAME}-*.tar.bz2
