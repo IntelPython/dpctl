@@ -28,7 +28,7 @@ requirements:
     run:
         - python
         - numpy >=1.17
-        - dpcpp_cpp_rt >=2021.2  # [not linux]
+        - dpcpp_cpp_rt >=2021.2
 
 test:
     requires:
