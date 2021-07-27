@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ${PYTHON} setup.py clean --all
-${PYTHON} setup.py install
+${PYTHON} setup.py install --sycl-compiler-prefix=$CONDA_PREFIX
 
 # Build wheel package
 if [ "$CONDA_PY" == "36" ]; then
