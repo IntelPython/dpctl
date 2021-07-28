@@ -8,7 +8,7 @@ source:
 build:
     number: {{ GIT_DESCRIBE_NUMBER }}
     script_env:
-        - ONEAPI_ROOT  # [not linux]
+        - ONEAPI_ROOT  # for wheel on Linux
         - WHEELS_OUTPUT_FOLDER
 
 requirements:
