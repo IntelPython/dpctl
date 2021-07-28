@@ -94,7 +94,7 @@ jobs:
 
   upload:
     needs: test
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
