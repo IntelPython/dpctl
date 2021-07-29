@@ -112,3 +112,12 @@ TEST_F(TestDPCTLSyclEventInterface, CheckGetBackend_Invalid)
     EXPECT_NO_FATAL_FAILURE(Bty = DPCTLEvent_GetBackend(E));
     EXPECT_TRUE(Bty == DPCTL_UNKNOWN_BACKEND);
 }
+
+TEST_F(TestDPCTLSyclEventInterface, ChkGetCommandExecutionStatus)
+{
+    DPCTLSyclEventStatusType ESTy =
+        DPCTLSyclEventStatusType::DPCTL_UNKNOWN_STATUS;
+    EXPECT_NO_FATAL_FAILURE(ESTy = DPCTLEvent_GetCommandExecutionStatus(ERef));
+    EXPECT_TRUE(ESTy != DPCTLSyclEventStatusType::DPCTL_UNKNOWN_STATUS);
+    EXPECT_TRUE(ESTy == DPCTLSyclEventStatusType::DPCTL_COMPLETE);
+}

@@ -151,4 +151,12 @@ typedef enum
     // clang-format on
 } DPCTLQueuePropertyType;
 
+typedef enum
+{
+    DPCTL_UNKNOWN_STATUS,
+    DPCTL_SUBMITTED,
+    DPCTL_RUNNING,
+    DPCTL_COMPLETE
+} DPCTLSyclEventStatusType;
+
 DPCTL_C_EXTERN_C_END
