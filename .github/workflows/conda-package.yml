@@ -4,10 +4,14 @@ on: push
 
 env:
   PACKAGE_NAME: dpctl
+  MODULE_NAME: dpctl
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.8"]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -23,7 +27,10 @@ jobs:
         with:
           path: ~/.conda/pkgs
           key:
-            ${{ runner.os }}-conda-build-${{ env.CACHE_NUMBER }}-${{hashFiles('**/meta.yaml') }}
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
@@ -32,7 +39,7 @@ jobs:
       - name: Build conda package
         run: |
           CHANNELS="-c intel -c defaults --override-channels"
-          VERSIONS="--python 3.8"
+          VERSIONS="--python ${{ matrix.python }}"
           TEST="--no-test"
 
           conda build \
@@ -43,17 +50,24 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: /usr/share/miniconda/conda-bld/linux-64/${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   test:
     needs: build
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python: ["3.8"]
+    env:
+      CHANNELS: -c intel -c defaults --override-channels
+
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
       - name: Install conda-build
@@ -65,10 +79,11 @@ jobs:
           conda index $GITHUB_WORKSPACE/channel
           # Test channel
           conda search $PACKAGE_NAME -c $GITHUB_WORKSPACE/channel --override-channels
+
       - name: Collect dependencies
         run: |
-          CHANNELS="-c $GITHUB_WORKSPACE/channel -c intel -c defaults --override-channels"
-          conda install $PACKAGE_NAME $CHANNELS --only-deps --dry-run > lockfile
+          CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          conda install $PACKAGE_NAME python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
       - name: Set pkgs_dirs
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
@@ -79,28 +94,35 @@ jobs:
         with:
           path: ~/.conda/pkgs
           key:
-            ${{ runner.os }}-conda-test-${{ env.CACHE_NUMBER }}-${{hashFiles('lockfile') }}
-      - name: Install ${{ env.PACKAGE_NAME }}
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+
+      - name: Install dpctl
         run: |
-          CHANNELS="-c $GITHUB_WORKSPACE/channel -c intel -c defaults --override-channels"
-          conda install $PACKAGE_NAME pytest $CHANNELS
+          CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          conda install $PACKAGE_NAME pytest python=${{ matrix.python }} $CHANNELS
           # Test installed packages
           conda list
       - name: Run tests
         run: |
           # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
           export OCL_ICD_FILENAMES=libintelocl.so
-          python -m pytest --pyargs $PACKAGE_NAME
+          python -m pytest --pyargs $MODULE_NAME
 
   upload:
     needs: test
     if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.8"]
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Install anaconda-client
         run: conda install anaconda-client
