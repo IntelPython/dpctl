@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ["3.8"]
+        python: [3.8]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -55,11 +55,14 @@ jobs:
 
   test:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on:  ${{ matrix.runner }}
 
     strategy:
       matrix:
-        python: ["3.8"]
+        python: [3.8]
+        runner:
+          - ubuntu-latest
+          - [self-hosted, gen9]
     env:
       CHANNELS: -c intel -c defaults --override-channels
 
@@ -109,6 +112,7 @@ jobs:
         run: |
           # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
           export OCL_ICD_FILENAMES=libintelocl.so
+          clinfo -l
           python -m pytest --pyargs $MODULE_NAME
 
   upload:
@@ -117,7 +121,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ["3.8"]
+        python: [3.8]
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
