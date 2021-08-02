@@ -112,4 +112,42 @@ DPCTL_API
 DPCTLSyclEventStatusType
 DPCTLEvent_GetCommandExecutionStatus(__dpctl_keep DPCTLSyclEventRef ERef);
 
+/*!
+ * @brief Wrapper over
+ * ``event.get_profiling_info<info::event_profiling::command_submit>()``
+ *
+ * @param    ERef           Opaque pointer to a ``sycl::event``
+ * @return   Returns a value describing the time in nanoseconds
+ * when the associated command group was submitted to the queue.
+ * @ingroup EventInterface
+ */
+DPCTL_API
+uint64_t DPCTLEvent_GetProfilingInfoSubmit(__dpctl_keep DPCTLSyclEventRef ERef);
+
+/*!
+ * @brief Wrapper over
+ * ``event.get_profiling_info<info::event_profiling::command_start>()``
+ *
+ * @param    ERef           Opaque pointer to a ``sycl::event``
+ * @return   Returns a value describing the time in nanoseconds
+ * when the action associated with the command group (e.g. kernel invocation)
+ * started executing on the device.
+ * @ingroup EventInterface
+ */
+DPCTL_API
+uint64_t DPCTLEvent_GetProfilingInfoStart(__dpctl_keep DPCTLSyclEventRef ERef);
+
+/*!
+ * @brief Wrapper over
+ * ``event.get_profiling_info<info::event_profiling::command_end>()``
+ *
+ * @param    ERef           Opaque pointer to a ``sycl::event``
+ * @return   Returns a value describing the time in nanoseconds
+ * when the action associated with the command group (e.g. kernel invocation)
+ * finished executing on the device.
+ * @ingroup EventInterface
+ */
+DPCTL_API
+uint64_t DPCTLEvent_GetProfilingInfoEnd(__dpctl_keep DPCTLSyclEventRef ERef);
+
 DPCTL_C_EXTERN_C_END

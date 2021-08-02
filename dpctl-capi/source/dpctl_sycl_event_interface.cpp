@@ -131,3 +131,54 @@ DPCTLEvent_GetCommandExecutionStatus(__dpctl_keep DPCTLSyclEventRef ERef)
     }
     return ESTy;
 }
+
+uint64_t DPCTLEvent_GetProfilingInfoSubmit(__dpctl_keep DPCTLSyclEventRef ERef)
+{
+    uint64_t profilingInfoSubmit = 0;
+    auto E = unwrap(ERef);
+    if (E) {
+        try {
+            E->wait();
+            profilingInfoSubmit = E->get_profiling_info<
+                sycl::info::event_profiling::command_submit>();
+        } catch (invalid_object_error &e) {
+            // \todo log error
+            std::cerr << e.what() << '\n';
+        }
+    }
+    return profilingInfoSubmit;
+}
+
+uint64_t DPCTLEvent_GetProfilingInfoStart(__dpctl_keep DPCTLSyclEventRef ERef)
+{
+    uint64_t profilingInfoStart = 0;
+    auto E = unwrap(ERef);
+    if (E) {
+        try {
+            E->wait();
+            profilingInfoStart = E->get_profiling_info<
+                sycl::info::event_profiling::command_start>();
+        } catch (invalid_object_error &e) {
+            // \todo log error
+            std::cerr << e.what() << '\n';
+        }
+    }
+    return profilingInfoStart;
+}
+
+uint64_t DPCTLEvent_GetProfilingInfoEnd(__dpctl_keep DPCTLSyclEventRef ERef)
+{
+    uint64_t profilingInfoEnd = 0;
+    auto E = unwrap(ERef);
+    if (E) {
+        try {
+            E->wait();
+            profilingInfoEnd = E->get_profiling_info<
+                sycl::info::event_profiling::command_end>();
+        } catch (invalid_object_error &e) {
+            // \todo log error
+            std::cerr << e.what() << '\n';
+        }
+    }
+    return profilingInfoEnd;
+}

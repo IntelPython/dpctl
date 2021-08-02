@@ -133,3 +133,33 @@ TEST_F(TestDPCTLSyclEventInterface, ChkGetCommandExecutionStatus)
     EXPECT_TRUE(ESTy != DPCTLSyclEventStatusType::DPCTL_UNKNOWN_STATUS);
     EXPECT_TRUE(ESTy == DPCTLSyclEventStatusType::DPCTL_COMPLETE);
 }
+
+#ifndef DPCTL_COVERAGE
+TEST_F(TestDPCTLSyclEventInterface, CheckGetProfiling)
+{
+    property_list propList{property::queue::enable_profiling()};
+    queue Q(cpu_selector(), propList);
+    auto eA = Q.submit(
+        [&](handler &h) { h.parallel_for(1000, [=](id<1>) { /*...*/ }); });
+    DPCTLSyclEventRef ERef = reinterpret_cast<DPCTLSyclEventRef>(&eA);
+
+    auto eStart = DPCTLEvent_GetProfilingInfoStart(ERef);
+    auto eEnd = DPCTLEvent_GetProfilingInfoEnd(ERef);
+    auto eSubmit = DPCTLEvent_GetProfilingInfoSubmit(ERef);
+
+    EXPECT_TRUE(eStart);
+    EXPECT_TRUE(eEnd);
+    EXPECT_TRUE(eSubmit);
+}
+#endif
+
+TEST_F(TestDPCTLSyclEventInterface, CheckGetProfiling_Invalid)
+{
+    auto eStart = DPCTLEvent_GetProfilingInfoStart(ERef);
+    auto eEnd = DPCTLEvent_GetProfilingInfoEnd(ERef);
+    auto eSubmit = DPCTLEvent_GetProfilingInfoSubmit(ERef);
+
+    EXPECT_FALSE(eStart);
+    EXPECT_FALSE(eEnd);
+    EXPECT_FALSE(eSubmit);
+}
