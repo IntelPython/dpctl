@@ -116,7 +116,7 @@ jobs:
         run: |
           # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
           export OCL_ICD_FILENAMES=libintelocl.so
-          clinfo -l
+          # clinfo -l
           python -m pytest --pyargs $MODULE_NAME
 
   upload:
