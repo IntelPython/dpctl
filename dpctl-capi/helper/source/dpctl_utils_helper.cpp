@@ -447,3 +447,18 @@ int64_t DPCTL_GetRelativeDeviceId(const device &Device)
     }
     return relid;
 }
+
+DPCTLSyclEventStatusType
+DPCTL_SyclEventStatusToDPCTLEventStatusType(info::event_command_status E)
+{
+    switch (E) {
+    case info::event_command_status::submitted:
+        return DPCTLSyclEventStatusType::DPCTL_SUBMITTED;
+    case info::event_command_status::running:
+        return DPCTLSyclEventStatusType::DPCTL_RUNNING;
+    case info::event_command_status::complete:
+        return DPCTLSyclEventStatusType::DPCTL_COMPLETE;
+    default:
+        return DPCTLSyclEventStatusType::DPCTL_UNKNOWN_STATUS;
+    }
+}

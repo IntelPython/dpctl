@@ -98,3 +98,22 @@ DPCTLSyclBackendType DPCTLEvent_GetBackend(__dpctl_keep DPCTLSyclEventRef ERef)
     }
     return BTy;
 }
+
+DPCTLSyclEventStatusType
+DPCTLEvent_GetCommandExecutionStatus(__dpctl_keep DPCTLSyclEventRef ERef)
+{
+    DPCTLSyclEventStatusType ESTy =
+        DPCTLSyclEventStatusType::DPCTL_UNKNOWN_STATUS;
+    auto E = unwrap(ERef);
+    if (E) {
+        try {
+            auto SyclESTy =
+                E->get_info<sycl::info::event::command_execution_status>();
+            ESTy = DPCTL_SyclEventStatusToDPCTLEventStatusType(SyclESTy);
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return ESTy;
+}

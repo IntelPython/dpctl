@@ -91,4 +91,16 @@ DPCTLEvent_Copy(__dpctl_keep const DPCTLSyclEventRef ERef);
 DPCTL_API
 DPCTLSyclBackendType DPCTLEvent_GetBackend(__dpctl_keep DPCTLSyclEventRef ERef);
 
+/*!
+ * @brief Returns the DPCTLSyclEventStatusType enum value for the
+ * DPCTLSyclEventRef argument.
+ *
+ * @param    ERef           Opaque pointer to a ``sycl::event``
+ * @return   The DPCTLSyclDEventStatusType value corresponding to the event.
+ * @ingroup EventInterface
+ */
+DPCTL_API
+DPCTLSyclEventStatusType
+DPCTLEvent_GetCommandExecutionStatus(__dpctl_keep DPCTLSyclEventRef ERef);
+
 DPCTL_C_EXTERN_C_END

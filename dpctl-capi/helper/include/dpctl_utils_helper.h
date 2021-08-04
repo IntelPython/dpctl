@@ -196,3 +196,16 @@ DPCTLPartitionAffinityDomainType DPCTL_SyclPartitionAffinityDomainToDPCTLType(
  */
 DPCTL_API
 int64_t DPCTL_GetRelativeDeviceId(const sycl::device &Device);
+
+/*!
+ * @brief Converts a ``sycl::info::event_command_status`` enum value to
+ * corresponding DPCTLSyclEventStatusType enum value.
+ *
+ * @param    SyclESTy           ``sycl::info::event_command_status`` to be
+ * converted to DPCTLSyclEventStatusType enum.
+ * @return   A DPCTLSyclEventStatusType enum value for the input
+ * ``sycl::info::event_command_status`` enum value.
+ */
+DPCTL_API
+DPCTLSyclEventStatusType DPCTL_SyclEventStatusToDPCTLEventStatusType(
+    sycl::info::event_command_status SyclESTy);
