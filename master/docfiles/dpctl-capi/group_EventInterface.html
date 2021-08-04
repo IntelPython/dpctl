@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Event class C wrapper &mdash; Data-parallel Control (dpctl) 0.8.0+36.gb283185 documentation</title>
+  <title>Event class C wrapper &mdash; Data-parallel Control (dpctl) 0.8.0+37.g3fc0bf4 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.8.0+36.gb283185
+                0.8.0+37.g3fc0bf4
               </div>
             
           
@@ -218,7 +218,10 @@ DPCTLEvent_GetBackend<span></span><span class="p">(</span><span class="n">__dpct
 DPCTLEvent_GetCommandExecutionStatus<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
-DPCTLEvent_Wait<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span></pre>
+DPCTLEvent_Wait<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">void</span>
+DPCTLEvent_WaitAndThrow<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span></pre>
 </div>
 <div class="section" id="detailed-documentation">
 <span id="details-d6-d8a-group-eventinterface"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this headline">¶</a></h2>
@@ -310,6 +313,21 @@ DPCTLEvent_Wait<span></span><span class="p">(</span><span class="n">__dpctl_keep
 </tr>
 </tbody>
 </table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga4b955b64cc76d942f20384e4fd566bbf"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<span class="n">DPCTLEvent_WaitAndThrow</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
+<p>C-API wrapper for ‘sycl::event.wait_and_throw’.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>ERef</p></td>
+<td><p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -353,7 +371,7 @@ DPCTLEvent_Wait<span></span><span class="p">(</span><span class="n">__dpctl_keep
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.8.0+36.gb283185
+      v: 0.8.0+37.g3fc0bf4
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

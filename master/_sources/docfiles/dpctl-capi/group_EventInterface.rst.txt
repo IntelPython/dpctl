@@ -37,6 +37,9 @@ Overview
 	DPCTL_API void
 	:ref:`DPCTLEvent_Wait<doxid-d6/d8a/group__EventInterface_1ga3befe2587ca487628646214b7cf3b96e>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
 
+	DPCTL_API void
+	:ref:`DPCTLEvent_WaitAndThrow<doxid-d6/d8a/group__EventInterface_1ga4b955b64cc76d942f20384e4fd566bbf>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
 .. _details-d6/d8a/group__EventInterface:
 
 Detailed Documentation
@@ -196,4 +199,27 @@ C-API wrapper for sycl::event.wait.
 		- ERef
 
 		- An opaque DPCTLSyclEventRef pointer on which to wait.
+
+.. index:: pair: function; DPCTLEvent_WaitAndThrow
+.. _doxid-d6/d8a/group__EventInterface_1ga4b955b64cc76d942f20384e4fd566bbf:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLEvent_WaitAndThrow(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef)
+
+C-API wrapper for 'sycl::event.wait_and_throw'.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- ERef
+
+		- Opaque pointer to a ``sycl::event``
 
