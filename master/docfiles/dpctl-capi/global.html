@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.8.0+33.g5cce14f documentation</title>
+  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.8.0+36.gb283185 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.8.0+33.g5cce14f
+                0.8.0+36.gb283185
               </div>
             
           
@@ -122,6 +122,7 @@
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclAspectType.html">enum DPCTLSyclAspectType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclBackendType.html">enum DPCTLSyclBackendType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclDeviceType.html">enum DPCTLSyclDeviceType</a></li>
+<li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclEventStatusType.html">enum DPCTLSyclEventStatusType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#detailed-documentation">Detailed Documentation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#typedefs">Typedefs</a></li>
@@ -230,6 +231,7 @@
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLSyclAspectType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a5f57a140cfab264daf4500bdac0be389"><span class="std std-ref">DPCTLSyclAspectType</span></a><span></span><span class="p">;</span>
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLSyclBackendType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1aa217d239d7e3752c49bd9fd42c71c933"><span class="std std-ref">DPCTLSyclBackendType</span></a><span></span><span class="p">;</span>
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLSyclDeviceType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a15d8954e4e712e2ec00838a9283d13ff"><span class="std std-ref">DPCTLSyclDeviceType</span></a><span></span><span class="p">;</span>
+<span class="k">enum</span> <a class="reference internal" href="enum_DPCTLSyclEventStatusType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021"><span class="std std-ref">DPCTLSyclEventStatusType</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// global functions</span>
 
@@ -499,6 +501,9 @@ DPCTLEvent_Delete<span></span><span class="p">(</span><span class="n">__dpctl_ta
 
 <span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclBackendType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1aa217d239d7e3752c49bd9fd42c71c933"><span class="std std-ref">DPCTLSyclBackendType</span></a><span></span>
 DPCTLEvent_GetBackend<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclEventStatusType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021"><span class="std std-ref">DPCTLSyclEventStatusType</span></a><span></span>
+DPCTLEvent_GetCommandExecutionStatus<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
 DPCTLEvent_Wait<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
@@ -1013,7 +1018,7 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.8.0+33.g5cce14f
+      v: 0.8.0+36.gb283185
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

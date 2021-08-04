@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Event class C wrapper &mdash; Data-parallel Control (dpctl) 0.8.0+33.g5cce14f documentation</title>
+  <title>Event class C wrapper &mdash; Data-parallel Control (dpctl) 0.8.0+36.gb283185 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.8.0+33.g5cce14f
+                0.8.0+36.gb283185
               </div>
             
           
@@ -214,6 +214,9 @@ DPCTLEvent_Delete<span></span><span class="p">(</span><span class="n">__dpctl_ta
 <span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclBackendType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1aa217d239d7e3752c49bd9fd42c71c933"><span class="std std-ref">DPCTLSyclBackendType</span></a><span></span>
 DPCTLEvent_GetBackend<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
+<span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclEventStatusType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021"><span class="std std-ref">DPCTLSyclEventStatusType</span></a><span></span>
+DPCTLEvent_GetCommandExecutionStatus<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
 DPCTLEvent_Wait<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span></pre>
 </div>
@@ -275,7 +278,24 @@ DPCTLEvent_Wait<span></span><span class="p">(</span><span class="n">__dpctl_keep
 </table>
 <p class="rubric">Returns:</p>
 <p>A DPCTLSyclBackendType enum value identifying the SYCL backend associated with the event.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga3befe2587ca487628646214b7cf3b96e"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1gaba5717c1481def3ceb1fc0ee6c3dabe9"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclEventStatusType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021"><span class="std std-ref">DPCTLSyclEventStatusType</span></a><span></span>
+<span class="n">DPCTLEvent_GetCommandExecutionStatus</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
+<p>Returns the DPCTLSyclEventStatusType enum value for the DPCTLSyclEventRef argument.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>ERef</p></td>
+<td><p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>The DPCTLSyclDEventStatusType value corresponding to the event.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga3befe2587ca487628646214b7cf3b96e"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLEvent_Wait</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
 <p>C-API wrapper for sycl::event.wait.</p>
 <p class="rubric">Parameters:</p>
@@ -333,7 +353,7 @@ DPCTLEvent_Wait<span></span><span class="p">(</span><span class="n">__dpctl_keep
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.8.0+33.g5cce14f
+      v: 0.8.0+36.gb283185
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
