@@ -34,6 +34,18 @@ Overview
 	DPCTL_API :ref:`DPCTLSyclEventStatusType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1ac950d7ef3975b7c553971613f4a27021>`
 	:ref:`DPCTLEvent_GetCommandExecutionStatus<doxid-d6/d8a/group__EventInterface_1gaba5717c1481def3ceb1fc0ee6c3dabe9>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
 
+	DPCTL_API uint64_t
+	:ref:`DPCTLEvent_GetProfilingInfoEnd<doxid-d6/d8a/group__EventInterface_1ga87d98a9b0d6d7de64cf10b7782a746dd>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
+	DPCTL_API uint64_t
+	:ref:`DPCTLEvent_GetProfilingInfoStart<doxid-d6/d8a/group__EventInterface_1ga82b888e75071bab550a39257f32ef993>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
+	DPCTL_API uint64_t
+	:ref:`DPCTLEvent_GetProfilingInfoSubmit<doxid-d6/d8a/group__EventInterface_1gaa1e8ec801992e1fdb0836463f73fcc85>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>`
+	:ref:`DPCTLEvent_GetWaitList<doxid-d6/d8a/group__EventInterface_1ga77eab99e200776384c7c345c0f2011c7>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
 	DPCTL_API void
 	:ref:`DPCTLEvent_Wait<doxid-d6/d8a/group__EventInterface_1ga3befe2587ca487628646214b7cf3b96e>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
 
@@ -176,6 +188,122 @@ Returns the DPCTLSyclEventStatusType enum value for the DPCTLSyclEventRef argume
 .. rubric:: Returns:
 
 The DPCTLSyclDEventStatusType value corresponding to the event.
+
+.. index:: pair: function; DPCTLEvent_GetProfilingInfoEnd
+.. _doxid-d6/d8a/group__EventInterface_1ga87d98a9b0d6d7de64cf10b7782a746dd:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint64_t
+	DPCTLEvent_GetProfilingInfoEnd(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef)
+
+Wrapper over ``event.get_profiling_info<info::event_profiling::command_end>()``
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- ERef
+
+		- Opaque pointer to a ``sycl::event``
+
+
+
+.. rubric:: Returns:
+
+Returns a value describing the time in nanoseconds when the action associated with the command group (e.g. kernel invocation) finished executing on the device.
+
+.. index:: pair: function; DPCTLEvent_GetProfilingInfoStart
+.. _doxid-d6/d8a/group__EventInterface_1ga82b888e75071bab550a39257f32ef993:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint64_t
+	DPCTLEvent_GetProfilingInfoStart(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef)
+
+Wrapper over ``event.get_profiling_info<info::event_profiling::command_start>()``
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- ERef
+
+		- Opaque pointer to a ``sycl::event``
+
+
+
+.. rubric:: Returns:
+
+Returns a value describing the time in nanoseconds when the action associated with the command group (e.g. kernel invocation) started executing on the device.
+
+.. index:: pair: function; DPCTLEvent_GetProfilingInfoSubmit
+.. _doxid-d6/d8a/group__EventInterface_1gaa1e8ec801992e1fdb0836463f73fcc85:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint64_t
+	DPCTLEvent_GetProfilingInfoSubmit(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef)
+
+Wrapper over ``event.get_profiling_info<info::event_profiling::command_submit>()``
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- ERef
+
+		- Opaque pointer to a ``sycl::event``
+
+
+
+.. rubric:: Returns:
+
+Returns a value describing the time in nanoseconds when the associated command group was submitted to the queue.
+
+.. index:: pair: function; DPCTLEvent_GetWaitList
+.. _doxid-d6/d8a/group__EventInterface_1ga77eab99e200776384c7c345c0f2011c7:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>`
+	DPCTLEvent_GetWaitList(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef)
+
+C-API wrapper for ``sycl::event::get_wait_list``. Returns a vector of events that this event still waits for.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- ERef
+
+		- Opaque pointer to a ``sycl::event``.
+
+
+
+.. rubric:: Returns:
+
+A DPCTLEventVectorRef of DPCTLSyclEventRef objects.
 
 .. index:: pair: function; DPCTLEvent_Wait
 .. _doxid-d6/d8a/group__EventInterface_1ga3befe2587ca487628646214b7cf3b96e:

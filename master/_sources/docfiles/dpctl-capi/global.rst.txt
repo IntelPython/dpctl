@@ -29,6 +29,7 @@ Overview
 
 	typedef void :ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`(int err_code);
 	typedef struct DPCTLDeviceVector* :target:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`;
+	typedef struct DPCTLEventVector* :target:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>`;
 	typedef struct DPCTLPlatformVector* :target:`DPCTLPlatformVectorRef<doxid-d7/d69/group__PlatformManager_1ga18dc8588af45614eb2f4a9f7b25a6047>`;
 	typedef  struct DPCTLOpaqueSyclContext* :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`;
 	typedef struct DPCTLOpaqueSyclDevice* :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`;
@@ -322,11 +323,47 @@ Overview
 	DPCTL_API :ref:`DPCTLSyclEventStatusType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1ac950d7ef3975b7c553971613f4a27021>`
 	:ref:`DPCTLEvent_GetCommandExecutionStatus<doxid-d6/d8a/group__EventInterface_1gaba5717c1481def3ceb1fc0ee6c3dabe9>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
 
+	DPCTL_API uint64_t
+	:ref:`DPCTLEvent_GetProfilingInfoEnd<doxid-d6/d8a/group__EventInterface_1ga87d98a9b0d6d7de64cf10b7782a746dd>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
+	DPCTL_API uint64_t
+	:ref:`DPCTLEvent_GetProfilingInfoStart<doxid-d6/d8a/group__EventInterface_1ga82b888e75071bab550a39257f32ef993>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
+	DPCTL_API uint64_t
+	:ref:`DPCTLEvent_GetProfilingInfoSubmit<doxid-d6/d8a/group__EventInterface_1gaa1e8ec801992e1fdb0836463f73fcc85>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>`
+	:ref:`DPCTLEvent_GetWaitList<doxid-d6/d8a/group__EventInterface_1ga77eab99e200776384c7c345c0f2011c7>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
 	DPCTL_API void
 	:ref:`DPCTLEvent_Wait<doxid-d6/d8a/group__EventInterface_1ga3befe2587ca487628646214b7cf3b96e>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
 
 	DPCTL_API void
 	:ref:`DPCTLEvent_WaitAndThrow<doxid-d6/d8a/group__EventInterface_1ga4b955b64cc76d942f20384e4fd566bbf>`(__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
+
+	DPCTL_API void
+	:ref:`DPCTLEventVector_Clear<doxid-d5/d12/dpctl__sycl__event__interface_8h_1ad2e72f059ec496cfc832b4eedf77157a>`(__dpctl_keep :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>` VRef);
+
+	__dpctl_give :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>`
+	:ref:`DPCTLEventVector_Create<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a99a7c6375d03047627ecaaac276e650c>`(void);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>`
+	:ref:`DPCTLEventVector_CreateFromArray<doxid-d5/d12/dpctl__sycl__event__interface_8h_1abf123b90a1262ca3211d4883f4046170>`(
+		size_t len,
+		__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`* elems
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLEventVector_Delete<doxid-d5/d12/dpctl__sycl__event__interface_8h_1afa2341f80b22492a36946ac7a2a62f74>`(__dpctl_take :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>` VRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	:ref:`DPCTLEventVector_GetAt<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a92fc3661092893538d93983c071e70ef>`(
+		__dpctl_keep :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>` VRef,
+		size_t index
+		);
+
+	DPCTL_API size_t
+	:ref:`DPCTLEventVector_Size<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a65819357fd48d2ed7452b65f9c92ef27>`(__dpctl_keep :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>` VRef);
 
 	DPCTL_API void
 	:ref:`DPCTLKernel_Delete<doxid-d1/dcb/group__KernelInterface_1ga02cb1ddc64d9f78d228a5dc222c8862b>`(__dpctl_take :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
@@ -988,4 +1025,170 @@ Wrapper over std::hash<sycl::device>'s operator()
 .. rubric:: Returns:
 
 Returns hash value.
+
+.. index:: pair: function; DPCTLEventVector_Clear
+.. _doxid-d5/d12/dpctl__sycl__event__interface_8h_1ad2e72f059ec496cfc832b4eedf77157a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLEventVector_Clear(__dpctl_keep :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>` VRef)
+
+Delete all the elements of the std::vector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- VRef
+
+		- Opaque pointer to a vector.
+
+.. index:: pair: function; DPCTLEventVector_Create
+.. _doxid-d5/d12/dpctl__sycl__event__interface_8h_1a99a7c6375d03047627ecaaac276e650c:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	__dpctl_give :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>`
+	DPCTLEventVector_Create(void)
+
+Create an opaque pointer to a std::vector of opaque pointers wrapping the SYCL data type.
+
+
+
+.. rubric:: Returns:
+
+Returns a new opaque pointer to a vector.
+
+.. index:: pair: function; DPCTLEventVector_CreateFromArray
+.. _doxid-d5/d12/dpctl__sycl__event__interface_8h_1abf123b90a1262ca3211d4883f4046170:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>`
+	DPCTLEventVector_CreateFromArray(
+		size_t len,
+		__dpctl_keep :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`* elems
+		)
+
+Create an opaque pointer to a std::vector created from the input raw array. The elements of the input array are deep copied before inserting the copies into the vector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- len
+
+		- Number of elements in the input array.
+
+	*
+		- elems
+
+		- A C array whose elements will be copied into the returned vector.
+
+
+
+.. rubric:: Returns:
+
+Returns a new opaque pointer to a vector.
+
+.. index:: pair: function; DPCTLEventVector_Delete
+.. _doxid-d5/d12/dpctl__sycl__event__interface_8h_1afa2341f80b22492a36946ac7a2a62f74:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLEventVector_Delete(__dpctl_take :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>` VRef)
+
+Delete all elements in the vector and then delete the vector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- VRef
+
+		- Opaque pointer to a vector to be deleted.
+
+.. index:: pair: function; DPCTLEventVector_GetAt
+.. _doxid-d5/d12/dpctl__sycl__event__interface_8h_1a92fc3661092893538d93983c071e70ef:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	DPCTLEventVector_GetAt(
+		__dpctl_keep :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>` VRef,
+		size_t index
+		)
+
+Returns the element at the specified index.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- VRef
+
+		- Opaque pointer to a vector.
+
+	*
+		- index
+
+		- The index postion of the element to be returned.
+
+
+
+.. rubric:: Returns:
+
+The element at the specified postion, if the index position is out of bounds then a nullptr is returned.
+
+.. index:: pair: function; DPCTLEventVector_Size
+.. _doxid-d5/d12/dpctl__sycl__event__interface_8h_1a65819357fd48d2ed7452b65f9c92ef27:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLEventVector_Size(__dpctl_keep :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>` VRef)
+
+Returns the number of elements in the vector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- VRef
+
+		- Opaque pointer to a vector.
+
+
+
+.. rubric:: Returns:
+
+The current size of the vector.
 

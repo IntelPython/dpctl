@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.8.0+37.g3fc0bf4 documentation</title>
+  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.9.0dev0+2.ge5c50ea documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.8.0+37.g3fc0bf4
+                0.9.0dev0+2.ge5c50ea
               </div>
             
           
@@ -212,6 +212,7 @@
 
 <span class="k">typedef</span> <span class="kt">void</span> <a class="reference internal" href="#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="p">(</span><span class="kt">int</span> <span class="n">err_code</span><span class="p">);</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLDeviceVector</span><span class="o">*</span> <span class="doxyrest-code-target target" id="doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span></span><span class="n">DPCTLDeviceVectorRef</span></span><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLEventVector</span><span class="o">*</span> <span class="doxyrest-code-target target" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span></span><span class="n">DPCTLEventVectorRef</span></span><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLPlatformVector</span><span class="o">*</span> <span class="doxyrest-code-target target" id="doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span></span><span class="n">DPCTLPlatformVectorRef</span></span><span></span><span class="p">;</span>
 <span class="k">typedef</span>  <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclContext</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclDevice</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span><span class="p">;</span>
@@ -505,11 +506,47 @@ DPCTLEvent_GetBackend<span></span><span class="p">(</span><span class="n">__dpct
 <span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclEventStatusType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021"><span class="std std-ref">DPCTLSyclEventStatusType</span></a><span></span>
 DPCTLEvent_GetCommandExecutionStatus<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
+<span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
+DPCTLEvent_GetProfilingInfoEnd<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
+DPCTLEvent_GetProfilingInfoStart<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
+DPCTLEvent_GetProfilingInfoSubmit<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span>
+DPCTLEvent_GetWaitList<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
 DPCTLEvent_Wait<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
 DPCTLEvent_WaitAndThrow<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">void</span>
+<a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1ad2e72f059ec496cfc832b4eedf77157a"><span class="std std-ref">DPCTLEventVector_Clear</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">);</span>
+
+<span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a99a7c6375d03047627ecaaac276e650c"><span class="std std-ref">DPCTLEventVector_Create</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1abf123b90a1262ca3211d4883f4046170"><span class="std std-ref">DPCTLEventVector_CreateFromArray</span></a><span></span><span class="p">(</span>
+    <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span><span class="o">*</span> <span class="n">elems</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">void</span>
+<a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1afa2341f80b22492a36946ac7a2a62f74"><span class="std std-ref">DPCTLEventVector_Delete</span></a><span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a92fc3661092893538d93983c071e70ef"><span class="std std-ref">DPCTLEventVector_GetAt</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">index</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a65819357fd48d2ed7452b65f9c92ef27"><span class="std std-ref">DPCTLEventVector_Size</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
 DPCTLKernel_Delete<span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span>
@@ -978,6 +1015,104 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns hash value.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1ad2e72f059ec496cfc832b4eedf77157a"><span id="index-20"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<span class="n">DPCTLEventVector_Clear</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
+<p>Delete all the elements of the std::vector.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>VRef</p></td>
+<td><p>Opaque pointer to a vector.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1a99a7c6375d03047627ecaaac276e650c"><span id="index-21"></span><span></span><span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span>
+<span class="n">DPCTLEventVector_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
+<p>Create an opaque pointer to a std::vector of opaque pointers wrapping the SYCL data type.</p>
+<p class="rubric">Returns:</p>
+<p>Returns a new opaque pointer to a vector.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1abf123b90a1262ca3211d4883f4046170"><span id="index-22"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span>
+<span class="n">DPCTLEventVector_CreateFromArray</span><span class="p">(</span>
+    <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span><span class="o">*</span> <span class="n">elems</span>
+    <span class="p">)</span></pre>
+<p>Create an opaque pointer to a std::vector created from the input raw array. The elements of the input array are deep copied before inserting the copies into the vector.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>len</p></td>
+<td><p>Number of elements in the input array.</p></td>
+</tr>
+<tr class="row-even"><td><p>elems</p></td>
+<td><p>A C array whose elements will be copied into the returned vector.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>Returns a new opaque pointer to a vector.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1afa2341f80b22492a36946ac7a2a62f74"><span id="index-23"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<span class="n">DPCTLEventVector_Delete</span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
+<p>Delete all elements in the vector and then delete the vector.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>VRef</p></td>
+<td><p>Opaque pointer to a vector to be deleted.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1a92fc3661092893538d93983c071e70ef"><span id="index-24"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<span class="n">DPCTLEventVector_GetAt</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">index</span>
+    <span class="p">)</span></pre>
+<p>Returns the element at the specified index.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>VRef</p></td>
+<td><p>Opaque pointer to a vector.</p></td>
+</tr>
+<tr class="row-even"><td><p>index</p></td>
+<td><p>The index postion of the element to be returned.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>The element at the specified postion, if the index position is out of bounds then a nullptr is returned.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1a65819357fd48d2ed7452b65f9c92ef27"><span id="index-25"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<span class="n">DPCTLEventVector_Size</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
+<p>Returns the number of elements in the vector.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>VRef</p></td>
+<td><p>Opaque pointer to a vector.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>The current size of the vector.</p>
 </div>
 </div>
 </div>
@@ -1021,7 +1156,7 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.8.0+37.g3fc0bf4
+      v: 0.9.0dev0+2.ge5c50ea
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
