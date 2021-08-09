@@ -26,6 +26,7 @@
 
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_event_interface.h"
+#include "dpctl_sycl_types.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 
@@ -33,7 +34,31 @@ using namespace cl::sycl;
 
 namespace
 {
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(event, DPCTLSyclEventRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(event, DPCTLSyclEventRef);
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclEventRef>,
+                                   DPCTLEventVectorRef);
+
+#ifndef DPCTL_COVERAGE
+sycl::event produce_event(sycl::queue &Q, sycl::buffer<int> &data)
+{
+    int N = data.get_range()[0];
+
+    auto e1 = Q.submit([&](sycl::handler &h) {
+        sycl::accessor a{data, h, sycl::write_only, sycl::noinit};
+        h.parallel_for(N, [=](sycl::id<1> i) { a[i] = 1; });
+    });
+
+    auto e2 = Q.submit([&](sycl::handler &h) {
+        sycl::accessor a{data, h};
+        h.single_task([=]() {
+            for (int i = 1; i < N; i++)
+                a[0] += a[i];
+        });
+    });
+
+    return e2;
+}
+#endif
 } // namespace
 
 struct TestDPCTLSyclEventInterface : public ::testing::Test
@@ -163,3 +188,28 @@ TEST_F(TestDPCTLSyclEventInterface, CheckGetProfiling_Invalid)
     EXPECT_FALSE(eEnd);
     EXPECT_FALSE(eSubmit);
 }
+
+TEST_F(TestDPCTLSyclEventInterface, CheckGetWaitList)
+{
+    DPCTLEventVectorRef EVRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(EVRef = DPCTLEvent_GetWaitList(ERef));
+    ASSERT_TRUE(EVRef);
+    EXPECT_NO_FATAL_FAILURE(DPCTLEventVector_Clear(EVRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLEventVector_Delete(EVRef));
+}
+
+#ifndef DPCTL_COVERAGE
+TEST_F(TestDPCTLSyclEventInterface, CheckGetWaitListSYCL)
+{
+    sycl::queue q;
+    sycl::buffer<int> data{42};
+    sycl::event eD;
+    DPCTLEventVectorRef EVRef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(eD = produce_event(q, data));
+    DPCTLSyclEventRef ERef = reinterpret_cast<DPCTLSyclEventRef>(&eD);
+    EXPECT_NO_FATAL_FAILURE(EVRef = DPCTLEvent_GetWaitList(ERef));
+    ASSERT_TRUE(DPCTLEventVector_Size(EVRef) > 0);
+    DPCTLEventVector_Delete(EVRef);
+}
+#endif

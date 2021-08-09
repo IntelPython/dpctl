@@ -37,6 +37,11 @@ namespace
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(event, DPCTLSyclEventRef)
 } /* end of anonymous namespace */
 
+#undef EL
+#define EL Event
+#include "dpctl_vector_templ.cpp"
+#undef EL
+
 __dpctl_give DPCTLSyclEventRef DPCTLEvent_Create()
 {
     DPCTLSyclEventRef ERef = nullptr;
@@ -181,4 +186,40 @@ uint64_t DPCTLEvent_GetProfilingInfoEnd(__dpctl_keep DPCTLSyclEventRef ERef)
         }
     }
     return profilingInfoEnd;
+}
+
+__dpctl_give DPCTLEventVectorRef
+DPCTLEvent_GetWaitList(__dpctl_keep DPCTLSyclEventRef ERef)
+{
+    auto E = unwrap(ERef);
+    if (!E) {
+        std::cerr << "Cannot get wait list as input is a nullptr\n";
+        return nullptr;
+    }
+    vector_class<DPCTLSyclEventRef> *EventsVectorPtr = nullptr;
+    try {
+        EventsVectorPtr = new vector_class<DPCTLSyclEventRef>();
+    } catch (std::bad_alloc const &ba) {
+        // \todo log error
+        std::cerr << ba.what() << '\n';
+        return nullptr;
+    }
+    try {
+        auto Events = E->get_wait_list();
+        EventsVectorPtr->reserve(Events.size());
+        for (const auto &Ev : Events) {
+            EventsVectorPtr->emplace_back(wrap(new event(Ev)));
+        }
+        return wrap(EventsVectorPtr);
+    } catch (std::bad_alloc const &ba) {
+        delete EventsVectorPtr;
+        // \todo log error
+        std::cerr << ba.what() << '\n';
+        return nullptr;
+    } catch (const runtime_error &re) {
+        delete EventsVectorPtr;
+        // \todo log error
+        std::cerr << re.what() << '\n';
+        return nullptr;
+    }
 }
