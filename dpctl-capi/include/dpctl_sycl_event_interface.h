@@ -31,12 +31,17 @@
 #include "dpctl_data_types.h"
 #include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_types.h"
+#include "dpctl_vector.h"
 
 DPCTL_C_EXTERN_C_BEGIN
 
 /**
  * @defgroup EventInterface Event class C wrapper
  */
+
+// Declares a set of types and functions to deal with vectors of
+// DPCTLSyclEventRef. Refer dpctl_vector_macros.h
+DPCTL_DECLARE_VECTOR(Event)
 
 /*!
  * @brief A wrapper for ``sycl::event`` contructor to construct a new event.
@@ -149,5 +154,17 @@ uint64_t DPCTLEvent_GetProfilingInfoStart(__dpctl_keep DPCTLSyclEventRef ERef);
  */
 DPCTL_API
 uint64_t DPCTLEvent_GetProfilingInfoEnd(__dpctl_keep DPCTLSyclEventRef ERef);
+
+/*!
+ * @brief  C-API wrapper for ``sycl::event::get_wait_list``.
+ * Returns a vector of events that this event still waits for.
+ *
+ * @param    ERef           Opaque pointer to a ``sycl::event``.
+ * @return   A DPCTLEventVectorRef of DPCTLSyclEventRef objects.
+ * @ingroup EventInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLEventVectorRef
+DPCTLEvent_GetWaitList(__dpctl_keep DPCTLSyclEventRef ERef);
 
 DPCTL_C_EXTERN_C_END
