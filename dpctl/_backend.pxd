@@ -217,6 +217,8 @@ cdef extern from "dpctl_sycl_device_selector_interface.h":
 
 
 cdef extern from "dpctl_sycl_event_interface.h":
+    cdef DPCTLSyclEventRef DPCTLEvent_Create()
+    cdef DPCTLSyclEventRef DPCTLEvent_Copy(const DPCTLSyclEventRef ERef)
     cdef void DPCTLEvent_Wait(DPCTLSyclEventRef ERef)
     cdef void DPCTLEvent_Delete(DPCTLSyclEventRef ERef)
 

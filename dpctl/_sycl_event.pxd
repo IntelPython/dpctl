@@ -33,3 +33,20 @@ cdef public api class SyclEvent [object PySyclEventObject, type PySyclEventType]
     cdef  SyclEvent _create (DPCTLSyclEventRef e, list args)
     cdef  DPCTLSyclEventRef get_event_ref (self)
     cpdef void wait (self)
+
+
+cdef class _SyclEventRaw:
+    cdef DPCTLSyclEventRef _event_ref
+
+
+cdef public class SyclEventRaw(_SyclEventRaw) [object PySyclEventRawObject, type PySyclEventRawType]:
+    @staticmethod
+    cdef SyclEventRaw _create (DPCTLSyclEventRef event)
+    @staticmethod
+    cdef void _init_helper(_SyclEventRaw event, DPCTLSyclEventRef ERef)
+    cdef int _init_event_default(self)
+    cdef int _init_event_from__SyclEventRaw(self, _SyclEventRaw other)
+    cdef int _init_event_from_SyclEvent(self, SyclEvent event)
+    cdef int _init_event_from_capsule(self, object caps)
+    cdef  DPCTLSyclEventRef get_event_ref (self)
+    cpdef void wait (self)
