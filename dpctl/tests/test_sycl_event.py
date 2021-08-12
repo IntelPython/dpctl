@@ -28,6 +28,32 @@ from dpctl import event_status_type as esty
 from ._helper import has_cpu
 
 
+def produce_event(profiling=False):
+    oclSrc = "                                                                 \
+            kernel void add(global int* a) {                                   \
+                size_t index = get_global_id(0);                               \
+                a[index] = a[index] + 1;                                       \
+            }"
+    if profiling:
+        q = dpctl.SyclQueue("opencl:cpu", property="enable_profiling")
+    else:
+        q = dpctl.SyclQueue("opencl:cpu")
+    prog = dpctl_prog.create_program_from_source(q, oclSrc)
+    addKernel = prog.get_sycl_kernel("add")
+
+    bufBytes = 1024 * np.dtype("i").itemsize
+    abuf = dpctl_mem.MemoryUSMShared(bufBytes, queue=q)
+    a = np.ndarray((1024), buffer=abuf, dtype="i")
+    a[:] = np.arange(1024)
+    args = []
+
+    args.append(a.base)
+    r = [1024]
+    ev = q.submit(addKernel, args, r)
+
+    return ev
+
+
 def test_create_default_event_raw():
     try:
         dpctl.SyclEventRaw()
@@ -37,25 +63,7 @@ def test_create_default_event_raw():
 
 def test_create_event_raw_from_SyclEvent():
     if has_cpu():
-        oclSrc = "                                                             \
-            kernel void add(global int* a) {                                   \
-                size_t index = get_global_id(0);                               \
-                a[index] = a[index] + 1;                                       \
-            }"
-        q = dpctl.SyclQueue("opencl:cpu")
-        prog = dpctl_prog.create_program_from_source(q, oclSrc)
-        addKernel = prog.get_sycl_kernel("add")
-
-        bufBytes = 1024 * np.dtype("i").itemsize
-        abuf = dpctl_mem.MemoryUSMShared(bufBytes, queue=q)
-        a = np.ndarray((1024), buffer=abuf, dtype="i")
-        a[:] = np.arange(1024)
-        args = []
-
-        args.append(a.base)
-        r = [1024]
-        ev = q.submit(addKernel, args, r)
-
+        ev = produce_event()
         try:
             dpctl.SyclEventRaw(ev)
         except ValueError:
@@ -132,5 +140,14 @@ def test_get_wait_list():
                 "Failed to get a list of waiting events from SyclEventRaw"
             )
         assert len(wait_list)
+
+
+def test_profiling_info():
+    if has_cpu():
+        event = produce_event(profiling=True)
+        event_raw = dpctl.SyclEventRaw(event)
+        assert event_raw.profiling_info_submit
+        assert event_raw.profiling_info_start
+        assert event_raw.profiling_info_end
     else:
         pytest.skip("No OpenCL CPU queues available")
