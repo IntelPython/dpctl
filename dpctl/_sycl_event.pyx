@@ -24,6 +24,7 @@
 import logging
 
 from cpython cimport pycapsule
+from libc.stdint cimport uint64_t
 
 from ._backend cimport (  # noqa: E211
     DPCTLEvent_Copy,
@@ -31,6 +32,9 @@ from ._backend cimport (  # noqa: E211
     DPCTLEvent_Delete,
     DPCTLEvent_GetBackend,
     DPCTLEvent_GetCommandExecutionStatus,
+    DPCTLEvent_GetProfilingInfoEnd,
+    DPCTLEvent_GetProfilingInfoStart,
+    DPCTLEvent_GetProfilingInfoSubmit,
     DPCTLEvent_GetWaitList,
     DPCTLEvent_Wait,
     DPCTLEventVector_Delete,
@@ -267,3 +271,22 @@ cdef class SyclEventRaw(_SyclEventRaw):
             events.append(SyclEventRaw._create(ERef))
         DPCTLEventVector_Delete(EVRef)
         return events
+
+    def profiling_info_submit(self):
+        cdef uint64_t profiling_info_submit = 0
+        profiling_info_submit = DPCTLEvent_GetProfilingInfoSubmit(
+                                self._event_ref
+        )
+        return profiling_info_submit
+
+    @property
+    def profiling_info_start(self):
+        cdef uint64_t profiling_info_start = 0
+        profiling_info_start = DPCTLEvent_GetProfilingInfoStart(self._event_ref)
+        return profiling_info_start
+
+    @property
+    def profiling_info_end(self):
+        cdef uint64_t profiling_info_end = 0
+        profiling_info_end = DPCTLEvent_GetProfilingInfoEnd(self._event_ref)
+        return profiling_info_end

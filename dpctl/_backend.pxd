@@ -21,7 +21,7 @@
 types defined by dpctl's C API.
 """
 
-from libc.stdint cimport int64_t, uint32_t
+from libc.stdint cimport int64_t, uint32_t, uint64_t
 from libcpp cimport bool
 
 
@@ -238,6 +238,9 @@ cdef extern from "dpctl_sycl_event_interface.h":
         size_t index)
     cdef DPCTLEventVectorRef DPCTLEvent_GetWaitList(
         DPCTLSyclEventRef ERef)
+    cdef uint64_t DPCTLEvent_GetProfilingInfoSubmit(DPCTLSyclEventRef ERef)
+    cdef uint64_t DPCTLEvent_GetProfilingInfoStart(DPCTLSyclEventRef ERef)
+    cdef uint64_t DPCTLEvent_GetProfilingInfoEnd(DPCTLSyclEventRef ERef)
 
 
 cdef extern from "dpctl_sycl_kernel_interface.h":
