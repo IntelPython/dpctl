@@ -104,6 +104,12 @@ cdef extern from "dpctl_sycl_enum_types.h":
         _L1_cache                           'L1_cache',
         _next_partitionable                 'next_partitionable',
 
+    ctypedef enum _event_status_type 'DPCTLSyclEventStatusType':
+        _UNKNOWN_STATUS     'DPCTL_UNKNOWN_STATUS'
+        _SUBMITTED          'DPCTL_SUBMITTED'
+        _RUNNING            'DPCTL_RUNNING'
+        _COMPLETE           'DPCTL_COMPLETE'
+
 
 cdef extern from "dpctl_sycl_types.h":
     cdef struct DPCTLOpaqueSyclContext
@@ -221,6 +227,7 @@ cdef extern from "dpctl_sycl_event_interface.h":
     cdef DPCTLSyclEventRef DPCTLEvent_Copy(const DPCTLSyclEventRef ERef)
     cdef void DPCTLEvent_Wait(DPCTLSyclEventRef ERef)
     cdef void DPCTLEvent_Delete(DPCTLSyclEventRef ERef)
+    cdef _event_status_type DPCTLEvent_GetCommandExecutionStatus(DPCTLSyclEventRef ERef)
 
 
 cdef extern from "dpctl_sycl_kernel_interface.h":

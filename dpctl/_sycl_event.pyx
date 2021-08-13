@@ -29,9 +29,13 @@ from ._backend cimport (  # noqa: E211
     DPCTLEvent_Copy,
     DPCTLEvent_Create,
     DPCTLEvent_Delete,
+    DPCTLEvent_GetCommandExecutionStatus,
     DPCTLEvent_Wait,
     DPCTLSyclEventRef,
+    _event_status_type,
 )
+
+from .enum_types import backend_type, event_status_type
 
 __all__ = [
     "SyclEvent",
@@ -209,3 +213,19 @@ cdef class SyclEventRaw(_SyclEventRaw):
             "SyclEventRef",
             &_event_capsule_deleter
         )
+
+    @property
+    def execution_status(self):
+        """ Returns the event status.
+        """
+        cdef _event_status_type ESTy = DPCTLEvent_GetCommandExecutionStatus(
+                                        self._event_ref
+        )
+        if ESTy == _event_status_type._SUBMITTED:
+            return event_status_type.submitted
+        elif ESTy == _event_status_type._RUNNING:
+            return event_status_type.running
+        elif ESTy == _event_status_type._COMPLETE:
+            return event_status_type.complete
+        else:
+            raise ValueError("Unknown event status.")
