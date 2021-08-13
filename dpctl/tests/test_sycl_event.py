@@ -23,6 +23,7 @@ import pytest
 import dpctl
 import dpctl.memory as dpctl_mem
 import dpctl.program as dpctl_prog
+from dpctl import event_status_type as esty
 
 from ._helper import has_cpu
 
@@ -70,3 +71,12 @@ def test_create_event_raw_from_capsule():
         dpctl.SyclEventRaw(event_capsule)
     except ValueError:
         pytest.fail("Failed to create an event from capsule")
+
+
+def test_execution_status():
+    event = dpctl.SyclEventRaw()
+    try:
+        event_status = event.execution_status
+    except ValueError:
+        pytest.fail("Failed to get an event status")
+    assert event_status == esty.complete

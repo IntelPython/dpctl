@@ -25,6 +25,7 @@ from enum import Enum, auto
 __all__ = [
     "device_type",
     "backend_type",
+    "event_status_type",
 ]
 
 
@@ -71,3 +72,11 @@ class backend_type(Enum):
     host = auto()
     level_zero = auto()
     opencl = auto()
+
+
+class event_status_type(Enum):
+
+    unknown_status = auto()
+    submitted = auto()
+    running = auto()
+    complete = auto()
