@@ -347,6 +347,12 @@ cdef extern from "dpctl_sycl_queue_interface.h":
         size_t Count,
         int Advice)
     cdef bool DPCTLQueue_IsInOrder(const DPCTLSyclQueueRef QRef)
+    cdef DPCTLSyclEventRef DPCTLQueue_SubmitBarrier(
+        const DPCTLSyclQueueRef QRef)
+    cdef DPCTLSyclEventRef DPCTLQueue_SubmitBarrierForEvents(
+        const DPCTLSyclQueueRef QRef,
+        const DPCTLSyclEventRef *DepEvents,
+        size_t NDepEvents)
 
 
 cdef extern from "dpctl_sycl_queue_manager.h":

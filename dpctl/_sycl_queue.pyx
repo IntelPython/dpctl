@@ -43,6 +43,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLQueue_MemAdvise,
     DPCTLQueue_Memcpy,
     DPCTLQueue_Prefetch,
+    DPCTLQueue_SubmitBarrierForEvents,
     DPCTLQueue_SubmitNDRange,
     DPCTLQueue_SubmitRange,
     DPCTLQueue_Wait,
@@ -63,6 +64,7 @@ from .enum_types import backend_type
 from cpython cimport pycapsule
 from libc.stdlib cimport free, malloc
 
+import collections.abc
 import logging
 
 __all__ = [
@@ -879,3 +881,40 @@ cdef class SyclQueue(_SyclQueue):
         return pycapsule.PyCapsule_New(
             <void *>QRef, "SyclQueueRef", &_queue_capsule_deleter
         )
+
+    cpdef SyclEvent submit_barrier(self, dependent_events=None):
+        """
+        Submits a barrier to the queue.
+        """
+        cdef DPCTLSyclEventRef *depEvents = NULL
+        cdef DPCTLSyclEventRef ERef = NULL
+        cdef size_t nDE = 0
+        # Create the array of dependent events if any
+        if (dependent_events is None or
+            (isinstance(dependent_events, collections.abc.Sequence) and
+             all([type(de) is SyclEvent for de in dependent_events]))):
+            nDE = 0 if dependent_events is None else len(dependent_events)
+        else:
+            raise TypeError(
+                "dependent_events must either None, or a sequence of "
+                ":class:`dpctl.SyclEvent` objects")
+        if nDE > 0:
+            depEvents = (
+                <DPCTLSyclEventRef*>malloc(nDE*sizeof(DPCTLSyclEventRef))
+            )
+            if not depEvents:
+                raise MemoryError()
+            else:
+                for idx, de in enumerate(dependent_events):
+                    depEvents[idx] = (<SyclEvent>de).get_event_ref()
+
+        ERef = DPCTLQueue_SubmitBarrierForEvents(
+            self.get_queue_ref(), depEvents, nDE)
+        if (depEvents is not NULL):
+            free(depEvents)
+        if ERef is NULL:
+            raise SyclKernelSubmitError(
+                "Barrier submission to Sycl queue failed."
+            )
+
+        return SyclEvent._create(ERef, [])
