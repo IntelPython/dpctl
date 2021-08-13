@@ -343,4 +343,32 @@ bool DPCTLQueue_IsInOrder(__dpctl_keep const DPCTLSyclQueueRef QRef);
 DPCTL_API
 size_t DPCTLQueue_Hash(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
+/*!
+ * @brief C-API wraper for ``sycl::queue::submit_barrier()``.
+ *
+ * @param    QRef    An opaque pointer to the ``sycl::queue``.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::submit_barrier()`` function.
+ */
+DPCTL_API
+DPCTLSyclEventRef
+DPCTLQueue_SubmitBarrier(__dpctl_keep const DPCTLSyclQueueRef QRef);
+
+/*!
+ * @brief C-API wraper for ``sycl::queue::submit_barrier(event_vector)``.
+ *
+ * @param    QRef    An opaque pointer to the ``sycl::queue``.
+ * @param    DepEvents     List of dependent DPCTLSyclEventRef objects (events)
+ *                         for the barrier. We call ``sycl::handler.depends_on``
+ *                         for each of the provided events.
+ * @param    NDepEvents    Size of the DepEvents list.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::submit_barrier()`` function.
+ */
+DPCTL_API
+DPCTLSyclEventRef DPCTLQueue_SubmitBarrierForEvents(
+    __dpctl_keep const DPCTLSyclQueueRef QRef,
+    __dpctl_keep const DPCTLSyclEventRef *DepEvents,
+    size_t NDepEvents);
+
 DPCTL_C_EXTERN_C_END

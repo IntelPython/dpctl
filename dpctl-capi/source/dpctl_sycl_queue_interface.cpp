@@ -533,3 +533,44 @@ size_t DPCTLQueue_Hash(__dpctl_keep const DPCTLSyclQueueRef QRef)
         return 0;
     }
 }
+
+__dpctl_give DPCTLSyclEventRef DPCTLQueue_SubmitBarrierForEvents(
+    __dpctl_keep const DPCTLSyclQueueRef QRef,
+    __dpctl_keep const DPCTLSyclEventRef *DepEvents,
+    size_t NDepEvents)
+{
+    auto Q = unwrap(QRef);
+    event e;
+    if (Q) {
+        try {
+            e = Q->submit([&](handler &cgh) {
+                // Depend on any event that was specified by the caller.
+                if (NDepEvents)
+                    for (auto i = 0ul; i < NDepEvents; ++i)
+                        cgh.depends_on(*unwrap(DepEvents[i]));
+
+                cgh.barrier();
+            });
+        } catch (runtime_error &re) {
+            // \todo fix error handling
+            std::cerr << re.what() << '\n';
+            return nullptr;
+        } catch (std::runtime_error &sre) {
+            std::cerr << sre.what() << '\n';
+            return nullptr;
+        }
+
+        return wrap(new event(e));
+    }
+    else {
+        // todo: log error
+        std::cerr << "Argument QRef is null" << '\n';
+        return nullptr;
+    }
+}
+
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_SubmitBarrier(__dpctl_keep const DPCTLSyclQueueRef QRef)
+{
+    return DPCTLQueue_SubmitBarrierForEvents(QRef, nullptr, 0);
+}

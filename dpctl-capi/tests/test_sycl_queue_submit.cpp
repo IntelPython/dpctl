@@ -356,4 +356,56 @@ TEST_F(TestQueueSubmitNDRange, ChkSubmitNDRangeDouble)
     EXPECT_TRUE(worked);
 }
 
+struct TestQueueSubmitBarrier : public ::testing::Test
+{
+    DPCTLSyclQueueRef QRef = nullptr;
+
+    TestQueueSubmitBarrier()
+    {
+        DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+        DPCTLSyclDeviceRef DRef = nullptr;
+
+        EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
+        EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+        EXPECT_NO_FATAL_FAILURE(QRef = DPCTLQueue_CreateForDevice(
+                                    DRef, nullptr, DPCTL_DEFAULT_PROPERTY));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+    }
+    ~TestQueueSubmitBarrier()
+    {
+        EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(QRef));
+    }
+};
+
+TEST_F(TestQueueSubmitBarrier, ChkSubmitBarrier)
+{
+    DPCTLSyclEventRef ERef = nullptr;
+
+    ASSERT_TRUE(QRef != nullptr);
+    EXPECT_NO_FATAL_FAILURE(ERef = DPCTLQueue_SubmitBarrier(QRef));
+    ASSERT_TRUE(ERef != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+}
+
+TEST_F(TestQueueSubmitBarrier, ChkSubmitBarrierWithEvents)
+{
+    DPCTLSyclEventRef ERef = nullptr;
+    DPCTLSyclEventRef DepsERefs[2] = {nullptr, nullptr};
+
+    EXPECT_NO_FATAL_FAILURE(DepsERefs[0] = DPCTLEvent_Create());
+    EXPECT_NO_FATAL_FAILURE(DepsERefs[1] = DPCTLEvent_Create());
+
+    ASSERT_TRUE(QRef != nullptr);
+    EXPECT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_SubmitBarrierForEvents(QRef, DepsERefs, 2));
+
+    ASSERT_TRUE(ERef != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Delete(DepsERefs[0]));
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Delete(DepsERefs[1]));
+}
+
 #endif
