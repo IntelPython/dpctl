@@ -39,6 +39,8 @@ def build_backend(
 
     if sycl_compiler_prefix is None:
         oneapi_root = os.getenv("ONEAPI_ROOT")
+        if oneapi_root is None:
+            raise ValueError("Environment variable ONEAPI_ROOT is not set")
         if IS_LIN:
             DPCPP_ROOT = os.path.join(oneapi_root, r"compiler/latest/linux")
         elif IS_WIN:
@@ -159,6 +161,8 @@ def build_backend(
     elif IS_WIN:
         if os.path.exists(os.path.join(DPCPP_ROOT, "bin", "dpcpp.exe")):
             cmake_compiler_args = [
+                "-DDPCTL_DPCPP_HOME_DIR=" + DPCPP_ROOT,
+                "-DDPCTL_DPCPP_FROM_ONEAPI=ON",
                 "-DCMAKE_C_COMPILER:PATH="
                 + os.path.join(DPCPP_ROOT, "bin", "clang-cl.exe"),
                 "-DCMAKE_CXX_COMPILER:PATH="
@@ -166,7 +170,8 @@ def build_backend(
             ]
         else:
             cmake_compiler_args = [
-                "-DDPCTL_CUSTOM_DPCPP_INSTALL_DIR=" + DPCPP_ROOT,
+                "-DDPCTL_DPCPP_HOME_DIR=" + DPCPP_ROOT,
+                "-DDPCTL_DPCPP_FROM_ONEAPI=OFF",
                 "-DCMAKE_C_COMPILER:PATH="
                 + os.path.join(DPCPP_ROOT, "bin", "clang-cl.exe"),
                 "-DCMAKE_CXX_COMPILER:PATH="
