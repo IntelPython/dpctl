@@ -229,6 +229,15 @@ cdef extern from "dpctl_sycl_event_interface.h":
     cdef void DPCTLEvent_Delete(DPCTLSyclEventRef ERef)
     cdef _event_status_type DPCTLEvent_GetCommandExecutionStatus(DPCTLSyclEventRef ERef)
     cdef _backend_type DPCTLEvent_GetBackend(DPCTLSyclEventRef ERef)
+    cdef struct DPCTLEventVector
+    ctypedef DPCTLEventVector *DPCTLEventVectorRef
+    cdef void DPCTLEventVector_Delete(DPCTLEventVectorRef EVRef)
+    cdef size_t DPCTLEventVector_Size(DPCTLEventVectorRef EVRef)
+    cdef DPCTLSyclEventRef DPCTLEventVector_GetAt(
+        DPCTLEventVectorRef EVRef,
+        size_t index)
+    cdef DPCTLEventVectorRef DPCTLEvent_GetWaitList(
+        DPCTLSyclEventRef ERef)
 
 
 cdef extern from "dpctl_sycl_kernel_interface.h":
