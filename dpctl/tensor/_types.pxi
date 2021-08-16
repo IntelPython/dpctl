@@ -119,6 +119,19 @@ cdef int typenum_from_format(str s) except *:
         raise TypeError("Format '" + s + "' can only have native byteorder.")
     return dt.num
 
+cdef int descr_to_typenum(object dtype):
+    "Returns typenum for argumentd dtype that has attribute descr, assumed numpy.dtype"
+    obj = getattr(dtype, 'descr')
+    if (not isinstance(obj, list) or len(obj) != 1):
+        return -1
+    obj = obj[0]
+    if (not isinstance(obj, tuple) or len(obj) != 2 or obj[0]):
+        return -1
+    obj = obj[1]
+    if not isinstance(obj, str):
+        return -1
+    return typenum_from_format(obj)
+
 
 cdef int dtype_to_typenum(dtype) except *:
     if isinstance(dtype, str):
@@ -126,15 +139,13 @@ cdef int dtype_to_typenum(dtype) except *:
     elif isinstance(dtype, bytes):
         return typenum_from_format(dtype.decode("UTF-8"))
     elif hasattr(dtype, 'descr'):
-        obj = getattr(dtype, 'descr')
-        if (not isinstance(obj, list) or len(obj) != 1):
-            return -1
-        obj = obj[0]
-        if (not isinstance(obj, tuple) or len(obj) != 2 or obj[0]):
-            return -1
-        obj = obj[1]
-        if not isinstance(obj, str):
-            return -1
-        return typenum_from_format(obj)
+        return descr_to_typenum(dtype)
     else:
-        return -1
+        try:
+            dt = np.dtype(dtype)
+            if hasattr(dt, 'descr'):
+                return descr_to_typenum(dt)
+            else:
+                return -1
+        except Exception:
+            return -1
