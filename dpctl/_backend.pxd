@@ -228,6 +228,7 @@ cdef extern from "dpctl_sycl_event_interface.h":
     cdef void DPCTLEvent_Wait(DPCTLSyclEventRef ERef)
     cdef void DPCTLEvent_Delete(DPCTLSyclEventRef ERef)
     cdef _event_status_type DPCTLEvent_GetCommandExecutionStatus(DPCTLSyclEventRef ERef)
+    cdef _backend_type DPCTLEvent_GetBackend(DPCTLSyclEventRef ERef)
 
 
 cdef extern from "dpctl_sycl_kernel_interface.h":

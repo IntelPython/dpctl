@@ -29,9 +29,11 @@ from ._backend cimport (  # noqa: E211
     DPCTLEvent_Copy,
     DPCTLEvent_Create,
     DPCTLEvent_Delete,
+    DPCTLEvent_GetBackend,
     DPCTLEvent_GetCommandExecutionStatus,
     DPCTLEvent_Wait,
     DPCTLSyclEventRef,
+    _backend_type,
     _event_status_type,
 )
 
@@ -229,3 +231,19 @@ cdef class SyclEventRaw(_SyclEventRaw):
             return event_status_type.complete
         else:
             raise ValueError("Unknown event status.")
+
+    @property
+    def backend(self):
+        """ Returns the Sycl backend associated with the event.
+        """
+        cdef _backend_type BE = DPCTLEvent_GetBackend(self._event_ref)
+        if BE == _backend_type._OPENCL:
+            return backend_type.opencl
+        elif BE == _backend_type._LEVEL_ZERO:
+            return backend_type.level_zero
+        elif BE == _backend_type._HOST:
+            return backend_type.host
+        elif BE == _backend_type._CUDA:
+            return backend_type.cuda
+        else:
+            raise ValueError("Unknown backend type.")
