@@ -31,7 +31,12 @@ from ._backend cimport (  # noqa: E211
     DPCTLEvent_Delete,
     DPCTLEvent_GetBackend,
     DPCTLEvent_GetCommandExecutionStatus,
+    DPCTLEvent_GetWaitList,
     DPCTLEvent_Wait,
+    DPCTLEventVector_Delete,
+    DPCTLEventVector_GetAt,
+    DPCTLEventVector_Size,
+    DPCTLEventVectorRef,
     DPCTLSyclEventRef,
     _backend_type,
     _event_status_type,
@@ -240,3 +245,20 @@ cdef class SyclEventRaw(_SyclEventRaw):
             return backend_type.cuda
         else:
             raise ValueError("Unknown backend type.")
+
+    def get_wait_list(self):
+        cdef DPCTLEventVectorRef EVRef = DPCTLEvent_GetWaitList(
+            self.get_event_ref()
+        )
+        cdef size_t num_events
+        cdef size_t i
+        cdef DPCTLSyclEventRef ERef
+        if (EVRef is NULL):
+            raise ValueError("Internal error: NULL event vector encountered")
+        num_events = DPCTLEventVector_Size(EVRef)
+        events = []
+        for i in range(num_events):
+            ERef = DPCTLEventVector_GetAt(EVRef, i)
+            events.append(SyclEventRaw._create(ERef))
+        DPCTLEventVector_Delete(EVRef)
+        return events

@@ -87,3 +87,50 @@ def test_backend():
         dpctl.SyclEventRaw().backend
     except ValueError:
         pytest.fail("Failed to get backend from event")
+
+
+@pytest.mark.skip(reason="event::get_wait_list() method returns wrong result")
+def test_get_wait_list():
+    if has_cpu():
+        oclSrc = "                                                             \
+            kernel void add_k(global float* a) {                               \
+                size_t index = get_global_id(0);                               \
+                a[index] = a[index] + 1;                                       \
+            }                                                                  \
+            kernel void sqrt_k(global float* a) {                              \
+                size_t index = get_global_id(0);                               \
+                a[index] = sqrt(a[index]);                                     \
+            }                                                                  \
+            kernel void sin_k(global float* a) {                               \
+                size_t index = get_global_id(0);                               \
+                a[index] = sin(a[index]);                                      \
+            }"
+        q = dpctl.SyclQueue("opencl:cpu")
+        prog = dpctl_prog.create_program_from_source(q, oclSrc)
+        addKernel = prog.get_sycl_kernel("add_k")
+        sqrtKernel = prog.get_sycl_kernel("sqrt_k")
+        sinKernel = prog.get_sycl_kernel("sin_k")
+
+        bufBytes = 1024 * np.dtype("f").itemsize
+        abuf = dpctl_mem.MemoryUSMShared(bufBytes, queue=q)
+        a = np.ndarray((1024), buffer=abuf, dtype="f")
+        a[:] = np.arange(1024)
+        args = []
+
+        args.append(a.base)
+        r = [1024]
+        ev_1 = q.submit(addKernel, args, r)
+        ev_2 = q.submit(sqrtKernel, args, r, dEvents=[ev_1])
+        ev_3 = q.submit(sinKernel, args, r, dEvents=[ev_2])
+
+        ev_raw = dpctl.SyclEventRaw(ev_3)
+
+        try:
+            wait_list = ev_raw.get_wait_list()
+        except ValueError:
+            pytest.fail(
+                "Failed to get a list of waiting events from SyclEventRaw"
+            )
+        assert len(wait_list)
+    else:
+        pytest.skip("No OpenCL CPU queues available")
