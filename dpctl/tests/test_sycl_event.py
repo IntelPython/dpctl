@@ -80,3 +80,10 @@ def test_execution_status():
     except ValueError:
         pytest.fail("Failed to get an event status")
     assert event_status == esty.complete
+
+
+def test_backend():
+    try:
+        dpctl.SyclEventRaw().backend
+    except ValueError:
+        pytest.fail("Failed to get backend from event")
