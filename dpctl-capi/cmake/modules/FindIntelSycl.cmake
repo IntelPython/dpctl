@@ -49,7 +49,7 @@ elseif(DEFINED ENV{ONEAPI_ROOT})
         message(FATAL_ERROR "Unsupported system.")
     endif()
 else()
-    message(FATAL_ERROR,
+    message(FATAL_ERROR
         "Could not locate a DPC++ installation. Either pass the path to a "
         "custom location using DPCTL_DPCPP_HOME_DIR or set the "
         " ONEAPI_ROOT environment variable."
@@ -95,11 +95,11 @@ if(${clangxx_result} MATCHES "0")
     set(IntelSycl_SYCL_INCLUDE_DIR ${IntelSycl_ROOT}/include/sycl)
     set(IntelSycl_LIBRARY_DIR ${IntelSycl_ROOT}/lib)
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        set(IntelSycl_SYCL_LIBRARY ${IntelSycl_ROOT}/lib/sycl.lib)
-        set(IntelSycl_OPENCL_LIBRARY ${IntelSycl_ROOT}/lib/OpenCL.lib)
+        set(IntelSycl_SYCL_LIBRARY ${IntelSycl_LIBRARY_DIR}/sycl.lib)
+        set(IntelSycl_OPENCL_LIBRARY ${IntelSycl_LIBRARY_DIR}/OpenCL.lib)
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-        set(IntelSycl_SYCL_LIBRARY ${IntelSycl_ROOT}/lib/libsycl.so)
-        set(IntelSycl_OPENCL_LIBRARY ${IntelSycl_ROOT}/lib/libOpenCL.so)
+        set(IntelSycl_SYCL_LIBRARY ${IntelSycl_LIBRARY_DIR}/libsycl.so)
+        set(IntelSycl_OPENCL_LIBRARY ${IntelSycl_LIBRARY_DIR}/libOpenCL.so)
     endif()
 
 endif()
