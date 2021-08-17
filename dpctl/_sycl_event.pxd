@@ -42,8 +42,6 @@ cdef class _SyclEventRaw:
 cdef public class SyclEventRaw(_SyclEventRaw) [object PySyclEventRawObject, type PySyclEventRawType]:
     @staticmethod
     cdef SyclEventRaw _create (DPCTLSyclEventRef event)
-    @staticmethod
-    cdef void _init_helper(_SyclEventRaw event, DPCTLSyclEventRef ERef)
     cdef int _init_event_default(self)
     cdef int _init_event_from__SyclEventRaw(self, _SyclEventRaw other)
     cdef int _init_event_from_SyclEvent(self, SyclEvent event)
