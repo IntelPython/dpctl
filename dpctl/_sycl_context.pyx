@@ -65,6 +65,11 @@ cdef void _context_capsule_deleter(object o):
         DPCTLContext_Delete(CRef)
 
 
+cdef void _init_helper(_SyclContext context, DPCTLSyclContextRef CRef):
+    "Populate context attributes from opaque reference CRef"
+    context._ctxt_ref = CRef
+
+
 cdef class _SyclContext:
     """ Data owner for SyclContext
     """
@@ -157,11 +162,6 @@ cdef class SyclContext(_SyclContext):
                    be renamed.
 
     """
-
-    @staticmethod
-    cdef void _init_helper(_SyclContext context, DPCTLSyclContextRef CRef):
-        context._ctxt_ref = CRef
-
     @staticmethod
     cdef SyclContext _create(DPCTLSyclContextRef ctxt):
         """
@@ -170,7 +170,7 @@ cdef class SyclContext(_SyclContext):
         Users should pass a copy if they intend to keep the argument ctxt alive.
         """
         cdef _SyclContext ret = <_SyclContext>_SyclContext.__new__(_SyclContext)
-        SyclContext._init_helper(ret, ctxt)
+        _init_helper(ret, ctxt)
         return SyclContext(ret)
 
     cdef int _init_context_from__SyclContext(self, _SyclContext other):
@@ -191,7 +191,7 @@ cdef class SyclContext(_SyclContext):
             CRef = DPCTLContext_Create(DRef, eh_callback, props)
             if (CRef is NULL):
                 return -1
-        SyclContext._init_helper(<_SyclContext> self, CRef)
+        _init_helper(<_SyclContext> self, CRef)
         return 0
 
     cdef int _init_context_from_devices(self, object devices, int props):
@@ -231,7 +231,7 @@ cdef class SyclContext(_SyclContext):
         DPCTLDeviceVector_Delete(DVRef)
         if (CRef is NULL):
             return -1
-        SyclContext._init_helper(<_SyclContext> self, CRef)
+        _init_helper(<_SyclContext> self, CRef)
         return 0
 
     cdef int _init_context_from_capsule(self, object cap):

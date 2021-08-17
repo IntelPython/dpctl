@@ -38,8 +38,6 @@ cdef public class SyclContext(_SyclContext) [object PySyclContextObject, type Py
 
     @staticmethod
     cdef SyclContext _create (DPCTLSyclContextRef CRef)
-    @staticmethod
-    cdef void _init_helper(_SyclContext self, DPCTLSyclContextRef CRef)
     cdef int _init_context_from__SyclContext(self, _SyclContext other)
     cdef int _init_context_from_one_device(self, SyclDevice device, int props)
     cdef int _init_context_from_devices(self, object devices, int props)
