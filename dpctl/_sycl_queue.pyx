@@ -864,11 +864,17 @@ cdef class SyclQueue(_SyclQueue):
 
     def __repr__(self):
         cdef cpp_bool in_order = DPCTLQueue_IsInOrder(self._queue_ref)
-        if in_order:
+        cdef cpp_bool en_prof = DPCTLQueue_HasEnableProfiling(self._queue_ref)
+        if in_order or en_prof:
+            prop = []
+            if in_order:
+                prop.append("in_order")
+            if en_prof:
+                prop.append("enable_profiling")
             return (
                 "<dpctl."
                 + self.__name__
-                + " at {}, property=in_order>".format(hex(id(self)))
+                + " at {}, property={}>".format(hex(id(self)), prop)
             )
         else:
             return "<dpctl." + self.__name__ + " at {}>".format(hex(id(self)))
