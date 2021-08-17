@@ -46,5 +46,5 @@ cdef public class SyclEventRaw(_SyclEventRaw) [object PySyclEventRawObject, type
     cdef int _init_event_from__SyclEventRaw(self, _SyclEventRaw other)
     cdef int _init_event_from_SyclEvent(self, SyclEvent event)
     cdef int _init_event_from_capsule(self, object caps)
-    cdef  DPCTLSyclEventRef get_event_ref (self)
-    cpdef void wait (self)
+    cdef DPCTLSyclEventRef get_event_ref (self)
+    cdef void _wait (SyclEventRaw event)
