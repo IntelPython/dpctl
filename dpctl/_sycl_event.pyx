@@ -93,6 +93,8 @@ cdef void _event_capsule_deleter(object o):
         )
         DPCTLEvent_Delete(ERef)
 
+cdef void _init_helper(_SyclEventRaw event, DPCTLSyclEventRef ERef):
+    event._event_ref = ERef
 
 cdef class _SyclEventRaw:
     """ Python wrapper class for a ``cl::sycl::event``.
@@ -107,13 +109,9 @@ cdef class SyclEventRaw(_SyclEventRaw):
     """
 
     @staticmethod
-    cdef void _init_helper(_SyclEventRaw event, DPCTLSyclEventRef ERef):
-        event._event_ref = ERef
-
-    @staticmethod
     cdef SyclEventRaw _create(DPCTLSyclEventRef eref):
         cdef _SyclEventRaw ret = _SyclEventRaw.__new__(_SyclEventRaw)
-        SyclEventRaw._init_helper(ret, eref)
+        _init_helper(ret, eref)
         return SyclEventRaw(ret)
 
     cdef int _init_event_default(self):
