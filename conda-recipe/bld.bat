@@ -1,6 +1,7 @@
 
 REM A workaround for activate-dpcpp.bat issue to be addressed in 2021.4
-set "LIB=%CONDA_PREFIX%\Library\lib;%CONDA_PREFIX%\compiler\lib;%LIB%"
+set "LIB=%BUILD_PREFIX%\Library\lib;%BUILD_PREFIX%\compiler\lib;%LIB%"
+set "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
 
 "%PYTHON%" setup.py clean --all
 "%PYTHON%" setup.py install --sycl-compiler-prefix=%BUILD_PREFIX%\Library
