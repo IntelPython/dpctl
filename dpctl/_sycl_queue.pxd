@@ -81,3 +81,4 @@ cdef public class SyclQueue (_SyclQueue) [object PySyclQueueObject, type PySyclQ
     cpdef memcpy(self, dest, src, size_t count)
     cpdef prefetch(self, ptr, size_t count=*)
     cpdef mem_advise(self, ptr, size_t count, int mem)
+    cpdef SyclEvent submit_barrier(self, dependent_events=*)

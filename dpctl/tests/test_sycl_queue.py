@@ -381,3 +381,16 @@ def test_hashing_of_queue():
     """
     queue_dict = {dpctl.SyclQueue(): "default_queue"}
     assert queue_dict
+
+
+def test_queue_submit_barrier(valid_filter):
+    try:
+        q = dpctl.SyclQueue(valid_filter)
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Failed to create device with supported filter")
+    ev1 = q.submit_barrier()
+    ev2 = q.submit_barrier()
+    ev3 = q.submit_barrier([ev1, ev2])
+    ev3.wait()
+    ev1.wait()
+    ev2.wait()
