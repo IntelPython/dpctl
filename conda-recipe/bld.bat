@@ -3,7 +3,7 @@ REM A workaround for activate-dpcpp.bat issue to be addressed in 2021.4
 set "LIB=%CONDA_PREFIX%\Library\lib;%CONDA_PREFIX%\compiler\lib;%LIB%"
 
 "%PYTHON%" setup.py clean --all
-"%PYTHON%" setup.py install --sycl-compiler-prefix=%CONDA_PREFIX%\Library
+"%PYTHON%" setup.py install --sycl-compiler-prefix=%BUILD_PREFIX%\Library
 if errorlevel 1 exit 1
 
 rem Build wheel package
