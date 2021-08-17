@@ -334,6 +334,17 @@ DPCTL_API
 bool DPCTLQueue_IsInOrder(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
+ * @brief C-API wrapper for
+ * sycl::queue::has_property<sycl::property::queue::enable_profiling>() that
+ * indicates whether the referenced queue was constructed with this property.
+ *
+ * @param    QRef         An opaque pointer to the ``sycl::queue``.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+bool DPCTLQueue_HasEnableProfiling(__dpctl_keep const DPCTLSyclQueueRef QRef);
+
+/*!
  * @brief C-API wrapper for std::hash<sycl::queue>'s operator().
  *
  * @param    QRef         An opaque pointer to the ``sycl::queue``.

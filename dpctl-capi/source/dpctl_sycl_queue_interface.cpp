@@ -520,6 +520,16 @@ bool DPCTLQueue_IsInOrder(__dpctl_keep const DPCTLSyclQueueRef QRef)
         return false;
 }
 
+bool DPCTLQueue_HasEnableProfiling(__dpctl_keep const DPCTLSyclQueueRef QRef)
+{
+    auto Q = unwrap(QRef);
+    if (Q) {
+        return Q->has_property<sycl::property::queue::enable_profiling>();
+    }
+    else
+        return false;
+}
+
 size_t DPCTLQueue_Hash(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     auto Q = unwrap(QRef);

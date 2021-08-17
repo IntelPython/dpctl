@@ -115,7 +115,7 @@ TEST(TestDPCTLSyclQueueInterface, CheckCopy)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST(TestDPCTLSyclQueueInterface, CheckCopy_Invalid)
+TEST(TestDPCTLSyclQueueInterface, CheckCopyInvalid)
 {
     DPCTLSyclQueueRef Q1 = nullptr;
     DPCTLSyclQueueRef Q2 = nullptr;
@@ -125,7 +125,7 @@ TEST(TestDPCTLSyclQueueInterface, CheckCopy_Invalid)
     EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q2));
 }
 
-TEST(TestDPCTLSyclQueueInterface, CheckAreEq_False)
+TEST(TestDPCTLSyclQueueInterface, CheckAreEqFalse)
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
     DPCTLSyclDeviceRef DRef = nullptr;
@@ -152,7 +152,7 @@ TEST(TestDPCTLSyclQueueInterface, CheckAreEq_False)
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
 }
 
-TEST(TestDPCTLSyclQueueInterface, CheckAreEq_True)
+TEST(TestDPCTLSyclQueueInterface, CheckAreEqTrue)
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
     DPCTLSyclDeviceRef DRef = nullptr;
@@ -172,7 +172,7 @@ TEST(TestDPCTLSyclQueueInterface, CheckAreEq_True)
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
 }
 
-TEST(TestDPCTLSyclQueueInterface, CheckAreEq_Invalid)
+TEST(TestDPCTLSyclQueueInterface, CheckAreEqInvalid)
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
     DPCTLSyclDeviceRef DRef = nullptr;
@@ -192,7 +192,7 @@ TEST(TestDPCTLSyclQueueInterface, CheckAreEq_Invalid)
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
 }
 
-TEST(TestDPCTLSyclQueueInterface, CheckHash_Invalid)
+TEST(TestDPCTLSyclQueueInterface, CheckHashInvalid)
 {
     DPCTLSyclQueueRef Q1 = nullptr;
     DPCTLSyclQueueRef Q2 = nullptr;
@@ -200,7 +200,7 @@ TEST(TestDPCTLSyclQueueInterface, CheckHash_Invalid)
     EXPECT_TRUE(DPCTLQueue_Hash(Q2) == 0);
 }
 
-TEST(TestDPCTLSyclQueueInterface, CheckGetBackend_Invalid)
+TEST(TestDPCTLSyclQueueInterface, CheckGetBackendInvalid)
 {
     DPCTLSyclQueueRef Q = nullptr;
     DPCTLSyclBackendType Bty = DPCTL_UNKNOWN_BACKEND;
@@ -208,7 +208,7 @@ TEST(TestDPCTLSyclQueueInterface, CheckGetBackend_Invalid)
     EXPECT_TRUE(Bty == DPCTL_UNKNOWN_BACKEND);
 }
 
-TEST(TestDPCTLSyclQueueInterface, CheckGetContext_Invalid)
+TEST(TestDPCTLSyclQueueInterface, CheckGetContextInvalid)
 {
     DPCTLSyclQueueRef Q = nullptr;
     DPCTLSyclContextRef CRef = nullptr;
@@ -216,7 +216,7 @@ TEST(TestDPCTLSyclQueueInterface, CheckGetContext_Invalid)
     EXPECT_TRUE(CRef == nullptr);
 }
 
-TEST(TestDPCTLSyclQueueInterface, CheckGetDevice_Invalid)
+TEST(TestDPCTLSyclQueueInterface, CheckGetDeviceInvalid)
 {
     DPCTLSyclQueueRef Q = nullptr;
     DPCTLSyclDeviceRef DRef = nullptr;
@@ -250,11 +250,45 @@ TEST(TestDPCTLSyclQueueInterface, CheckIsInOrder)
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
 }
 
-TEST(TestDPCTLSyclQueueInterface, CheckIsInOrder_Invalid)
+TEST(TestDPCTLSyclQueueInterface, CheckIsInOrderInvalid)
 {
     bool ioq = true;
     DPCTLSyclQueueRef Q1 = nullptr;
     EXPECT_NO_FATAL_FAILURE(ioq = DPCTLQueue_IsInOrder(Q1));
+    EXPECT_FALSE(ioq);
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckHasEnableProfiling)
+{
+    bool ioq = true;
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclQueueRef Q1 = nullptr;
+    DPCTLSyclQueueRef Q2 = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    EXPECT_NO_FATAL_FAILURE(
+        Q1 = DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY));
+    EXPECT_NO_FATAL_FAILURE(ioq = DPCTLQueue_HasEnableProfiling(Q1));
+    EXPECT_FALSE(ioq);
+
+    EXPECT_NO_FATAL_FAILURE(
+        Q2 = DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_ENABLE_PROFILING));
+    EXPECT_NO_FATAL_FAILURE(ioq = DPCTLQueue_HasEnableProfiling(Q2));
+    EXPECT_TRUE(ioq);
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q1));
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(Q2));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckHasEnableProfilingInvalid)
+{
+    bool ioq = true;
+    DPCTLSyclQueueRef Q1 = nullptr;
+    EXPECT_NO_FATAL_FAILURE(ioq = DPCTLQueue_HasEnableProfiling(Q1));
     EXPECT_FALSE(ioq);
 }
 
