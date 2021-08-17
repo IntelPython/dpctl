@@ -38,6 +38,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLQueue_GetBackend,
     DPCTLQueue_GetContext,
     DPCTLQueue_GetDevice,
+    DPCTLQueue_HasEnableProfiling,
     DPCTLQueue_Hash,
     DPCTLQueue_IsInOrder,
     DPCTLQueue_MemAdvise,
@@ -850,6 +851,12 @@ cdef class SyclQueue(_SyclQueue):
     def is_in_order(self):
         """True if SyclQueue is in-order, False if it is out-of-order."""
         return DPCTLQueue_IsInOrder(self._queue_ref)
+
+    @property
+    def has_enable_profiling(self):
+        """True if SyclQueue was constructed with enabled_profiling property,
+        False otherwise."""
+        return DPCTLQueue_HasEnableProfiling(self._queue_ref)
 
     @property
     def __name__(self):

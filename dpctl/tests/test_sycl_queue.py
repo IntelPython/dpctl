@@ -373,6 +373,14 @@ def test_context_equals():
     assert hash(ctx0) == hash(ctx1)
 
 
+def test_has_enable_profiling():
+    try:
+        q = dpctl.SyclQueue(property="enable_profiling")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip()
+    assert q.has_enable_profiling
+
+
 def test_hashing_of_queue():
     """
     Test that a :class:`dpctl.SyclQueue` object can be used as
