@@ -26,13 +26,19 @@ from ._backend cimport DPCTLSyclContextRef
 from ._sycl_device cimport SyclDevice
 
 
-cdef class _SyclContext:
+cdef public class _SyclContext [
+    object Py_SyclContextObject,
+    type Py_SyclContextType
+]:
     """ Data owner for SyclContext
     """
     cdef DPCTLSyclContextRef _ctxt_ref
 
 
-cdef public class SyclContext(_SyclContext) [object PySyclContextObject, type PySyclContextType]:
+cdef public class SyclContext(_SyclContext) [
+    object PySyclContextObject,
+    type PySyclContextType
+]:
     ''' Wrapper class for a Sycl Context
     '''
 

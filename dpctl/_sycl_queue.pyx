@@ -918,3 +918,10 @@ cdef class SyclQueue(_SyclQueue):
             )
 
         return SyclEvent._create(ERef, [])
+
+cdef public DPCTLSyclQueueRef get_queue_ref(SyclQueue q):
+    """
+    C-API function to get opaque queue reference from
+    :class:`dpctl.SyclQueue` instance.
+    """
+    return q.get_queue_ref()
