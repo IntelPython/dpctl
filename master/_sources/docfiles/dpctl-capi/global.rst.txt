@@ -527,6 +527,16 @@ Overview
 		);
 
 	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	:ref:`DPCTLQueue_SubmitBarrier<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a510589397113e5964a91d01344fa1d3d>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+
+	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	:ref:`DPCTLQueue_SubmitBarrierForEvents<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a24bbfc173063bea832c7040586067136>`(
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		__dpctl_keep const :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`* DepEvents,
+		size_t NDepEvents
+		);
+
+	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
 	:ref:`DPCTLQueue_SubmitNDRange<doxid-d9/db1/group__QueueInterface_1gaac9356153363bb89ade3116816fca94b>`(
 		__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef,
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
@@ -1191,4 +1201,76 @@ Returns the number of elements in the vector.
 .. rubric:: Returns:
 
 The current size of the vector.
+
+.. index:: pair: function; DPCTLQueue_SubmitBarrier
+.. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1a510589397113e5964a91d01344fa1d3d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	DPCTLQueue_SubmitBarrier(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
+
+C-API wraper for ``sycl::queue::submit_barrier()``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to the ``sycl::queue``.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::submit_barrier()`` function.
+
+.. index:: pair: function; DPCTLQueue_SubmitBarrierForEvents
+.. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1a24bbfc173063bea832c7040586067136:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	DPCTLQueue_SubmitBarrierForEvents(
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		__dpctl_keep const :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`* DepEvents,
+		size_t NDepEvents
+		)
+
+C-API wraper for ``sycl::queue::submit_barrier(event_vector)``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to the ``sycl::queue``.
+
+	*
+		- DepEvents
+
+		- List of dependent DPCTLSyclEventRef objects (events) for the barrier. We call ``sycl::handler.depends_on`` for each of the provided events.
+
+	*
+		- NDepEvents
+
+		- Size of the DepEvents list.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::submit_barrier()`` function.
 
