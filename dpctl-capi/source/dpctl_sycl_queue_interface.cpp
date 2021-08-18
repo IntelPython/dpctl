@@ -119,8 +119,11 @@ bool set_kernel_arg(handler &cgh,
 std::unique_ptr<property_list> create_property_list(int properties)
 {
     std::unique_ptr<property_list> propList;
-    if (properties & DPCTL_ENABLE_PROFILING) {
-        if (properties & DPCTL_IN_ORDER) {
+    int _prop = properties;
+    if (_prop & DPCTL_ENABLE_PROFILING) {
+        _prop = _prop ^ DPCTL_ENABLE_PROFILING;
+        if (_prop & DPCTL_IN_ORDER) {
+            _prop = _prop ^ DPCTL_IN_ORDER;
             propList = std::make_unique<property_list>(
                 sycl::property::queue::enable_profiling(),
                 sycl::property::queue::in_order());
@@ -130,11 +133,18 @@ std::unique_ptr<property_list> create_property_list(int properties)
                 sycl::property::queue::enable_profiling());
         }
     }
-    else if (properties & DPCTL_IN_ORDER) {
+    else if (_prop & DPCTL_IN_ORDER) {
+        _prop = _prop ^ DPCTL_IN_ORDER;
         propList =
             std::make_unique<property_list>(sycl::property::queue::in_order());
     }
 
+    if (_prop) {
+        // todo: log error
+        std::cerr << "Invalid queue property argument (" << std::hex
+                  << properties << "), interpreted as (" << (properties ^ _prop)
+                  << ")" << '\n';
+    }
     return propList;
 }
 
