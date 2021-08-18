@@ -932,6 +932,43 @@ cdef class SyclQueue(_SyclQueue):
 
         return SyclEvent._create(ERef, [])
 
+    @property
+    def backend(self):
+        """Returns the backend_type enum value for the device
+        associated with this queue.
+
+        Returns:
+            backend_type: The backend for the device.
+        """
+        return self.sycl_device.backend
+
+    @property
+    def name(self):
+        """Returns the device name for the device
+        associated with this queue.
+
+        Returns:
+            str: The name of the device as a string.
+        """
+        return self.sycl_device.name
+
+    @property
+    def driver_version(self):
+        """Returns the driver version for the device
+        associated with this queue.
+
+        Returns:
+            str: The driver version of the device as a string.
+        """
+        return self.sycl_device.driver_version
+
+    def print_device_info(self):
+        """ Print information about the SYCL device
+        associated with this queue.
+        """
+        self.sycl_device.print_device_info()
+
+
 cdef public DPCTLSyclQueueRef get_queue_ref(SyclQueue q):
     """
     C-API function to get opaque queue reference from
