@@ -55,6 +55,9 @@ Overview
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
 	:ref:`DPCTLQueue_GetDevice<doxid-d9/db1/group__QueueInterface_1ga44095b28dfb5c357e6c065749e9aa8c0>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
+	DPCTL_API bool
+	:ref:`DPCTLQueue_HasEnableProfiling<doxid-d9/db1/group__QueueInterface_1ga348ae09783aa4defd1eb864eb04418a2>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+
 	DPCTL_API size_t
 	:ref:`DPCTLQueue_Hash<doxid-d9/db1/group__QueueInterface_1ga17f54699da3f3ab226cf8e3c9c57a7dc>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
@@ -403,6 +406,29 @@ returns the Sycl device for the queue.
 .. rubric:: Returns:
 
 A DPCTLSyclDeviceRef pointer to the sycl device for the queue.
+
+.. index:: pair: function; DPCTLQueue_HasEnableProfiling
+.. _doxid-d9/db1/group__QueueInterface_1ga348ae09783aa4defd1eb864eb04418a2:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLQueue_HasEnableProfiling(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
+
+C-API wrapper for sycl::queue::has_property<sycl::property::queue::enable_profiling>() that indicates whether the referenced queue was constructed with this property.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to the ``sycl::queue``.
 
 .. index:: pair: function; DPCTLQueue_Hash
 .. _doxid-d9/db1/group__QueueInterface_1ga17f54699da3f3ab226cf8e3c9c57a7dc:
