@@ -38,6 +38,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLQueue_GetBackend,
     DPCTLQueue_GetContext,
     DPCTLQueue_GetDevice,
+    DPCTLQueue_HasEnableProfiling,
     DPCTLQueue_Hash,
     DPCTLQueue_IsInOrder,
     DPCTLQueue_MemAdvise,
@@ -852,16 +853,28 @@ cdef class SyclQueue(_SyclQueue):
         return DPCTLQueue_IsInOrder(self._queue_ref)
 
     @property
+    def has_enable_profiling(self):
+        """True if SyclQueue was constructed with enabled_profiling property,
+        False otherwise."""
+        return DPCTLQueue_HasEnableProfiling(self._queue_ref)
+
+    @property
     def __name__(self):
         return "SyclQueue"
 
     def __repr__(self):
         cdef cpp_bool in_order = DPCTLQueue_IsInOrder(self._queue_ref)
-        if in_order:
+        cdef cpp_bool en_prof = DPCTLQueue_HasEnableProfiling(self._queue_ref)
+        if in_order or en_prof:
+            prop = []
+            if in_order:
+                prop.append("in_order")
+            if en_prof:
+                prop.append("enable_profiling")
             return (
                 "<dpctl."
                 + self.__name__
-                + " at {}, property=in_order>".format(hex(id(self)))
+                + " at {}, property={}>".format(hex(id(self)), prop)
             )
         else:
             return "<dpctl." + self.__name__ + " at {}>".format(hex(id(self)))
