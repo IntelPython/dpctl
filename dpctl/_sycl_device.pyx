@@ -162,6 +162,14 @@ cdef str _device_type_to_filter_string_part(_device_type DTy):
     else:
         return "unknown"
 
+cdef void _init_helper(_SyclDevice device, DPCTLSyclDeviceRef DRef):
+    "Populate attributes of device from opaque device reference DRef"
+    device._device_ref = DRef
+    device._name = DPCTLDevice_GetName(DRef)
+    device._driver_version = DPCTLDevice_GetDriverVersion(DRef)
+    device._vendor = DPCTLDevice_GetVendor(DRef)
+    device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes(DRef)
+
 
 cdef class SyclDevice(_SyclDevice):
     """ SyclDevice(arg=None)
@@ -204,14 +212,6 @@ cdef class SyclDevice(_SyclDevice):
 
     """
     @staticmethod
-    cdef void _init_helper(_SyclDevice device, DPCTLSyclDeviceRef DRef):
-        device._device_ref = DRef
-        device._name = DPCTLDevice_GetName(DRef)
-        device._driver_version = DPCTLDevice_GetDriverVersion(DRef)
-        device._vendor = DPCTLDevice_GetVendor(DRef)
-        device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes(DRef)
-
-    @staticmethod
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref):
         """
         This function calls DPCTLDevice_Delete(dref).
@@ -221,7 +221,7 @@ cdef class SyclDevice(_SyclDevice):
         """
         cdef _SyclDevice ret = _SyclDevice.__new__(_SyclDevice)
         # Initialize the attributes of the SyclDevice object
-        SyclDevice._init_helper(<_SyclDevice> ret, dref)
+        _init_helper(<_SyclDevice> ret, dref)
         # ret is a temporary, and _SyclDevice.__dealloc__ will delete dref
         return SyclDevice(ret)
 
@@ -245,7 +245,7 @@ cdef class SyclDevice(_SyclDevice):
         if DRef is NULL:
             return -1
         else:
-            SyclDevice._init_helper(self, DRef)
+            _init_helper(self, DRef)
             return 0
 
     def __cinit__(self, arg=None):

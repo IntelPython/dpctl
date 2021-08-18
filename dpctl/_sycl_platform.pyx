@@ -65,6 +65,14 @@ cdef class _SyclPlatform:
         DPCTLCString_Delete(self._version)
 
 
+cdef void _init_helper(_SyclPlatform platform, DPCTLSyclPlatformRef PRef):
+    "Populate attributes of class from opaque reference PRef"
+    platform._platform_ref = PRef
+    platform._name = DPCTLPlatform_GetName(PRef)
+    platform._version = DPCTLPlatform_GetVersion(PRef)
+    platform._vendor = DPCTLPlatform_GetVendor(PRef)
+
+
 cdef class SyclPlatform(_SyclPlatform):
     """ SyclPlatform(self, arg=None)
         Python class representing ``cl::sycl::platform`` class.
@@ -73,13 +81,6 @@ cdef class SyclPlatform(_SyclPlatform):
         SyclPlatform(filter_selector) - create platform selected by filter
         selector
     """
-    @staticmethod
-    cdef void _init_helper(_SyclPlatform platform, DPCTLSyclPlatformRef PRef):
-        platform._platform_ref = PRef
-        platform._name = DPCTLPlatform_GetName(PRef)
-        platform._version = DPCTLPlatform_GetVersion(PRef)
-        platform._vendor = DPCTLPlatform_GetVendor(PRef)
-
     @staticmethod
     cdef SyclPlatform _create(DPCTLSyclPlatformRef pref):
         """
@@ -90,7 +91,7 @@ cdef class SyclPlatform(_SyclPlatform):
         """
         cdef _SyclPlatform p = _SyclPlatform.__new__(_SyclPlatform)
         # Initialize the attributes of the SyclPlatform object
-        SyclPlatform._init_helper(<_SyclPlatform>p, pref)
+        _init_helper(<_SyclPlatform>p, pref)
         return SyclPlatform(p)
 
     cdef int _init_from__SyclPlatform(self, _SyclPlatform other):
@@ -114,7 +115,7 @@ cdef class SyclPlatform(_SyclPlatform):
         if PRef is NULL:
             return -1
         else:
-            SyclPlatform._init_helper(self, PRef)
+            _init_helper(self, PRef)
             return 0
 
     cdef DPCTLSyclPlatformRef get_platform_ref(self):
@@ -169,7 +170,7 @@ cdef class SyclPlatform(_SyclPlatform):
                     "Could not create a SyclPlatform from default selector"
                 )
             else:
-                SyclPlatform._init_helper(self, PRef)
+                _init_helper(self, PRef)
         else:
             raise ValueError(
                 "Invalid argument. Argument should be a str object specifying "

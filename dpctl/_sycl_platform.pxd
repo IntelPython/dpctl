@@ -36,8 +36,6 @@ cdef class _SyclPlatform:
 cdef class SyclPlatform(_SyclPlatform):
     @staticmethod
     cdef SyclPlatform _create(DPCTLSyclPlatformRef dref)
-    @staticmethod
-    cdef void _init_helper(_SyclPlatform platform, DPCTLSyclPlatformRef DRef)
     cdef int _init_from_cstring(self, const char *string)
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef)
     cdef int _init_from__SyclPlatform(self, _SyclPlatform other)
