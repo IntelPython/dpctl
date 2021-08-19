@@ -706,3 +706,13 @@ def as_usm_memory(obj):
             "USM allocation represented by argument {}".
             format(obj)
         )
+
+
+cdef public DPCTLSyclUSMRef get_usm_pointer(_Memory obj):
+    return obj.memory_ptr
+
+cdef public DPCTLSyclContextRef get_context(_Memory obj):
+    return obj.queue._context.get_context_ref()
+
+cdef public size_t get_nbytes(_Memory obj):
+    return <size_t>obj.nbytes
