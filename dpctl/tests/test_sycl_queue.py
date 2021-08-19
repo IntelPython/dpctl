@@ -391,6 +391,28 @@ def test_hashing_of_queue():
     assert queue_dict
 
 
+def test_channeling_device_properties():
+    try:
+        q = dpctl.SyclQueue()
+        dev = q.sycl_device
+    except dpctl.SyclQueueCreationError:
+        pytest.fail("Failed to create device from default selector")
+    import io
+    from contextlib import redirect_stdout
+
+    f1 = io.StringIO()
+    with redirect_stdout(f1):
+        q.print_device_info()  # should execute without raising
+    f2 = io.StringIO()
+    with redirect_stdout(f2):
+        dev.print_device_info()
+    assert f1.getvalue() == f2.getvalue(), "Mismatch in print_device_info"
+    for pr in ["backend", "name", "driver_version"]:
+        assert getattr(q, pr) == getattr(
+            dev, pr
+        ), "Mismatch found for property {}".format(pr)
+
+
 def test_queue_submit_barrier(valid_filter):
     try:
         q = dpctl.SyclQueue(valid_filter)
