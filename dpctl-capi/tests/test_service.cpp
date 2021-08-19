@@ -1,4 +1,4 @@
-//===--------- dpctl_config.h - Configured options for dpctl C API         ===//
+//===--- test_service.cpp - Test cases for sevice functions  ===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -19,14 +19,30 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file exports a set of dpctl C API configurations.
+/// This file has unit test cases for functions defined in
+/// dpctl_service.h.
 ///
 //===----------------------------------------------------------------------===//
 
-#pragma once
+#include "Config/dpctl_config.h"
+#include "dpctl_service.h"
+#include <gtest/gtest.h>
+#include <string>
 
-/* Defined when dpctl was built with level zero program creation enabled. */
-#cmakedefine DPCTL_ENABLE_LO_PROGRAM_CREATION @DPCTL_ENABLE_LO_PROGRAM_CREATION@
+#define ASSTR(a) TOSTR(a)
+#define TOSTR(a) #a
 
-/* The DPCPP version used to build dpctl */
-#define DPCTL_DPCPP_VERSION "@IntelSycl_VERSION@"
+TEST(TestServicesFns, ChkDPCPPVersion)
+{
+    auto c_ver = DPCTLService_GetDPCPPVersion();
+    std::string ver = std::string(c_ver);
+    ASSERT_TRUE(ver.length() > 0);
+
+    std::string ver_from_cmplr(ASSTR(__VERSION__));
+    std::size_t found = ver_from_cmplr.find(ver);
+
+    // version returned by DPCTLService_GetDPCPPVersion
+    // should occur as a substring in the version obtained
+    // from compiler
+    ASSERT_TRUE(found != std::string::npos);
+}

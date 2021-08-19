@@ -1,4 +1,4 @@
-//===--------- dpctl_config.h - Configured options for dpctl C API         ===//
+//===- dpctl_service.cpp - C API for service functions   -*-C++-*- ===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -19,14 +19,32 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file exports a set of dpctl C API configurations.
+/// This header defines dpctl service functions.
 ///
 //===----------------------------------------------------------------------===//
 
-#pragma once
+#include "dpctl_service.h"
+#include "Config/dpctl_config.h"
 
-/* Defined when dpctl was built with level zero program creation enabled. */
-#cmakedefine DPCTL_ENABLE_LO_PROGRAM_CREATION @DPCTL_ENABLE_LO_PROGRAM_CREATION@
+#include <algorithm>
+#include <cstring>
+#include <iostream>
 
-/* The DPCPP version used to build dpctl */
-#define DPCTL_DPCPP_VERSION "@IntelSycl_VERSION@"
+__dpctl_give const char *DPCTLService_GetDPCPPVersion(void)
+{
+    std::string version = DPCTL_DPCPP_VERSION;
+    char *version_cstr = nullptr;
+    try {
+        auto cstr_len = version.length() + 1;
+        version_cstr = new char[cstr_len];
+#ifdef _WIN32
+        strncpy_s(version_cstr, cstr_len, version.c_str(), cstr_len);
+#else
+        std::strncpy(version_cstr, version.c_str(), cstr_len);
+#endif
+    } catch (std::bad_alloc const &ba) {
+        // \todo log error
+        std::cerr << ba.what() << '\n';
+    }
+    return version_cstr;
+}
