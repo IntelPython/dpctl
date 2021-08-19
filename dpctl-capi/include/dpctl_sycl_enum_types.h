@@ -146,8 +146,8 @@ typedef enum
 {
     // clang-format off
     DPCTL_DEFAULT_PROPERTY = 0,
-    DPCTL_ENABLE_PROFILING = 1 << 1,
-    DPCTL_IN_ORDER         = 1 << 2
+    DPCTL_ENABLE_PROFILING = 1 << 0,
+    DPCTL_IN_ORDER         = 1 << 1
     // clang-format on
 } DPCTLQueuePropertyType;
 
