@@ -14,7 +14,7 @@ Enums to depict the properties that can be passed to a sycl::queue constructor.
 	enum DPCTLQueuePropertyType
 	{
 	    :target:`DPCTL_DEFAULT_PROPERTY<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a439a88c8e537df22ac3e2c66fce3ad4fa0d0e4da9d5ff861c6d6fa2552f04d132>` = 0,
-	    :target:`DPCTL_ENABLE_PROFILING<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a439a88c8e537df22ac3e2c66fce3ad4fa8330745774d3b74ab19d1810a9268c79>` = 1<<1,
-	    :target:`DPCTL_IN_ORDER<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a439a88c8e537df22ac3e2c66fce3ad4fa7e379549193ddf123f049ea5ef2241d6>`         = 1<<2,
+	    :target:`DPCTL_ENABLE_PROFILING<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a439a88c8e537df22ac3e2c66fce3ad4fa8330745774d3b74ab19d1810a9268c79>` = 1<<0,
+	    :target:`DPCTL_IN_ORDER<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a439a88c8e537df22ac3e2c66fce3ad4fa7e379549193ddf123f049ea5ef2241d6>`         = 1<<1,
 	};
 
