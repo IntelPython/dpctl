@@ -53,6 +53,9 @@ Overview
 
 	// global functions
 
+	DPCTL_API const __dpctl_give char*
+	:ref:`DPCTLService_GetDPCPPVersion<doxid-d8/dff/group__Service_1ga644b14f0bee03243f0ce30679e3c8d41>`(void);
+
 	DPCTL_API bool
 	:ref:`DPCTLContext_AreEq<doxid-da/df7/group__ContextInterface_1gaa6938cd391c1cea91998fae97ba05141>`(
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef1,

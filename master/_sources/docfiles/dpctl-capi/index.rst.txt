@@ -15,6 +15,7 @@ dpctl C API
 	group_ProgramInterface.rst
 	group_QueueInterface.rst
 	group_QueueManager.rst
+	group_Service.rst
 	group_USMInterface.rst
 
 .. rubric:: Further Reading:
@@ -30,6 +31,7 @@ dpctl C API
 |	:ref:`Program class C wrapper<doxid-d3/d4f/group__ProgramInterface>`
 |	:ref:`Queue class C wrapper<doxid-d9/db1/group__QueueInterface>`
 |	:ref:`Queue class helper functions<doxid-d9/db6/group__QueueManager>`
+|	:ref:`Service functions<doxid-d8/dff/group__Service>`
 |	:ref:`USM Interface<doxid-d9/d27/group__USMInterface>`
 
 
