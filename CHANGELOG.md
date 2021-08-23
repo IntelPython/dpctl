@@ -4,6 +4,68 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - xx/xx/xxxx
+
+### Added
+- Improvements to logic for working with custom DPC++ toolchain (#481)
+- Add SyclContext unit test cases (#488)
+- Consolidate configurations of tools that support PEP 518 into pyproject.toml (#486)
+- Added C-API hash function, used them in Python interface (#491)
+- Add missing extra checks to ensure unwrapped pointer is not Null
+- Add error messages to L0 program creation routine
+- Improve test coverage for dpctl_sycl_queue_interface (#492)
+- Use pytest.warns in test_lsplatform3 (#495)
+- Added test class to test DRef=nullptr case (#496)
+- Extend parameterized test in test_sycl_queue_interface (#497)
+- Use Memcpy, memadvise in tests
+- Expanded types tests by TestQueueSubmitRange
+- Added a test that retrieved DPCPP compiled kernel and submits them via DPCTLQueue_SubmitRange (#499)
+- Add DPCTLEvent_Copy (#504), DPCTLEvent_GetBackend (#507), DPCTLEvent_GetCommandExecutionStatus (#516),
+  DPCTLEvent_WaitAndThrow (#513), DPCTLEvent_GetWaitList (#510) functions
+- Propagate compile flags (#512)
+- Add conda package CI pipeline on GitHub Actions (#515)
+- Run tests on GPU (#518)
+- Add 3 wrapper func for event::get_profiling_info (#519)
+- Changes to build_backend.py to enable sycl-compiler-prefix on Windows
+- dtype keyword of usm_ndarray now supports np.double and other types (#526)
+- Implemented DPCTLQueue_SubmitBarrier, DPCTLQueue_SubmitBarrierForEvents,
+  SyclQueue.submit_barrier (#524)
+- Added C-API DPCTLQueue_HasEnableProfiling
+- Added Python API SyclQueue.has_enable_profiling
+- Use public for data owning class definitions
+- Queue has enable profiling (#531)
+- Use public for data owning class definitions (#533)
+- Added logic to verify that all bits of property integer were recognized and used (#494)
+- Added support for some properties/methods of underluing device
+- A test for properties, method of q mirroring that of device
+- Conda build scripts should build wheels in the same setup invocation as install (#538)
+- Added install_requires keyword to setup call
+- Added requirements.txt files in dpctl/ and in dpctl/docs (#540)
+
+### Changed
+- Moved DPCLSyclInterface library from MANIFEST.in (#482)
+- Refactored tests
+- Use dpcpp compiler package for Linux (#514)
+- Update conda-package.yml
+- Static methods _init_helper made into functions and removed from PXD files (#532)
+
+### Removed
+- Remove imports from __future__ (#485)
+
+### Fixed
+- Fix sub devices (#479)
+- Fix addressof_ref function in SyclContext (#488)
+- Follow DPCTLDevice_CreateFromSelector which passes the check (#487)
+- Fix a typo in the pytest configuration (#490)
+- Fixed dbg_build.sh script for Linux to use L0
+- Reuse IntelSycl_LIBRARY_DIR
+- CXX, dpcpp used on Windows too
+- Update conda-recipe/bld.bat
+- Change to SyclQueue.__repr__ to reflect property
+- Static methods _init_helper made into functions and removed from PXD files
+- Fixed typo in pip installation instruction
+- Fixed dpctl_config, added dpctl_service.h, .cpp (#539)
+
 ## [0.8.0] - 05/26/2021
 
 ### Added
