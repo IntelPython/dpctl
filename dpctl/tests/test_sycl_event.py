@@ -81,6 +81,23 @@ def test_create_event_raw_from_capsule():
         pytest.fail("Failed to create an event from capsule")
 
 
+def test_wait_with_event():
+    event = dpctl.SyclEventRaw()
+    try:
+        dpctl.SyclEventRaw.wait(event)
+    except ValueError:
+        pytest.fail("Failed to wait for the event")
+
+
+def test_wait_with_list():
+    event_1 = dpctl.SyclEventRaw()
+    event_2 = dpctl.SyclEventRaw()
+    try:
+        dpctl.SyclEventRaw.wait([event_1, event_2])
+    except ValueError:
+        pytest.fail("Failed to wait for events from the list")
+
+
 def test_execution_status():
     event = dpctl.SyclEventRaw()
     try:

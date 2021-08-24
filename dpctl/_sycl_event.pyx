@@ -25,6 +25,7 @@ import logging
 
 from cpython cimport pycapsule
 from libc.stdint cimport uint64_t
+import collections.abc
 
 from ._backend cimport (  # noqa: E211
     DPCTLEvent_Copy,
@@ -37,6 +38,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLEvent_GetProfilingInfoSubmit,
     DPCTLEvent_GetWaitList,
     DPCTLEvent_Wait,
+    DPCTLEvent_WaitAndThrow,
     DPCTLEventVector_Delete,
     DPCTLEventVector_GetAt,
     DPCTLEventVector_Size,
@@ -192,8 +194,25 @@ cdef class SyclEventRaw(_SyclEventRaw):
         """
         return self._event_ref
 
-    cpdef void wait(self):
-        DPCTLEvent_Wait(self._event_ref)
+    @staticmethod
+    cdef void _wait(SyclEventRaw event):
+        DPCTLEvent_WaitAndThrow(event._event_ref)
+
+    @staticmethod
+    def wait(event):
+        """ Waits for a given event or a sequence of events.
+        """
+        if (isinstance(event, collections.abc.Sequence) and
+            all( (isinstance(el, SyclEventRaw) for el in event) )):
+            for e in event:
+                SyclEventRaw._wait(e)
+        elif isinstance(event, SyclEventRaw):
+            SyclEventRaw._wait(event)
+        else:
+            raise TypeError(
+                "The passed argument is not a SyclEventRaw type or "
+                "a sequence of such objects"
+            )
 
     def addressof_ref(self):
         """ Returns the address of the C API `DPCTLSyclEventRef` pointer as
