@@ -54,17 +54,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix sub devices (#479)
-- Fix addressof_ref function in SyclContext (#488)
-- Follow DPCTLDevice_CreateFromSelector which passes the check (#487)
+- Fix addressof_ref function in `SyclContext` (#488)
+- Follow `DPCTLDevice_CreateFromSelector` which passes the check (#487)
 - Fix a typo in the pytest configuration (#490)
 - Fixed dbg_build.sh script for Linux to use L0
-- Reuse IntelSycl_LIBRARY_DIR
+- Reuse IntelSycl_LIBRARY_DIR variable in cmake
 - CXX, dpcpp used on Windows too
 - Update conda-recipe/bld.bat
-- Change to SyclQueue.__repr__ to reflect property
-- Static methods _init_helper made into functions and removed from PXD files
-- Fixed typo in pip installation instruction
-- Fixed dpctl_config, added dpctl_service.h, .cpp (#539)
+- Change to SyclQueue.__repr__ to reflect properties (#531)
+- Static methods `_init_helper` made into functions and removed from PXD files (#532)
+- Fixed typo in pip installation instruction (#536)
+- Fixed dpctl_config.h, added dpctl_service.h, .cpp (#539)
+- Fixed `__sycl_usm_array_interface__` output for 0d arrays (#547) 
 
 ## [0.8.0] - 05/26/2021
 
