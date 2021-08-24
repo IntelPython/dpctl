@@ -203,7 +203,7 @@ cdef class SyclEventRaw(_SyclEventRaw):
         """ Waits for a given event or a sequence of events.
         """
         if (isinstance(event, collections.abc.Sequence) and
-            all( (isinstance(el, SyclEventRaw) for el in event) )):
+           all((isinstance(el, SyclEventRaw) for el in event))):
             for e in event:
                 SyclEventRaw._wait(e)
         elif isinstance(event, SyclEventRaw):
