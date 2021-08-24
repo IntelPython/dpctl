@@ -31,7 +31,7 @@ from .program._program cimport SyclKernel
 
 cdef void default_async_error_handler(int) nogil except *
 
-cdef public class _SyclQueue [
+cdef public api class _SyclQueue [
     object Py_SyclQueueObject, type Py_SyclQueueType
 ]:
     """ Python data owner class for a sycl::queue.
@@ -41,7 +41,7 @@ cdef public class _SyclQueue [
     cdef SyclDevice _device
 
 
-cdef public class SyclQueue (_SyclQueue) [
+cdef public api class SyclQueue (_SyclQueue) [
     object PySyclQueueObject, type PySyclQueueType
 ]:
     """ Python wrapper class for a sycl::queue.

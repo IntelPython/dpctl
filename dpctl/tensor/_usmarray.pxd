@@ -9,7 +9,7 @@ cdef public int USM_ARRAY_F_CONTIGUOUS
 cdef public int USM_ARRAY_WRITEABLE
 
 
-cdef public class usm_ndarray [object PyUSMArrayObject, type PyUSMArrayType]:
+cdef public api class usm_ndarray [object PyUSMArrayObject, type PyUSMArrayType]:
     # data fields
     cdef char* data_
     cdef readonly int nd_

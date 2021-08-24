@@ -32,7 +32,7 @@ cdef DPCTLSyclQueueRef get_queue_ref_from_ptr_and_syclobj(
     DPCTLSyclUSMRef ptr, object syclobj)
 
 
-cdef public class _Memory [object Py_MemoryObject, type Py_MemoryType]:
+cdef public api class _Memory [object Py_MemoryObject, type Py_MemoryType]:
     cdef DPCTLSyclUSMRef memory_ptr
     cdef Py_ssize_t nbytes
     cdef SyclQueue queue
@@ -51,12 +51,12 @@ cdef public class _Memory [object Py_MemoryObject, type Py_MemoryType]:
     cpdef bytes tobytes(self)
 
     @staticmethod
-    cdef public SyclDevice get_pointer_device(
+    cdef SyclDevice get_pointer_device(
         DPCTLSyclUSMRef p, SyclContext ctx)
     @staticmethod
-    cdef public bytes get_pointer_type(DPCTLSyclUSMRef p, SyclContext ctx)
+    cdef bytes get_pointer_type(DPCTLSyclUSMRef p, SyclContext ctx)
     @staticmethod
-    cdef public object create_from_usm_pointer_size_qref(
+    cdef object create_from_usm_pointer_size_qref(
         DPCTLSyclUSMRef USMRef,
         Py_ssize_t nbytes,
         DPCTLSyclQueueRef QRef,
@@ -64,12 +64,12 @@ cdef public class _Memory [object Py_MemoryObject, type Py_MemoryType]:
     )
 
 
-cdef public class MemoryUSMShared(_Memory) [object PyMemoryUSMSharedObject,
+cdef public api class MemoryUSMShared(_Memory) [object PyMemoryUSMSharedObject,
                                             type PyMemoryUSMSharedType]:
     pass
 
 
-cdef public class MemoryUSMHost(_Memory) [object PyMemoryUSMHostObject,
+cdef public api class MemoryUSMHost(_Memory) [object PyMemoryUSMHostObject,
                                           type PyMemoryUSMHostType]:
     pass
 

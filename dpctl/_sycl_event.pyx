@@ -32,6 +32,13 @@ __all__ = [
 _logger = logging.getLogger(__name__)
 
 
+cdef api DPCTLSyclEventRef get_event_ref(SyclEvent ev):
+    """ C-API function to access opaque event reference from
+    Python object of type :class:`dpctl.SyclEvent`.
+    """
+    return ev.get_event_ref()
+
+
 cdef class SyclEvent:
     """ Python wrapper class for cl::sycl::event.
     """
