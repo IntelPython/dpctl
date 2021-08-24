@@ -25,6 +25,7 @@ import logging
 
 from cpython cimport pycapsule
 from libc.stdint cimport uint64_t
+import collections.abc
 
 from ._backend cimport (  # noqa: E211
     DPCTLEvent_Copy,
@@ -206,14 +207,19 @@ cdef class SyclEventRaw(_SyclEventRaw):
 
     @staticmethod
     def wait(event):
-        if isinstance(event, list):
+        """ Waits for a given event or a sequence of events.
+        """
+        if (isinstance(event, collections.abc.Sequence) and
+            all( (isinstance(el, SyclEventRaw) for el in event) )):
             for e in event:
                 SyclEventRaw._wait(e)
         elif isinstance(event, SyclEventRaw):
             SyclEventRaw._wait(event)
         else:
-            raise ValueError("The passed argument is not a list \
-                              or a SyclEventRaw type.")
+            raise TypeError(
+                "The passed argument is not a SyclEventRaw type or "
+                "a sequence of such objects"
+            )
 
     def addressof_ref(self):
         """ Returns the address of the C API `DPCTLSyclEventRef` pointer as
