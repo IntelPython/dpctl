@@ -4,7 +4,7 @@
 
 What?
 ====
-A lightweight Python package exposing a subset of SYCL functionalities.
+A lightweight Python package exposing a subset of SYCL functionalities, part of [![](https://spec.oneapi.io/oneapi-logo-white-scaled.jpg)](https://oneapi.io).
 
 Requirements
 ============
