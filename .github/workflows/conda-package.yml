@@ -20,7 +20,7 @@ jobs:
         - os: windows-latest
           pkgs_dirs: C:\Users\runneradmin\.conda\pkgs
           condarc: C:\Users\runneradmin\.condarc
-          conda-bld: C:\Miniconda\conda-bld\
+          conda-bld: C:\Miniconda\conda-bld\win-64\
         python: [3.8]
     steps:
       - uses: actions/checkout@v2
