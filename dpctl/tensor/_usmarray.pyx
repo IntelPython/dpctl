@@ -118,7 +118,7 @@ cdef class usm_ndarray:
         buffer can be strings ('device'|'shared'|'host' to allocate new memory)
         or dpctl.memory.MemoryUSM* buffers, or usm_ndrray instances.
         """
-        cdef int nd = 9
+        cdef int nd = 0
         cdef int typenum = 0
         cdef int itemsize = 0
         cdef int err = 0
@@ -304,7 +304,7 @@ cdef class usm_ndarray:
         ary_ptr = <char *>(<size_t> self.data_)
         ro_flag = False if (self.flags_ & USM_ARRAY_WRITEABLE) else True
         ary_iface['data'] = (<size_t> ary_ptr, ro_flag)
-        ary_iface['shape'] = _make_int_tuple(self.nd_, self.shape_)
+        ary_iface['shape'] = self.shape
         if (self.strides_):
             ary_iface['strides'] = _make_int_tuple(self.nd_, self.strides_)
         else:
