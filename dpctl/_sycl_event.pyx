@@ -100,10 +100,11 @@ cdef void _event_capsule_deleter(object o):
         DPCTLEvent_Delete(ERef)
 
 cdef void _init_helper(_SyclEventRaw event, DPCTLSyclEventRef ERef):
+    "Populate attributes of class from opaque reference ERef"
     event._event_ref = ERef
 
 cdef class _SyclEventRaw:
-    """ Python wrapper class for a ``cl::sycl::event``.
+    """ Data owner for SyclEvent
     """
 
     def __dealloc__(self):
@@ -111,11 +112,74 @@ cdef class _SyclEventRaw:
 
 
 cdef class SyclEventRaw(_SyclEventRaw):
-    """ Python wrapper class for a ``cl::sycl::event``.
+    """
+    SyclEvent(arg=None)
+    Python class representing ``cl::sycl::event``. There are multiple
+    ways to create a :class:`dpctl.SyclEventRaw` object:
+
+        - Invoking the constructor with no arguments creates a ready event
+          using the default constructor of the ``cl::sycl::event``.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create a default SyclEventRaw
+                e = dpctl.SyclEventRaw()
+
+        - Invoking the constuctor with a :class:`dpctl.SyclEvent` object
+          creates an event by copying the passed object.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create a SyclEventRaw by passing SyclEvent
+                q = dpctl.SyclQueue()
+                e = q.submit_barrier()
+                e_r = dpctl.SyclEventRaw(e)
+
+        - Invoking the constuctor with a :class:`dpctl.SyclEventRaw` object
+          creates an event by copying the passed object.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create a SyclEventRaw by passing SyclEventRaw
+                e = dpctl.SyclEventRaw()
+                e_r = dpctl.SyclEventRaw(e)
+
+        - Invoking the constuctor with a named ``PyCapsule`` with name
+          **"SyclEventRef"** that carries a pointer to a ``sycl::event``
+          object. The capsule will be renamed upon successful consumption
+          to ensure one-time use. A new named capsule can be constructed by
+          using :func:`dpctl.SyclEventRaw._get_capsule` method.
+
+    Args:
+        arg (optional): Defaults to ``None``.
+            The argument can be a :class:`dpctl.SyclEvent`
+            instance, a :class:`dpctl.SyclEventRaw` instance, or a
+            named ``PyCapsule`` called **"SyclEventRef"**.
+
+    Raises:
+        ValueError: If the :class:`dpctl.SyclEventRaw` object creation failed.
+        TypeError: In case of incorrect arguments given to constructors,
+                   unexpected types of input arguments, or in the case the input
+                   capsule contained a null pointer or could not be renamed.
     """
 
     @staticmethod
     cdef SyclEventRaw _create(DPCTLSyclEventRef eref):
+        """"
+        This function calls DPCTLEvent_Delete(eref).
+
+        The user of this function must pass a copy to keep the
+        eref argument alive.
+        """
         cdef _SyclEventRaw ret = _SyclEventRaw.__new__(_SyclEventRaw)
         _init_helper(ret, eref)
         return SyclEventRaw(ret)
@@ -225,6 +289,20 @@ cdef class SyclEventRaw(_SyclEventRaw):
         return <size_t>self._event_ref
 
     def _get_capsule(self):
+        """
+        Returns a copy of the underlying ``cl::sycl::event`` pointer as a void
+        pointer inside a named ``PyCapsule`` that has the name
+        **SyclEventRef**. The ownership of the pointer inside the capsule is
+        passed to the caller, and pointer is deleted when the capsule goes out
+        of scope.
+        Returns:
+            :class:`pycapsule`: A capsule object storing a copy of the
+            ``cl::sycl::event`` pointer belonging to thus
+            :class:`dpctl.SyclEventRaw` instance.
+        Raises:
+            ValueError: If the ``DPCTLEvent_Copy`` fails to copy the
+                        ``cl::sycl::event`` pointer.
+        """
         cdef DPCTLSyclEventRef ERef = NULL
         ERef = DPCTLEvent_Copy(self._event_ref)
         if (ERef is NULL):
@@ -237,7 +315,7 @@ cdef class SyclEventRaw(_SyclEventRaw):
 
     @property
     def execution_status(self):
-        """ Returns the event status.
+        """ Returns the event_status_type enum value for this event.
         """
         cdef _event_status_type ESTy = DPCTLEvent_GetCommandExecutionStatus(
                                         self._event_ref
@@ -253,7 +331,11 @@ cdef class SyclEventRaw(_SyclEventRaw):
 
     @property
     def backend(self):
-        """ Returns the Sycl backend associated with the event.
+        """Returns the backend_type enum value for the device
+        associated with this event.
+
+        Returns:
+            backend_type: The backend for the device.
         """
         cdef _backend_type BE = DPCTLEvent_GetBackend(self._event_ref)
         if BE == _backend_type._OPENCL:
@@ -268,6 +350,10 @@ cdef class SyclEventRaw(_SyclEventRaw):
             raise ValueError("Unknown backend type.")
 
     def get_wait_list(self):
+        """
+        Returns the list of :class:`dpctl.SyclEventRaw` objects that depend
+        on this event.
+        """
         cdef DPCTLEventVectorRef EVRef = DPCTLEvent_GetWaitList(
             self.get_event_ref()
         )
@@ -285,6 +371,10 @@ cdef class SyclEventRaw(_SyclEventRaw):
         return events
 
     def profiling_info_submit(self):
+        """
+        Returns the 64-bit time value in nanoseconds
+        when ``cl::sycl::command_group`` was submitted to the queue.
+        """
         cdef uint64_t profiling_info_submit = 0
         profiling_info_submit = DPCTLEvent_GetProfilingInfoSubmit(
                                 self._event_ref
@@ -293,12 +383,20 @@ cdef class SyclEventRaw(_SyclEventRaw):
 
     @property
     def profiling_info_start(self):
+        """
+        Returns the 64-bit time value in nanoseconds
+        when ``cl::sycl::command_group`` started execution on the device.
+        """
         cdef uint64_t profiling_info_start = 0
         profiling_info_start = DPCTLEvent_GetProfilingInfoStart(self._event_ref)
         return profiling_info_start
 
     @property
     def profiling_info_end(self):
+        """
+        Returns the 64-bit time value in nanoseconds
+        when ``cl::sycl::command_group`` finished execution on the device.
+        """
         cdef uint64_t profiling_info_end = 0
         profiling_info_end = DPCTLEvent_GetProfilingInfoEnd(self._event_ref)
         return profiling_info_end

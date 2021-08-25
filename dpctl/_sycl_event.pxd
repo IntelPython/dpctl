@@ -36,10 +36,14 @@ cdef public class SyclEvent [object PySyclEventObject, type PySyclEventType]:
 
 
 cdef class _SyclEventRaw:
+    """ Data owner for SyclEvent
+    """
     cdef DPCTLSyclEventRef _event_ref
 
 
 cdef public class SyclEventRaw(_SyclEventRaw) [object PySyclEventRawObject, type PySyclEventRawType]:
+    """ Python wrapper class for a ``cl::sycl::event``
+    """
     @staticmethod
     cdef SyclEventRaw _create (DPCTLSyclEventRef event)
     cdef int _init_event_default(self)
