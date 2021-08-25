@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Conda build scripts should build wheels in the same setup invocation as install (#538)
 - Added install_requires keyword to setup call
 - Added requirements.txt files in dpctl/ and in dpctl/docs (#540)
+- Improved C-API for dpctl Cython classes, added example of using them in Pybind11 extension. (#550)
 
 ### Changed
 - Moved DPCLSyclInterface library from MANIFEST.in (#482)
