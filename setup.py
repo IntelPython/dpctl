@@ -458,7 +458,9 @@ setup(
     ext_modules=extensions(),
     zip_safe=False,
     setup_requires=["Cython"],
-    install_requires=["numpy", "dpcpp_cpp_rt"],
+    install_requires=[
+        "numpy",
+    ],
     keywords="dpctl",
     classifiers=[
         "Development Status :: 3 - Alpha",
