@@ -66,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Static methods `_init_helper` made into functions and removed from PXD files (#532)
 - Fixed typo in pip installation instruction (#536)
 - Fixed dpctl_config.h, added dpctl_service.h, .cpp (#539)
-- Fixed `__sycl_usm_array_interface__` output for 0d arrays (#547) 
+- Fixed `__sycl_usm_array_interface__` output for 0d arrays (#547)
 
 ## [0.8.0] - 05/26/2021
 
