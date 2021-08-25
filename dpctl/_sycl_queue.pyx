@@ -969,7 +969,7 @@ cdef class SyclQueue(_SyclQueue):
         self.sycl_device.print_device_info()
 
 
-cdef public DPCTLSyclQueueRef get_queue_ref(SyclQueue q):
+cdef api DPCTLSyclQueueRef get_queue_ref(SyclQueue q):
     """
     C-API function to get opaque queue reference from
     :class:`dpctl.SyclQueue` instance.

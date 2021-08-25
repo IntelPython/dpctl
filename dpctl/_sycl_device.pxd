@@ -29,7 +29,7 @@ from ._backend cimport (
 )
 
 
-cdef public class _SyclDevice [
+cdef public api class _SyclDevice [
     object Py_SyclDeviceObject,
     type Py_SyclDeviceType
 ]:
@@ -42,7 +42,7 @@ cdef public class _SyclDevice [
     cdef size_t *_max_work_item_sizes
 
 
-cdef public class SyclDevice(_SyclDevice) [
+cdef public api class SyclDevice(_SyclDevice) [
     object PySyclDeviceObject,
     type PySyclDeviceType
 ]:

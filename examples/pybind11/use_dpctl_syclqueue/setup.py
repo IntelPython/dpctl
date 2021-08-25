@@ -14,22 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# distutils: language = c++
-# cython: language_level=3
+from pybind11.setup_helpers import Pybind11Extension
+from setuptools import setup
 
-""" This file declares the SyclEvent extension type.
-"""
+import dpctl
 
-from ._backend cimport DPCTLSyclEventRef
+exts = [
+    Pybind11Extension(
+        "pybind11_example",
+        ["./pybind11_example.cpp"],
+        include_dirs=[dpctl.get_include()],
+        extra_compile_args=["-fPIC"],
+        extra_link_args=["-fPIC"],
+        language="c++",
+    ),
+]
 
-
-cdef public api class SyclEvent [object PySyclEventObject, type PySyclEventType]:
-    ''' Wrapper class for a Sycl Event
-    '''
-    cdef  DPCTLSyclEventRef _event_ref
-    cdef list _args
-
-    @staticmethod
-    cdef  SyclEvent _create (DPCTLSyclEventRef e, list args)
-    cdef  DPCTLSyclEventRef get_event_ref (self)
-    cpdef void wait (self)
+setup(name="pybind11_example", ext_modules=exts)

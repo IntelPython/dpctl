@@ -1118,7 +1118,7 @@ cdef class SyclDevice(_SyclDevice):
                 else:
                     return str(relId)
 
-cdef public DPCTLSyclDeviceRef get_device_ref(SyclDevice dev):
+cdef api DPCTLSyclDeviceRef get_device_ref(SyclDevice dev):
     """
     C-API function to get opaque device reference from
     :class:`dpctl.SyclDevice` instance.

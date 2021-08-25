@@ -26,7 +26,7 @@ from ._backend cimport DPCTLSyclContextRef
 from ._sycl_device cimport SyclDevice
 
 
-cdef public class _SyclContext [
+cdef public api class _SyclContext [
     object Py_SyclContextObject,
     type Py_SyclContextType
 ]:
@@ -35,7 +35,7 @@ cdef public class _SyclContext [
     cdef DPCTLSyclContextRef _ctxt_ref
 
 
-cdef public class SyclContext(_SyclContext) [
+cdef public api class SyclContext(_SyclContext) [
     object PySyclContextObject,
     type PySyclContextType
 ]:
