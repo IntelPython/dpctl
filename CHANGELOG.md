@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added install_requires keyword to setup call
 - Added requirements.txt files in dpctl/ and in dpctl/docs (#540)
 - Improved C-API for dpctl Cython classes, added example of using them in Pybind11 extension. (#550)
+- dpctl.SyclEvent acquired ability to get command status and get profiling information. (#553)
 
 ### Changed
 - Moved DPCLSyclInterface library from MANIFEST.in (#482)
