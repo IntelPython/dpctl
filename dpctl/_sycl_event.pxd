@@ -23,32 +23,27 @@
 from ._backend cimport DPCTLSyclEventRef
 
 
-cdef public api class SyclEvent [object PySyclEventObject, type PySyclEventType]:
-    ''' Wrapper class for a Sycl Event
-    '''
-    cdef  DPCTLSyclEventRef _event_ref
-    cdef list _args
-
-    @staticmethod
-    cdef  SyclEvent _create (DPCTLSyclEventRef e, list args)
-    cdef  DPCTLSyclEventRef get_event_ref (self)
-    cpdef void wait (self)
-
-
-cdef class _SyclEventRaw:
+cdef public api class _SyclEvent [
+    object Py_SyclEventObject,
+    type Py_SyclEventType
+]:
     """ Data owner for SyclEvent
     """
     cdef DPCTLSyclEventRef _event_ref
+    cdef object args
 
 
-cdef public class SyclEventRaw(_SyclEventRaw) [object PySyclEventRawObject, type PySyclEventRawType]:
+cdef public api class SyclEvent(_SyclEvent) [
+    object PySyclEventObject,
+    type PySyclEventType
+]:
     """ Python wrapper class for a ``cl::sycl::event``
     """
     @staticmethod
-    cdef SyclEventRaw _create (DPCTLSyclEventRef event)
+    cdef SyclEvent _create (DPCTLSyclEventRef event, object args=*)
     cdef int _init_event_default(self)
-    cdef int _init_event_from__SyclEventRaw(self, _SyclEventRaw other)
-    cdef int _init_event_from_SyclEvent(self, SyclEvent event)
+    cdef int _init_event_from__SyclEvent(self, _SyclEvent other)
     cdef int _init_event_from_capsule(self, object caps)
     cdef DPCTLSyclEventRef get_event_ref (self)
-    cdef void _wait (SyclEventRaw event)
+    cdef void _wait (SyclEvent event)
+    cpdef void wait (self)

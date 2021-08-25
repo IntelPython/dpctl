@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" Defines unit test cases for the SyclEventRaw class.
+""" Defines unit test cases for the SyclEvent class.
 """
 
 import numpy as np
@@ -54,52 +54,46 @@ def produce_event(profiling=False):
     return ev
 
 
-def test_create_default_event_raw():
+def test_create_default_event():
     try:
-        dpctl.SyclEventRaw()
+        dpctl.SyclEvent()
     except ValueError:
         pytest.fail("Failed to create a default event")
 
 
-def test_create_event_raw_from_SyclEvent():
-    if has_cpu():
-        ev = produce_event()
-        try:
-            dpctl.SyclEventRaw(ev)
-        except ValueError:
-            pytest.fail("Failed to create an event from SyclEvent")
-    else:
-        pytest.skip("No OpenCL CPU queues available")
-
-
-def test_create_event_raw_from_capsule():
+def test_create_event_from_capsule():
     try:
-        event = dpctl.SyclEventRaw()
+        event = dpctl.SyclEvent()
         event_capsule = event._get_capsule()
-        dpctl.SyclEventRaw(event_capsule)
+        dpctl.SyclEvent(event_capsule)
     except ValueError:
         pytest.fail("Failed to create an event from capsule")
 
 
 def test_wait_with_event():
-    event = dpctl.SyclEventRaw()
+    event = dpctl.SyclEvent()
     try:
-        dpctl.SyclEventRaw.wait(event)
+        dpctl.SyclEvent.wait_for(event)
+    except ValueError:
+        pytest.fail("Failed to wait_for(event)")
+    event = dpctl.SyclEvent()
+    try:
+        event.wait()
     except ValueError:
         pytest.fail("Failed to wait for the event")
 
 
 def test_wait_with_list():
-    event_1 = dpctl.SyclEventRaw()
-    event_2 = dpctl.SyclEventRaw()
+    event_1 = dpctl.SyclEvent()
+    event_2 = dpctl.SyclEvent()
     try:
-        dpctl.SyclEventRaw.wait([event_1, event_2])
+        dpctl.SyclEvent.wait_for([event_1, event_2])
     except ValueError:
         pytest.fail("Failed to wait for events from the list")
 
 
 def test_execution_status():
-    event = dpctl.SyclEventRaw()
+    event = dpctl.SyclEvent()
     try:
         event_status = event.execution_status
     except ValueError:
@@ -109,7 +103,7 @@ def test_execution_status():
 
 def test_backend():
     try:
-        dpctl.SyclEventRaw().backend
+        dpctl.SyclEvent().backend
     except ValueError:
         pytest.fail("Failed to get backend from event")
 
@@ -148,23 +142,18 @@ def test_get_wait_list():
         ev_2 = q.submit(sqrtKernel, args, r, dEvents=[ev_1])
         ev_3 = q.submit(sinKernel, args, r, dEvents=[ev_2])
 
-        ev_raw = dpctl.SyclEventRaw(ev_3)
-
         try:
-            wait_list = ev_raw.get_wait_list()
+            wait_list = ev_3.get_wait_list()
         except ValueError:
-            pytest.fail(
-                "Failed to get a list of waiting events from SyclEventRaw"
-            )
+            pytest.fail("Failed to get a list of waiting events from SyclEvent")
         assert len(wait_list)
 
 
 def test_profiling_info():
     if has_cpu():
         event = produce_event(profiling=True)
-        event_raw = dpctl.SyclEventRaw(event)
-        assert event_raw.profiling_info_submit
-        assert event_raw.profiling_info_start
-        assert event_raw.profiling_info_end
+        assert event.profiling_info_submit
+        assert event.profiling_info_start
+        assert event.profiling_info_end
     else:
         pytest.skip("No OpenCL CPU queues available")

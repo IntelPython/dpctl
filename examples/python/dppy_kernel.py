@@ -15,17 +15,17 @@
 # limitations under the License.
 
 
-import numba_dppy as dppy
+import numba_dppy
 import numpy as np
 from sycl_timer import SyclTimer
 
 import dpctl
 
 
-@dppy.kernel
+@numba_dppy.kernel
 def dppy_gemm(a, b, c):
-    i = dppy.get_global_id(0)
-    j = dppy.get_global_id(1)
+    i = numba_dppy.get_global_id(0)
+    j = numba_dppy.get_global_id(1)
     if i >= c.shape[0] or j >= c.shape[1]:
         return
     c[i, j] = 0
@@ -49,5 +49,7 @@ with dpctl.device_context(q):
     timers = SyclTimer(time_scale=1)
     with timers(q):
         dppy_gemm[griddim, blockdim](a, b, c)
+        cc = np.dot(a, b)
     host_time, device_time = timers.dt()
     print("Wall time: ", host_time, "\n", "Device time: ", device_time)
+    print(np.allclose(c, cc))

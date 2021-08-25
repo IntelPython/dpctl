@@ -40,12 +40,12 @@ class SyclTimer:
         return self.__enter__()
 
     def __enter__(self):
-        self.event_start = dpctl.SyclEventRaw(self.queue.submit_barrier())
+        self.event_start = self.queue.submit_barrier()
         self.host_start = self.timer()
         return self
 
     def __exit__(self, *args):
-        self.event_finish = dpctl.SyclEventRaw(self.queue.submit_barrier())
+        self.event_finish = self.queue.submit_barrier()
         self.host_finish = self.timer()
 
     def dt(self):
@@ -57,6 +57,5 @@ class SyclTimer:
                 self.event_finish.profiling_info_start
                 - self.event_start.profiling_info_end
             )
-            / 1e9
-            * self.time_scale,
+            * (1e-9 * self.time_scale),
         )

@@ -52,7 +52,6 @@ from .enum_types import backend_type, event_status_type
 
 __all__ = [
     "SyclEvent",
-    "SyclEventRaw",
 ]
 
 _logger = logging.getLogger(__name__)
@@ -65,39 +64,6 @@ cdef api DPCTLSyclEventRef get_event_ref(SyclEvent ev):
     return ev.get_event_ref()
 
 
-cdef class SyclEvent:
-    """ Python wrapper class for cl::sycl::event.
-    """
-
-    @staticmethod
-    cdef SyclEvent _create(DPCTLSyclEventRef eref, list args):
-        cdef SyclEvent ret = SyclEvent.__new__(SyclEvent)
-        ret._event_ref = eref
-        ret._args = args
-        return ret
-
-    def __dealloc__(self):
-        self.wait()
-        DPCTLEvent_Delete(self._event_ref)
-
-    cdef DPCTLSyclEventRef get_event_ref(self):
-        """ Returns the DPCTLSyclEventRef pointer for this class.
-        """
-        return self._event_ref
-
-    cpdef void wait(self):
-        DPCTLEvent_Wait(self._event_ref)
-
-    def addressof_ref(self):
-        """ Returns the address of the C API DPCTLSyclEventRef pointer as
-        a size_t.
-
-        Returns:
-            The address of the DPCTLSyclEventRef object used to create this
-            SyclEvent cast to a size_t.
-        """
-        return int(<size_t>self._event_ref)
-
 cdef void _event_capsule_deleter(object o):
     cdef DPCTLSyclEventRef ERef = NULL
     if pycapsule.PyCapsule_IsValid(o, "SyclEventRef"):
@@ -106,23 +72,27 @@ cdef void _event_capsule_deleter(object o):
         )
         DPCTLEvent_Delete(ERef)
 
-cdef void _init_helper(_SyclEventRaw event, DPCTLSyclEventRef ERef):
+
+cdef void _init_helper(_SyclEvent event, DPCTLSyclEventRef ERef):
     "Populate attributes of class from opaque reference ERef"
     event._event_ref = ERef
 
-cdef class _SyclEventRaw:
+
+cdef class _SyclEvent:
     """ Data owner for SyclEvent
     """
 
     def __dealloc__(self):
+        DPCTLEvent_Wait(self._event_ref)
         DPCTLEvent_Delete(self._event_ref)
+        self.args = None
 
 
-cdef class SyclEventRaw(_SyclEventRaw):
+cdef class SyclEvent(_SyclEvent):
     """
     SyclEvent(arg=None)
     Python class representing ``cl::sycl::event``. There are multiple
-    ways to create a :class:`dpctl.SyclEventRaw` object:
+    ways to create a :class:`dpctl.SyclEvent` object:
 
         - Invoking the constructor with no arguments creates a ready event
           using the default constructor of the ``cl::sycl::event``.
@@ -132,81 +102,53 @@ cdef class SyclEventRaw(_SyclEventRaw):
 
                 import dpctl
 
-                # Create a default SyclEventRaw
-                e = dpctl.SyclEventRaw()
-
-        - Invoking the constuctor with a :class:`dpctl.SyclEvent` object
-          creates an event by copying the passed object.
-
-        :Example:
-            .. code-block:: python
-
-                import dpctl
-
-                # Create a SyclEventRaw by passing SyclEvent
-                q = dpctl.SyclQueue()
-                e = q.submit_barrier()
-                e_r = dpctl.SyclEventRaw(e)
-
-        - Invoking the constuctor with a :class:`dpctl.SyclEventRaw` object
-          creates an event by copying the passed object.
-
-        :Example:
-            .. code-block:: python
-
-                import dpctl
-
-                # Create a SyclEventRaw by passing SyclEventRaw
-                e = dpctl.SyclEventRaw()
-                e_r = dpctl.SyclEventRaw(e)
+                # Create a default SyclEvent
+                e = dpctl.SyclEvent()
 
         - Invoking the constuctor with a named ``PyCapsule`` with name
           **"SyclEventRef"** that carries a pointer to a ``sycl::event``
           object. The capsule will be renamed upon successful consumption
           to ensure one-time use. A new named capsule can be constructed by
-          using :func:`dpctl.SyclEventRaw._get_capsule` method.
+          using :func:`dpctl.SyclEvent._get_capsule` method.
 
     Args:
         arg (optional): Defaults to ``None``.
             The argument can be a :class:`dpctl.SyclEvent`
-            instance, a :class:`dpctl.SyclEventRaw` instance, or a
+            instance, a :class:`dpctl.SyclEvent` instance, or a
             named ``PyCapsule`` called **"SyclEventRef"**.
 
     Raises:
-        ValueError: If the :class:`dpctl.SyclEventRaw` object creation failed.
+        ValueError: If the :class:`dpctl.SyclEvent` object creation failed.
         TypeError: In case of incorrect arguments given to constructors,
                    unexpected types of input arguments, or in the case the input
                    capsule contained a null pointer or could not be renamed.
     """
 
     @staticmethod
-    cdef SyclEventRaw _create(DPCTLSyclEventRef eref):
+    cdef SyclEvent _create(DPCTLSyclEventRef eref, object args=None):
         """"
         This function calls DPCTLEvent_Delete(eref).
 
         The user of this function must pass a copy to keep the
         eref argument alive.
         """
-        cdef _SyclEventRaw ret = _SyclEventRaw.__new__(_SyclEventRaw)
+        cdef _SyclEvent ret = _SyclEvent.__new__(_SyclEvent)
         _init_helper(ret, eref)
-        return SyclEventRaw(ret)
+        ret.args=args
+        return SyclEvent(ret)
 
     cdef int _init_event_default(self):
         self._event_ref = DPCTLEvent_Create()
         if (self._event_ref is NULL):
             return -1
+        self.args=None
         return 0
 
-    cdef int _init_event_from__SyclEventRaw(self, _SyclEventRaw other):
+    cdef int _init_event_from__SyclEvent(self, _SyclEvent other):
         self._event_ref = DPCTLEvent_Copy(other._event_ref)
         if (self._event_ref is NULL):
             return -1
-        return 0
-
-    cdef int _init_event_from_SyclEvent(self, SyclEvent event):
-        self._event_ref = DPCTLEvent_Copy(event._event_ref)
-        if (self._event_ref is NULL):
-            return -1
+        self.args = other.args
         return 0
 
     cdef int _init_event_from_capsule(self, object cap):
@@ -226,6 +168,7 @@ cdef class SyclEventRaw(_SyclEventRaw):
             if (ERef_copy is NULL):
                 return -3
             self._event_ref = ERef_copy
+            self.args = None
             return 0
         else:
             return -128
@@ -234,10 +177,8 @@ cdef class SyclEventRaw(_SyclEventRaw):
         cdef int ret = 0
         if arg is None:
             ret = self._init_event_default()
-        elif type(arg) is _SyclEventRaw:
-            ret = self._init_event_from__SyclEventRaw(<_SyclEventRaw> arg)
-        elif isinstance(arg, SyclEvent):
-            ret = self._init_event_from_SyclEvent(<SyclEvent> arg)
+        elif type(arg) is _SyclEvent:
+            ret = self._init_event_from__SyclEvent(<_SyclEvent> arg)
         elif pycapsule.PyCapsule_IsValid(arg, "SyclEventRef"):
             ret = self._init_event_from_capsule(arg)
         else:
@@ -266,22 +207,22 @@ cdef class SyclEventRaw(_SyclEventRaw):
         return self._event_ref
 
     @staticmethod
-    cdef void _wait(SyclEventRaw event):
+    cdef void _wait(SyclEvent event):
         DPCTLEvent_WaitAndThrow(event._event_ref)
 
     @staticmethod
-    def wait(event):
+    def wait_for(event):
         """ Waits for a given event or a sequence of events.
         """
         if (isinstance(event, collections.abc.Sequence) and
-           all((isinstance(el, SyclEventRaw) for el in event))):
+           all((isinstance(el, SyclEvent) for el in event))):
             for e in event:
-                SyclEventRaw._wait(e)
-        elif isinstance(event, SyclEventRaw):
-            SyclEventRaw._wait(event)
+                SyclEvent._wait(e)
+        elif isinstance(event, SyclEvent):
+            SyclEvent._wait(event)
         else:
             raise TypeError(
-                "The passed argument is not a SyclEventRaw type or "
+                "The passed argument is not a SyclEvent type or "
                 "a sequence of such objects"
             )
 
@@ -305,7 +246,7 @@ cdef class SyclEventRaw(_SyclEventRaw):
         Returns:
             :class:`pycapsule`: A capsule object storing a copy of the
             ``cl::sycl::event`` pointer belonging to thus
-            :class:`dpctl.SyclEventRaw` instance.
+            :class:`dpctl.SyclEvent` instance.
         Raises:
             ValueError: If the ``DPCTLEvent_Copy`` fails to copy the
                         ``cl::sycl::event`` pointer.
@@ -358,7 +299,7 @@ cdef class SyclEventRaw(_SyclEventRaw):
 
     def get_wait_list(self):
         """
-        Returns the list of :class:`dpctl.SyclEventRaw` objects that depend
+        Returns the list of :class:`dpctl.SyclEvent` objects that depend
         on this event.
         """
         cdef DPCTLEventVectorRef EVRef = DPCTLEvent_GetWaitList(
@@ -373,7 +314,7 @@ cdef class SyclEventRaw(_SyclEventRaw):
         events = []
         for i in range(num_events):
             ERef = DPCTLEventVector_GetAt(EVRef, i)
-            events.append(SyclEventRaw._create(ERef))
+            events.append(SyclEvent._create(ERef, args=None))
         DPCTLEventVector_Delete(EVRef)
         return events
 
@@ -407,3 +348,7 @@ cdef class SyclEventRaw(_SyclEventRaw):
         cdef uint64_t profiling_info_end = 0
         profiling_info_end = DPCTLEvent_GetProfilingInfoEnd(self._event_ref)
         return profiling_info_end
+
+    cpdef void wait(self):
+        "Synchronously wait for completion of this event."
+        DPCTLEvent_Wait(self._event_ref)

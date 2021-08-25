@@ -46,7 +46,7 @@ from dpctl._sycl_device_factory import (
     select_gpu_device,
     select_host_device,
 )
-from dpctl._sycl_event import SyclEvent, SyclEventRaw
+from dpctl._sycl_event import SyclEvent
 from dpctl._sycl_platform import SyclPlatform, get_platforms, lsplatform
 from dpctl._sycl_queue import (
     SyclKernelInvalidRangeError,
