@@ -21,7 +21,7 @@
 types defined by dpctl's C API.
 """
 
-from libc.stdint cimport int64_t, uint32_t
+from libc.stdint cimport int64_t, uint32_t, uint64_t
 from libcpp cimport bool
 
 
@@ -103,6 +103,12 @@ cdef extern from "dpctl_sycl_enum_types.h":
         _L2_cache                           'L2_cache',
         _L1_cache                           'L1_cache',
         _next_partitionable                 'next_partitionable',
+
+    ctypedef enum _event_status_type 'DPCTLSyclEventStatusType':
+        _UNKNOWN_STATUS     'DPCTL_UNKNOWN_STATUS'
+        _SUBMITTED          'DPCTL_SUBMITTED'
+        _RUNNING            'DPCTL_RUNNING'
+        _COMPLETE           'DPCTL_COMPLETE'
 
 
 cdef extern from "dpctl_sycl_types.h":
@@ -217,8 +223,25 @@ cdef extern from "dpctl_sycl_device_selector_interface.h":
 
 
 cdef extern from "dpctl_sycl_event_interface.h":
+    cdef DPCTLSyclEventRef DPCTLEvent_Create()
+    cdef DPCTLSyclEventRef DPCTLEvent_Copy(const DPCTLSyclEventRef ERef)
     cdef void DPCTLEvent_Wait(DPCTLSyclEventRef ERef)
+    cdef void DPCTLEvent_WaitAndThrow(DPCTLSyclEventRef ERef)
     cdef void DPCTLEvent_Delete(DPCTLSyclEventRef ERef)
+    cdef _event_status_type DPCTLEvent_GetCommandExecutionStatus(DPCTLSyclEventRef ERef)
+    cdef _backend_type DPCTLEvent_GetBackend(DPCTLSyclEventRef ERef)
+    cdef struct DPCTLEventVector
+    ctypedef DPCTLEventVector *DPCTLEventVectorRef
+    cdef void DPCTLEventVector_Delete(DPCTLEventVectorRef EVRef)
+    cdef size_t DPCTLEventVector_Size(DPCTLEventVectorRef EVRef)
+    cdef DPCTLSyclEventRef DPCTLEventVector_GetAt(
+        DPCTLEventVectorRef EVRef,
+        size_t index)
+    cdef DPCTLEventVectorRef DPCTLEvent_GetWaitList(
+        DPCTLSyclEventRef ERef)
+    cdef uint64_t DPCTLEvent_GetProfilingInfoSubmit(DPCTLSyclEventRef ERef)
+    cdef uint64_t DPCTLEvent_GetProfilingInfoStart(DPCTLSyclEventRef ERef)
+    cdef uint64_t DPCTLEvent_GetProfilingInfoEnd(DPCTLSyclEventRef ERef)
 
 
 cdef extern from "dpctl_sycl_kernel_interface.h":
