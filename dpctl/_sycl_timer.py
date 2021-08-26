@@ -17,27 +17,65 @@
 
 import timeit
 
-import dpctl
+from . import SyclQueue
 
 
 class SyclTimer:
-    def __init__(self, host_time=timeit.default_timer, time_scale=1):
-        self.timer = host_time
+    """
+    SyclTimer(host_timer=timeit.default_timer, time_scale=1)
+    Python class to measure device time of execution of commands submitted to
+    :class:`dpctl.SyclQueue` as well as the wall-time.
+
+    :Example:
+        .. code-block:: python
+
+            import dpctl
+
+            # Create a default SyclQueue
+            q = dpctl.SyclQueue(property='enable_profiling')
+
+            # create the timer
+            miliseconds_sc = 1e-3
+            timer = dpctl.SyclTimer(time_scale = miliseconds_sc)
+
+            # use the timer
+            with timer(queue=q):
+                code_block
+
+            # retrieve elapsed times in miliseconds
+            sycl_dt, wall_dt = timer.dt
+
+    Remark:
+       The timer synchronizes the queue at the entrance and the
+       exit of the context.
+
+    Args:
+       host_timer (callable): A callable such that host_timer() returns current
+       host time in seconds.
+       time_scale (int, float): Ratio of the unit of time of interest and
+       one second.
+    """
+
+    def __init__(self, host_timer=timeit.default_timer, time_scale=1):
+        self.timer = host_timer
         self.time_scale = time_scale
+        self.queue = None
 
     def __call__(self, queue=None):
-        if isinstance(queue, dpctl.SyclQueue):
+        if isinstance(queue, SyclQueue):
             if queue.has_enable_profiling:
                 self.queue = queue
             else:
                 raise ValueError(
-                    "The queue does not contain the enable_profiling property"
+                    "The given queue was not created with the "
+                    "enable_profiling property"
                 )
         else:
-            raise ValueError(
-                "The passed queue must be <class 'dpctl._sycl_queue.SyclQueue'>"
+            raise TypeError(
+                "The passed queue must have type dpctl.SyclQueue, "
+                "got {}".format(type(queue))
             )
-        return self.__enter__()
+        return self
 
     def __enter__(self):
         self.event_start = self.queue.submit_barrier()
@@ -48,6 +86,7 @@ class SyclTimer:
         self.event_finish = self.queue.submit_barrier()
         self.host_finish = self.timer()
 
+    @property
     def dt(self):
         self.event_start.wait()
         self.event_finish.wait()

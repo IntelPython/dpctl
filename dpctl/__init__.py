@@ -64,6 +64,7 @@ from dpctl._sycl_queue_manager import (
     set_global_queue,
 )
 
+from ._sycl_timer import SyclTimer
 from ._version import get_versions
 from .enum_types import backend_type, device_type, event_status_type
 
@@ -88,7 +89,7 @@ __all__ += [
 ]
 __all__ += [
     "SyclEvent",
-    "SyclEventRaw",
+    "SyclTimer",
 ]
 __all__ += [
     "get_platforms",
