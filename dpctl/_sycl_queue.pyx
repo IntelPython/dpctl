@@ -327,7 +327,11 @@ cdef class SyclQueue(_SyclQueue):
                     .format(arg)
                 )
             elif status == -2 or status == -8:
+                default_dev_error = (
+                    "Default SYCL Device could not be created."
+                )
                 raise SyclQueueCreationError(
+                    default_dev_error if (len_args == 0) else
                     "SYCL Device '{}' could not be created.".format(arg)
                 )
             elif status == -3 or status == -7:
