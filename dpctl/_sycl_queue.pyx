@@ -30,6 +30,8 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_Delete,
     DPCTLDeviceMgr_GetCachedContext,
     DPCTLDeviceSelector_Delete,
+    DPCTLEvent_Delete,
+    DPCTLEvent_Wait,
     DPCTLFilterSelector_Create,
     DPCTLQueue_AreEq,
     DPCTLQueue_Copy,
@@ -812,6 +814,7 @@ cdef class SyclQueue(_SyclQueue):
     cpdef memcpy(self, dest, src, size_t count):
         cdef void *c_dest
         cdef void *c_src
+        cdef DPCTLSyclEventRef ERef = NULL
 
         if isinstance(dest, _Memory):
             c_dest = <void*>(<_Memory>dest).memory_ptr
@@ -823,10 +826,17 @@ cdef class SyclQueue(_SyclQueue):
         else:
             raise TypeError("Parameter `src` should have type _Memory.")
 
-        DPCTLQueue_Memcpy(self._queue_ref, c_dest, c_src, count)
+        ERef = DPCTLQueue_Memcpy(self._queue_ref, c_dest, c_src, count)
+        if (ERef is NULL):
+            raise RuntimeError(
+                "SyclQueue.memcpy operation encountered an error"
+            )
+        DPCTLEvent_Wait(ERef)
+        DPCTLEvent_Delete(ERef)
 
     cpdef prefetch(self, mem, size_t count=0):
         cdef void *ptr
+        cdef DPCTLSyclEventRef ERef = NULL
 
         if isinstance(mem, _Memory):
             ptr = <void*>(<_Memory>mem).memory_ptr
@@ -836,10 +846,17 @@ cdef class SyclQueue(_SyclQueue):
         if (count <=0 or count > self.nbytes):
             count = self.nbytes
 
-        DPCTLQueue_Prefetch(self._queue_ref, ptr, count)
+        ERef = DPCTLQueue_Prefetch(self._queue_ref, ptr, count)
+        if (ERef is NULL):
+            raise RuntimeError(
+                "SyclQueue.prefetch encountered an error"
+            )
+        DPCTLEvent_Wait(ERef)
+        DPCTLEvent_Delete(ERef)
 
     cpdef mem_advise(self, mem, size_t count, int advice):
         cdef void *ptr
+        cdef DPCTLSyclEventRef ERef = NULL
 
         if isinstance(mem, _Memory):
             ptr = <void*>(<_Memory>mem).memory_ptr
@@ -849,7 +866,13 @@ cdef class SyclQueue(_SyclQueue):
         if (count <=0 or count > self.nbytes):
             count = self.nbytes
 
-        DPCTLQueue_MemAdvise(self._queue_ref, ptr, count, advice)
+        ERef = DPCTLQueue_MemAdvise(self._queue_ref, ptr, count, advice)
+        if (ERef is NULL):
+            raise RuntimeError(
+                "SyclQueue.mem_advise operation encountered an error"
+            )
+        DPCTLEvent_Wait(ERef)
+        DPCTLEvent_Delete(ERef)
 
     @property
     def is_in_order(self):

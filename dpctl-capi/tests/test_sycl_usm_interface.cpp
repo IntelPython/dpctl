@@ -56,12 +56,23 @@ void common_test_body(size_t nbytes,
     auto QueueDev = DPCTLQueue_GetDevice(Q);
     EXPECT_TRUE(DPCTLDevice_AreEq(Dev, QueueDev));
 
-    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Prefetch(Q, Ptr, nbytes));
-    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_MemAdvise(Q, Ptr, nbytes, 0));
+    DPCTLSyclEventRef E1Ref = nullptr, E2Ref = nullptr, E3Ref = nullptr;
+    EXPECT_NO_FATAL_FAILURE(E1Ref = DPCTLQueue_Prefetch(Q, Ptr, nbytes));
+    EXPECT_TRUE(E1Ref != nullptr);
+    EXPECT_NO_FATAL_FAILURE(E2Ref = DPCTLQueue_MemAdvise(Q, Ptr, nbytes, 0));
+    EXPECT_TRUE(E2Ref != nullptr);
 
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Wait(E1Ref));
+    DPCTLEvent_Delete(E1Ref);
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Wait(E2Ref));
+    DPCTLEvent_Delete(E2Ref);
     try {
         unsigned short *host_ptr = new unsigned short[nbytes];
-        EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Memcpy(Q, host_ptr, Ptr, nbytes));
+        EXPECT_NO_FATAL_FAILURE(
+            E3Ref = DPCTLQueue_Memcpy(Q, host_ptr, Ptr, nbytes));
+        EXPECT_TRUE(E3Ref != nullptr);
+        EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Wait(E3Ref));
+        DPCTLEvent_Delete(E3Ref);
         delete[] host_ptr;
     } catch (std::bad_alloc const &ba) {
         // pass
