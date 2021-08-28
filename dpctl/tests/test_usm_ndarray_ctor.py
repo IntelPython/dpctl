@@ -74,6 +74,7 @@ def test_allocate_usm_ndarray(shape, usm_type):
         "f8",
         "c8",
         "c16",
+        b"float32",
         np.dtype("d"),
         np.half,
     ],
@@ -81,6 +82,12 @@ def test_allocate_usm_ndarray(shape, usm_type):
 def test_dtypes(dtype):
     Xusm = dpt.usm_ndarray((1,), dtype=dtype)
     assert Xusm.itemsize == np.dtype(dtype).itemsize
+
+
+@pytest.mark.parametrize("dtype", ["", ">f4", "invalid", 123])
+def test_dtypes_invalid(dtype):
+    with pytest.raises((TypeError, ValueError)):
+        dpt.usm_ndarray((1,), dtype=dtype)
 
 
 def test_properties():
