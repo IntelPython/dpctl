@@ -645,3 +645,53 @@ def test_hashing_of_device():
     """
     device_dict = {dpctl.SyclDevice(): "default_device"}
     assert device_dict
+
+
+list_of_valid_aspects = [
+    "cpu",
+    "gpu",
+    "accelerator",
+    "custom",
+    "fp16",
+    "fp64",
+    "image",
+    "online_compiler",
+    "online_linker",
+    "queue_profiling",
+    "usm_device_allocations",
+    "usm_host_allocations",
+    "usm_shared_allocations",
+    "usm_system_allocator",
+]
+
+list_of_invalid_aspects = [
+    "emulated",
+    "host_debuggable",
+    "atomic64",
+    "usm_atomic_host_allocations",
+    "usm_atomic_shared_allocations",
+]
+
+
+@pytest.fixture(params=list_of_valid_aspects)
+def valid_aspects(request):
+    return request.param
+
+
+@pytest.fixture(params=list_of_invalid_aspects)
+def invalid_aspects(request):
+    return request.param
+
+
+def test_valid_aspects(valid_aspects):
+    dpctl.select_device_with_aspects([valid_aspects])
+
+
+def test_invalid_aspects(invalid_aspects):
+    try:
+        dpctl.select_device_with_aspects([invalid_aspects])
+        raise AttributeError(
+            f"The {invalid_aspects} aspect is supported in dpctl"
+        )
+    except ValueError:
+        pytest.skip(f"The {invalid_aspects} aspect is not supported in dpctl")
