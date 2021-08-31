@@ -41,11 +41,10 @@ jobs:
         with:
           path: ${{ matrix.pkgs_dirs }}
           key:
-            ${{ matrix.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
           restore-keys: |
-            ${{ matrix.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
-            ${{ matrix.os }}-conda-${{ env.CACHE_NUMBER }}-
-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Install conda-build
         run: conda install conda-build
       - name: Build conda package
@@ -53,10 +52,10 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ matrix.os }} Python ${{ matrix.python }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ matrix.conda-bld }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
-  test:
+  test_linux:
     needs: build
     runs-on:  ${{ matrix.runner }}
 
@@ -89,7 +88,6 @@ jobs:
           conda index $GITHUB_WORKSPACE/channel
           # Test channel
           conda search $PACKAGE_NAME -c $GITHUB_WORKSPACE/channel --override-channels
-
       - name: Collect dependencies
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
@@ -108,7 +106,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
-
       - name: Install dpctl
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
@@ -121,6 +118,69 @@ jobs:
           export OCL_ICD_FILENAMES=libintelocl.so
           # clinfo -l
           python -m pytest --pyargs $MODULE_NAME
+
+  test_windows:
+    needs: build
+    runs-on:  ${{ matrix.runner }}
+
+    strategy:
+      matrix:
+        python: [3.8]
+        experimental: [false]
+        runner: [windows-latest]
+        include:
+          - python: 3.8
+            experimental: true
+            runner: [self-hosted, gen9]
+    continue-on-error: ${{ matrix.experimental }}
+    env:
+      CHANNELS: -c intel -c defaults --override-channels
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-activate-base: true
+          activate-environment: ""
+      - name: Install conda-build
+        run: conda install conda-build
+      - name: Create conda channel
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/channel/win-64
+          mv ${{ env.PACKAGE_NAME }}-*.tar.bz2 ${{ env.GITHUB_WORKSPACE }}/channel/win-64
+          conda index ${{ env.GITHUB_WORKSPACE }}/channel
+          # Test channel
+          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.GITHUB_WORKSPACE }}/channel --override-channels
+      - name: Collect dependencies
+        run: conda install ${{ env.PACKAGE_NAME }} python=${{ matrix.python }} -c ${{ env.GITHUB_WORKSPACE }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
+      - name: Set pkgs_dirs
+        run: |
+          echo "pkgs_dirs: [C:\Users\runneradmin\.conda\pkgs]" >> C:\Users\runneradmin\.condarc
+      - name: Cache conda packages
+        uses: actions/cache@v2
+        env:
+          CACHE_NUMBER: 0  # Increase to reset cache
+        with:
+          path: C:\Users\runneradmin\.conda\pkgs
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+      - name: Install opencl_rt
+        run: conda install opencl_rt -c intel --override-channels
+      - name: Install dpctl
+        run: |
+          conda install ${{ env.PACKAGE_NAME }} pytest python=${{ matrix.python }} -c ${{ env.GITHUB_WORKSPACE }}/channel ${{ env.CHANNELS }}
+          # Test installed packages
+          conda list
+      - name: Add library
+        run: echo "OCL_ICD_FILENAMES=C:\Miniconda\Library\lib\intelocl64.dll" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Run tests
+        run: python -m pytest --pyargs ${{ env.MODULE_NAME }}
 
   upload:
     needs: test
