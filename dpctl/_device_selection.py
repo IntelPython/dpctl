@@ -13,15 +13,23 @@ def select_device_with_aspects(aspect_list, deny_list=[]):
     selected_dev = None
 
     for dev in devs:
-        aspect_status = True
-        for asp in aspect_list:
-            has_aspect = "dev.has_aspect_" + asp
-            if not eval(has_aspect):
-                aspect_status = False
-        for deny in deny_list:
-            has_aspect = "dev.has_aspect_" + deny
-            if eval(has_aspect):
-                aspect_status = False
+        # aspect_status = True
+        #     for asp in aspect_list:
+        #         has_aspect = "dev.has_aspect_" + asp
+        #         if not eval(has_aspect):
+        #             aspect_status = False
+        #     for deny in deny_list:
+        #         has_aspect = "dev.has_aspect_" + deny
+        #         if eval(has_aspect):
+        #             aspect_status = False
+        aspect_status = all(
+            (getattr(dev, "has_aspect_" + asp) is True for asp in aspect_list)
+        )
+        aspect_status = aspect_status and not (
+            any(
+                (getattr(dev, "has_aspect_" + asp) is True for asp in deny_list)
+            )
+        )
         if aspect_status and dev.default_selector_score > max_score:
             max_score = dev.default_selector_score
             selected_dev = dev
