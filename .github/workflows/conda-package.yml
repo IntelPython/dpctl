@@ -128,10 +128,6 @@ jobs:
         python: [3.8]
         experimental: [false]
         runner: [windows-latest]
-        include:
-          - python: 3.8
-            experimental: true
-            runner: [self-hosted, gen9]
     continue-on-error: ${{ matrix.experimental }}
     env:
       CHANNELS: -c intel -c defaults --override-channels
