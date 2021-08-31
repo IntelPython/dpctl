@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "LD_LIBRARY_PATH: $LD_LIBRARY_PATH"
+echo "KW_LD_LIBRARY_PATH: $KW_LD_LIBRARY_PATH"
+
 ${PYTHON} setup.py clean --all
 INSTALL_CMD="install --sycl-compiler-prefix=$CONDA_PREFIX"
 
