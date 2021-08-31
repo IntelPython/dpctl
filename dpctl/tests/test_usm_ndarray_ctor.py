@@ -55,6 +55,7 @@ def test_allocate_usm_ndarray(shape, usm_type):
     assert X.sycl_device == q.sycl_device
     assert X.size == Xnp.size
     assert X.shape == Xnp.shape
+    assert X.shape == X.__sycl_usm_array_interface__["shape"]
 
 
 @pytest.mark.parametrize(

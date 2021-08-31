@@ -1,4 +1,4 @@
-//===--------- dpctl_config.h - Configured options for dpctl C API         ===//
+//===- dpctl_service.h - C API for service functions   -*-C++-*- ===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -19,14 +19,28 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file exports a set of dpctl C API configurations.
+/// This header defines dpctl service functions.
 ///
 //===----------------------------------------------------------------------===//
 
 #pragma once
 
-/* Defined when dpctl was built with level zero program creation enabled. */
-#cmakedefine DPCTL_ENABLE_LO_PROGRAM_CREATION @DPCTL_ENABLE_LO_PROGRAM_CREATION@
+#include "Support/DllExport.h"
+#include "Support/ExternC.h"
+#include "Support/MemOwnershipAttrs.h"
 
-/* The DPCPP version used to build dpctl */
-#define DPCTL_DPCPP_VERSION "@IntelSycl_VERSION@"
+DPCTL_C_EXTERN_C_BEGIN
+/**
+ * @defgroup Service Service functions
+ */
+
+/*!
+ * @brief Get version of DPC++ toolchain the library was compiled with.
+ *
+ * @return A C string containing the version of DPC++ toolchain.
+ * @ingroup Service
+ */
+DPCTL_API
+__dpctl_give const char *DPCTLService_GetDPCPPVersion(void);
+
+DPCTL_C_EXTERN_C_END

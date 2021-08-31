@@ -65,7 +65,7 @@ from dpctl._sycl_queue_manager import (
 )
 
 from ._version import get_versions
-from .enum_types import backend_type, device_type
+from .enum_types import backend_type, device_type, event_status_type
 
 __all__ = [
     "SyclContext",
@@ -88,6 +88,7 @@ __all__ += [
 ]
 __all__ += [
     "SyclEvent",
+    "SyclEventRaw",
 ]
 __all__ += [
     "get_platforms",
@@ -112,6 +113,7 @@ __all__ += [
 __all__ += [
     "device_type",
     "backend_type",
+    "event_status_type",
 ]
 __all__ += [
     "get_include",

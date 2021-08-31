@@ -327,7 +327,11 @@ cdef class SyclQueue(_SyclQueue):
                     .format(arg)
                 )
             elif status == -2 or status == -8:
+                default_dev_error = (
+                    "Default SYCL Device could not be created."
+                )
                 raise SyclQueueCreationError(
+                    default_dev_error if (len_args == 0) else
                     "SYCL Device '{}' could not be created.".format(arg)
                 )
             elif status == -3 or status == -7:
@@ -931,3 +935,47 @@ cdef class SyclQueue(_SyclQueue):
             )
 
         return SyclEvent._create(ERef, [])
+
+    @property
+    def backend(self):
+        """Returns the backend_type enum value for the device
+        associated with this queue.
+
+        Returns:
+            backend_type: The backend for the device.
+        """
+        return self.sycl_device.backend
+
+    @property
+    def name(self):
+        """Returns the device name for the device
+        associated with this queue.
+
+        Returns:
+            str: The name of the device as a string.
+        """
+        return self.sycl_device.name
+
+    @property
+    def driver_version(self):
+        """Returns the driver version for the device
+        associated with this queue.
+
+        Returns:
+            str: The driver version of the device as a string.
+        """
+        return self.sycl_device.driver_version
+
+    def print_device_info(self):
+        """ Print information about the SYCL device
+        associated with this queue.
+        """
+        self.sycl_device.print_device_info()
+
+
+cdef api DPCTLSyclQueueRef get_queue_ref(SyclQueue q):
+    """
+    C-API function to get opaque queue reference from
+    :class:`dpctl.SyclQueue` instance.
+    """
+    return q.get_queue_ref()

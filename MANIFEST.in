@@ -2,9 +2,15 @@ include versioneer.py
 recursive-include dpctl/include *.h
 recursive-include dpctl *.pxd
 include dpctl/_sycl_context.h
+include dpctl/_sycl_context_api.h
 include dpctl/_sycl_device.h
+include dpctl/_sycl_device_api.h
 include dpctl/_sycl_queue.h
-include dpctl/_sycl_queue_manager.h
+include dpctl/_sycl_queue_api.h
 include dpctl/_sycl_event.h
+include dpctl/_sycl_event_api.h
 include dpctl/memory/_memory.h
+include dpctl/memory/_memory_api.h
+include dpctl/tensor/_usmarray.h
+include dpctl/tensor/_usmarray_api.h
 include dpctl/tests/input_files/*

@@ -1117,3 +1117,10 @@ cdef class SyclDevice(_SyclDevice):
                     return ":".join((dt_str, str(relId)))
                 else:
                     return str(relId)
+
+cdef api DPCTLSyclDeviceRef get_device_ref(SyclDevice dev):
+    """
+    C-API function to get opaque device reference from
+    :class:`dpctl.SyclDevice` instance.
+    """
+    return dev.get_device_ref()

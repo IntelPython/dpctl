@@ -292,6 +292,41 @@ TEST(TestDPCTLSyclQueueInterface, CheckHasEnableProfilingInvalid)
     EXPECT_FALSE(ioq);
 }
 
+TEST(TestDPCTLSyclQueueInterface, CheckPropertyHandling)
+{
+    DPCTLSyclQueueRef QRef = nullptr;
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+
+    ::testing::internal::CaptureStderr();
+    EXPECT_NO_FATAL_FAILURE(QRef = DPCTLQueue_CreateForDevice(
+                                DRef, nullptr, DPCTL_DEFAULT_PROPERTY));
+    std::string capt1 = ::testing::internal::GetCapturedStderr();
+    ASSERT_TRUE(capt1.empty());
+    ASSERT_FALSE(DPCTLQueue_IsInOrder(QRef));
+    ASSERT_FALSE(DPCTLQueue_HasEnableProfiling(QRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(QRef));
+
+    QRef = nullptr;
+    ::testing::internal::CaptureStderr();
+    int invalid_prop = -1;
+    EXPECT_NO_FATAL_FAILURE(
+        QRef = DPCTLQueue_CreateForDevice(DRef, nullptr, invalid_prop));
+    std::string capt2 = ::testing::internal::GetCapturedStderr();
+    ASSERT_TRUE(!capt2.empty());
+    ASSERT_TRUE(DPCTLQueue_IsInOrder(QRef) ==
+                bool((invalid_prop & DPCTL_IN_ORDER)));
+    ASSERT_TRUE(DPCTLQueue_HasEnableProfiling(QRef) ==
+                bool((invalid_prop & DPCTL_ENABLE_PROFILING)));
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(QRef));
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+}
+
 TEST_P(TestDPCTLQueueMemberFunctions, CheckGetBackend)
 {
     auto q = unwrap(QRef);

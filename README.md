@@ -4,7 +4,7 @@
 
 What?
 ====
-A lightweight Python package exposing a subset of SYCL functionalities.
+A lightweight Python package exposing a subset of SYCL functionalities, part of [![](https://spec.oneapi.io/oneapi-logo-white-scaled.jpg)](https://oneapi.io).
 
 Requirements
 ============
@@ -80,7 +80,7 @@ Install Wheel Package from Pypi
 ==================================
 1. Install dpctl
 ```cmd
-python -m pip install --index-url https://pypi.anaconda.org/intel/simple -extra-index-url https://pypi.org/simple dpctl
+python -m pip install --index-url https://pypi.anaconda.org/intel/simple --extra-index-url https://pypi.org/simple dpctl
 ```
 Note: dpctl wheel package is placed on Pypi, but some of its dependencies (like Intel numpy) are in Anaconda Cloud.
 That is why install command requires additional intel Pypi channel from Anaconda Cloud.

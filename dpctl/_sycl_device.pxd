@@ -29,7 +29,10 @@ from ._backend cimport (
 )
 
 
-cdef class _SyclDevice:
+cdef public api class _SyclDevice [
+    object Py_SyclDeviceObject,
+    type Py_SyclDeviceType
+]:
     """ A helper data-owner class to abstract a `cl::sycl::device` instance.
     """
     cdef DPCTLSyclDeviceRef _device_ref
@@ -39,7 +42,10 @@ cdef class _SyclDevice:
     cdef size_t *_max_work_item_sizes
 
 
-cdef public class SyclDevice(_SyclDevice) [object PySyclDeviceObject, type PySyclDeviceType]:
+cdef public api class SyclDevice(_SyclDevice) [
+    object PySyclDeviceObject,
+    type PySyclDeviceType
+]:
     @staticmethod
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref)
     cdef int _init_from__SyclDevice(self, _SyclDevice other)

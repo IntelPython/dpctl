@@ -23,13 +23,27 @@
 from ._backend cimport DPCTLSyclEventRef
 
 
-cdef public class SyclEvent [object PySyclEventObject, type PySyclEventType]:
-    ''' Wrapper class for a Sycl Event
-    '''
-    cdef  DPCTLSyclEventRef _event_ref
-    cdef list _args
+cdef public api class _SyclEvent [
+    object Py_SyclEventObject,
+    type Py_SyclEventType
+]:
+    """ Data owner for SyclEvent
+    """
+    cdef DPCTLSyclEventRef _event_ref
+    cdef object args
 
+
+cdef public api class SyclEvent(_SyclEvent) [
+    object PySyclEventObject,
+    type PySyclEventType
+]:
+    """ Python wrapper class for a ``cl::sycl::event``
+    """
     @staticmethod
-    cdef  SyclEvent _create (DPCTLSyclEventRef e, list args)
-    cdef  DPCTLSyclEventRef get_event_ref (self)
+    cdef SyclEvent _create (DPCTLSyclEventRef event, object args=*)
+    cdef int _init_event_default(self)
+    cdef int _init_event_from__SyclEvent(self, _SyclEvent other)
+    cdef int _init_event_from_capsule(self, object caps)
+    cdef DPCTLSyclEventRef get_event_ref (self)
+    cdef void _wait (SyclEvent event)
     cpdef void wait (self)

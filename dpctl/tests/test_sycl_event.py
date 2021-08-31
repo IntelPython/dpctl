@@ -1,0 +1,159 @@
+#                      Data Parallel Control (dpctl)
+#
+# Copyright 2020-2021 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+""" Defines unit test cases for the SyclEvent class.
+"""
+
+import numpy as np
+import pytest
+
+import dpctl
+import dpctl.memory as dpctl_mem
+import dpctl.program as dpctl_prog
+from dpctl import event_status_type as esty
+
+from ._helper import has_cpu
+
+
+def produce_event(profiling=False):
+    oclSrc = "                                                                 \
+            kernel void add(global int* a) {                                   \
+                size_t index = get_global_id(0);                               \
+                a[index] = a[index] + 1;                                       \
+            }"
+    if profiling:
+        q = dpctl.SyclQueue("opencl:cpu", property="enable_profiling")
+    else:
+        q = dpctl.SyclQueue("opencl:cpu")
+    prog = dpctl_prog.create_program_from_source(q, oclSrc)
+    addKernel = prog.get_sycl_kernel("add")
+
+    bufBytes = 1024 * np.dtype("i").itemsize
+    abuf = dpctl_mem.MemoryUSMShared(bufBytes, queue=q)
+    a = np.ndarray((1024), buffer=abuf, dtype="i")
+    a[:] = np.arange(1024)
+    args = []
+
+    args.append(a.base)
+    r = [1024]
+    ev = q.submit(addKernel, args, r)
+
+    return ev
+
+
+def test_create_default_event():
+    try:
+        dpctl.SyclEvent()
+    except ValueError:
+        pytest.fail("Failed to create a default event")
+
+
+def test_create_event_from_capsule():
+    try:
+        event = dpctl.SyclEvent()
+        event_capsule = event._get_capsule()
+        dpctl.SyclEvent(event_capsule)
+    except ValueError:
+        pytest.fail("Failed to create an event from capsule")
+
+
+def test_wait_with_event():
+    event = dpctl.SyclEvent()
+    try:
+        dpctl.SyclEvent.wait_for(event)
+    except ValueError:
+        pytest.fail("Failed to wait_for(event)")
+    event = dpctl.SyclEvent()
+    try:
+        event.wait()
+    except ValueError:
+        pytest.fail("Failed to wait for the event")
+
+
+def test_wait_with_list():
+    event_1 = dpctl.SyclEvent()
+    event_2 = dpctl.SyclEvent()
+    try:
+        dpctl.SyclEvent.wait_for([event_1, event_2])
+    except ValueError:
+        pytest.fail("Failed to wait for events from the list")
+
+
+def test_execution_status():
+    event = dpctl.SyclEvent()
+    try:
+        event_status = event.execution_status
+    except ValueError:
+        pytest.fail("Failed to get an event status")
+    assert event_status == esty.complete
+
+
+def test_backend():
+    try:
+        dpctl.SyclEvent().backend
+    except ValueError:
+        pytest.fail("Failed to get backend from event")
+
+
+@pytest.mark.skip(reason="event::get_wait_list() method returns wrong result")
+def test_get_wait_list():
+    if has_cpu():
+        oclSrc = "                                                             \
+            kernel void add_k(global float* a) {                               \
+                size_t index = get_global_id(0);                               \
+                a[index] = a[index] + 1;                                       \
+            }                                                                  \
+            kernel void sqrt_k(global float* a) {                              \
+                size_t index = get_global_id(0);                               \
+                a[index] = sqrt(a[index]);                                     \
+            }                                                                  \
+            kernel void sin_k(global float* a) {                               \
+                size_t index = get_global_id(0);                               \
+                a[index] = sin(a[index]);                                      \
+            }"
+        q = dpctl.SyclQueue("opencl:cpu")
+        prog = dpctl_prog.create_program_from_source(q, oclSrc)
+        addKernel = prog.get_sycl_kernel("add_k")
+        sqrtKernel = prog.get_sycl_kernel("sqrt_k")
+        sinKernel = prog.get_sycl_kernel("sin_k")
+
+        bufBytes = 1024 * np.dtype("f").itemsize
+        abuf = dpctl_mem.MemoryUSMShared(bufBytes, queue=q)
+        a = np.ndarray((1024), buffer=abuf, dtype="f")
+        a[:] = np.arange(1024)
+        args = []
+
+        args.append(a.base)
+        r = [1024]
+        ev_1 = q.submit(addKernel, args, r)
+        ev_2 = q.submit(sqrtKernel, args, r, dEvents=[ev_1])
+        ev_3 = q.submit(sinKernel, args, r, dEvents=[ev_2])
+
+        try:
+            wait_list = ev_3.get_wait_list()
+        except ValueError:
+            pytest.fail("Failed to get a list of waiting events from SyclEvent")
+        assert len(wait_list)
+
+
+def test_profiling_info():
+    if has_cpu():
+        event = produce_event(profiling=True)
+        assert event.profiling_info_submit
+        assert event.profiling_info_start
+        assert event.profiling_info_end
+    else:
+        pytest.skip("No OpenCL CPU queues available")
