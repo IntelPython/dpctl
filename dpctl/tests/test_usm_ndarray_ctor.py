@@ -38,6 +38,7 @@ from dpctl.tensor._usmarray import Device
         (4, 5),
         (2, 5, 2),
         (2, 2, 2, 2, 2, 2, 2, 2),
+        5,
     ],
 )
 @pytest.mark.parametrize("usm_type", ["shared", "host", "device"])
