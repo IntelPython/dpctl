@@ -647,7 +647,7 @@ def test_hashing_of_device():
     assert device_dict
 
 
-list_of_valid_aspects = [
+list_of_supported_aspects = [
     "cpu",
     "gpu",
     "accelerator",
@@ -664,7 +664,9 @@ list_of_valid_aspects = [
     "usm_system_allocator",
 ]
 
-list_of_invalid_aspects = [
+# SYCL 2020 spec aspects not presently
+# supported in DPC++, and dpctl
+list_of_unsupported_aspects = [
     "emulated",
     "host_debuggable",
     "atomic64",
@@ -673,25 +675,39 @@ list_of_invalid_aspects = [
 ]
 
 
-@pytest.fixture(params=list_of_valid_aspects)
-def valid_aspects(request):
+@pytest.fixture(params=list_of_supported_aspects)
+def supported_aspect(request):
     return request.param
 
 
-@pytest.fixture(params=list_of_invalid_aspects)
-def invalid_aspects(request):
+@pytest.fixture(params=list_of_unsupported_aspects)
+def unsupported_aspect(request):
     return request.param
 
 
-def test_valid_aspects(valid_aspects):
-    dpctl.select_device_with_aspects([valid_aspects])
-
-
-def test_invalid_aspects(invalid_aspects):
+def test_supported_aspect(supported_aspect):
     try:
-        dpctl.select_device_with_aspects([invalid_aspects])
-        raise AttributeError(
-            f"The {invalid_aspects} aspect is supported in dpctl"
-        )
+        dpctl.select_device_with_aspects(supported_aspect)
     except ValueError:
-        pytest.skip(f"The {invalid_aspects} aspect is not supported in dpctl")
+        # ValueError may be raised if no device with
+        # requested aspect charateristics is available
+        pass
+
+
+def test_unsupported_aspect(unsupported_aspect):
+    try:
+        dpctl.select_device_with_aspects(unsupported_aspect)
+        raise AttributeError(
+            f"The {unsupported_aspect} aspect is now supported in dpctl"
+        )
+    except AttributeError:
+        pytest.skip(
+            f"The {unsupported_aspect} aspect is not supported in dpctl"
+        )
+
+
+def test_handle_no_device():
+    with pytest.raises(ValueError):
+        dpctl.select_device_with_aspects(["gpu", "cpu"])
+    with pytest.raises(ValueError):
+        dpctl.select_device_with_aspects("cpu", excluded_aspects="cpu")
