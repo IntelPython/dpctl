@@ -484,39 +484,74 @@ void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
     }
 }
 
-void DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
-                       void *Dest,
-                       const void *Src,
-                       size_t Count)
+DPCTLSyclEventRef DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                                    void *Dest,
+                                    const void *Src,
+                                    size_t Count)
 {
     auto Q = unwrap(QRef);
     if (Q) {
-        auto event = Q->memcpy(Dest, Src, Count);
-        event.wait();
+        sycl::event ev;
+        try {
+            ev = Q->memcpy(Dest, Src, Count);
+        } catch (const sycl::runtime_error &re) {
+            // todo: log error
+            std::cerr << re.what() << '\n';
+            return nullptr;
+        }
+        return wrap(new event(ev));
+    }
+    else {
+        // todo: log error
+        std::cerr << "QRef passed to memcpy was NULL" << '\n';
+        return nullptr;
     }
 }
 
-void DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
-                         const void *Ptr,
-                         size_t Count)
+DPCTLSyclEventRef DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
+                                      const void *Ptr,
+                                      size_t Count)
 {
     auto Q = unwrap(QRef);
     if (Q) {
-        auto event = Q->prefetch(Ptr, Count);
-        event.wait();
+        sycl::event ev;
+        try {
+            ev = Q->prefetch(Ptr, Count);
+        } catch (sycl::runtime_error &re) {
+            // todo: log error
+            std::cerr << re.what() << '\n';
+            return nullptr;
+        }
+        return wrap(new event(ev));
+    }
+    else {
+        // todo: log error
+        std::cerr << "QRef passed to prefetch was NULL" << '\n';
+        return nullptr;
     }
 }
 
-void DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
-                          const void *Ptr,
-                          size_t Count,
-                          int Advice)
+DPCTLSyclEventRef DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
+                                       const void *Ptr,
+                                       size_t Count,
+                                       int Advice)
 {
     auto Q = unwrap(QRef);
     if (Q) {
-        auto event =
-            Q->mem_advise(Ptr, Count, static_cast<pi_mem_advice>(Advice));
-        event.wait();
+        sycl::event ev;
+        try {
+            ev = Q->mem_advise(Ptr, Count, static_cast<pi_mem_advice>(Advice));
+        } catch (const sycl::runtime_error &re) {
+            // todo: log error
+            std::cerr << re.what() << '\n';
+            return nullptr;
+        }
+        return wrap(new event(ev));
+    }
+    else {
+        // todo: log error
+        std::cerr << "QRef passed to prefetch was NULL" << '\n';
+        return nullptr;
     }
 }
 

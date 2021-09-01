@@ -34,6 +34,8 @@ from dpctl._backend cimport (  # noqa: E211
     DPCTLaligned_alloc_host,
     DPCTLaligned_alloc_shared,
     DPCTLContext_Delete,
+    DPCTLEvent_Delete,
+    DPCTLEvent_Wait,
     DPCTLfree_with_queue,
     DPCTLmalloc_device,
     DPCTLmalloc_host,
@@ -45,6 +47,7 @@ from dpctl._backend cimport (  # noqa: E211
     DPCTLQueue_Memcpy,
     DPCTLSyclContextRef,
     DPCTLSyclDeviceRef,
+    DPCTLSyclEventRef,
     DPCTLSyclUSMRef,
     DPCTLUSM_GetPointerDevice,
     DPCTLUSM_GetPointerType,
@@ -79,20 +82,26 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
     """
     # could also have used bytearray(nbytes)
     cdef unsigned char[::1] host_buf = np.empty((nbytes,), dtype="|u1")
+    cdef DPCTLSyclEventRef E1Ref = NULL
+    cdef DPCTLSyclEventRef E2Ref = NULL
 
-    DPCTLQueue_Memcpy(
+    E1Ref = DPCTLQueue_Memcpy(
         src_queue.get_queue_ref(),
         <void *>&host_buf[0],
         src_ptr,
         nbytes
     )
+    DPCTLEvent_Wait(E1Ref)
 
-    DPCTLQueue_Memcpy(
+    E2Ref = DPCTLQueue_Memcpy(
         dest_queue.get_queue_ref(),
         dest_ptr,
         <void *>&host_buf[0],
         nbytes
     )
+    DPCTLEvent_Wait(E2Ref)
+    DPCTLEvent_Delete(E1Ref)
+    DPCTLEvent_Delete(E2Ref)
 
 
 def _to_memory(unsigned char[::1] b, str usm_kind):
@@ -356,6 +365,7 @@ cdef class _Memory:
         """
         # Cython does the right thing here
         cdef unsigned char[::1] host_buf = obj
+        cdef DPCTLSyclEventRef ERef = NULL
 
         if (host_buf is None):
             # Python object did not have buffer interface
@@ -368,12 +378,14 @@ cdef class _Memory:
                 .format(self.nbytes)
             )
         # call kernel to copy from
-        DPCTLQueue_Memcpy(
+        ERef = DPCTLQueue_Memcpy(
             self.queue.get_queue_ref(),
             <void *>&host_buf[0],     # destination
             <void *>self.memory_ptr,  # source
             <size_t>self.nbytes
         )
+        DPCTLEvent_Wait(ERef)
+        DPCTLEvent_Delete(ERef)
 
         return obj
 
@@ -383,6 +395,7 @@ cdef class _Memory:
         """
         cdef const unsigned char[::1] host_buf = obj
         cdef Py_ssize_t buf_len = len(host_buf)
+        cdef DPCTLSyclEventRef ERef = NULL
 
         if (buf_len > self.nbytes):
             raise ValueError(
@@ -390,12 +403,14 @@ cdef class _Memory:
                 "buffer".format(self.nbytes)
             )
         # call kernel to copy from
-        DPCTLQueue_Memcpy(
+        ERef = DPCTLQueue_Memcpy(
             self.queue.get_queue_ref(),
             <void *>self.memory_ptr,  # destination
             <void *>&host_buf[0],     # source
             <size_t>buf_len
         )
+        DPCTLEvent_Wait(ERef)
+        DPCTLEvent_Delete(ERef)
 
     cpdef copy_from_device(self, object sycl_usm_ary):
         """
@@ -404,6 +419,7 @@ cdef class _Memory:
         """
         cdef _USMBufferData src_buf
         cdef const char* kind
+        cdef DPCTLSyclEventRef ERef = NULL
 
         if not hasattr(sycl_usm_ary, '__sycl_usm_array_interface__'):
             raise ValueError(
@@ -428,12 +444,14 @@ cdef class _Memory:
                     <size_t>src_buf.nbytes
                 )
             else:
-                DPCTLQueue_Memcpy(
+                ERef = DPCTLQueue_Memcpy(
                     self.queue.get_queue_ref(),
                     <void *>self.memory_ptr,
                     <void *>src_buf.p,
                     <size_t>src_buf.nbytes
                 )
+                DPCTLEvent_Wait(ERef)
+                DPCTLEvent_Delete(ERef)
         else:
             raise TypeError
 

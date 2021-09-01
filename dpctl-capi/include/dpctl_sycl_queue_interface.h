@@ -266,7 +266,7 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                          size_t NDepEvents);
 
 /*!
- * @brief Calls the ``sycl::queue.submit`` function to do a blocking wait on
+ * @brief Calls the ``sycl::queue::submit`` function to do a blocking wait on
  * all enqueued tasks in the queue.
  *
  * @param    QRef           Opaque pointer to a ``sycl::queue``.
@@ -276,38 +276,39 @@ DPCTL_API
 void DPCTLQueue_Wait(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
- * @brief C-API wrapper for ``sycl::queue::memcpy``, the function waits on an
- * event till the memcpy operation completes.
+ * @brief C-API wrapper for ``sycl::queue::memcpy``.
  *
  * @param    QRef           An opaque pointer to the ``sycl::queue``.
  * @param    Dest           An USM pointer to the destination memory.
  * @param    Src            An USM pointer to the source memory.
  * @param    Count          A number of bytes to copy.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::memcpy`` function.
  * @ingroup QueueInterface
  */
 DPCTL_API
-void DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
-                       void *Dest,
-                       const void *Src,
-                       size_t Count);
+DPCTLSyclEventRef DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                                    void *Dest,
+                                    const void *Src,
+                                    size_t Count);
 
 /*!
- * @brief C-API wrapper for ``sycl::queue::prefetch``, the function waits on an
- * event till the prefetch operation completes.
+ * @brief C-API wrapper for ``sycl::queue::prefetch``.
  *
  * @param    QRef           An opaque pointer to the ``sycl::queue``.
  * @param    Ptr            An USM pointer to memory.
  * @param    Count          A number of bytes to prefetch.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::prefetch`` function.
  * @ingroup QueueInterface
  */
 DPCTL_API
-void DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
-                         const void *Ptr,
-                         size_t Count);
+DPCTLSyclEventRef DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
+                                      const void *Ptr,
+                                      size_t Count);
 
 /*!
- * @brief C-API wrapper for sycl::queue::mem_advise, the function waits on an
- * event till the operation completes.
+ * @brief C-API wrapper for ``sycl::queue::mem_advise``.
  *
  * @param    QRef           An opaque pointer to the ``sycl::queue``.
  * @param    Ptr            An USM pointer to memory.
@@ -315,13 +316,15 @@ void DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
  * @param    Advice         Device-defined advice for the specified allocation.
  *                          A value of 0 reverts the advice for Ptr to the
  *                          default behavior.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::mem_advise`` function.
  * @ingroup QueueInterface
  */
 DPCTL_API
-void DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
-                          const void *Ptr,
-                          size_t Count,
-                          int Advice);
+DPCTLSyclEventRef DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
+                                       const void *Ptr,
+                                       size_t Count,
+                                       int Advice);
 
 /*!
  * @brief C-API wrapper for sycl::queue::is_in_order that indicates whether

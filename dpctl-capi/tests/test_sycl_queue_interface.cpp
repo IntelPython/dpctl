@@ -327,6 +327,24 @@ TEST(TestDPCTLSyclQueueInterface, CheckPropertyHandling)
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
 }
 
+TEST(TestDPCTLSyclQueueInterface, CheckMemOpsZeroQRef)
+{
+    DPCTLSyclQueueRef QRef = nullptr;
+    void *p1 = nullptr;
+    void *p2 = nullptr;
+    size_t n_bytes = 0;
+    DPCTLSyclEventRef ERef = nullptr;
+
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Memcpy(QRef, p1, p2, n_bytes));
+    ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Prefetch(QRef, p1, n_bytes));
+    ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_MemAdvise(QRef, p1, n_bytes, 0));
+    ASSERT_FALSE(bool(ERef));
+}
+
 TEST_P(TestDPCTLQueueMemberFunctions, CheckGetBackend)
 {
     auto q = unwrap(QRef);
@@ -362,6 +380,31 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckGetDevice)
     auto D = DPCTLQueue_GetDevice(QRef);
     ASSERT_TRUE(D != nullptr);
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(D));
+}
+
+TEST_P(TestDPCTLQueueMemberFunctions, CheckMemOpsNullPtr)
+{
+    void *p1 = nullptr;
+    void *p2 = nullptr;
+    size_t n_bytes = 256;
+    DPCTLSyclEventRef ERef = nullptr;
+
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Memcpy(QRef, p1, p2, n_bytes));
+    ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Prefetch(QRef, p1, n_bytes));
+    if (ERef) {
+        ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+        ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+        ERef = nullptr;
+    }
+
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_MemAdvise(QRef, p1, n_bytes, 0));
+    if (ERef) {
+        ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+        ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+        ERef = nullptr;
+    }
 }
 
 INSTANTIATE_TEST_SUITE_P(
