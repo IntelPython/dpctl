@@ -12,7 +12,7 @@ def select_device_with_aspects(required_aspects, excluded_aspects=[]):
 
     The list of SYCL device aspects can be found in SYCL 2020 specs:
 
-    https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:device-aspects 
+    https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:device-aspects
 
         :Example:
             .. code-block:: python
