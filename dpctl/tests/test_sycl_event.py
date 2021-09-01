@@ -180,3 +180,10 @@ def test_sycl_timer():
         timer(queue=q_no_profiling)
     with pytest.raises(TypeError):
         timer(queue=None)
+
+
+def test_event_capsule():
+    ev = dpctl.SyclEvent()
+    cap = ev._get_capsule()
+    ev2 = dpctl.SyclEvent(cap)
+    assert type(ev2) == type(ev)
