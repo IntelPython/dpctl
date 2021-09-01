@@ -424,3 +424,25 @@ def test_queue_submit_barrier(valid_filter):
     ev3.wait()
     ev1.wait()
     ev2.wait()
+
+
+def test_queue__repr__():
+    q1 = dpctl.SyclQueue()
+    r1 = q1.__repr__()
+    q2 = dpctl.SyclQueue(property="in_order")
+    r2 = q2.__repr__()
+    q3 = dpctl.SyclQueue(property="enable_profiling")
+    r3 = q3.__repr__()
+    q4 = dpctl.SyclQueue(property=["in_order", "enable_profiling"])
+    r4 = q4.__repr__()
+    assert type(r1) is str
+    assert type(r2) is str
+    assert type(r3) is str
+    assert type(r4) is str
+
+
+def test_queue_capsule():
+    q = dpctl.SyclQueue()
+    cap = q._get_capsule()
+    q2 = dpctl.SyclQueue(cap)
+    assert q == q2

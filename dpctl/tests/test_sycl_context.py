@@ -159,6 +159,16 @@ def test_context_multi_device():
     shmem_1 = dpmem.MemoryUSMShared(256, queue=q1)
     shmem_2 = dpmem.MemoryUSMDevice(256, queue=q2)
     shmem_2.copy_from_device(shmem_1)
+    # create context for single sub-device
+    ctx1 = dpctl.SyclContext(d1)
+    q1 = dpctl.SyclQueue(ctx1, d1)
+    shmem_1 = dpmem.MemoryUSMShared(256, queue=q1)
+    cap = ctx1._get_capsule()
+    del ctx1
+    ctx2 = dpctl.SyclContext(cap)
+    q2 = dpctl.SyclQueue(ctx2, d1)
+    shmem_2 = dpmem.MemoryUSMDevice(256, queue=q2)
+    shmem_2.copy_from_device(shmem_1)
 
 
 def test_hashing_of_context():
@@ -169,3 +179,8 @@ def test_hashing_of_context():
     """
     ctx_dict = {dpctl.SyclContext(): "default_context"}
     assert ctx_dict
+
+
+def test_context_repr():
+    ctx = dpctl.SyclContext()
+    assert type(ctx.__repr__()) is str
