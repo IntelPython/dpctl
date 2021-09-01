@@ -645,3 +645,69 @@ def test_hashing_of_device():
     """
     device_dict = {dpctl.SyclDevice(): "default_device"}
     assert device_dict
+
+
+list_of_supported_aspects = [
+    "cpu",
+    "gpu",
+    "accelerator",
+    "custom",
+    "fp16",
+    "fp64",
+    "image",
+    "online_compiler",
+    "online_linker",
+    "queue_profiling",
+    "usm_device_allocations",
+    "usm_host_allocations",
+    "usm_shared_allocations",
+    "usm_system_allocator",
+]
+
+# SYCL 2020 spec aspects not presently
+# supported in DPC++, and dpctl
+list_of_unsupported_aspects = [
+    "emulated",
+    "host_debuggable",
+    "atomic64",
+    "usm_atomic_host_allocations",
+    "usm_atomic_shared_allocations",
+]
+
+
+@pytest.fixture(params=list_of_supported_aspects)
+def supported_aspect(request):
+    return request.param
+
+
+@pytest.fixture(params=list_of_unsupported_aspects)
+def unsupported_aspect(request):
+    return request.param
+
+
+def test_supported_aspect(supported_aspect):
+    try:
+        dpctl.select_device_with_aspects(supported_aspect)
+    except ValueError:
+        # ValueError may be raised if no device with
+        # requested aspect charateristics is available
+        pass
+
+
+def test_unsupported_aspect(unsupported_aspect):
+    try:
+        dpctl.select_device_with_aspects(unsupported_aspect)
+        raise AttributeError(
+            f"The {unsupported_aspect} aspect is now supported in dpctl"
+        )
+    except AttributeError:
+        pytest.skip(
+            f"The {unsupported_aspect} aspect is not supported in dpctl"
+        )
+
+
+def test_handle_no_device():
+    with pytest.raises(ValueError):
+        dpctl.select_device_with_aspects(["gpu", "cpu"])
+    with pytest.raises(ValueError):
+        dpctl.select_device_with_aspects("cpu", excluded_aspects="cpu")

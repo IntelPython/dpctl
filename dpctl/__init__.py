@@ -64,6 +64,7 @@ from dpctl._sycl_queue_manager import (
     set_global_queue,
 )
 
+from ._device_selection import select_device_with_aspects
 from ._sycl_timer import SyclTimer
 from ._version import get_versions
 from .enum_types import backend_type, device_type, event_status_type
@@ -81,6 +82,7 @@ __all__ += [
     "select_default_device",
     "select_gpu_device",
     "select_host_device",
+    "select_device_with_aspects",
     "get_num_devices",
     "has_cpu_devices",
     "has_gpu_devices",
