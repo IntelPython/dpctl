@@ -38,6 +38,7 @@ from dpctl.tensor._usmarray import Device
         (4, 5),
         (2, 5, 2),
         (2, 2, 2, 2, 2, 2, 2, 2),
+        5,
     ],
 )
 @pytest.mark.parametrize("usm_type", ["shared", "host", "device"])
@@ -74,6 +75,7 @@ def test_allocate_usm_ndarray(shape, usm_type):
         "f8",
         "c8",
         "c16",
+        b"float32",
         np.dtype("d"),
         np.half,
     ],
@@ -81,6 +83,15 @@ def test_allocate_usm_ndarray(shape, usm_type):
 def test_dtypes(dtype):
     Xusm = dpt.usm_ndarray((1,), dtype=dtype)
     assert Xusm.itemsize == np.dtype(dtype).itemsize
+    expected_fmt = (np.dtype(dtype).str)[1:]
+    actual_fmt = Xusm.__sycl_usm_array_interface__["typestr"][1:]
+    assert expected_fmt == actual_fmt
+
+
+@pytest.mark.parametrize("dtype", ["", ">f4", "invalid", 123])
+def test_dtypes_invalid(dtype):
+    with pytest.raises((TypeError, ValueError)):
+        dpt.usm_ndarray((1,), dtype=dtype)
 
 
 def test_properties():
