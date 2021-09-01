@@ -37,19 +37,20 @@ class Test1DKernelSubmit(unittest.TestCase):
             size_t index = get_global_id(0);                                   \
             c[index] = d*a[index] + b[index];                                  \
         }"
-        q = dpctl.SyclQueue("opencl:gpu")
+        q = dpctl.SyclQueue("opencl:gpu", property="enable_profiling")
         prog = dpctl_prog.create_program_from_source(q, oclSrc)
         axpyKernel = prog.get_sycl_kernel("axpy")
 
-        bufBytes = 1024 * np.dtype("i").itemsize
+        n_elems = 1024 * 512
+        bufBytes = n_elems * np.dtype("i").itemsize
         abuf = dpctl_mem.MemoryUSMShared(bufBytes, queue=q)
         bbuf = dpctl_mem.MemoryUSMShared(bufBytes, queue=q)
         cbuf = dpctl_mem.MemoryUSMShared(bufBytes, queue=q)
-        a = np.ndarray((1024), buffer=abuf, dtype="i")
-        b = np.ndarray((1024), buffer=bbuf, dtype="i")
-        c = np.ndarray((1024), buffer=cbuf, dtype="i")
-        a[:] = np.arange(1024)
-        b[:] = np.arange(1024, 0, -1)
+        a = np.ndarray((n_elems,), buffer=abuf, dtype="i")
+        b = np.ndarray((n_elems,), buffer=bbuf, dtype="i")
+        c = np.ndarray((n_elems,), buffer=cbuf, dtype="i")
+        a[:] = np.arange(n_elems)
+        b[:] = np.arange(n_elems, 0, -1)
         c[:] = 0
         d = 2
         args = []
@@ -59,10 +60,17 @@ class Test1DKernelSubmit(unittest.TestCase):
         args.append(c.base)
         args.append(ctypes.c_int(d))
 
-        r = [1024]
+        r = [
+            n_elems,
+        ]
 
-        q.submit(axpyKernel, args, r)
-        self.assertTrue(np.allclose(c, a * d + b))
+        timer = dpctl.SyclTimer()
+        with timer(q):
+            q.submit(axpyKernel, args, r)
+            ref_c = a * d + b
+        host_dt, device_dt = timer.dt
+        self.assertTrue(host_dt > device_dt)
+        self.assertTrue(np.allclose(c, ref_c))
 
 
 if __name__ == "__main__":

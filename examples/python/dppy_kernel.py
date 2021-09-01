@@ -17,9 +17,9 @@
 
 import numba_dppy
 import numpy as np
-from sycl_timer import SyclTimer
 
 import dpctl
+from dpctl import SyclTimer
 
 
 @numba_dppy.kernel
@@ -45,11 +45,12 @@ b = np.array(np.random.random(X * X), dtype=np.float32).reshape(X, X)
 c = np.ones_like(a).reshape(X, X)
 
 q = dpctl.SyclQueue("opencl:gpu", property="enable_profiling")
+timer = SyclTimer(time_scale=1)
 with dpctl.device_context(q):
-    timers = SyclTimer(time_scale=1)
-    with timers(q):
+    with timer(q):
         dppy_gemm[griddim, blockdim](a, b, c)
         cc = np.dot(a, b)
-    host_time, device_time = timers.dt()
-    print("Wall time: ", host_time, "\n", "Device time: ", device_time)
-    print(np.allclose(c, cc))
+    host_time, device_time = timer.dt
+
+print("Wall time: ", host_time, "\nDevice time: ", device_time)
+print(np.allclose(c, cc))
