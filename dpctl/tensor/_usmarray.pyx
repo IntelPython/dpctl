@@ -130,12 +130,17 @@ cdef class usm_ndarray:
         cdef Py_ssize_t _offset = offset
         cdef Py_ssize_t ary_min_displacement = 0
         cdef Py_ssize_t ary_max_displacement = 0
+        cdef Py_ssize_t tmp = 0
         cdef char * data_ptr = NULL
 
         self._reset()
         if (not isinstance(shape, (list, tuple))
                 and not hasattr(shape, 'tolist')):
-            raise TypeError("Argument shape must be a list of a tuple.")
+            try:
+                tmp = <Py_ssize_t> shape
+                shape = [shape, ]
+            except Exception:
+                raise TypeError("Argument shape must be a list or a tuple.")
         nd = len(shape)
         typenum = dtype_to_typenum(dtype)
         itemsize = type_bytesize(typenum)

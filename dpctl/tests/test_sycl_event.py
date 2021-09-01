@@ -157,3 +157,26 @@ def test_profiling_info():
         assert event.profiling_info_end
     else:
         pytest.skip("No OpenCL CPU queues available")
+
+
+def test_sycl_timer():
+    try:
+        q = dpctl.SyclQueue(property="enable_profiling")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue creation of default device failed")
+    timer = dpctl.SyclTimer()
+    m1 = dpctl_mem.MemoryUSMDevice(256 * 1024, queue=q)
+    m2 = dpctl_mem.MemoryUSMDevice(256 * 1024, queue=q)
+    with timer(q):
+        # device task
+        m1.copy_from_device(m2)
+        # host task
+        [x ** 2 for x in range(1024)]
+    host_dt, device_dt = timer.dt
+    assert host_dt > device_dt
+    q_no_profiling = dpctl.SyclQueue()
+    assert q_no_profiling.has_enable_profiling is False
+    with pytest.raises(ValueError):
+        timer(queue=q_no_profiling)
+    with pytest.raises(TypeError):
+        timer(queue=None)
