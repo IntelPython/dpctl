@@ -63,6 +63,11 @@ cdef void _context_capsule_deleter(object o):
             o, "SyclContextRef"
         )
         DPCTLContext_Delete(CRef)
+    elif pycapsule.PyCapsule_IsValid(o, "used_SyclContextRef"):
+        CRef = <DPCTLSyclContextRef> pycapsule.PyCapsule_GetPointer(
+            o, "used_SyclContextRef"
+        )
+        DPCTLContext_Delete(CRef)
 
 
 cdef void _init_helper(_SyclContext context, DPCTLSyclContextRef CRef):

@@ -71,6 +71,11 @@ cdef void _event_capsule_deleter(object o):
             o, "SyclEventRef"
         )
         DPCTLEvent_Delete(ERef)
+    elif pycapsule.PyCapsule_IsValid(o, "used_SyclEventRef"):
+        ERef = <DPCTLSyclEventRef> pycapsule.PyCapsule_GetPointer(
+            o, "used_SyclEventRef"
+        )
+        DPCTLEvent_Delete(ERef)
 
 
 cdef void _init_helper(_SyclEvent event, DPCTLSyclEventRef ERef):
