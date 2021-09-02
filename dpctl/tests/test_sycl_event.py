@@ -195,3 +195,26 @@ def test_addressof_ref():
     ev = dpctl.SyclEvent()
     ref = ev.addressof_ref()
     assert type(ref) is int
+
+
+def test_cpython_api():
+    import ctypes
+    import sys
+
+    ev = dpctl.SyclEvent()
+    mod = sys.modules[ev.__class__.__module__]
+    # get capsule storign get_event_ref function ptr
+    ev_ref_fn_cap = mod.__pyx_capi__["get_event_ref"]
+    # construct Python callable to invoke "get_event_ref"
+    cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
+    cap_ptr_fn.restype = ctypes.c_void_p
+    cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
+    ev_ref_fn_ptr = cap_ptr_fn(
+        ev_ref_fn_cap, b"DPCTLSyclEventRef (struct PySyclEventObject *)"
+    )
+    callable_maker = ctypes.PYFUNCTYPE(ctypes.c_void_p, ctypes.py_object)
+    get_event_ref_fn = callable_maker(ev_ref_fn_ptr)
+
+    r2 = ev.addressof_ref()
+    r1 = get_event_ref_fn(ev)
+    assert r1 == r2
