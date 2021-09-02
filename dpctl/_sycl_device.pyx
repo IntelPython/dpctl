@@ -253,17 +253,8 @@ cdef class SyclDevice(_SyclDevice):
         cdef const char *filter_c_str = NULL
         cdef int ret = 0
 
-        if type(arg) is unicode:
-            string = bytes(<unicode>arg, "utf-8")
-            filter_c_str = string
-            DSRef = DPCTLFilterSelector_Create(filter_c_str)
-            ret = self._init_from_selector(DSRef)
-            if ret == -1:
-                raise ValueError(
-                    "Could not create a SyclDevice with the selector string"
-                )
-        elif isinstance(arg, unicode):
-            string = bytes(<unicode>unicode(arg), "utf-8")
+        if type(arg) is str:
+            string = bytes(<str>arg, "utf-8")
             filter_c_str = string
             DSRef = DPCTLFilterSelector_Create(filter_c_str)
             ret = self._init_from_selector(DSRef)
