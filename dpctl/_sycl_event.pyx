@@ -323,6 +323,7 @@ cdef class SyclEvent(_SyclEvent):
         DPCTLEventVector_Delete(EVRef)
         return events
 
+    @property
     def profiling_info_submit(self):
         """
         Returns the 64-bit time value in nanoseconds
