@@ -152,6 +152,7 @@ def test_context_multi_device():
     d1, d2 = d.create_sub_devices(partition=(n1, n2))
     ctx = dpctl.SyclContext((d1, d2))
     assert ctx.device_count == 2
+    assert type(repr(ctx)) is str
     q1 = dpctl.SyclQueue(ctx, d1)
     q2 = dpctl.SyclQueue(ctx, d2)
     import dpctl.memory as dpmem
@@ -164,7 +165,9 @@ def test_context_multi_device():
     q1 = dpctl.SyclQueue(ctx1, d1)
     shmem_1 = dpmem.MemoryUSMShared(256, queue=q1)
     cap = ctx1._get_capsule()
+    cap2 = ctx1._get_capsule()
     del ctx1
+    del cap2  # exercise deleter of non-renamed capsule
     ctx2 = dpctl.SyclContext(cap)
     q2 = dpctl.SyclQueue(ctx2, d1)
     shmem_2 = dpmem.MemoryUSMDevice(256, queue=q2)
