@@ -160,6 +160,11 @@ cdef void _queue_capsule_deleter(object o):
             o, "SyclQueueRef"
         )
         DPCTLQueue_Delete(QRef)
+    elif pycapsule.PyCapsule_IsValid(o, "used_SyclQueueRef"):
+        QRef = <DPCTLSyclQueueRef> pycapsule.PyCapsule_GetPointer(
+            o, "used_SyclQueueRef"
+        )
+        DPCTLQueue_Delete(QRef)
 
 
 cdef class _SyclQueue:
