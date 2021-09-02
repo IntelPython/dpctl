@@ -82,12 +82,19 @@ def check_print_info(platform):
         pytest.fail("Encountered an exception inside print_info().")
 
 
+def check_repr(platform):
+    r = repr(platform)
+    assert type(r) is str
+    assert r != ""
+
+
 list_of_checks = [
     check_name,
     check_vendor,
     check_version,
     check_backend,
     check_print_info,
+    check_repr,
 ]
 
 
@@ -115,6 +122,15 @@ def test_platform_creation(valid_filter, check):
         platform = dpctl.SyclPlatform(valid_filter)
     except ValueError:
         pytest.skip("Failed to create platform with supported filter")
+    check(platform)
+
+
+def test_default_platform_creation(check):
+    platform = None
+    try:
+        platform = dpctl.SyclPlatform()
+    except ValueError:
+        pytest.skip("Failed to create default platform")
     check(platform)
 
 
