@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Workaround to Klocwork overwriting LD_LIBRARY_PATH that was modified
+# by DPC++ compiler conda packages. Will need to be added to DPC++ compiler
+# activation scripts.
+export LDFLAGS="$LDFLAGS -Wl,-rpath,$CONDA_PREFIX/lib"
+
 ${PYTHON} setup.py clean --all
 INSTALL_CMD="install --sycl-compiler-prefix=$CONDA_PREFIX"
 
