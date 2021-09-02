@@ -184,6 +184,14 @@ def test_sycl_timer():
 
 def test_event_capsule():
     ev = dpctl.SyclEvent()
-    cap = ev._get_capsule()
-    ev2 = dpctl.SyclEvent(cap)
-    assert type(ev2) == type(ev)
+    cap1 = ev._get_capsule()
+    cap2 = ev._get_capsule()
+    del ev
+    del cap1  # test deleter
+    del cap2
+
+
+def test_addressof_ref():
+    ev = dpctl.SyclEvent()
+    ref = ev.addressof_ref()
+    assert type(ref) is int
