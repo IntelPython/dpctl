@@ -48,12 +48,20 @@ class Dummy(MemoryUSMShared):
     not has_sycl_platforms(),
     reason="No SYCL devices except the default host device.",
 )
-def test_memory_create():
+def test_memory_create(memory_ctor):
+    import sys
+
     nbytes = 1024
-    queue = dpctl.get_current_queue()
-    mobj = MemoryUSMShared(nbytes, alignment=64, queue=queue)
+    queue = dpctl.SyclQueue()
+    mobj = memory_ctor(nbytes, alignment=64, queue=queue)
     assert mobj.nbytes == nbytes
     assert hasattr(mobj, "__sycl_usm_array_interface__")
+    assert len(mobj) == nbytes
+    assert mobj.size == nbytes
+    assert mobj._context == queue.sycl_context
+    assert type(repr(mobj)) is str
+    assert type(bytes(mobj)) is bytes
+    assert sys.getsizeof(mobj) > nbytes
 
 
 @pytest.mark.skipif(
@@ -69,7 +77,7 @@ def test_memory_create_with_np():
 
 def _create_memory():
     nbytes = 1024
-    queue = dpctl.get_current_queue()
+    queue = dpctl.SyclQueue()
     mobj = MemoryUSMShared(nbytes, alignment=64, queue=queue)
     return mobj
 
@@ -90,25 +98,24 @@ def test_memory_without_context():
 
     # Without context
     assert mobj.get_usm_type() == "shared"
+    assert mobj.get_usm_type(syclobj=dpctl.SyclContext()) == "shared"
 
 
 @pytest.mark.skipif(not has_cpu(), reason="No SYCL CPU device available.")
 def test_memory_cpu_context():
     mobj = _create_memory()
 
-    # CPU context
-    with dpctl.device_context("opencl:cpu:0"):
-        # type respective to the context in which
-        # memory was created
-        usm_type = mobj.get_usm_type()
-        assert usm_type == "shared"
+    # type respective to the context in which
+    # memory was created
+    usm_type = mobj.get_usm_type()
+    assert usm_type == "shared"
 
-        current_queue = dpctl.get_current_queue()
-        # type as view from current queue
-        usm_type = mobj.get_usm_type(current_queue)
-        # type can be unknown if current queue is
-        # not in the same SYCL context
-        assert usm_type in ["unknown", "shared"]
+    cpu_queue = dpctl.SyclQueue("cpu")
+    # type as view from CPU queue
+    usm_type = mobj.get_usm_type(cpu_queue)
+    # type can be unknown if current queue is
+    # not in the same SYCL context
+    assert usm_type in ["unknown", "shared"]
 
 
 @pytest.mark.skipif(not has_gpu(), reason="No OpenCL GPU queues available")
@@ -116,12 +123,11 @@ def test_memory_gpu_context():
     mobj = _create_memory()
 
     # GPU context
-    with dpctl.device_context("opencl:gpu:0"):
-        usm_type = mobj.get_usm_type()
-        assert usm_type == "shared"
-        current_queue = dpctl.get_current_queue()
-        usm_type = mobj.get_usm_type(current_queue)
-        assert usm_type in ["unknown", "shared"]
+    usm_type = mobj.get_usm_type()
+    assert usm_type == "shared"
+    gpu_queue = dpctl.SyclQueue("opencl:gpu")
+    usm_type = mobj.get_usm_type(gpu_queue)
+    assert usm_type in ["unknown", "shared"]
 
 
 @pytest.mark.skipif(
@@ -166,10 +172,10 @@ def test_zero_copy():
     not has_sycl_platforms(),
     reason="No SYCL devices except the default host device.",
 )
-def test_pickling():
+def test_pickling(memory_ctor):
     import pickle
 
-    mobj = _create_memory()
+    mobj = memory_ctor(1024, alignment=64)
     host_src_obj = _create_host_buf(mobj.nbytes)
     mobj.copy_from_host(host_src_obj)
 
@@ -183,6 +189,22 @@ def test_pickling():
     assert (
         mobj._pointer != mobj_reconstructed._pointer
     ), "Pickling/unpickling should be changing pointer"
+
+
+@pytest.mark.skipif(
+    not has_sycl_platforms(),
+    reason="No SYCL devices except the default host device.",
+)
+def test_pickling_reconstructor_invalid_type(memory_ctor):
+    import pickle
+
+    mobj = memory_ctor(1024, alignment=64)
+    good_pickle_bytes = pickle.dumps(mobj)
+    usm_types = expected_usm_type(memory_ctor).encode("utf-8")
+    i = good_pickle_bytes.index(usm_types)
+    bad_pickle_bytes = good_pickle_bytes[:i] + b"u" + good_pickle_bytes[i + 1 :]
+    with pytest.raises(ValueError):
+        pickle.loads(bad_pickle_bytes)
 
 
 @pytest.fixture(params=[MemoryUSMShared, MemoryUSMDevice, MemoryUSMHost])
@@ -256,12 +278,15 @@ def test_sycl_usm_array_interface(memory_ctor):
 
 
 class View:
-    def __init__(self, buf, shape, strides, offset, syclobj=None):
+    def __init__(
+        self, buf, shape, strides, offset, syclobj=None, transf_fn=None
+    ):
         self.buffer_ = buf
         self.shape_ = shape
         self.strides_ = strides
         self.offset_ = offset
         self.syclobj_ = syclobj
+        self.transf_fn_ = transf_fn
 
     @property
     def __sycl_usm_array_interface__(self):
@@ -271,6 +296,8 @@ class View:
         sua_iface["strides"] = self.strides_
         if self.syclobj_:
             sua_iface["syclobj"] = self.syclobj_
+        if self.transf_fn_:
+            sua_iface = self.transf_fn_(sua_iface)
         return sua_iface
 
 
@@ -338,6 +365,106 @@ def test_suai_non_contig_2D(memory_ctor):
     assert np.array_equal(res, expected_res)
 
 
+def test_suai_invalid_suai():
+    n_bytes = 2 * 3 * 5 * 128
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queue")
+    try:
+        buf = MemoryUSMShared(n_bytes, queue=q)
+    except Exception:
+        pytest.skip("USM-shared allocation failed")
+
+    # different syclobj values
+    class DuckSyclObject:
+        def __init__(self, syclobj):
+            self.syclobj = syclobj
+
+        def _get_capsule(self):
+            return self.syclobj._get_capsule()
+
+    ctx = q.sycl_context
+    for syclobj in [
+        q,
+        DuckSyclObject(q),
+        q._get_capsule(),
+        ctx,
+        DuckSyclObject(ctx),
+        ctx._get_capsule(),
+    ]:
+        v = View(buf, shape=(n_bytes,), strides=(1,), offset=0, syclobj=syclobj)
+        MemoryUSMShared(v)
+        with pytest.raises(ValueError):
+            MemoryUSMDevice(v)
+        with pytest.raises(ValueError):
+            MemoryUSMHost(v)
+
+    # version validation
+    def invalid_version(suai_iface):
+        "Set version to invalid"
+        suai_iface["version"] = 0
+        return suai_iface
+
+    v = View(
+        buf, shape=(n_bytes,), strides=(1,), offset=0, transf_fn=invalid_version
+    )
+    with pytest.raises(ValueError):
+        MemoryUSMShared(v)
+
+    # data validation
+    def invalid_data(suai_iface):
+        "Set data to invalid"
+        suai_iface["data"] = tuple()
+        return suai_iface
+
+    v = View(
+        buf, shape=(n_bytes,), strides=(1,), offset=0, transf_fn=invalid_data
+    )
+    with pytest.raises(ValueError):
+        MemoryUSMShared(v)
+    # set shape to a negative value
+    v = View(buf, shape=(-n_bytes,), strides=(2,), offset=0)
+    with pytest.raises(ValueError):
+        MemoryUSMShared(v)
+    v = View(buf, shape=(-n_bytes,), strides=None, offset=0)
+    with pytest.raises(ValueError):
+        MemoryUSMShared(v)
+    # shape validation
+    v = View(buf, shape=None, strides=(1,), offset=0)
+    with pytest.raises(ValueError):
+        MemoryUSMShared(v)
+
+    # typestr validation
+    def invalid_typestr(suai_iface):
+        suai_iface["typestr"] = "invalid"
+        return suai_iface
+
+    v = View(
+        buf, shape=(n_bytes,), strides=(1,), offset=0, transf_fn=invalid_typestr
+    )
+    with pytest.raises(ValueError):
+        MemoryUSMShared(v)
+
+    def unsupported_typestr(suai_iface):
+        suai_iface["typestr"] = "O"
+        return suai_iface
+
+    v = View(
+        buf,
+        shape=(n_bytes,),
+        strides=(1,),
+        offset=0,
+        transf_fn=unsupported_typestr,
+    )
+    with pytest.raises(ValueError):
+        MemoryUSMShared(v)
+    # set strides to invalid value
+    v = View(buf, shape=(n_bytes,), strides=Ellipsis, offset=0)
+    with pytest.raises(ValueError):
+        MemoryUSMShared(v)
+
+
 def check_view(v):
     """
     Memory object created from duck __sycl_usm_array_interface__ argument
@@ -389,3 +516,88 @@ def test_with_constructor(memory_ctor):
         syclobj=buf.sycl_device.filter_string,
     )
     check_view(v)
+
+
+@pytest.mark.skipif(
+    not has_sycl_platforms(),
+    reason="No SYCL devices except the default host device.",
+)
+def test_cpython_api(memory_ctor):
+    import ctypes
+    import sys
+
+    mobj = memory_ctor(1024)
+    mod = sys.modules[mobj.__class__.__module__]
+    # get capsules storing function pointers
+    mem_ptr_fn_cap = mod.__pyx_capi__["get_usm_pointer"]
+    mem_ctx_fn_cap = mod.__pyx_capi__["get_context"]
+    mem_nby_fn_cap = mod.__pyx_capi__["get_nbytes"]
+    # construct Python callable to invoke "get_usm_pointer"
+    cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
+    cap_ptr_fn.restype = ctypes.c_void_p
+    cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
+    mem_ptr_fn_ptr = cap_ptr_fn(
+        mem_ptr_fn_cap, b"DPCTLSyclUSMRef (struct Py_MemoryObject *)"
+    )
+    mem_ctx_fn_ptr = cap_ptr_fn(
+        mem_ctx_fn_cap, b"DPCTLSyclContextRef (struct Py_MemoryObject *)"
+    )
+    mem_nby_fn_ptr = cap_ptr_fn(
+        mem_nby_fn_cap, b"size_t (struct Py_MemoryObject *)"
+    )
+    callable_maker = ctypes.PYFUNCTYPE(ctypes.c_void_p, ctypes.py_object)
+    get_ptr_fn = callable_maker(mem_ptr_fn_ptr)
+    get_ctx_fn = callable_maker(mem_ctx_fn_ptr)
+    get_nby_fn = callable_maker(mem_nby_fn_ptr)
+
+    capi_ptr = get_ptr_fn(mobj)
+    direct_ptr = mobj._pointer
+    assert capi_ptr == direct_ptr
+    capi_ctx_ref = get_ctx_fn(mobj)
+    direct_ctx_ref = mobj._context.addressof_ref()
+    assert capi_ctx_ref == direct_ctx_ref
+    capi_nbytes = get_nby_fn(mobj)
+    direct_nbytes = mobj.nbytes
+    assert capi_nbytes == direct_nbytes
+
+
+def test_memory_construction_from_other_memory_objects():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default queue could not be created")
+    m_sh = MemoryUSMShared(256, queue=q)
+    m_de = MemoryUSMDevice(256, queue=q)
+    m_ho = MemoryUSMHost(256, queue=q)
+    with pytest.raises(ValueError):
+        MemoryUSMDevice(m_sh)
+    with pytest.raises(ValueError):
+        MemoryUSMHost(m_de)
+    with pytest.raises(ValueError):
+        MemoryUSMShared(m_ho)
+    m1 = MemoryUSMDevice(m_sh, copy=True)
+    m2 = MemoryUSMHost(m_de, copy=True)
+    m3 = MemoryUSMShared(m_de, copy=True)
+    assert bytes(m1) == bytes(m_sh)
+    assert bytes(m2) == bytes(m3)
+
+
+def test_memory_copy_between_contexts():
+    try:
+        q = dpctl.SyclQueue("cpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("CPU queue could not be created")
+    d = q.sycl_device
+    n = d.max_compute_units
+    n_half = n // 2
+    d0, d1 = d.create_sub_devices(partition=[n_half, n - n_half])
+    q0 = dpctl.SyclQueue(d0)
+    q1 = dpctl.SyclQueue(d1)
+    m0 = MemoryUSMDevice(256, queue=q0)
+    m1 = MemoryUSMDevice(256, queue=q1)
+    host_buf = b"abcd" * 64
+    m0.copy_from_host(host_buf)
+    m1.copy_from_device(m0)
+    copy_buf = bytearray(256)
+    m1.copy_to_host(copy_buf)
+    assert host_buf == copy_buf
