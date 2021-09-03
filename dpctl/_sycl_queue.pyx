@@ -644,8 +644,12 @@ cdef class SyclQueue(_SyclQueue):
         else:
             return False
 
-    def get_sycl_backend(self):
-        """ Returns the Sycl backend associated with the queue.
+    @property
+    def backend(self):
+        """ Returns the backend_type enum value for this queue.
+
+        Returns:
+            backend_type: The backend for the queue.
         """
         cdef _backend_type BE = DPCTLQueue_GetBackend(self._queue_ref)
         if BE == _backend_type._OPENCL:
@@ -958,16 +962,6 @@ cdef class SyclQueue(_SyclQueue):
             )
 
         return SyclEvent._create(ERef, [])
-
-    @property
-    def backend(self):
-        """Returns the backend_type enum value for the device
-        associated with this queue.
-
-        Returns:
-            backend_type: The backend for the device.
-        """
-        return self.sycl_device.backend
 
     @property
     def name(self):

@@ -424,6 +424,8 @@ def test_queue_submit_barrier(valid_filter):
     ev3.wait()
     ev1.wait()
     ev2.wait()
+    with pytest.raises(TypeError):
+        q.submit_barrier(range(3))
 
 
 def test_queue__repr__():
@@ -488,6 +490,11 @@ def test_constructor_many_arg():
         dpctl.SyclQueue(None, None, None, None)
     with pytest.raises(TypeError):
         dpctl.SyclQueue(None, None)
+    ctx = dpctl.SyclContext()
+    with pytest.raises(TypeError):
+        dpctl.SyclQueue(ctx, None)
+    with pytest.raises(TypeError):
+        dpctl.SyclQueue(ctx)
 
 
 def test_queue_wait():
@@ -510,3 +517,11 @@ def test_queue_memops():
     q.memcpy(m1, m2, 512)
     q.prefetch(m1, 512)
     q.mem_advise(m1, 512, 0)
+    with pytest.raises(TypeError):
+        q.memcpy(m1, list(), 512)
+    with pytest.raises(TypeError):
+        q.memcpy(list(), m2, 512)
+    with pytest.raises(TypeError):
+        q.prefetch(list(), 512)
+    with pytest.raises(TypeError):
+        q.mem_advise(list(), 512, 0)
