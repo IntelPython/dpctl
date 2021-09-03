@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl.SyclQueue &mdash; Data-parallel Control (dpctl) 0.10.0dev0+14.g73dfb5c documentation</title>
+  <title>dpctl.SyclQueue &mdash; Data-parallel Control (dpctl) 0.10.0dev0+18.ge4064fa documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.10.0dev0+14.g73dfb5c
+                0.10.0dev0+18.ge4064fa
               </div>
             
           
@@ -314,7 +314,7 @@ The argument can be either “default”, “in_order”,
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">backend</span></code></p></td>
-<td><p>Returns the backend_type enum value for the device associated with this queue.</p></td>
+<td><p>Returns the backend_type enum value for this queue.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">driver_version</span></code></p></td>
 <td><p>Returns the driver version for the device associated with this queue.</p></td>
@@ -358,34 +358,31 @@ The argument can be either “default”, “in_order”,
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.addressof_ref" title="dpctl.SyclQueue.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a></p></td>
 <td><p>Returns the address of the C API DPCTLSyclQueueRef pointer as a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.get_sycl_backend" title="dpctl.SyclQueue.get_sycl_backend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_backend</span></code></a></p></td>
-<td><p>Returns the Sycl backend associated with the queue.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.get_sycl_context" title="dpctl.SyclQueue.get_sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_context</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.get_sycl_context" title="dpctl.SyclQueue.get_sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_context</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.get_sycl_device" title="dpctl.SyclQueue.get_sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_device</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.get_sycl_device" title="dpctl.SyclQueue.get_sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_device</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.mem_advise" title="dpctl.SyclQueue.mem_advise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mem_advise</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.mem_advise" title="dpctl.SyclQueue.mem_advise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mem_advise</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.memcpy" title="dpctl.SyclQueue.memcpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memcpy</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.memcpy" title="dpctl.SyclQueue.memcpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memcpy</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.prefetch" title="dpctl.SyclQueue.prefetch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefetch</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.prefetch" title="dpctl.SyclQueue.prefetch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefetch</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_device_info</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_device_info</span></code></p></td>
 <td><p>Print information about the SYCL device associated with this queue.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.submit" title="dpctl.SyclQueue.submit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.submit" title="dpctl.SyclQueue.submit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_barrier</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_barrier</span></code></p></td>
 <td><p>Submits a barrier to the queue.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.wait" title="dpctl.SyclQueue.wait"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.wait" title="dpctl.SyclQueue.wait"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -434,12 +431,6 @@ The argument can be either “default”, “in_order”,
 <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> cast to a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.SyclQueue.get_sycl_backend">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">get_sycl_backend</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.get_sycl_backend" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the Sycl backend associated with the queue.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -520,7 +511,7 @@ The argument can be either “default”, “in_order”,
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.10.0dev0+14.g73dfb5c
+      v: 0.10.0dev0+18.ge4064fa
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
