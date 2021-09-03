@@ -433,16 +433,80 @@ def test_queue__repr__():
     r2 = q2.__repr__()
     q3 = dpctl.SyclQueue(property="enable_profiling")
     r3 = q3.__repr__()
-    q4 = dpctl.SyclQueue(property=["in_order", "enable_profiling"])
+    q4 = dpctl.SyclQueue(property="default")
     r4 = q4.__repr__()
+    q5 = dpctl.SyclQueue(property=["in_order", "enable_profiling"])
+    r5 = q5.__repr__()
     assert type(r1) is str
     assert type(r2) is str
     assert type(r3) is str
     assert type(r4) is str
+    assert type(r5) is str
+
+
+def test_queue_invalid_property():
+    with pytest.raises(ValueError):
+        dpctl.SyclQueue(property=4.5)
+    with pytest.raises(ValueError):
+        dpctl.SyclQueue(property=["abc", tuple()])
 
 
 def test_queue_capsule():
     q = dpctl.SyclQueue()
     cap = q._get_capsule()
+    cap2 = q._get_capsule()
     q2 = dpctl.SyclQueue(cap)
     assert q == q2
+    del cap2  # call deleter on non-renamed capsule
+
+
+def test_cpython_api():
+    import ctypes
+    import sys
+
+    q = dpctl.SyclQueue()
+    mod = sys.modules[q.__class__.__module__]
+    # get capsule storign get_context_ref function ptr
+    q_ref_fn_cap = mod.__pyx_capi__["get_queue_ref"]
+    # construct Python callable to invoke "get_queue_ref"
+    cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
+    cap_ptr_fn.restype = ctypes.c_void_p
+    cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
+    q_ref_fn_ptr = cap_ptr_fn(
+        q_ref_fn_cap, b"DPCTLSyclQueueRef (struct PySyclQueueObject *)"
+    )
+    callable_maker = ctypes.PYFUNCTYPE(ctypes.c_void_p, ctypes.py_object)
+    get_queue_ref_fn = callable_maker(q_ref_fn_ptr)
+
+    r2 = q.addressof_ref()
+    r1 = get_queue_ref_fn(q)
+    assert r1 == r2
+
+
+def test_constructor_many_arg():
+    with pytest.raises(TypeError):
+        dpctl.SyclQueue(None, None, None, None)
+    with pytest.raises(TypeError):
+        dpctl.SyclQueue(None, None)
+
+
+def test_queue_wait():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Failed to create device with supported filter")
+    q.wait()
+
+
+def test_queue_memops():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Failed to create device with supported filter")
+    from dpctl.memory import MemoryUSMDevice
+
+    m1 = MemoryUSMDevice(512, queue=q)
+    m2 = MemoryUSMDevice(512, queue=q)
+    q.memcpy(m1, m2, 512)
+    q.prefetch(m1, 512)
+    q.mem_advise(m1, 512, 0)
