@@ -112,7 +112,10 @@ def test_execution_status():
 
 
 def test_execution_status_nondefault_event():
-    event = produce_event()
+    try:
+        event = produce_event()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL CPU queue could not be created")
     try:
         event_status = event.execution_status
     except ValueError:
@@ -127,7 +130,10 @@ def test_backend():
         dpctl.SyclEvent().backend
     except ValueError:
         pytest.fail("Failed to get backend from event")
-    event = produce_event()
+    try:
+        event = produce_event()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL CPU queue could not be created")
     try:
         event.backend
     except ValueError:
