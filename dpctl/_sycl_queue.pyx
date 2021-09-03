@@ -289,18 +289,13 @@ cdef class SyclQueue(_SyclQueue):
             status = self._init_queue_default(props)
         elif len_args == 1:
             arg = args[0]
-            if type(arg) is unicode:
-                string = bytes(<unicode>arg, "utf-8")
+            if type(arg) is str:
+                string = bytes(<str>arg, "utf-8")
                 filter_c_str = string
                 status = self._init_queue_from_filter_string(
                     filter_c_str, props)
             elif type(arg) is _SyclQueue:
                 status = self._init_queue_from__SyclQueue(<_SyclQueue>arg)
-            elif isinstance(arg, unicode):
-                string = bytes(<unicode>unicode(arg), "utf-8")
-                filter_c_str = string
-                status = self._init_queue_from_filter_string(
-                    filter_c_str, props)
             elif isinstance(arg, SyclDevice):
                 status = self._init_queue_from_device(<SyclDevice>arg, props)
             elif pycapsule.PyCapsule_IsValid(arg, "SyclQueueRef"):
@@ -649,8 +644,12 @@ cdef class SyclQueue(_SyclQueue):
         else:
             return False
 
-    def get_sycl_backend(self):
-        """ Returns the Sycl backend associated with the queue.
+    @property
+    def backend(self):
+        """ Returns the backend_type enum value for this queue.
+
+        Returns:
+            backend_type: The backend for the queue.
         """
         cdef _backend_type BE = DPCTLQueue_GetBackend(self._queue_ref)
         if BE == _backend_type._OPENCL:
@@ -690,7 +689,7 @@ cdef class SyclQueue(_SyclQueue):
             The address of the ``DPCTLSyclQueueRef`` object used to create this
             :class:`dpctl.SyclQueue` cast to a ``size_t``.
         """
-        return int(<size_t>self._queue_ref)
+        return <size_t>self._queue_ref
 
     cpdef SyclEvent submit(
         self,
@@ -848,8 +847,8 @@ cdef class SyclQueue(_SyclQueue):
         else:
             raise TypeError("Parameter `mem` should have type _Memory")
 
-        if (count <=0 or count > self.nbytes):
-            count = self.nbytes
+        if (count <=0 or count > mem.nbytes):
+            count = mem.nbytes
 
         ERef = DPCTLQueue_Prefetch(self._queue_ref, ptr, count)
         if (ERef is NULL):
@@ -868,8 +867,8 @@ cdef class SyclQueue(_SyclQueue):
         else:
             raise TypeError("Parameter `mem` should have type _Memory")
 
-        if (count <=0 or count > self.nbytes):
-            count = self.nbytes
+        if (count <=0 or count > mem.nbytes):
+            count = mem.nbytes
 
         ERef = DPCTLQueue_MemAdvise(self._queue_ref, ptr, count, advice)
         if (ERef is NULL):
@@ -963,16 +962,6 @@ cdef class SyclQueue(_SyclQueue):
             )
 
         return SyclEvent._create(ERef, [])
-
-    @property
-    def backend(self):
-        """Returns the backend_type enum value for the device
-        associated with this queue.
-
-        Returns:
-            backend_type: The backend for the device.
-        """
-        return self.sycl_device.backend
 
     @property
     def name(self):

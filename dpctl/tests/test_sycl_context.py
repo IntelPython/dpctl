@@ -187,3 +187,26 @@ def test_hashing_of_context():
 def test_context_repr():
     ctx = dpctl.SyclContext()
     assert type(ctx.__repr__()) is str
+
+
+def test_cpython_api():
+    import ctypes
+    import sys
+
+    ctx = dpctl.SyclContext()
+    mod = sys.modules[ctx.__class__.__module__]
+    # get capsule storign get_context_ref function ptr
+    ctx_ref_fn_cap = mod.__pyx_capi__["get_context_ref"]
+    # construct Python callable to invoke "get_context_ref"
+    cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
+    cap_ptr_fn.restype = ctypes.c_void_p
+    cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
+    ctx_ref_fn_ptr = cap_ptr_fn(
+        ctx_ref_fn_cap, b"DPCTLSyclContextRef (struct PySyclContextObject *)"
+    )
+    callable_maker = ctypes.PYFUNCTYPE(ctypes.c_void_p, ctypes.py_object)
+    get_context_ref_fn = callable_maker(ctx_ref_fn_ptr)
+
+    r2 = ctx.addressof_ref()
+    r1 = get_context_ref_fn(ctx)
+    assert r1 == r2
