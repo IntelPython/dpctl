@@ -17,7 +17,7 @@
 """Defines unit test cases for the SyclQueue.memcpy.
 """
 
-import unittest
+import pytest
 
 import dpctl
 import dpctl.memory
@@ -25,52 +25,43 @@ import dpctl.memory
 from ._helper import has_sycl_platforms
 
 
-class TestQueueMemcpy(unittest.TestCase):
-    def _create_memory(self):
-        nbytes = 1024
-        mobj = dpctl.memory.MemoryUSMShared(nbytes)
-        return mobj
-
-    @unittest.skipUnless(
-        has_sycl_platforms(), "No SYCL devices except the default host device."
-    )
-    def test_memcpy_copy_usm_to_usm(self):
-        mobj1 = self._create_memory()
-        mobj2 = self._create_memory()
-        q = dpctl.get_current_queue()
-
-        mv1 = memoryview(mobj1)
-        mv2 = memoryview(mobj2)
-
-        mv1[:3] = b"123"
-
-        q.memcpy(mobj2, mobj1, 3)
-
-        self.assertEqual(mv2[:3], b"123")
-
-    @unittest.skipUnless(
-        has_sycl_platforms(), "No SYCL devices except the default host device."
-    )
-    def test_memcpy_type_error(self):
-        mobj = self._create_memory()
-        q = mobj._queue
-
-        with self.assertRaises(TypeError) as cm:
-            q.memcpy(None, mobj, 3)
-
-        self.assertEqual(type(cm.exception), TypeError)
-        self.assertEqual(
-            str(cm.exception), "Parameter `dest` should have type _Memory."
-        )
-
-        with self.assertRaises(TypeError) as cm:
-            q.memcpy(mobj, None, 3)
-
-        self.assertEqual(type(cm.exception), TypeError)
-        self.assertEqual(
-            str(cm.exception), "Parameter `src` should have type _Memory."
-        )
+def _create_memory():
+    nbytes = 1024
+    mobj = dpctl.memory.MemoryUSMShared(nbytes)
+    return mobj
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.mark.skipif(
+    not has_sycl_platforms(),
+    reason="No SYCL devices except the default host device.",
+)
+def test_memcpy_copy_usm_to_usm():
+    mobj1 = _create_memory()
+    mobj2 = _create_memory()
+    q = dpctl.SyclQueue()
+
+    mv1 = memoryview(mobj1)
+    mv2 = memoryview(mobj2)
+
+    mv1[:3] = b"123"
+
+    q.memcpy(mobj2, mobj1, 3)
+
+    assert mv2[:3], b"123"
+
+
+# @pytest.mark.skipif(
+#    not has_sycl_platforms(),
+#    reason="No SYCL devices except the default host device."
+# )
+def test_memcpy_type_error():
+    mobj = _create_memory()
+    q = mobj._queue
+
+    with pytest.raises(TypeError) as cm:
+        q.memcpy(None, mobj, 3)
+    assert "`dest`" in str(cm.value)
+
+    with pytest.raises(TypeError) as cm:
+        q.memcpy(mobj, None, 3)
+    assert "`src`" in str(cm.value)
