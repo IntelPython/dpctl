@@ -70,6 +70,11 @@ def test_create_event_from_capsule():
         pytest.fail("Failed to create an event from capsule")
 
 
+def test_invalid_constructor_arg():
+    with pytest.raises(TypeError):
+        dpctl.SyclEvent(list())
+
+
 def test_wait_with_event():
     event = dpctl.SyclEvent()
     try:
@@ -81,6 +86,11 @@ def test_wait_with_event():
         event.wait()
     except ValueError:
         pytest.fail("Failed to wait for the event")
+
+
+def test_wait_for_invalid():
+    with pytest.raises(TypeError):
+        dpctl.SyclEvent.wait_for(77)
 
 
 def test_wait_with_list():
@@ -101,9 +111,25 @@ def test_execution_status():
     assert event_status == esty.complete
 
 
+def test_execution_status_nondefault_event():
+    event = produce_event()
+    try:
+        event_status = event.execution_status
+    except ValueError:
+        pytest.fail("Failed to get an event status")
+    assert type(event_status) is esty
+    wl = event.get_wait_list()
+    assert type(wl) is list
+
+
 def test_backend():
     try:
         dpctl.SyclEvent().backend
+    except ValueError:
+        pytest.fail("Failed to get backend from event")
+    event = produce_event()
+    try:
+        event.backend
     except ValueError:
         pytest.fail("Failed to get backend from event")
 
