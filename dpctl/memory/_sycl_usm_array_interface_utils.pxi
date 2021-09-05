@@ -54,7 +54,7 @@ cdef DPCTLSyclQueueRef get_queue_ref_from_ptr_and_syclobj(
         if pycapsule.PyCapsule_IsValid(cap, "SyclQueueRef"):
             q = SyclQueue(cap)
             return _queue_ref_copy_from_SyclQueue(ptr, <SyclQueue> q)
-        elif pycapsule.PyCapsule_IsValid(cap, "SyclContexRef"):
+        elif pycapsule.PyCapsule_IsValid(cap, "SyclContextRef"):
             ctx = <SyclContext>SyclContext(cap)
             return _queue_ref_copy_from_USMRef_and_SyclContext(ptr, ctx)
         else:
