@@ -491,6 +491,36 @@ cdef class usm_ndarray:
         res.flags_ |= (self.flags_ & USM_ARRAY_WRITEABLE)
         return res
 
+    def __bool__(self):
+        if self.size == 1:
+            return self.usm_data.copy_to_host().view(self.dtype).__bool__()
+
+        if self.size == 0:
+            raise ValueError(
+                "The truth value of an empty array is ambiguous"
+            )
+
+        raise ValueError(
+            "The truth value of an array with more than one element is "
+            "ambiguous. Use a.any() or a.all()"
+        )
+
+    def __float__(self):
+        if self.size == 1:
+            return self.usm_data.copy_to_host().view(self.dtype).__float__()
+
+        raise ValueError(
+            "only size-1 arrays can be converted to Python scalars"
+        )
+
+    def __int__(self):
+        if self.size == 1:
+            return self.usm_data.copy_to_host().view(self.dtype).__int__()
+
+        raise ValueError(
+            "only size-1 arrays can be converted to Python scalars"
+        )
+
     def to_device(self, target_device):
         """
         Transfer array to target device

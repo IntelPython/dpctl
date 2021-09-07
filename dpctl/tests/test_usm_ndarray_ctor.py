@@ -114,6 +114,32 @@ def test_properties():
     assert isinstance(X.ndim, numbers.Integral)
 
 
+@pytest.mark.parametrize("func", [bool, float, int])
+@pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
+def test_copy_scalar_with_func(func, shape):
+    X = dpt.usm_ndarray(shape)
+    Y = np.arange(1, X.size + 1, dtype=X.dtype)
+    X.usm_data.copy_from_host(Y.view("|u1"))
+    assert func(X) == func(Y)
+
+
+@pytest.mark.parametrize("method", ["__bool__", "__float__", "__int__"])
+@pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
+def test_copy_scalar_with_method(method, shape):
+    X = dpt.usm_ndarray(shape)
+    Y = np.arange(1, X.size + 1, dtype=X.dtype)
+    X.usm_data.copy_from_host(Y.view("|u1"))
+    assert getattr(X, method)() == getattr(Y, method)()
+
+
+@pytest.mark.parametrize("func", [bool, float, int])
+@pytest.mark.parametrize("shape", [(2,), (1, 2), (3, 4, 5), (0,)])
+def test_copy_scalar_invalid_shape(func, shape):
+    X = dpt.usm_ndarray(shape)
+    with pytest.raises(ValueError):
+        func(X)
+
+
 @pytest.mark.parametrize(
     "ind",
     [
