@@ -88,8 +88,10 @@ cdef class _SyclEvent:
     """
 
     def __dealloc__(self):
-        DPCTLEvent_Wait(self._event_ref)
-        DPCTLEvent_Delete(self._event_ref)
+        if (self._event_ref):
+            DPCTLEvent_Wait(self._event_ref)
+            DPCTLEvent_Delete(self._event_ref)
+        self._event_ref = NULL
         self.args = None
 
 
