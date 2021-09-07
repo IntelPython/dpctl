@@ -21,6 +21,8 @@ import pytest
 
 import dpctl
 
+from ._helper import create_invalid_capsule
+
 list_of_valid_filter_selectors = [
     "opencl",
     "opencl:gpu",
@@ -210,3 +212,9 @@ def test_cpython_api():
     r2 = ctx.addressof_ref()
     r1 = get_context_ref_fn(ctx)
     assert r1 == r2
+
+
+def test_invalid_capsule():
+    cap = create_invalid_capsule()
+    with pytest.raises(ValueError):
+        dpctl.SyclContext(cap)

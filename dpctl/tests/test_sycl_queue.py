@@ -21,6 +21,8 @@ import pytest
 
 import dpctl
 
+from ._helper import create_invalid_capsule
+
 list_of_standard_selectors = [
     dpctl.select_accelerator_device,
     dpctl.select_cpu_device,
@@ -359,6 +361,8 @@ def test_context_not_equals():
     ctx_cpu = cpuQ.get_sycl_context()
     assert ctx_cpu != ctx_gpu
     assert hash(ctx_cpu) != hash(ctx_gpu)
+    assert gpuQ != cpuQ
+    assert hash(cpuQ) != hash(gpuQ)
 
 
 def test_context_equals():
@@ -497,11 +501,34 @@ def test_constructor_many_arg():
         dpctl.SyclQueue(ctx)
 
 
+def test_constructor_inconsistent_ctx_dev():
+    try:
+        q = dpctl.SyclQueue("cpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Failed to create CPU queue")
+    cpuD = q.sycl_device
+    n_eu = cpuD.max_compute_units
+    n_half = n_eu // 2
+    try:
+        d0, d1 = cpuD.create_sub_devices(partition=[n_half, n_eu - n_half])
+    except Exception:
+        pytest.skip("Could not create CPU sub-devices")
+    ctx = dpctl.SyclContext(d0)
+    with pytest.raises(dpctl.SyclQueueCreationError):
+        dpctl.SyclQueue(ctx, d1)
+
+
+def test_constructor_invalid_capsule():
+    cap = create_invalid_capsule()
+    with pytest.raises(TypeError):
+        dpctl.SyclQueue(cap)
+
+
 def test_queue_wait():
     try:
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
-        pytest.skip("Failed to create device with supported filter")
+        pytest.skip("Failed to create default queue")
     q.wait()
 
 
