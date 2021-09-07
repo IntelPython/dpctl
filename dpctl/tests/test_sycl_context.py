@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" Defines unit test cases for the SyclContxt class.
+""" Defines unit test cases for the :class:`dpctl.SyclContext` class.
 """
 
 import pytest
@@ -218,3 +218,10 @@ def test_invalid_capsule():
     cap = create_invalid_capsule()
     with pytest.raises(ValueError):
         dpctl.SyclContext(cap)
+
+
+def test_multi_device_different_platforms():
+    devs = dpctl.get_devices()  # all devices
+    if len(devs) > 1:
+        with pytest.raises(ValueError):
+            dpctl.SyclContext(devs)
