@@ -24,6 +24,12 @@ omit = [
     "dpctl/_version.py",
 ]
 
+[tool.coverage.report]
+omit = [
+    "dpctl/tests/*",
+    "dpctl/_version.py",
+]
+
 [tool.pytest.ini.options]
 minversion = "6.0"
 norecursedirs= [

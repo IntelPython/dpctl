@@ -14,3 +14,4 @@ include dpctl/memory/_memory_api.h
 include dpctl/tensor/_usmarray.h
 include dpctl/tensor/_usmarray_api.h
 include dpctl/tests/input_files/*
+include dpctl/tests/*.pyx
