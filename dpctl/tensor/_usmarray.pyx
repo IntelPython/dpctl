@@ -521,6 +521,12 @@ cdef class usm_ndarray:
             "only size-1 arrays can be converted to Python scalars"
         )
 
+    def __index__(self):
+        if np.issubdtype(self.dtype, np.integer):
+            return int(self)
+
+        raise IndexError("only integer or boolean arrays are valid indices")
+
     def to_device(self, target_device):
         """
         Transfer array to target device

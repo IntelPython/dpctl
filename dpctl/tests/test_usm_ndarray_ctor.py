@@ -116,19 +116,21 @@ def test_properties():
 
 @pytest.mark.parametrize("func", [bool, float, int])
 @pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
-def test_copy_scalar_with_func(func, shape):
-    X = dpt.usm_ndarray(shape)
-    Y = np.arange(1, X.size + 1, dtype=X.dtype)
-    X.usm_data.copy_from_host(Y.view("|u1"))
+@pytest.mark.parametrize("dtype", ["|b1", "|f8", "|i8"])
+def test_copy_scalar_with_func(func, shape, dtype):
+    X = dpt.usm_ndarray(shape, dtype=dtype)
+    Y = np.arange(1, X.size + 1, dtype=dtype).reshape(shape)
+    X.usm_data.copy_from_host(Y.reshape(-1).view("|u1"))
     assert func(X) == func(Y)
 
 
 @pytest.mark.parametrize("method", ["__bool__", "__float__", "__int__"])
 @pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
-def test_copy_scalar_with_method(method, shape):
-    X = dpt.usm_ndarray(shape)
-    Y = np.arange(1, X.size + 1, dtype=X.dtype)
-    X.usm_data.copy_from_host(Y.view("|u1"))
+@pytest.mark.parametrize("dtype", ["|b1", "|f8", "|i8"])
+def test_copy_scalar_with_method(method, shape, dtype):
+    X = dpt.usm_ndarray(shape, dtype=dtype)
+    Y = np.arange(1, X.size + 1, dtype=dtype).reshape(shape)
+    X.usm_data.copy_from_host(Y.reshape(-1).view("|u1"))
     assert getattr(X, method)() == getattr(Y, method)()
 
 
@@ -138,6 +140,34 @@ def test_copy_scalar_invalid_shape(func, shape):
     X = dpt.usm_ndarray(shape)
     with pytest.raises(ValueError):
         func(X)
+
+
+@pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
+@pytest.mark.parametrize("index_dtype", ["|i8"])
+def test_usm_ndarray_as_index(shape, index_dtype):
+    X = dpt.usm_ndarray(shape, dtype=index_dtype)
+    Xnp = np.arange(1, X.size + 1, dtype=index_dtype).reshape(shape)
+    X.usm_data.copy_from_host(Xnp.reshape(-1).view("|u1"))
+    Y = np.arange(X.size + 1)
+    assert Y[X] == Y[1]
+
+
+@pytest.mark.parametrize("shape", [(2,), (1, 2), (3, 4, 5), (0,)])
+@pytest.mark.parametrize("index_dtype", ["|i8"])
+def test_usm_ndarray_as_index_invalid_shape(shape, index_dtype):
+    X = dpt.usm_ndarray(shape, dtype=index_dtype)
+    Y = np.arange(X.size + 1)
+    with pytest.raises(IndexError):
+        Y[X]
+
+
+@pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
+@pytest.mark.parametrize("index_dtype", ["|f8"])
+def test_usm_ndarray_as_index_invalid_dtype(shape, index_dtype):
+    X = dpt.usm_ndarray(shape, dtype=index_dtype)
+    Y = np.arange(X.size + 1)
+    with pytest.raises(IndexError):
+        Y[X]
 
 
 @pytest.mark.parametrize(
