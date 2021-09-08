@@ -537,13 +537,24 @@ cdef class SyclQueue(_SyclQueue):
 
     @staticmethod
     cdef SyclQueue _create_from_context_and_device(
-        SyclContext ctx, SyclDevice dev
+        SyclContext ctx, SyclDevice dev, int props=0
     ):
+        """
+        Static factory method to create :class:`dpctl.SyclQueue` instance
+        from given :class:`dpctl.SyclContext`, :class:`dpctl.SyclDevice`
+        and optional integer `props` encoding the queue properties.
+        """
         cdef _SyclQueue ret = _SyclQueue.__new__(_SyclQueue)
         cdef DPCTLSyclContextRef cref = ctx.get_context_ref()
         cdef DPCTLSyclDeviceRef dref = dev.get_device_ref()
-        cdef DPCTLSyclQueueRef qref = DPCTLQueue_Create(cref, dref, NULL, 0)
+        cdef DPCTLSyclQueueRef qref = NULL
 
+        qref = DPCTLQueue_Create(
+            cref,
+            dref,
+            <error_handler_callback *>&default_async_error_handler,
+            props
+        )
         if qref is NULL:
             raise SyclQueueCreationError("Queue creation failed.")
         ret._queue_ref = qref
