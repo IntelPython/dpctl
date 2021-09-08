@@ -525,7 +525,7 @@ cdef class usm_ndarray:
         if np.issubdtype(self.dtype, np.integer):
             return int(self)
 
-        raise IndexError("only integer or boolean arrays are valid indices")
+        raise IndexError("only integer arrays are valid indices")
 
     def to_device(self, target_device):
         """
