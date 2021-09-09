@@ -66,7 +66,7 @@ cdef public api class SyclQueue (_SyclQueue) [
     cdef  SyclQueue _create(DPCTLSyclQueueRef qref)
     @staticmethod
     cdef  SyclQueue _create_from_context_and_device(
-        SyclContext ctx, SyclDevice dev
+        SyclContext ctx, SyclDevice dev, int props=*
     )
     cdef cpp_bool equals(self, SyclQueue q)
     cpdef SyclContext get_sycl_context(self)
