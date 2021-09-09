@@ -464,6 +464,7 @@ def test_queue_capsule():
     q2 = dpctl.SyclQueue(cap)
     assert q == q2
     del cap2  # call deleter on non-renamed capsule
+    assert q2 != []  # compare with other types
 
 
 def test_cpython_api():
