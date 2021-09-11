@@ -21,8 +21,7 @@ import numpy.lib.stride_tricks as np_st
 import pytest
 
 import dpctl
-
-# import dpctl.memory as dpmem
+import dpctl.memory as dpm
 import dpctl.tensor as dpt
 from dpctl.tensor._usmarray import Device
 
@@ -223,4 +222,15 @@ def test_slice_constructor_3d():
     ]:
         assert np.array_equal(
             _to_numpy(Xusm[ind]), Xh[ind]
+        ), "Failed for {}".format(ind)
+
+
+@pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
+def test_slice_suai(usm_type):
+    Xh = np.arange(0, 10, dtype="u1")
+    default_device = dpctl.select_default_device()
+    Xusm = _from_numpy(Xh, device=default_device, usm_type=usm_type)
+    for ind in [slice(2, 3, None), slice(5, 7, None), slice(3, 9, None)]:
+        assert np.array_equal(
+            dpm.as_usm_memory(Xusm[ind]).copy_to_host(), Xh[ind]
         ), "Failed for {}".format(ind)
