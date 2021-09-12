@@ -234,3 +234,20 @@ def test_slice_suai(usm_type):
         assert np.array_equal(
             dpm.as_usm_memory(Xusm[ind]).copy_to_host(), Xh[ind]
         ), "Failed for {}".format(ind)
+
+
+def test_slicing_basic():
+    Xusm = dpt.usm_ndarray((10, 5), dtype="c16")
+    Xusm[None]
+    Xusm[...]
+    Xusm[8]
+    Xusm[-3]
+    with pytest.raises(IndexError):
+        Xusm[..., ...]
+    with pytest.raises(IndexError):
+        Xusm[1, 1, :, 1]
+    Xusm[:, -4]
+    with pytest.raises(IndexError):
+        Xusm[:, -128]
+    with pytest.raises(TypeError):
+        Xusm[{1, 2, 3, 4, 5, 6, 7}]
