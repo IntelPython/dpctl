@@ -258,6 +258,11 @@ def test_ctor_invalid_shape():
         dpt.usm_ndarray(dict())
 
 
+def test_ctor_invalid_order():
+    with pytest.raises(ValueError):
+        dpt.usm_ndarray((5, 5, 3), order="Z")
+
+
 def test_ctor_buffer_kwarg():
     dpt.usm_ndarray(10, buffer=b"device")
     with pytest.raises(ValueError):
@@ -269,3 +274,20 @@ def test_ctor_buffer_kwarg():
     )
     with pytest.raises(ValueError):
         dpt.usm_ndarray(10, buffer=dict())
+
+
+def test_usm_ndarray_props():
+    Xusm = dpt.usm_ndarray((10, 5), dtype="c16", order="F")
+    Xusm.ndim
+    repr(Xusm)
+    Xusm.flags
+    Xusm.__sycl_usm_array_interface__
+    Xusm.device
+    Xusm.strides
+    Xusm.real
+    Xusm.imag
+    try:
+        dpctl.SyclQueue("cpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Sycl device CPU was not detected")
+    Xusm.to_device("cpu")
