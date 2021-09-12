@@ -251,3 +251,21 @@ def test_slicing_basic():
         Xusm[:, -128]
     with pytest.raises(TypeError):
         Xusm[{1, 2, 3, 4, 5, 6, 7}]
+
+
+def test_ctor_invalid_shape():
+    with pytest.raises(TypeError):
+        dpt.usm_ndarray(dict())
+
+
+def test_ctor_buffer_kwarg():
+    dpt.usm_ndarray(10, buffer=b"device")
+    with pytest.raises(ValueError):
+        dpt.usm_ndarray(10, buffer="invalid_param")
+    Xusm = dpt.usm_ndarray((10, 5), dtype="c16")
+    X2 = dpt.usm_ndarray(Xusm.shape, buffer=Xusm, dtype=Xusm.dtype)
+    assert np.array_equal(
+        Xusm.usm_data.copy_to_host(), X2.usm_data.copy_to_host()
+    )
+    with pytest.raises(ValueError):
+        dpt.usm_ndarray(10, buffer=dict())
