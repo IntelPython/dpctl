@@ -116,7 +116,7 @@ def test_properties():
 
 @pytest.mark.parametrize("func", [bool, float, int])
 @pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
-@pytest.mark.parametrize("dtype", ["|b1", "|f8", "|i8"])
+@pytest.mark.parametrize("dtype", ["|b1", "|u2", "|f4", "|i8"])
 def test_copy_scalar_with_func(func, shape, dtype):
     X = dpt.usm_ndarray(shape, dtype=dtype)
     Y = np.arange(1, X.size + 1, dtype=dtype).reshape(shape)
@@ -126,7 +126,7 @@ def test_copy_scalar_with_func(func, shape, dtype):
 
 @pytest.mark.parametrize("method", ["__bool__", "__float__", "__int__"])
 @pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
-@pytest.mark.parametrize("dtype", ["|b1", "|f8", "|i8"])
+@pytest.mark.parametrize("dtype", ["|b1", "|u2", "|f4", "|i8"])
 def test_copy_scalar_with_method(method, shape, dtype):
     X = dpt.usm_ndarray(shape, dtype=dtype)
     Y = np.arange(1, X.size + 1, dtype=dtype).reshape(shape)
