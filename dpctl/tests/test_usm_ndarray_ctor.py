@@ -307,6 +307,14 @@ def test_slicing_basic():
         Xusm[:, -128]
     with pytest.raises(TypeError):
         Xusm[{1, 2, 3, 4, 5, 6, 7}]
+    X = dpt.usm_ndarray(10, "u1")
+    X.usm_data.copy_from_host(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09")
+    int(
+        X[X[2]]
+    )  # check that objects with __index__ method can be used as indices
+    Xh = dpm.as_usm_memory(X[X[2] : X[5]]).copy_to_host()
+    Xnp = np.arange(0, 10, dtype="u1")
+    assert np.array_equal(Xh, Xnp[Xnp[2] : Xnp[5]])
 
 
 def test_ctor_invalid_shape():
