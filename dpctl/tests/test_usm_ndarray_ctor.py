@@ -114,6 +114,64 @@ def test_properties():
     assert isinstance(X.ndim, numbers.Integral)
 
 
+@pytest.mark.parametrize("func", [bool, float, int, complex])
+@pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
+@pytest.mark.parametrize("dtype", ["|b1", "|u2", "|f4", "|i8"])
+def test_copy_scalar_with_func(func, shape, dtype):
+    X = dpt.usm_ndarray(shape, dtype=dtype)
+    Y = np.arange(1, X.size + 1, dtype=dtype).reshape(shape)
+    X.usm_data.copy_from_host(Y.reshape(-1).view("|u1"))
+    assert func(X) == func(Y)
+
+
+@pytest.mark.parametrize(
+    "method", ["__bool__", "__float__", "__int__", "__complex__"]
+)
+@pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
+@pytest.mark.parametrize("dtype", ["|b1", "|u2", "|f4", "|i8"])
+def test_copy_scalar_with_method(method, shape, dtype):
+    X = dpt.usm_ndarray(shape, dtype=dtype)
+    Y = np.arange(1, X.size + 1, dtype=dtype).reshape(shape)
+    X.usm_data.copy_from_host(Y.reshape(-1).view("|u1"))
+    assert getattr(X, method)() == getattr(Y, method)()
+
+
+@pytest.mark.parametrize("func", [bool, float, int, complex])
+@pytest.mark.parametrize("shape", [(2,), (1, 2), (3, 4, 5), (0,)])
+def test_copy_scalar_invalid_shape(func, shape):
+    X = dpt.usm_ndarray(shape)
+    with pytest.raises(ValueError):
+        func(X)
+
+
+@pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
+@pytest.mark.parametrize("index_dtype", ["|i8"])
+def test_usm_ndarray_as_index(shape, index_dtype):
+    X = dpt.usm_ndarray(shape, dtype=index_dtype)
+    Xnp = np.arange(1, X.size + 1, dtype=index_dtype).reshape(shape)
+    X.usm_data.copy_from_host(Xnp.reshape(-1).view("|u1"))
+    Y = np.arange(X.size + 1)
+    assert Y[X] == Y[1]
+
+
+@pytest.mark.parametrize("shape", [(2,), (1, 2), (3, 4, 5), (0,)])
+@pytest.mark.parametrize("index_dtype", ["|i8"])
+def test_usm_ndarray_as_index_invalid_shape(shape, index_dtype):
+    X = dpt.usm_ndarray(shape, dtype=index_dtype)
+    Y = np.arange(X.size + 1)
+    with pytest.raises(IndexError):
+        Y[X]
+
+
+@pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
+@pytest.mark.parametrize("index_dtype", ["|f8"])
+def test_usm_ndarray_as_index_invalid_dtype(shape, index_dtype):
+    X = dpt.usm_ndarray(shape, dtype=index_dtype)
+    Y = np.arange(X.size + 1)
+    with pytest.raises(IndexError):
+        Y[X]
+
+
 @pytest.mark.parametrize(
     "ind",
     [
@@ -251,6 +309,14 @@ def test_slicing_basic():
         Xusm[:, -128]
     with pytest.raises(TypeError):
         Xusm[{1, 2, 3, 4, 5, 6, 7}]
+    X = dpt.usm_ndarray(10, "u1")
+    X.usm_data.copy_from_host(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09")
+    int(
+        X[X[2]]
+    )  # check that objects with __index__ method can be used as indices
+    Xh = dpm.as_usm_memory(X[X[2] : X[5]]).copy_to_host()
+    Xnp = np.arange(0, 10, dtype="u1")
+    assert np.array_equal(Xh, Xnp[Xnp[2] : Xnp[5]])
 
 
 def test_ctor_invalid_shape():
@@ -291,3 +357,19 @@ def test_usm_ndarray_props():
     except dpctl.SyclQueueCreationError:
         pytest.skip("Sycl device CPU was not detected")
     Xusm.to_device("cpu")
+
+
+def test_datapi_device():
+    X = dpt.usm_ndarray(1)
+    dev_t = type(X.device)
+    with pytest.raises(TypeError):
+        dev_t()
+    dev_t.create_device(X.device)
+    dev_t.create_device(X.sycl_queue)
+    dev_t.create_device(X.sycl_device)
+    dev_t.create_device(X.sycl_device.filter_string)
+    dev_t.create_device(None)
+    X.device.sycl_context
+    X.device.sycl_queue
+    X.device.sycl_device
+    repr(X.device)
