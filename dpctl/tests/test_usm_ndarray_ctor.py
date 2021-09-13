@@ -357,3 +357,19 @@ def test_usm_ndarray_props():
     except dpctl.SyclQueueCreationError:
         pytest.skip("Sycl device CPU was not detected")
     Xusm.to_device("cpu")
+
+
+def test_datapi_device():
+    X = dpt.usm_ndarray(1)
+    dev_t = type(X.device)
+    with pytest.raises(TypeError):
+        dev_t()
+    dev_t.create_device(X.device)
+    dev_t.create_device(X.sycl_queue)
+    dev_t.create_device(X.sycl_device)
+    dev_t.create_device(X.sycl_device.filter_string)
+    dev_t.create_device(None)
+    X.device.sycl_context
+    X.device.sycl_queue
+    X.device.sycl_device
+    repr(X.device)
