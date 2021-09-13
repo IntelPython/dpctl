@@ -21,8 +21,7 @@ import numpy.lib.stride_tricks as np_st
 import pytest
 
 import dpctl
-
-# import dpctl.memory as dpmem
+import dpctl.memory as dpm
 import dpctl.tensor as dpt
 from dpctl.tensor._usmarray import Device
 
@@ -224,3 +223,71 @@ def test_slice_constructor_3d():
         assert np.array_equal(
             _to_numpy(Xusm[ind]), Xh[ind]
         ), "Failed for {}".format(ind)
+
+
+@pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
+def test_slice_suai(usm_type):
+    Xh = np.arange(0, 10, dtype="u1")
+    default_device = dpctl.select_default_device()
+    Xusm = _from_numpy(Xh, device=default_device, usm_type=usm_type)
+    for ind in [slice(2, 3, None), slice(5, 7, None), slice(3, 9, None)]:
+        assert np.array_equal(
+            dpm.as_usm_memory(Xusm[ind]).copy_to_host(), Xh[ind]
+        ), "Failed for {}".format(ind)
+
+
+def test_slicing_basic():
+    Xusm = dpt.usm_ndarray((10, 5), dtype="c16")
+    Xusm[None]
+    Xusm[...]
+    Xusm[8]
+    Xusm[-3]
+    with pytest.raises(IndexError):
+        Xusm[..., ...]
+    with pytest.raises(IndexError):
+        Xusm[1, 1, :, 1]
+    Xusm[:, -4]
+    with pytest.raises(IndexError):
+        Xusm[:, -128]
+    with pytest.raises(TypeError):
+        Xusm[{1, 2, 3, 4, 5, 6, 7}]
+
+
+def test_ctor_invalid_shape():
+    with pytest.raises(TypeError):
+        dpt.usm_ndarray(dict())
+
+
+def test_ctor_invalid_order():
+    with pytest.raises(ValueError):
+        dpt.usm_ndarray((5, 5, 3), order="Z")
+
+
+def test_ctor_buffer_kwarg():
+    dpt.usm_ndarray(10, buffer=b"device")
+    with pytest.raises(ValueError):
+        dpt.usm_ndarray(10, buffer="invalid_param")
+    Xusm = dpt.usm_ndarray((10, 5), dtype="c16")
+    X2 = dpt.usm_ndarray(Xusm.shape, buffer=Xusm, dtype=Xusm.dtype)
+    assert np.array_equal(
+        Xusm.usm_data.copy_to_host(), X2.usm_data.copy_to_host()
+    )
+    with pytest.raises(ValueError):
+        dpt.usm_ndarray(10, buffer=dict())
+
+
+def test_usm_ndarray_props():
+    Xusm = dpt.usm_ndarray((10, 5), dtype="c16", order="F")
+    Xusm.ndim
+    repr(Xusm)
+    Xusm.flags
+    Xusm.__sycl_usm_array_interface__
+    Xusm.device
+    Xusm.strides
+    Xusm.real
+    Xusm.imag
+    try:
+        dpctl.SyclQueue("cpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Sycl device CPU was not detected")
+    Xusm.to_device("cpu")

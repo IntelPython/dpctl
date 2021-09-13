@@ -308,7 +308,7 @@ cdef class usm_ndarray:
         mem_ptr = <char *>(<size_t> ary_iface['data'][0])
         ary_ptr = <char *>(<size_t> self.data_)
         ro_flag = False if (self.flags_ & USM_ARRAY_WRITEABLE) else True
-        ary_iface['data'] = (<size_t> ary_ptr, ro_flag)
+        ary_iface['data'] = (<size_t> mem_ptr, ro_flag)
         ary_iface['shape'] = self.shape
         if (self.strides_):
             ary_iface['strides'] = _make_int_tuple(self.nd_, self.strides_)
@@ -335,7 +335,7 @@ cdef class usm_ndarray:
         """
         Gives the number of indices needed to address elements of this array.
         """
-        return int(self.nd_)
+        return self.nd_
 
     @property
     def usm_data(self):
