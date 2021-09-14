@@ -308,7 +308,7 @@ cdef class usm_ndarray:
         mem_ptr = <char *>(<size_t> ary_iface['data'][0])
         ary_ptr = <char *>(<size_t> self.data_)
         ro_flag = False if (self.flags_ & USM_ARRAY_WRITEABLE) else True
-        ary_iface['data'] = (<size_t> ary_ptr, ro_flag)
+        ary_iface['data'] = (<size_t> mem_ptr, ro_flag)
         ary_iface['shape'] = self.shape
         if (self.strides_):
             ary_iface['strides'] = _make_int_tuple(self.nd_, self.strides_)
@@ -335,7 +335,7 @@ cdef class usm_ndarray:
         """
         Gives the number of indices needed to address elements of this array.
         """
-        return int(self.nd_)
+        return self.nd_
 
     @property
     def usm_data(self):
@@ -490,6 +490,54 @@ cdef class usm_ndarray:
         )
         res.flags_ |= (self.flags_ & USM_ARRAY_WRITEABLE)
         return res
+
+    def __bool__(self):
+        if self.size == 1:
+            mem_view = dpmem.as_usm_memory(self)
+            return mem_view.copy_to_host().view(self.dtype).__bool__()
+
+        if self.size == 0:
+            raise ValueError(
+                "The truth value of an empty array is ambiguous"
+            )
+
+        raise ValueError(
+            "The truth value of an array with more than one element is "
+            "ambiguous. Use a.any() or a.all()"
+        )
+
+    def __float__(self):
+        if self.size == 1:
+            mem_view = dpmem.as_usm_memory(self)
+            return mem_view.copy_to_host().view(self.dtype).__float__()
+
+        raise ValueError(
+            "only size-1 arrays can be converted to Python scalars"
+        )
+
+    def __complex__(self):
+        if self.size == 1:
+            mem_view = dpmem.as_usm_memory(self)
+            return mem_view.copy_to_host().view(self.dtype).__complex__()
+
+        raise ValueError(
+            "only size-1 arrays can be converted to Python scalars"
+        )
+
+    def __int__(self):
+        if self.size == 1:
+            mem_view = dpmem.as_usm_memory(self)
+            return mem_view.copy_to_host().view(self.dtype).__int__()
+
+        raise ValueError(
+            "only size-1 arrays can be converted to Python scalars"
+        )
+
+    def __index__(self):
+        if np.issubdtype(self.dtype, np.integer):
+            return int(self)
+
+        raise IndexError("only integer arrays are valid indices")
 
     def to_device(self, target_device):
         """
