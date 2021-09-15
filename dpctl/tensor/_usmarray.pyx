@@ -635,3 +635,39 @@ cdef usm_ndarray _zero_like(usm_ndarray ary):
     )
     # TODO: call function to set array elements to zero
     return r
+
+
+cdef api char* usm_ndarray_get_data(usm_ndarray arr):
+    """
+    """
+    return arr.get_data()
+
+
+cdef api int usm_ndarray_get_ndim(usm_ndarray arr):
+    """"""
+    return arr.get_ndim()
+
+
+cdef api Py_ssize_t* usm_ndarray_get_shape(usm_ndarray arr):
+    """ """
+    return arr.get_shape()
+
+
+cdef api Py_ssize_t* usm_ndarray_get_strides(usm_ndarray arr):
+    """ """
+    return arr.get_strides()
+
+
+cdef api int usm_ndarray_get_typenum(usm_ndarray arr):
+    """ """
+    return arr.get_typenum()
+
+
+cdef api int usm_ndarray_get_flags(usm_ndarray arr):
+    """ """
+    return arr.get_flags()
+
+
+cdef api c_dpctl.DPCTLSyclQueueRef usm_ndarray_get_queue_ref(usm_ndarray arr):
+    """ """
+    return arr.get_queue_ref()

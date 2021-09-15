@@ -373,3 +373,75 @@ def test_datapi_device():
     X.device.sycl_queue
     X.device.sycl_device
     repr(X.device)
+
+
+def test_pyx_capi():
+    import ctypes
+    import sys
+
+    X = dpt.usm_ndarray(17)[1::2]
+    mod = sys.modules[X.__class__.__module__]
+    # get capsule storign get_context_ref function ptr
+    arr_data_fn_cap = mod.__pyx_capi__["usm_ndarray_get_data"]
+    arr_ndim_fn_cap = mod.__pyx_capi__["usm_ndarray_get_ndim"]
+    arr_shape_fn_cap = mod.__pyx_capi__["usm_ndarray_get_shape"]
+    arr_strides_fn_cap = mod.__pyx_capi__["usm_ndarray_get_strides"]
+    arr_typenum_fn_cap = mod.__pyx_capi__["usm_ndarray_get_typenum"]
+    arr_flags_fn_cap = mod.__pyx_capi__["usm_ndarray_get_flags"]
+    arr_queue_ref_fn_cap = mod.__pyx_capi__["usm_ndarray_get_queue_ref"]
+    # construct Python callable to invoke these functions
+    cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
+    cap_ptr_fn.restype = ctypes.c_void_p
+    cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
+    callable_maker_ptr = ctypes.PYFUNCTYPE(ctypes.c_void_p, ctypes.py_object)
+    callable_maker_int = ctypes.PYFUNCTYPE(ctypes.c_int, ctypes.py_object)
+    arr_data_fn_ptr = cap_ptr_fn(
+        arr_data_fn_cap, b"char *(struct PyUSMArrayObject *)"
+    )
+    get_data_fn = callable_maker_ptr(arr_data_fn_ptr)
+
+    arr_ndim_fn_ptr = cap_ptr_fn(
+        arr_ndim_fn_cap, b"int (struct PyUSMArrayObject *)"
+    )
+    get_ndim_fn = callable_maker_int(arr_ndim_fn_ptr)
+
+    arr_shape_fn_ptr = cap_ptr_fn(
+        arr_shape_fn_cap, b"Py_ssize_t *(struct PyUSMArrayObject *)"
+    )
+    get_shape_fn = callable_maker_ptr(arr_shape_fn_ptr)
+
+    arr_strides_fn_ptr = cap_ptr_fn(
+        arr_strides_fn_cap, b"Py_ssize_t *(struct PyUSMArrayObject *)"
+    )
+    get_strides_fn = callable_maker_ptr(arr_strides_fn_ptr)
+    arr_typenum_fn_ptr = cap_ptr_fn(
+        arr_typenum_fn_cap, b"int (struct PyUSMArrayObject *)"
+    )
+    get_typenum_fn = callable_maker_int(arr_typenum_fn_ptr)
+    arr_flags_fn_ptr = cap_ptr_fn(
+        arr_flags_fn_cap, b"int (struct PyUSMArrayObject *)"
+    )
+    get_flags_fn = callable_maker_int(arr_flags_fn_ptr)
+    arr_queue_ref_fn_ptr = cap_ptr_fn(
+        arr_queue_ref_fn_cap, b"DPCTLSyclQueueRef (struct PyUSMArrayObject *)"
+    )
+    get_queue_ref_fn = callable_maker_ptr(arr_queue_ref_fn_ptr)
+
+    r1 = get_data_fn(X)
+    sua_iface = X.__sycl_usm_array_interface__
+    assert r1 == sua_iface["data"][0] + sua_iface.get("offset") * X.itemsize
+    assert get_ndim_fn(X) == X.ndim
+    c_longlong_p = ctypes.POINTER(ctypes.c_longlong)
+    shape0 = ctypes.cast(get_shape_fn(X), c_longlong_p).contents.value
+    assert shape0 == X.shape[0]
+    strides0_p = get_strides_fn(X)
+    if strides0_p:
+        strides0_p = ctypes.cast(strides0_p, c_longlong_p).contents
+        strides0_p = strides0_p.value
+    assert strides0_p == 0 or strides0_p == X.strides[0]
+    typenum = get_typenum_fn(X)
+    assert type(typenum) is int
+    flags = get_flags_fn(X)
+    assert type(flags) is int and flags == X.flags
+    queue_ref = get_queue_ref_fn(X)  # address of a copy, should be unequal
+    assert queue_ref != X.sycl_queue.addressof_ref()

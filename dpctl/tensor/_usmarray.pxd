@@ -8,16 +8,34 @@ cdef public int USM_ARRAY_C_CONTIGUOUS
 cdef public int USM_ARRAY_F_CONTIGUOUS
 cdef public int USM_ARRAY_WRITEABLE
 
+cdef public int UAR_BOOL
+cdef public int UAR_BYTE
+cdef public int UAR_UBYTE
+cdef public int UAR_SHORT
+cdef public int UAR_USHORT
+cdef public int UAR_INT
+cdef public int UAR_UINT
+cdef public int UAR_LONG
+cdef public int UAR_ULONG
+cdef public int UAR_LONGLONG
+cdef public int UAR_ULONGLONG
+cdef public int UAR_FLOAT
+cdef public int UAR_DOUBLE
+cdef public int UAR_CFLOAT
+cdef public int UAR_CDOUBLE
+cdef public int UAR_TYPE_SENTINEL
+cdef public int UAR_HALF
 
-cdef public api class usm_ndarray [object PyUSMArrayObject, type PyUSMArrayType]:
+
+cdef api class usm_ndarray [object PyUSMArrayObject, type PyUSMArrayType]:
     # data fields
     cdef char* data_
-    cdef readonly int nd_
+    cdef int nd_
     cdef Py_ssize_t *shape_
     cdef Py_ssize_t *strides_
-    cdef readonly int typenum_
-    cdef readonly int flags_
-    cdef readonly object base_
+    cdef int typenum_
+    cdef int flags_
+    cdef object base_
     # make usm_ndarray weak-referenceable
     cdef object __weakref__
 
