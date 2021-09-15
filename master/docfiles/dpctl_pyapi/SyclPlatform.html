@@ -1,80 +1,40 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>dpctl.SyclPlatform &mdash; Data-parallel Control (dpctl) 0.10.0dev0+55.g34ce6b7 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>dpctl.SyclPlatform &mdash; Data-parallel Control (dpctl) 0.10.0dev1+11.g5793c9a documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/target-highlight.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpctl.SyclQueue" href="SyclQueue.html" />
     <link rel="prev" title="dpctl.SyclEvent" href="SyclEvent.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
-                0.10.0dev0+55.g34ce6b7
+                0.10.0dev1+11.g5793c9a
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -82,18 +42,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
@@ -123,78 +72,36 @@
 <li class="toctree-l1"><a class="reference internal" href="../dpctl-capi/index.html">dpctl C API</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Data-parallel Control (dpctl)</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../dpctl_pyapi.html">dpctl Python API</a> &raquo;</li>
-        
       <li>dpctl.SyclPlatform</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../../_sources/docfiles/dpctl_pyapi/SyclPlatform.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="dpctl-syclplatform">
-<span id="syclplatform-api"></span><h1>dpctl.SyclPlatform<a class="headerlink" href="#dpctl-syclplatform" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="dpctl-syclplatform">
+<span id="syclplatform-api"></span><h1>dpctl.SyclPlatform<a class="headerlink" href="#dpctl-syclplatform" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.SyclPlatform">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclPlatform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclPlatform" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclPlatform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclPlatform" title="Permalink to this definition"></a></dt>
 <dd><p>Python class representing <code class="docutils literal notranslate"><span class="pre">cl::sycl::platform</span></code> class.</p>
 <p>SyclPlatform() - create platform selected by sycl::default_selector
 SyclPlatform(filter_selector) - create platform selected by filter
@@ -234,13 +141,13 @@ selector</p>
 </table>
 </dd></dl>
 
-<div class="section" id="detail">
-<h2>Detail<a class="headerlink" href="#detail" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<section id="detail">
+<h2>Detail<a class="headerlink" href="#detail" title="Permalink to this headline"></a></h2>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h3>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclPlatform.backend">
-<span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">backend</span></span><a class="headerlink" href="#dpctl.SyclPlatform.backend" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">backend</span></span><a class="headerlink" href="#dpctl.SyclPlatform.backend" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the backend_type enum value for this device</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -254,28 +161,28 @@ selector</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclPlatform.name">
-<span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#dpctl.SyclPlatform.name" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#dpctl.SyclPlatform.name" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the name of the platform as a string</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclPlatform.vendor">
-<span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">vendor</span></span><a class="headerlink" href="#dpctl.SyclPlatform.vendor" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">vendor</span></span><a class="headerlink" href="#dpctl.SyclPlatform.vendor" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the platform vendor name as a string.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclPlatform.version">
-<span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#dpctl.SyclPlatform.version" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#dpctl.SyclPlatform.version" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a backend-defined driver version as a string.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="public-methods">
-<h3>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="public-methods">
+<h3>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline"></a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclPlatform.print_platform_info">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">print_platform_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclPlatform.print_platform_info" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">print_platform_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclPlatform.print_platform_info" title="Permalink to this definition"></a></dt>
 <dd><p>Print information about the SYCL platform.</p>
 <p>The level of information printed out by the function can be controlled
 by the optional <code class="docutils literal notranslate"><span class="pre">vebosity</span></code> setting.</p>
@@ -300,50 +207,40 @@ highest level to print the most verbose output.</p>
 </dl>
 </dd></dl>
 
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="SyclQueue.html" class="btn btn-neutral float-right" title="dpctl.SyclQueue" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="SyclEvent.html" class="btn btn-neutral float-left" title="dpctl.SyclEvent" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="SyclQueue.html" class="btn btn-neutral float-right" title="dpctl.SyclQueue" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, Intel Corp..
-
-    </p>
+    <p>&#169; Copyright 2020, Intel Corp..</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
   
 
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.10.0dev0+55.g34ce6b7
+      v: 0.10.0dev1+11.g5793c9a
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
@@ -371,18 +268,11 @@ highest level to print the most verbose output.</p>
       
     </div>
   </div>
-
-
-  <script type="text/javascript">
+<script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
