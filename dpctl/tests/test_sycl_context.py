@@ -14,12 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" Defines unit test cases for the SyclContxt class.
+""" Defines unit test cases for the :class:`dpctl.SyclContext` class.
 """
 
 import pytest
 
 import dpctl
+
+from ._helper import create_invalid_capsule
 
 list_of_valid_filter_selectors = [
     "opencl",
@@ -152,11 +154,24 @@ def test_context_multi_device():
     d1, d2 = d.create_sub_devices(partition=(n1, n2))
     ctx = dpctl.SyclContext((d1, d2))
     assert ctx.device_count == 2
+    assert type(repr(ctx)) is str
     q1 = dpctl.SyclQueue(ctx, d1)
     q2 = dpctl.SyclQueue(ctx, d2)
     import dpctl.memory as dpmem
 
     shmem_1 = dpmem.MemoryUSMShared(256, queue=q1)
+    shmem_2 = dpmem.MemoryUSMDevice(256, queue=q2)
+    shmem_2.copy_from_device(shmem_1)
+    # create context for single sub-device
+    ctx1 = dpctl.SyclContext(d1)
+    q1 = dpctl.SyclQueue(ctx1, d1)
+    shmem_1 = dpmem.MemoryUSMShared(256, queue=q1)
+    cap = ctx1._get_capsule()
+    cap2 = ctx1._get_capsule()
+    del ctx1
+    del cap2  # exercise deleter of non-renamed capsule
+    ctx2 = dpctl.SyclContext(cap)
+    q2 = dpctl.SyclQueue(ctx2, d1)
     shmem_2 = dpmem.MemoryUSMDevice(256, queue=q2)
     shmem_2.copy_from_device(shmem_1)
 
@@ -169,3 +184,44 @@ def test_hashing_of_context():
     """
     ctx_dict = {dpctl.SyclContext(): "default_context"}
     assert ctx_dict
+
+
+def test_context_repr():
+    ctx = dpctl.SyclContext()
+    assert type(ctx.__repr__()) is str
+
+
+def test_cpython_api():
+    import ctypes
+    import sys
+
+    ctx = dpctl.SyclContext()
+    mod = sys.modules[ctx.__class__.__module__]
+    # get capsule storign get_context_ref function ptr
+    ctx_ref_fn_cap = mod.__pyx_capi__["get_context_ref"]
+    # construct Python callable to invoke "get_context_ref"
+    cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
+    cap_ptr_fn.restype = ctypes.c_void_p
+    cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
+    ctx_ref_fn_ptr = cap_ptr_fn(
+        ctx_ref_fn_cap, b"DPCTLSyclContextRef (struct PySyclContextObject *)"
+    )
+    callable_maker = ctypes.PYFUNCTYPE(ctypes.c_void_p, ctypes.py_object)
+    get_context_ref_fn = callable_maker(ctx_ref_fn_ptr)
+
+    r2 = ctx.addressof_ref()
+    r1 = get_context_ref_fn(ctx)
+    assert r1 == r2
+
+
+def test_invalid_capsule():
+    cap = create_invalid_capsule()
+    with pytest.raises(ValueError):
+        dpctl.SyclContext(cap)
+
+
+def test_multi_device_different_platforms():
+    devs = dpctl.get_devices()  # all devices
+    if len(devs) > 1:
+        with pytest.raises(ValueError):
+            dpctl.SyclContext(devs)

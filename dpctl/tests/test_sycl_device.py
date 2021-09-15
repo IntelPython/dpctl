@@ -51,6 +51,7 @@ list_of_invalid_filter_selectors = [
     "opencl:gpu:-1",
     "cuda:cpu:0",
     "abc",
+    1,
 ]
 
 
@@ -470,6 +471,10 @@ def check_print_device_info(device):
         pytest.fail("Encountered an exception inside print_device_info().")
 
 
+def check_repr(device):
+    assert type(repr(device)) is str
+
+
 list_of_checks = [
     check_get_max_compute_units,
     check_get_max_work_item_dims,
@@ -523,6 +528,7 @@ list_of_checks = [
     check_create_sub_devices_by_affinity_L1_cache,
     check_create_sub_devices_by_affinity_next_partitionable,
     check_print_device_info,
+    check_repr,
 ]
 
 

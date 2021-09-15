@@ -34,6 +34,7 @@ from dpctl._backend cimport (  # noqa: E211
     DPCTLaligned_alloc_host,
     DPCTLaligned_alloc_shared,
     DPCTLContext_Delete,
+    DPCTLDevice_Copy,
     DPCTLEvent_Delete,
     DPCTLEvent_Wait,
     DPCTLfree_with_queue,
@@ -48,6 +49,7 @@ from dpctl._backend cimport (  # noqa: E211
     DPCTLSyclContextRef,
     DPCTLSyclDeviceRef,
     DPCTLSyclEventRef,
+    DPCTLSyclQueueRef,
     DPCTLSyclUSMRef,
     DPCTLUSM_GetPointerDevice,
     DPCTLUSM_GetPointerType,
@@ -138,7 +140,7 @@ cdef class _Memory:
 
     cdef _cinit_alloc(self, Py_ssize_t alignment, Py_ssize_t nbytes,
                       bytes ptr_type, SyclQueue queue):
-        cdef DPCTLSyclUSMRef p
+        cdef DPCTLSyclUSMRef p = NULL
 
         self._cinit_empty()
 
@@ -215,10 +217,12 @@ cdef class _Memory:
             )
 
     def __dealloc__(self):
-        if (self.refobj is None and self.memory_ptr):
-            DPCTLfree_with_queue(
-                self.memory_ptr, self.queue.get_queue_ref()
-            )
+        if (self.refobj is None):
+            if self.memory_ptr:
+                if (type(self.queue) is SyclQueue):
+                    DPCTLfree_with_queue(
+                        self.memory_ptr, self.queue.get_queue_ref()
+                    )
         self._cinit_empty()
 
     cdef _getbuffer(self, Py_buffer *buffer, int flags):
@@ -267,7 +271,7 @@ cdef class _Memory:
     property _queue:
         """
         :class:`dpctl.SyclQueue` with :class:`dpctl.SyclContext` the
-        USM pointer is bound to and :class:`dpctl.SyclDevice` it was
+        USM allocation is bound to and :class:`dpctl.SyclDevice` it was
         allocated on.
         """
         def __get__(self):
@@ -477,8 +481,10 @@ cdef class _Memory:
         cdef DPCTLSyclDeviceRef dref = DPCTLUSM_GetPointerDevice(
             p, ctx.get_context_ref()
         )
-
-        return SyclDevice._create(dref)
+        cdef DPCTLSyclDeviceRef dref_copy = DPCTLDevice_Copy(dref)
+        if (dref_copy is NULL):
+            raise RuntimeError("Could not create a copy of sycl device")
+        return SyclDevice._create(dref_copy)  # deletes the argument
 
     @staticmethod
     cdef bytes get_pointer_type(DPCTLSyclUSMRef p, SyclContext ctx):

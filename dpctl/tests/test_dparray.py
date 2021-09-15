@@ -17,85 +17,104 @@
 """Unit test cases for dpctl.tensor.numpy_usm_shared.
 """
 
-import unittest
-
 import numpy
 
 from dpctl.tensor import numpy_usm_shared as dparray
 
 
-class Test_dparray(unittest.TestCase):
-    def setUp(self):
-        self.X = dparray.ndarray((256, 4), dtype="d")
-        self.X.fill(1.0)
-
-    def test_dparray_type(self):
-        self.assertIsInstance(self.X, dparray.ndarray)
-
-    def test_dparray_as_ndarray_self(self):
-        Y = self.X.as_ndarray()
-        self.assertEqual(type(Y), numpy.ndarray)
-
-    def test_dparray_as_ndarray(self):
-        Y = dparray.as_ndarray(self.X)
-        self.assertEqual(type(Y), numpy.ndarray)
-
-    def test_dparray_from_ndarray(self):
-        Y = dparray.as_ndarray(self.X)
-        dp1 = dparray.from_ndarray(Y)
-        self.assertIsInstance(dp1, dparray.ndarray)
-
-    def test_multiplication_dparray(self):
-        C = self.X * 5
-        self.assertIsInstance(C, dparray.ndarray)
-
-    def test_inplace_sub(self):
-        self.X -= 1
-
-    def test_dparray_through_python_func(self):
-        def func_operation_with_const(dpctl_array):
-            return dpctl_array * 2.0 + 13
-
-        C = self.X * 5
-        dp_func = func_operation_with_const(C)
-        self.assertIsInstance(dp_func, dparray.ndarray)
-
-    def test_dparray_mixing_dpctl_and_numpy(self):
-        dp_numpy = numpy.ones((256, 4), dtype="d")
-        res = dp_numpy * self.X
-        self.assertIsInstance(self.X, dparray.ndarray)
-        self.assertIsInstance(res, dparray.ndarray)
-
-    def test_dparray_shape(self):
-        res = self.X.shape
-        self.assertEqual(res, (256, 4))
-
-    def test_dparray_T(self):
-        res = self.X.T
-        self.assertEqual(res.shape, (4, 256))
-
-    def test_numpy_ravel_with_dparray(self):
-        res = numpy.ravel(self.X)
-        self.assertEqual(res.shape, (1024,))
-
-    def test_numpy_sum_with_dparray(self):
-        res = numpy.sum(self.X)
-        self.assertEqual(res, 1024.0)
-
-    def test_numpy_sum_with_dparray_out(self):
-        res = dparray.empty((self.X.shape[1],), dtype=self.X.dtype)
-        res2 = numpy.sum(self.X, axis=0, out=res)
-        self.assertTrue(res is res2)
-        self.assertIsInstance(res2, dparray.ndarray)
-
-    def test_frexp_with_out(self):
-        X = dparray.array([0.5, 4.7])
-        mant = dparray.empty((2,), dtype="d")
-        exp = dparray.empty((2,), dtype="i4")
-        res = numpy.frexp(X, out=(mant, exp))
-        self.assertTrue(res[0] is mant)
-        self.assertTrue(res[1] is exp)
+def get_arg():
+    X = dparray.ndarray((256, 4), dtype="d")
+    X.fill(1.0)
+    return X
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_dparray_type():
+    X = get_arg()
+    assert isinstance(X, dparray.ndarray)
+
+
+def test_dparray_as_ndarray_self():
+    X = get_arg()
+    Y = X.as_ndarray()
+    assert type(Y) == numpy.ndarray
+
+
+def test_dparray_as_ndarray():
+    X = get_arg()
+    Y = dparray.as_ndarray(X)
+    assert type(Y) == numpy.ndarray
+
+
+def test_dparray_from_ndarray():
+    X = get_arg()
+    Y = dparray.as_ndarray(X)
+    dp1 = dparray.from_ndarray(Y)
+    assert isinstance(dp1, dparray.ndarray)
+
+
+def test_multiplication_dparray():
+    C = get_arg() * 5
+    assert isinstance(C, dparray.ndarray)
+
+
+def test_inplace_sub():
+    X = get_arg()
+    X -= 1
+
+
+def test_dparray_through_python_func():
+    def func_operation_with_const(dpctl_array):
+        return dpctl_array * 2.0 + 13
+
+    C = get_arg() * 5
+    dp_func = func_operation_with_const(C)
+    assert isinstance(dp_func, dparray.ndarray)
+
+
+def test_dparray_mixing_dpctl_and_numpy():
+    dp_numpy = numpy.ones((256, 4), dtype="d")
+    X = get_arg()
+    res = dp_numpy * X
+    assert isinstance(X, dparray.ndarray)
+    assert isinstance(res, dparray.ndarray)
+
+
+def test_dparray_shape():
+    X = get_arg()
+    res = X.shape
+    assert res == (256, 4)
+
+
+def test_dparray_T():
+    X = get_arg()
+    res = X.T
+    assert res.shape == (4, 256)
+
+
+def test_numpy_ravel_with_dparray():
+    X = get_arg()
+    res = numpy.ravel(X)
+    assert res.shape == (1024,)
+
+
+def test_numpy_sum_with_dparray():
+    X = get_arg()
+    res = numpy.sum(X)
+    assert res == 1024.0
+
+
+def test_numpy_sum_with_dparray_out():
+    X = get_arg()
+    res = dparray.empty((X.shape[1],), dtype=X.dtype)
+    res2 = numpy.sum(X, axis=0, out=res)
+    assert res is res2
+    assert isinstance(res2, dparray.ndarray)
+
+
+def test_frexp_with_out():
+    X = dparray.array([0.5, 4.7])
+    mant = dparray.empty((2,), dtype="d")
+    exp = dparray.empty((2,), dtype="i4")
+    res = numpy.frexp(X, out=(mant, exp))
+    assert res[0] is mant
+    assert res[1] is exp

@@ -78,7 +78,7 @@ cdef class _SyclQueueManager:
         Returns:
             backend_type: The SYCL backend for the currently selected queue.
         """
-        return self.get_current_queue().get_sycl_backend()
+        return self.get_current_queue().backend
 
     cpdef get_current_device_type(self):
         """
@@ -88,7 +88,7 @@ cdef class _SyclQueueManager:
             device_type: The SYCL device type for the currently selected queue.
             Possible values can be gpu, cpu, accelerator, or host.
         """
-        return self.get_current_queue().get_sycl_device().device_type
+        return self.get_current_queue().sycl_device.device_type
 
     cpdef SyclQueue get_current_queue(self):
         """

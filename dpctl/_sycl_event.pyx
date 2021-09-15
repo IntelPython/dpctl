@@ -71,6 +71,11 @@ cdef void _event_capsule_deleter(object o):
             o, "SyclEventRef"
         )
         DPCTLEvent_Delete(ERef)
+    elif pycapsule.PyCapsule_IsValid(o, "used_SyclEventRef"):
+        ERef = <DPCTLSyclEventRef> pycapsule.PyCapsule_GetPointer(
+            o, "used_SyclEventRef"
+        )
+        DPCTLEvent_Delete(ERef)
 
 
 cdef void _init_helper(_SyclEvent event, DPCTLSyclEventRef ERef):
@@ -83,8 +88,10 @@ cdef class _SyclEvent:
     """
 
     def __dealloc__(self):
-        DPCTLEvent_Wait(self._event_ref)
-        DPCTLEvent_Delete(self._event_ref)
+        if (self._event_ref):
+            DPCTLEvent_Wait(self._event_ref)
+            DPCTLEvent_Delete(self._event_ref)
+        self._event_ref = NULL
         self.args = None
 
 
@@ -318,6 +325,7 @@ cdef class SyclEvent(_SyclEvent):
         DPCTLEventVector_Delete(EVRef)
         return events
 
+    @property
     def profiling_info_submit(self):
         """
         Returns the 64-bit time value in nanoseconds

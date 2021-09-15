@@ -25,7 +25,7 @@ import dpctl.memory as dpctl_mem
 import dpctl.program as dpctl_prog
 from dpctl import event_status_type as esty
 
-from ._helper import has_cpu
+from ._helper import create_invalid_capsule, has_cpu
 
 
 def produce_event(profiling=False):
@@ -70,6 +70,11 @@ def test_create_event_from_capsule():
         pytest.fail("Failed to create an event from capsule")
 
 
+def test_invalid_constructor_arg():
+    with pytest.raises(TypeError):
+        dpctl.SyclEvent(list())
+
+
 def test_wait_with_event():
     event = dpctl.SyclEvent()
     try:
@@ -81,6 +86,11 @@ def test_wait_with_event():
         event.wait()
     except ValueError:
         pytest.fail("Failed to wait for the event")
+
+
+def test_wait_for_invalid():
+    with pytest.raises(TypeError):
+        dpctl.SyclEvent.wait_for(77)
 
 
 def test_wait_with_list():
@@ -101,9 +111,31 @@ def test_execution_status():
     assert event_status == esty.complete
 
 
+def test_execution_status_nondefault_event():
+    try:
+        event = produce_event()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL CPU queue could not be created")
+    try:
+        event_status = event.execution_status
+    except ValueError:
+        pytest.fail("Failed to get an event status")
+    assert type(event_status) is esty
+    wl = event.get_wait_list()
+    assert type(wl) is list
+
+
 def test_backend():
     try:
         dpctl.SyclEvent().backend
+    except ValueError:
+        pytest.fail("Failed to get backend from event")
+    try:
+        event = produce_event()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL CPU queue could not be created")
+    try:
+        event.backend
     except ValueError:
         pytest.fail("Failed to get backend from event")
 
@@ -180,3 +212,47 @@ def test_sycl_timer():
         timer(queue=q_no_profiling)
     with pytest.raises(TypeError):
         timer(queue=None)
+
+
+def test_event_capsule():
+    ev = dpctl.SyclEvent()
+    cap1 = ev._get_capsule()
+    cap2 = ev._get_capsule()
+    del ev
+    del cap1  # test deleter
+    del cap2
+
+
+def test_event_invalid_capsule():
+    cap = create_invalid_capsule()
+    with pytest.raises(TypeError):
+        dpctl.SyclEvent(cap)
+
+
+def test_addressof_ref():
+    ev = dpctl.SyclEvent()
+    ref = ev.addressof_ref()
+    assert type(ref) is int
+
+
+def test_cpython_api():
+    import ctypes
+    import sys
+
+    ev = dpctl.SyclEvent()
+    mod = sys.modules[ev.__class__.__module__]
+    # get capsule storign get_event_ref function ptr
+    ev_ref_fn_cap = mod.__pyx_capi__["get_event_ref"]
+    # construct Python callable to invoke "get_event_ref"
+    cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
+    cap_ptr_fn.restype = ctypes.c_void_p
+    cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
+    ev_ref_fn_ptr = cap_ptr_fn(
+        ev_ref_fn_cap, b"DPCTLSyclEventRef (struct PySyclEventObject *)"
+    )
+    callable_maker = ctypes.PYFUNCTYPE(ctypes.c_void_p, ctypes.py_object)
+    get_event_ref_fn = callable_maker(ev_ref_fn_ptr)
+
+    r2 = ev.addressof_ref()
+    r1 = get_event_ref_fn(ev)
+    assert r1 == r2

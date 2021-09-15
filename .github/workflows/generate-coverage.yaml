@@ -87,7 +87,7 @@ jobs:
           source /opt/intel/oneapi/setvars.sh
           python setup.py develop --coverage=True
           python -c "import dpctl; print(dpctl.__version__); dpctl.lsplatform()"
-          pytest -q -ra --disable-warnings --cov dpctl --cov-report term-missing --pyargs dpctl -vv
+          pytest -q -ra --disable-warnings --cov-config pyproject.toml --cov dpctl --cov-report term-missing --pyargs dpctl -vv
 
       - name: Install coverall dependencies
         shell: bash -l {0}
