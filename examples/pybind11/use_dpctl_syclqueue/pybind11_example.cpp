@@ -3,9 +3,13 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
+// clang-format off
+#include "dpctl_sycl_types.h"
 #include "../_sycl_queue.h"
 #include "../_sycl_queue_api.h"
-#include "dpctl_sycl_types.h"
+#include "../_sycl_device.h"
+#include "../_sycl_device_api.h"
+// clang-format on
 
 namespace py = pybind11;
 
@@ -22,6 +26,34 @@ size_t get_max_compute_units(py::object queue)
     }
     else {
         throw std::runtime_error("expected dpctl.SyclQueue as argument");
+    }
+}
+
+uint64_t get_device_global_mem_size(py::object device)
+{
+    PyObject *device_pycapi = device.ptr();
+    if (PyObject_TypeCheck(device_pycapi, &PySyclDeviceType)) {
+        DPCTLSyclDeviceRef DRef = get_device_ref(
+            reinterpret_cast<PySyclDeviceObject *>(device_pycapi));
+        sycl::device *d_ptr = reinterpret_cast<sycl::device *>(DRef);
+        return d_ptr->get_info<sycl::info::device::global_mem_size>();
+    }
+    else {
+        throw std::runtime_error("expected dpctl.SyclDevice as argument");
+    }
+}
+
+uint64_t get_device_local_mem_size(py::object device)
+{
+    PyObject *device_pycapi = device.ptr();
+    if (PyObject_TypeCheck(device_pycapi, &PySyclDeviceType)) {
+        DPCTLSyclDeviceRef DRef = get_device_ref(
+            reinterpret_cast<PySyclDeviceObject *>(device_pycapi));
+        sycl::device *d_ptr = reinterpret_cast<sycl::device *>(DRef);
+        return d_ptr->get_info<sycl::info::device::local_mem_size>();
+    }
+    else {
+        throw std::runtime_error("expected dpctl.SyclDevice as argument");
     }
 }
 
@@ -82,11 +114,16 @@ offloaded_array_mod(py::object queue,
 
 PYBIND11_MODULE(pybind11_example, m)
 {
-    // Import the dpctl._sycl_queue extension
+    // Import the dpctl._sycl_queue, dpctl._sycl_device extensions
+    import_dpctl___sycl_device();
     import_dpctl___sycl_queue();
     m.def("get_max_compute_units", &get_max_compute_units,
           "Computes max_compute_units property of the device underlying given "
           "dpctl.SyclQueue");
+    m.def("get_device_global_mem_size", &get_device_global_mem_size,
+          "Computes amount of global memory of the given dpctl.SyclDevice");
+    m.def("get_device_local_mem_size", &get_device_local_mem_size,
+          "Computes amount of local memory of the given dpctl.SyclDevice");
     m.def("offloaded_array_mod", &offloaded_array_mod,
           "Compute offloaded modular reduction of integer-valued NumPy array");
 }
