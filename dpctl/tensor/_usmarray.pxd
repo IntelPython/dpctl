@@ -36,6 +36,7 @@ cdef api class usm_ndarray [object PyUSMArrayObject, type PyUSMArrayType]:
     cdef int typenum_
     cdef int flags_
     cdef object base_
+    cdef object array_namespace_
     # make usm_ndarray weak-referenceable
     cdef object __weakref__
 
