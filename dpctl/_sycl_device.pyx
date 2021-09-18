@@ -34,11 +34,13 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetBackend,
     DPCTLDevice_GetDeviceType,
     DPCTLDevice_GetDriverVersion,
+    DPCTLDevice_GetGlobalMemSize,
     DPCTLDevice_GetImage2dMaxHeight,
     DPCTLDevice_GetImage2dMaxWidth,
     DPCTLDevice_GetImage3dMaxDepth,
     DPCTLDevice_GetImage3dMaxHeight,
     DPCTLDevice_GetImage3dMaxWidth,
+    DPCTLDevice_GetLocalMemSize,
     DPCTLDevice_GetMaxComputeUnits,
     DPCTLDevice_GetMaxNumSubGroups,
     DPCTLDevice_GetMaxReadImageArgs,
@@ -655,6 +657,22 @@ cdef class SyclDevice(_SyclDevice):
             types that can be put into vectors.
         """
         return DPCTLDevice_GetPreferredVectorWidthHalf(self._device_ref)
+
+    @property
+    def global_mem_size(self):
+        """ Returns the size of global memory on this device in bytes.
+        """
+        cdef size_t global_mem_size = 0
+        global_mem_size = DPCTLDevice_GetGlobalMemSize(self._device_ref)
+        return global_mem_size
+
+    @property
+    def local_mem_size(self):
+        """ Returns the size of local memory on this device in bytes.
+        """
+        cdef size_t local_mem_size = 0
+        local_mem_size = DPCTLDevice_GetLocalMemSize(self._device_ref)
+        return local_mem_size
 
     @property
     def vendor(self):
