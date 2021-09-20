@@ -4,7 +4,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.9.0] - xx/xx/xxxx
+## [0.10.0] - 09/xx/2021
+
+### Added
+- Used clang-format off, clang-format on to avoid include reordering (#588)
+- Add methods __bool__, __float__ and __int__ to usm_ndarray (#578)
+- Added test based on example from #583
+- Added tests for constructors with invalid capsules (#577)
+- Coverage sycl queue (#574)
+- Added a test to exercise API exported function (get_event_ref). (#570)
+- Expanded tests in test_sycl_context to improve coverage (#571)
+- Tweaks to test_sycl_event to improve coverage (#567)
+- Improve coverage of dpctl.__init__ file and other service functions (#563)
+- Added test for repr and test for default argument to constructor (#565)
+- Added some tests to involve capsule (#564)
+- Add workflow for Public CI on Windows (#534)
+- DPCTLQueue_Memcpy, _Prefetch, _Memadvise become asynchronous (#557)
+- Add aspect selector (#558)
+
+### Changed
+- Parametrize ocl kernel compiled from source in types of arguments (#581)
+- Temporary off self-hosted runner (#559)
+- Static method SyclQueue._create_from_context_and_device change (#579)
+- Transition all Python API to use pytest over unittest, improved coverage in dpctl/memory (#575)
+- profiling_info_submit was not property (#573)
+- Simplified arg parsing in SyclDevice constructor (#572)
+- Try using <img> tag with alignment attribute set (#562)
+- Moved sycl timer into dpctl.SyclTimer (#555)
+
+### Fixed
+- Workaround for running conda-build using Klocwork (#566)
+- 225453f Elena Totmenina  Divide pipelines for Linux and Windows (#582)
+- Fix/usm ndarray suai (#584)
+- Capsule deleters should service used renamed capsules too (#568)
+- Fixed __version__ test to allow for semantic versioning (#569)
+- Improved coverage of _types.pxi (#556)
+- Fix UnboundLocalError when default queue could not be created (#554)
+
+## [0.9.0] - 08/25/2021
 
 ### Added
 - Improvements to logic for working with custom DPC++ toolchain (#481)
