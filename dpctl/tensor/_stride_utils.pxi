@@ -138,17 +138,28 @@ cdef int _from_input_shape_strides(
         max_disp[0] = max_shift
         if max_shift == min_shift + (elem_count - 1):
             if nd == 1:
-                contig[0] = USM_ARRAY_C_CONTIGUOUS
+                if strides_arr[0] == 1:
+                    contig[0] = USM_ARRAY_C_CONTIGUOUS
+                else:
+                    contig[0] = 0
                 return 0
             for i in range(0, nd - 1):
                 if all_incr:
-                    all_incr = strides_arr[i] < strides_arr[i + 1]
+                    all_incr = (
+                        (strides_arr[i] > 0) and
+                        (strides_arr[i+1] > 0) and
+                        (strides_arr[i] <= strides_arr[i + 1])
+                    )
                 if all_decr:
-                    all_decr = strides_arr[i] > strides_arr[i + 1]
+                    all_decr = (
+                        (strides_arr[i] > 0) and
+                        (strides_arr[i+1] > 0) and
+                        (strides_arr[i] >= strides_arr[i + 1])
+                    )
             if all_incr:
-                contig[0] = USM_ARRAY_C_CONTIGUOUS
-            elif all_decr:
                 contig[0] = USM_ARRAY_F_CONTIGUOUS
+            elif all_decr:
+                contig[0] = USM_ARRAY_C_CONTIGUOUS
             else:
                 contig[0] = 0
             return 0

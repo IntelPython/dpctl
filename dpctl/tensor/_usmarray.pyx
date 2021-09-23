@@ -18,6 +18,8 @@
 # cython: language_level=3
 # cython: linetrace=True
 
+import sys
+
 import numpy as np
 
 import dpctl
@@ -31,16 +33,62 @@ from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
 
-
-cdef extern from "usm_array.hpp" namespace "usm_array":
-    cdef cppclass usm_array:
-        usm_array(char *, int, size_t*, Py_ssize_t *,
-                  int, int, c_dpctl.DPCTLSyclQueueRef) except +
-
-
 include "_stride_utils.pxi"
 include "_types.pxi"
 include "_slicing.pxi"
+
+
+def _dispatch_unary_elementwise(ary, name):
+    try:
+        mod = ary.__array_namespace__()
+    except AttributeError:
+        return NotImplemented
+    if mod is None and "dpnp" in sys.modules:
+        fn = getattr(sys.modules["dpnp"], name)
+        if callable(fn):
+            return fn(ary)
+    elif hasattr(mod, name):
+        fn = getattr(mod, name)
+        if callable(fn):
+            return fn(ary)
+
+    return NotImplemented
+
+
+def _dispatch_binary_elementwise(ary, name, other):
+    try:
+        mod = ary.__array_namespace__()
+    except AttributeError:
+        return NotImplemented
+    if mod is None and "dpnp" in sys.modules:
+        fn = getattr(sys.modules["dpnp"], name)
+        if callable(fn):
+            return fn(ary, other)
+    elif hasattr(mod, name):
+        fn = getattr(mod, name)
+        if callable(fn):
+            return fn(ary, other)
+
+    return NotImplemented
+
+
+def _dispatch_binary_elementwise2(other, name, ary):
+    try:
+        mod = ary.__array_namespace__()
+    except AttributeError:
+        return NotImplemented
+    mod = ary.__array_namespace__()
+    if mod is None and "dpnp" in sys.modules:
+        fn = getattr(sys.modules["dpnp"], name)
+        if callable(fn):
+            return fn(other, ary)
+    elif hasattr(mod, name):
+        fn = getattr(mod, name)
+        if callable(fn):
+            return fn(other, ary)
+
+    return NotImplemented
+
 
 cdef class InternalUSMArrayError(Exception):
     """
@@ -55,7 +103,8 @@ cdef class usm_ndarray:
     usm_ndarray(
         shape, dtype="|f8", strides=None, buffer='device',
         offset=0, order='C',
-        buffer_ctor_kwargs=dict()
+        buffer_ctor_kwargs=dict(),
+        array_namespace=None
     )
 
     See :class:`dpctl.memory.MemoryUSMShared` for allowed
@@ -76,6 +125,7 @@ cdef class usm_ndarray:
         Initializes member fields
         """
         self.base_ = None
+        self.array_namespace_ = None
         self.nd_ = -1
         self.data_ = <char *>0
         self.shape_ = <Py_ssize_t *>0
@@ -106,13 +156,16 @@ cdef class usm_ndarray:
             order=('C' if (self.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'F')
         )
         res.flags_ = self.flags_
+        res.array_namespace_ = self.array_namespace_
         if (res.data_ != self.data_):
             raise InternalUSMArrayError(
                 "Data pointers of cloned and original objects are different.")
         return res
 
     def __cinit__(self, shape, dtype="|f8", strides=None, buffer='device',
-                  Py_ssize_t offset=0, order='C', buffer_ctor_kwargs=dict()):
+                  Py_ssize_t offset=0, order='C',
+                  buffer_ctor_kwargs=dict(),
+                  array_namespace=None):
         """
         strides and offset must be given in units of array elements.
         buffer can be strings ('device'|'shared'|'host' to allocate new memory)
@@ -208,9 +261,14 @@ cdef class usm_ndarray:
         self.typenum_ = typenum
         self.flags_ = contig_flag
         self.nd_ = nd
+        self.array_namespace_ = array_namespace
 
     def __dealloc__(self):
         self._cleanup()
+
+    @property
+    def _pointer(self):
+        return <size_t> self.get_data()
 
     cdef Py_ssize_t get_offset(self) except *:
         cdef char *mem_ptr = NULL
@@ -303,7 +361,12 @@ cdef class usm_ndarray:
         cdef char *mem_ptr = NULL
         cdef char *ary_ptr = NULL
         if (not isinstance(self.base_, dpmem._memory._Memory)):
-            raise ValueError("Invalid instance of usm_ndarray ecountered")
+            raise InternalUSMArrayError(
+                "Invalid instance of usm_ndarray ecountered. "
+                "Private field base_ has an unexpected type {}.".format(
+                    type(self.base_)
+                )
+            )
         ary_iface = self.base_.__sycl_usm_array_interface__
         mem_ptr = <char *>(<size_t> ary_iface['data'][0])
         ary_ptr = <char *>(<size_t> self.data_)
@@ -318,8 +381,9 @@ cdef class usm_ndarray:
             elif (self.flags_ & USM_ARRAY_F_CONTIGUOUS):
                 ary_iface['strides'] = _f_contig_strides(self.nd_, self.shape_)
             else:
-                raise ValueError("USM Array is not contiguous and "
-                                 "has empty strides")
+                raise InternalUSMArrayError(
+                    "USM Array is not contiguous and has empty strides"
+                )
         ary_iface['typestr'] = _make_typestr(self.typenum_)
         byte_offset = ary_ptr - mem_ptr
         item_size = self.get_itemsize()
@@ -342,7 +406,7 @@ cdef class usm_ndarray:
         """
         Gives USM memory object underlying usm_array instance.
         """
-        return self.base_
+        return self.get_base()
 
     @property
     def shape(self):
@@ -354,6 +418,68 @@ cdef class usm_ndarray:
             return _make_int_tuple(self.nd_, self.shape_)
         else:
             return tuple()
+
+    @shape.setter
+    def shape(self, new_shape):
+        """
+        Setting shape is only allowed when reshaping to the requested
+        dimensions can be returned as view. Use `dpctl.tensor.reshape`
+        to reshape the array in all other cases.
+        """
+        cdef int new_nd = -1
+        cdef Py_ssize_t nelems = -1
+        cdef int err = 0
+        cdef Py_ssize_t min_disp = 0
+        cdef Py_ssize_t max_disp = 0
+        cdef int contig_flag = 0
+        cdef Py_ssize_t *shape_ptr = NULL
+        cdef Py_ssize_t *strides_ptr = NULL
+        import operator
+
+        from ._reshape import reshaped_strides
+
+        new_nd = len(new_shape)
+        try:
+            new_shape = tuple(operator.index(dim) for dim in new_shape)
+        except TypeError:
+            raise TypeError(
+                "Target shape must be a finite iterable of integers"
+            )
+        if not np.prod(new_shape) == shape_to_elem_count(self.nd_, self.shape_):
+            raise TypeError(
+                f"Can not reshape array of size {self.size} into {new_shape}"
+            )
+        new_strides = reshaped_strides(
+            self.shape,
+            self.strides,
+            new_shape
+        )
+        if new_strides is None:
+            raise AttributeError(
+                "Incompatible shape for in-place modification. "
+                "Use `reshape()` to make a copy with the desired shape."
+            )
+        err = _from_input_shape_strides(
+            new_nd, new_shape, new_strides,
+            self.get_itemsize(),
+            b"C",
+            &shape_ptr, &strides_ptr,
+            &nelems, &min_disp, &max_disp, &contig_flag
+        )
+        if (err == 0):
+            if (self.shape_):
+                PyMem_Free(self.shape_)
+            if (self.strides_):
+                PyMem_Free(self.strides_)
+            print(contig_flag)
+            self.flags_ = contig_flag
+            self.nd_ = new_nd
+            self.shape_ = shape_ptr
+            self.strides_ = strides_ptr
+        else:
+            raise InternalUSMArrayError(
+                "Encountered in shape setter, error code {err}".format(err)
+            )
 
     @property
     def strides(self):
@@ -489,7 +615,52 @@ cdef class usm_ndarray:
             offset=_meta[2]
         )
         res.flags_ |= (self.flags_ & USM_ARRAY_WRITEABLE)
+        res.array_namespace_ = self.array_namespace_
         return res
+
+    def to_device(self, target_device):
+        """
+        Transfer array to target device
+        """
+        d = Device.create_device(target_device)
+        if (d.sycl_device == self.sycl_device):
+            return self
+        elif (d.sycl_context == self.sycl_context):
+            res = usm_ndarray(
+                self.shape,
+                self.dtype,
+                buffer=self.usm_data,
+                strides=self.strides,
+                offset=self.get_offset()
+            )
+            res.flags_ = self.flags
+            return res
+        else:
+            nbytes = self.usm_data.nbytes
+            new_buffer = type(self.usm_data)(
+                nbytes, queue=d.sycl_queue
+            )
+            new_buffer.copy_from_device(self.usm_data)
+            res = usm_ndarray(
+                self.shape,
+                self.dtype,
+                buffer=new_buffer,
+                strides=self.strides,
+                offset=self.get_offset()
+            )
+            res.flags_ = self.flags
+            return res
+
+    def _set_namespace(self, mod):
+        """ Sets array namespace to given module `mod`. """
+        self.array_namespace_ = mod
+
+    def __array_namespace__(self, api_version=None):
+        """
+        Returns array namespace, member functions of which
+        implement data API.
+        """
+        return self.array_namespace_
 
     def __bool__(self):
         if self.size == 1:
@@ -539,38 +710,305 @@ cdef class usm_ndarray:
 
         raise IndexError("only integer arrays are valid indices")
 
-    def to_device(self, target_device):
+    def __abs__(self):
+        return _dispatch_unary_elementwise(self, "abs")
+
+    def __add__(first, other):
         """
-        Transfer array to target device
+        Cython 0.* never calls `__radd__`, always calls `__add__`
+        but first argument need not be an instance of this class,
+        so dispatching is needed.
+
+        This changes in Cython 3.0, where first is guaranteed to
+        be `self`.
+
+        [1] http://docs.cython.org/en/latest/src/userguide/special_methods.html
         """
-        d = Device.create_device(target_device)
-        if (d.sycl_device == self.sycl_device):
-            return self
-        elif (d.sycl_context == self.sycl_context):
-            res = usm_ndarray(
-                self.shape,
-                self.dtype,
-                buffer=self.usm_data,
-                strides=self.strides,
-                offset=self.get_offset()
-            )
-            res.flags_ = self.flags
-            return res
+        if isinstance(first, usm_ndarray):
+            return _dispatch_binary_elementwise(first, "add", other)
+        elif isinstance(other, usm_ndarray):
+            return _dispatch_binary_elementwise2(first, "add", other)
+        return NotImplemented
+
+    def __and__(first, other):
+        "See comment in __add__"
+        if isinstance(first, usm_ndarray):
+            return _dispatch_binary_elementwise(first, "logical_and", other)
+        elif isinstance(other, usm_ndarray):
+            return _dispatch_binary_elementwise2(first, "logical_and", other)
+        return NotImplemented
+
+    def __dlpack__(self, stream=None):
+        return NotImplemented
+
+    def __dlpack_device__(self):
+        return NotImplemented
+
+    def __eq__(self, other):
+        return _dispatch_binary_elementwise(self, "equal", other)
+
+    def __floordiv__(first, other):
+        "See comment in __add__"
+        if isinstance(first, usm_ndarray):
+            return _dispatch_binary_elementwise(first, "floor_divide", other)
+        elif isinstance(other, usm_ndarray):
+            return _dispatch_binary_elementwise2(first, "floor_divide", other)
+        return NotImplemented
+
+    def __ge__(self, other):
+        return _dispatch_binary_elementwise(self, "greater_equal", other)
+
+    def __gt__(self, other):
+        return _dispatch_binary_elementwise(self, "greater", other)
+
+    def __invert__(self):
+        return _dispatch_unary_elementwise(self, "invert")
+
+    def __le__(self, other):
+        return _dispatch_binary_elementwise(self, "less_equal", other)
+
+    def __len__(self):
+        if (self.nd_):
+            return self.shape[0]
         else:
-            nbytes = self.usm_data.nbytes
-            new_buffer = type(self.usm_data)(
-                nbytes, queue=d.sycl_queue
-            )
-            new_buffer.copy_from_device(self.usm_data)
-            res = usm_ndarray(
-                self.shape,
-                self.dtype,
-                buffer=new_buffer,
-                strides=self.strides,
-                offset=self.get_offset()
-            )
-            res.flags_ = self.flags
+            raise TypeError("len() of unsized object")
+
+    def __lshift__(first, other):
+        "See comment in __add__"
+        if isinstance(first, usm_ndarray):
+            return _dispatch_binary_elementwise(first, "left_shift", other)
+        elif isinstance(other, usm_ndarray):
+            return _dispatch_binary_elementwise2(first, "left_shift", other)
+        return NotImplemented
+
+    def __lt__(self, other):
+        return _dispatch_binary_elementwise(self, "less", other)
+
+    def __matmul__(first, other):
+        "See comment in __add__"
+        if isinstance(first, usm_ndarray):
+            return _dispatch_binary_elementwise(first, "matmul", other)
+        elif isinstance(other, usm_ndarray):
+            return _dispatch_binary_elementwise2(first, "matmul", other)
+        return NotImplemented
+
+    def __mod__(first, other):
+        "See comment in __add__"
+        if isinstance(first, usm_ndarray):
+            return _dispatch_binary_elementwise(first, "mod", other)
+        elif isinstance(other, usm_ndarray):
+            return _dispatch_binary_elementwise2(first, "mod", other)
+        return NotImplemented
+
+    def __mul__(first, other):
+        "See comment in __add__"
+        if isinstance(first, usm_ndarray):
+            return _dispatch_binary_elementwise(first, "multiply", other)
+        elif isinstance(other, usm_ndarray):
+            return _dispatch_binary_elementwise2(first, "multiply", other)
+        return NotImplemented
+
+    def __ne__(self, other):
+        return _dispatch_binary_elementwise(self, "not_equal", other)
+
+    def __neg__(self):
+        return _dispatch_unary_elementwise(self, "negative")
+
+    def __or__(first, other):
+        "See comment in __add__"
+        if isinstance(first, usm_ndarray):
+            return _dispatch_binary_elementwise(first, "logical_or", other)
+        elif isinstance(other, usm_ndarray):
+            return _dispatch_binary_elementwise2(first, "logical_or", other)
+        return NotImplemented
+
+    def __pos__(self):
+        return _dispatch_unary_elementwise(self, "positive")
+
+    def __pow__(first, other, mod):
+        "See comment in __add__"
+        if mod is None:
+            if isinstance(first, usm_ndarray):
+                return _dispatch_binary_elementwise(first, "power", other)
+            elif isinstance(other, usm_ndarray):
+                return _dispatch_binary_elementwise(first, "power", other)
+        return NotImplemented
+
+    def __rshift__(first, other):
+        "See comment in __add__"
+        if isinstance(first, usm_ndarray):
+            return _dispatch_binary_elementwise(first, "right_shift", other)
+        elif isinstance(other, usm_ndarray):
+            return _dispatch_binary_elementwise2(first, "right_shift", other)
+        return NotImplemented
+
+    def __setitem__(self, key, val):
+        try:
+            Xv = self.__getitem__(key)
+        except (ValueError, IndexError) as e:
+            raise e
+        from ._copy_utils import (
+            copy_from_numpy_into,
+            copy_from_usm_ndarray_to_usm_ndarray,
+        )
+        if isinstance(val, usm_ndarray):
+            copy_from_usm_ndarray_to_usm_ndarray(Xv, val)
+        else:
+            copy_from_numpy_into(Xv, np.asarray(val))
+
+    def __sub__(first, other):
+        "See comment in __add__"
+        if isinstance(first, usm_ndarray):
+            return _dispatch_binary_elementwise(first, "subtract", other)
+        elif isinstance(other, usm_ndarray):
+            return _dispatch_binary_elementwise2(first, "subtract", other)
+        return NotImplemented
+
+    def __truediv__(first, other):
+        "See comment in __add__"
+        if isinstance(first, usm_ndarray):
+            return _dispatch_binary_elementwise(first, "true_divide", other)
+        elif isinstance(other, usm_ndarray):
+            return _dispatch_binary_elementwise2(first, "true_divide", other)
+        return NotImplemented
+
+    def __xor__(first, other):
+        "See comment in __add__"
+        if isinstance(first, usm_ndarray):
+            return _dispatch_binary_elementwise(first, "logical_xor", other)
+        elif isinstance(other, usm_ndarray):
+            return _dispatch_binary_elementwise2(first, "logical_xor", other)
+        return NotImplemented
+
+    def __radd__(self, other):
+        return _dispatch_binary_elementwise(self, "add", other)
+
+    def __rand__(self, other):
+        return _dispatch_binary_elementwise(self, "logical_and", other)
+
+    def __rfloordiv__(self, other):
+        return _dispatch_binary_elementwise2(other, "floor_divide", self)
+
+    def __rlshift__(self, other, mod):
+        return _dispatch_binary_elementwise2(other, "left_shift", self)
+
+    def __rmatmul__(self, other):
+        return _dispatch_binary_elementwise2(other, "matmul", self)
+
+    def __rmod__(self, other):
+        return _dispatch_binary_elementwise2(other, "mod", self)
+
+    def __rmul__(self, other):
+        return _dispatch_binary_elementwise(self, "multiply", other)
+
+    def __ror__(self, other):
+        return _dispatch_binary_elementwise(self, "logical_or", other)
+
+    def __rpow__(self, other, mod):
+        return _dispatch_binary_elementwise2(other, "power", self)
+
+    def __rrshift__(self, other, mod):
+        return _dispatch_binary_elementwise2(other, "right_shift", self)
+
+    def __rsub__(self, other):
+        return _dispatch_binary_elementwise2(other, "subtract", self)
+
+    def __rtruediv__(self, other):
+        return _dispatch_binary_elementwise2(other, "true_divide", self)
+
+    def __rxor__(self, other):
+        return _dispatch_binary_elementwise2(other, "logical_xor", self)
+
+    def __iadd__(self, other):
+        res = self.__add__(other)
+        if res is NotImplemented:
             return res
+        self.__setitem__(Ellipsis, res)
+        return self
+
+    def __iand__(self, other):
+        res = self.__and__(other)
+        if res is NotImplemented:
+            return res
+        self.__setitem__(Ellipsis, res)
+        return self
+
+    def __ifloordiv__(self, other):
+        res = self.__floordiv__(other)
+        if res is NotImplemented:
+            return res
+        self.__setitem__(Ellipsis, res)
+        return self
+
+    def __ilshift__(self, other):
+        res = self.__lshift__(other)
+        if res is NotImplemented:
+            return res
+        self.__setitem__(Ellipsis, res)
+        return self
+
+    def __imatmul__(self, other):
+        res = self.__matmul__(other)
+        if res is NotImplemented:
+            return res
+        self.__setitem__(Ellipsis, res)
+        return self
+
+    def __imod__(self, other):
+        res = self.__mod__(other)
+        if res is NotImplemented:
+            return res
+        self.__setitem__(Ellipsis, res)
+        return self
+
+    def __imul__(self, other):
+        res = self.__mul__(other)
+        if res is NotImplemented:
+            return res
+        self.__setitem__(Ellipsis, res)
+        return self
+
+    def __ior__(self, other):
+        res = self.__or__(other)
+        if res is NotImplemented:
+            return res
+        self.__setitem__(Ellipsis, res)
+        return self
+
+    def __ipow__(self, other):
+        res = self.__pow__(other, None)
+        if res is NotImplemented:
+            return res
+        self.__setitem__(Ellipsis, res)
+        return self
+
+    def __irshift__(self, other):
+        res = self.__rshift__(other)
+        if res is NotImplemented:
+            return res
+        self.__setitem__(Ellipsis, res)
+        return self
+
+    def __isub__(self, other):
+        res = self.__sub__(other)
+        if res is NotImplemented:
+            return res
+        self.__setitem__(Ellipsis, res)
+        return self
+
+    def __itruediv__(self, other):
+        res = self.__truediv__(other)
+        if res is NotImplemented:
+            return res
+        self.__setitem__(Ellipsis, res)
+        return self
+
+    def __ixor__(self, other):
+        res = self.__xor__(other)
+        if res is NotImplemented:
+            return res
+        self.__setitem__(Ellipsis, res)
+        return self
 
 
 cdef usm_ndarray _real_view(usm_ndarray ary):
@@ -635,3 +1073,39 @@ cdef usm_ndarray _zero_like(usm_ndarray ary):
     )
     # TODO: call function to set array elements to zero
     return r
+
+
+cdef api char* usm_ndarray_get_data(usm_ndarray arr):
+    """
+    """
+    return arr.get_data()
+
+
+cdef api int usm_ndarray_get_ndim(usm_ndarray arr):
+    """"""
+    return arr.get_ndim()
+
+
+cdef api Py_ssize_t* usm_ndarray_get_shape(usm_ndarray arr):
+    """ """
+    return arr.get_shape()
+
+
+cdef api Py_ssize_t* usm_ndarray_get_strides(usm_ndarray arr):
+    """ """
+    return arr.get_strides()
+
+
+cdef api int usm_ndarray_get_typenum(usm_ndarray arr):
+    """ """
+    return arr.get_typenum()
+
+
+cdef api int usm_ndarray_get_flags(usm_ndarray arr):
+    """ """
+    return arr.get_flags()
+
+
+cdef api c_dpctl.DPCTLSyclQueueRef usm_ndarray_get_queue_ref(usm_ndarray arr):
+    """ """
+    return arr.get_queue_ref()
