@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.10.0] - 09/xx/2021
 
 ### Added
-- Used clang-format off, clang-format on to avoid include reordering in pybind11 example (#588)
-- Added methods __bool__, __float__, __int__, __index__, and __complex__ to usm_ndarray (#578)
-- Added test based on example from #583
+- Added methods __bool__, __float__, __int__, __index__,
+  and __complex__ to usm_ndarray (#578)
+- Added data-API required special methods to usm_ndarray class,
+  as well as to_numpy/from_numpy, astype, reshape functions (#586)
+- Added methods to query dpctl.SyclDevice for size of global/local memory (#589)
 - Added tests for constructors with invalid capsules (#577)
 - Improved test coverage of `dpctl.SyclQueue` implementation (#574)
 - Added a test to exercise API exported function (get_event_ref). (#570)
@@ -21,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added workflow for Public CI on Windows (#534)
 - DPCTLQueue_Memcpy, _Prefetch, _Memadvise become asynchronous (#557)
 - Added device aspect selector, `dpctl.select_device_with_aspects` (#558)
+- Added test based on example from #583
 
 ### Changed
 - Parametrized tests for executing OpenCL kernels compiled from source in types of arguments (#581)
@@ -31,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Simplified arg parsing in SyclDevice constructor (#572)
 - Used<img> tag with alignment attribute set in README (#562)
 - Moved sycl timer into dpctl.SyclTimer (#555)
+- Used clang-format off, clang-format on to avoid include reordering in pybind11 example (#588)
 
 ### Fixed
 - Implemented a workaround for running conda-build using Klocwork (#566)
