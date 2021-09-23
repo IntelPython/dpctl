@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.10.0rc1+1.gebc8b6 documentation</title>
+  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.10.0rc1+2.g002d24b documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.10.0rc1+1.gebc8b6
+                0.10.0rc1+2.g002d24b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -87,13 +87,39 @@ that will implement future Python data API
 is allocated with a USM shared memory allocator.</p>
 </dd>
 </dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.astype">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usm_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unsafe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dpctl/tensor/_copy_utils.html#astype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.astype" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a copy of the array, cast to a specified type.</p>
+<p>A view can be returned, if possible, when <cite>copy=False</cite> is used.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.from_numpy">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">from_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">np_ary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.from_numpy" title="Permalink to this definition"></a></dt>
+<dd><p>Copies numpy array <cite>np_ary</cite> into a new usm_ndarray</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.reshape">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">reshape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><span class="pre">usm_ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">newshape</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><span class="pre">usm_ndarray</span></a></span></span><a class="reference internal" href="../_modules/dpctl/tensor/_reshape.html#reshape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.reshape" title="Permalink to this definition"></a></dt>
+<dd><p>Reshapes given usm_ndarray into new shape. Returns a view, if possible,
+a copy otherwise. Memory layout of the copy is controlled by order keyword.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.to_numpy">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">to_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ary</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.to_numpy" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray" title="Permalink to this definition"></a></dt>
 <dd><dl class="simple">
 <dt>usm_ndarray(</dt><dd><p>shape, dtype=”<a href="#id1"><span class="problematic" id="id2">|</span></a>f8”, strides=None, buffer=’device’,
 offset=0, order=’C’,
-buffer_ctor_kwargs=dict()</p>
+buffer_ctor_kwargs=dict(),
+array_namespace=None</p>
 </dd>
 </dl>
 <p>)</p>
@@ -110,11 +136,6 @@ MemoryUSM* buffer is used for buffer.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.T">
 <span class="sig-name descname"><span class="pre">T</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.T" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.base_">
-<span class="sig-name descname"><span class="pre">base_</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.base_" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -136,11 +157,6 @@ MemoryUSM* buffer is used for buffer.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.flags_">
-<span class="sig-name descname"><span class="pre">flags_</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.flags_" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.imag">
 <span class="sig-name descname"><span class="pre">imag</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.imag" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -156,11 +172,6 @@ MemoryUSM* buffer is used for buffer.</p>
 <span class="sig-name descname"><span class="pre">nbytes</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.nbytes" title="Permalink to this definition"></a></dt>
 <dd><p>Total bytes consumed by the elements of the array.</p>
 </dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.nd_">
-<span class="sig-name descname"><span class="pre">nd_</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.nd_" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.ndim">
@@ -222,11 +233,6 @@ change of respective index.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.typenum_">
-<span class="sig-name descname"><span class="pre">typenum_</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.typenum_" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.usm_data">
 <span class="sig-name descname"><span class="pre">usm_data</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.usm_data" title="Permalink to this definition"></a></dt>
 <dd><p>Gives USM memory object underlying usm_array instance.</p>
@@ -269,7 +275,7 @@ change of respective index.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.10.0rc1+1.gebc8b6
+      v: 0.10.0rc1+2.g002d24b
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

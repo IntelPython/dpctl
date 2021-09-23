@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Data-parallel Control (dpctl) 0.10.0rc1+1.gebc8b6 documentation</title>
+  <title>Index &mdash; Data-parallel Control (dpctl) 0.10.0rc1+2.g002d24b documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.10.0rc1+1.gebc8b6
+                0.10.0rc1+2.g002d24b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -134,6 +134,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl.memory_api.html#dpctl.memory.as_usm_memory">as_usm_memory() (in module dpctl.memory)</a>
 </li>
+      <li><a href="docfiles/dpctl.tensor_api.html#dpctl.tensor.astype">astype() (in module dpctl.tensor)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -149,8 +151,6 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl_pyapi.html#dpctl.backend_type">backend_type (class in dpctl)</a>
-</li>
-      <li><a href="docfiles/dpctl.tensor_api.html#dpctl.tensor.usm_ndarray.base_">base_ (dpctl.tensor.usm_ndarray attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1485,7 +1485,7 @@
 </li>
       <li><a href="docfiles/dpctl.tensor_api.html#dpctl.tensor.usm_ndarray.flags">flags (dpctl.tensor.usm_ndarray attribute)</a>
 </li>
-      <li><a href="docfiles/dpctl.tensor_api.html#dpctl.tensor.usm_ndarray.flags_">flags_ (dpctl.tensor.usm_ndarray attribute)</a>
+      <li><a href="docfiles/dpctl.tensor_api.html#dpctl.tensor.from_numpy">from_numpy() (in module dpctl.tensor)</a>
 </li>
       <li>
     function
@@ -2049,6 +2049,8 @@
         <li><a href="docfiles/dpctl-capi/global.html#index-0">global</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl.memory_api.html#dpctl.memory.MemoryUSMDevice.nbytes">nbytes (dpctl.memory.MemoryUSMDevice attribute)</a>
 
       <ul>
@@ -2059,10 +2061,6 @@
         <li><a href="docfiles/dpctl.tensor_api.html#dpctl.tensor.usm_ndarray.nbytes">(dpctl.tensor.usm_ndarray attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docfiles/dpctl.tensor_api.html#dpctl.tensor.usm_ndarray.nd_">nd_ (dpctl.tensor.usm_ndarray attribute)</a>
-</li>
       <li><a href="docfiles/dpctl.tensor_api.html#dpctl.tensor.usm_ndarray.ndim">ndim (dpctl.tensor.usm_ndarray attribute)</a>
 </li>
   </ul></td>
@@ -2161,6 +2159,10 @@
         <li><a href="docfiles/dpctl.memory_api.html#dpctl.memory.MemoryUSMShared.reference_obj">(dpctl.memory.MemoryUSMShared attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl.tensor_api.html#dpctl.tensor.reshape">reshape() (in module dpctl.tensor)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -2264,6 +2266,8 @@
 </li>
       <li><a href="docfiles/dpctl.tensor_api.html#dpctl.tensor.usm_ndarray.to_device">to_device() (dpctl.tensor.usm_ndarray method)</a>
 </li>
+      <li><a href="docfiles/dpctl.tensor_api.html#dpctl.tensor.to_numpy">to_numpy() (in module dpctl.tensor)</a>
+</li>
       <li><a href="docfiles/dpctl.memory_api.html#dpctl.memory.MemoryUSMDevice.tobytes">tobytes() (dpctl.memory.MemoryUSMDevice method)</a>
 
       <ul>
@@ -2304,10 +2308,6 @@
         <li><a href="docfiles/dpctl-capi/global.html#index-1">error_handler_callback</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docfiles/dpctl.tensor_api.html#dpctl.tensor.usm_ndarray.typenum_">typenum_ (dpctl.tensor.usm_ndarray attribute)</a>
-</li>
   </ul></td>
 </tr></table>
 
@@ -2387,7 +2387,7 @@
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.10.0rc1+1.gebc8b6
+      v: 0.10.0rc1+2.g002d24b
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
