@@ -253,6 +253,71 @@ def copy_from_usm_ndarray_to_usm_ndarray(dst, src):
     copy_same_shape(dst, src_same_shape)
 
 
+def copy(usm_ary, order="K"):
+    """
+    Creates a copy of given instance of `usm_ndarray`.
+
+    Memory layour of the copy is controlled by `order` keyword,
+    following NumPy's conventions. The `order` keywords can be
+    one of the following:
+
+       "C": C-contiguous memory layout
+       "F": Fotrant-contiguous memory layout
+       "A": Fotrant-contiguous if the input array is
+            F-contiguous, and C-contiguous otherwise
+       "K": match the layout of `usm_ary` as closely
+            as possible.
+
+    """
+    if not isinstance(usm_ary, dpt.usm_ndarray):
+        return TypeError(
+            "Expected object of type dpt.usm_ndarray, got {}".format(
+                type(usm_ary)
+            )
+        )
+    copy_order = "C"
+    if order == "C":
+        pass
+    elif order == "F":
+        copy_order = order
+    elif order == "A":
+        if usm_ary.flags & 2:
+            copy_order = "F"
+    elif order == "K":
+        if usm_ary.flags & 2:
+            copy_order = "F"
+    else:
+        raise ValueError(
+            "Unrecognized value of the order keyword. "
+            "Recognized values are 'A', 'C', 'F', or 'K'"
+        )
+    c_contig = usm_ary.flags & 1
+    f_contig = usm_ary.flags & 2
+    R = dpt.usm_ndarray(
+        usm_ary.shape,
+        dtype=usm_ary.dtype,
+        buffer=usm_ary.usm_type,
+        order=copy_order,
+        buffer_ctor_kwargs={"queue": usm_ary.sycl_queue},
+    )
+    if order == "K" and (not c_contig and not f_contig):
+        original_strides = usm_ary.strides
+        ind = sorted(
+            range(usm_ary.ndim),
+            key=lambda i: abs(original_strides[i]),
+            reverse=True,
+        )
+        new_strides = tuple(R.strides[ind[i]] for i in ind)
+        R = dpt.usm_ndarray(
+            usm_ary.shape,
+            dtype=usm_ary.dtype,
+            buffer=R.usm_data,
+            strides=new_strides,
+        )
+    copy_same_dtype(R, usm_ary)
+    return R
+
+
 def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
     """
     astype(usm_array, new_dtype, order="K", casting="unsafe", copy=True)
@@ -266,6 +331,11 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
             "Expected object of type dpt.usm_ndarray, got {}".format(
                 type(usm_ary)
             )
+        )
+    if not isinstance(order, str) or order not in ["A", "C", "F", "K"]:
+        raise ValueError(
+            "Unrecognized value of the order keyword. "
+            "Recognized values are 'A', 'C', 'F', or 'K'"
         )
     ary_dtype = usm_ary.dtype
     target_dtype = np.dtype(newdtype)
@@ -294,6 +364,11 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
         elif order == "K":
             if usm_ary.flags & 2:
                 copy_order = "F"
+        else:
+            raise ValueError(
+                "Unrecognized value of the order keyword. "
+                "Recognized values are 'A', 'C', 'F', or 'K'"
+            )
         R = dpt.usm_ndarray(
             usm_ary.shape,
             dtype=target_dtype,

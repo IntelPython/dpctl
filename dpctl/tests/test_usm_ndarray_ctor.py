@@ -768,6 +768,34 @@ def test_astype():
     assert Y.usm_data is X.usm_data
 
 
+def test_astype_invalid_order():
+    X = dpt.usm_ndarray(5, "i4")
+    with pytest.raises(ValueError):
+        dpt.astype(X, "i4", order="WRONG")
+
+
+def test_copy():
+    X = dpt.usm_ndarray((5, 5), "i4")[2:4, 1:4]
+    X[:] = 42
+    Yc = dpt.copy(X, order="C")
+    Yf = dpt.copy(X, order="F")
+    Ya = dpt.copy(X, order="A")
+    Yk = dpt.copy(X, order="K")
+    assert Yc.usm_data is not X.usm_data
+    assert Yf.usm_data is not X.usm_data
+    assert Ya.usm_data is not X.usm_data
+    assert Yk.usm_data is not X.usm_data
+    assert Yc.strides == (3, 1)
+    assert Yf.strides == (1, 2)
+    assert Ya.strides == (3, 1)
+    assert Yk.strides == (3, 1)
+    ref = np.full(X.shape, 42, dtype=X.dtype)
+    assert np.array_equal(dpt.asnumpy(Yc), ref)
+    assert np.array_equal(dpt.asnumpy(Yf), ref)
+    assert np.array_equal(dpt.asnumpy(Ya), ref)
+    assert np.array_equal(dpt.asnumpy(Yk), ref)
+
+
 def test_ctor_invalid():
     m = dpm.MemoryUSMShared(12)
     with pytest.raises(ValueError):
