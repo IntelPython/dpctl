@@ -1,3 +1,32 @@
+//=- use_sycl_buffer.cpp - Example of SYCL code to be called from Cython  =//
+//
+//                      Data Parallel Control (dpctl)
+//
+// Copyright 2020-2021 Intel Corporation
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file implements SYCL code to compute columnwise total of a matrix,
+/// provided as host C-contiguous allocation. SYCL kernels access this memory
+/// using `sycl::buffer`. Two routines are provided. One solves the task by
+/// calling BLAS function GEMV from Intel(R) Math Kernel Library, the other
+/// performs the computation using DPC++ reduction group function and atomics.
+///
+//===----------------------------------------------------------------------===//
+
 #include "use_sycl_buffer.h"
 #include "dpctl_sycl_types.h"
 #include <CL/sycl.hpp>

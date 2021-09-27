@@ -1,3 +1,31 @@
+//=- sycl_blackscholes.cpp - Example of SYCL code to be called from Cython  =//
+//
+//                      Data Parallel Control (dpctl)
+//
+// Copyright 2020-2021 Intel Corporation
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file implements SYCL code to price European vanilla options using
+/// Black-Scholes formula, as well as code to generate option parameters using
+/// SYCL device random number generation library from Intel(R) Math Kernel
+/// Library.
+///
+//===----------------------------------------------------------------------===//
+
 #include "sycl_blackscholes.hpp"
 #include "dpctl_sycl_types.h"
 #include <CL/sycl.hpp>
