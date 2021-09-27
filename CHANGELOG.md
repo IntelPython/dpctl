@@ -4,7 +4,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.9.0] - xx/xx/xxxx
+## [0.10.0] - 09/xx/2021
+
+### Added
+- Added methods __bool__, __float__, __int__, __index__,
+  and __complex__ to usm_ndarray (#578)
+- Added data-API required special methods to usm_ndarray class,
+  as well as to_numpy/from_numpy, astype, reshape functions (#586)
+- Added methods to query dpctl.SyclDevice for size of global/local memory (#589)
+- Added tests for constructors with invalid capsules (#577)
+- Improved test coverage of `dpctl.SyclQueue` implementation (#574)
+- Added a test to exercise API exported function (get_event_ref). (#570)
+- Expanded tests in test_sycl_context to improve coverage (#571)
+- Tweaks to test_sycl_event to improve coverage (#567)
+- Improved coverage of dpctl.__init__ file and other service functions (#563)
+- Added test for repr and test for default argument to constructor (#565)
+- Added some tests to involve capsule (#564)
+- Added workflow for Public CI on Windows (#534)
+- DPCTLQueue_Memcpy, _Prefetch, _Memadvise become asynchronous (#557)
+- Added device aspect selector, `dpctl.select_device_with_aspects` (#558)
+- Added test based on example from #583
+
+### Changed
+- Parametrized tests for executing OpenCL kernels compiled from source in types of arguments (#581)
+- Temporary disabled self-hosted CI jobs runner (#559)
+- Changed static method `SyclQueue._create_from_context_and_device` (#579)
+- Transitioned all Python API to use pytest over unittest, improved coverage in dpctl/memory (#575)
+- Changed `dpctl.SyclEvent.profiling_info_submit` from method to a property (#573)
+- Simplified arg parsing in SyclDevice constructor (#572)
+- Used<img> tag with alignment attribute set in README (#562)
+- Moved sycl timer into dpctl.SyclTimer (#555)
+- Used clang-format off, clang-format on to avoid include reordering in pybind11 example (#588)
+
+### Fixed
+- Implemented a workaround for running conda-build using Klocwork (#566)
+- Separated pipelines for Linux and Windows (#582)
+- Fixed inconsistency in `__sycl_usm_array_interface__` of `usm_ndarray` instance (#584)
+- Fixed memory leak: Capsule deleters now free resources for renamed capsules too (#568)
+- Fixed __version__ test to allow for semantic versioning (#569)
+- Improved coverage of _types.pxi (#556)
+- Fixed `UnboundLocalError` when default queue could not be created (#554)
+
+## [0.9.0] - 08/25/2021
 
 ### Added
 - Improvements to logic for working with custom DPC++ toolchain (#481)
