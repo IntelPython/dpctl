@@ -33,8 +33,12 @@
 
 #elif defined(_WIN32) || defined(_WIN64)
 
+#include "Support/DllExport.h"
+
 #define NOMINMAX
 #include <windows.h>
+
+DPCTL_API HMODULE _dpctl_load_win_dynamic_lib(LPCTSTR filename);
 
 #endif // __linux__
 
@@ -55,7 +59,7 @@ public:
 #ifdef __linux__
         _handle = dlopen(libName, flag);
 #elif defined(_WIN32) || defined(_WIN64)
-        _handle = LoadLibraryA(libName);
+        _handle = _dpctl_load_win_dynamic_lib(libName);
 #endif
     }
 
