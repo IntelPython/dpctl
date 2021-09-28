@@ -28,6 +28,7 @@
 #include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
+#include <vector>
 
 using namespace cl::sycl;
 
@@ -196,9 +197,9 @@ DPCTLEvent_GetWaitList(__dpctl_keep DPCTLSyclEventRef ERef)
         std::cerr << "Cannot get wait list as input is a nullptr\n";
         return nullptr;
     }
-    vector_class<DPCTLSyclEventRef> *EventsVectorPtr = nullptr;
+    std::vector<DPCTLSyclEventRef> *EventsVectorPtr = nullptr;
     try {
-        EventsVectorPtr = new vector_class<DPCTLSyclEventRef>();
+        EventsVectorPtr = new std::vector<DPCTLSyclEventRef>();
     } catch (std::bad_alloc const &ba) {
         // \todo log error
         std::cerr << ba.what() << '\n';

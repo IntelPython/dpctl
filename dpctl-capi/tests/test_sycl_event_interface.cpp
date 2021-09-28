@@ -29,13 +29,14 @@
 #include "dpctl_sycl_types.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
+#include <vector>
 
 using namespace cl::sycl;
 
 namespace
 {
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(event, DPCTLSyclEventRef);
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclEventRef>,
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclEventRef>,
                                    DPCTLEventVectorRef);
 
 #ifndef DPCTL_COVERAGE

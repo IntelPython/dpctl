@@ -31,12 +31,13 @@
 #include "dpctl_utils.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
+#include <vector>
 
 using namespace cl::sycl;
 
 namespace
 {
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclPlatformRef>,
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclPlatformRef>,
                                    DPCTLPlatformVectorRef);
 
 void check_platform_name(__dpctl_keep const DPCTLSyclPlatformRef PRef)

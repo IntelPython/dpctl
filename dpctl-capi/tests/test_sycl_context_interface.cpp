@@ -31,13 +31,14 @@
 #include "dpctl_sycl_types.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
+#include <vector>
 
 using namespace cl::sycl;
 
 namespace
 {
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(sycl::device, DPCTLSyclDeviceRef);
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclDeviceRef>,
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclDeviceRef>,
                                    DPCTLDeviceVectorRef)
 } // namespace
 

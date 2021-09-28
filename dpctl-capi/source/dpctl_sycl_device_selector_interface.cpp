@@ -83,7 +83,7 @@ __dpctl_give DPCTLSyclDeviceSelectorRef
 DPCTLFilterSelector_Create(__dpctl_keep const char *filter_str)
 {
     try {
-        auto Selector = new ONEAPI::filter_selector(filter_str);
+        auto Selector = new ext::oneapi::filter_selector(filter_str);
         return wrap(Selector);
     } catch (std::bad_alloc &ba) {
         std::cerr << ba.what() << '\n';
