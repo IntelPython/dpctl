@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        python: [3.8]
+        python: [3.8, 3.9]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -57,7 +57,7 @@ jobs:
 
     strategy:
       matrix:
-        python: [3.8]
+        python: [3.8, 3.9]
     env:
       conda-bld: C:\Miniconda\conda-bld\win-64\
     steps:
@@ -96,7 +96,7 @@ jobs:
 
     strategy:
       matrix:
-        python: [3.8]
+        python: [3.8, 3.9]
         experimental: [false]
         runner: [ubuntu-latest]
         # include:
@@ -160,7 +160,7 @@ jobs:
 
     strategy:
       matrix:
-        python: [3.8]
+        python: [3.8, 3.9]
         experimental: [false]
         runner: [windows-latest]
     continue-on-error: ${{ matrix.experimental }}
@@ -216,7 +216,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.8]
+        python: [3.8, 3.9]
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -241,7 +241,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python: [3.8]
+        python: [3.8, 3.9]
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
