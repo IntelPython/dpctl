@@ -37,6 +37,10 @@
 #include <inttypes.h>
 #include <stdint.h>
 
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
+
 #ifndef _MSC_VER
 
 #if !defined(UINT32_MAX)
