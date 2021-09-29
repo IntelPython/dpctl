@@ -181,6 +181,7 @@ def copy_same_dtype(dst, src):
 def copy_same_shape(dst, src):
     if src.dtype == dst.dtype:
         copy_same_dtype(dst, src)
+        return
 
     # check that memory regions do not overlap
     if has_memory_overlap(dst, src):
