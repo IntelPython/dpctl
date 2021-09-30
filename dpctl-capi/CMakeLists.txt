@@ -207,11 +207,10 @@ if(DPCTL_GENERATE_COVERAGE)
     set(DPCTL_BUILD_CAPI_TESTS "ON")
     if(DPCTL_COVERAGE_REPORT_OUTPUT_DIR)
         set(COVERAGE_OUTPUT_DIR ${DPCTL_COVERAGE_REPORT_OUTPUT_DIR})
-        message(STATUS "Coverage reports to be saved at ${COVERAGE_OUTPUT_DIR}")
     else()
         set(COVERAGE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
-        message(STATUS "Coverage reports to be saved at ${COVERAGE_OUTPUT_DIR}")
     endif()
+    message(STATUS "Coverage reports to be saved at ${COVERAGE_OUTPUT_DIR}")
 endif()
 
 # Add sub-directory to build the dpctl C API test cases
