@@ -16,7 +16,6 @@ requirements:
         - {{ compiler('cxx') }}
         - {{ compiler('dpcpp') }}  # [not osx]
     host:
-        - dpcpp_cpp_rt  # [py==39]
         - setuptools
         - cython
         - cmake
