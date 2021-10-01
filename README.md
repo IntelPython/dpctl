@@ -6,7 +6,7 @@ What?
 ====
 <img align="left" src="https://spec.oneapi.io/oneapi-logo-white-scaled.jpg" alt="oneAPI logo" />
 
-A lightweight Python package exposing a subset of SYCL functionalities, part of Intel(R) [oneAPI](https://oneapi.io) [Base ToolKit](https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit.html).
+A lightweight Python package exposing a subset of DPC++ functionality, part of Intel(R) [oneAPI](https://oneapi.io) [Base ToolKit](https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit.html).
 
 `dpctl` [provides](https://intelpython.github.io/dpctl) for discovery and selection of SYCL devices, construction of SYCL queues, as well as working with USM allocations.
 <br /><br />
