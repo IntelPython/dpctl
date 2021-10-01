@@ -29,8 +29,8 @@ jobs:
 
       - name: Install Intel OneAPI
         run: |
-          sudo apt-get install intel-oneapi-dpcpp-cpp-compiler
-          sudo apt-get install intel-oneapi-tbb
+          sudo apt-get install intel-oneapi-compiler-dpcpp-cpp=2021.3.0-3350
+          sudo apt-get install intel-oneapi-tbb=2021.3.0-511
 
       - name: Install CMake
         run: |
