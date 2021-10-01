@@ -35,10 +35,6 @@ using namespace cl::sycl;
 
 namespace
 {
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(event, DPCTLSyclEventRef);
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclEventRef>,
-                                   DPCTLEventVectorRef);
-
 #ifndef DPCTL_COVERAGE
 sycl::event produce_event(sycl::queue &Q, sycl::buffer<int> &data)
 {

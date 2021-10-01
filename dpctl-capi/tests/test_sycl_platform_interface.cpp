@@ -37,8 +37,6 @@ using namespace cl::sycl;
 
 namespace
 {
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclPlatformRef>,
-                                   DPCTLPlatformVectorRef);
 
 void check_platform_name(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 {
