@@ -8,8 +8,8 @@ What?
 
 A lightweight Python package exposing a subset of DPC++ functionality, part of Intel(R) [oneAPI](https://oneapi.io) [Base ToolKit](https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit.html).
 
-`dpctl` [provides](https://intelpython.github.io/dpctl) for discovery and selection of SYCL devices, construction of SYCL queues, as well as working with USM allocations.
-<br /><br />
+`dpctl` [provides](https://intelpython.github.io/dpctl) for discovery and selection of SYCL devices, construction of SYCL queues, as well as working with SYCL USM allocations. `dpctl.tensor` contains growing implementation of n-dimensional array conforming to [array-API specification](https://data-apis.org/array-api) backed by a USM-allocation and powered by SYCL kernels.
+<br />
 
 Requirements
 ============
