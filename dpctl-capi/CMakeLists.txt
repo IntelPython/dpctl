@@ -50,6 +50,22 @@ if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
     set(DPCTL_ENABLE_LO_PROGRAM_CREATION 1)
     include(GetLevelZeroHeaders)
     get_level_zero_headers()
+    if (UNIX)
+        find_library(PI_LEVEL_ZERO_LIB
+            NAMES pi_level_zero
+            HINTS ${IntelSycl_LIBRARY_DIR}
+        )
+        find_program(READELF_PROG readelf)
+        find_program(GREP_PROG grep)
+        execute_process(
+            COMMAND ${READELF_PROG} -d ${PI_LEVEL_ZERO_LIB}
+            COMMAND ${GREP_PROG} libze_loader
+            COMMAND ${GREP_PROG} -Po "libze_loader[^\]]*"
+            OUTPUT_VARIABLE LIBZE_LOADER_FILENAME
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_STRIP_TRAILING_WHITESPACE
+            )
+    endif()
 endif()
 
 configure_file(

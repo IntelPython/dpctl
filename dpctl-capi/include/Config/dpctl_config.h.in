@@ -30,3 +30,5 @@
 
 /* The DPCPP version used to build dpctl */
 #define DPCTL_DPCPP_VERSION "@IntelSycl_VERSION@"
+
+#define DPCTL_LIBZE_LOADER_FILENAME "@LIBZE_LOADER_FILENAME@"
