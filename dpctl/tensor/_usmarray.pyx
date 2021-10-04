@@ -471,7 +471,6 @@ cdef class usm_ndarray:
                 PyMem_Free(self.shape_)
             if (self.strides_):
                 PyMem_Free(self.strides_)
-            print(contig_flag)
             self.flags_ = contig_flag
             self.nd_ = new_nd
             self.shape_ = shape_ptr

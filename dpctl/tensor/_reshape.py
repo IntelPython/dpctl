@@ -66,7 +66,10 @@ def reshaped_strides(old_sh, old_sts, new_sh, order="C"):
         ]
     ]
     valid = all(
-        [check_st == old_st for check_st, old_st in zip(check_sts, old_sts)]
+        [
+            check_st == old_st or old_dim == 1
+            for check_st, old_st, old_dim in zip(check_sts, old_sts, old_sh)
+        ]
     )
     return new_sts if valid else None
 
