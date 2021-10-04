@@ -250,6 +250,7 @@ def copy_from_usm_ndarray_to_usm_ndarray(dst, src):
         )
     else:
         src_same_shape = src
+        src_same_shape.shape = common_shape
 
     copy_same_shape(dst, src_same_shape)
 
