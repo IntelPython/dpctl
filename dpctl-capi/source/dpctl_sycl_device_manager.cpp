@@ -31,6 +31,7 @@
 #include <iomanip>
 #include <iostream>
 #include <unordered_map>
+#include <vector>
 
 using namespace cl::sycl;
 
@@ -142,10 +143,10 @@ DPCTLDeviceMgr_GetCachedContext(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 __dpctl_give DPCTLDeviceVectorRef
 DPCTLDeviceMgr_GetDevices(int device_identifier)
 {
-    vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
+    std::vector<DPCTLSyclDeviceRef> *Devices = nullptr;
 
     try {
-        Devices = new vector_class<DPCTLSyclDeviceRef>();
+        Devices = new std::vector<DPCTLSyclDeviceRef>();
     } catch (std::bad_alloc const &ba) {
         delete Devices;
         return nullptr;

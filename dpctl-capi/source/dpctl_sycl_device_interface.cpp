@@ -31,6 +31,7 @@
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <algorithm>
 #include <cstring>
+#include <vector>
 
 using namespace cl::sycl;
 
@@ -40,7 +41,7 @@ namespace
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclDeviceRef>,
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclDeviceRef>,
                                    DPCTLDeviceVectorRef)
 
 } /* end of anonymous namespace */
@@ -608,7 +609,7 @@ __dpctl_give DPCTLDeviceVectorRef
 DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                     size_t count)
 {
-    vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
+    std::vector<DPCTLSyclDeviceRef> *Devices = nullptr;
     if (DRef) {
         if (count == 0) {
             std::cerr << "Can not create sub-devices with zero compute units"
@@ -619,7 +620,7 @@ DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         try {
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_equally>(count);
-            Devices = new vector_class<DPCTLSyclDeviceRef>();
+            Devices = new std::vector<DPCTLSyclDeviceRef>();
             for (const auto &sd : subDevices) {
                 Devices->emplace_back(wrap(new device(sd)));
             }
@@ -646,7 +647,7 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                      __dpctl_keep size_t *counts,
                                      size_t ncounts)
 {
-    vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
+    std::vector<DPCTLSyclDeviceRef> *Devices = nullptr;
     std::vector<size_t> vcounts(ncounts);
     vcounts.assign(counts, counts + ncounts);
     size_t min_elem = *std::min_element(vcounts.begin(), vcounts.end());
@@ -657,7 +658,7 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     }
     if (DRef) {
         auto D = unwrap(DRef);
-        vector_class<std::remove_pointer<decltype(D)>::type> subDevices;
+        std::vector<std::remove_pointer<decltype(D)>::type> subDevices;
         try {
             subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_counts>(vcounts);
@@ -670,7 +671,7 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
             return nullptr;
         }
         try {
-            Devices = new vector_class<DPCTLSyclDeviceRef>();
+            Devices = new std::vector<DPCTLSyclDeviceRef>();
             for (const auto &sd : subDevices) {
                 Devices->emplace_back(wrap(new device(sd)));
             }
@@ -692,7 +693,7 @@ __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy)
 {
-    vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
+    std::vector<DPCTLSyclDeviceRef> *Devices = nullptr;
     auto D = unwrap(DRef);
     if (D) {
         try {
@@ -700,7 +701,7 @@ __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
                 PartitionAffinityDomainTy);
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
-            Devices = new vector_class<DPCTLSyclDeviceRef>();
+            Devices = new std::vector<DPCTLSyclDeviceRef>();
             for (const auto &sd : subDevices) {
                 Devices->emplace_back(wrap(new device(sd)));
             }

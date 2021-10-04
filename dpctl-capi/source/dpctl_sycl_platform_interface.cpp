@@ -32,6 +32,7 @@
 #include <iostream>
 #include <set>
 #include <sstream>
+#include <vector>
 
 using namespace cl::sycl;
 
@@ -39,7 +40,7 @@ namespace
 {
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef);
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef);
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclPlatformRef>,
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclPlatformRef>,
                                    DPCTLPlatformVectorRef);
 } // namespace
 
@@ -207,12 +208,12 @@ DPCTLPlatform_GetVersion(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 
 __dpctl_give DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms()
 {
-    vector_class<DPCTLSyclPlatformRef> *Platforms = nullptr;
+    std::vector<DPCTLSyclPlatformRef> *Platforms = nullptr;
 
     auto platforms = platform::get_platforms();
 
     try {
-        Platforms = new vector_class<DPCTLSyclPlatformRef>();
+        Platforms = new std::vector<DPCTLSyclPlatformRef>();
         Platforms->reserve(platforms.size());
     } catch (std::bad_alloc const &ba) {
         return nullptr;
