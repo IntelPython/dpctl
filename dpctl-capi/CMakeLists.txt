@@ -41,7 +41,7 @@ option(DPCTL_BUILD_CAPI_TESTS
 
 # Minimum version requirement only when oneAPI dpcpp is used.
 if(DPCTL_DPCPP_FROM_ONEAPI)
-    find_package(IntelSycl 2021.2.0 REQUIRED)
+    find_package(IntelSycl 2021.3.0 REQUIRED)
 else()
     find_package(IntelSycl REQUIRED)
 endif()
