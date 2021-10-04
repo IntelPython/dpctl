@@ -676,6 +676,15 @@ def test_setitem_errors():
     X[:] = Y[None, :, 0]
 
 
+def test_setitem_different_dtypes():
+    X = dpt.from_numpy(np.ones(10, "f4"))
+    Y = dpt.from_numpy(np.zeros(10, "f4"))
+    Z = dpt.usm_ndarray((20,), "d")
+    Z[::2] = X
+    Z[1::2] = Y
+    assert np.allclose(dpt.asnumpy(Z), np.tile(np.array([1, 0], "d"), 10))
+
+
 def test_shape_setter():
     def cc_strides(sh):
         return np.empty(sh, dtype="u1").strides

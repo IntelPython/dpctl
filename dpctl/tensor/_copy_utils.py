@@ -194,9 +194,6 @@ def copy_same_shape(dst, src):
     sh_i, dst_st, dst_disp, src_st, src_disp = contract_iter2(
         dst.shape, dst.strides, src.strides
     )
-    # sh_i, dst_st, dst_disp, src_st, src_disp = (
-    #    dst.shape, dst.strides, 0, src.strides, 0
-    # )
     src_iface = src.__sycl_usm_array_interface__
     dst_iface = dst.__sycl_usm_array_interface__
     src_iface["shape"] = tuple()
