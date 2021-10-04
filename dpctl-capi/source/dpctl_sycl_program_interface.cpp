@@ -45,7 +45,7 @@ namespace
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 
 #ifdef __linux__
-static const char *zeLoaderName = "libze_loader.so";
+static const char *zeLoaderName = DPCTL_LIBZE_LOADER_FILENAME;
 static const int libLoadFlags = RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL;
 #elif defined(_WIN64)
 static const char *zeLoaderName = "ze_loader.dll";
