@@ -28,6 +28,7 @@
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_device_selector_interface.h"
+#include "dpctl_utils.h"
 #include <gtest/gtest.h>
 #include <string>
 
@@ -68,6 +69,14 @@ TEST_P(TestDPCTLDeviceManager, ChkGetRelativeId)
 TEST_P(TestDPCTLDeviceManager, ChkPrintDeviceInfo)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
+}
+
+TEST_P(TestDPCTLDeviceManager, ChkGetDeviceInfoStr)
+{
+    const char *info_str = nullptr;
+    EXPECT_NO_FATAL_FAILURE(info_str = DPCTLDeviceMgr_GetDeviceInfoStr(DRef));
+    ASSERT_TRUE(info_str != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(info_str));
 }
 
 TEST_P(TestDPCTLDeviceManager, ChkGetCachedContext)

@@ -77,6 +77,22 @@ __dpctl_give DPCTLDeviceVectorRef
 DPCTLDeviceMgr_GetDevices(int device_identifier);
 
 /*!
+ * @brief Returns a set of device info attributes as a string.
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   A formatted C string capturing the following attributes:
+ *             - device name
+ *             - driver version
+ *             - vendor
+ *             - profiler support
+ *             - oneapi filter string
+ * @ingroup DeviceManager
+ */
+DPCTL_API
+__dpctl_give const char *
+DPCTLDeviceMgr_GetDeviceInfoStr(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
  * @brief Returns an index on the given device in the vector returned by
  * #DPCTLDeviceMgr_GetDevices if found, -1 otherwise.
  *
@@ -91,6 +107,7 @@ DPCTLDeviceMgr_GetDevices(int device_identifier);
  * @return   If found, returns the position of the given device in the
  * vector that would be returned by #DPCTLDeviceMgr_GetDevices if called
  * with the same device_identifier argument.
+ * @ingroup DeviceManager
  */
 DPCTL_API
 int DPCTLDeviceMgr_GetPositionInDevices(__dpctl_keep DPCTLSyclDeviceRef DRef,
@@ -122,6 +139,7 @@ DPCTLDeviceMgr_GetCachedContext(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  *                             the enum values or a bitwise OR-ed combination.
  * @return   The number of available devices satisfying the condition specified
  * by the device_identifier bit flag.
+ * @ingroup DeviceManager
  */
 DPCTL_API
 size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier);
@@ -131,6 +149,7 @@ size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier);
  * currently supported by dpctl.
  *
  * @param    DRef           A #DPCTLSyclDeviceRef opaque pointer.
+ * @ingroup DeviceManager
  */
 DPCTL_API
 void DPCTLDeviceMgr_PrintDeviceInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef);
