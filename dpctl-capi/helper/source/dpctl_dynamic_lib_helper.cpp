@@ -169,6 +169,8 @@ static HMODULE WINAPI _DPCTLLoadLibrary(LPCTSTR filename)
     delete[] wPathBuf;
 
     if (ERROR_SUCCESS != sverif) {
+        // Restore current directory from the search path
+        SetDllDirectory(NULL);
         return NULL;
     }
 
