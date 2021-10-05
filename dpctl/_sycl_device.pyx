@@ -739,12 +739,12 @@ cdef class SyclDevice(_SyclDevice):
         cdef DPCTLDeviceVectorRef DVRef = NULL
         if count > 0:
             DVRef = DPCTLDevice_CreateSubDevicesEqually(self._device_ref, count)
-        else:
-            raise ValueError(
-                "Creating sub-devices with zero compute units is requested"
-            )
         if DVRef is NULL:
-            raise SubDeviceCreationError("Sub-devices were not created.")
+            raise SubDeviceCreationError(
+                "Sub-devices were not created." if (count > 0) else
+                "Sub-devices were not created, "
+                "requested compute units count was zero."
+            )
         return _get_devices(DVRef)
 
     cdef list create_sub_devices_by_counts(self, object counts):
@@ -778,12 +778,12 @@ cdef class SyclDevice(_SyclDevice):
                 self._device_ref, counts_buff, ncounts
             )
         free(counts_buff)
-        if min_count == 0:
-            raise ValueError(
-                "Targeted sub-device execution units must positive"
-            )
         if DVRef is NULL:
-            raise SubDeviceCreationError("Sub-devices were not created.")
+            raise SubDeviceCreationError(
+                "Sub-devices were not created." if (min_count > 0) else
+                "Sub-devices were not created, "
+                "sub-device execution units counts must be positive."
+            )
         return _get_devices(DVRef)
 
     cdef list create_sub_devices_by_affinity(
@@ -866,7 +866,7 @@ cdef class SyclDevice(_SyclDevice):
             raise TypeError(
                 "create_sub_devices(partition=parition_spec) is expected."
             )
-        if isinstance(partition, int) and partition > 0:
+        if isinstance(partition, int) and partition >= 0:
             return self.create_sub_devices_equally(partition)
         elif isinstance(partition, str):
             if partition == "not_applicable":
