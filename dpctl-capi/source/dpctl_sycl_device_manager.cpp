@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_manager.h"
+#include "../helper/include/dpctl_string_utils.hpp"
 #include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_enum_types.h"
@@ -171,21 +172,12 @@ DPCTLDeviceMgr_GetDevices(int device_identifier)
 __dpctl_give const char *
 DPCTLDeviceMgr_GetDeviceInfoStr(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    char *cstr_info = nullptr;
+    const char *cstr_info = nullptr;
     auto D = unwrap(DRef);
     if (D) {
         try {
             auto infostr = get_device_info_str(*D);
-            auto cstr_len = infostr.length() + 1;
-            cstr_info = new char[cstr_len];
-#ifdef _WIN32
-            strncpy_s(cstr_info, cstr_len, infostr.c_str(), cstr_len);
-#else
-            std::strncpy(cstr_info, infostr.c_str(), cstr_len);
-#endif
-        } catch (std::bad_alloc const &ba) {
-            // \todo log error
-            std::cerr << ba.what() << '\n';
+            cstr_info = dpctl::helper::cstring_from_string(infostr);
         } catch (runtime_error const &re) {
             // \todo log error
             std::cerr << re.what() << '\n';

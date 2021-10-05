@@ -26,6 +26,7 @@
 #include "dpctl_service.h"
 #include "Config/dpctl_config.h"
 
+#include "../helper/include/dpctl_string_utils.hpp"
 #include <algorithm>
 #include <cstring>
 #include <iostream>
@@ -33,18 +34,5 @@
 __dpctl_give const char *DPCTLService_GetDPCPPVersion(void)
 {
     std::string version = DPCTL_DPCPP_VERSION;
-    char *version_cstr = nullptr;
-    try {
-        auto cstr_len = version.length() + 1;
-        version_cstr = new char[cstr_len];
-#ifdef _WIN32
-        strncpy_s(version_cstr, cstr_len, version.c_str(), cstr_len);
-#else
-        std::strncpy(version_cstr, version.c_str(), cstr_len);
-#endif
-    } catch (std::bad_alloc const &ba) {
-        // \todo log error
-        std::cerr << ba.what() << '\n';
-    }
-    return version_cstr;
+    return dpctl::helper::cstring_from_string(version);
 }

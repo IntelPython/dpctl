@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_interface.h"
+#include "../helper/include/dpctl_string_utils.hpp"
 #include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_device_manager.h"
@@ -307,21 +308,12 @@ DPCTLDevice_GetPlatform(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 __dpctl_give const char *
 DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    char *cstr_name = nullptr;
+    const char *cstr_name = nullptr;
     auto D = unwrap(DRef);
     if (D) {
         try {
             auto name = D->get_info<info::device::name>();
-            auto cstr_len = name.length() + 1;
-            cstr_name = new char[cstr_len];
-#ifdef _WIN32
-            strncpy_s(cstr_name, cstr_len, name.c_str(), cstr_len);
-#else
-            std::strncpy(cstr_name, name.c_str(), cstr_len);
-#endif
-        } catch (std::bad_alloc const &ba) {
-            // \todo log error
-            std::cerr << ba.what() << '\n';
+            cstr_name = dpctl::helper::cstring_from_string(name);
         } catch (runtime_error const &re) {
             // \todo log error
             std::cerr << re.what() << '\n';
@@ -333,21 +325,12 @@ DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 __dpctl_give const char *
 DPCTLDevice_GetVendor(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    char *cstr_vendor = nullptr;
+    const char *cstr_vendor = nullptr;
     auto D = unwrap(DRef);
     if (D) {
         try {
             auto vendor = D->get_info<info::device::vendor>();
-            auto cstr_len = vendor.length() + 1;
-            cstr_vendor = new char[cstr_len];
-#ifdef _WIN32
-            strncpy_s(cstr_vendor, cstr_len, vendor.c_str(), cstr_len);
-#else
-            std::strncpy(cstr_vendor, vendor.c_str(), cstr_len);
-#endif
-        } catch (std::bad_alloc const &ba) {
-            // \todo log error
-            std::cerr << ba.what() << '\n';
+            cstr_vendor = dpctl::helper::cstring_from_string(vendor);
         } catch (runtime_error const &re) {
             // \todo log error
             std::cerr << re.what() << '\n';
@@ -359,21 +342,12 @@ DPCTLDevice_GetVendor(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 __dpctl_give const char *
 DPCTLDevice_GetDriverVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    char *cstr_driver = nullptr;
+    const char *cstr_driver = nullptr;
     auto D = unwrap(DRef);
     if (D) {
         try {
             auto driver = D->get_info<info::device::driver_version>();
-            auto cstr_len = driver.length() + 1;
-            cstr_driver = new char[cstr_len];
-#ifdef _WIN32
-            strncpy_s(cstr_driver, cstr_len, driver.c_str(), cstr_len);
-#else
-            std::strncpy(cstr_driver, driver.c_str(), cstr_len);
-#endif
-        } catch (std::bad_alloc const &ba) {
-            // \todo log error
-            std::cerr << ba.what() << '\n';
+            cstr_driver = dpctl::helper::cstring_from_string(driver);
         } catch (runtime_error const &re) {
             // \todo log error
             std::cerr << re.what() << '\n';
