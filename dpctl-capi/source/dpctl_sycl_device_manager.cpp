@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_manager.h"
+#include "../helper/include/dpctl_string_utils.hpp"
 #include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_enum_types.h"
@@ -45,7 +46,7 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 /*
  * Helper function to print the metadata for a sycl::device.
  */
-void print_device_info(const device &Device)
+std::string get_device_info_str(const device &Device)
 {
     std::stringstream ss;
 
@@ -62,7 +63,7 @@ void print_device_info(const device &Device)
        << DPCTL_DeviceTypeToStr(Device.get_info<info::device::device_type>())
        << ":" << DPCTL_GetRelativeDeviceId(Device) << '\n';
 
-    std::cout << ss.str();
+    return ss.str();
 }
 
 struct DeviceCacheBuilder
@@ -169,6 +170,23 @@ DPCTLDeviceMgr_GetDevices(int device_identifier)
     return wrap(Devices);
 }
 
+__dpctl_give const char *
+DPCTLDeviceMgr_GetDeviceInfoStr(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    const char *cstr_info = nullptr;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            auto infostr = get_device_info_str(*D);
+            cstr_info = dpctl::helper::cstring_from_string(infostr);
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return cstr_info;
+}
+
 int DPCTLDeviceMgr_GetPositionInDevices(__dpctl_keep DPCTLSyclDeviceRef DRef,
                                         int device_identifier)
 {
@@ -227,7 +245,7 @@ void DPCTLDeviceMgr_PrintDeviceInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto Device = unwrap(DRef);
     if (Device)
-        print_device_info(*Device);
+        std::cout << get_device_info_str(*Device);
     else
         std::cout << "Device is not valid (NULL). Cannot print device info.\n";
 }

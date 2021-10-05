@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_platform_interface.h"
+#include "../helper/include/dpctl_string_utils.hpp"
 #include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
 #include <CL/sycl.hpp>
@@ -122,88 +123,61 @@ DPCTLPlatform_GetBackend(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 __dpctl_give const char *
 DPCTLPlatform_GetName(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 {
-    char *cstr_name = nullptr;
     auto P = unwrap(PRef);
     if (P) {
         try {
             auto name = P->get_info<info::platform::name>();
-            auto cstr_len = name.length() + 1;
-            cstr_name = new char[cstr_len];
-#ifdef _WIN32
-            strncpy_s(cstr_name, cstr_len, name.c_str(), cstr_len);
-#else
-            std::strncpy(cstr_name, name.c_str(), cstr_len);
-#endif
-        } catch (std::bad_alloc const &ba) {
-            // \todo log error
-            std::cerr << ba.what() << '\n';
+            return dpctl::helper::cstring_from_string(name);
         } catch (runtime_error const &re) {
             // \todo log error
             std::cerr << re.what() << '\n';
+            return nullptr;
         }
     }
     else {
         std::cerr << "Name cannot be looked up for a NULL platform\n";
+        return nullptr;
     }
-    return cstr_name;
 }
 
 __dpctl_give const char *
 DPCTLPlatform_GetVendor(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 {
-    char *cstr_vendor = nullptr;
     auto P = unwrap(PRef);
     if (P) {
         try {
             auto vendor = P->get_info<info::platform::vendor>();
-            auto cstr_len = vendor.length() + 1;
-            cstr_vendor = new char[cstr_len];
-#ifdef _WIN32
-            strncpy_s(cstr_vendor, cstr_len, vendor.c_str(), cstr_len);
-#else
-            std::strncpy(cstr_vendor, vendor.c_str(), cstr_len);
-#endif
-        } catch (std::bad_alloc const &ba) {
-            // \todo log error
-            std::cerr << ba.what() << '\n';
+            return dpctl::helper::cstring_from_string(vendor);
         } catch (runtime_error const &re) {
             // \todo log error
             std::cerr << re.what() << '\n';
+            return nullptr;
         }
     }
     else {
         std::cerr << "Vendor cannot be looked up for a NULL platform\n";
+        return nullptr;
     }
-    return cstr_vendor;
 }
 
 __dpctl_give const char *
 DPCTLPlatform_GetVersion(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 {
-    char *cstr_driver = nullptr;
     auto P = unwrap(PRef);
     if (P) {
         try {
             auto driver = P->get_info<info::platform::version>();
-            auto cstr_len = driver.length() + 1;
-            cstr_driver = new char[cstr_len];
-#ifdef _WIN32
-            strncpy_s(cstr_driver, cstr_len, driver.c_str(), cstr_len);
-#else
-            std::strncpy(cstr_driver, driver.c_str(), cstr_len);
-#endif
-        } catch (std::bad_alloc const &ba) {
-            // \todo log error
-            std::cerr << ba.what() << '\n';
+            return dpctl::helper::cstring_from_string(driver);
         } catch (runtime_error const &re) {
             // \todo log error
             std::cerr << re.what() << '\n';
+            return nullptr;
         }
     }
     else {
         std::cerr << "Driver version cannot be looked up for a NULL platform\n";
+        return nullptr;
     }
-    return cstr_driver;
 }
 
 __dpctl_give DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms()
