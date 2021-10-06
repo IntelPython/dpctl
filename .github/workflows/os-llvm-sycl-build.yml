@@ -26,13 +26,14 @@ jobs:
         with:
           path: |
             /home/runner/work/sycl_bundle
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/home/runner/work/sycl_bundle/*') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/home/runner/work/sycl_bundle/bundle_id.txt') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
       - name: Download nightly and components
+        if: steps.cache-sycl-bundle.outputs.cache-hit != 'true'
         shell: bash -l {0}
         run: |
           cd /home/runner/work
@@ -43,7 +44,7 @@ jobs:
           export NIGHTLY_TAG=$(python3 -c "import sys, urllib.parse as ul; print (ul.quote_plus(sys.argv[1]))" $(git tag | sort -V | tail -1))
           cd ..
           export DOWNLOAD_URL_PREFIX=https://github.com/intel/llvm/releases/download
-          wget ${DOWNLOAD_URL_PREFIX}/${NIGHTLY_TAG}/dpcpp-compiler.tar.gz
+          wget ${DOWNLOAD_URL_PREFIX}/${NIGHTLY_TAG}/dpcpp-compiler.tar.gz && echo ${NIGHTLY_TAG} > bundle_id.txt || rm -rf bundle_d.txt
           wget ${DOWNLOAD_URL_PREFIX}/2021-07/${OCLCPUEXP_FN}
           wget ${DOWNLOAD_URL_PREFIX}/2021-07/${FPGAEMU_FN}
           wget https://github.com/oneapi-src/oneTBB/releases/download/v2021.4.0/${TBB_FN}
