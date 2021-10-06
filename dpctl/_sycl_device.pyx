@@ -351,7 +351,7 @@ cdef class SyclDevice(_SyclDevice):
         elif DTy == _device_type._GPU:
             return device_type.gpu
         elif DTy == _device_type._HOST_DEVICE:
-            return device_type.host_device
+            return device_type.host
         else:
             raise ValueError("Unknown device type.")
 
