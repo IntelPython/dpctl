@@ -26,6 +26,9 @@ Helper functions for sycl::device objects that do not directly map to any sycl::
 	DPCTL_API :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
 	:ref:`DPCTLDeviceMgr_GetCachedContext<doxid-d0/d15/group__DeviceManager_1gabb587f003e809eaef26d7dbd253ec88e>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
+	DPCTL_API const __dpctl_give char*
+	:ref:`DPCTLDeviceMgr_GetDeviceInfoStr<doxid-d0/d15/group__DeviceManager_1ga9545c145c64cee5ec1591b5b78a0a72b>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
 	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
 	:ref:`DPCTLDeviceMgr_GetDevices<doxid-d0/d15/group__DeviceManager_1gab7f1386fee08d194d4ad046221c02e18>`(int device_identifier);
 
@@ -106,6 +109,45 @@ If the DPCTLSyclDeviceRef argument is a root device, then this function returns 
 .. rubric:: Returns:
 
 A DPCTLSyclContextRef associated with the :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` argument passed to the function. If the :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` is not found in the cache, then returns a nullptr.
+
+.. index:: pair: function; DPCTLDeviceMgr_GetDeviceInfoStr
+.. _doxid-d0/d15/group__DeviceManager_1ga9545c145c64cee5ec1591b5b78a0a72b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API const __dpctl_give char*
+	DPCTLDeviceMgr_GetDeviceInfoStr(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns a set of device info attributes as a string.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+A formatted C string capturing the following attributes:
+
+* device name
+
+* driver version
+
+* vendor
+
+* profiler support
+
+* oneapi filter string
 
 .. index:: pair: function; DPCTLDeviceMgr_GetDevices
 .. _doxid-d0/d15/group__DeviceManager_1gab7f1386fee08d194d4ad046221c02e18:
