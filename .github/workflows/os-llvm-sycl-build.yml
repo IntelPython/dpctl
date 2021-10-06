@@ -32,7 +32,7 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Download nightly and components
+      - name: Download and install nightly and components
         shell: bash -l {0}
         run: |
           cd /home/runner/work
@@ -43,13 +43,24 @@ jobs:
           export NIGHTLY_TAG=$(python3 -c "import sys, urllib.parse as ul; print (ul.quote_plus(sys.argv[1]))" \
              $(echo ${LATEST_LLVM_TAG} | awk '{gsub(/^refs\/tags\//, "", $2)} {print $2}'))
           if [[ -f bundle_id.txt && ( "$(cat bundle_id.txt)" == "${LATEST_LLVM_TAG_SHA}" ) ]]; then
-              export DOWNLOAD_URL_PREFIX=https://github.com/intel/llvm/releases/download
-              wget ${DOWNLOAD_URL_PREFIX}/${NIGHTLY_TAG}/dpcpp-compiler.tar.gz && echo ${LATEST_LLVM_TAG_SHA} > bundle_id.txt || rm -rf bundle_id.txt
-              wget ${DOWNLOAD_URL_PREFIX}/2021-07/${OCLCPUEXP_FN} || rm -rf bundle_id.txt
-              wget ${DOWNLOAD_URL_PREFIX}/2021-07/${FPGAEMU_FN} || rm -rf bundle_id.txt
-              wget https://github.com/oneapi-src/oneTBB/releases/download/v2021.4.0/${TBB_FN} || rm -rf bundle_id.txt
-          else
               echo "Using cached download of ${LATEST_LLVM_TAG}"
+          else
+              export DOWNLOAD_URL_PREFIX=https://github.com/intel/llvm/releases/download
+              rm -rf dpcpp-compiler.tar.gz
+              wget ${DOWNLOAD_URL_PREFIX}/${NIGHTLY_TAG}/dpcpp-compiler.tar.gz && echo ${LATEST_LLVM_TAG_SHA} > bundle_id.txt || rm -rf bundle_id.txt
+              [ -f ${OCLCPUEXP_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/2021-07/${OCLCPUEXP_FN} || rm -rf bundle_id.txt
+              [ -f ${FPGAEMU_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/2021-07/${FPGAEMU_FN} || rm -rf bundle_id.txt
+              [ -f ${TBB_FN} ] || wget https://github.com/oneapi-src/oneTBB/releases/download/v2021.4.0/${TBB_FN} || rm -rf bundle_id.txt
+              rm -rf dpcpp_compiler
+              tar xf dpcpp-compiler.tar.gz
+              mkdir -p oclcpuexp
+              mkdir -p fpgaemu
+              [ -d oclcpuexp/x64 ] || tar xf ${OCLCPUEXP_FN} -C oclcpuexp
+              [ -d fpgaemu/x64 ] || tar xf ${FPGAEMU_FN} -C fpgaemu
+              [ -d oneapi-tbb-2021.4.0/lib ] || tar xf ${TBB_FN}
+              mkdir -p dpcpp_compiler/lib
+              mkdir -p dpcpp_compiler/lib/oclfpga
+              touch dpcpp_compiler/lib/oclfpga/fpgavars.sh
           fi
 
       - name: Install system components
@@ -67,21 +78,6 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install numpy cython setuptools pytest
-
-      - name: install nightly
-        shell: bash -l {0}
-        run: |
-          cd /home/runner/work/sycl_bundle
-          tar xf dpcpp-compiler.tar.gz
-          mkdir -p oclcpuexp
-          mkdir -p fpgaemu
-          mkdir -p tbb
-          tar xf ${OCLCPUEXP_FN} -C oclcpuexp
-          tar xf ${FPGAEMU_FN} -C fpgaemu
-          tar xf ${TBB_FN}
-          mkdir -p dpcpp_compiler/lib
-          mkdir -p dpcpp_compiler/lib/oclfpga
-          touch dpcpp_compiler/lib/oclfpga/fpgavars.sh
 
       - name: Checkout repo
         uses: actions/checkout@v2
