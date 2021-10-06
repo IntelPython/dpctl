@@ -66,6 +66,39 @@ std::string get_device_info_str(const device &Device)
     return ss.str();
 }
 
+/*!
+ * @brief Canonicalizes a device identifier bit flag to have a valid (i.e., not
+ * UNKNOWN) backend and device type bits.
+ *
+ * The device id is bit flag that indicates the backend and device type, both
+ * of which are optional, that are to be queried. The function makes sure if a
+ * device identifier only provides a device type value the backend is set to
+ * DPCTL_ALL_BACKENDS. Similarly, if only backend is provided the device type
+ * is set to DPCTL_ALL.
+ *
+ * @param    device_id     A bit flag storing a backend and a device type value.
+ * @return   Canonicalized bit flag that makes sure neither backend nor device
+ * type is UNKNOWN (0). For cases where the input device id does not provide
+ * either one of the values, we set the value to ALL.
+ */
+int to_canonical_device_id(int device_id)
+{ // If the identifier is 0 (UNKNOWN_DEVICE) return 0.
+    if (!device_id)
+        return 0;
+
+    // Check if the device identifier has a backend specified. If not, then
+    // toggle all backend specifier bits, i.e. set the backend to
+    // DPCTL_ALL_BACKENDS.
+    if (!(device_id & DPCTL_ALL_BACKENDS))
+        device_id |= DPCTL_ALL_BACKENDS;
+
+    // Check if a device type was specified. If not, set device type to ALL.
+    if (!(device_id & ~DPCTL_ALL_BACKENDS))
+        device_id |= DPCTL_ALL;
+
+    return device_id;
+}
+
 struct DeviceCacheBuilder
 {
     using DeviceCache = std::unordered_map<device, context>;
@@ -146,12 +179,18 @@ DPCTLDeviceMgr_GetDevices(int device_identifier)
 {
     std::vector<DPCTLSyclDeviceRef> *Devices = nullptr;
 
+    device_identifier = to_canonical_device_id(device_identifier);
+
     try {
         Devices = new std::vector<DPCTLSyclDeviceRef>();
     } catch (std::bad_alloc const &ba) {
         delete Devices;
         return nullptr;
     }
+
+    if (!device_identifier)
+        return wrap(Devices);
+
     const auto &root_devices = device::get_devices();
     default_selector mRanker;
 
@@ -195,6 +234,10 @@ int DPCTLDeviceMgr_GetPositionInDevices(__dpctl_keep DPCTLSyclDeviceRef DRef,
         return not_found;
     }
 
+    device_identifier = to_canonical_device_id(device_identifier);
+    if (!device_identifier)
+        return not_found;
+
     const auto &root_devices = device::get_devices();
     default_selector mRanker;
     int index = not_found;
@@ -224,6 +267,11 @@ size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier)
 {
     size_t nDevices = 0;
     auto &cache = DeviceCacheBuilder::getDeviceCache();
+
+    device_identifier = to_canonical_device_id(device_identifier);
+    if (!device_identifier)
+        return 0;
+
     for (const auto &entry : cache) {
         auto Bty(DPCTL_SyclBackendToDPCTLBackendType(
             entry.first.get_platform().get_backend()));
