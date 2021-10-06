@@ -1,0 +1,99 @@
+name: Build with Open Source LLVM SYCL compiler
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  install-compiler:
+    name: Build with nightly build of DPC++ toolchain
+    runs-on: ubuntu-20.04
+
+    env:
+      OCLCPUEXP_FN: oclcpuexp-2021.12.6.0.19_rel.tar.gz
+      FPGAEMU_FN: fpgaemu-2021.12.6.0.19_rel.tar.gz
+      TBB_FN: oneapi-tbb-2021.4.0-lin.tgz
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Cache sycl bundle
+        id: cache-sycl-bundle
+        uses: actions/cache@v2
+        with:
+          path: |
+            /home/runner/work/sycl_bundle
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/home/runner/work/sycl_bundle/bundle_id.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Download and install nightly and components
+        shell: bash -l {0}
+        run: |
+          cd /home/runner/work
+          mkdir -p sycl_bundle
+          cd sycl_bundle
+          export LATEST_LLVM_TAG=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/intel/llvm.git | tail --lines=1)
+          export LATEST_LLVM_TAG_SHA=$(echo ${LATEST_LLVM_TAG} | awk '{print $1}')
+          export NIGHTLY_TAG=$(python3 -c "import sys, urllib.parse as ul; print (ul.quote_plus(sys.argv[1]))" \
+             $(echo ${LATEST_LLVM_TAG} | awk '{gsub(/^refs\/tags\//, "", $2)} {print $2}'))
+          if [[ -f bundle_id.txt && ( "$(cat bundle_id.txt)" == "${LATEST_LLVM_TAG_SHA}" ) ]]; then
+              echo "Using cached download of ${LATEST_LLVM_TAG}"
+          else
+              export DOWNLOAD_URL_PREFIX=https://github.com/intel/llvm/releases/download
+              rm -rf dpcpp-compiler.tar.gz
+              wget ${DOWNLOAD_URL_PREFIX}/${NIGHTLY_TAG}/dpcpp-compiler.tar.gz && echo ${LATEST_LLVM_TAG_SHA} > bundle_id.txt || rm -rf bundle_id.txt
+              [ -f ${OCLCPUEXP_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/2021-07/${OCLCPUEXP_FN} || rm -rf bundle_id.txt
+              [ -f ${FPGAEMU_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/2021-07/${FPGAEMU_FN} || rm -rf bundle_id.txt
+              [ -f ${TBB_FN} ] || wget https://github.com/oneapi-src/oneTBB/releases/download/v2021.4.0/${TBB_FN} || rm -rf bundle_id.txt
+              rm -rf dpcpp_compiler
+              tar xf dpcpp-compiler.tar.gz
+              mkdir -p oclcpuexp
+              mkdir -p fpgaemu
+              [ -d oclcpuexp/x64 ] || tar xf ${OCLCPUEXP_FN} -C oclcpuexp
+              [ -d fpgaemu/x64 ] || tar xf ${FPGAEMU_FN} -C fpgaemu
+              [ -d oneapi-tbb-2021.4.0/lib ] || tar xf ${TBB_FN}
+              mkdir -p dpcpp_compiler/lib
+              mkdir -p dpcpp_compiler/lib/oclfpga
+              touch dpcpp_compiler/lib/oclfpga/fpgavars.sh
+          fi
+
+      - name: Install system components
+        shell: bash -l {0}
+        run: |
+          sudo apt-get install cmake libtinfo5
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          architecture: x64
+
+      - name: Install dpctl dependencies
+        shell: bash -l {0}
+        run: |
+          pip install numpy cython setuptools pytest
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: build dpctl
+        shell: bash -l {0}
+        run: |
+          export SYCL_BUNDLE_FOLDER=/home/runner/work/sycl_bundle
+          source ${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/startup.sh
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/fpgaemu/x64:${LD_LIBRARY_PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oneapi-tbb-2021.4.0/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
+          export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
+          clang++ --version
+          sycl-ls
+          python setup.py develop --sycl-compiler-prefix=$(dirname $(dirname `which clang++`))
+          python -m pytest -v dpctl/tests
