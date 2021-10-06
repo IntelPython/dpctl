@@ -65,10 +65,10 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_IsCPU,
     DPCTLDevice_IsGPU,
     DPCTLDevice_IsHost,
+    DPCTLDeviceMgr_GetDeviceInfoStr,
     DPCTLDeviceMgr_GetDevices,
     DPCTLDeviceMgr_GetPositionInDevices,
     DPCTLDeviceMgr_GetRelativeId,
-    DPCTLDeviceMgr_PrintDeviceInfo,
     DPCTLDeviceSelector_Delete,
     DPCTLDeviceSelector_Score,
     DPCTLDeviceVector_Delete,
@@ -286,7 +286,12 @@ cdef class SyclDevice(_SyclDevice):
     def print_device_info(self):
         """ Print information about the SYCL device.
         """
-        DPCTLDeviceMgr_PrintDeviceInfo(self._device_ref)
+        cdef const char * info_str = DPCTLDeviceMgr_GetDeviceInfoStr(
+            self._device_ref
+        )
+        py_info = <bytes> info_str
+        DPCTLCString_Delete(info_str)
+        print(py_info.decode("utf-8"))
 
     cdef DPCTLSyclDeviceRef get_device_ref(self):
         """ Returns the DPCTLSyclDeviceRef pointer for this class.
