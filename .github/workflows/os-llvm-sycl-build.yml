@@ -33,7 +33,6 @@ jobs:
             ${{ runner.os }}-
 
       - name: Download nightly and components
-        if: steps.cache-sycl-bundle.outputs.cache-hit != 'true'
         shell: bash -l {0}
         run: |
           cd /home/runner/work
@@ -41,12 +40,17 @@ jobs:
           cd sycl_bundle
           export LATEST_LLVM_TAG=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/intel/llvm.git | tail --lines=1)
           export LATEST_LLVM_TAG_SHA=$(echo ${LATEST_LLVM_TAG} | awk '{print $1}')
-          export NIGHTLY_TAG=$(python3 -c "import sys, urllib.parse as ul; print (ul.quote_plus(sys.argv[1]))" $(echo ${LATEST_LLVM_TAG} | awk '{gsub(/^refs\/tags\//, "", $2)} {print $2}'))
-          export DOWNLOAD_URL_PREFIX=https://github.com/intel/llvm/releases/download
-          wget ${DOWNLOAD_URL_PREFIX}/${NIGHTLY_TAG}/dpcpp-compiler.tar.gz && echo ${LATEST_LLVM_TAG_SHA} > bundle_id.txt || rm -rf bundle_d.txt
-          wget ${DOWNLOAD_URL_PREFIX}/2021-07/${OCLCPUEXP_FN}
-          wget ${DOWNLOAD_URL_PREFIX}/2021-07/${FPGAEMU_FN}
-          wget https://github.com/oneapi-src/oneTBB/releases/download/v2021.4.0/${TBB_FN}
+          export NIGHTLY_TAG=$(python3 -c "import sys, urllib.parse as ul; print (ul.quote_plus(sys.argv[1]))" \
+             $(echo ${LATEST_LLVM_TAG} | awk '{gsub(/^refs\/tags\//, "", $2)} {print $2}'))
+          if [[ -f bundle_id.txt && ( "$(cat bundle_id.txt)" == "${LATEST_LLVM_TAG_SHA}" ) ]]; then
+              export DOWNLOAD_URL_PREFIX=https://github.com/intel/llvm/releases/download
+              wget ${DOWNLOAD_URL_PREFIX}/${NIGHTLY_TAG}/dpcpp-compiler.tar.gz && echo ${LATEST_LLVM_TAG_SHA} > bundle_id.txt || rm -rf bundle_id.txt
+              wget ${DOWNLOAD_URL_PREFIX}/2021-07/${OCLCPUEXP_FN} || rm -rf bundle_id.txt
+              wget ${DOWNLOAD_URL_PREFIX}/2021-07/${FPGAEMU_FN} || rm -rf bundle_id.txt
+              wget https://github.com/oneapi-src/oneTBB/releases/download/v2021.4.0/${TBB_FN} || rm -rf bundle_id.txt
+          else
+              echo "Using cached download of ${LATEST_LLVM_TAG}"
+          fi
 
       - name: Install system components
         shell: bash -l {0}
