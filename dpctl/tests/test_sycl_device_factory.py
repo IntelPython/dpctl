@@ -27,7 +27,7 @@ argument_list_1 = [
     (bty.level_zero, dty.gpu),
     (bty.opencl, dty.gpu),
     (bty.opencl, dty.cpu),
-    (bty.host, dty.host_device),
+    (bty.host, dty.host),
 ]
 
 argument_list_2 = [

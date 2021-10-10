@@ -351,7 +351,7 @@ cdef class SyclDevice(_SyclDevice):
         elif DTy == _device_type._GPU:
             return device_type.gpu
         elif DTy == _device_type._HOST_DEVICE:
-            return device_type.host_device
+            return device_type.host
         else:
             raise ValueError("Unknown device type.")
 
@@ -1014,8 +1014,7 @@ cdef class SyclDevice(_SyclDevice):
         cdef int64_t relId = -1
 
         DTy = DPCTLDevice_GetDeviceType(self._device_ref)
-        relId = DPCTLDeviceMgr_GetPositionInDevices(
-            self._device_ref, _backend_type._ALL_BACKENDS | DTy)
+        relId = DPCTLDeviceMgr_GetPositionInDevices(self._device_ref, DTy)
         return relId
 
     cdef int get_backend_ordinal(self):
@@ -1032,8 +1031,7 @@ cdef class SyclDevice(_SyclDevice):
         cdef int64_t relId = -1
 
         BTy = DPCTLDevice_GetBackend(self._device_ref)
-        relId = DPCTLDeviceMgr_GetPositionInDevices(
-            self._device_ref, BTy | _device_type._ALL_DEVICES)
+        relId = DPCTLDeviceMgr_GetPositionInDevices(self._device_ref, BTy)
         return relId
 
     cdef int get_overall_ordinal(self):
