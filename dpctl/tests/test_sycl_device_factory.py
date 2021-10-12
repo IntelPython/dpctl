@@ -56,7 +56,7 @@ def string_to_device_type(dty_str):
     elif dty_str == "cpu":
         return dty.cpu
     elif dty_str == "host":
-        return dty.host_device
+        return dty.host
     elif dty_str == "gpu":
         return dty.gpu
 
