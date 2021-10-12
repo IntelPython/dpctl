@@ -124,7 +124,15 @@ struct DeviceCacheBuilder
                 for (const auto &D : Devices) {
                     if (mRanker(D) < 0)
                         continue;
-                    auto entry = cache_l.emplace(D, D);
+
+                    // Per https://github.com/intel/llvm/blob/sycl/sycl/doc/
+                    // extensions/PlatformContext/PlatformContext.adoc
+                    // sycl::queue(D) would create default platform context
+                    // for capable compiler, sycl::context(D) otherwise
+                    auto Q = queue(D);
+                    auto Ctx = Q.get_context();
+                    auto entry = cache_l.emplace(D, Ctx);
+
                     if (!entry.second) {
                         std::cerr << "Fatal Error during device cache "
                                      "construction.\n";
