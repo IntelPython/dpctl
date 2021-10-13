@@ -4,13 +4,14 @@
 
 What?
 ====
-<img align="left" src="https://spec.oneapi.io/oneapi-logo-white-scaled.jpg" alt="oneAPI logo" />
 
 `dpctl` (data parallel control) is a lightweight Python package [exposing](https://intelpython.github.io/dpctl)
 subset of the Intel(R) oneAPI DPC++ [runtime entities](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes)
 aiming to aid Python users in
 discovering and representing SYCL devices, constructing SYCL queues, representing USM
 allocations as well as ndarrays built on top of these.
+
+<img align="right" src="https://spec.oneapi.io/oneapi-logo-white-scaled.jpg" alt="oneAPI logo" />
 
 `dpctl` is a part of DPPY (data parallel Python) stack powered by oneAPI. It is included
 in Intel(R) [oneAPI](https://oneapi.io) [Base ToolKit](https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit.html).
