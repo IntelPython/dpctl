@@ -6,10 +6,27 @@ What?
 ====
 <img align="left" src="https://spec.oneapi.io/oneapi-logo-white-scaled.jpg" alt="oneAPI logo" />
 
-A lightweight Python package exposing a subset of DPC++ functionality, part of Intel(R) [oneAPI](https://oneapi.io) [Base ToolKit](https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit.html).
+`dpctl` (data parallel control) is a lightweight Python package [exposing](https://intelpython.github.io/dpctl)
+subset of the Intel(R) oneAPI DPC++ runtime entities aiming to aid Python users in
+discovering and representing SYCL devices, constructing SYCL queues, representing USM
+allocations as well as ndarrays built on top of these.
 
-`dpctl` [provides](https://intelpython.github.io/dpctl) for discovery and selection of SYCL devices, construction of SYCL queues, as well as working with SYCL USM allocations. `dpctl.tensor` contains growing implementation of n-dimensional array conforming to [array-API specification](https://data-apis.org/array-api) backed by a USM-allocation and powered by SYCL kernels.
-<br />
+`dpctl` is a part of DPPY (data parallel Python) stack powered by oneAPI. It is included
+in Intel(R) [oneAPI](https://oneapi.io) [Base ToolKit](https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit.html).
+
+`dpctl` consists of sycl-interface C library and Python bindings. The C library
+depends on DPC++ runtime only, while Python package additionally requires
+`numpy` to be installed.
+
+`dpctl` strives to assist authors of Python native extensions written in C,
+Cython, or pybind11 to use its `dpctl.SyclQueue` object to indicate the offload
+target as well as objects in `dpctl.memory` and `dpctl.tensor` submodules to
+represent USM allocations that are accessible from within SYCL kernels executed
+on the target queue.
+
+`dpctl.tensor` submodule provides an array container representing an array in a
+strided layout on top of a USM allocation. The submodule provides an array-API
+conforming oneAPI DPC++ powered library to manipulate the array container.
 
 Requirements
 ============
