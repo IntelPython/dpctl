@@ -44,3 +44,28 @@ public:
 
     void operator()(const cl::sycl::exception_list &exceptions);
 };
+
+/*!
+ * @brief Provides a static error handling function that prints an error code
+ * and message to the standard error stream.
+ *
+ */
+class DPCTL_API DefaultErrorHandler
+{
+public:
+    /*!
+     * @brief A default error handler function that prints out the error code
+     * and optionally the error message to ``std::cerr``.
+     *
+     * @param    err_code       An integer error code.
+     * @param    err_msg        A C string corresponding to an error message.
+     * @param    file_name      The file where the error occurred.
+     * @param    func_name      The function name where the error occurred.
+     * @param    line_num       The line number where the error occurred.
+     */
+    static void handler(int err_code,
+                        const char *err_msg,
+                        const char *file_name,
+                        const char *func_name,
+                        int line_num);
+};

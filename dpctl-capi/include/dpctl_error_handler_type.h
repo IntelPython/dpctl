@@ -32,4 +32,21 @@
  * @param    err_code       Error code extracted from an SYCL asynchronous
  * error.
  */
-typedef void error_handler_callback(int err_code);
+typedef void error_handler_callback(int err_code) __attribute__((
+    deprecated("the function does not allow passing in an error string, use "
+               "'error_handler_callback_fn' instead!!!")));
+
+/*!
+ * @brief Type signature required for an error handler callback function.
+ *
+ * @param    err_code       An integer error code.
+ * @param    err_msg        A C string corresponding to an error message.
+ * @param    file_name      The file where the error occurred.
+ * @param    func_name      The function name where the error occurred.
+ * @param    line_num       The line number where the error occurred.
+ */
+typedef void (*error_handler_callback_fn)(int err_code,
+                                          const char *err_msg,
+                                          const char *file_name,
+                                          const char *func_name,
+                                          int line_num);

@@ -25,7 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_context_interface.h"
-#include "../helper/include/dpctl_async_error_handler.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "Support/CBindingWrapping.h"
 #include <CL/sycl.hpp>
 #include <vector>

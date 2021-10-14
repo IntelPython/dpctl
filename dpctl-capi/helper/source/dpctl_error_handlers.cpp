@@ -23,7 +23,9 @@
 /// context and queue contructors.
 //===----------------------------------------------------------------------===//
 
-#include "dpctl_async_error_handler.h"
+#include "dpctl_error_handlers.h"
+#include <iomanip>
+#include <iostream>
 
 void DPCTL_AsyncErrorHandler::operator()(
     const cl::sycl::exception_list &exceptions)
@@ -39,4 +41,30 @@ void DPCTL_AsyncErrorHandler::operator()(
             handler_(err_code);
         }
     }
+}
+
+void DefaultErrorHandler::handler(int err_code,
+                                  const char *err_msg,
+                                  const char *file_name,
+                                  const char *func_name,
+                                  int line_num)
+{
+    std::stringstream ss;
+
+    ss << "Dpctl-Error ";
+    if (file_name)
+        ss << "on " << file_name << " ";
+
+    if (func_name)
+        ss << "at " << func_name << " ";
+
+    if (line_num)
+        ss << "on line " << line_num << ".";
+
+    ss << " (" << err_code << ")";
+
+    if (err_msg)
+        ss << " " << err_msg << '\n';
+
+    std::cerr << ss.str();
 }
