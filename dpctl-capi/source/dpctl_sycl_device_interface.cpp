@@ -186,6 +186,37 @@ DPCTLDevice_GetMaxComputeUnits(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return nComputeUnits;
 }
 
+uint64_t
+DPCTLDevice_GetGlobalMemSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    uint64_t GlobalMemSize = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            GlobalMemSize = D->get_info<info::device::global_mem_size>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return GlobalMemSize;
+}
+
+uint64_t DPCTLDevice_GetLocalMemSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    uint64_t LocalMemSize = 0;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+            LocalMemSize = D->get_info<info::device::local_mem_size>();
+        } catch (runtime_error const &re) {
+            // \todo log error
+            std::cerr << re.what() << '\n';
+        }
+    }
+    return LocalMemSize;
+}
+
 uint32_t
 DPCTLDevice_GetMaxWorkItemDims(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {

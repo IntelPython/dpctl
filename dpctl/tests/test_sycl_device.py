@@ -61,6 +61,16 @@ def check_get_max_compute_units(device):
     assert max_compute_units > 0
 
 
+def check_get_global_mem_size(device):
+    global_mem_size = device.global_mem_size
+    assert global_mem_size > 0
+
+
+def check_get_local_mem_size(device):
+    local_mem_size = device.local_mem_size
+    assert local_mem_size > 0
+
+
 def check_get_max_work_item_dims(device):
     max_work_item_dims = device.max_work_item_dims
     assert max_work_item_dims > 0
@@ -529,6 +539,8 @@ list_of_checks = [
     check_create_sub_devices_by_affinity_next_partitionable,
     check_print_device_info,
     check_repr,
+    check_get_global_mem_size,
+    check_get_local_mem_size,
 ]
 
 

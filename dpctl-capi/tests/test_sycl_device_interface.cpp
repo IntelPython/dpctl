@@ -132,6 +132,20 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxComputeUnits)
     EXPECT_TRUE(n > 0);
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetGlobalMemSize)
+{
+    size_t gm_sz = 0;
+    EXPECT_NO_FATAL_FAILURE(gm_sz = DPCTLDevice_GetGlobalMemSize(DRef));
+    EXPECT_TRUE(gm_sz > 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetLocalMemSize)
+{
+    size_t lm_sz = 0;
+    EXPECT_NO_FATAL_FAILURE(lm_sz = DPCTLDevice_GetLocalMemSize(DRef));
+    EXPECT_TRUE(lm_sz > 0);
+}
+
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWorkItemDims)
 {
     size_t n = 0;

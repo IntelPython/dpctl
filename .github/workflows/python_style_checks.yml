@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-python@v2
       - uses: jamescurtin/isort-action@master
         with:
-          args: ". --check-only"
+          configuration: "--check-only"
 
   black:
     # The type of runner that the job will run on
