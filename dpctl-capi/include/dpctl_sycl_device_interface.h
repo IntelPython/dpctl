@@ -31,11 +31,17 @@
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_data_types.h"
+#include "dpctl_exec_state.h"
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
+
+#define DEPRACATION_NOTICE                                                     \
+    "The function is deprecated to change the naming convention and "          \
+    "support the new DpctlExecState argument to improve error "                \
+    "handling and reporting."
 
 /**
  * @defgroup DeviceInterface Device class C wrapper
@@ -49,20 +55,33 @@ DPCTL_C_EXTERN_C_BEGIN
  * DPCTLSyclDeviceRef object.
  * @ingroup DeviceInterface
  */
-DPCTL_API
-__dpctl_give DPCTLSyclDeviceRef
-DPCTLDevice_Copy(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+DPCTL_API __dpctl_give DPCTLSyclDeviceRef
+DPCTLDevice_Copy(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+    __attribute__((deprecated(DEPRACATION_NOTICE, "dpctl_device_copy")));
 
 /*!
- * @brief Returns a new DPCTLSyclDeviceRef opaque object wrapping a SYCL device
- * instance as a host device.
+ * @brief Returns a copy of the DPCTLSyclDeviceRef object.
  *
- * @return   An opaque pointer to a ``sycl::device`` created as an instance of
- * the host device.
+ * @param    ES             The execution state object used for error handling.
+ * @param    DRef           DPCTLSyclDeviceRef object to be copied.
+ * @return   A new DPCTLSyclDeviceRef created by copying the passed in
+ * DPCTLSyclDeviceRef object.
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_give DPCTLSyclDeviceRef DPCTLDevice_Create(void);
+__dpctl_give DPCTLSyclDeviceRef
+dpctl_device_copy(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                  __dpctl_keep const DpctlExecState ES);
+
+/*!
+ * @brief Returns a new DPCTLSyclDeviceRef opaque object wrapping a SYCL
+ * device instance as a host device.
+ *
+ * @return   An opaque pointer to a ``sycl::device`` created as an instance
+ * of the host device.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_Create(void);
 
 /*!
  * @brief Returns a new DPCTLSyclDeviceRef opaque object created using the

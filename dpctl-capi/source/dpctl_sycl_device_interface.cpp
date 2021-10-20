@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_interface.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "../helper/include/dpctl_string_utils.hpp"
 #include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
@@ -44,23 +45,33 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclDeviceRef>,
                                    DPCTLDeviceVectorRef)
-
 } /* end of anonymous namespace */
 
 __dpctl_give DPCTLSyclDeviceRef
 DPCTLDevice_Copy(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
+    return dpctl_device_copy(DRef, nullptr);
+}
+
+__dpctl_give DPCTLSyclDeviceRef
+dpctl_device_copy(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                  __dpctl_keep const DpctlExecState ES)
+{
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
+
     auto Device = unwrap(DRef);
+
     if (!Device) {
-        std::cerr << "Cannot copy DPCTLSyclDeviceRef as input is a nullptr\n";
+        handler(-1, "Cannot copy DPCTLSyclDeviceRef as input is a nullptr.",
+                __FILE__, __func__, __LINE__);
         return nullptr;
     }
     try {
         auto CopiedDevice = new device(*Device);
         return wrap(CopiedDevice);
     } catch (std::bad_alloc const &ba) {
-        // \todo log error
-        std::cerr << ba.what() << '\n';
+        handler(-1, ba.what(), __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
