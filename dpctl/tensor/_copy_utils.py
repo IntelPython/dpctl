@@ -181,6 +181,7 @@ def copy_same_dtype(dst, src):
 def copy_same_shape(dst, src):
     if src.dtype == dst.dtype:
         copy_same_dtype(dst, src)
+        return
 
     # check that memory regions do not overlap
     if has_memory_overlap(dst, src):
@@ -193,9 +194,6 @@ def copy_same_shape(dst, src):
     sh_i, dst_st, dst_disp, src_st, src_disp = contract_iter2(
         dst.shape, dst.strides, src.strides
     )
-    # sh_i, dst_st, dst_disp, src_st, src_disp = (
-    #    dst.shape, dst.strides, 0, src.strides, 0
-    # )
     src_iface = src.__sycl_usm_array_interface__
     dst_iface = dst.__sycl_usm_array_interface__
     src_iface["shape"] = tuple()
@@ -249,6 +247,7 @@ def copy_from_usm_ndarray_to_usm_ndarray(dst, src):
         )
     else:
         src_same_shape = src
+        src_same_shape.shape = common_shape
 
     copy_same_shape(dst, src_same_shape)
 

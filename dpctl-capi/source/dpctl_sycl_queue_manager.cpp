@@ -43,7 +43,7 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 
 struct QueueManager
 {
-    using QueueStack = vector_class<queue>;
+    using QueueStack = std::vector<queue>;
     static QueueStack &getQueueStack()
     {
         thread_local static QueueStack *activeQueues = new QueueStack([] {

@@ -17,6 +17,9 @@
 """ Defines unit test cases for the SyclQueue class.
 """
 
+import ctypes
+import sys
+
 import pytest
 
 import dpctl
@@ -395,22 +398,22 @@ def test_hashing_of_queue():
     assert queue_dict
 
 
-def test_channeling_device_properties():
+def test_channeling_device_properties(capsys):
     try:
         q = dpctl.SyclQueue()
         dev = q.sycl_device
     except dpctl.SyclQueueCreationError:
         pytest.fail("Failed to create device from default selector")
-    import io
-    from contextlib import redirect_stdout
 
-    f1 = io.StringIO()
-    with redirect_stdout(f1):
-        q.print_device_info()  # should execute without raising
-    f2 = io.StringIO()
-    with redirect_stdout(f2):
-        dev.print_device_info()
-    assert f1.getvalue() == f2.getvalue(), "Mismatch in print_device_info"
+    q.print_device_info()  # should execute without raising
+    q_captured = capsys.readouterr()
+    q_output = q_captured.out
+    dev.print_device_info()
+    d_captured = capsys.readouterr()
+    d_output = d_captured.out
+    assert q_output, "No output captured"
+    assert q_output == d_output, "Mismatch in print_device_info"
+    assert q_captured.err == "" and d_captured.err == ""
     for pr in ["backend", "name", "driver_version"]:
         assert getattr(q, pr) == getattr(
             dev, pr
@@ -468,9 +471,6 @@ def test_queue_capsule():
 
 
 def test_cpython_api():
-    import ctypes
-    import sys
-
     q = dpctl.SyclQueue()
     mod = sys.modules[q.__class__.__module__]
     # get capsule storign get_context_ref function ptr

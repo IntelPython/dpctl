@@ -201,7 +201,7 @@ def test_pickling_reconstructor_invalid_type(memory_ctor):
     mobj = memory_ctor(1024, alignment=64)
     good_pickle_bytes = pickle.dumps(mobj)
     usm_types = expected_usm_type(memory_ctor).encode("utf-8")
-    i = good_pickle_bytes.index(usm_types)
+    i = good_pickle_bytes.rfind(usm_types)
     bad_pickle_bytes = good_pickle_bytes[:i] + b"u" + good_pickle_bytes[i + 1 :]
     with pytest.raises(ValueError):
         pickle.loads(bad_pickle_bytes)

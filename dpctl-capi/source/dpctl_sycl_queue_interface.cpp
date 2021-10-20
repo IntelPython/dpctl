@@ -514,15 +514,23 @@ DPCTLSyclEventRef DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
 {
     auto Q = unwrap(QRef);
     if (Q) {
-        sycl::event ev;
-        try {
-            ev = Q->prefetch(Ptr, Count);
-        } catch (sycl::runtime_error &re) {
+        if (Ptr) {
+            sycl::event ev;
+            try {
+                ev = Q->prefetch(Ptr, Count);
+            } catch (sycl::runtime_error &re) {
+                // todo: log error
+                std::cerr << re.what() << '\n';
+                return nullptr;
+            }
+            return wrap(new event(ev));
+        }
+        else {
             // todo: log error
-            std::cerr << re.what() << '\n';
+            std::cerr << "Attempt to prefetch USM-allocation at nullptr"
+                      << '\n';
             return nullptr;
         }
-        return wrap(new event(ev));
     }
     else {
         // todo: log error

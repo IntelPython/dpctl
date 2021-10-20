@@ -65,10 +65,10 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_IsCPU,
     DPCTLDevice_IsGPU,
     DPCTLDevice_IsHost,
+    DPCTLDeviceMgr_GetDeviceInfoStr,
     DPCTLDeviceMgr_GetDevices,
     DPCTLDeviceMgr_GetPositionInDevices,
     DPCTLDeviceMgr_GetRelativeId,
-    DPCTLDeviceMgr_PrintDeviceInfo,
     DPCTLDeviceSelector_Delete,
     DPCTLDeviceSelector_Score,
     DPCTLDeviceVector_Delete,
@@ -286,7 +286,12 @@ cdef class SyclDevice(_SyclDevice):
     def print_device_info(self):
         """ Print information about the SYCL device.
         """
-        DPCTLDeviceMgr_PrintDeviceInfo(self._device_ref)
+        cdef const char * info_str = DPCTLDeviceMgr_GetDeviceInfoStr(
+            self._device_ref
+        )
+        py_info = <bytes> info_str
+        DPCTLCString_Delete(info_str)
+        print(py_info.decode("utf-8"))
 
     cdef DPCTLSyclDeviceRef get_device_ref(self):
         """ Returns the DPCTLSyclDeviceRef pointer for this class.
@@ -346,7 +351,7 @@ cdef class SyclDevice(_SyclDevice):
         elif DTy == _device_type._GPU:
             return device_type.gpu
         elif DTy == _device_type._HOST_DEVICE:
-            return device_type.host_device
+            return device_type.host
         else:
             raise ValueError("Unknown device type.")
 
@@ -739,12 +744,12 @@ cdef class SyclDevice(_SyclDevice):
         cdef DPCTLDeviceVectorRef DVRef = NULL
         if count > 0:
             DVRef = DPCTLDevice_CreateSubDevicesEqually(self._device_ref, count)
-        else:
-            raise ValueError(
-                "Creating sub-devices with zero compute units is requested"
-            )
         if DVRef is NULL:
-            raise SubDeviceCreationError("Sub-devices were not created.")
+            raise SubDeviceCreationError(
+                "Sub-devices were not created." if (count > 0) else
+                "Sub-devices were not created, "
+                "requested compute units count was zero."
+            )
         return _get_devices(DVRef)
 
     cdef list create_sub_devices_by_counts(self, object counts):
@@ -778,12 +783,12 @@ cdef class SyclDevice(_SyclDevice):
                 self._device_ref, counts_buff, ncounts
             )
         free(counts_buff)
-        if min_count == 0:
-            raise ValueError(
-                "Targeted sub-device execution units must positive"
-            )
         if DVRef is NULL:
-            raise SubDeviceCreationError("Sub-devices were not created.")
+            raise SubDeviceCreationError(
+                "Sub-devices were not created." if (min_count > 0) else
+                "Sub-devices were not created, "
+                "sub-device execution units counts must be positive."
+            )
         return _get_devices(DVRef)
 
     cdef list create_sub_devices_by_affinity(
@@ -866,7 +871,7 @@ cdef class SyclDevice(_SyclDevice):
             raise TypeError(
                 "create_sub_devices(partition=parition_spec) is expected."
             )
-        if isinstance(partition, int) and partition > 0:
+        if isinstance(partition, int) and partition >= 0:
             return self.create_sub_devices_equally(partition)
         elif isinstance(partition, str):
             if partition == "not_applicable":
@@ -1009,8 +1014,7 @@ cdef class SyclDevice(_SyclDevice):
         cdef int64_t relId = -1
 
         DTy = DPCTLDevice_GetDeviceType(self._device_ref)
-        relId = DPCTLDeviceMgr_GetPositionInDevices(
-            self._device_ref, _backend_type._ALL_BACKENDS | DTy)
+        relId = DPCTLDeviceMgr_GetPositionInDevices(self._device_ref, DTy)
         return relId
 
     cdef int get_backend_ordinal(self):
@@ -1027,8 +1031,7 @@ cdef class SyclDevice(_SyclDevice):
         cdef int64_t relId = -1
 
         BTy = DPCTLDevice_GetBackend(self._device_ref)
-        relId = DPCTLDeviceMgr_GetPositionInDevices(
-            self._device_ref, BTy | _device_type._ALL_DEVICES)
+        relId = DPCTLDeviceMgr_GetPositionInDevices(self._device_ref, BTy)
         return relId
 
     cdef int get_overall_ordinal(self):

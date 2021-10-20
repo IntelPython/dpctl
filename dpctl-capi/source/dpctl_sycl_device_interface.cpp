@@ -25,12 +25,14 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_interface.h"
+#include "../helper/include/dpctl_string_utils.hpp"
 #include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_device_manager.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <algorithm>
 #include <cstring>
+#include <vector>
 
 using namespace cl::sycl;
 
@@ -40,7 +42,7 @@ namespace
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclDeviceRef>,
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclDeviceRef>,
                                    DPCTLDeviceVectorRef)
 
 } /* end of anonymous namespace */
@@ -307,21 +309,12 @@ DPCTLDevice_GetPlatform(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 __dpctl_give const char *
 DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    char *cstr_name = nullptr;
+    const char *cstr_name = nullptr;
     auto D = unwrap(DRef);
     if (D) {
         try {
             auto name = D->get_info<info::device::name>();
-            auto cstr_len = name.length() + 1;
-            cstr_name = new char[cstr_len];
-#ifdef _WIN32
-            strncpy_s(cstr_name, cstr_len, name.c_str(), cstr_len);
-#else
-            std::strncpy(cstr_name, name.c_str(), cstr_len);
-#endif
-        } catch (std::bad_alloc const &ba) {
-            // \todo log error
-            std::cerr << ba.what() << '\n';
+            cstr_name = dpctl::helper::cstring_from_string(name);
         } catch (runtime_error const &re) {
             // \todo log error
             std::cerr << re.what() << '\n';
@@ -333,21 +326,12 @@ DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 __dpctl_give const char *
 DPCTLDevice_GetVendor(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    char *cstr_vendor = nullptr;
+    const char *cstr_vendor = nullptr;
     auto D = unwrap(DRef);
     if (D) {
         try {
             auto vendor = D->get_info<info::device::vendor>();
-            auto cstr_len = vendor.length() + 1;
-            cstr_vendor = new char[cstr_len];
-#ifdef _WIN32
-            strncpy_s(cstr_vendor, cstr_len, vendor.c_str(), cstr_len);
-#else
-            std::strncpy(cstr_vendor, vendor.c_str(), cstr_len);
-#endif
-        } catch (std::bad_alloc const &ba) {
-            // \todo log error
-            std::cerr << ba.what() << '\n';
+            cstr_vendor = dpctl::helper::cstring_from_string(vendor);
         } catch (runtime_error const &re) {
             // \todo log error
             std::cerr << re.what() << '\n';
@@ -359,21 +343,12 @@ DPCTLDevice_GetVendor(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 __dpctl_give const char *
 DPCTLDevice_GetDriverVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    char *cstr_driver = nullptr;
+    const char *cstr_driver = nullptr;
     auto D = unwrap(DRef);
     if (D) {
         try {
             auto driver = D->get_info<info::device::driver_version>();
-            auto cstr_len = driver.length() + 1;
-            cstr_driver = new char[cstr_len];
-#ifdef _WIN32
-            strncpy_s(cstr_driver, cstr_len, driver.c_str(), cstr_len);
-#else
-            std::strncpy(cstr_driver, driver.c_str(), cstr_len);
-#endif
-        } catch (std::bad_alloc const &ba) {
-            // \todo log error
-            std::cerr << ba.what() << '\n';
+            cstr_driver = dpctl::helper::cstring_from_string(driver);
         } catch (runtime_error const &re) {
             // \todo log error
             std::cerr << re.what() << '\n';
@@ -608,7 +583,7 @@ __dpctl_give DPCTLDeviceVectorRef
 DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                     size_t count)
 {
-    vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
+    std::vector<DPCTLSyclDeviceRef> *Devices = nullptr;
     if (DRef) {
         if (count == 0) {
             std::cerr << "Can not create sub-devices with zero compute units"
@@ -619,7 +594,7 @@ DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         try {
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_equally>(count);
-            Devices = new vector_class<DPCTLSyclDeviceRef>();
+            Devices = new std::vector<DPCTLSyclDeviceRef>();
             for (const auto &sd : subDevices) {
                 Devices->emplace_back(wrap(new device(sd)));
             }
@@ -646,7 +621,7 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                      __dpctl_keep size_t *counts,
                                      size_t ncounts)
 {
-    vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
+    std::vector<DPCTLSyclDeviceRef> *Devices = nullptr;
     std::vector<size_t> vcounts(ncounts);
     vcounts.assign(counts, counts + ncounts);
     size_t min_elem = *std::min_element(vcounts.begin(), vcounts.end());
@@ -657,7 +632,7 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     }
     if (DRef) {
         auto D = unwrap(DRef);
-        vector_class<std::remove_pointer<decltype(D)>::type> subDevices;
+        std::vector<std::remove_pointer<decltype(D)>::type> subDevices;
         try {
             subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_counts>(vcounts);
@@ -670,7 +645,7 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
             return nullptr;
         }
         try {
-            Devices = new vector_class<DPCTLSyclDeviceRef>();
+            Devices = new std::vector<DPCTLSyclDeviceRef>();
             for (const auto &sd : subDevices) {
                 Devices->emplace_back(wrap(new device(sd)));
             }
@@ -692,7 +667,7 @@ __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy)
 {
-    vector_class<DPCTLSyclDeviceRef> *Devices = nullptr;
+    std::vector<DPCTLSyclDeviceRef> *Devices = nullptr;
     auto D = unwrap(DRef);
     if (D) {
         try {
@@ -700,7 +675,7 @@ __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
                 PartitionAffinityDomainTy);
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
-            Devices = new vector_class<DPCTLSyclDeviceRef>();
+            Devices = new std::vector<DPCTLSyclDeviceRef>();
             for (const auto &sd : subDevices) {
                 Devices->emplace_back(wrap(new device(sd)));
             }

@@ -28,6 +28,7 @@
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_device_selector_interface.h"
+#include "dpctl_utils.h"
 #include <gtest/gtest.h>
 #include <string>
 
@@ -68,6 +69,14 @@ TEST_P(TestDPCTLDeviceManager, ChkGetRelativeId)
 TEST_P(TestDPCTLDeviceManager, ChkPrintDeviceInfo)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
+}
+
+TEST_P(TestDPCTLDeviceManager, ChkGetDeviceInfoStr)
+{
+    const char *info_str = nullptr;
+    EXPECT_NO_FATAL_FAILURE(info_str = DPCTLDeviceMgr_GetDeviceInfoStr(DRef));
+    ASSERT_TRUE(info_str != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(info_str));
 }
 
 TEST_P(TestDPCTLDeviceManager, ChkGetCachedContext)
@@ -127,6 +136,57 @@ INSTANTIATE_TEST_SUITE_P(
                       DPCTLSyclBackendType::DPCTL_OPENCL,
                       DPCTLSyclBackendType::DPCTL_OPENCL |
                           DPCTLSyclDeviceType::DPCTL_GPU));
+
+struct TestGetNumDevicesForDTy : public ::testing::TestWithParam<int>
+{
+    size_t nDevices = 0;
+    TestGetNumDevicesForDTy()
+    {
+        cl::sycl::info::device_type sycl_dty =
+            DPCTL_DPCTLDeviceTypeToSyclDeviceType(
+                DPCTLSyclDeviceType(GetParam()));
+
+        auto devices = cl::sycl::device::get_devices(sycl_dty);
+        EXPECT_TRUE(devices.size() == DPCTLDeviceMgr_GetNumDevices(GetParam()));
+    }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    GetDevices,
+    TestGetNumDevicesForDTy,
+    ::testing::Values(DPCTLSyclDeviceType::DPCTL_ACCELERATOR,
+                      DPCTLSyclDeviceType::DPCTL_ALL,
+                      DPCTLSyclDeviceType::DPCTL_CPU,
+                      DPCTLSyclDeviceType::DPCTL_GPU,
+                      DPCTLSyclDeviceType::DPCTL_HOST_DEVICE));
+
+struct TestGetNumDevicesForBTy : public ::testing::TestWithParam<int>
+{
+    size_t nDevices = 0;
+    TestGetNumDevicesForBTy()
+    {
+        cl::sycl::backend sycl_bty = DPCTL_DPCTLBackendTypeToSyclBackend(
+            DPCTLSyclBackendType(GetParam()));
+
+        auto platforms = cl::sycl::platform::get_platforms();
+        for (const auto &P : platforms) {
+            if (P.get_backend() == sycl_bty) {
+                auto devices = P.get_devices();
+                EXPECT_TRUE(devices.size() ==
+                            DPCTLDeviceMgr_GetNumDevices(GetParam()));
+            }
+        }
+    }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    GetDevices,
+    TestGetNumDevicesForBTy,
+    ::testing::Values(DPCTLSyclBackendType::DPCTL_CUDA,
+                      DPCTLSyclBackendType::DPCTL_ALL_BACKENDS,
+                      DPCTLSyclBackendType::DPCTL_HOST,
+                      DPCTLSyclBackendType::DPCTL_LEVEL_ZERO,
+                      DPCTLSyclBackendType::DPCTL_OPENCL));
 
 struct TestDPCTLDeviceVector : public ::testing::Test
 {
