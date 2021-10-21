@@ -215,6 +215,13 @@ def extensions():
             **extension_args,
         ),
         Extension(
+            "dpctl.utils._compute_follows_data",
+            [
+                os.path.join("dpctl", "utils", "_compute_follows_data.pyx"),
+            ],
+            **extension_args,
+        ),
+        Extension(
             "dpctl.tensor._usmarray",
             [
                 os.path.join("dpctl", "tensor", "_usmarray.pyx"),
