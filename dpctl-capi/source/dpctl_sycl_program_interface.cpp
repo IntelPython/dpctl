@@ -24,6 +24,11 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#ifndef __SYCL_INTERNAL_API
+// make sure that sycl::program is defined and implemented
+#define __SYCL_INTERNAL_API
+#endif
+
 #include "dpctl_sycl_program_interface.h"
 #include "Config/dpctl_config.h"
 #include "Support/CBindingWrapping.h"
