@@ -40,21 +40,15 @@ using namespace cl::sycl;
 namespace
 {
 // Create wrappers for C Binding types (see CBindingWrapping.h).
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclDeviceRef>,
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DpctlSyclDeviceRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DpctlSyclDeviceSelectorRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DpctlSyclPlatformRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DpctlSyclDeviceRef>,
                                    DPCTLDeviceVectorRef)
 } /* end of anonymous namespace */
 
-__dpctl_give DPCTLSyclDeviceRef
-DPCTLDevice_Copy(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    return dpctl_device_copy(DRef, nullptr);
-}
-
-__dpctl_give DPCTLSyclDeviceRef
-dpctl_device_copy(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+__dpctl_give DpctlSyclDeviceRef
+dpctl_device_copy(__dpctl_keep const DpctlSyclDeviceRef DRef,
                   __dpctl_keep const DpctlExecState ES)
 {
     auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
@@ -63,7 +57,7 @@ dpctl_device_copy(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     auto Device = unwrap(DRef);
 
     if (!Device) {
-        handler(-1, "Cannot copy DPCTLSyclDeviceRef as input is a nullptr.",
+        handler(-1, "Cannot copy DpctlSyclDeviceRef as input is a nullptr.",
                 __FILE__, __func__, __LINE__);
         return nullptr;
     }
@@ -76,25 +70,29 @@ dpctl_device_copy(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     }
 }
 
-__dpctl_give DPCTLSyclDeviceRef DPCTLDevice_Create()
+__dpctl_give DpctlSyclDeviceRef
+dpctl_device_create(__dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     try {
         auto Device = new device();
         return wrap(Device);
     } catch (std::bad_alloc const &ba) {
-        // \todo log error
-        std::cerr << ba.what() << '\n';
+        handler(-1, ba.what(), __FILE__, __func__, __LINE__);
         return nullptr;
-    } catch (runtime_error const &re) {
-        // \todo log error
-        std::cerr << re.what() << '\n';
+    } catch (const sycl::exception &e) {
+        handler(e.get_cl_code(), e.what(), __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
 
-__dpctl_give DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
-    __dpctl_keep const DPCTLSyclDeviceSelectorRef DSRef)
+__dpctl_give DpctlSyclDeviceRef dpctl_device_create_from_selector(
+    __dpctl_keep const DpctlSyclDeviceSelectorRef DSRef,
+    __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     auto Selector = unwrap(DSRef);
     if (!Selector)
         // \todo : Log error
@@ -103,8 +101,7 @@ __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
         auto Device = new device(*Selector);
         return wrap(Device);
     } catch (std::bad_alloc const &ba) {
-        // \todo log error
-        std::cerr << ba.what() << '\n';
+        handler(-1, ba.what(), __FILE__, __func__, __LINE__);
         return nullptr;
     } catch (runtime_error const &re) {
         // \todo log error
@@ -113,14 +110,18 @@ __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
     }
 }
 
-void DPCTLDevice_Delete(__dpctl_take DPCTLSyclDeviceRef DRef)
+void dpctl_device_delete(__dpctl_take DpctlSyclDeviceRef DRef,
+                         __dpctl_keep const DpctlExecState /**/)
 {
     delete unwrap(DRef);
 }
 
 DPCTLSyclDeviceType
-DPCTLDevice_GetDeviceType(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+dpctl_device_get_device_type(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                             __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     DPCTLSyclDeviceType DTy = DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE;
     auto D = unwrap(DRef);
     if (D) {
@@ -135,8 +136,11 @@ DPCTLDevice_GetDeviceType(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return DTy;
 }
 
-bool DPCTLDevice_IsAccelerator(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+bool dpctl_device_is_accelerator(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                                 __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     auto D = unwrap(DRef);
     if (D) {
         return D->is_accelerator();
@@ -144,8 +148,11 @@ bool DPCTLDevice_IsAccelerator(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return false;
 }
 
-bool DPCTLDevice_IsCPU(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+bool dpctl_device_isCPU(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                        __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     auto D = unwrap(DRef);
     if (D) {
         return D->is_cpu();
@@ -153,8 +160,11 @@ bool DPCTLDevice_IsCPU(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return false;
 }
 
-bool DPCTLDevice_IsGPU(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+bool dpctl_device_isGPU(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                        __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     auto D = unwrap(DRef);
     if (D) {
         return D->is_gpu();
@@ -162,9 +172,12 @@ bool DPCTLDevice_IsGPU(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return false;
 }
 
-bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+bool dpctl_device_is_host(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                          __dpctl_keep const DpctlExecState ES)
 {
     auto D = unwrap(DRef);
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     if (D) {
         return D->is_host();
     }
@@ -172,8 +185,11 @@ bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 DPCTLSyclBackendType
-DPCTLDevice_GetBackend(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+dpctl_device_get_backend(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                         __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
     auto D = unwrap(DRef);
     if (D) {
@@ -184,8 +200,11 @@ DPCTLDevice_GetBackend(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 uint32_t
-DPCTLDevice_GetMaxComputeUnits(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+dpctl_device_get_max_compute_units(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                                   __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     uint32_t nComputeUnits = 0;
     auto D = unwrap(DRef);
     if (D) {
@@ -200,8 +219,11 @@ DPCTLDevice_GetMaxComputeUnits(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 uint64_t
-DPCTLDevice_GetGlobalMemSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+dpctl_device_get_global_mem_size(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                                 __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     uint64_t GlobalMemSize = 0;
     auto D = unwrap(DRef);
     if (D) {
@@ -215,8 +237,12 @@ DPCTLDevice_GetGlobalMemSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return GlobalMemSize;
 }
 
-uint64_t DPCTLDevice_GetLocalMemSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+uint64_t
+dpctl_device_get_local_mem_size(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                                __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     uint64_t LocalMemSize = 0;
     auto D = unwrap(DRef);
     if (D) {
@@ -231,8 +257,11 @@ uint64_t DPCTLDevice_GetLocalMemSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 uint32_t
-DPCTLDevice_GetMaxWorkItemDims(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+dpctl_device_get_max_work_item_dims(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                                    __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     uint32_t maxWorkItemDims = 0;
     auto D = unwrap(DRef);
     if (D) {
@@ -248,8 +277,11 @@ DPCTLDevice_GetMaxWorkItemDims(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 __dpctl_keep size_t *
-DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+dpctl_device_get_max_work_item_sizes(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                                     __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     size_t *sizes = nullptr;
     auto D = unwrap(DRef);
     if (D) {
@@ -271,8 +303,11 @@ DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 size_t
-DPCTLDevice_GetMaxWorkGroupSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+dpctl_device_get_max_work_group_size(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                                     __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     size_t max_wg_size = 0;
     auto D = unwrap(DRef);
     if (D) {
@@ -287,8 +322,11 @@ DPCTLDevice_GetMaxWorkGroupSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 uint32_t
-DPCTLDevice_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+dpctl_device_get_max_num_sub_groups(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                                    __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     size_t max_nsubgroups = 0;
     auto D = unwrap(DRef);
     if (D) {
@@ -302,10 +340,13 @@ DPCTLDevice_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return max_nsubgroups;
 }
 
-__dpctl_give DPCTLSyclPlatformRef
-DPCTLDevice_GetPlatform(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+__dpctl_give DpctlSyclPlatformRef
+dpctl_device_get_platform(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                          __dpctl_keep const DpctlExecState ES)
 {
-    DPCTLSyclPlatformRef PRef = nullptr;
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
+    DpctlSyclPlatformRef PRef = nullptr;
     auto D = unwrap(DRef);
     if (D) {
         try {
@@ -318,8 +359,11 @@ DPCTLDevice_GetPlatform(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 __dpctl_give const char *
-DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+dpctl_device_get_name(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                      __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     const char *cstr_name = nullptr;
     auto D = unwrap(DRef);
     if (D) {
@@ -335,8 +379,11 @@ DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 __dpctl_give const char *
-DPCTLDevice_GetVendor(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+dpctl_device_get_vendor(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                        __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     const char *cstr_vendor = nullptr;
     auto D = unwrap(DRef);
     if (D) {
@@ -352,8 +399,11 @@ DPCTLDevice_GetVendor(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 __dpctl_give const char *
-DPCTLDevice_GetDriverVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+dpctl_device_get_driver_version(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                                __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     const char *cstr_driver = nullptr;
     auto D = unwrap(DRef);
     if (D) {
@@ -368,8 +418,12 @@ DPCTLDevice_GetDriverVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return cstr_driver;
 }
 
-bool DPCTLDevice_IsHostUnifiedMemory(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+bool dpctl_device_is_host_unified_memory(__dpctl_keep const DpctlSyclDeviceRef
+                                             DRef,
+                                         __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     bool ret = false;
     auto D = unwrap(DRef);
     if (D) {
@@ -383,9 +437,12 @@ bool DPCTLDevice_IsHostUnifiedMemory(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return ret;
 }
 
-bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
-                       __dpctl_keep const DPCTLSyclDeviceRef DRef2)
+bool dpctl_device_are_eq(__dpctl_keep const DpctlSyclDeviceRef DRef1,
+                         __dpctl_keep const DpctlSyclDeviceRef DRef2,
+                         __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     auto D1 = unwrap(DRef1);
     auto D2 = unwrap(DRef2);
     if (D1 && D2)
@@ -394,9 +451,12 @@ bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
         return false;
 }
 
-bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
-                           DPCTLSyclAspectType AT)
+bool dpctl_device_has_aspect(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                             DPCTLSyclAspectType AT,
+                             __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     bool hasAspect = false;
     auto D = unwrap(DRef);
     if (D) {
@@ -411,8 +471,11 @@ bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
 }
 
 #define declmethod(FUNC, NAME, TYPE)                                           \
-    TYPE DPCTLDevice_##FUNC(__dpctl_keep const DPCTLSyclDeviceRef DRef)        \
+    TYPE dpctl_device_##FUNC(__dpctl_keep const DpctlSyclDeviceRef DRef,       \
+                             __dpctl_keep const DpctlExecState ES)             \
     {                                                                          \
+        auto handler = ES ? dpctl_exec_state_get_error_handler(ES)             \
+                          : &DefaultErrorHandler::handler;                     \
         TYPE result = 0;                                                       \
         auto D = unwrap(DRef);                                                 \
         if (D) {                                                               \
@@ -433,9 +496,12 @@ declmethod(GetImage3dMaxHeight, image3d_max_height, size_t);
 declmethod(GetImage3dMaxDepth, image3d_max_depth, size_t);
 #undef declmethod
 
-bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+bool dpctl_device_get_sub_group_independent_forward_progress(
+    __dpctl_keep const DpctlSyclDeviceRef DRef,
+    __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     bool SubGroupProgress = false;
     auto D = unwrap(DRef);
     if (D) {
@@ -450,9 +516,12 @@ bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
     return SubGroupProgress;
 }
 
-uint32_t DPCTLDevice_GetPreferredVectorWidthChar(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+uint32_t dpctl_device_get_preferred_vector_width_char(
+    __dpctl_keep const DpctlSyclDeviceRef DRef,
+    __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     size_t vector_width_char = 0;
     auto D = unwrap(DRef);
     if (D) {
@@ -467,9 +536,12 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthChar(
     return vector_width_char;
 }
 
-uint32_t DPCTLDevice_GetPreferredVectorWidthShort(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+uint32_t dpctl_device_get_preferred_vector_width_short(
+    __dpctl_keep const DpctlSyclDeviceRef DRef,
+    __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     size_t vector_width_short = 0;
     auto D = unwrap(DRef);
     if (D) {
@@ -484,9 +556,12 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthShort(
     return vector_width_short;
 }
 
-uint32_t DPCTLDevice_GetPreferredVectorWidthInt(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+uint32_t dpctl_device_get_preferred_vector_width_int(
+    __dpctl_keep const DpctlSyclDeviceRef DRef,
+    __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     size_t vector_width_int = 0;
     auto D = unwrap(DRef);
     if (D) {
@@ -501,9 +576,12 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthInt(
     return vector_width_int;
 }
 
-uint32_t DPCTLDevice_GetPreferredVectorWidthLong(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+uint32_t dpctl_device_get_preferred_vector_width_long(
+    __dpctl_keep const DpctlSyclDeviceRef DRef,
+    __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     size_t vector_width_long = 0;
     auto D = unwrap(DRef);
     if (D) {
@@ -518,9 +596,12 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthLong(
     return vector_width_long;
 }
 
-uint32_t DPCTLDevice_GetPreferredVectorWidthFloat(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+uint32_t dpctl_device_get_preferred_vector_width_float(
+    __dpctl_keep const DpctlSyclDeviceRef DRef,
+    __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     size_t vector_width_float = 0;
     auto D = unwrap(DRef);
     if (D) {
@@ -535,9 +616,12 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthFloat(
     return vector_width_float;
 }
 
-uint32_t DPCTLDevice_GetPreferredVectorWidthDouble(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+uint32_t dpctl_device_get_preferred_vector_width_double(
+    __dpctl_keep const DpctlSyclDeviceRef DRef,
+    __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     size_t vector_width_double = 0;
     auto D = unwrap(DRef);
     if (D) {
@@ -552,9 +636,12 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthDouble(
     return vector_width_double;
 }
 
-uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+uint32_t dpctl_device_get_preferred_vector_width_half(
+    __dpctl_keep const DpctlSyclDeviceRef DRef,
+    __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     size_t vector_width_half = 0;
     auto D = unwrap(DRef);
     if (D) {
@@ -569,9 +656,12 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(
     return vector_width_half;
 }
 
-__dpctl_give DPCTLSyclDeviceRef
-DPCTLDevice_GetParentDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+__dpctl_give DpctlSyclDeviceRef
+dpctl_device_get_parent_device(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                               __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     auto D = unwrap(DRef);
     if (D) {
         try {
@@ -590,11 +680,14 @@ DPCTLDevice_GetParentDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         return nullptr;
 }
 
-__dpctl_give DPCTLDeviceVectorRef
-DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
-                                    size_t count)
+__dpctl_give DPCTLDeviceVectorRef dpctl_device_create_sub_devices_equally(
+    __dpctl_keep const DpctlSyclDeviceRef DRef,
+    size_t count,
+    __dpctl_keep const DpctlExecState ES)
 {
-    std::vector<DPCTLSyclDeviceRef> *Devices = nullptr;
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
+    std::vector<DpctlSyclDeviceRef> *Devices = nullptr;
     if (DRef) {
         if (count == 0) {
             std::cerr << "Can not create sub-devices with zero compute units"
@@ -605,7 +698,7 @@ DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         try {
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_equally>(count);
-            Devices = new std::vector<DPCTLSyclDeviceRef>();
+            Devices = new std::vector<DpctlSyclDeviceRef>();
             for (const auto &sd : subDevices) {
                 Devices->emplace_back(wrap(new device(sd)));
             }
@@ -627,12 +720,15 @@ DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     return wrap(Devices);
 }
 
-__dpctl_give DPCTLDeviceVectorRef
-DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
-                                     __dpctl_keep size_t *counts,
-                                     size_t ncounts)
+__dpctl_give DPCTLDeviceVectorRef dpctl_device_create_sub_devices_by_counts(
+    __dpctl_keep const DpctlSyclDeviceRef DRef,
+    __dpctl_keep size_t *counts,
+    size_t ncounts,
+    __dpctl_keep const DpctlExecState ES)
 {
-    std::vector<DPCTLSyclDeviceRef> *Devices = nullptr;
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
+    std::vector<DpctlSyclDeviceRef> *Devices = nullptr;
     std::vector<size_t> vcounts(ncounts);
     vcounts.assign(counts, counts + ncounts);
     size_t min_elem = *std::min_element(vcounts.begin(), vcounts.end());
@@ -656,7 +752,7 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
             return nullptr;
         }
         try {
-            Devices = new std::vector<DPCTLSyclDeviceRef>();
+            Devices = new std::vector<DpctlSyclDeviceRef>();
             for (const auto &sd : subDevices) {
                 Devices->emplace_back(wrap(new device(sd)));
             }
@@ -674,11 +770,14 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     return wrap(Devices);
 }
 
-__dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef,
-    DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy)
+__dpctl_give DPCTLDeviceVectorRef dpctl_device_create_sub_devices_by_affinity(
+    __dpctl_keep const DpctlSyclDeviceRef DRef,
+    DPCTLPartitionAffinityDomainType PartitionAffinityDomainTy,
+    __dpctl_keep const DpctlExecState ES)
 {
-    std::vector<DPCTLSyclDeviceRef> *Devices = nullptr;
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
+    std::vector<DpctlSyclDeviceRef> *Devices = nullptr;
     auto D = unwrap(DRef);
     if (D) {
         try {
@@ -686,7 +785,7 @@ __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
                 PartitionAffinityDomainTy);
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
-            Devices = new std::vector<DPCTLSyclDeviceRef>();
+            Devices = new std::vector<DpctlSyclDeviceRef>();
             for (const auto &sd : subDevices) {
                 Devices->emplace_back(wrap(new device(sd)));
             }
@@ -708,8 +807,11 @@ __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
     return wrap(Devices);
 }
 
-size_t DPCTLDevice_Hash(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+size_t dpctl_device_hash(__dpctl_keep const DpctlSyclDeviceRef DRef,
+                         __dpctl_keep const DpctlExecState ES)
 {
+    auto handler = ES ? dpctl_exec_state_get_error_handler(ES)
+                      : &DefaultErrorHandler::handler;
     if (DRef) {
         auto D = unwrap(DRef);
         std::hash<device> hash_fn;
