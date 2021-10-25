@@ -1,9 +1,6 @@
 name: Conda package
 
-on:
-  push:
-    branches:
-    tags:
+on: push
 
 env:
   PACKAGE_NAME: dpctl
