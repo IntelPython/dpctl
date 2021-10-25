@@ -55,7 +55,8 @@ public:
 #ifdef __linux__
         _handle = dlopen(libName, flag);
 #elif defined(_WIN32) || defined(_WIN64)
-        _handle = LoadLibraryA(libName);
+        _handle =
+            LoadLibraryExA(libName, nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
 #endif
     }
 
