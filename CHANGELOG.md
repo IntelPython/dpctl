@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.0] - 10/28/2021
+
+### Added
+- Use Python 3.9 in public CI (#599)
+- Coverage workflow is to use oneAPI 2021.3 (#614)
+- Use readelf on pi_level_zero library to find exact name of ze_loader (#617)
+- Added tests to cover red lines in coverage report (#619)
+- Add a new utility function to return the device info as a C string object (#620)
+- Always raise SubDeviceCreationError even when counts are zero (#622)
+- Add a workflow to install nightly intel/llvm + drivers (#621)
+- Used OutputGrabber class to try to capture std::cout outputs of DPCTLSyclInterface (#542)
+- Update opencl interoprability code to fix build with open source llvm/sycl bundle (#625)
+- Enable use of default platform context extension (#627)
+- Allowing mkl_version to be bigger than the version of the DPC++ the package was built with (#631)
+- Implement dpctl.utils.get_execition_queue( queue_list ) (#632)
+- Update build deps for numpy (#641)
+
+### Changed
+- Cleanup/c extensions with dpctl (#604)
+- Replaced host_device device type with host in test (#616)
+- Packages compiles using open source SYCL compiler now (#603)
+- Rework the logic in memory's copy_from_device (#618)
+- Use dpctl.device_type.host_device instead of dpctl.device_type.host (#626)
+- Reinstate deprecated sycl::program and that was conditionally removed from open source DPC++ toolchain (#633)
+- Use LoadLibraryExA instead of LoadLibraryA to mitigate a possible DLL injection issue when we load the Level zero DLL on windows (#636)
+
+### Removed
+- Remove use of DPC++ features deprecated in 2021.4 and open source intel/llvm compiler (#603)
+
+### Fixed
+- Suppress errant CMake log (#610)
+- Fix for the hang is to avoid passing nullptr argument to sycl::queue::prefetch (#612)
+- Correct the logic to return device count (#623)
+
 ## [0.10.0] - 09/28/2021
 
 ### Added
