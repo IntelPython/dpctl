@@ -59,6 +59,8 @@ def test_memory_create(memory_ctor):
     assert len(mobj) == nbytes
     assert mobj.size == nbytes
     assert mobj._context == queue.sycl_context
+    assert mobj._queue == queue
+    assert mobj.sycl_queue == queue
     assert type(repr(mobj)) is str
     assert type(bytes(mobj)) is bytes
     assert sys.getsizeof(mobj) > nbytes
@@ -495,7 +497,7 @@ def test_with_constructor(memory_ctor):
         shape=(64,),
         strides=(1,),
         offset=0,
-        syclobj=buf._queue._get_capsule(),
+        syclobj=buf.sycl_queue._get_capsule(),
     )
     check_view(v)
     # Use context capsule
