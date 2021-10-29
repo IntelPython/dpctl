@@ -38,7 +38,7 @@ jobs:
         run: conda install conda-build
       - name: Build conda package
         run: |
-          CHANNELS="-c intel -c defaults --override-channels"
+          CHANNELS="-c defaults -c intel --override-channels"
           VERSIONS="--python ${{ matrix.python }}"
           TEST="--no-test"
           conda build \
@@ -83,7 +83,7 @@ jobs:
       - name: Install conda-build
         run: conda install conda-build
       - name: Build conda package
-        run: conda build --no-test --python ${{ matrix.python }} -c intel -c defaults --override-channels conda-recipe
+        run: conda build --no-test --python ${{ matrix.python }} -c defaults -c intel --override-channels conda-recipe
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
