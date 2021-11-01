@@ -2,12 +2,13 @@
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![Coverage Status](https://coveralls.io/repos/github/IntelPython/dpctl/badge.svg?branch=master)](https://coveralls.io/github/IntelPython/dpctl?branch=master)
 
-What?
-====
+About dpctl
+===========
 
 `dpctl` (data parallel control) is a lightweight [Python package](https://intelpython.github.io/dpctl) exposing a
 subset of the Intel(R) oneAPI DPC++ [runtime classes](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes).
-`dpctl` aids Python users in discovering and representing SYCL devices, constructing SYCL queues, and queuerying SYCL platforms.
+`dpctl` aids Python users in queuerying SYCL platforms, discovering and representing SYCL devices, and constructing SYCL queues. `dpctl` facilitates
+use of constructed SYCL queues to target execution of SYCL kernels on [Intel(R) XPUs](https://www.intel.com/content/www/us/en/newsroom/news/xpu-vision-oneapi-server-gpu.html).
 
 `dpctl` features classes representing [SYCL unified shared memory](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:usm)
 allocations as well as higher-level objects such as [`dpctl.tensor.usm_ndarray`](https://intelpython.github.io/dpctl/latest/docfiles/dpctl.tensor_api.html#module-dpctl.tensor) on top of these.
