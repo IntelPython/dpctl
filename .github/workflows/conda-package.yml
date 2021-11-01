@@ -215,7 +215,7 @@ jobs:
 
   upload_linux:
     needs: test_linux
-    if: ${{ github.ref }} == 'refs/heads/master' || ${{ github.ref }} == 'refs/heads/release*'
+    if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true)}}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -240,7 +240,7 @@ jobs:
 
   upload_windows:
     needs: test_windows
-    if: ${{ github.ref }} == 'refs/heads/master' || ${{ github.ref }} == 'refs/heads/release*'
+    if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true)}}
     runs-on: windows-latest
     strategy:
       matrix:
