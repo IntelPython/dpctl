@@ -8,34 +8,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Use Python 3.9 in public CI (#599)
-- Add a new utility function to return the device info as a C string object (#620)
-- Add a workflow to install nightly intel/llvm + drivers (#621)
-- Always raise SubDeviceCreationError even when counts are zero (#622)
-- Updated opencl interoprability code to fix build with open source llvm/sycl bundle (#625)
+- Add a new C API utility function (`DPCTLDeviceMgr_GetDeviceInfoStr`) to return the device info as a C string object (#620)
+- New Github workflow to build dpclt with nightly Intel llvm/sycl + drivers (#621)
+- Always raise SubDeviceCreationError even when sub-device counts are zero (#622)
+- Updated OpenCL interoprability code to fix build with Intel llvm/sycl bundle (#625)
 - Enabled use of default platform context extension in SYCL compilers that implement this extension (#627)
-- Implemented `dpctl.utils.get_execution_queue(queue_seq)` (#632)
+- Implemented `dpctl.utils.get_execution_queue(queue_seq)` utility to help implementing "compute-follows data" convention for offload target (#632)
+- Improved code coverage (#619) (#542) (#631)
 
 ### Changed
-- Replaced host_device device type with host in test (#616)
-- Packages compiles using open source SYCL compiler now (#603)
-- Rework the logic in memory's copy_from_device (#618)
-- Use dpctl.device_type.host_device instead of dpctl.device_type.host (#626)
-- Reinstate deprecated sycl::program and that was conditionally removed from open source DPC++ toolchain (#633)
-- Use LoadLibraryExA instead of LoadLibraryA to mitigate a possible DLL injection issue when we load the Level zero DLL on windows (#636)
-- Coverage workflow is to use oneAPI 2021.3 (#614)
-- Added tests to cover red lines in coverage report (#619)
-- Used `pytest.capsys` fixture to test print_device_info method in `dpctl.SyclQueue` (#542)
-- Allowing mkl_version to be bigger than the version of the DPC++ the package was built with (#631)
-- Update build deps for numpy (#641)
-- Use "readelf" on SYCL's pi_level_zero library to find out and use the exact name of ze_loader in SyclInterface library (#617)
+- Replaced `host_device` device type with `host` in tests (#616)
+- Rework the logic in `dpctl.memory`'s `copy_from_device` method to work correctly with `host` device (#618)
+- Use `dpctl.device_type.host` instead of `dpctl.device_type.host_device` (#626)
+- Reinstate deprecated `sycl::program` and that was conditionally removed from open source DPC++ toolchain (#633)
+- Use `LoadLibraryExA` instead of `LoadLibraryA` to mitigate a possible DLL injection issue when we load the Level zero DLL on windows (#636)
+- Github coverage workflow is changed to use oneAPI 2021.3 instead of latest to work around broken profiling instrumentation in DPC++ 2021.4 (#614)
+- Update build dependencies for NumPy (#641)
+- Use "readelf" on SYCL's `pi_level_zero` library to find out and use the exact name of `ze_loader.so` in SyclInterface library (#617)
 
 ### Removed
-- Removed use of DPC++ features deprecated in 2021.4 and open source intel/llvm compiler (#603)
+- Removed use of DPC++ features deprecated in 2021.4 and open source Intel llvm/sycl compiler (#603)
 
 ### Fixed
 - Suppress errant CMake log (#610)
-- Fix for the hang is to avoid passing nullptr argument to sycl::queue::prefetch (#612)
-- Correct the logic to return device count (#623)
+- Fixes to compile dpctl using Intel llvm/sycl compiler (#603)
+- Fix for the hang is to avoid passing `nullptr` argument to `sycl::queue::prefetch` (#612)
+- Fixed the logic to return device count (#623)
 - Enabled building of C extensions with dpctl by including header defining `bool` type for C compilers (#604)
 
 ## [0.10.0] - 09/28/2021
