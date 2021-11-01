@@ -2,12 +2,13 @@
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![Coverage Status](https://coveralls.io/repos/github/IntelPython/dpctl/badge.svg?branch=master)](https://coveralls.io/github/IntelPython/dpctl?branch=master)
 
-About dpCtl
-===========
+What?
+====
 <img align="left" src="https://spec.oneapi.io/oneapi-logo-white-scaled.jpg" alt="oneAPI logo" />
-Essential library for controlling execution of Python programs on Intel(R) XPUs. Implements tensor API for the Python Data API Consortium specification.
 
-It includes all essential functionality for controlling devices, memory, and data parallel kernels execution directly from Python.
+A lightweight Python package exposing a subset of SYCL functionalities, part of Intel(R) [oneAPI](https://oneapi.io) [Base ToolKit](https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit.html).
+
+`dpctl` [provides](https://intelpython.github.io/dpctl) for discovery and selection of SYCL devices, construction of SYCL queues, as well as working with USM allocations.
 <br /><br />
 
 Requirements
