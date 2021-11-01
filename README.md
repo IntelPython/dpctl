@@ -5,20 +5,20 @@
 What?
 ====
 
-`dpctl` (data parallel control) is a lightweight Python package [exposing](https://intelpython.github.io/dpctl)
-subset of the Intel(R) oneAPI DPC++ [runtime entities](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes)
-aiming to aid Python users in
-discovering and representing SYCL devices, constructing SYCL queues, representing USM
-allocations as well as ndarrays built on top of these.
+`dpctl` (data parallel control) is a lightweight [Python package](https://intelpython.github.io/dpctl) exposing a
+subset of the Intel(R) oneAPI DPC++ [runtime classes](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes).
+`dpctl` aids Python users in discovering and representing SYCL devices, constructing SYCL queues, and queuerying SYCL platforms.
+
+`dpctl` features classes representing [SYCL unified shared memory](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:usm)
+allocations as well as higher-level objects such as [`dpctl.tensor.usm_ndarray`](https://intelpython.github.io/dpctl/latest/docfiles/dpctl.tensor_api.html#module-dpctl.tensor) on top of these.
 
 <img align="right" src="https://spec.oneapi.io/oneapi-logo-white-scaled.jpg" alt="oneAPI logo" />
 
-`dpctl` is a part of DPPY (data parallel Python) stack powered by oneAPI. It is included
-in Intel(R) [oneAPI](https://oneapi.io) [Base ToolKit](https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit.html).
+`dpctl` is a part of [Intel(R) Distribution for Python*](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/distribution-for-python.html) and
+is included in Intel(R) [oneAPI](https://oneapi.io) [Base ToolKit](https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit.html).
 
-`dpctl` consists of sycl-interface C library and Python bindings. The C library
-depends on DPC++ runtime only, while Python package additionally requires
-`numpy` to be installed.
+`dpctl` also provides C library for SYCL interfaces which depends on DPC++ runtime
+only, while the Python package additionally requires `numpy` to be installed.
 
 `dpctl` strives to assist authors of Python native extensions written in C,
 Cython, or pybind11 to use its `dpctl.SyclQueue` object to indicate the offload
