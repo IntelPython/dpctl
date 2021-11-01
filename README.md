@@ -5,26 +5,21 @@
 About dpctl
 ===========
 
+<img align="left" src="https://spec.oneapi.io/oneapi-logo-white-scaled.jpg" alt="oneAPI logo" />
+
 `dpctl` (data parallel control) is a lightweight [Python package](https://intelpython.github.io/dpctl) exposing a
-subset of the Intel(R) oneAPI DPC++ [runtime classes](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes).
-`dpctl` aids Python users in queuerying SYCL platforms, discovering and representing SYCL devices, and constructing SYCL queues. `dpctl` facilitates
-use of constructed SYCL queues to target execution of SYCL kernels on [Intel(R) XPUs](https://www.intel.com/content/www/us/en/newsroom/news/xpu-vision-oneapi-server-gpu.html).
+subset of the Intel(R) oneAPI DPC++ [runtime classes](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes)
+that is distributed as part of [Intel(R) Distribution for Python*](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/distribution-for-python.html) and
+is included in Intel(R) [oneAPI](https://oneapi.io) [Base ToolKit](https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit.html).
+`dpctl` lets Python users query SYCL platforms, discover and represent SYCL devices, and construct SYCL queues to control data-parallel code execution on [Intel(R) XPUs](https://www.intel.com/content/www/us/en/newsroom/news/xpu-vision-oneapi-server-gpu.html) from Python.
 
 `dpctl` features classes representing [SYCL unified shared memory](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:usm)
-allocations as well as higher-level objects such as [`dpctl.tensor.usm_ndarray`](https://intelpython.github.io/dpctl/latest/docfiles/dpctl.tensor_api.html#module-dpctl.tensor) on top of these.
+allocations as well as higher-level objects such as [`dpctl.tensor.usm_ndarray`](https://intelpython.github.io/dpctl/latest/docfiles/dpctl.tensor_api.html#module-dpctl.tensor) on top of USM allocations.
 
-<img align="right" src="https://spec.oneapi.io/oneapi-logo-white-scaled.jpg" alt="oneAPI logo" />
-
-`dpctl` is a part of [Intel(R) Distribution for Python*](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/distribution-for-python.html) and
-is included in Intel(R) [oneAPI](https://oneapi.io) [Base ToolKit](https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit.html).
-
-`dpctl` also provides C library for SYCL interfaces which depends on DPC++ runtime
-only, while the Python package additionally requires `numpy` to be installed.
-
-`dpctl` strives to assist authors of Python native extensions written in C,
+`dpctl` assists authors of Python native extensions written in C,
 Cython, or pybind11 to use its `dpctl.SyclQueue` object to indicate the offload
 target as well as objects in `dpctl.memory` and `dpctl.tensor` submodules to
-represent USM allocations that are accessible from within SYCL kernels executed
+represent USM allocations that are accessible from within data-parallel code executed
 on the target queue.
 
 `dpctl.tensor` submodule provides an array container representing an array in a
