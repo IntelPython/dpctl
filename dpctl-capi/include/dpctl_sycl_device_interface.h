@@ -178,6 +178,28 @@ uint32_t
 DPCTLDevice_GetMaxComputeUnits(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
+ * @brief Wrapper over device.get_info<info::device::global_mem_size>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the valid result if device exists else returns 0.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+uint64_t
+DPCTLDevice_GetGlobalMemSize(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::local_mem_size>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the valid result if device exists else returns 0.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+uint64_t
+DPCTLDevice_GetLocalMemSize(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
  * @brief Wrapper for get_info<info::device::max_work_item_dimensions>().
  *
  * @param    DRef           Opaque pointer to a ``sycl::device``

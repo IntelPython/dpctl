@@ -26,10 +26,11 @@
 #include "../helper/include/dpctl_vector_macros.h"
 #include "Support/MemOwnershipAttrs.h"
 #include <type_traits>
+#include <vector>
 
 namespace
 {
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<SYCLREF(EL)>, VECTOR(EL))
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<SYCLREF(EL)>, VECTOR(EL))
 }
 
 /*!
@@ -39,9 +40,9 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<SYCLREF(EL)>, VECTOR(EL))
  */
 __dpctl_give VECTOR(EL) FN(EL, Create)()
 {
-    vector_class<SYCLREF(EL)> *Vec = nullptr;
+    std::vector<SYCLREF(EL)> *Vec = nullptr;
     try {
-        Vec = new vector_class<SYCLREF(EL)>();
+        Vec = new std::vector<SYCLREF(EL)>();
         return wrap(Vec);
     } catch (std::bad_alloc const &ba) {
         delete Vec;
@@ -58,9 +59,9 @@ __dpctl_give VECTOR(EL) FN(EL, Create)()
 __dpctl_give VECTOR(EL)
     FN(EL, CreateFromArray)(size_t n, __dpctl_keep SYCLREF(EL) * elems)
 {
-    vector_class<SYCLREF(EL)> *Vec = nullptr;
+    std::vector<SYCLREF(EL)> *Vec = nullptr;
     try {
-        Vec = new vector_class<SYCLREF(EL)>();
+        Vec = new std::vector<SYCLREF(EL)>();
         for (size_t i = 0; i < n; ++i) {
             auto Ref = unwrap(elems[i]);
             Vec->emplace_back(

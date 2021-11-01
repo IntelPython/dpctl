@@ -8,7 +8,7 @@ source:
 build:
     number: {{ GIT_DESCRIBE_NUMBER }}
     script_env:
-        - ONEAPI_ROOT  # for wheel on Linux
+        - ONEAPI_ROOT              # for wheel on Linux
         - WHEELS_OUTPUT_FOLDER
 
 requirements:
@@ -20,18 +20,18 @@ requirements:
         - cython
         - cmake
         - python
-        - make  # [unix]
-        - ninja  # [win]
-        - numpy >=1.17 # [win or osx or py==38]
-        - numpy 1.17 # [linux and py==37]
+        - make                     # [unix]
+        - ninja                    # [win]
+        - numpy 1.19
         - wheel
     run:
         - python
-        - numpy >=1.17
+        - {{ pin_compatible('numpy') }}
         - dpcpp-cpp-rt >=2021.2
 
 test:
     requires:
+        - cython
         - pytest
         - pytest-cov
 

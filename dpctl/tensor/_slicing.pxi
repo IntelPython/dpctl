@@ -44,6 +44,9 @@ cdef object _basic_slice_meta(object ind, tuple shape,
     Raises IndexError for invalid index `ind`, and NotImplementedError
     if `ind` is an array.
     """
+    is_integral = lambda x: (
+        isinstance(x, numbers.Integral) or callable(getattr(x, "__index__", None))
+    )
     if ind is Ellipsis:
         return (shape, strides, offset)
     elif ind is None:
@@ -58,7 +61,8 @@ cdef object _basic_slice_meta(object ind, tuple shape,
             new_strides,
             offset + sl_start * strides[0]
         )
-    elif isinstance(ind, numbers.Integral):
+    elif is_integral(ind):
+        ind = ind.__index__()
         if 0 <= ind < shape[0]:
             return (shape[1:], strides[1:], offset + ind * strides[0])
         elif -shape[0] <= ind < 0:
@@ -82,7 +86,7 @@ cdef object _basic_slice_meta(object ind, tuple shape,
                 ellipses_count = ellipses_count + 1
             elif isinstance(i, slice):
                 axes_referenced = axes_referenced + 1
-            elif isinstance(i, numbers.Integral):
+            elif is_integral(i):
                 explicit_index = explicit_index + 1
                 axes_referenced = axes_referenced + 1
             elif isinstance(i, list):
@@ -124,7 +128,8 @@ cdef object _basic_slice_meta(object ind, tuple shape,
                 new_strides.append(str_i)
                 new_offset = new_offset + sl_start * strides[k]
                 k = k_new
-            elif isinstance(ind_i, numbers.Integral):
+            elif is_integral(ind_i):
+                ind_i = ind_i.__index__()
                 if 0 <= ind_i < shape[k]:
                     k_new = k + 1
                     new_offset = new_offset + ind_i * strides[k]

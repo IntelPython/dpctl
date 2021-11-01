@@ -27,11 +27,11 @@ argument_list_1 = [
     (bty.level_zero, dty.gpu),
     (bty.opencl, dty.gpu),
     (bty.opencl, dty.cpu),
-    (bty.host, dty.host_device),
+    (bty.host, dty.host),
 ]
 
 argument_list_2 = [
-    ("host", "host_device"),
+    ("host", "host"),
     ("level_zero", "gpu"),
     ("opencl", "gpu"),
     ("opencl", "cpu"),
@@ -44,7 +44,7 @@ list_of_backend_str = [
 ]
 
 list_of_device_type_str = [
-    "host_device",
+    "host",
     "gpu",
     "cpu",
 ]
@@ -55,8 +55,8 @@ def string_to_device_type(dty_str):
         return dty.accelerator
     elif dty_str == "cpu":
         return dty.cpu
-    elif dty_str == "host_device":
-        return dty.host_device
+    elif dty_str == "host":
+        return dty.host
     elif dty_str == "gpu":
         return dty.gpu
 

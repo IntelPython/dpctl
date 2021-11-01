@@ -17,6 +17,9 @@
 """ Defines unit test cases for the SyclQueue class.
 """
 
+import ctypes
+import sys
+
 import pytest
 
 import dpctl
@@ -395,22 +398,22 @@ def test_hashing_of_queue():
     assert queue_dict
 
 
-def test_channeling_device_properties():
+def test_channeling_device_properties(capsys):
     try:
         q = dpctl.SyclQueue()
         dev = q.sycl_device
     except dpctl.SyclQueueCreationError:
         pytest.fail("Failed to create device from default selector")
-    import io
-    from contextlib import redirect_stdout
 
-    f1 = io.StringIO()
-    with redirect_stdout(f1):
-        q.print_device_info()  # should execute without raising
-    f2 = io.StringIO()
-    with redirect_stdout(f2):
-        dev.print_device_info()
-    assert f1.getvalue() == f2.getvalue(), "Mismatch in print_device_info"
+    q.print_device_info()  # should execute without raising
+    q_captured = capsys.readouterr()
+    q_output = q_captured.out
+    dev.print_device_info()
+    d_captured = capsys.readouterr()
+    d_output = d_captured.out
+    assert q_output, "No output captured"
+    assert q_output == d_output, "Mismatch in print_device_info"
+    assert q_captured.err == "" and d_captured.err == ""
     for pr in ["backend", "name", "driver_version"]:
         assert getattr(q, pr) == getattr(
             dev, pr
@@ -433,7 +436,7 @@ def test_queue_submit_barrier(valid_filter):
 
 
 def test_queue__repr__():
-    q1 = dpctl.SyclQueue()
+    q1 = dpctl.SyclQueue(property=0)
     r1 = q1.__repr__()
     q2 = dpctl.SyclQueue(property="in_order")
     r2 = q2.__repr__()
@@ -441,7 +444,7 @@ def test_queue__repr__():
     r3 = q3.__repr__()
     q4 = dpctl.SyclQueue(property="default")
     r4 = q4.__repr__()
-    q5 = dpctl.SyclQueue(property=["in_order", "enable_profiling"])
+    q5 = dpctl.SyclQueue(property=["in_order", "enable_profiling", 0])
     r5 = q5.__repr__()
     assert type(r1) is str
     assert type(r2) is str
@@ -464,12 +467,10 @@ def test_queue_capsule():
     q2 = dpctl.SyclQueue(cap)
     assert q == q2
     del cap2  # call deleter on non-renamed capsule
+    assert q2 != []  # compare with other types
 
 
 def test_cpython_api():
-    import ctypes
-    import sys
-
     q = dpctl.SyclQueue()
     mod = sys.modules[q.__class__.__module__]
     # get capsule storign get_context_ref function ptr
@@ -552,3 +553,45 @@ def test_queue_memops():
         q.prefetch(list(), 512)
     with pytest.raises(TypeError):
         q.mem_advise(list(), 512, 0)
+
+
+@pytest.fixture(scope="session")
+def dpctl_cython_extension(tmp_path_factory):
+    import os.path
+    import shutil
+    import subprocess
+    import sys
+    import sysconfig
+
+    curr_dir = os.path.dirname(__file__)
+    dr = tmp_path_factory.mktemp("_cython_api")
+    for fn in ["_cython_api.pyx", "setup_cython_api.py"]:
+        shutil.copy(
+            src=os.path.join(curr_dir, fn),
+            dst=dr,
+            follow_symlinks=False,
+        )
+    res = subprocess.run(
+        [sys.executable, "setup_cython_api.py", "build_ext", "--inplace"],
+        cwd=dr,
+    )
+    if res.returncode == 0:
+        import glob
+        from importlib.util import module_from_spec, spec_from_file_location
+
+        sfx = sysconfig.get_config_vars()["EXT_SUFFIX"]
+        pth = glob.glob(os.path.join(dr, "_cython_api*" + sfx))
+        if not pth:
+            pytest.skip("Cython extension was not built")
+        spec = spec_from_file_location("_cython_api", pth[0])
+        builder_module = module_from_spec(spec)
+        spec.loader.exec_module(builder_module)
+        return builder_module
+    else:
+        pytest.skip("Cython extension could not be built")
+
+
+def test_cython_api(dpctl_cython_extension):
+    q = dpctl_cython_extension.call_create_from_context_and_devices()
+    d = dpctl.SyclDevice()
+    assert q.sycl_device == d

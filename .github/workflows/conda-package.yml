@@ -1,27 +1,65 @@
 name: Conda package
 
-on: push
+on: [push, pull_request]
 
 env:
   PACKAGE_NAME: dpctl
   MODULE_NAME: dpctl
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
+  build_linux:
+    runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        include:
-        - os: ubuntu-latest
-          pkgs_dirs: ~/.conda/pkgs
-          condarc: ~/.condarc
-          conda-bld: /usr/share/miniconda/conda-bld/linux-64/
-        - os: windows-latest
-          pkgs_dirs: C:\Users\runneradmin\.conda\pkgs
-          condarc: C:\Users\runneradmin\.condarc
-          conda-bld: C:\Miniconda\conda-bld\win-64\
-        python: [3.8]
+        python: [3.8, 3.9]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set pkgs_dirs
+        run: |
+          echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
+      - name: Cache conda packages
+        uses: actions/cache@v2
+        env:
+          CACHE_NUMBER: 0  # Increase to reset cache
+        with:
+          path: ~/.conda/pkgs
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+      - name: Add conda to system path
+        run: echo $CONDA/bin >> $GITHUB_PATH
+      - name: Install conda-build
+        run: conda install conda-build
+      - name: Build conda package
+        run: |
+          CHANNELS="-c defaults -c intel --override-channels"
+          VERSIONS="--python ${{ matrix.python }}"
+          TEST="--no-test"
+          conda build \
+            $TEST \
+            $VERSIONS \
+            $CHANNELS \
+            conda-recipe
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          path: /usr/share/miniconda/conda-bld/linux-64/${{ env.PACKAGE_NAME }}-*.tar.bz2
+
+  build_windows:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        python: [3.8, 3.9]
+    env:
+      conda-bld: C:\Miniconda\conda-bld\win-64\
     steps:
       - uses: actions/checkout@v2
         with:
@@ -31,15 +69,12 @@ jobs:
           auto-activate-base: true
           activate-environment: ""
 
-      - name: Set pkgs_dirs
-        run: |
-          echo "pkgs_dirs: [${{ matrix.pkgs_dirs }}]" >> ${{ matrix.condarc }}
       - name: Cache conda packages
         uses: actions/cache@v2
         env:
           CACHE_NUMBER: 0  # Increase to reset cache
         with:
-          path: ${{ matrix.pkgs_dirs }}
+          path: /home/runner/conda_pkgs_dir
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
           restore-keys: |
@@ -48,20 +83,20 @@ jobs:
       - name: Install conda-build
         run: conda install conda-build
       - name: Build conda package
-        run: conda build --no-test --python ${{ matrix.python }} -c intel -c defaults --override-channels conda-recipe
+        run: conda build --no-test --python ${{ matrix.python }} -c defaults -c intel --override-channels conda-recipe
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
-          path: ${{ matrix.conda-bld }}${{ env.PACKAGE_NAME }}-*.tar.bz2
+          path: ${{ env.conda-bld }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   test_linux:
-    needs: build
+    needs: build_linux
     runs-on:  ${{ matrix.runner }}
 
     strategy:
       matrix:
-        python: [3.8]
+        python: [3.8, 3.9]
         experimental: [false]
         runner: [ubuntu-latest]
         # include:
@@ -116,16 +151,17 @@ jobs:
         run: |
           # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
           export OCL_ICD_FILENAMES=libintelocl.so
+          export SYCL_ENABLE_HOST_DEVICE=1
           # clinfo -l
           python -m pytest --pyargs $MODULE_NAME
 
   test_windows:
-    needs: build
+    needs: build_windows
     runs-on:  ${{ matrix.runner }}
 
     strategy:
       matrix:
-        python: [3.8]
+        python: [3.8, 3.9]
         experimental: [false]
         runner: [windows-latest]
     continue-on-error: ${{ matrix.experimental }}
@@ -152,15 +188,12 @@ jobs:
           conda search ${{ env.PACKAGE_NAME }} -c ${{ env.GITHUB_WORKSPACE }}/channel --override-channels
       - name: Collect dependencies
         run: conda install ${{ env.PACKAGE_NAME }} python=${{ matrix.python }} -c ${{ env.GITHUB_WORKSPACE }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
-      - name: Set pkgs_dirs
-        run: |
-          echo "pkgs_dirs: [C:\Users\runneradmin\.conda\pkgs]" >> C:\Users\runneradmin\.condarc
       - name: Cache conda packages
         uses: actions/cache@v2
         env:
           CACHE_NUMBER: 0  # Increase to reset cache
         with:
-          path: C:\Users\runneradmin\.conda\pkgs
+          path: /home/runner/conda_pkgs_dir
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
           restore-keys: |
@@ -176,15 +209,17 @@ jobs:
       - name: Add library
         run: echo "OCL_ICD_FILENAMES=C:\Miniconda\Library\lib\intelocl64.dll" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Run tests
-        run: python -m pytest --pyargs ${{ env.MODULE_NAME }}
+        run: |
+          set SYCL_ENABLE_HOST_DEVICE=1
+          python -m pytest --pyargs ${{ env.MODULE_NAME }}
 
   upload_linux:
     needs: test_linux
-    if: ${{ github.ref == 'refs/heads/master' }}
+    if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true)}}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.8]
+        python: [3.8, 3.9]
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -205,11 +240,11 @@ jobs:
 
   upload_windows:
     needs: test_windows
-    if: ${{ github.ref == 'refs/heads/master' }}
+    if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true)}}
     runs-on: windows-latest
     strategy:
       matrix:
-        python: [3.8]
+        python: [3.8, 3.9]
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2

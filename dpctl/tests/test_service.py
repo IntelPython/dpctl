@@ -79,7 +79,8 @@ def test_get_dpcppversion():
     assert len(dpcpp_ver) > 0
     dpcpp_ver = dpcpp_ver.decode("utf-8")
     mkl_ver = _get_mkl_version_if_present()
-    assert mkl_ver is None or mkl_ver == dpcpp_ver
+    if mkl_ver is not None:
+        assert mkl_ver >= dpcpp_ver
 
 
 def test___version__():

@@ -28,6 +28,7 @@
 #include "../helper/include/dpctl_async_error_handler.h"
 #include "Support/CBindingWrapping.h"
 #include <CL/sycl.hpp>
+#include <vector>
 
 using namespace cl::sycl;
 
@@ -36,7 +37,7 @@ namespace
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(vector_class<DPCTLSyclDeviceRef>,
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclDeviceRef>,
                                    DPCTLDeviceVectorRef)
 } /* end of anonymous namespace */
 
@@ -67,7 +68,7 @@ DPCTLContext_CreateFromDevices(__dpctl_keep const DPCTLDeviceVectorRef DVRef,
                                int /**/)
 {
     DPCTLSyclContextRef CRef = nullptr;
-    vector_class<device> Devices;
+    std::vector<device> Devices;
     auto DeviceRefs = unwrap(DVRef);
     if (!DeviceRefs)
         return CRef;
@@ -125,9 +126,9 @@ DPCTLContext_GetDevices(__dpctl_keep const DPCTLSyclContextRef CRef)
                      "input is a nullptr\n";
         return nullptr;
     }
-    vector_class<DPCTLSyclDeviceRef> *DevicesVectorPtr = nullptr;
+    std::vector<DPCTLSyclDeviceRef> *DevicesVectorPtr = nullptr;
     try {
-        DevicesVectorPtr = new vector_class<DPCTLSyclDeviceRef>();
+        DevicesVectorPtr = new std::vector<DPCTLSyclDeviceRef>();
     } catch (std::bad_alloc const &ba) {
         // \todo log error
         std::cerr << ba.what() << '\n';

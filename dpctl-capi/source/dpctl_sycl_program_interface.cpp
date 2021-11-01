@@ -24,11 +24,17 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#ifndef __SYCL_INTERNAL_API
+// make sure that sycl::program is defined and implemented
+#define __SYCL_INTERNAL_API
+#endif
+
 #include "dpctl_sycl_program_interface.h"
 #include "Config/dpctl_config.h"
 #include "Support/CBindingWrapping.h"
 #include <CL/cl.h>     /* OpenCL headers     */
 #include <CL/sycl.hpp> /* Sycl headers       */
+#include <CL/sycl/backend/opencl.hpp>
 
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 #include "../helper/include/dpctl_dynamic_lib_helper.h"
@@ -45,7 +51,7 @@ namespace
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 
 #ifdef __linux__
-static const char *zeLoaderName = "libze_loader.so";
+static const char *zeLoaderName = DPCTL_LIBZE_LOADER_FILENAME;
 static const int libLoadFlags = RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL;
 #elif defined(_WIN64)
 static const char *zeLoaderName = "ze_loader.dll";
@@ -75,7 +81,7 @@ createOpenCLInterOpProgram(const context &SyclCtx,
                            const char *CompileOpts)
 {
     cl_int err;
-    auto CLCtx = SyclCtx.get();
+    auto CLCtx = get_native<backend::opencl>(SyclCtx);
     auto CLProgram = clCreateProgramWithIL(CLCtx, IL, length, &err);
     if (err) {
         // \todo: record the error string and any other information.
@@ -89,7 +95,7 @@ createOpenCLInterOpProgram(const context &SyclCtx,
     // Get a list of CL Devices from the Sycl devices
     auto CLDevices = new cl_device_id[SyclDevices.size()];
     for (auto i = 0ul; i < SyclDevices.size(); ++i)
-        CLDevices[i] = SyclDevices[i].get();
+        CLDevices[i] = get_native<backend::opencl>(SyclDevices[i]);
 
     // Build the OpenCL interoperability program
     err = clBuildProgram(CLProgram, (cl_uint)(SyclDevices.size()), CLDevices,
@@ -138,7 +144,7 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
                               size_t length,
                               const char *CompileOpts)
 {
-    auto ZeCtx = SyclCtx.get_native<backend::level_zero>();
+    auto ZeCtx = get_native<backend::level_zero>(SyclCtx);
     auto SyclDevices = SyclCtx.get_devices();
     if (SyclDevices.size() > 1) {
         std::cerr << "Level zero program can be created for only one device.\n";
@@ -159,7 +165,7 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
     ZeModuleDesc.pBuildFlags = CompileOpts;
     ZeModuleDesc.pConstants = &ZeSpecConstants;
 
-    auto ZeDevice = SyclDevices[0].get_native<backend::level_zero>();
+    auto ZeDevice = get_native<backend::level_zero>(SyclDevices[0]);
     ze_module_handle_t ZeModule;
 
     auto stZeModuleCreateF = getZeModuleCreateFn();

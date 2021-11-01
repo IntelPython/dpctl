@@ -82,8 +82,13 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create()
 __dpctl_give DPCTLSyclDeviceSelectorRef
 DPCTLFilterSelector_Create(__dpctl_keep const char *filter_str)
 {
+#if __SYCL_COMPILER_VERSION < 20210925
+    using filter_selector_t = sycl::ONEAPI::filter_selector;
+#else
+    using filter_selector_t = sycl::ext::oneapi::filter_selector;
+#endif
     try {
-        auto Selector = new ONEAPI::filter_selector(filter_str);
+        auto Selector = new filter_selector_t(filter_str);
         return wrap(Selector);
     } catch (std::bad_alloc &ba) {
         std::cerr << ba.what() << '\n';

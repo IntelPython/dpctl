@@ -39,7 +39,7 @@ class device_type(Enum):
     gpu                  1
     cpu                  2
     accelerator          3
-    host_device          4
+    host                 4
     ==================   ============
     """
 
@@ -49,7 +49,7 @@ class device_type(Enum):
     cpu = auto()
     custom = auto()
     gpu = auto()
-    host_device = auto()
+    host = auto()
 
 
 class backend_type(Enum):

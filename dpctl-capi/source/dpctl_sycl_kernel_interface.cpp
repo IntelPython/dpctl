@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_kernel_interface.h"
+#include "../helper/include/dpctl_string_utils.hpp"
 #include "Support/CBindingWrapping.h"
 #include <CL/sycl.hpp> /* Sycl headers */
 
@@ -49,14 +50,7 @@ DPCTLKernel_GetFunctionName(__dpctl_keep const DPCTLSyclKernelRef Kernel)
     auto kernel_name = SyclKernel->get_info<info::kernel::function_name>();
     if (kernel_name.empty())
         return nullptr;
-    auto cstr_len = kernel_name.length() + 1;
-    auto cstr_name = new char[cstr_len];
-#ifdef _WIN32
-    strncpy_s(cstr_name, cstr_len, kernel_name.c_str(), cstr_len);
-#else
-    std::strncpy(cstr_name, kernel_name.c_str(), cstr_len);
-#endif
-    return cstr_name;
+    return dpctl::helper::cstring_from_string(kernel_name);
 }
 
 size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef Kernel)

@@ -41,7 +41,7 @@ option(DPCTL_BUILD_CAPI_TESTS
 
 # Minimum version requirement only when oneAPI dpcpp is used.
 if(DPCTL_DPCPP_FROM_ONEAPI)
-    find_package(IntelSycl 2021.2.0 REQUIRED)
+    find_package(IntelSycl 2021.3.0 REQUIRED)
 else()
     find_package(IntelSycl REQUIRED)
 endif()
@@ -50,6 +50,22 @@ if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
     set(DPCTL_ENABLE_LO_PROGRAM_CREATION 1)
     include(GetLevelZeroHeaders)
     get_level_zero_headers()
+    if (UNIX)
+        find_library(PI_LEVEL_ZERO_LIB
+            NAMES pi_level_zero
+            HINTS ${IntelSycl_LIBRARY_DIR}
+        )
+        find_program(READELF_PROG readelf)
+        find_program(GREP_PROG grep)
+        execute_process(
+            COMMAND ${READELF_PROG} -d ${PI_LEVEL_ZERO_LIB}
+            COMMAND ${GREP_PROG} libze_loader
+            COMMAND ${GREP_PROG} -Po "libze_loader[^\]]*"
+            OUTPUT_VARIABLE LIBZE_LOADER_FILENAME
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_STRIP_TRAILING_WHITESPACE
+            )
+    endif()
 endif()
 
 configure_file(
@@ -207,11 +223,10 @@ if(DPCTL_GENERATE_COVERAGE)
     set(DPCTL_BUILD_CAPI_TESTS "ON")
     if(DPCTL_COVERAGE_REPORT_OUTPUT_DIR)
         set(COVERAGE_OUTPUT_DIR ${DPCTL_COVERAGE_REPORT_OUTPUT_DIR})
-        message(STATUS "Coverage reports to be saved at ${COVERAGE_OUTPUT_DIR}")
     else()
         set(COVERAGE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
-        message(STATUS "Coverage reports to be saved at ${COVERAGE_OUTPUT_DIR}")
     endif()
+    message(STATUS "Coverage reports to be saved at ${COVERAGE_OUTPUT_DIR}")
 endif()
 
 # Add sub-directory to build the dpctl C API test cases

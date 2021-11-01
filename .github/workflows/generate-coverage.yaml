@@ -29,8 +29,8 @@ jobs:
 
       - name: Install Intel OneAPI
         run: |
-          sudo apt-get install intel-oneapi-dpcpp-cpp-compiler
-          sudo apt-get install intel-oneapi-tbb
+          sudo apt-get install intel-oneapi-compiler-dpcpp-cpp=2021.3.0-3350
+          sudo apt-get install intel-oneapi-tbb=2021.3.0-511
 
       - name: Install CMake
         run: |
@@ -87,7 +87,7 @@ jobs:
           source /opt/intel/oneapi/setvars.sh
           python setup.py develop --coverage=True
           python -c "import dpctl; print(dpctl.__version__); dpctl.lsplatform()"
-          pytest -q -ra --disable-warnings --cov dpctl --cov-report term-missing --pyargs dpctl -vv
+          pytest -q -ra --disable-warnings --cov-config pyproject.toml --cov dpctl --cov-report term-missing --pyargs dpctl -vv
 
       - name: Install coverall dependencies
         shell: bash -l {0}

@@ -2,7 +2,7 @@
 
 cdef bint _valid_usm_ptr_and_context(DPCTLSyclUSMRef ptr, SyclContext ctx):
     usm_type = _Memory.get_pointer_type(ptr, ctx)
-    return usm_type in (b'shared', b'device', b'host')
+    return usm_type in (b"shared", b"device", b"host")
 
 
 cdef DPCTLSyclQueueRef _queue_ref_copy_from_SyclQueue(
@@ -49,7 +49,7 @@ cdef DPCTLSyclQueueRef get_queue_ref_from_ptr_and_syclobj(
     elif pycapsule.PyCapsule_IsValid(syclobj, "SyclContextRef"):
         ctx = <SyclContext>SyclContext(syclobj)
         return _queue_ref_copy_from_USMRef_and_SyclContext(ptr, ctx)
-    elif hasattr(syclobj, '_get_capsule'):
+    elif hasattr(syclobj, "_get_capsule"):
         cap = syclobj._get_capsule()
         if pycapsule.PyCapsule_IsValid(cap, "SyclQueueRef"):
             q = SyclQueue(cap)
@@ -166,8 +166,8 @@ cdef class _USMBufferData:
         nd = len(ary_shape)
         try:
             dt = np.dtype(ary_typestr)
-            if (dt.hasobject or not (np.issubdtype(dt.type, np.integer) or
-                                     np.issubdtype(dt.type, np.inexact))):
+            if (dt.hasobject or not (np.issubdtype(dt.type, np.number) or
+                                     dt.type is np.bool_)):
                 DPCTLQueue_Delete(QRef)
                 raise TypeError("Only integer types, floating and complex "
                                 "floating types are supported.")

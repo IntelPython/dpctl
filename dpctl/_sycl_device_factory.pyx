@@ -94,7 +94,7 @@ cdef _device_type _string_to_dpctl_sycl_device_ty(str dty_str):
         return _device_type._CUSTOM
     elif dty_str == "gpu":
         return _device_type._GPU
-    elif dty_str == "host_device":
+    elif dty_str == "host":
         return _device_type._HOST_DEVICE
     else:
         return _device_type._UNKNOWN_DEVICE
@@ -128,7 +128,7 @@ cdef _device_type _enum_to_dpctl_sycl_device_ty(DTy):
         return _device_type._CUSTOM
     elif DTy == device_type_t.gpu:
         return _device_type._GPU
-    elif DTy == device_type_t.host_device:
+    elif DTy == device_type_t.host:
         return _device_type._HOST_DEVICE
     else:
         return _device_type._UNKNOWN_DEVICE
@@ -164,7 +164,7 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
         device_type (optional): Defaults to ``dpctl.device_type.all``.
             A :class:`dpctl.device_type` enum value or a string that
             specifies a SYCL device type. Currently, accepted values are:
-            "gpu", "cpu", "accelerator", "host_device", or "all".
+            "gpu", "cpu", "accelerator", "host", or "all".
     Returns:
         list: A list of available :class:`dpctl.SyclDevice` instances that
         satisfy the provided :class:`dpctl.backend_type` and
@@ -217,7 +217,7 @@ cpdef int get_num_devices(
         device_type (optional): Defaults to ``dpctl.device_type.all``.
             A :class:`dpctl.device_type` enum value or a string that
             specifies a SYCL device type. Currently, accepted values are:
-            "gpu", "cpu", "accelerator", "host_device", or "all".
+            "gpu", "cpu", "accelerator", "host", or "all".
     Returns:
         int: The number of available SYCL devices that satisfy the provided
         :class:`dpctl.backend_type` and :class:`dpctl.device_type` values.
