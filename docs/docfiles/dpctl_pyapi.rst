@@ -28,11 +28,11 @@ Classes
 .. toctree::
     :maxdepth: 1
 
-    dpctl.SyclContext : A Python class representing cl::sycl::context <dpctl_pyapi/SyclContext>
-    dpctl.SyclDevice : A Python class representing cl::sycl::device <dpctl_pyapi/SyclDevice>
-    dpctl.SyclEvent : A Python class representing cl::sycl::event <dpctl_pyapi/SyclEvent>
-    dpctl.SyclPlatform : A Python class representing cl::sycl::event <dpctl_pyapi/SyclPlatform>
-    dpctl.SyclQueue : A Python class representing cl::sycl::event <dpctl_pyapi/SyclQueue>
+    dpctl.SyclContext : A Python class representing `sycl::context` <dpctl_pyapi/SyclContext>
+    dpctl.SyclDevice : A Python class representing `sycl::device` <dpctl_pyapi/SyclDevice>
+    dpctl.SyclEvent : A Python class representing `sycl::event` <dpctl_pyapi/SyclEvent>
+    dpctl.SyclPlatform : A Python class representing `sycl::platform` <dpctl_pyapi/SyclPlatform>
+    dpctl.SyclQueue : A Python class representing `sycl::queue` <dpctl_pyapi/SyclQueue>
 
 Enumerations
 ------------
