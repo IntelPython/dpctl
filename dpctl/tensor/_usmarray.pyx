@@ -1014,14 +1014,30 @@ cdef usm_ndarray _real_view(usm_ndarray ary):
     """
     View into real parts of a complex type array
     """
-    cdef usm_ndarray r = ary._clone()
+    cdef int r_typenum_ = -1
+    cdef usm_ndarray r = None
+    cdef Py_ssize_t offset_elems = 0
+
     if (ary.typenum_ == UAR_CFLOAT):
-        r.typenum_ = UAR_FLOAT
+        r_typenum_ = UAR_FLOAT
     elif (ary.typenum_ == UAR_CDOUBLE):
-        r.typenum_ = UAR_DOUBLE
+        r_typenum_ = UAR_DOUBLE
     else:
         raise InternalUSMArrayError(
             "_real_view call on array of non-complex type.")
+
+    offset_elems = ary.get_offset() * 2
+    r = usm_ndarray.__new__(
+        usm_ndarray,
+        _make_int_tuple(ary.nd_, ary.shape_),
+        dtype=_make_typestr(r_typenum_),
+        strides=tuple(2 * si for si in ary.strides),
+        buffer=ary.base_,
+        offset=offset_elems,
+        order=('C' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'F')
+    )
+    r.flags_ = ary.flags_
+    r.array_namespace_ = ary.array_namespace_
     return r
 
 
@@ -1029,16 +1045,31 @@ cdef usm_ndarray _imag_view(usm_ndarray ary):
     """
     View into imaginary parts of a complex type array
     """
-    cdef usm_ndarray r = ary._clone()
+    cdef int r_typenum_ = -1
+    cdef usm_ndarray r = None
+    cdef Py_ssize_t offset_elems = 0
+
     if (ary.typenum_ == UAR_CFLOAT):
-        r.typenum_ = UAR_FLOAT
+        r_typenum_ = UAR_FLOAT
     elif (ary.typenum_ == UAR_CDOUBLE):
-        r.typenum_ = UAR_DOUBLE
+        r_typenum_ = UAR_DOUBLE
     else:
         raise InternalUSMArrayError(
-            "_real_view call on array of non-complex type.")
+            "_imag_view call on array of non-complex type.")
+
     # displace pointer to imaginary part
-    r.data_ = r.data_ + type_bytesize(r.typenum_)
+    offset_elems = 2 * ary.get_offset() + 1
+    r = usm_ndarray.__new__(
+        usm_ndarray,
+        _make_int_tuple(ary.nd_, ary.shape_),
+        dtype=_make_typestr(r_typenum_),
+        strides=tuple(2 * si for si in ary.strides),
+        buffer=ary.base_,
+        offset=offset_elems,
+        order=('C' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'F')
+    )
+    r.flags_ = ary.flags_
+    r.array_namespace_ = ary.array_namespace_
     return r
 
 
