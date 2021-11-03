@@ -1054,7 +1054,8 @@ cdef usm_ndarray _transpose(usm_ndarray ary):
             _make_reversed_int_tuple(ary.nd_, ary.strides_)
             if (ary.strides_) else None),
         buffer=ary.base_,
-        order=('F' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'C')
+        order=('F' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'C'),
+        offset=ary.get_offset()
     )
     r.flags_ |= (ary.flags_ & USM_ARRAY_WRITEABLE)
     return r
