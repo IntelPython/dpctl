@@ -295,6 +295,15 @@ cdef class _Memory:
         def __get__(self):
             return self.queue.get_sycl_device()
 
+    property sycl_queue:
+        """
+        :class:`dpctl.SyclQueue` with :class:`dpctl.SyclContext` the
+        USM allocation is bound to and :class:`dpctl.SyclDevice` it was
+        allocated on.
+        """
+        def __get__(self):
+            return self.queue
+
     def __repr__(self):
         return (
             "<SYCL(TM) USM-{} allocation of {} bytes at {}>"
