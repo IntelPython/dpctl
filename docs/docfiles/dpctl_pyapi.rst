@@ -14,13 +14,14 @@ Sub-modules
     :mod:`dpctl.memory`
         USM allocators and deallocators and classes that implement Python's
         `buffer protocol`_.
-    :mod:`dpctl.program`
-        Experimental wrappers for SYCL 1.2 ``program`` and ``kernel`` classes.
-        The module is going to be refactored in the future to support SYCL
-        2020's ``kernel_bundle`` feature and the wrapper for the ``program``
-        class is going to be removed.
     :mod:`dpctl.tensor`
         Implementation of different types of tensor classes that use USM memory.
+    :mod:`dpctl.program`
+        Experimental wrappers for SYCL 1.2 `Program`<https://sycl.readthedocs.io/en/latest/iface/program.html>
+        and `Kernel`<https://sycl.readthedocs.io/en/latest/iface/kernel.html> classes.
+        The module is going to be refactored in the future to support SYCL
+        2020's ``sycl::kernel_bundle`` feature and the wrapper for the ``sycl::program``
+        class is going to be removed.
 
 Classes
 -------
@@ -28,11 +29,11 @@ Classes
 .. toctree::
     :maxdepth: 1
 
-    dpctl.SyclContext : A Python class representing `sycl::context` <dpctl_pyapi/SyclContext>
-    dpctl.SyclDevice : A Python class representing `sycl::device` <dpctl_pyapi/SyclDevice>
-    dpctl.SyclEvent : A Python class representing `sycl::event` <dpctl_pyapi/SyclEvent>
-    dpctl.SyclPlatform : A Python class representing `sycl::platform` <dpctl_pyapi/SyclPlatform>
-    dpctl.SyclQueue : A Python class representing `sycl::queue` <dpctl_pyapi/SyclQueue>
+    `dpctl.SyclPlatform`<dpctl_pyapi/SyclPlatform> : A Python class representing `SYCL Platforms`<https://sycl.readthedocs.io/en/latest/iface/platform.html>
+    `dpctl.SyclDevice`<dpctl_pyapi/SyclDevice> : A Python class representing `SYCL Devices`<https://sycl.readthedocs.io/en/latest/iface/device.html>
+    `dpctl.SyclQueue`<dpctl_pyapi/SyclQueue> : A Python class representing `SYCL Queues`<https://sycl.readthedocs.io/en/latest/iface/queue.html>
+    `dpctl.SyclContext`<dpctl_pyapi/SyclContext> : A Python class representing `SYCL Contexts`<https://sycl.readthedocs.io/en/latest/iface/context.html>
+    `dpctl.SyclEvent`<dpctl_pyapi/SyclEvent> : A Python class representing `SYCL Events`<https://sycl.readthedocs.io/en/latest/iface/event.html>
 
 Enumerations
 ------------
@@ -53,17 +54,17 @@ Exceptions
 Device Selection Functions
 --------------------------
 
-.. autofunction:: get_devices
-.. autofunction:: select_accelerator_device
-.. autofunction:: select_cpu_device
-.. autofunction:: select_default_device
-.. autofunction:: select_gpu_device
-.. autofunction:: select_host_device
 .. autofunction:: get_num_devices
+.. autofunction:: get_devices
+.. autofunction:: has_host_device
 .. autofunction:: has_cpu_devices
 .. autofunction:: has_gpu_devices
 .. autofunction:: has_accelerator_devices
-.. autofunction:: has_host_device
+.. autofunction:: select_default_device
+.. autofunction:: select_cpu_device
+.. autofunction:: select_gpu_device
+.. autofunction:: select_host_device
+.. autofunction:: select_accelerator_device
 
 Queue Management Functions
 --------------------------
