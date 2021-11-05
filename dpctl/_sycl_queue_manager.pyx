@@ -213,7 +213,7 @@ cpdef get_current_backend():
 @contextmanager
 def device_context(arg):
     """
-    Yields a SYCL queue corresponding to the input device object, the queue object, or the filter string.
+    Yields a SYCL queue corresponding to the input queue object, device object, or device filter selector string.
 
     This context manager "activates", *i.e.*, sets as the currently usable
     queue, the SYCL queue defined by the argument `arg`.
@@ -223,7 +223,7 @@ def device_context(arg):
     usable queue on exiting the context manager.
 
     Args:
-        arg : A :class:`.SyclDevice` object, or a :class:`.SyclQueue` object, or a filter selector string
+        arg : A :class:`dpctl.SyclQueue` object, or a :class:`dpctl.SyclDevice` object, or a filter selector string
 
     Yields:
         :class:`.SyclQueue`: A SYCL queue corresponding to the specified input device, queue, or filter string.
@@ -232,7 +232,7 @@ def device_context(arg):
         SyclQueueCreationError: If the SYCL queue creation failed.
 
     :Example:
-        The following example activates Level Zero GPU number 0 by respective filter selector string:
+        The following example sets current queue targeting specific device indicated with filter selector string in the scope of `with` block:
 
         .. code-block:: python
 
