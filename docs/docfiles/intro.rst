@@ -1,17 +1,14 @@
-Welcome to Data-parallel Control (dpctl)'s documentation!
-=========================================================
+Data-Parallel Control - The Library That Controls XPUs
+=======================================================
 
-The data-parallel control (dpctl) library provides C and Python bindings for
-`SYCL 2020 <https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html>`_.
-The SYCL 2020 features supported by dpctl are limited to those included by
-Intel's DPCPP compiler and specifically cover the SYCL runtime classes described
-in `Section 4.6 <https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes>`_
-of the SYCL 2020 specification. Apart from the bindings for these runtime
-classes, dpctl includes bindings for SYCL USM memory allocators and
-deallocators. Dpctl's Python API provides classes that implement
-`Python buffer protocol <https://docs.python.org/3/c-api/buffer.html>`_
-using SYCL USM memory; making it possible to create Python objects that are
-backed by SYCL USM memory.
+Data Parallel Control ``dpctl`` is the Python library that controls multiple devices of a platform, features classes for
+unified shared memory (USM) management, and implements tensor array API on top of it. It is a foundational part of
+a larger family of libraries and tools for Data Parallel Python (DPPY) aimed to program XPUs the same way as CPUs.
 
-Dpctl also supports the DPCPP ``ONEAPI::filter_selector`` extension and has
-experimental support for SYCL's ``kernel`` and ``program`` classes.
+The ``dpctl`` library is built upon `SYCL standard`<https://www.khronos.org/sycl/> and implements a subset of
+`runtime classes specifications`<https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes>,
+which allow users to query SYCL platforms, discover and represent SYCL devices, and construct SYCL queues for execution
+of data-parallel code.
+
+The library also assists authors of Python native extensions written in C, Cython, or pybind11 to access objects
+representing devices, queues, memory, and tensor array APIs.
