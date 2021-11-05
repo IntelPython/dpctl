@@ -213,7 +213,7 @@ cpdef get_current_backend():
 @contextmanager
 def device_context(arg):
     """
-    Yields a SYCL queue corresponding to the input device object, the queue object, or the filter string.
+    Yields a SYCL queue corresponding to the input queue object, device object, or device filter selector string.
 
     This context manager "activates", *i.e.*, sets as the currently usable
     queue, the SYCL queue defined by the argument `arg`.
