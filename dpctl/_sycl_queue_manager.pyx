@@ -223,7 +223,7 @@ def device_context(arg):
     usable queue on exiting the context manager.
 
     Args:
-        arg : A :class:`.SyclDevice` object, or a :class:`.SyclQueue` object, or a filter selector string
+        arg : A :class:`dpctl.SyclQueue` object, or a :class:`dpctl.SyclDevice` object, or a filter selector string
 
     Yields:
         :class:`.SyclQueue`: A SYCL queue corresponding to the specified input device, queue, or filter string.
