@@ -232,7 +232,7 @@ def device_context(arg):
         SyclQueueCreationError: If the SYCL queue creation failed.
 
     :Example:
-        The following example activates Level Zero GPU number 0 by respective filter selector string:
+        The following example sets current queue targeting specific device indicated with filter selector string in the scope of `with` block:
 
         .. code-block:: python
 
