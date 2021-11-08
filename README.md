@@ -22,101 +22,51 @@ representing SYCL devices, queues, memory, and tensors.
 `Dpctl` is the core part of a larger family of 
 [data-parallel Python libraries and tools](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html) 
 to program XPUs. The library is available via [conda](https://anaconda.org/intel/dpctl) and [pip](https://pypi.org/project/dpctl/).
-It also comes with [Intel(R) Distribution for Python*](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/distribution-for-python.html)
+It also comes with [Intel(R) Distribution for Python*](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/distribution-for-python.html) (IDP).
 
-Requirements
-============
-- Install Conda
-- Install Intel oneAPI
-    - Set environment variable `ONEAPI_ROOT`
-        - Windows: `C:\Program Files (x86)\Intel\oneAPI\`
-        - Linux: `/opt/intel/oneapi`
-- Install OpenCL HD graphics drivers
+Installing `dpctl`
+==================
 
-Build and Install Conda Package
-==================================
-1. Create and activate conda build environment
+Using Intel oneAPI
+------------------
+
+`dpctl` is packaged as part of the quarterly Intel oneAPI releases. To get the library from the latest
+oneAPI release please follow the instructions from Intel's
+[oneAPI installation guide](https://www.intel.com/content/www/us/en/developer/articles/guide/installation-guide-for-oneapi-toolkits.html).
+Note that you will need to install the Intel BaseKit toolkit to get IDP and `dpctl`.
+
+Using Conda
+-----------
+
+`dpctl` packages are available on the Intel channel on Annaconda cloud. You an use the following to install `dpctl` from there:
+
 ```bash
-conda create -n build-env conda-build
-conda activate build-env
+conda install dpctl -c intel
 ```
-2. Set environment variable `ONEAPI_ROOT` and build conda package
+
+Using PyPi
+----------
+
+`dpctl` is also available from PyPi and to install run:
+
 ```bash
-export ONEAPI_ROOT=/opt/intel/oneapi
-conda build conda-recipe -c ${ONEAPI_ROOT}/conda_channel
-```
-On Windows to cope with [long file names](https://github.com/IntelPython/dpctl/issues/15)
-use `croot` with short folder path:
-```cmd
-set "ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\"
-conda build --croot=C:/tmp conda-recipe -c "%ONEAPI_ROOT%\conda_channel"
+pip3 install dpctl
 ```
 
-:warning: **You could face issues with conda-build=3.20**: Use conda-build=3.18!
+Installing bleeding edge
+------------------------
 
-3. Install conda package
+If you want to try out the current master, you can install it from our development channel on Annocaonda cloud:
+
 ```bash
-conda install dpctl
+conda install dpctl -c dppy\label\dev
 ```
 
-Build and Install with setuptools
-=================================
-dpctl relies on DPC++ runtime. With Intel oneAPI installed you should activate it.
-`setup.py` requires environment variable `ONEAPI_ROOT` and following packages
-installed:
-- `cython`
-- `numpy`
-- `cmake` - for building C API
-- `ninja` - only on Windows
+Building `dpctl`
+================
 
-You need DPC++ to build dpctl. If you want to build using the DPC++ in a
-oneAPI distribution, activate DPC++ compiler as follows:
-```bash
-export ONEAPI_ROOT=/opt/intel/oneapi
-source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
-```
-
-For install:
-```cmd
-python setup.py install
-```
-
-For development:
-```cmd
-python setup.py develop
-```
-
-It is also possible to build dpctl using [DPC++ toolchain](https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md) 
-instead of oneAPI DPC++. Instead of activating the oneAPI environment, indicate the toolchain installation prefix with 
-`--sycl-compiler-prefix` option, e.g.
-
-```cmd
-python setup.py develop --sycl-compiler-prefix=${DPCPP_ROOT}/llvm/build
-```
-
-Please use `python setup.py develop --help` for more details.
-
-Install Wheel Package from Pypi
-==================================
-1. Install dpctl
-```cmd
-python -m pip install --index-url https://pypi.anaconda.org/intel/simple --extra-index-url https://pypi.org/simple dpctl
-```
-Note: dpctl wheel package is placed on Pypi, but some of its dependencies (like Intel numpy) are in Anaconda Cloud.
-That is why install command requires additional intel Pypi channel from Anaconda Cloud.
-
-2. Set path to Performance Libraries in case of using venv or system Python:
-On Linux:
-```cmd
-export LD_LIBRARY_PATH=<path_to_your_env>/lib
-```
-On Windows:
-```cmd
-set PATH=<path_to_your_env>\bin;<path_to_your_env>\Library\bin;%PATH%
-```
-
-**Note:** Please refer to [Getting Started and API Reference documentation](https://intelpython.github.io/dpctl) for more 
-information on installing `dpctl` or setting up a development environment.
+Please refer our [getting started user guide](https://intelpython.github.io/dpctl) for more 
+information on setting up a development environment and building `dpctl` from source.
 
 Using dpctl
 ===========
