@@ -841,3 +841,25 @@ def test_reshape():
         dpt.reshape(Z, Z.shape, order="invalid")
     W = dpt.reshape(Z, (-1,), order="C")
     assert W.shape == (Z.size,)
+
+
+def test_transpose():
+    n, m = 2, 3
+    X = dpt.usm_ndarray((n, m), "f4")
+    Xnp = np.arange(n * m, dtype="f4").reshape((n, m))
+    X[:] = Xnp
+    assert np.array_equal(dpt.to_numpy(X.T), Xnp.T)
+    assert np.array_equal(dpt.to_numpy(X[1:].T), Xnp[1:].T)
+
+
+def test_real_imag_views():
+    n, m = 2, 3
+    X = dpt.usm_ndarray((n, m), "c8")
+    Xnp_r = np.arange(n * m, dtype="f4").reshape((n, m))
+    Xnp_i = np.arange(n * m, 2 * n * m, dtype="f4").reshape((n, m))
+    Xnp = Xnp_r + 1j * Xnp_i
+    X[:] = Xnp
+    assert np.array_equal(dpt.to_numpy(X.real), Xnp.real)
+    assert np.array_equal(dpt.to_numpy(X.imag), Xnp.imag)
+    assert np.array_equal(dpt.to_numpy(X[1:].real), Xnp[1:].real)
+    assert np.array_equal(dpt.to_numpy(X[1:].imag), Xnp[1:].imag)
