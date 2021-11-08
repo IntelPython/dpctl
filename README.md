@@ -7,23 +7,21 @@ About dpctl
 
 <img align="left" src="https://spec.oneapi.io/oneapi-logo-white-scaled.jpg" alt="oneAPI logo" />
 
-Data Parallel Control `dpctl` is the Python library that controls multiple devices of a platform, features classes for 
-unified shared memory (USM) management, and implements tensor array API on top of it. It is a foundational part of 
-a larger family of libraries and tools for Data Parallel Python (DPPY) aimed to program XPUs the same way as CPUs.
+Data Parallel Control (`dpctl`) is the Python library that controls multiple devices of a platform, features classes for 
+SYCL unified shared memory (USM) management, and implements a tensor array API using USM. It is the core part of 
+a larger family of libraries and tools that together consitute Data Parallel Python (DPPY) to program 
+[XPUs](https://www.intel.com/content/www/us/en/newsroom/news/xpu-vision-oneapi-server-gpu.html#gs.ervs8m) using Python.
 
-The library is available via [conda](https://anaconda.org/intel/dpctl) and [pip](https://pypi.org/project/dpctl/).
-It also comes with [Intel(R) Distribution for Python*](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/distribution-for-python.html)
-
-The `dpctl` library is built upon [SYCL standard](https://www.khronos.org/sycl/) and implements a subset of [runtime 
-classes specifications](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes),
-which allow users to query SYCL platforms, discover and represent SYCL devices, and construct SYCL queues for execution
+The `dpctl` library is built upon [SYCL standard](https://www.khronos.org/sycl/) and implements Python bindings for a subset of the
+standard [runtime classes](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes)
+that allow users to query SYCL platforms, discover and represent SYCL devices, and construct SYCL queues for execution
 of data-parallel code.
 
 The library also assists authors of Python native extensions written in C, Cython, or pybind11 to access objects 
-representing devices, queues, memory, and tensor array APIs.
+representing SYCL devices, queues, memory, and tensor array APIs.
 
-Please refer to [Getting Started and API Reference documentation](https://intelpython.github.io/dpctl) for more 
-information. 
+The library is available via [conda](https://anaconda.org/intel/dpctl) and [pip](https://pypi.org/project/dpctl/).
+It also comes with [Intel(R) Distribution for Python*](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/distribution-for-python.html)
 
 Requirements
 ============
@@ -87,7 +85,9 @@ For development:
 python setup.py develop
 ```
 
-It is also possible to build dpctl using [DPC++ toolchain](https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md) instead of oneAPI DPC++. Instead of activating the oneAPI environment, indicate the toolchain installation prefix with `--sycl-compiler-prefix` option, e.g.
+It is also possible to build dpctl using [DPC++ toolchain](https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md) 
+instead of oneAPI DPC++. Instead of activating the oneAPI environment, indicate the toolchain installation prefix with 
+`--sycl-compiler-prefix` option, e.g.
 
 ```cmd
 python setup.py develop --sycl-compiler-prefix=${DPCPP_ROOT}/llvm/build
@@ -114,9 +114,14 @@ On Windows:
 set PATH=<path_to_your_env>\bin;<path_to_your_env>\Library\bin;%PATH%
 ```
 
+**Note:** Please refer to [Getting Started and API Reference documentation](https://intelpython.github.io/dpctl) for more 
+information on installing `dpctl` or setting up a development environment.
+
 Using dpctl
 ===========
-dpctl relies on DPC++ runtime. With Intel oneAPI installed you could activate it.
+dpctl requires a DPC++ runtime to be installed. It is suggested to use install the `dpcpp_cpp_rt` package from conda.
+Alternatively, a full Intel oneAPI installation may also be used. You will have to activate your
+oneAPI installation by using the following commands:
 
 On Windows:
 ```cmd
@@ -126,13 +131,6 @@ On Linux:
 ```bash
 source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh
 ```
-
-When dpctl is installed via conda package
-then it uses DPC++ runtime from `dpcpp_cpp_rt` package
-and it is not necessary to activate oneAPI DPC++ compiler environment.
-
-`dpcpp_cpp_rt` package is provided by oneAPI `conda_channel`.
-
 Examples
 ========
 See examples in folder `examples`.
