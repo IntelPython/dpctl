@@ -93,7 +93,7 @@ jobs:
         shell: bash -l {0}
         run: |
           sudo gem install coveralls-lcov
-          pip install coveralls
+          pip install coveralls==3.2.0
 
       - name: Upload coverage data to coveralls.io
         run: |
