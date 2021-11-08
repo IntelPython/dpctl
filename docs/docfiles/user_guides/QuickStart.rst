@@ -56,7 +56,7 @@ Dpctl can also be istalled from Pypi.
 
 .. code-block:: bash
 
-    python -m pip install --index-url https://pypi.anaconda.org/intel/simple -extra-index-url https://pypi.org/simple dpctl
+    python -m pip install --index-url https://pypi.anaconda.org/intel/simple --extra-index-url https://pypi.org/simple dpctl
 
 .. note::
 
