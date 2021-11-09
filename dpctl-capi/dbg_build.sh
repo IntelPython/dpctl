@@ -9,7 +9,7 @@ rm -rf ${INSTALL_PREFIX}
 
 cmake                                                       \
     -DCMAKE_BUILD_TYPE=Debug                                \
-    -DCMAKE_C_COMPILER=clang                                \
+    -DCMAKE_C_COMPILER=icx                                  \
     -DCMAKE_CXX_COMPILER=dpcpp                              \
     -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}                \
     -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX}                   \
