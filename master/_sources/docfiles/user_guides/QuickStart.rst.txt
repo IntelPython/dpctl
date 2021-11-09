@@ -208,7 +208,7 @@ After setting up dpctl you can try out the Python examples as follows:
 The dpctl repository also provides a set of examples of building Cython
 extensions with DPC++ compiler, that interoperate with dpctl. These examples are
 located under *examples/cython*. Each example in the folder can be built using
-``CC=clang CXX=dpcpp python setup.py build_ext --inplace``. Please refer to
+``CC=icx CXX=dpcpp python setup.py build_ext --inplace``. Please refer to
 ``run.py`` script in respective folders to execute the Cython extension
 examples.
 
@@ -252,7 +252,7 @@ library.
         -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}                \
         -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX}                   \
         -DDPCPP_INSTALL_DIR=${DPCPP_ROOT}                       \
-        -DCMAKE_C_COMPILER:PATH=${DPCPP_ROOT}/bin/clang         \
+        -DCMAKE_C_COMPILER:PATH=${DPCPP_ROOT}/bin/icx           \
         -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/bin/dpcpp       \
         -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON                   \
         -DDPCTL_BUILD_CAPI_TESTS=ON                             \

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data-parallel Control (dpctl) 0.11.0+7.ge939fe41 documentation</title>
+  <title>Quick Start Guide &mdash; Data-parallel Control (dpctl) 0.11.0+8.g0cd7b350 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.11.0+7.ge939fe41
+                0.11.0+8.g0cd7b350
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -277,7 +277,7 @@ python examples/python/<span class="si">${</span><span class="nv">script</span><
 <p>The dpctl repository also provides a set of examples of building Cython
 extensions with DPC++ compiler, that interoperate with dpctl. These examples are
 located under <em>examples/cython</em>. Each example in the folder can be built using
-<code class="docutils literal notranslate"><span class="pre">CC=clang</span> <span class="pre">CXX=dpcpp</span> <span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">build_ext</span> <span class="pre">--inplace</span></code>. Please refer to
+<code class="docutils literal notranslate"><span class="pre">CC=icx</span> <span class="pre">CXX=dpcpp</span> <span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">build_ext</span> <span class="pre">--inplace</span></code>. Please refer to
 <code class="docutils literal notranslate"><span class="pre">run.py</span></code> script in respective folders to execute the Cython extension
 examples.</p>
 </section>
@@ -314,7 +314,7 @@ cmake                                                       <span class="se">\</
     -DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span>                <span class="se">\</span>
     -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span>                   <span class="se">\</span>
     -DDPCPP_INSTALL_DIR<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>                       <span class="se">\</span>
-    -DCMAKE_C_COMPILER:PATH<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/bin/clang         <span class="se">\</span>
+    -DCMAKE_C_COMPILER:PATH<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/bin/icx           <span class="se">\</span>
     -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/bin/dpcpp       <span class="se">\</span>
     -DDPCTL_ENABLE_LO_PROGRAM_CREATION<span class="o">=</span>ON                   <span class="se">\</span>
     -DDPCTL_BUILD_CAPI_TESTS<span class="o">=</span>ON                             <span class="se">\</span>
@@ -355,7 +355,7 @@ make <span class="nv">V</span><span class="o">=</span><span class="m">1</span> -
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.11.0+7.ge939fe41
+      v: 0.11.0+8.g0cd7b350
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
