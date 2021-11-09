@@ -14,7 +14,7 @@ Example illustrates compiling SYCL extension, linking to oneMKL.
 
 ```
 # make sure oneAPI is activated, $ONEAPI_ROOT must be set
-CC=clang CXX=dpcpp python setup.py build_ext --inplace
+CC=icx CXX=dpcpp python setup.py build_ext --inplace
 ```
 
 

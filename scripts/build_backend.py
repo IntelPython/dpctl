@@ -86,7 +86,7 @@ def build_backend(
                 "-DDPCTL_DPCPP_HOME_DIR=" + DPCPP_ROOT,
                 "-DDPCTL_DPCPP_FROM_ONEAPI=ON",
                 "-DCMAKE_C_COMPILER:PATH="
-                + os.path.join(DPCPP_ROOT, "bin", "clang"),
+                + os.path.join(DPCPP_ROOT, "bin", "icx"),
                 "-DCMAKE_CXX_COMPILER:PATH="
                 + os.path.join(DPCPP_ROOT, "bin", "dpcpp"),
             ]
@@ -164,7 +164,7 @@ def build_backend(
                 "-DDPCTL_DPCPP_HOME_DIR=" + DPCPP_ROOT,
                 "-DDPCTL_DPCPP_FROM_ONEAPI=ON",
                 "-DCMAKE_C_COMPILER:PATH="
-                + os.path.join(DPCPP_ROOT, "bin", "clang-cl.exe"),
+                + os.path.join(DPCPP_ROOT, "bin", "icx.exe"),
                 "-DCMAKE_CXX_COMPILER:PATH="
                 + os.path.join(DPCPP_ROOT, "bin", "dpcpp.exe"),
             ]

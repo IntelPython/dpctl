@@ -63,7 +63,7 @@ else()
 endif()
 
 # We will extract the version information from the compiler
-set(clangxx_cmd "${IntelSycl_ROOT}/bin/clang++")
+set(clangxx_cmd "${CMAKE_CXX_COMPILER}")
 set(clangxx_arg "--version")
 
 # Check if dpcpp is available
