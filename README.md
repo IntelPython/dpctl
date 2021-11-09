@@ -147,7 +147,7 @@ Examples of building Cython extensions with DPC++ compiler, that interoperate
 with dpctl can be found in folder `cython`.
 
 Each example in `cython` folder can be built using
-`CC=clang CXX=dpcpp python setup.py build_ext --inplace`.
+`CC=icx CXX=dpcpp python setup.py build_ext --inplace`.
 Please refer to `run.py` script in respective folders to execute extensions.
 
 Tests
