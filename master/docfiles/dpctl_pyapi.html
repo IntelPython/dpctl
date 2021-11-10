@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl Python API &mdash; Data-parallel Control (dpctl) 0.11.0+10.g309aa1f5 documentation</title>
+  <title>dpctl Python API &mdash; Data-parallel Control (dpctl) 0.11.0+11.g5c3fed5f documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/doxyrest-pygments.css" type="text/css" />
@@ -21,7 +21,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="dpctl C API" href="dpctl-capi/index.html" />
+    <link rel="next" title="libsyclinterface" href="libsyclinterface/index.html" />
     <link rel="prev" title="Quick Start Guide" href="user_guides/QuickStart.html" /> 
 </head>
 
@@ -33,7 +33,7 @@
             <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.11.0+10.g309aa1f5
+                0.11.0+11.g5c3fed5f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -59,7 +59,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#other-helper-functions">Other Helper Functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="dpctl-capi/index.html">dpctl C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libsyclinterface/index.html">libsyclinterface</a></li>
 </ul>
 
         </div>
@@ -147,7 +147,7 @@ class is going to be removed.</p>
 <h2>Enumerations<a class="headerlink" href="#enumerations" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.backend_type">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">backend_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dpctl/enum_types.html#backend_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.backend_type" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">backend_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dpctl/enum_types.html#backend_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.backend_type" title="Permalink to this definition"></a></dt>
 <dd><p>An enumeration of supported SYCL backends.</p>
 <table class="docutils align-default">
 <colgroup>
@@ -178,7 +178,7 @@ class is going to be removed.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.device_type">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">device_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dpctl/enum_types.html#device_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.device_type" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">device_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dpctl/enum_types.html#device_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.device_type" title="Permalink to this definition"></a></dt>
 <dd><p>An enumeration of supported SYCL device types.</p>
 <table class="docutils align-default">
 <colgroup>
@@ -212,21 +212,21 @@ class is going to be removed.</p>
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline"></a></h2>
 <dl class="py exception">
 <dt class="sig sig-object py" id="dpctl.SyclKernelInvalidRangeError">
-<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclKernelInvalidRangeError</span></span><a class="headerlink" href="#dpctl.SyclKernelInvalidRangeError" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclKernelInvalidRangeError</span></span><a class="headerlink" href="#dpctl.SyclKernelInvalidRangeError" title="Permalink to this definition"></a></dt>
 <dd><p>A SyclKernelInvalidRangeError is raised when the provided range has less
 than one or more than three dimensions.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dpctl.SyclKernelSubmitError">
-<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclKernelSubmitError</span></span><a class="headerlink" href="#dpctl.SyclKernelSubmitError" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclKernelSubmitError</span></span><a class="headerlink" href="#dpctl.SyclKernelSubmitError" title="Permalink to this definition"></a></dt>
 <dd><p>A SyclKernelSubmitError exception is raised when the provided
 <a class="reference internal" href="dpctl.program_api.html#dpctl.program.SyclKernel" title="dpctl.program.SyclKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclKernel</span></code></a> could not be submitted to the <a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dpctl.SyclQueueCreationError">
-<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclQueueCreationError</span></span><a class="headerlink" href="#dpctl.SyclQueueCreationError" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclQueueCreationError</span></span><a class="headerlink" href="#dpctl.SyclQueueCreationError" title="Permalink to this definition"></a></dt>
 <dd><p>A SyclQueueCreationError exception is raised when a <a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a>
 could not be created. <a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> creation can fail if the filter
 string is invalid, or the backend or device type values are not supported.</p>
@@ -686,7 +686,7 @@ level to print the most verbose output.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="user_guides/QuickStart.html" class="btn btn-neutral float-left" title="Quick Start Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpctl-capi/index.html" class="btn btn-neutral float-right" title="dpctl C API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="libsyclinterface/index.html" class="btn btn-neutral float-right" title="libsyclinterface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
@@ -710,7 +710,7 @@ level to print the most verbose output.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.11.0+10.g309aa1f5
+      v: 0.11.0+11.g5c3fed5f
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

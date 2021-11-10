@@ -1,5 +1,5 @@
-dpctl C API
-===========
+libsyclinterface
+================
 
 .. toctree::
 	:hidden:

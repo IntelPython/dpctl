@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.program &mdash; Data-parallel Control (dpctl) 0.11.0+10.g309aa1f5 documentation</title>
+  <title>dpctl.program &mdash; Data-parallel Control (dpctl) 0.11.0+11.g5c3fed5f documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.11.0+10.g309aa1f5
+                0.11.0+11.g5c3fed5f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -48,7 +48,7 @@
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi.html">dpctl Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dpctl-capi/index.html">dpctl C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libsyclinterface/index.html">libsyclinterface</a></li>
 </ul>
 
         </div>
@@ -84,7 +84,7 @@ source string or SPIR-V binary file.</p>
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.program.SyclKernel">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">SyclKernel</span></span><a class="headerlink" href="#dpctl.program.SyclKernel" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">SyclKernel</span></span><a class="headerlink" href="#dpctl.program.SyclKernel" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="dpctl.program.SyclKernel.addressof_ref">
 <span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclKernel.addressof_ref" title="Permalink to this definition"></a></dt>
@@ -114,7 +114,7 @@ this <code class="xref py py-class docutils literal notranslate"><span class="pr
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.program.SyclProgram">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">SyclProgram</span></span><a class="headerlink" href="#dpctl.program.SyclProgram" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">SyclProgram</span></span><a class="headerlink" href="#dpctl.program.SyclProgram" title="Permalink to this definition"></a></dt>
 <dd><p>Wraps a <code class="docutils literal notranslate"><span class="pre">sycl::program</span></code> object created from an OpenCL interoperability
 program.</p>
 <p>SyclProgram exposes the C API from <code class="docutils literal notranslate"><span class="pre">dpctl_sycl_program_interface.h</span></code>. A
@@ -150,7 +150,7 @@ this <code class="xref py py-class docutils literal notranslate"><span class="pr
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline"></a></h2>
 <dl class="py exception">
 <dt class="sig sig-object py" id="dpctl.program.SyclProgramCompilationError">
-<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">SyclProgramCompilationError</span></span><a class="headerlink" href="#dpctl.program.SyclProgramCompilationError" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">SyclProgramCompilationError</span></span><a class="headerlink" href="#dpctl.program.SyclProgramCompilationError" title="Permalink to this definition"></a></dt>
 <dd><p>This exception is raised when a <code class="docutils literal notranslate"><span class="pre">sycl::program</span></code> could not be built from
 either a SPIR-V binary file or a string source.</p>
 </dd></dl>
@@ -246,7 +246,7 @@ when compiling the program.</p></li>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.11.0+10.g309aa1f5
+      v: 0.11.0+11.g5c3fed5f
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

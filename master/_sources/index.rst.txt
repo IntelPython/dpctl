@@ -11,6 +11,6 @@
     :caption: API Documentation
 
     docfiles/dpctl_pyapi
-    docfiles/dpctl-capi/index
+    docfiles/libsyclinterface/index
 
 .. include:: ./docfiles/boilerplate.rst

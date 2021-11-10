@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>enum DPCTLSyclEventStatusType &mdash; Data-parallel Control (dpctl) 0.11.0+10.g309aa1f5 documentation</title>
+  <title>enum DPCTLSyclDeviceType &mdash; Data-parallel Control (dpctl) 0.11.0+11.g5c3fed5f documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -21,7 +21,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="prev" title="enum DPCTLSyclDeviceType" href="enum_DPCTLSyclDeviceType.html" /> 
+    <link rel="next" title="enum DPCTLSyclEventStatusType" href="enum_DPCTLSyclEventStatusType.html" />
+    <link rel="prev" title="enum DPCTLSyclBackendType" href="enum_DPCTLSyclBackendType.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -32,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.11.0+10.g309aa1f5
+                0.11.0+11.g5c3fed5f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -49,7 +50,7 @@
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../dpctl_pyapi.html">dpctl Python API</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">dpctl C API</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">libsyclinterface</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="group_ContextInterface.html">Context class C wrapper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_DeviceInterface.html">Device class C wrapper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_DeviceManager.html">Device class helper functions</a></li>
@@ -70,8 +71,8 @@
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLQueuePropertyType.html">enum DPCTLQueuePropertyType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclAspectType.html">enum DPCTLSyclAspectType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclBackendType.html">enum DPCTLSyclBackendType</a></li>
-<li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclDeviceType.html">enum DPCTLSyclDeviceType</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">enum DPCTLSyclEventStatusType</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">enum DPCTLSyclDeviceType</a></li>
+<li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclEventStatusType.html">enum DPCTLSyclEventStatusType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="global.html#overview">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="global.html#detailed-documentation">Detailed Documentation</a></li>
 </ul>
@@ -94,11 +95,11 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">dpctl C API</a> &raquo;</li>
+          <li><a href="index.html">libsyclinterface</a> &raquo;</li>
           <li><a href="global.html">Global Namespace</a> &raquo;</li>
-      <li>enum DPCTLSyclEventStatusType</li>
+      <li>enum DPCTLSyclDeviceType</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/docfiles/dpctl-capi/enum_DPCTLSyclEventStatusType.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/docfiles/libsyclinterface/enum_DPCTLSyclDeviceType.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -106,16 +107,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="enum-dpctlsycleventstatustype">
-<span id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021"></span><span id="index-0"></span><h1>enum DPCTLSyclEventStatusType<a class="headerlink" href="#enum-dpctlsycleventstatustype" title="Permalink to this headline"></a></h1>
+  <section id="enum-dpctlsycldevicetype">
+<span id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a15d8954e4e712e2ec00838a9283d13ff"></span><span id="index-0"></span><h1>enum DPCTLSyclDeviceType<a class="headerlink" href="#enum-dpctlsycldevicetype" title="Permalink to this headline"></a></h1>
+<p>DPCTL device types that are equivalent to Sycl’s device_type.</p>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;dpctl_sycl_enum_types.h&gt;</span><span class="cp"></span>
 
-<span class="k">enum</span> <span class="n">DPCTLSyclEventStatusType</span>
+<span class="k">enum</span> <span class="n">DPCTLSyclDeviceType</span>
 <span class="p">{</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021a174675630eef09c2c94f4f3e2dec52af"><span></span><span class="n">DPCTL_UNKNOWN_STATUS</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021abb000965a91d3761986706b52ee2d244"><span></span><span class="n">DPCTL_SUBMITTED</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021aa4b3fb9838e7eadebe271de818335146"><span></span><span class="n">DPCTL_RUNNING</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021a2e96163b1f35bc641b376233c54616e9"><span></span><span class="n">DPCTL_COMPLETE</span></span><span></span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a15d8954e4e712e2ec00838a9283d13ffa77c06e8aa17a0393baa03104d93a1c2c"><span></span><span class="n">DPCTL_ACCELERATOR</span></span><span></span>    <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">0</span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a15d8954e4e712e2ec00838a9283d13ffa56e696aa054417023c07b5d43f0ce30d"><span></span><span class="n">DPCTL_AUTOMATIC</span></span><span></span>      <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a15d8954e4e712e2ec00838a9283d13ffa7301bd6676b8167d6048d08072ceeb2e"><span></span><span class="n">DPCTL_CPU</span></span><span></span>            <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">2</span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a15d8954e4e712e2ec00838a9283d13ffad64472511a7f7b3c711d56e34266e252"><span></span><span class="n">DPCTL_CUSTOM</span></span><span></span>         <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">3</span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f"><span></span><span class="n">DPCTL_GPU</span></span><span></span>            <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">4</span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a15d8954e4e712e2ec00838a9283d13ffa6f66b14770eab4e002d856217057a935"><span></span><span class="n">DPCTL_HOST_DEVICE</span></span><span></span>    <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">5</span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a15d8954e4e712e2ec00838a9283d13ffa965ac28a750a70af103119b14a0476e8"><span></span><span class="n">DPCTL_ALL</span></span><span></span>            <span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">6</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a15d8954e4e712e2ec00838a9283d13ffa8e4d82c04d9f20cac007a0fe6b86250f"><span></span><span class="n">DPCTL_UNKNOWN_DEVICE</span></span><span></span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">};</span></pre>
 </section>
 
@@ -123,7 +129,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="enum_DPCTLSyclDeviceType.html" class="btn btn-neutral float-left" title="enum DPCTLSyclDeviceType" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="enum_DPCTLSyclBackendType.html" class="btn btn-neutral float-left" title="enum DPCTLSyclBackendType" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="enum_DPCTLSyclEventStatusType.html" class="btn btn-neutral float-right" title="enum DPCTLSyclEventStatusType" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
@@ -147,7 +154,7 @@
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.11.0+10.g309aa1f5
+      v: 0.11.0+11.g5c3fed5f
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
