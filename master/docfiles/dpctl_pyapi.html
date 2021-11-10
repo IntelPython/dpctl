@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl Python API &mdash; Data-parallel Control (dpctl) 0.11.0+9.gf292953f documentation</title>
+  <title>dpctl Python API &mdash; Data-parallel Control (dpctl) 0.11.0+10.g309aa1f5 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.11.0+9.gf292953f
+                0.11.0+10.g309aa1f5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -51,14 +51,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">dpctl Python API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#sub-modules">Sub-modules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#classes">Classes</a><ul>
-<li class="toctree-l3"><a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/platform.html">`dpctl.SyclPlatform`&lt;dpctl_pyapi/SyclPlatform&gt; : A Python class representing `SYCL Platforms`</a></li>
-<li class="toctree-l3"><a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device.html">`dpctl.SyclDevice`&lt;dpctl_pyapi/SyclDevice&gt; : A Python class representing `SYCL Devices`</a></li>
-<li class="toctree-l3"><a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">`dpctl.SyclQueue`&lt;dpctl_pyapi/SyclQueue&gt; : A Python class representing `SYCL Queues`</a></li>
-<li class="toctree-l3"><a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/context.html">`dpctl.SyclContext`&lt;dpctl_pyapi/SyclContext&gt; : A Python class representing `SYCL Contexts`</a></li>
-<li class="toctree-l3"><a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/event.html">`dpctl.SyclEvent`&lt;dpctl_pyapi/SyclEvent&gt; : A Python class representing `SYCL Events`</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#classes">Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#enumerations">Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#device-selection-functions">Device Selection Functions</a></li>
@@ -126,15 +119,29 @@ class is going to be removed.</p>
 </section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/platform.html">`dpctl.SyclPlatform`&lt;dpctl_pyapi/SyclPlatform&gt; : A Python class representing `SYCL Platforms`</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device.html">`dpctl.SyclDevice`&lt;dpctl_pyapi/SyclDevice&gt; : A Python class representing `SYCL Devices`</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">`dpctl.SyclQueue`&lt;dpctl_pyapi/SyclQueue&gt; : A Python class representing `SYCL Queues`</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/context.html">`dpctl.SyclContext`&lt;dpctl_pyapi/SyclContext&gt; : A Python class representing `SYCL Contexts`</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/event.html">`dpctl.SyclEvent`&lt;dpctl_pyapi/SyclEvent&gt; : A Python class representing `SYCL Events`</a></li>
-</ul>
-</div>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_pyapi/SyclPlatform.html#syclplatform-api"><span class="std std-ref">dpctl.SyclPlatform</span></a></p></td>
+<td><p>A Python class representing a <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/platform.html">SYCL platform</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl_pyapi/SyclDevice.html#sycldevice-api"><span class="std std-ref">dpctl.SyclDevice</span></a></p></td>
+<td><p>A Python class representing a <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device.html">SYCL device</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_pyapi/SyclQueue.html#syclqueue-api"><span class="std std-ref">dpctl.SyclQueue</span></a></p></td>
+<td><p>A Python class representing a <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">SYCL queue</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl_pyapi/SyclContext.html#syclcontext-api"><span class="std std-ref">dpctl.SyclContext</span></a></p></td>
+<td><p>A Python class representing a <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/context.html">SYCL context</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_pyapi/SyclEvent.html#syclevent-api"><span class="std std-ref">dpctl.SyclEvent</span></a></p></td>
+<td><p>A Python class representing a <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/event.html">SYCL event</a>.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="enumerations">
 <h2>Enumerations<a class="headerlink" href="#enumerations" title="Permalink to this headline"></a></h2>
@@ -703,7 +710,7 @@ level to print the most verbose output.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.11.0+9.gf292953f
+      v: 0.11.0+10.g309aa1f5
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
