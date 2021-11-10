@@ -1,17 +1,31 @@
 Welcome to Data-parallel Control (dpctl)'s documentation!
 =========================================================
 
-The data-parallel control (dpctl) library provides C and Python bindings for
-`SYCL 2020 <https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html>`_.
-The SYCL 2020 features supported by dpctl are limited to those included by
-Intel's DPCPP compiler and specifically cover the SYCL runtime classes described
-in `Section 4.6 <https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes>`_
-of the SYCL 2020 specification. Apart from the bindings for these runtime
-classes, dpctl includes bindings for SYCL USM memory allocators and
-deallocators. Dpctl's Python API provides classes that implement
-`Python buffer protocol <https://docs.python.org/3/c-api/buffer.html>`_
-using SYCL USM memory; making it possible to create Python objects that are
-backed by SYCL USM memory.
+`Data-parallel control <https://github.com/IntelPython/dpctl>`_ (dpctl) is a
+runtime library for Python applications and libraries to execute a compute
+kernel on a device that supports a data-parallel mode of execution. Using
+dpctl's API a library or an application can query a system to identify
+data-parallel devices, allocate memory on those devices, and schedule execution
+of compute kernels on the devices. Dpctl's role is only to facilitate the
+scheduling of compute kernels, the library plays no role in
+the definition of the kernels themselves. It is up to the users of dpctl to
+define the kernels. As an example, the
+`numba-dppy <https://intelpython.github.io/numba-dppy/latest/index.html>`_
+package uses an OpenCL-like abstraction to define kernels directly in Python
+and JIT compiles them to native binary. Numba-dppy then schedules the kernels on
+devices using dpctl. Another example is the
+`dpnp <https://intelpython.github.io/dpnp/>`_ package, a NumPy-like
+library of pre-compiled kernels written in the
+`SYCL language <https://sycl.readthedocs.io/en/latest/index.html>`_. Dpnp too
+uses dpctl to schedule and execute the kernels it provides.
 
-Dpctl also supports the DPCPP ``ONEAPI::filter_selector`` extension and has
-experimental support for SYCL's ``kernel`` and ``program`` classes.
+Dpctl uses SYCL as the underlying low-level runtime layer and implements
+Python bindings for a subset of the runtime classes defined in
+`SYCL 2020 <https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html>`_.
+Currently, only Intel(R)'s `DPC++ <https://intel.ly/3wwjEsd>`_ is the only
+supported SYCL implementation. Refer the User Guide and API documentation for a
+comprehensive list of SYCL features exposed by dpctl.
+
+.. todo::
+
+    A paragraph on dpctl.tensor

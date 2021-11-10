@@ -1,14 +1,20 @@
 .. include:: ./docfiles/intro.rst
 
+
+How-to Guides
+=============
+
 .. toctree::
    :maxdepth: 1
-   :caption: User Guides
 
    docfiles/user_guides/QuickStart
+   docfiles/user_guides/UserManual
+
+API Documentation
+=================
 
 .. toctree::
     :maxdepth: 1
-    :caption: API Documentation
 
     docfiles/dpctl_pyapi
     @DOXYREST_OUTPUT_DIR_NAME@/index
