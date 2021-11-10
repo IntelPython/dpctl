@@ -159,6 +159,7 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
 
     // Populate the Level Zero module descriptions
     ze_module_desc_t ZeModuleDesc = {};
+    ZeModuleDesc.stype = ZE_STRUCTURE_TYPE_MODULE_DESC;
     ZeModuleDesc.format = ZE_MODULE_FORMAT_IL_SPIRV;
     ZeModuleDesc.inputSize = length;
     ZeModuleDesc.pInputModule = (uint8_t *)IL;
