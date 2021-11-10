@@ -4,7 +4,7 @@ on:
     branches:
       - master
   pull_request:
-
+    types: [opened, synchronize, reopened, closed]
 
 jobs:
   build-and-deploy:
@@ -16,6 +16,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Add Intel repository
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
           wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
           sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
@@ -23,23 +24,29 @@ jobs:
           sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
           sudo apt-get update
       - name: Install Intel OneAPI
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
           sudo apt-get install intel-oneapi-dpcpp-cpp-compiler
       - name: Install Lua
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
           sudo apt-get install liblua5.2-dev
       - name: Install Doxygen
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
           sudo apt-get install doxygen
       - name: Install CMake
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
           sudo apt-get install cmake
       - name: Setup Python
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         uses: actions/setup-python@v2
         with:
           python-version: '3.8'
           architecture: x64
       - name: Install sphinx dependencies
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         shell: bash -l {0}
         run: |
           pip install numpy cython setuptools sphinx sphinx_rtd_theme pydot graphviz
@@ -48,12 +55,14 @@ jobs:
         with:
           fetch-depth: 0
       - name: Build dpctl
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         shell: bash -l {0}
         run: |
           source /opt/intel/oneapi/setvars.sh
           python setup.py develop
           python -c "import dpctl; print(dpctl.__version__)"
       - name: Build docs
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         shell: bash -l {0}
         run: |
           # Ensure that SYCL libraries are on LD_LIBRARY_PATH
@@ -87,7 +96,7 @@ jobs:
           git commit -m "Latest docs."
           git push tokened_docs gh-pages
       - name: Publish pull-request docs
-        if: ${{ github.ref != 'refs/heads/master' }}
+        if: ${{ github.event.pull_request && github.event.action != 'closed' }}
         env:
           PR_NUM: ${{ github.event.number }}
         shell: bash -l {0}
@@ -105,13 +114,38 @@ jobs:
           git config --global user.email 'github-actions[doc-deploy-bot]@users.noreply.github.com'
           git commit -m "Docs for pull request ${PR_NUM}"
           git push tokened_docs gh-pages
-      - name: Comment with URL to pull-request docs
-        if: ${{ github.ref != 'refs/heads/master' }}
+      - name: Unpublished pull-request docs
+        if: ${{ github.event.pull_request && github.event.action == 'closed' }}
+        env:
+          PR_NUM: ${{ github.event.number }}
+        shell: bash -l {0}
+        run: |
+          git remote add tokened_docs https://IntelPython:${{ secrets.GITHUB_TOKEN }}@github.com/IntelPython/dpctl.git
+          git fetch tokened_docs
+          git checkout --track tokened_docs/gh-pages
+          echo `pwd`
+          [ -d pulls/${PR_NUM} ] && git rm -rf pulls/${PR_NUM}
+          git config --global user.name 'github-actions[doc-deploy-bot]'
+          git config --global user.email 'github-actions[doc-deploy-bot]@users.noreply.github.com'
+          git commit -m "Removing docs for closed pull request ${PR_NUM}"
+          git push tokened_docs gh-pages
+      - name: Comment with URL to published pull-request docs
+        if: ${{ github.event.pull_request && github.event.action != 'closed' }}
         env:
           PR_NUM: ${{ github.event.number }}
         uses: mshick/add-pr-comment@v1
         with:
           message: |
             View rendered docs @ https://intelpython.github.io/dpctl/pulls/${{ env.PR_NUM }}/index.html
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token-user-login: 'github-actions[bot]'
+      - name: Comment with URL about removal of PR docs
+        if: ${{ github.event.pull_request && github.event.action == 'closed' }}
+        env:
+          PR_NUM: ${{ github.event.number }}
+        uses: mshick/add-pr-comment@v1
+        with:
+          message: |
+            Deleted rendered PR docs from intelpython.github.com/dpctl, latest should be updated shortly. :crossed_fingers:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           repo-token-user-login: 'github-actions[bot]'
