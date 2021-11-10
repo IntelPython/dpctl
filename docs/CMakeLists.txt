@@ -29,7 +29,7 @@ function(_setup_doxygen)
     if(DPCTL_ENABLE_DOXYGEN_HTML)
         set(GENERATE_HTML "YES")
     endif()
-    set(DOXYGEN_INPUT_DIR ../dpctl-capi/include)
+    set(DOXYGEN_INPUT_DIR ../libsyclinterface/include)
     set(DOXYGEN_OUTPUT_DIR ${DOC_OUTPUT_DIR}/doxygen)
     set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/xml/index.xml)
     set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
@@ -61,7 +61,7 @@ function(_setup_doxygen)
 endfunction()
 
 function(_setup_doxyrest)
-    set(DOXYREST_OUTPUT_DIR_NAME docfiles/dpctl-capi)
+    set(DOXYREST_OUTPUT_DIR_NAME docfiles/libsyclinterface)
     set(DOXYREST_OUTPUT_DIR
         ${CMAKE_CURRENT_SOURCE_DIR}/${DOXYREST_OUTPUT_DIR_NAME}
         PARENT_SCOPE

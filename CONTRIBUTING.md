@@ -15,12 +15,12 @@ Run before each commit:
 
 ```bash
 clang-format -style=file -i         \
-     dpctl-capi/include/*.h         \
-     dpctl-capi/include/Support/*.h \
-     dpctl-capi/source/*.cpp        \
-     dpctl-capi/tests/*.cpp         \
-     dpctl-capi/helper/include/*.h  \
-     dpctl-capi/helper/source/*.cpp
+     libsyclinterface/include/*.h         \
+     libsyclinterface/include/Support/*.h \
+     libsyclinterface/source/*.cpp        \
+     libsyclinterface/tests/*.cpp         \
+     libsyclinterface/helper/include/*.h  \
+     libsyclinterface/helper/source/*.cpp
 ```
 
 > **_NOTE:_** A much simpler option is to use `pre-commit` and the

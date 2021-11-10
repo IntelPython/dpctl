@@ -76,7 +76,7 @@ def build_backend(
     if os.path.exists(INSTALL_PREFIX):
         shutil.rmtree(INSTALL_PREFIX)
 
-    backends = os.path.join(dpctl_dir, "dpctl-capi")
+    backends = os.path.join(dpctl_dir, "libsyclinterface")
 
     ENABLE_LO_PROGRAM_CREATION = "ON" if l0_support else "OFF"
 
@@ -213,7 +213,7 @@ def build_backend(
         shutil.rmtree(include_dir)
 
     shutil.copytree(
-        os.path.join(dpctl_dir, "dpctl-capi", "include"), include_dir
+        os.path.join(dpctl_dir, "libsyclinterface", "include"), include_dir
     )
 
 

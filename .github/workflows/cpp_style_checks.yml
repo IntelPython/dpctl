@@ -19,4 +19,4 @@ jobs:
       uses: jidicula/clang-format-action@v3.1.0
       with:
         clang-format-version: '11'
-        check-path: 'dpctl-capi'
+        check-path: 'libsyclinterface'

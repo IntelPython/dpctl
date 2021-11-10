@@ -917,11 +917,11 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = ../dpctl-capi/include/Support
-EXCLUDE               += ../dpctl-capi/include/Config
-EXCLUDE               += ../dpctl-capi/include/dpctl_vector.h
-EXCLUDE               += ../dpctl-capi/include/dpctl_data_types.h
-EXCLUDE               += ../dpctl-capi/include/dpctl_utils.h
+EXCLUDE                = ../libsyclinterface/include/Support
+EXCLUDE               += ../libsyclinterface/include/Config
+EXCLUDE               += ../libsyclinterface/include/dpctl_vector.h
+EXCLUDE               += ../libsyclinterface/include/dpctl_data_types.h
+EXCLUDE               += ../libsyclinterface/include/dpctl_utils.h
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
