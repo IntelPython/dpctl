@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl Python API &mdash; Data-parallel Control (dpctl) 0.11.0+11.g5c3fed5f documentation</title>
+  <title>dpctl Python API &mdash; Data-parallel Control (dpctl) 0.11.0+12.g9d264fdc documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.11.0+11.g5c3fed5f
+                0.11.0+12.g9d264fdc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -457,7 +457,8 @@ returned by the SYCL <code class="docutils literal notranslate"><span class="pre
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.device_context">
 <span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">device_context</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.device_context" title="Permalink to this definition"></a></dt>
-<dd><p>Yields a SYCL queue corresponding to the input filter string.</p>
+<dd><p>Yields a SYCL queue corresponding to the input queue object, device object,
+or device filter selector string.</p>
 <p>This context manager “activates”, <em>i.e.</em>, sets as the currently usable
 queue, the SYCL queue defined by the argument <cite>arg</cite>.
 The activated queue is yielded by the context manager and can also be
@@ -466,21 +467,25 @@ the context manager’s scope. The yielded queue is removed as the currently
 usable queue on exiting the context manager.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>queue_str</strong> (<em>str</em>) – A string corresponding to the DPC++ filter selector.</p>
+<dd class="field-odd"><p><strong>arg</strong> – A <a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object, or a <a class="reference internal" href="dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>
+object, or a filter selector string.</p>
 </dd>
 <dt class="field-even">Yields</dt>
-<dd class="field-even"><p><a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> – A SYCL queue corresponding to the specified
-filter string.</p>
+<dd class="field-even"><p><a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> –</p>
+<dl class="simple">
+<dt>A SYCL queue corresponding to the specified</dt><dd><p>input device, queue, or filter string.</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#dpctl.SyclQueueCreationError" title="dpctl.SyclQueueCreationError"><strong>SyclQueueCreationError</strong></a> – If the SYCL queue creation failed.</p>
 </dd>
 <dt class="field-even">Example</dt>
-<dd class="field-even"><p>To create a scope within which the Level Zero GPU number 0 is active,
-a programmer needs to do the following.</p>
+<dd class="field-even"><p>The following example sets current queue targeting specific device
+indicated with filter selector string in the scope of <cite>with</cite> block:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="k">with</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">device_context</span><span class="p">(</span><span class="s2">&quot;level0:gpu:0&quot;</span><span class="p">):</span>
-    <span class="k">pass</span>
+    <span class="n">do_something_on_gpu0</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd>
@@ -710,7 +715,7 @@ level to print the most verbose output.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.11.0+11.g5c3fed5f
+      v: 0.11.0+12.g9d264fdc
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
