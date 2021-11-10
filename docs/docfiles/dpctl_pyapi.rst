@@ -26,14 +26,19 @@ Sub-modules
 Classes
 -------
 
-.. toctree::
-    :maxdepth: 1
+.. list-table::
+   :widths: 25,50
 
-    `dpctl.SyclPlatform`<dpctl_pyapi/SyclPlatform> : A Python class representing `SYCL Platforms`<https://sycl.readthedocs.io/en/latest/iface/platform.html>
-    `dpctl.SyclDevice`<dpctl_pyapi/SyclDevice> : A Python class representing `SYCL Devices`<https://sycl.readthedocs.io/en/latest/iface/device.html>
-    `dpctl.SyclQueue`<dpctl_pyapi/SyclQueue> : A Python class representing `SYCL Queues`<https://sycl.readthedocs.io/en/latest/iface/queue.html>
-    `dpctl.SyclContext`<dpctl_pyapi/SyclContext> : A Python class representing `SYCL Contexts`<https://sycl.readthedocs.io/en/latest/iface/context.html>
-    `dpctl.SyclEvent`<dpctl_pyapi/SyclEvent> : A Python class representing `SYCL Events`<https://sycl.readthedocs.io/en/latest/iface/event.html>
+   * - :ref:`SyclPlatform_api`
+     - A Python class representing a `SYCL platform <https://sycl.readthedocs.io/en/latest/iface/platform.html>`_.
+   * - :ref:`SyclDevice_api`
+     - A Python class representing a `SYCL device <https://sycl.readthedocs.io/en/latest/iface/device.html>`_.
+   * - :ref:`SyclQueue_api`
+     - A Python class representing a `SYCL queue <https://sycl.readthedocs.io/en/latest/iface/queue.html>`_.
+   * - :ref:`SyclContext_api`
+     - A Python class representing a `SYCL context <https://sycl.readthedocs.io/en/latest/iface/context.html>`_.
+   * - :ref:`SyclEvent_api`
+     - A Python class representing a `SYCL event <https://sycl.readthedocs.io/en/latest/iface/event.html>`_.
 
 Enumerations
 ------------
