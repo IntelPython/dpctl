@@ -23,6 +23,7 @@ per-file-ignores =
     dpctl/memory/_memory.pyx: E999, E225, E226, E227
     dpctl/program/_program.pyx: E999, E225, E226, E227
     dpctl/tensor/_usmarray.pyx: E999, E225, E226, E227
+    dpctl/tensor/_dlpack.pyx: E999, E225, E226, E227
     dpctl/tensor/numpy_usm_shared.py: F821
     dpctl/tests/_cython_api.pyx: E999, E225, E227, E402
     dpctl/utils/_compute_follows_data.pyx: E999, E225, E227
