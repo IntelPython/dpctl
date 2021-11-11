@@ -8,17 +8,17 @@ repos:
         pass_filenames: false
         args: ["-r", "dpctl", "-lll"]
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
+    rev: v4.0.1
     hooks:
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
 -   repo: https://github.com/psf/black
-    rev: 21.4b2
+    rev: 21.10b0
     hooks:
     -   id: black
         exclude: "versioneer.py|dpctl/_version.py"
 -   repo: https://github.com/pycqa/isort
-    rev: 5.8.0
+    rev: 5.10.1
     hooks:
     -   id: isort
         name: isort (python)
@@ -29,7 +29,7 @@ repos:
         name: isort (pyi)
         types: [pyi]
 -   repo: https://gitlab.com/pycqa/flake8
-    rev: 3.9.1
+    rev: 4.0.1
     hooks:
     -   id: flake8
 -   repo: https://github.com/pocc/pre-commit-hooks
