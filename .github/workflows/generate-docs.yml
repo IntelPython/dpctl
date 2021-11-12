@@ -54,6 +54,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Build dpctl
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         shell: bash -l {0}
