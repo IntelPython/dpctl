@@ -32,6 +32,7 @@ from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
+cimport dpctl.tensor._dlpack as c_dlpack
 
 include "_stride_utils.pxi"
 include "_types.pxi"
@@ -738,10 +739,20 @@ cdef class usm_ndarray:
         return NotImplemented
 
     def __dlpack__(self, stream=None):
-        return NotImplemented
+        """Produce DLPack capsule"""
+        if stream is None:
+            return c_dlpack.to_dlpack_capsule(self)
+        else:
+            raise NotImplementedError(
+                "Only stream=None is supported. "
+                "Use `dpctl.SyclQueue.submit_barrier` to synchronize queues."
+            )
 
     def __dlpack_device__(self):
-        return NotImplemented
+        return (
+            c_dlpack.device_oneAPI,
+            (<c_dpctl.SyclDevice>self.sycl_device).get_overall_ordinal(),
+        )
 
     def __eq__(self, other):
         return _dispatch_binary_elementwise(self, "equal", other)
