@@ -305,5 +305,18 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
 
 cpdef from_dlpack(array):
     """Constructs `usm_ndarray` from a Python object that implements
-    `__dlpack__` protocol."""
-    pass
+    `__dlpack__` protocol.
+    """
+    if not hasattr(array, "__dlpack__"):
+        raise TypeError(
+            "The argument of type {type(array)} does not implement "
+            "`__dlpack__` method."
+        )
+    dlpack_attr = getattr(array, "__dlpack__")
+    if not callable(dlpack_attr):
+        raise TypeError(
+            "The argument of type {type(array)} does not implement "
+            "`__dlpack__` method."
+        )
+    dlpack_capsule = dlpack_attr()
+    return from_dlpack_capsule(dlpack_capsule)
