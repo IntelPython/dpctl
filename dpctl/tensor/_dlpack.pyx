@@ -36,6 +36,7 @@ from ._usmarray cimport usm_ndarray
 import numpy as np
 
 import dpctl
+import dpctl.memory as dpmem
 
 
 cdef extern from './include/dlpack/dlpack.h' nogil:
@@ -95,10 +96,6 @@ cdef void pycapsule_deleter(object dlt_capsule):
         dlm_tensor = <DLManagedTensor*>cpython.PyCapsule_GetPointer(
             dlt_capsule, 'dltensor')
         dlm_tensor.deleter(dlm_tensor)
-    elif cpython.PyCapsule_IsValid(dlt_capsule, 'used_dltensor'):
-        dlm_tensor = <DLManagedTensor*>cpython.PyCapsule_GetPointer(
-            dlt_capsule, 'used_dltensor')
-        dlm_tensor.deleter(dlm_tensor)
 
 
 cdef void managed_tensor_deleter(DLManagedTensor *dlm_tensor) with gil:
@@ -133,7 +130,11 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
     cdef int64_t *shape_strides_ptr = NULL
     cdef int i = 0
     cdef int device_id = -1
+    cdef char* base_ptr = NULL
+    cdef Py_ssize_t element_offset = 0
+    cdef Py_ssize_t byte_offset = 0
 
+    ary_base = usm_ary.get_base()
     ary_sycl_queue = usm_ary.get_sycl_queue()
     ary_sycl_device = ary_sycl_queue.get_sycl_device()
 
@@ -176,11 +177,13 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
 
     ary_dt = usm_ary.dtype
     ary_dtk = ary_dt.kind
+    element_offset = usm_ary.get_offset()
+    byte_offset = element_offset * (<Py_ssize_t>ary_dt.itemsize)
 
     dl_tensor = &dlm_tensor.dl_tensor
-    dl_tensor.data = <void*>data_ptr
+    dl_tensor.data = <void*>(data_ptr - byte_offset)
     dl_tensor.ndim = nd
-    dl_tensor.byte_offset = <uint64_t>0
+    dl_tensor.byte_offset = <uint64_t>byte_offset
     dl_tensor.shape = &shape_strides_ptr[0]
     if strides_ptr is NULL:
         dl_tensor.strides = NULL
@@ -212,6 +215,24 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
     return cpython.PyCapsule_New(dlm_tensor, 'dltensor', pycapsule_deleter)
 
 
+cdef class _DLManagedTensorOwner:
+    """Helper class managing lifetimes of the DLManagedTensor struct"""
+    cdef DLManagedTensor *dlm_tensor
+
+    def __cinit__(self):
+        self.dlm_tensor = NULL
+
+    def __dealloc__(self):
+        if self.dlm_tensor:
+            self.dlm_tensor.deleter(self.dlm_tensor)
+
+    @staticmethod
+    cdef _DLManagedTensorOwner _create(DLManagedTensor *dlm_tensor_src):
+        cdef _DLManagedTensorOwner res = _DLManagedTensorOwner.__new__(_DLManagedTensorOwner)
+        res.dlm_tensor = dlm_tensor_src
+        return res
+
+
 cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
     """Reconstructs instance of usm_ndarray from named Python
     capsule object referencing instance of `DLManagedTensor` without
@@ -221,6 +242,11 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
     cdef size_t sz = 1
     cdef int i
     cdef int element_bytesize = 0
+    cdef Py_ssize_t offset_min = 0
+    cdef Py_ssize_t offset_max = 0
+    cdef int64_t stride_i
+    cdef char* mem_ptr = NULL
+    cdef Py_ssize_t element_offset = 0
 
     if not cpython.PyCapsule_IsValid(py_caps, 'dltensor'):
         if cpython.PyCapsule_IsValid(py_caps, 'used_dltensor'):
@@ -237,9 +263,12 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
     # Verify that we can work with this device
     if dlm_tensor.dl_tensor.device.device_type == kDLOneAPI:
         q = dpctl.SyclQueue(str(<int>dlm_tensor.dl_tensor.device.device_id))
-        usm_type = c_dpmem._Memory.get_pointer_type(
-            <DPCTLSyclUSMRef> dlm_tensor.dl_tensor.data,
-            <c_dpctl.SyclContext>q.sycl_context)
+        if dlm_tensor.dl_tensor.data is NULL:
+            usm_type = b"device"
+        else:
+            usm_type = c_dpmem._Memory.get_pointer_type(
+                <DPCTLSyclUSMRef> dlm_tensor.dl_tensor.data,
+                <c_dpctl.SyclContext>q.sycl_context)
         if usm_type == b"unknown":
             raise ValueError(
                 f"Data pointer in DLPack is not bound to default sycl "
@@ -255,17 +284,45 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
             raise ValueError(
                 "Can not import DLPack tensor with lanes != 1"
             )
-        for i in range(dlm_tensor.dl_tensor.ndim):
-            sz = sz * dlm_tensor.dl_tensor.shape[i]
+        if dlm_tensor.dl_tensor.strides is NULL:
+            for i in range(dlm_tensor.dl_tensor.ndim):
+                sz = sz * dlm_tensor.dl_tensor.shape[i]
+        else:
+            offset_min = 0
+            offset_max = 0
+            for i in range(dlm_tensor.dl_tensor.ndim):
+                stride_i = dlm_tensor.dl_tensor.strides[i]
+                if stride_i > 0:
+                    offset_max = offset_max + stride_i * (
+                        dlm_tensor.dl_tensor.shape[i] - 1
+                    )
+                else:
+                    offset_min = offset_min + stride_i * (
+                        dlm_tensor.dl_tensor.shape[i] - 1
+                    )
+            sz = offset_max - offset_min + 1
+        if sz == 0:
+            sz = 1
 
         element_bytesize = (dlm_tensor.dl_tensor.dtype.bits // 8)
         sz = sz * element_bytesize
-        usm_mem = c_dpmem._Memory.create_from_usm_pointer_size_qref(
-            <DPCTLSyclUSMRef> dlm_tensor.dl_tensor.data,
-            sz,
-            (<c_dpctl.SyclQueue>q).get_queue_ref(),
-            memory_owner=py_caps
-        )
+        element_offset = dlm_tensor.dl_tensor.byte_offset // element_bytesize
+
+        # transfer dlm_tensor ownership
+        dlm_holder = _DLManagedTensorOwner._create(dlm_tensor)
+        cpython.PyCapsule_SetName(py_caps, 'used_dltensor')
+
+        if dlm_tensor.dl_tensor.data is NULL:
+            usm_mem = dpmem.MemoryUSMDevice(sz, q)
+        else:
+            mem_ptr = <char *>dlm_tensor.dl_tensor.data + dlm_tensor.dl_tensor.byte_offset
+            mem_ptr = mem_ptr - (element_offset * element_bytesize)
+            usm_mem = c_dpmem._Memory.create_from_usm_pointer_size_qref(
+                <DPCTLSyclUSMRef> mem_ptr,
+                sz,
+                (<c_dpctl.SyclQueue>q).get_queue_ref(),
+                memory_owner=dlm_holder
+            )
         py_shape = list()
         for i in range(dlm_tensor.dl_tensor.ndim):
             py_shape.append(dlm_tensor.dl_tensor.shape[i])
@@ -293,9 +350,9 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
             py_shape,
             dtype=ary_dt,
             buffer=usm_mem,
-            strides=py_strides
+            strides=py_strides,
+            offset=element_offset
         )
-        cpython.PyCapsule_SetName(py_caps, 'used_dltensor')
         return res_ary
     else:
         raise ValueError(
@@ -304,8 +361,16 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
 
 
 cpdef from_dlpack(array):
-    """Constructs `usm_ndarray` from a Python object that implements
-    `__dlpack__` protocol.
+    """dpctl.tensor.from_dlpack(obj)
+
+    Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python
+    object `obj` that implements `__dlpack__` protocol. The output
+    array is always a zero-copy view of the input.
+
+    Raises:
+        TypeError: if `obj` does not implement `__dlpack__` method.
+        ValueError: if zero copy view can not be constructed because
+            the input array resides on an unsupported device.
     """
     if not hasattr(array, "__dlpack__"):
         raise TypeError(
