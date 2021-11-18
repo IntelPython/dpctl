@@ -229,6 +229,17 @@ def _asarray_from_numpy_ndarray(
     return res
 
 
+def _is_object_with_buffer_protocol(obj):
+    "Returns True if object support Python buffer protocol"
+    try:
+        # use context manager to ensure
+        # buffer is instantly released
+        with memoryview(obj):
+            return True
+    except TypeError:
+        return False
+
+
 def asarray(
     obj,
     dtype=None,
@@ -238,7 +249,45 @@ def asarray(
     sycl_queue=None,
     order="K",
 ):
-    """Represents object `obj` as usm_ndarray"""
+    """asarray(obj, dtype=None, copy=None, order="K",
+               device=None, usm_type=None, sycl_queue=None)
+
+    Converts `obj` to :class:`dpctl.tensor.usm_ndarray`.
+
+    Args:
+        obj: Python object to convert. Can be an instance of `usm_ndarray`,
+            an object representing SYCL USM allocation and implementing
+            `__sycl_usm_array_interface__` protocol, an instance
+            of `numpy.ndarray`, an object supporting Python buffer protocol,
+            a Python scalar, or a (possibly nested) sequence of Python scalars.
+        dtype (data type, optional): output array data type. If `dtype` is
+            `None`, the output array data type is inferred from data types in
+            `obj`. Default: `None`
+        copy (`bool`, optional): boolean indicating whether or not to copy the
+            input. If `True`, always creates a copy. If `False`, need to copy
+            raises `ValueError`. If `None`, try to reuse existing memory
+            allocations if possible, but allowed to perform a copy otherwise.
+            Default: `None`.
+        order ("C","F","A","K", optional): memory layout of the output array.
+            Default: "C"
+        device (optional): array API concept of device where the output array
+            is created. `device` can be `None`, a oneAPI filter selector string,
+            an instance of :class:`dpctl.SyclDevice` corresponding to a
+            non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
+            `dpctl.tensor.usm_array.device`. Default: `None`.
+        usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+            allocation for the output array. For `usm_type=None` the allocation
+            type is inferred from the input if `obj` has USM allocation, or
+            `"device"` is used instead. Default: `None`.
+        sycl_queue: (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
+            for output array allocation and copying. `sycl_queue` and `device`
+            are exclusive keywords, i.e. use one or another. If both are
+            specified, a `TypeError` is raised unless both imply the same
+            underlying SYCL queue to be used. If both a `None`, the
+            `dpctl.SyclQueue()` is used for allocation and copying.
+            Default: `None`.
+    """
     # 1. Check that copy is a valid keyword
     if copy not in [None, True, False]:
         raise TypeError(
@@ -313,9 +362,17 @@ def asarray(
             sycl_queue=sycl_queue,
             order=order,
         )
-    elif hasattr(obj, "__dlpack__"):
-        raise NotImplementedError(
-            "Support for __dlpack__ is not yet implemented"
+    elif _is_object_with_buffer_protocol(obj):
+        if copy is False:
+            raise ValueError(
+                f"Converting {type(obj)} to usm_ndarray requires a copy"
+            )
+        return _asarray_from_numpy_ndarray(
+            np.array(obj),
+            dtype=dtype,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+            order=order,
         )
     elif isinstance(obj, (list, tuple, range)):
         if copy is False:
@@ -335,6 +392,10 @@ def asarray(
         raise NotImplementedError(
             "Converting Python sequences is not implemented"
         )
+    if copy is False:
+        raise ValueError(
+            f"Converting {type(obj)} to usm_ndarray requires a copy"
+        )
     # obj is a scalar, create 0d array
     return _asarray_from_numpy_ndarray(
         np.asarray(obj),
@@ -348,9 +409,35 @@ def asarray(
 def empty(
     sh, dtype="f8", order="C", device=None, usm_type="device", sycl_queue=None
 ):
-    """Creates empty usm_ndarray"""
+    """dpctl.tensor.empty(shape, dtype="f8", order="C", device=None,
+                          usm_type="device", sycl_queue=None)
+
+    Creates `usm_ndarray` from uninitialized USM allocation.
+
+    Args:
+        shape (tuple): Dimensions of the array to be created.
+        dtype (optional): data type of the array. Can be typestring,
+            a `numpy.dtype` object, `numpy` char string, or a numpy
+            scalar type. Default: "f8"
+        order ("C", or F"): memory layout for the array. Default: "C"
+        device (optional): array API concept of device where the output array
+            is created. `device` can be `None`, a oneAPI filter selector string,
+            an instance of :class:`dpctl.SyclDevice` corresponding to a
+            non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
+            `dpctl.tensor.usm_array.device`. Default: `None`.
+        usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+            allocation for the output array. Default: `"device"`.
+        sycl_queue: (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
+            for output array allocation and copying. `sycl_queue` and `device`
+            are exclusive keywords, i.e. use one or another. If both are
+            specified, a `TypeError` is raised unless both imply the same
+            underlying SYCL queue to be used. If both a `None`, the
+            `dpctl.SyclQueue()` is used for allocation and copying.
+            Default: `None`.
+    """
     dtype = np.dtype(dtype)
-    if len(order) == 0 or order[0] not in "CcFf":
+    if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
         raise ValueError(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
