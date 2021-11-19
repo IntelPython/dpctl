@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.11.0+49.g31de5dc2 documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.11.0+50.g76c6a326 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.11.0+49.g31de5dc2
+                0.11.0+50.g76c6a326
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -306,6 +306,17 @@
     <span class="k">return</span> <span class="n">res</span>
 
 
+<span class="k">def</span> <span class="nf">_is_object_with_buffer_protocol</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="s2">&quot;Returns True if object support Python buffer protocol&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># use context manager to ensure</span>
+        <span class="c1"># buffer is instantly released</span>
+        <span class="k">with</span> <span class="nb">memoryview</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
 <div class="viewcode-block" id="asarray"><a class="viewcode-back" href="../../../docfiles/dpctl.tensor_api.html#dpctl.tensor.asarray">[docs]</a><span class="k">def</span> <span class="nf">asarray</span><span class="p">(</span>
     <span class="n">obj</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -390,9 +401,17 @@
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
             <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__dlpack__&quot;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;Support for __dlpack__ is not yet implemented&quot;</span>
+    <span class="k">elif</span> <span class="n">_is_object_with_buffer_protocol</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">copy</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Converting </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="si">}</span><span class="s2"> to usm_ndarray requires a copy&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_asarray_from_numpy_ndarray</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">range</span><span class="p">)):</span>
         <span class="k">if</span> <span class="n">copy</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
@@ -412,6 +431,10 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;Converting Python sequences is not implemented&quot;</span>
         <span class="p">)</span>
+    <span class="k">if</span> <span class="n">copy</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Converting </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="si">}</span><span class="s2"> to usm_ndarray requires a copy&quot;</span>
+        <span class="p">)</span>
     <span class="c1"># obj is a scalar, create 0d array</span>
     <span class="k">return</span> <span class="n">_asarray_from_numpy_ndarray</span><span class="p">(</span>
         <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span>
@@ -427,7 +450,7 @@
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Creates empty usm_ndarray&quot;&quot;&quot;</span>
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;CcFf&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;CcFf&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;Unrecognized order keyword value, expecting &#39;F&#39; or &#39;C&#39;.&quot;</span>
         <span class="p">)</span>
@@ -479,7 +502,7 @@
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.11.0+49.g31de5dc2
+      v: 0.11.0+50.g76c6a326
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
