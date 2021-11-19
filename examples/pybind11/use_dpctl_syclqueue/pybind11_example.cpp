@@ -130,7 +130,7 @@ offloaded_array_mod(py::object queue,
             ->submit([&](sycl::handler &cgh) {
                 sycl::accessor a_acc(a_buf, cgh, sycl::read_only);
                 sycl::accessor r_acc(r_buf, cgh, sycl::write_only,
-                                     sycl::noinit);
+                                     sycl::no_init);
 
                 cgh.parallel_for(sycl::range<1>(n), [=](sycl::id<1> idx) {
                     r_acc[idx] = a_acc[idx] % mod;
