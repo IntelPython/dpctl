@@ -19,7 +19,7 @@
 # cython: linetrace=True
 
 import logging
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 
 from .enum_types import backend_type, device_type
 
@@ -210,6 +210,14 @@ cpdef get_current_backend():
     return _mgr.get_current_backend()
 
 
+def _get_registered_context_manager(sycl_queue):
+    try:
+        from numba_dppy import get_context_manager
+        return get_context_manager(sycl_queue)
+    except:
+        return nullcontext()
+
+
 @contextmanager
 def device_context(arg):
     """
@@ -248,7 +256,8 @@ def device_context(arg):
     ctxt = None
     try:
         ctxt = _mgr._set_as_current_queue(arg)
-        yield ctxt
+        with _get_registered_context_manager(ctxt):
+            yield ctxt
     finally:
         # Code to release resource
         if ctxt:
