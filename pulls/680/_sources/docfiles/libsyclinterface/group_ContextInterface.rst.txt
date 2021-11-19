@@ -1,0 +1,392 @@
+.. index:: pair: group; Context class C wrapper
+.. _doxid-da/df7/group__ContextInterface:
+
+Context class C wrapper
+=======================
+
+.. toctree::
+	:hidden:
+
+Overview
+~~~~~~~~
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	
+	// global functions
+
+	DPCTL_API bool
+	:ref:`DPCTLContext_AreEq<doxid-da/df7/group__ContextInterface_1gaa6938cd391c1cea91998fae97ba05141>`(
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef1,
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef2
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
+	:ref:`DPCTLContext_Copy<doxid-da/df7/group__ContextInterface_1ga2e2a05150e669d9950155c4884d1b12e>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
+	:ref:`DPCTLContext_Create<doxid-da/df7/group__ContextInterface_1ga02b29e40269ed9e323ff22896c031b53>`(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		int properties
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
+	:ref:`DPCTLContext_CreateFromDevices<doxid-da/df7/group__ContextInterface_1gae092621d43d78c7cb4d46dfc3fa6b681>`(
+		__dpctl_keep const :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` DVRef,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		int properties
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLContext_Delete<doxid-da/df7/group__ContextInterface_1ga12d2a8bc191c360fe67eae5e1fc78c63>`(__dpctl_take :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLContext_DeviceCount<doxid-da/df7/group__ContextInterface_1ga835a44d29be8de2b0b6bf4ccb09578be>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef);
+
+	DPCTL_API :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`
+	:ref:`DPCTLContext_GetBackend<doxid-da/df7/group__ContextInterface_1gaa6a2b2cf4f898df8824da1b52ba9ceb6>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
+	:ref:`DPCTLContext_GetDevices<doxid-da/df7/group__ContextInterface_1gaba52414ec6b07a3a3364f7a5a2c72b13>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLContext_Hash<doxid-da/df7/group__ContextInterface_1ga8bf9355c979e31f4714a0c2208f1ed14>`(__dpctl_take :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLContext_IsHost<doxid-da/df7/group__ContextInterface_1ga24db0f38d9acb63c50c686f848b21a53>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
+
+.. _details-da/df7/group__ContextInterface:
+
+Detailed Documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+Global Functions
+----------------
+
+.. index:: pair: function; DPCTLContext_AreEq
+.. _doxid-da/df7/group__ContextInterface_1gaa6938cd391c1cea91998fae97ba05141:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLContext_AreEq(
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef1,
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef2
+		)
+
+Checks if two DPCTLSyclContextRef objects point to the same sycl::context.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- CtxRef1
+
+		- First opaque pointer to the sycl context.
+
+	*
+		- CtxRef2
+
+		- Second opaque pointer to the sycl context.
+
+
+
+.. rubric:: Returns:
+
+True if the underlying sycl::context are same, false otherwise.
+
+.. index:: pair: function; DPCTLContext_Copy
+.. _doxid-da/df7/group__ContextInterface_1ga2e2a05150e669d9950155c4884d1b12e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
+	DPCTLContext_Copy(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef)
+
+Returns a copy of the DPCTLSyclContextRef object.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- CRef
+
+		- DPCTLSyclContextRef object to be copied.
+
+
+
+.. rubric:: Returns:
+
+A new DPCTLSyclContextRef created by copying the passed in DPCTLSyclContextRef object.
+
+.. index:: pair: function; DPCTLContext_Create
+.. _doxid-da/df7/group__ContextInterface_1ga02b29e40269ed9e323ff22896c031b53:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
+	DPCTLContext_Create(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		int properties
+		)
+
+Constructs a new SYCL context for the given SYCL device using the optional async error handler and properties bit flags.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a SYCL device.
+
+	*
+		- error_handler
+
+		- A callback function that will be invoked by the async_handler used during context creation. Can be NULL if no async_handler is needed.
+
+	*
+		- properties
+
+		- An optional combination of bit flags to define context properties. Currently, dpctl does not use this argument.
+
+
+
+.. rubric:: Returns:
+
+A new opaque pointer wrapping a SYCL context.
+
+.. index:: pair: function; DPCTLContext_CreateFromDevices
+.. _doxid-da/df7/group__ContextInterface_1gae092621d43d78c7cb4d46dfc3fa6b681:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
+	DPCTLContext_CreateFromDevices(
+		__dpctl_keep const :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` DVRef,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		int properties
+		)
+
+Constructs a new SYCL context for the given vector of SYCL devices using the optional async error handler and properties bit flags.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DVRef
+
+		- An opaque pointer to a std::vector of DPCTLSyclDeviceRef opaque pointers.
+
+	*
+		- error_handler
+
+		- A callback function that will be invoked by the async_handler used during context creation. Can be NULL if no async_handler is needed.
+
+	*
+		- properties
+
+		- An optional combination of bit flags to define context properties. Currently, dpctl does not use this argument.
+
+
+
+.. rubric:: Returns:
+
+A new opaque pointer wrapping a SYCL context.
+
+.. index:: pair: function; DPCTLContext_Delete
+.. _doxid-da/df7/group__ContextInterface_1ga12d2a8bc191c360fe67eae5e1fc78c63:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLContext_Delete(__dpctl_take :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef)
+
+Delete the pointer after casting it to sycl::context.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- CtxRef
+
+		- The DPCTLSyclContextRef pointer to be deleted.
+
+.. index:: pair: function; DPCTLContext_DeviceCount
+.. _doxid-da/df7/group__ContextInterface_1ga835a44d29be8de2b0b6bf4ccb09578be:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLContext_DeviceCount(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef)
+
+Returns the number of devices associated with sycl::context referenced by DPCTLSyclContextRef object.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- CRef
+
+		- DPCTLSyclContexRef object to query.
+
+
+
+.. rubric:: Returns:
+
+A positive count on success or zero on error.
+
+.. index:: pair: function; DPCTLContext_GetBackend
+.. _doxid-da/df7/group__ContextInterface_1gaa6a2b2cf4f898df8824da1b52ba9ceb6:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`
+	DPCTLContext_GetBackend(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef)
+
+Returns the sycl backend for the DPCTLSyclContextRef pointer.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- CtxRef
+
+		- An opaque pointer to a sycl::context.
+
+
+
+.. rubric:: Returns:
+
+The sycl backend for the DPCTLSyclContextRef returned as a DPCTLSyclBackendType enum type.
+
+.. index:: pair: function; DPCTLContext_GetDevices
+.. _doxid-da/df7/group__ContextInterface_1gaba52414ec6b07a3a3364f7a5a2c72b13:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>`
+	DPCTLContext_GetDevices(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef)
+
+Returns a vector of devices associated with sycl::context referenced by DPCTLSyclContextRef object.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- CRef
+
+		- DPCTLSyclContexRef object to query.
+
+
+
+.. rubric:: Returns:
+
+A DPCTLDeviceVectorRef with devices associated with given CRef.
+
+.. index:: pair: function; DPCTLContext_Hash
+.. _doxid-da/df7/group__ContextInterface_1ga8bf9355c979e31f4714a0c2208f1ed14:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLContext_Hash(__dpctl_take :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef)
+
+Wrapper over std::hash<sycl::context>'s operator()
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- CtxRef
+
+		- The DPCTLSyclContextRef pointer.
+
+
+
+.. rubric:: Returns:
+
+Hash value of the underlying ``sycl::context`` instance.
+
+.. index:: pair: function; DPCTLContext_IsHost
+.. _doxid-da/df7/group__ContextInterface_1ga24db0f38d9acb63c50c686f848b21a53:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLContext_IsHost(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef)
+
+Returns true if this SYCL context is a host context.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- CtxRef
+
+		- An opaque pointer to a sycl::context.
+
+
+
+.. rubric:: Returns:
+
+True if the SYCL context is a host context, else False.
+
