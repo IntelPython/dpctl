@@ -214,7 +214,7 @@ def _get_registered_context_manager(sycl_queue):
     try:
         from numba_dppy import get_context_manager
         return get_context_manager(sycl_queue)
-    except:
+    except Exception:
         return nullcontext()
 
 
