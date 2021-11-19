@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.11.0+50.g76c6a326 documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.11.0+51.g2b89b096 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.11.0+50.g76c6a326
+                0.11.0+51.g2b89b096
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -324,9 +324,47 @@
     <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Represents object `obj` as usm_ndarray&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;asarray(obj, dtype=None, copy=None, order=&quot;K&quot;,</span>
+<span class="sd">               device=None, usm_type=None, sycl_queue=None)</span>
+
+<span class="sd">    Converts `obj` to :class:`dpctl.tensor.usm_ndarray`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj: Python object to convert. Can be an instance of `usm_ndarray`,</span>
+<span class="sd">            an object representing SYCL USM allocation and implementing</span>
+<span class="sd">            `__sycl_usm_array_interface__` protocol, an instance</span>
+<span class="sd">            of `numpy.ndarray`, an object supporting Python buffer protocol,</span>
+<span class="sd">            a Python scalar, or a (possibly nested) sequence of Python scalars.</span>
+<span class="sd">        dtype (data type, optional): output array data type. If `dtype` is</span>
+<span class="sd">            `None`, the output array data type is inferred from data types in</span>
+<span class="sd">            `obj`. Default: `None`</span>
+<span class="sd">        copy (`bool`, optional): boolean indicating whether or not to copy the</span>
+<span class="sd">            input. If `True`, always creates a copy. If `False`, need to copy</span>
+<span class="sd">            raises `ValueError`. If `None`, try to reuse existing memory</span>
+<span class="sd">            allocations if possible, but allowed to perform a copy otherwise.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">        order (&quot;C&quot;,&quot;F&quot;,&quot;A&quot;,&quot;K&quot;, optional): memory layout of the output array.</span>
+<span class="sd">            Default: &quot;C&quot;</span>
+<span class="sd">        device (optional): array API concept of device where the output array</span>
+<span class="sd">            is created. `device` can be `None`, a oneAPI filter selector string,</span>
+<span class="sd">            an instance of :class:`dpctl.SyclDevice` corresponding to a</span>
+<span class="sd">            non-partitioned SYCL device, an instance of</span>
+<span class="sd">            :class:`dpctl.SyclQueue`, or a `Device` object returnedby</span>
+<span class="sd">            `dpctl.tensor.usm_array.device`. Default: `None`.</span>
+<span class="sd">        usm_type (&quot;device&quot;|&quot;shared&quot;|&quot;host&quot;, optional): The type of SYCL USM</span>
+<span class="sd">            allocation for the output array. For `usm_type=None` the allocation</span>
+<span class="sd">            type is inferred from the input if `obj` has USM allocation, or</span>
+<span class="sd">            `&quot;device&quot;` is used instead. Default: `None`.</span>
+<span class="sd">        sycl_queue: (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use</span>
+<span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
+<span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
+<span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
+<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># 1. Check that copy is a valid keyword</span>
     <span class="k">if</span> <span class="n">copy</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -448,7 +486,33 @@
 <div class="viewcode-block" id="empty"><a class="viewcode-back" href="../../../docfiles/dpctl.tensor_api.html#dpctl.tensor.empty">[docs]</a><span class="k">def</span> <span class="nf">empty</span><span class="p">(</span>
     <span class="n">sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;f8&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates empty usm_ndarray&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;dpctl.tensor.empty(shape, dtype=&quot;f8&quot;, order=&quot;C&quot;, device=None,</span>
+<span class="sd">                          usm_type=&quot;device&quot;, sycl_queue=None)</span>
+
+<span class="sd">    Creates `usm_ndarray` from uninitialized USM allocation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        shape (tuple): Dimensions of the array to be created.</span>
+<span class="sd">        dtype (optional): data type of the array. Can be typestring,</span>
+<span class="sd">            a `numpy.dtype` object, `numpy` char string, or a numpy</span>
+<span class="sd">            scalar type. Default: &quot;f8&quot;</span>
+<span class="sd">        order (&quot;C&quot;, or F&quot;): memory layout for the array. Default: &quot;C&quot;</span>
+<span class="sd">        device (optional): array API concept of device where the output array</span>
+<span class="sd">            is created. `device` can be `None`, a oneAPI filter selector string,</span>
+<span class="sd">            an instance of :class:`dpctl.SyclDevice` corresponding to a</span>
+<span class="sd">            non-partitioned SYCL device, an instance of</span>
+<span class="sd">            :class:`dpctl.SyclQueue`, or a `Device` object returnedby</span>
+<span class="sd">            `dpctl.tensor.usm_array.device`. Default: `None`.</span>
+<span class="sd">        usm_type (&quot;device&quot;|&quot;shared&quot;|&quot;host&quot;, optional): The type of SYCL USM</span>
+<span class="sd">            allocation for the output array. Default: `&quot;device&quot;`.</span>
+<span class="sd">        sycl_queue: (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use</span>
+<span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
+<span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
+<span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
+<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;CcFf&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -502,7 +566,7 @@
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.11.0+50.g76c6a326
+      v: 0.11.0+51.g2b89b096
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
