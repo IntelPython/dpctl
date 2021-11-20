@@ -163,7 +163,7 @@ def test_asarray_copy_false():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Could not create a queue")
-    X = dpt.from_numpy(np.random.randn(10, 4), usm_type="device", queue=q)
+    X = dpt.from_numpy(np.random.randn(10, 4), usm_type="device", sycl_queue=q)
     Y1 = dpt.asarray(X, copy=False, order="K")
     assert Y1 is X
     Y1c = dpt.asarray(X, copy=True, order="K")

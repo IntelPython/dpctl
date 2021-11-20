@@ -93,12 +93,12 @@ def copy_to_numpy(ary):
     )
 
 
-def copy_from_numpy(np_ary, usm_type="device", queue=None):
+def copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
     "Copies numpy array `np_ary` into a new usm_ndarray"
     # This may peform a copy to meet stated requirements
     Xnp = np.require(np_ary, requirements=["A", "O", "C", "E"])
-    if queue:
-        ctor_kwargs = {"queue": queue}
+    if sycl_queue:
+        ctor_kwargs = {"queue": sycl_queue}
     else:
         ctor_kwargs = dict()
     Xusm = dpt.usm_ndarray(
