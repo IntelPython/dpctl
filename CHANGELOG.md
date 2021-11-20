@@ -4,10 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Next Release] TBD
+## [Next Release] - TBD
+
+- dpctl-capi is now renamed to `libsyclinterface` (#666).
+
+## [0.11.1] - 11/10/2021
 
 ### Changed
-- dpctl-capi is now renamed to `libsyclinterface` (#666).
+- Replaced uses of clang compiler with icx executable (#665)
 
 ## [0.11.0] - 11/01/2021
 
