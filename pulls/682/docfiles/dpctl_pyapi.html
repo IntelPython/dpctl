@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpctl Python API &mdash; Data-parallel Control (dpctl) 0.11.0+25.gf3012f05 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/doxyrest-pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/target-highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="libsyclinterface" href="libsyclinterface/index.html" />
+    <link rel="prev" title="Quick Start Guide" href="user_guides/QuickStart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          </a>
+              <div class="version">
+                0.11.0+25.gf3012f05
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guides/QuickStart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">dpctl Python API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sub-modules">Sub-modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#enumerations">Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#device-selection-functions">Device Selection Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#queue-management-functions">Queue Management Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#other-helper-functions">Other Helper Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="libsyclinterface/index.html">libsyclinterface</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data-parallel Control (dpctl)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>dpctl Python API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/docfiles/dpctl_pyapi.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-dpctl">
+<span id="dpctl-python-api"></span><span id="dpctl-pyapi"></span><h1>dpctl Python API<a class="headerlink" href="#module-dpctl" title="Permalink to this headline"></a></h1>
+<p><strong>Data Parallel Control (dpctl)</strong> is a Python abstraction layer over SYCL.</p>
+<p>Dpctl implements a subset of SYCL’s API providing wrappers for the
+SYCL runtime classes described in <a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes">Section 4.6</a> of the <a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html">SYCL 2020 spec</a>.
+Note that the SYCL <code class="docutils literal notranslate"><span class="pre">device_selector</span></code> class is not implemented, instead
+there are device selection helper functions that can be used to simulate
+the same behavior. Dpctl implements the <code class="docutils literal notranslate"><span class="pre">ONEPI::filter_selector</span></code> extension
+that is included in Intel’s DPC++ SYCL compiler.</p>
+<p>The module also includes a global SYCL queue manager. The queue manager
+provides convenience functions to create a global instance of
+a <a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, to create a nested stack of queue objects, and
+to create a queue object for use only within a specific scope.</p>
+<section id="sub-modules">
+<h2>Sub-modules<a class="headerlink" href="#sub-modules" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><dl class="simple">
+<dt><a class="reference internal" href="dpctl.memory_api.html#module-dpctl.memory" title="dpctl.memory"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.memory</span></code></a></dt><dd><p>USM allocators and deallocators and classes that implement Python’s
+<a class="reference external" href="https://docs.python.org/3/c-api/buffer.html">buffer protocol</a>.</p>
+</dd>
+<dt><a class="reference internal" href="dpctl.tensor_api.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></dt><dd><p>Implementation of different types of tensor classes that use USM memory.</p>
+</dd>
+<dt><a class="reference internal" href="dpctl.program_api.html#module-dpctl.program" title="dpctl.program"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.program</span></code></a></dt><dd><p>Experimental wrappers for SYCL 1.2 <cite>Program`&lt;https://sycl.readthedocs.io/en/latest/iface/program.html&gt;
+and `Kernel`&lt;https://sycl.readthedocs.io/en/latest/iface/kernel.html&gt; classes.
+The module is going to be refactored in the future to support SYCL
+2020’s ``sycl::kernel_bundle`</cite> feature and the wrapper for the <code class="docutils literal notranslate"><span class="pre">sycl::program</span></code>
+class is going to be removed.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_pyapi/SyclPlatform.html#syclplatform-api"><span class="std std-ref">dpctl.SyclPlatform</span></a></p></td>
+<td><p>A Python class representing a <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/platform.html">SYCL platform</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl_pyapi/SyclDevice.html#sycldevice-api"><span class="std std-ref">dpctl.SyclDevice</span></a></p></td>
+<td><p>A Python class representing a <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device.html">SYCL device</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_pyapi/SyclQueue.html#syclqueue-api"><span class="std std-ref">dpctl.SyclQueue</span></a></p></td>
+<td><p>A Python class representing a <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">SYCL queue</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl_pyapi/SyclContext.html#syclcontext-api"><span class="std std-ref">dpctl.SyclContext</span></a></p></td>
+<td><p>A Python class representing a <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/context.html">SYCL context</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_pyapi/SyclEvent.html#syclevent-api"><span class="std std-ref">dpctl.SyclEvent</span></a></p></td>
+<td><p>A Python class representing a <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/event.html">SYCL event</a>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="enumerations">
+<h2>Enumerations<a class="headerlink" href="#enumerations" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpctl.backend_type">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">backend_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dpctl/enum_types.html#backend_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.backend_type" title="Permalink to this definition"></a></dt>
+<dd><p>An enumeration of supported SYCL backends.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 60%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name of backend</p></th>
+<th class="head"><p>Enum value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>opencl</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>level_zero</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>cuda</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>host</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dpctl.device_type">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">device_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dpctl/enum_types.html#device_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.device_type" title="Permalink to this definition"></a></dt>
+<dd><p>An enumeration of supported SYCL device types.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 60%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Device type</p></th>
+<th class="head"><p>Enum value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>gpu</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>cpu</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>accelerator</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>host</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+<section id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline"></a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="dpctl.SyclKernelInvalidRangeError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclKernelInvalidRangeError</span></span><a class="headerlink" href="#dpctl.SyclKernelInvalidRangeError" title="Permalink to this definition"></a></dt>
+<dd><p>A SyclKernelInvalidRangeError is raised when the provided range has less
+than one or more than three dimensions.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dpctl.SyclKernelSubmitError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclKernelSubmitError</span></span><a class="headerlink" href="#dpctl.SyclKernelSubmitError" title="Permalink to this definition"></a></dt>
+<dd><p>A SyclKernelSubmitError exception is raised when the provided
+<a class="reference internal" href="dpctl.program_api.html#dpctl.program.SyclKernel" title="dpctl.program.SyclKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclKernel</span></code></a> could not be submitted to the <a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dpctl.SyclQueueCreationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclQueueCreationError</span></span><a class="headerlink" href="#dpctl.SyclQueueCreationError" title="Permalink to this definition"></a></dt>
+<dd><p>A SyclQueueCreationError exception is raised when a <a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a>
+could not be created. <a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> creation can fail if the filter
+string is invalid, or the backend or device type values are not supported.</p>
+</dd></dl>
+
+</section>
+<section id="device-selection-functions">
+<h2>Device Selection Functions<a class="headerlink" href="#device-selection-functions" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.get_num_devices">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_num_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">backend_type.all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">device_type_t.all</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_devices" title="Permalink to this definition"></a></dt>
+<dd><p>A helper function to return the number of SYCL devices of a given
+<a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> and <a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>backend</strong> (<em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">dpctl.backend_type.all</span></code>.
+A <a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> enum value or a string that
+specifies a SYCL backend. Currently, accepted values are: “cuda”,
+“opencl”, “level_zero”, or “all”.</p></li>
+<li><p><strong>device_type</strong> (<em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">dpctl.device_type.all</span></code>.
+A <a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> enum value or a string that
+specifies a SYCL device type. Currently, accepted values are:
+“gpu”, “cpu”, “accelerator”, “host”, or “all”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The number of available SYCL devices that satisfy the provided
+<a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> and <a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.get_devices">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">backend_type.all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">device_type_t.all</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_devices" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a list of <a class="reference internal" href="dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instances selected based on
+the given <a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> and <a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> values.</p>
+<p>The function is analogous to <code class="docutils literal notranslate"><span class="pre">sycl::devices::get_devices()</span></code>, but with an
+additional functionality that allows filtering SYCL devices based on
+<code class="docutils literal notranslate"><span class="pre">backend</span></code> in addition to only <code class="docutils literal notranslate"><span class="pre">device_type</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>backend</strong> (<em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">dpctl.backend_type.all</span></code>.
+A <a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> enum value or a string that
+specifies a SYCL backend. Currently, accepted values are: “cuda”,
+“opencl”, “level_zero”, or “all”.</p></li>
+<li><p><strong>device_type</strong> (<em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">dpctl.device_type.all</span></code>.
+A <a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> enum value or a string that
+specifies a SYCL device type. Currently, accepted values are:
+“gpu”, “cpu”, “accelerator”, “host”, or “all”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of available <a class="reference internal" href="dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instances that
+satisfy the provided <a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> and
+<a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.has_host_device">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">has_host_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.has_host_device" title="Permalink to this definition"></a></dt>
+<dd><p>A helper function to check if there are any SYCL Host devices available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">sycl::device_type::host</span></code> devices are present,
+<code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.has_cpu_devices">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">has_cpu_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.has_cpu_devices" title="Permalink to this definition"></a></dt>
+<dd><p>A helper function to check if there are any SYCL CPU devices available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">sycl::device_type::cpu</span></code> devices are present,
+<code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.has_gpu_devices">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">has_gpu_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.has_gpu_devices" title="Permalink to this definition"></a></dt>
+<dd><p>A helper function to check if there are any SYCL GPU devices available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">sycl::device_type::gpu</span></code> devices are present,
+<code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.has_accelerator_devices">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">has_accelerator_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.has_accelerator_devices" title="Permalink to this definition"></a></dt>
+<dd><p>A helper function to check if there are any SYCL Accelerator devices
+available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">sycl::device_type::accelerator</span></code> devices are
+present, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.select_default_device">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">select_default_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.select_default_device" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for SYCL’s <code class="docutils literal notranslate"><span class="pre">default_selector</span></code> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A Python object wrapping the SYCL <code class="docutils literal notranslate"><span class="pre">device</span></code>
+returned by the SYCL <code class="docutils literal notranslate"><span class="pre">default_selector</span></code>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice">dpctl.SyclDevice</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the SYCL <code class="docutils literal notranslate"><span class="pre">default_selector</span></code> is unable to select a
+    <code class="docutils literal notranslate"><span class="pre">device</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.select_cpu_device">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">select_cpu_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.select_cpu_device" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for SYCL’s <code class="docutils literal notranslate"><span class="pre">cpu_selector</span></code> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A Python object wrapping the SYCL <code class="docutils literal notranslate"><span class="pre">device</span></code>
+returned by the SYCL <code class="docutils literal notranslate"><span class="pre">cpu_selector</span></code>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice">dpctl.SyclDevice</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the SYCL <code class="docutils literal notranslate"><span class="pre">cpu_selector</span></code> is unable to select a
+    <code class="docutils literal notranslate"><span class="pre">device</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.select_gpu_device">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">select_gpu_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.select_gpu_device" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for SYCL’s <code class="docutils literal notranslate"><span class="pre">gpu_selector</span></code> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A Python object wrapping the SYCL <code class="docutils literal notranslate"><span class="pre">device</span></code>
+returned by the SYCL <code class="docutils literal notranslate"><span class="pre">gpu_selector</span></code>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice">dpctl.SyclDevice</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the SYCL <code class="docutils literal notranslate"><span class="pre">gpu_selector</span></code> is unable to select a
+    <code class="docutils literal notranslate"><span class="pre">device</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.select_host_device">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">select_host_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.select_host_device" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for SYCL’s <code class="docutils literal notranslate"><span class="pre">host_selector</span></code> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A Python object wrapping the SYCL <code class="docutils literal notranslate"><span class="pre">device</span></code>
+returned by the SYCL <code class="docutils literal notranslate"><span class="pre">host_selector</span></code>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice">dpctl.SyclDevice</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the SYCL <code class="docutils literal notranslate"><span class="pre">host_selector</span></code> is unable to select a
+    <code class="docutils literal notranslate"><span class="pre">device</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.select_accelerator_device">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">select_accelerator_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.select_accelerator_device" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for SYCL’s <code class="docutils literal notranslate"><span class="pre">accelerator_selector</span></code> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A Python object wrapping the SYCL <code class="docutils literal notranslate"><span class="pre">device</span></code>
+returned by the SYCL <code class="docutils literal notranslate"><span class="pre">accelerator_selector</span></code>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice">dpctl.SyclDevice</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the SYCL <code class="docutils literal notranslate"><span class="pre">accelerator_selector</span></code> is unable to select a
+    <code class="docutils literal notranslate"><span class="pre">device</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="queue-management-functions">
+<h2>Queue Management Functions<a class="headerlink" href="#queue-management-functions" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.device_context">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">device_context</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.device_context" title="Permalink to this definition"></a></dt>
+<dd><p>Yields a SYCL queue corresponding to the input queue object, device object,
+or device filter selector string.</p>
+<p>This context manager “activates”, <em>i.e.</em>, sets as the currently usable
+queue, the SYCL queue defined by the argument <cite>arg</cite>.
+The activated queue is yielded by the context manager and can also be
+accessed by any subsequent call to <a class="reference internal" href="#dpctl.get_current_queue" title="dpctl.get_current_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code></a> inside
+the context manager’s scope. The yielded queue is removed as the currently
+usable queue on exiting the context manager.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arg</strong> – A <a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object, or a <a class="reference internal" href="dpctl_pyapi/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>
+object, or a filter selector string.</p>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> –</p>
+<dl class="simple">
+<dt>A SYCL queue corresponding to the specified</dt><dd><p>input device, queue, or filter string.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#dpctl.SyclQueueCreationError" title="dpctl.SyclQueueCreationError"><strong>SyclQueueCreationError</strong></a> – If the SYCL queue creation failed.</p>
+</dd>
+<dt class="field-even">Example</dt>
+<dd class="field-even"><p>The following example sets current queue targeting specific device
+indicated with filter selector string in the scope of <cite>with</cite> block:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="k">with</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">device_context</span><span class="p">(</span><span class="s2">&quot;level0:gpu:0&quot;</span><span class="p">):</span>
+    <span class="n">do_something_on_gpu0</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.get_current_backend">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_current_backend</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_current_backend" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the backend for the current queue as a <cite>backend_type</cite> enum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The SYCL backend for the currently selected queue.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#dpctl.backend_type" title="dpctl.backend_type">backend_type</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.get_current_device_type">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_current_device_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_current_device_type" title="Permalink to this definition"></a></dt>
+<dd><p>Returns current device type as a <cite>device_type</cite> enum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The SYCL device type for the currently selected queue.
+Possible values can be gpu, cpu, accelerator, or host.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#dpctl.device_type" title="dpctl.device_type">device_type</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.get_current_queue">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_current_queue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_current_queue" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the currently activate SYCL queue as a new SyclQueue object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>If there is a currently active SYCL queue that queue
+is returned wrapped in a SyclQueue object. The SyclQueue object
+owns a copy of the currently active SYCL queue as an opaque
+<cite>DPCTLSyclQueueRef</cite> pointer. The pointer is freed when the SyclQueue
+is garbage collected.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue">SyclQueue</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#dpctl.SyclQueueCreationError" title="dpctl.SyclQueueCreationError"><strong>SyclQueueCreationError</strong></a> – If no currently active SYCL queue found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.get_num_activated_queues">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_num_activated_queues</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_activated_queues" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the number of currently activated queues for this thread.</p>
+<p>Whenever a program’s control enters a <a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a>
+scope, either a new SYCL queue is created or a previously created
+queue is retrieved from a cache and yielded. The queue yielded by the
+context manager is termed to be “activated”. If a program creates
+multiple nested <a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scopes then multiple
+queues can be activated at the same time, although only the latest
+activated queue is usable directly via calling
+<a class="reference internal" href="#dpctl.get_current_queue" title="dpctl.get_current_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code></a>. This function returns the number of
+currently activated queues.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of currently activated queues.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.is_in_device_context">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">is_in_device_context</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.is_in_device_context" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if the control is inside a <a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the control is within a
+<a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scope, otherwise False.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.set_global_queue">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">set_global_queue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.set_global_queue" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the global queue to the SYCL queue specified explicitly,
+or created from given arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arg</strong> – An instance of <a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> or a filter selector
+string to be used to construct a <a class="reference internal" href="dpctl_pyapi/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>. The
+queue is stored in the dpctl queue manager as the default queue.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#dpctl.SyclQueueCreationError" title="dpctl.SyclQueueCreationError"><strong>SyclQueueCreationError</strong></a> – If a SYCL queue could not be created.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="other-helper-functions">
+<h2>Other Helper Functions<a class="headerlink" href="#other-helper-functions" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.get_platforms">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_platforms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_platforms" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a list of all available SYCL platforms on the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of SYCL platforms on the system.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.lsplatform">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">lsplatform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.lsplatform" title="Permalink to this definition"></a></dt>
+<dd><p>Prints out the list of available SYCL platforms, and optionally extra
+metadata about each platform.</p>
+<p>The level of information printed out by the function can be controlled by
+the optional <code class="docutils literal notranslate"><span class="pre">vebosity</span></code> setting.</p>
+<ul class="simple">
+<li><p><strong>Verbosity level 0</strong>: Prints out the list of platforms and their names.</p></li>
+<li><p><strong>Verbosity level 1</strong>: Prints out the name, version, vendor, backend,
+number of devices for each platform.</p></li>
+<li><p><strong>Verbosity level 2</strong>: At the highest level of verbosity everything in the
+previous levels along with the name, version, and filter string for each
+device is printed.</p></li>
+</ul>
+<p>At verbosity level 2 (highest level) the following output is generated.</p>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p>On a system with an OpenCL CPU driver, OpenCL GPU driver,
+Level Zero GPU driver, running the command.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span>$python -c &quot;import dpctl; dpctl.lsplatform()&quot;
+</pre></div>
+</div>
+<p>returns</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Platform</span> <span class="mi">0</span><span class="p">::</span>
+    <span class="n">Name</span>        <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">OpenCL</span>
+    <span class="n">Version</span>     <span class="n">OpenCL</span> <span class="mf">2.1</span> <span class="n">LINUX</span>
+    <span class="n">Vendor</span>      <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Corporation</span>
+    <span class="n">Profile</span>     <span class="n">FULL_PROFILE</span>
+    <span class="n">Backend</span>     <span class="n">opencl</span>
+    <span class="n">Devices</span>     <span class="mi">1</span>
+        <span class="n">Device</span> <span class="mi">0</span><span class="p">::</span>
+        <span class="n">Name</span>            <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Core</span><span class="p">(</span><span class="n">TM</span><span class="p">)</span> <span class="n">i7</span><span class="o">-</span><span class="mi">9700</span> <span class="n">CPU</span> <span class="o">@</span> <span class="mf">3.00</span><span class="n">GHz</span>
+        <span class="n">Driver</span> <span class="n">version</span>  <span class="mf">2020.11.11.0.13_160000</span>
+        <span class="n">Device</span> <span class="nb">type</span>     <span class="n">cpu</span>
+<span class="n">Platform</span> <span class="mi">1</span><span class="p">::</span>
+    <span class="n">Name</span>        <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">OpenCL</span> <span class="n">HD</span> <span class="n">Graphics</span>
+    <span class="n">Version</span>     <span class="n">OpenCL</span> <span class="mf">3.0</span>
+    <span class="n">Vendor</span>      <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Corporation</span>
+    <span class="n">Profile</span>     <span class="n">FULL_PROFILE</span>
+    <span class="n">Backend</span>     <span class="n">opencl</span>
+    <span class="n">Devices</span>     <span class="mi">1</span>
+        <span class="n">Device</span> <span class="mi">0</span><span class="p">::</span>
+        <span class="n">Name</span>            <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Graphics</span> <span class="n">Gen9</span> <span class="p">[</span><span class="mh">0x3e98</span><span class="p">]</span>
+        <span class="n">Driver</span> <span class="n">version</span>  <span class="mf">20.47.18513</span>
+        <span class="n">Device</span> <span class="nb">type</span>     <span class="n">gpu</span>
+<span class="n">Platform</span> <span class="mi">2</span><span class="p">::</span>
+    <span class="n">Name</span>        <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Level</span><span class="o">-</span><span class="n">Zero</span>
+    <span class="n">Version</span>     <span class="mf">1.0</span>
+    <span class="n">Vendor</span>      <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Corporation</span>
+    <span class="n">Profile</span>     <span class="n">FULL_PROFILE</span>
+    <span class="n">Backend</span>     <span class="n">level_zero</span>
+    <span class="n">Devices</span>     <span class="mi">1</span>
+        <span class="n">Device</span> <span class="mi">0</span><span class="p">::</span>
+        <span class="n">Name</span>            <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Graphics</span> <span class="n">Gen9</span> <span class="p">[</span><span class="mh">0x3e98</span><span class="p">]</span>
+        <span class="n">Driver</span> <span class="n">version</span>  <span class="mf">1.0.18513</span>
+        <span class="n">Device</span> <span class="nb">type</span>     <span class="n">gpu</span>
+</pre></div>
+</div>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>verbosity</strong> (<em>optional</em>) – Defaults to 0.
+The verbosity controls how much information is printed by the
+function. 0 is the lowest level set by default and 2 is the highest
+level to print the most verbose output.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="user_guides/QuickStart.html" class="btn btn-neutral float-left" title="Quick Start Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="libsyclinterface/index.html" class="btn btn-neutral float-right" title="libsyclinterface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Intel Corp..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Other versions</span>
+      v: 0.11.0+25.gf3012f05
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl>
+        <dt>Versions</dt>
+        
+          
+          <dd><a href="https://intelpython.github.io/dpctl/0.8.0/index.html">0.8.0</a></dd>
+          
+        
+          
+          <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>
+          
+        
+          
+          <dd><a href="https://intelpython.github.io/dpctl/0.6.1/index.html">0.6.1</a></dd>
+          
+        
+          
+          <dd><a href="https://intelpython.github.io/dpctl/latest/index.html">latest</a></dd>
+          
+        
+      </dl>
+      
+    </div>
+  </div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
