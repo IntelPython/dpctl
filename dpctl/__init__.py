@@ -56,12 +56,12 @@ from dpctl._sycl_queue import (
 )
 from dpctl._sycl_queue_manager import (
     device_context,
-    nested_context_factories,
     get_current_backend,
     get_current_device_type,
     get_current_queue,
     get_num_activated_queues,
     is_in_device_context,
+    nested_context_factories,
     set_global_queue,
 )
 

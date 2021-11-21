@@ -19,7 +19,7 @@
 # cython: linetrace=True
 
 import logging
-from contextlib import contextmanager, ExitStack
+from contextlib import ExitStack, contextmanager
 
 from .enum_types import backend_type, device_type
 
