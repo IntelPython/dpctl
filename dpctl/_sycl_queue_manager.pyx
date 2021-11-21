@@ -19,7 +19,7 @@
 # cython: linetrace=True
 
 import logging
-from contextlib import contextmanager, nullcontext
+from contextlib import contextmanager, ExitStack
 
 from .enum_types import backend_type, device_type
 
@@ -210,12 +210,20 @@ cpdef get_current_backend():
     return _mgr.get_current_backend()
 
 
-def _get_registered_context_manager(sycl_queue):
+nested_context_factories = []
+
+
+def _get_nested_contexts(ctxt):
+    _help_numba_dppy()
+    return (factory(ctxt) for factory in nested_context_factories)
+
+
+def _help_numba_dppy():
+    """Import numba-dppy for registering nested contexts"""
     try:
-        from numba_dppy import get_context_manager
-        return get_context_manager(sycl_queue)
+        import numba_dppy
     except Exception:
-        return nullcontext()
+        pass
 
 
 @contextmanager
@@ -255,7 +263,9 @@ def device_context(arg):
     ctxt = None
     try:
         ctxt = _mgr._set_as_current_queue(arg)
-        with _get_registered_context_manager(ctxt):
+        with ExitStack() as stack:
+            for nested_context in _get_nested_contexts(ctxt):
+                stack.enter_context(nested_context)
             yield ctxt
     finally:
         # Code to release resource
