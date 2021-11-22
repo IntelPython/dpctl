@@ -25,7 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_queue_interface.h"
-#include "../helper/include/dpctl_async_error_handler.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
@@ -165,7 +165,7 @@ DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
 DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
                   __dpctl_keep const DPCTLSyclDeviceRef DRef,
-                  error_handler_callback *error_handler,
+                  error_handler_callback *handler,
                   int properties)
 {
     DPCTLSyclQueueRef q = nullptr;
@@ -178,10 +178,10 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
     }
     auto propList = create_property_list(properties);
 
-    if (propList && error_handler) {
+    if (propList && handler) {
         try {
-            auto Queue = new queue(
-                *ctx, *dev, DPCTL_AsyncErrorHandler(error_handler), *propList);
+            auto Queue = new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(handler),
+                                   *propList);
             q = wrap(Queue);
         } catch (std::bad_alloc const &ba) {
             std::cerr << ba.what() << '\n';
@@ -199,10 +199,10 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
             std::cerr << re.what() << '\n';
         }
     }
-    else if (error_handler) {
+    else if (handler) {
         try {
             auto Queue =
-                new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(error_handler));
+                new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(handler));
             q = wrap(Queue);
         } catch (std::bad_alloc const &ba) {
             std::cerr << ba.what() << '\n';

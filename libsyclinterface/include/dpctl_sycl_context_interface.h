@@ -46,7 +46,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * optional async error handler and properties bit flags.
  *
  * @param    DRef           Opaque pointer to a SYCL device.
- * @param    error_handler  A callback function that will be invoked by the
+ * @param    handler        A callback function that will be invoked by the
  *                          async_handler used during context creation. Can be
  *                          NULL if no async_handler is needed.
  * @param    properties     An optional combination of bit flags to define
@@ -58,7 +58,7 @@ DPCTL_C_EXTERN_C_BEGIN
 DPCTL_API
 __dpctl_give DPCTLSyclContextRef
 DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
-                    error_handler_callback *error_handler,
+                    error_handler_callback *handler,
                     int properties);
 
 /*!
@@ -67,7 +67,7 @@ DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
  *
  * @param    DVRef          An opaque pointer to a std::vector of
  *                          DPCTLSyclDeviceRef opaque pointers.
- * @param    error_handler  A callback function that will be invoked by the
+ * @param    handler        A callback function that will be invoked by the
  *                          async_handler used during context creation. Can be
  *                          NULL if no async_handler is needed.
  * @param    properties     An optional combination of bit flags to define
@@ -79,7 +79,7 @@ DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
 DPCTL_API
 __dpctl_give DPCTLSyclContextRef
 DPCTLContext_CreateFromDevices(__dpctl_keep const DPCTLDeviceVectorRef DVRef,
-                               error_handler_callback *error_handler,
+                               error_handler_callback *handler,
                                int properties);
 
 /*!

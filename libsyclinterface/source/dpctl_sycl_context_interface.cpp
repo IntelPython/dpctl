@@ -25,7 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_context_interface.h"
-#include "../helper/include/dpctl_async_error_handler.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "Support/CBindingWrapping.h"
 #include <CL/sycl.hpp>
 #include <vector>
@@ -43,7 +43,7 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclDeviceRef>,
 
 __dpctl_give DPCTLSyclContextRef
 DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
-                    error_handler_callback *error_handler,
+                    error_handler_callback *handler,
                     int /**/)
 {
     DPCTLSyclContextRef CRef = nullptr;
@@ -51,8 +51,7 @@ DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     if (!Device)
         return CRef;
     try {
-        CRef =
-            wrap(new context(*Device, DPCTL_AsyncErrorHandler(error_handler)));
+        CRef = wrap(new context(*Device, DPCTL_AsyncErrorHandler(handler)));
     } catch (const std::bad_alloc &ba) {
         std::cerr << ba.what() << '\n';
     } catch (const runtime_error &re) {
@@ -64,7 +63,7 @@ DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
 
 __dpctl_give DPCTLSyclContextRef
 DPCTLContext_CreateFromDevices(__dpctl_keep const DPCTLDeviceVectorRef DVRef,
-                               error_handler_callback *error_handler,
+                               error_handler_callback *handler,
                                int /**/)
 {
     DPCTLSyclContextRef CRef = nullptr;
@@ -79,8 +78,7 @@ DPCTLContext_CreateFromDevices(__dpctl_keep const DPCTLDeviceVectorRef DVRef,
     }
 
     try {
-        CRef =
-            wrap(new context(Devices, DPCTL_AsyncErrorHandler(error_handler)));
+        CRef = wrap(new context(Devices, DPCTL_AsyncErrorHandler(handler)));
     } catch (const std::bad_alloc &ba) {
         std::cerr << ba.what() << '\n';
     } catch (const runtime_error &re) {
