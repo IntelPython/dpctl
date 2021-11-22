@@ -64,6 +64,15 @@ cdef api DPCTLSyclEventRef get_event_ref(SyclEvent ev):
     return ev.get_event_ref()
 
 
+cdef api SyclEvent make_SyclEvent(DPCTLSyclEventRef ERef):
+    """
+    C-API function to create :class:`dpctl.SyclEvent`
+    instance from opaque sycl event reference.
+    """
+    cdef DPCTLSyclEventRef copied_ERef = DPCTLEvent_Copy(ERef)
+    return SyclEvent._create(copied_ERef)
+
+
 cdef void _event_capsule_deleter(object o):
     cdef DPCTLSyclEventRef ERef = NULL
     if pycapsule.PyCapsule_IsValid(o, "SyclEventRef"):

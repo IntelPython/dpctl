@@ -1007,3 +1007,12 @@ cdef api DPCTLSyclQueueRef get_queue_ref(SyclQueue q):
     :class:`dpctl.SyclQueue` instance.
     """
     return q.get_queue_ref()
+
+
+cdef api SyclQueue make_SyclQueue(DPCTLSyclQueueRef QRef):
+    """
+    C-API function to create :class:`dpctl.SyclQueue` instance
+    from the given opaque queue reference.
+    """
+    cdef DPCTLSyclQueueRef copied_QRef = DPCTLQueue_Copy(QRef)
+    return SyclQueue._create(copied_QRef)
