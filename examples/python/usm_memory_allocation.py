@@ -34,8 +34,8 @@ mda = dpmem.MemoryUSMDevice(128, alignment=16)
 
 # allocate using given queue,
 # i.e. on the device and bound to the context stored in the queue
-mdq = dpmem.MemoryUSMDevice(256, queue=mda._queue)
+mdq = dpmem.MemoryUSMDevice(256, queue=mda.sycl_queue)
 
 # information about device associate with USM buffer
 print("Allocation performed on device:")
-mda._queue.sycl_device.print_device_info()
+mda.sycl_queue.print_device_info()

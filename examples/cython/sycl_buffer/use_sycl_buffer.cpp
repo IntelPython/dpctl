@@ -123,13 +123,13 @@ int c_columnwise_total_no_mkl(DPCTLSyclQueueRef q_ref,
             sycl::nd_range<2>(global, local), [=](sycl::nd_item<2> it) {
                 size_t i = it.get_global_id(0);
                 size_t j = it.get_global_id(1);
-                double group_sum = sycl::ONEAPI::reduce(
+                double group_sum = sycl::reduce_over_group(
                     it.get_group(), (i < n) ? mat_acc[it.get_global_id()] : 0.0,
                     std::plus<double>());
                 if (it.get_local_id(0) == 0) {
-                    sycl::ONEAPI::atomic_ref<
-                        double, sycl::ONEAPI::memory_order::relaxed,
-                        sycl::ONEAPI::memory_scope::system,
+                    sycl::ext::oneapi::atomic_ref<
+                        double, sycl::ext::oneapi::memory_order::relaxed,
+                        sycl::ext::oneapi::memory_scope::system,
                         sycl::access::address_space::global_space>(ct_acc[j]) +=
                         group_sum;
                 }
