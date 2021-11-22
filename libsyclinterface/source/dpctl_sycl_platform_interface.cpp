@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_platform_interface.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "../helper/include/dpctl_string_utils.hpp"
 #include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
@@ -50,15 +51,15 @@ DPCTLPlatform_Copy(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 {
     auto Platform = unwrap(PRef);
     if (!Platform) {
-        std::cerr << "Cannot copy DPCTLSyclPlatformRef as input is a nullptr\n";
+        error_handler("Cannot copy DPCTLSyclPlatformRef as input is a nullptr.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
     try {
         auto CopiedPlatform = new platform(*Platform);
         return wrap(CopiedPlatform);
-    } catch (std::bad_alloc const &ba) {
-        // \todo log error
-        std::cerr << ba.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -69,8 +70,8 @@ __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_Create()
     try {
         auto P = new platform();
         PRef = wrap(P);
-    } catch (std::bad_alloc const &ba) {
-        std::cerr << ba.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
     }
     return PRef;
 }
@@ -84,17 +85,15 @@ __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
         try {
             P = new platform(*DS);
             return wrap(P);
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << '\n';
-            return nullptr;
-        } catch (runtime_error const &re) {
+        } catch (std::exception const &e) {
             delete P;
-            std::cerr << re.what() << '\n';
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
     }
     else {
-        std::cerr << "Device selector pointer cannot be NULL\n";
+        error_handler("Device selector pointer cannot be NULL.", __FILE__,
+                      __func__, __LINE__);
     }
 
     return nullptr;
@@ -115,7 +114,8 @@ DPCTLPlatform_GetBackend(__dpctl_keep const DPCTLSyclPlatformRef PRef)
         BTy = DPCTL_SyclBackendToDPCTLBackendType(P->get_backend());
     }
     else {
-        std::cerr << "Backend cannot be looked up for a NULL platform\n";
+        error_handler("Backend cannot be looked up for a NULL platform.",
+                      __FILE__, __func__, __LINE__);
     }
     return BTy;
 }
@@ -128,14 +128,14 @@ DPCTLPlatform_GetName(__dpctl_keep const DPCTLSyclPlatformRef PRef)
         try {
             auto name = P->get_info<info::platform::name>();
             return dpctl::helper::cstring_from_string(name);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
     }
     else {
-        std::cerr << "Name cannot be looked up for a NULL platform\n";
+        error_handler("Name cannot be looked up for a NULL platform.", __FILE__,
+                      __func__, __LINE__);
         return nullptr;
     }
 }
@@ -148,14 +148,14 @@ DPCTLPlatform_GetVendor(__dpctl_keep const DPCTLSyclPlatformRef PRef)
         try {
             auto vendor = P->get_info<info::platform::vendor>();
             return dpctl::helper::cstring_from_string(vendor);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
     }
     else {
-        std::cerr << "Vendor cannot be looked up for a NULL platform\n";
+        error_handler("Vendor cannot be looked up for a NULL platform.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -168,14 +168,14 @@ DPCTLPlatform_GetVersion(__dpctl_keep const DPCTLSyclPlatformRef PRef)
         try {
             auto driver = P->get_info<info::platform::version>();
             return dpctl::helper::cstring_from_string(driver);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
     }
     else {
-        std::cerr << "Driver version cannot be looked up for a NULL platform\n";
+        error_handler("Driver version cannot be looked up for a NULL platform.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -189,7 +189,8 @@ __dpctl_give DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms()
     try {
         Platforms = new std::vector<DPCTLSyclPlatformRef>();
         Platforms->reserve(platforms.size());
-    } catch (std::bad_alloc const &ba) {
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 
