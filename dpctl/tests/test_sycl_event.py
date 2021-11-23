@@ -234,7 +234,7 @@ def test_addressof_ref():
     assert type(ref) is int
 
 
-def test_cpython_api():
+def test_cpython_api_get_event_ref():
     import ctypes
     import sys
 
@@ -255,3 +255,25 @@ def test_cpython_api():
     r2 = ev.addressof_ref()
     r1 = get_event_ref_fn(ev)
     assert r1 == r2
+
+
+def test_cpython_api_make_SyclEvent():
+    import ctypes
+    import sys
+
+    ev = dpctl.SyclEvent()
+    mod = sys.modules[ev.__class__.__module__]
+    # get capsule storing make_SyclEvent function ptr
+    make_e_fn_cap = mod.__pyx_capi__["make_SyclEvent"]
+    # construct Python callable to invoke "make_SyclDevice"
+    cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
+    cap_ptr_fn.restype = ctypes.c_void_p
+    cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
+    make_e_fn_ptr = cap_ptr_fn(
+        make_e_fn_cap, b"struct PySyclEventObject *(DPCTLSyclEventRef)"
+    )
+    callable_maker = ctypes.PYFUNCTYPE(ctypes.py_object, ctypes.c_void_p)
+    make_e_fn = callable_maker(make_e_fn_ptr)
+
+    ev2 = make_e_fn(ev.addressof_ref())
+    assert type(ev) == type(ev2)
