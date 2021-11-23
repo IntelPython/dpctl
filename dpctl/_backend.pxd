@@ -25,15 +25,15 @@ from libc.stdint cimport int64_t, uint32_t
 from libcpp cimport bool
 
 
-cdef extern from "dpctl_error_handler_type.h":
+cdef extern from "syclinterface/dpctl_error_handler_type.h":
     ctypedef void error_handler_callback(int err_code)
 
-cdef extern from "dpctl_utils.h":
+cdef extern from "syclinterface/dpctl_utils.h":
     cdef void DPCTLCString_Delete(const char *str)
     cdef void DPCTLSize_t_Array_Delete(size_t *arr)
 
 
-cdef extern from "dpctl_sycl_enum_types.h":
+cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
     ctypedef enum _backend_type 'DPCTLSyclBackendType':
         _ALL_BACKENDS    'DPCTL_ALL_BACKENDS'
         _CUDA            'DPCTL_CUDA'
@@ -111,7 +111,7 @@ cdef extern from "dpctl_sycl_enum_types.h":
         _COMPLETE           'DPCTL_COMPLETE'
 
 
-cdef extern from "dpctl_sycl_types.h":
+cdef extern from "syclinterface/dpctl_sycl_types.h":
     cdef struct DPCTLOpaqueSyclContext
     cdef struct DPCTLOpaqueSyclDevice
     cdef struct DPCTLOpaqueSyclDeviceSelector
@@ -133,12 +133,12 @@ cdef extern from "dpctl_sycl_types.h":
     ctypedef DPCTLOpaqueSyclUSM            *DPCTLSyclUSMRef
 
 
-cdef extern from "dpctl_sycl_device_manager.h":
+cdef extern from "syclinterface/dpctl_sycl_device_manager.h":
     cdef struct DPCTLDeviceVector
     ctypedef DPCTLDeviceVector *DPCTLDeviceVectorRef
 
 
-cdef extern from "dpctl_sycl_device_interface.h":
+cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
     cdef bool DPCTLDevice_AreEq(const DPCTLSyclDeviceRef DRef1,
                                 const DPCTLSyclDeviceRef DRef2)
     cdef DPCTLSyclDeviceRef DPCTLDevice_Copy(const DPCTLSyclDeviceRef DRef)
@@ -192,7 +192,7 @@ cdef extern from "dpctl_sycl_device_interface.h":
     cdef DPCTLSyclDeviceRef DPCTLDevice_GetParentDevice(const DPCTLSyclDeviceRef DRef)
 
 
-cdef extern from "dpctl_sycl_device_manager.h":
+cdef extern from "syclinterface/dpctl_sycl_device_manager.h":
     cdef DPCTLDeviceVectorRef DPCTLDeviceVector_CreateFromArray(
         size_t nelems,
         DPCTLSyclDeviceRef *elems)
@@ -213,7 +213,7 @@ cdef extern from "dpctl_sycl_device_manager.h":
     cdef int64_t DPCTLDeviceMgr_GetRelativeId(const DPCTLSyclDeviceRef DRef)
 
 
-cdef extern from "dpctl_sycl_device_selector_interface.h":
+cdef extern from "syclinterface/dpctl_sycl_device_selector_interface.h":
     DPCTLSyclDeviceSelectorRef DPCTLAcceleratorSelector_Create()
     DPCTLSyclDeviceSelectorRef DPCTLDefaultSelector_Create()
     DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create()
@@ -224,7 +224,7 @@ cdef extern from "dpctl_sycl_device_selector_interface.h":
     int DPCTLDeviceSelector_Score(DPCTLSyclDeviceSelectorRef, DPCTLSyclDeviceRef)
 
 
-cdef extern from "dpctl_sycl_event_interface.h":
+cdef extern from "syclinterface/dpctl_sycl_event_interface.h":
     cdef DPCTLSyclEventRef DPCTLEvent_Create()
     cdef DPCTLSyclEventRef DPCTLEvent_Copy(const DPCTLSyclEventRef ERef)
     cdef void DPCTLEvent_Wait(DPCTLSyclEventRef ERef)
@@ -246,13 +246,13 @@ cdef extern from "dpctl_sycl_event_interface.h":
     cdef size_t DPCTLEvent_GetProfilingInfoEnd(DPCTLSyclEventRef ERef)
 
 
-cdef extern from "dpctl_sycl_kernel_interface.h":
+cdef extern from "syclinterface/dpctl_sycl_kernel_interface.h":
     cdef const char* DPCTLKernel_GetFunctionName(const DPCTLSyclKernelRef KRef)
     cdef size_t DPCTLKernel_GetNumArgs(const DPCTLSyclKernelRef KRef)
     cdef void DPCTLKernel_Delete(DPCTLSyclKernelRef KRef)
 
 
-cdef extern from "dpctl_sycl_platform_manager.h":
+cdef extern from "syclinterface/dpctl_sycl_platform_manager.h":
     cdef struct DPCTLPlatformVector
     ctypedef DPCTLPlatformVector *DPCTLPlatformVectorRef
 
@@ -265,7 +265,7 @@ cdef extern from "dpctl_sycl_platform_manager.h":
     cdef void DPCTLPlatformMgr_PrintInfo(const DPCTLSyclPlatformRef, size_t)
 
 
-cdef extern from "dpctl_sycl_platform_interface.h":
+cdef extern from "syclinterface/dpctl_sycl_platform_interface.h":
     cdef DPCTLSyclPlatformRef DPCTLPlatform_Copy(const DPCTLSyclPlatformRef)
     cdef DPCTLSyclPlatformRef DPCTLPlatform_Create()
     cdef DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
@@ -278,7 +278,7 @@ cdef extern from "dpctl_sycl_platform_interface.h":
     cdef DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms()
 
 
-cdef extern from "dpctl_sycl_context_interface.h":
+cdef extern from "syclinterface/dpctl_sycl_context_interface.h":
     cdef DPCTLSyclContextRef DPCTLContext_Create(
         const DPCTLSyclDeviceRef DRef,
         error_handler_callback *handler,
@@ -299,7 +299,7 @@ cdef extern from "dpctl_sycl_context_interface.h":
     cdef void DPCTLContext_Delete(DPCTLSyclContextRef CtxRef)
 
 
-cdef extern from "dpctl_sycl_program_interface.h":
+cdef extern from "syclinterface/dpctl_sycl_program_interface.h":
     cdef DPCTLSyclProgramRef DPCTLProgram_CreateFromSpirv(
         const DPCTLSyclContextRef Ctx,
         const void *IL,
@@ -317,7 +317,7 @@ cdef extern from "dpctl_sycl_program_interface.h":
     cdef void DPCTLProgram_Delete(DPCTLSyclProgramRef PRef)
 
 
-cdef extern from "dpctl_sycl_queue_interface.h":
+cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
     cdef bool DPCTLQueue_AreEq(const DPCTLSyclQueueRef QRef1,
                                const DPCTLSyclQueueRef QRef2)
     cdef DPCTLSyclQueueRef DPCTLQueue_Create(
@@ -381,7 +381,7 @@ cdef extern from "dpctl_sycl_queue_interface.h":
     cdef bool DPCTLQueue_HasEnableProfiling(const DPCTLSyclQueueRef QRef)
 
 
-cdef extern from "dpctl_sycl_queue_manager.h":
+cdef extern from "syclinterface/dpctl_sycl_queue_manager.h":
     cdef DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue()
     cdef bool DPCTLQueueMgr_GlobalQueueIsCurrent()
     cdef bool DPCTLQueueMgr_IsCurrentQueue(const DPCTLSyclQueueRef QRef)
@@ -391,7 +391,7 @@ cdef extern from "dpctl_sycl_queue_manager.h":
     cdef size_t DPCTLQueueMgr_GetQueueStackSize()
 
 
-cdef extern from "dpctl_sycl_usm_interface.h":
+cdef extern from "syclinterface/dpctl_sycl_usm_interface.h":
     cdef DPCTLSyclUSMRef DPCTLmalloc_shared(
         size_t size,
         DPCTLSyclQueueRef QRef)

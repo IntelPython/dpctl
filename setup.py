@@ -43,7 +43,7 @@ else:
 # to build_ext command
 _coverage = False
 dpctl_sycl_interface_lib = "dpctl"
-dpctl_sycl_interface_include = r"dpctl/include"
+dpctl_sycl_interface_include = os.path.join("dpctl", "include")
 
 # Get long description
 with open("README.md", "r", encoding="utf-8") as file:
