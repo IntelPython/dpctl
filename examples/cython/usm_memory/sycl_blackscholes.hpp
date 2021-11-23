@@ -24,7 +24,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "dpctl_sycl_types.h"
+#include "syclinterface.h"
 #include <CL/sycl.hpp>
 
 template <typename T>
