@@ -562,7 +562,7 @@ def test_pyx_capi_check_constants():
 def test_tofrom_numpy(shape, dtype, usm_type):
     q = dpctl.SyclQueue()
     Xnp = np.zeros(shape, dtype=dtype)
-    Xusm = dpt.from_numpy(Xnp, usm_type=usm_type, queue=q)
+    Xusm = dpt.from_numpy(Xnp, usm_type=usm_type, sycl_queue=q)
     Ynp = np.ones(shape, dtype=dtype)
     ind = (slice(None, None, None),) * Ynp.ndim
     Xusm[ind] = Ynp

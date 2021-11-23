@@ -33,13 +33,16 @@ from dpctl.tensor._copy_utils import astype, copy
 from dpctl.tensor._copy_utils import copy_from_numpy as from_numpy
 from dpctl.tensor._copy_utils import copy_to_numpy as asnumpy
 from dpctl.tensor._copy_utils import copy_to_numpy as to_numpy
+from dpctl.tensor._ctors import asarray, empty
 from dpctl.tensor._reshape import reshape
 from dpctl.tensor._usmarray import usm_ndarray
 
 __all__ = [
     "usm_ndarray",
+    "asarray",
     "astype",
     "copy",
+    "empty",
     "reshape",
     "from_numpy",
     "to_numpy",

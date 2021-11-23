@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next Release] - TBD
 
+### Added
+- `dpctl.tensor.asarray`, `dpctl.tensor.empty` implemented (#646).
+
+### Changed
 - dpctl-capi is now renamed to `libsyclinterface` (#666).
 
 ## [0.11.1] - 11/10/2021
