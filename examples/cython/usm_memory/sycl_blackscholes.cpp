@@ -27,7 +27,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "sycl_blackscholes.hpp"
-#include "syclinterface.h"
+#include "dpctl_sycl_interface.h"
 #include <CL/sycl.hpp>
 #include <oneapi/mkl.hpp>
 #include <oneapi/mkl/rng/device.hpp>

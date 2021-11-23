@@ -37,7 +37,6 @@
 #include "syclinterface/dpctl_sycl_platform_interface.h"
 #include "syclinterface/dpctl_sycl_queue_interface.h"
 #include "syclinterface/dpctl_sycl_usm_interface.h"
-
 #include "syclinterface/dpctl_sycl_device_manager.h"
 #include "syclinterface/dpctl_sycl_platform_manager.h"
 #include "syclinterface/dpctl_sycl_queue_manager.h"
