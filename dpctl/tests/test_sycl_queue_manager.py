@@ -25,28 +25,36 @@ import dpctl
 
 from ._helper import has_cpu, has_gpu, has_sycl_platforms
 
-
-@pytest.mark.skipif(
+skip_no_platform = pytest.mark.skipif(
     not has_sycl_platforms(), reason="No SYCL platforms available"
 )
+skip_no_gpu = pytest.mark.skipif(
+    not has_gpu(), reason="No OpenCL GPU queues available"
+)
+skip_no_cpu = pytest.mark.skipif(
+    not has_cpu(), reason="No OpenCL CPU queues available"
+)
+
+
+@skip_no_platform
 def test_is_in_device_context_outside_device_ctxt():
     assert not dpctl.is_in_device_context()
 
 
-@pytest.mark.skipif(not has_gpu(), reason="No OpenCL GPU queues available")
+@skip_no_gpu
 def test_is_in_device_context_inside_device_ctxt_gpu():
     with dpctl.device_context("opencl:gpu:0"):
         assert dpctl.is_in_device_context()
 
 
-@pytest.mark.skipif(not has_cpu(), reason="No OpenCL CPU queues available")
+@skip_no_cpu
 def test_is_in_device_context_inside_device_ctxt_cpu():
     with dpctl.device_context("opencl:cpu:0"):
         assert dpctl.is_in_device_context()
 
 
-@pytest.mark.skipif(not has_gpu(), reason="No OpenCL GPU queues available")
-@pytest.mark.skipif(not has_cpu(), reason="No OpenCL CPU queues available")
+@skip_no_gpu
+@skip_no_cpu
 def test_is_in_device_context_inside_nested_device_ctxt():
     with dpctl.device_context("opencl:cpu:0"):
         with dpctl.device_context("opencl:gpu:0"):
@@ -55,7 +63,7 @@ def test_is_in_device_context_inside_nested_device_ctxt():
     assert not dpctl.is_in_device_context()
 
 
-@pytest.mark.skipif(not has_cpu(), reason="No OpenCL CPU queues available")
+@skip_no_cpu
 def test_is_in_device_context_inside_nested_device_ctxt_cpu():
     cpu = dpctl.SyclDevice("cpu")
     n = cpu.max_compute_units
@@ -76,17 +84,13 @@ def test_is_in_device_context_inside_nested_device_ctxt_cpu():
     assert 0 == dpctl.get_num_activated_queues()
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(), reason="No SYCL platforms available"
-)
+@skip_no_platform
 def test_get_current_device_type_outside_device_ctxt():
     assert dpctl.get_current_device_type() is not None
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(), reason="No SYCL platforms available"
-)
-@pytest.mark.skipif(not has_gpu(), reason="No OpenCL GPU queues available")
+@skip_no_platform
+@skip_no_gpu
 def test_get_current_device_type_inside_device_ctxt():
     assert dpctl.get_current_device_type() is not None
 
@@ -96,8 +100,8 @@ def test_get_current_device_type_inside_device_ctxt():
     assert dpctl.get_current_device_type() is not None
 
 
-@pytest.mark.skipif(not has_cpu(), reason="No OpenCL CPU queues available")
-@pytest.mark.skipif(not has_gpu(), reason="No OpenCL GPU queues available")
+@skip_no_cpu
+@skip_no_gpu
 def test_get_current_device_type_inside_nested_device_ctxt():
     assert dpctl.get_current_device_type() is not None
 
@@ -111,15 +115,13 @@ def test_get_current_device_type_inside_nested_device_ctxt():
     assert dpctl.get_current_device_type() is not None
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(), reason="No SYCL platforms available"
-)
+@skip_no_platform
 def test_num_current_queues_outside_with_clause():
     assert 0 == dpctl.get_num_activated_queues()
 
 
-@pytest.mark.skipif(not has_gpu(), reason="No OpenCL GPU queues available")
-@pytest.mark.skipif(not has_cpu(), reason="No OpenCL CPU queues available")
+@skip_no_gpu
+@skip_no_cpu
 def test_num_current_queues_inside_with_clause():
     with dpctl.device_context("opencl:cpu:0"):
         assert 1 == dpctl.get_num_activated_queues()
@@ -128,8 +130,8 @@ def test_num_current_queues_inside_with_clause():
     assert 0 == dpctl.get_num_activated_queues()
 
 
-@pytest.mark.skipif(not has_gpu(), reason="No OpenCL GPU queues available")
-@pytest.mark.skipif(not has_cpu(), reason="No OpenCL CPU queues available")
+@skip_no_gpu
+@skip_no_cpu
 def test_num_current_queues_inside_threads():
     from threading import Thread
 
@@ -146,9 +148,7 @@ def test_num_current_queues_inside_threads():
         Session2.start()
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(), reason="No SYCL platforms available"
-)
+@skip_no_platform
 def test_get_current_backend():
     dpctl.get_current_backend()
     dpctl.get_current_device_type()
