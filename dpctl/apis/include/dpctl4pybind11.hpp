@@ -107,3 +107,80 @@ public:
 };
 } // namespace detail
 } // namespace pybind11
+
+namespace pybind11
+{
+namespace detail
+{
+/* This type caster associates ``sycl::context`` C++ class with
+ * :class:`dpctl.SyclContext` for the purposes of generation of
+ * Python bindings by pybind11.
+ */
+template <> struct type_caster<sycl::context>
+{
+public:
+    PYBIND11_TYPE_CASTER(sycl::context, _("dpctl.SyclContext"));
+
+    bool load(handle src, bool)
+    {
+        PyObject *source = src.ptr();
+        if (PyObject_TypeCheck(source, &PySyclContextType)) {
+            DPCTLSyclContextRef CRef = get_context_ref(
+                reinterpret_cast<PySyclContextObject *>(source));
+            sycl::context *ctx = reinterpret_cast<sycl::context *>(CRef);
+            value = *ctx;
+            return true;
+        }
+        else {
+            throw std::runtime_error(
+                "Input is of unexpected type, expected dpctl.SyclContext");
+        }
+    }
+
+    static handle cast(sycl::context src, return_value_policy, handle)
+    {
+        auto tmp =
+            make_SyclContext(reinterpret_cast<DPCTLSyclContextRef>(&src));
+        return handle(reinterpret_cast<PyObject *>(tmp));
+    }
+};
+} // namespace detail
+} // namespace pybind11
+
+namespace pybind11
+{
+namespace detail
+{
+/* This type caster associates ``sycl::event`` C++ class with
+ * :class:`dpctl.SyclEvent` for the purposes of generation of
+ * Python bindings by pybind11.
+ */
+template <> struct type_caster<sycl::event>
+{
+public:
+    PYBIND11_TYPE_CASTER(sycl::event, _("dpctl.SyclEvent"));
+
+    bool load(handle src, bool)
+    {
+        PyObject *source = src.ptr();
+        if (PyObject_TypeCheck(source, &PySyclEventType)) {
+            DPCTLSyclEventRef ERef =
+                get_event_ref(reinterpret_cast<PySyclEventObject *>(source));
+            sycl::event *ev = reinterpret_cast<sycl::event *>(ERef);
+            value = *ev;
+            return true;
+        }
+        else {
+            throw std::runtime_error(
+                "Input is of unexpected type, expected dpctl.SyclEvent");
+        }
+    }
+
+    static handle cast(sycl::event src, return_value_policy, handle)
+    {
+        auto tmp = make_SyclEvent(reinterpret_cast<DPCTLSyclEventRef>(&src));
+        return handle(reinterpret_cast<PyObject *>(tmp));
+    }
+};
+} // namespace detail
+} // namespace pybind11
