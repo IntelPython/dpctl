@@ -1,6 +1,6 @@
 include versioneer.py
 recursive-include dpctl/include *.h
-recursive-include dpctl/tensor/include *
+include dpctl/include/dpctl4pybind11.hpp
 recursive-include dpctl *.pxd
 include dpctl/_sycl_context.h
 include dpctl/_sycl_context_api.h
@@ -14,5 +14,6 @@ include dpctl/memory/_memory.h
 include dpctl/memory/_memory_api.h
 include dpctl/tensor/_usmarray.h
 include dpctl/tensor/_usmarray_api.h
+recursive-include dpctl/tensor/include *
 include dpctl/tests/input_files/*
 include dpctl/tests/*.pyx
