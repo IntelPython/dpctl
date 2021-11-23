@@ -239,6 +239,9 @@ def device_context(arg):
     the context manager's scope. The yielded queue is removed as the currently
     usable queue on exiting the context manager.
 
+    You can register context factory in the list of factories.
+    This context manager uses context factories to create and activate nested contexts.
+
     Args:
         arg : A :class:`dpctl.SyclQueue` object, or a :class:`dpctl.SyclDevice`
               object, or a filter selector string.
@@ -259,6 +262,18 @@ def device_context(arg):
             import dpctl
             with dpctl.device_context("level0:gpu:0"):
                 do_something_on_gpu0()
+
+        The following example registers nested context factory:
+
+        .. code-block:: python
+
+            import dctl
+
+            def factory(sycl_queue):
+                ...
+                return context
+
+            dpctl.nested_context_factories.append(factory)
 
     """
     ctxt = None
