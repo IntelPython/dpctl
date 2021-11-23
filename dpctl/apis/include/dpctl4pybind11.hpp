@@ -35,6 +35,11 @@ namespace pybind11
 {
 namespace detail
 {
+
+/* This type caster associates ``sycl::queue`` C++ class with
+ * :class:`dpctl.SyclQueue` for the purposes of generation of
+ * Python bindings by pybind11.
+ */
 template <> struct type_caster<sycl::queue>
 {
 public:
@@ -52,7 +57,7 @@ public:
         }
         else {
             throw std::runtime_error(
-                "Input is of unexpected type, expected egapi.Example");
+                "Input is of unexpected type, expected dpctl.SyclQueue");
         }
     }
 
@@ -69,6 +74,10 @@ namespace pybind11
 {
 namespace detail
 {
+/* This type caster associates ``sycl::device`` C++ class with
+ * :class:`dpctl.SyclDevice` for the purposes of generation of
+ * Python bindings by pybind11.
+ */
 template <> struct type_caster<sycl::device>
 {
 public:
@@ -86,7 +95,7 @@ public:
         }
         else {
             throw std::runtime_error(
-                "Input is of unexpected type, expected egapi.Example");
+                "Input is of unexpected type, expected dpctl.SyclDevice");
         }
     }
 
