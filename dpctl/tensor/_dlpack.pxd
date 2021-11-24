@@ -31,3 +31,11 @@ cpdef object to_dlpack_capsule(usm_ndarray array) except +
 cpdef usm_ndarray from_dlpack_capsule(object dltensor) except +
 
 cpdef from_dlpack(array)
+
+cdef class DLPackCreationError(Exception):
+    """
+    A DLPackCreateError exception is raised when constructing
+    DLPack capsule from `usm_ndarray` based on a USM allocation
+    on a partitioned SYCL device.
+    """
+    pass

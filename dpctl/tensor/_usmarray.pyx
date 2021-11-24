@@ -739,7 +739,16 @@ cdef class usm_ndarray:
         return NotImplemented
 
     def __dlpack__(self, stream=None):
-        """Produce DLPack capsule"""
+        """
+        Produces DLPack capsule.
+
+        Raises:
+            MemoryError: when host memory can not be allocated.
+            DLPackCreationError: when array is allocated on a partitioned
+                SYCL device, or with a non-default context.
+            NotImplementedError: when non-default value of `stream` keyword
+                is used.
+        """
         if stream is None:
             return c_dlpack.to_dlpack_capsule(self)
         else:
@@ -749,10 +758,27 @@ cdef class usm_ndarray:
             )
 
     def __dlpack_device__(self):
-        return (
-            c_dlpack.device_oneAPI,
-            (<c_dpctl.SyclDevice>self.sycl_device).get_overall_ordinal(),
-        )
+        """
+        Gives a tuple (`device_type`, `device_id`) corresponding to `DLDevice`
+        entry in `DLTensor` in DLPack protocol.
+
+        The tuple describes the non-partitioned device where the array
+        has been allocated.
+
+        Raises:
+            DLPackCreationError: when array is allocation on a partitioned
+                SYCL device
+        """
+        cdef int dev_id = (<c_dpctl.SyclDevice>self.sycl_device).get_overall_ordinal()
+        if dev_id < 0:
+            raise c_dlpack.DLPackCreationError(
+                "DLPack protocol is only supported for non-partitioned devices"
+            )
+        else:
+            return (
+                c_dlpack.device_oneAPI,
+                dev_id,
+            )
 
     def __eq__(self, other):
         return _dispatch_binary_elementwise(self, "equal", other)

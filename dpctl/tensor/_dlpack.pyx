@@ -87,10 +87,14 @@ cdef extern from './include/dlpack/dlpack.h' nogil:
 
 
 def get_build_dlpack_version():
+    """
+    Returns the string value of DLPACK_VERSION from dlpack.h
+    `dpcl.tensor` was built with.
+    """
     return str(DLPACK_VERSION)
 
 
-cdef void pycapsule_deleter(object dlt_capsule):
+cdef void _pycapsule_deleter(object dlt_capsule):
     cdef DLManagedTensor *dlm_tensor = NULL
     if cpython.PyCapsule_IsValid(dlt_capsule, 'dltensor'):
         dlm_tensor = <DLManagedTensor*>cpython.PyCapsule_GetPointer(
@@ -98,7 +102,7 @@ cdef void pycapsule_deleter(object dlt_capsule):
         dlm_tensor.deleter(dlm_tensor)
 
 
-cdef void managed_tensor_deleter(DLManagedTensor *dlm_tensor) with gil:
+cdef void _managed_tensor_deleter(DLManagedTensor *dlm_tensor) with gil:
     if dlm_tensor is not NULL:
         stdlib.free(dlm_tensor.dl_tensor.shape)
         cpython.Py_DECREF(<usm_ndarray>dlm_tensor.manager_ctx)
@@ -106,18 +110,12 @@ cdef void managed_tensor_deleter(DLManagedTensor *dlm_tensor) with gil:
         stdlib.free(dlm_tensor)
 
 
-cdef class DLPackCreationError(Exception):
-    """
-    A DLPackCreateError exception is raised when constructing
-    DLPack capsule from `usm_ndarray` based on a USM allocation
-    on a partitioned SYCL device.
-    """
-    pass
-
-
 cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
-    """Constructs named Python capsule object referencing
-    instance of `DLManagerTensor` from `usm_ndarray` instance"""
+    """
+    Constructs named Python capsule object referencing
+    instance of `DLManagerTensor` from
+    :class:`dpctl.tensor.usm_ndarray` instance.
+    """
     cdef c_dpctl.SyclQueue ary_sycl_queue
     cdef c_dpctl.SyclDevice ary_sycl_device
     cdef DPCTLSyclDeviceRef pDRef = NULL
@@ -146,6 +144,14 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
             "to_dlpack_capsule: DLPack can only export arrays allocated on "
             "non-partitioned SYCL devices."
         )
+    # TODO: check that ary_sycl_context is the default context
+    default_context = dpctl.SyclQueue(ary_sycl_device).sycl_context
+    if not usm_ary.sycl_context == default_context:
+        raise DLPackCreationError(
+            "to_dlpack_capsule: DLPack can only export arrays based on USM "
+            "allocations bound to a default platform SYCL context"
+        )
+
 
     dlm_tensor = <DLManagedTensor *> stdlib.malloc(
         sizeof(DLManagedTensor))
@@ -210,13 +216,16 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
 
     dlm_tensor.manager_ctx = <void*>usm_ary
     cpython.Py_INCREF(usm_ary)
-    dlm_tensor.deleter = managed_tensor_deleter
+    dlm_tensor.deleter = _managed_tensor_deleter
 
-    return cpython.PyCapsule_New(dlm_tensor, 'dltensor', pycapsule_deleter)
+    return cpython.PyCapsule_New(dlm_tensor, 'dltensor', _pycapsule_deleter)
 
 
 cdef class _DLManagedTensorOwner:
-    """Helper class managing lifetimes of the DLManagedTensor struct"""
+    """
+    Helper class managing the lifetime of the DLManagedTensor struct
+    transferred from a 'dlpack' capsule.
+    """
     cdef DLManagedTensor *dlm_tensor
 
     def __cinit__(self):
@@ -234,9 +243,11 @@ cdef class _DLManagedTensorOwner:
 
 
 cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
-    """Reconstructs instance of usm_ndarray from named Python
-    capsule object referencing instance of `DLManagedTensor` without
-    a copy"""
+    """
+    Reconstructs instance of :class:`dpctl.tensor.usm_ndarray` from
+    named Python capsule object referencing instance of `DLManagedTensor`
+    without copy. The instance forms a view in the memory of the tensor.
+    """
     cdef DLManagedTensor *dlm_tensor = NULL
     cdef bytes usm_type
     cdef size_t sz = 1
@@ -361,7 +372,8 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
 
 
 cpdef from_dlpack(array):
-    """dpctl.tensor.from_dlpack(obj)
+    """
+    dpctl.tensor.from_dlpack(obj)
 
     Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python
     object `obj` that implements `__dlpack__` protocol. The output
