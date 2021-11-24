@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-20.04
 
     env:
-      OCLCPUEXP_FN: oclcpuexp-2021.12.6.0.19_rel.tar.gz
-      FPGAEMU_FN: fpgaemu-2021.12.6.0.19_rel.tar.gz
+      OCLCPUEXP_FN: oclcpuexp-2021.12.9.0.24_rel.tar.gz
+      FPGAEMU_FN: fpgaemu-2021.12.9.0.24_rel.tar.gz
       TBB_FN: oneapi-tbb-2021.4.0-lin.tgz
 
     steps:
@@ -48,8 +48,8 @@ jobs:
               export DOWNLOAD_URL_PREFIX=https://github.com/intel/llvm/releases/download
               rm -rf dpcpp-compiler.tar.gz
               wget ${DOWNLOAD_URL_PREFIX}/${NIGHTLY_TAG}/dpcpp-compiler.tar.gz && echo ${LATEST_LLVM_TAG_SHA} > bundle_id.txt || rm -rf bundle_id.txt
-              [ -f ${OCLCPUEXP_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/2021-07/${OCLCPUEXP_FN} || rm -rf bundle_id.txt
-              [ -f ${FPGAEMU_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/2021-07/${FPGAEMU_FN} || rm -rf bundle_id.txt
+              [ -f ${OCLCPUEXP_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/2021-09/${OCLCPUEXP_FN} || rm -rf bundle_id.txt
+              [ -f ${FPGAEMU_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/2021-09/${FPGAEMU_FN} || rm -rf bundle_id.txt
               [ -f ${TBB_FN} ] || wget https://github.com/oneapi-src/oneTBB/releases/download/v2021.4.0/${TBB_FN} || rm -rf bundle_id.txt
               rm -rf dpcpp_compiler
               tar xf dpcpp-compiler.tar.gz
