@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.11.2] - 11/xx/2021
 
 ## Fixed
-- Fix/gh #649 transpose (#653)
+- Fixed issue #649 about incorrect behavior of `.T` method on sliced arrays (#653)
 
 ## [0.11.1] - 11/10/2021
 
