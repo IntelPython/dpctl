@@ -17,6 +17,8 @@
 """Defines unit test cases for the SyclQueueManager class.
 """
 
+import contextlib
+
 import pytest
 
 import dpctl
@@ -156,3 +158,73 @@ def test_get_current_backend():
         dpctl.set_global_queue("gpu")
     elif has_cpu():
         dpctl.set_global_queue("cpu")
+
+
+def test_nested_context_factory_is_empty_list():
+    assert isinstance(dpctl.nested_context_factories, list)
+    assert not dpctl.nested_context_factories
+
+
+@contextlib.contextmanager
+def _register_nested_context_factory(factory):
+    dpctl.nested_context_factories.append(factory)
+    try:
+        yield
+    finally:
+        dpctl.nested_context_factories.remove(factory)
+
+
+def test_register_nested_context_factory_context():
+    def factory():
+        pass
+
+    with _register_nested_context_factory(factory):
+        assert factory in dpctl.nested_context_factories
+
+    assert isinstance(dpctl.nested_context_factories, list)
+    assert not dpctl.nested_context_factories
+
+
+@pytest.mark.skipif(not has_cpu(), reason="No OpenCL CPU queues available")
+def test_device_context_activates_nested_context():
+    in_context = False
+    factory_called = False
+
+    @contextlib.contextmanager
+    def context():
+        nonlocal in_context
+        old, in_context = in_context, True
+        yield
+        in_context = old
+
+    def factory(_):
+        nonlocal factory_called
+        factory_called = True
+        return context()
+
+    with _register_nested_context_factory(factory):
+        assert not factory_called
+        assert not in_context
+
+        with dpctl.device_context("opencl:cpu:0"):
+            assert factory_called
+            assert in_context
+
+        assert not in_context
+
+
+@pytest.mark.skipif(not has_cpu(), reason="No OpenCL CPU queues available")
+@pytest.mark.parametrize(
+    "factory, exception, match",
+    [
+        (True, TypeError, "object is not callable"),
+        (lambda x: None, AttributeError, "no attribute '__exit__'"),
+    ],
+)
+def test_nested_context_factory_exception_if_wrong_factory(
+    factory, exception, match
+):
+    with pytest.raises(exception, match=match):
+        with _register_nested_context_factory(factory):
+            with dpctl.device_context("opencl:cpu:0"):
+                pass

@@ -19,7 +19,7 @@
 # cython: linetrace=True
 
 import logging
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 
 from .enum_types import backend_type, device_type
 
@@ -210,6 +210,22 @@ cpdef get_current_backend():
     return _mgr.get_current_backend()
 
 
+nested_context_factories = []
+
+
+def _get_nested_contexts(ctxt):
+    _help_numba_dppy()
+    return (factory(ctxt) for factory in nested_context_factories)
+
+
+def _help_numba_dppy():
+    """Import numba-dppy for registering nested contexts"""
+    try:
+        import numba_dppy
+    except Exception:
+        pass
+
+
 @contextmanager
 def device_context(arg):
     """
@@ -221,6 +237,9 @@ def device_context(arg):
     accessed by any subsequent call to :func:`dpctl.get_current_queue()` inside
     the context manager's scope. The yielded queue is removed as the currently
     usable queue on exiting the context manager.
+
+    You can register context factory in the list of factories.
+    This context manager uses context factories to create and activate nested contexts.
 
     Args:
 
@@ -243,11 +262,26 @@ def device_context(arg):
             with dpctl.device_context("level0:gpu:0"):
                 pass
 
+        The following example registers nested context factory:
+
+        .. code-block:: python
+
+            import dctl
+
+            def factory(sycl_queue):
+                ...
+                return context
+
+            dpctl.nested_context_factories.append(factory)
+
     """
     ctxt = None
     try:
         ctxt = _mgr._set_as_current_queue(arg)
-        yield ctxt
+        with ExitStack() as stack:
+            for nested_context in _get_nested_contexts(ctxt):
+                stack.enter_context(nested_context)
+            yield ctxt
     finally:
         # Code to release resource
         if ctxt:
