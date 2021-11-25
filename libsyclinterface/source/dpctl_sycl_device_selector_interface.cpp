@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_selector_interface.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "Support/CBindingWrapping.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 
@@ -42,11 +43,8 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLAcceleratorSelector_Create()
     try {
         auto Selector = new accelerator_selector();
         return wrap(Selector);
-    } catch (std::bad_alloc const &ba) {
-        std::cerr << ba.what() << '\n';
-        return nullptr;
-    } catch (runtime_error const &re) {
-        std::cerr << re.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -56,11 +54,8 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLDefaultSelector_Create()
     try {
         auto Selector = new default_selector();
         return wrap(Selector);
-    } catch (std::bad_alloc const &ba) {
-        std::cerr << ba.what() << '\n';
-        return nullptr;
-    } catch (runtime_error const &re) {
-        std::cerr << re.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -70,11 +65,8 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create()
     try {
         auto Selector = new cpu_selector();
         return wrap(Selector);
-    } catch (std::bad_alloc const &ba) {
-        std::cerr << ba.what() << '\n';
-        return nullptr;
-    } catch (runtime_error const &re) {
-        std::cerr << re.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -90,11 +82,8 @@ DPCTLFilterSelector_Create(__dpctl_keep const char *filter_str)
     try {
         auto Selector = new filter_selector_t(filter_str);
         return wrap(Selector);
-    } catch (std::bad_alloc &ba) {
-        std::cerr << ba.what() << '\n';
-        return nullptr;
-    } catch (runtime_error &re) {
-        std::cerr << "Device: " << filter_str << " " << re.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -104,11 +93,8 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create()
     try {
         auto Selector = new gpu_selector();
         return wrap(Selector);
-    } catch (std::bad_alloc const &ba) {
-        std::cerr << ba.what() << '\n';
-        return nullptr;
-    } catch (runtime_error const &re) {
-        std::cerr << re.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -118,11 +104,8 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create()
     try {
         auto Selector = new host_selector();
         return wrap(Selector);
-    } catch (std::bad_alloc const &ba) {
-        std::cerr << ba.what() << '\n';
-        return nullptr;
-    } catch (runtime_error const &re) {
-        std::cerr << re.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
