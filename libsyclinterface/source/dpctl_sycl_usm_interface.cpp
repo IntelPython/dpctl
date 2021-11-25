@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_usm_interface.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_device_interface.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
@@ -45,15 +46,15 @@ __dpctl_give DPCTLSyclUSMRef
 DPCTLmalloc_shared(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     if (!QRef) {
-        std::cerr << "Input QRef is nullptr\n";
+        error_handler("Input QRef is nullptr.", __FILE__, __func__, __LINE__);
         return nullptr;
     }
     try {
         auto Q = unwrap(QRef);
         auto Ptr = malloc_shared(size, *Q);
         return wrap(Ptr);
-    } catch (feature_not_supported const &fns) {
-        std::cerr << fns.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -64,15 +65,15 @@ DPCTLaligned_alloc_shared(size_t alignment,
                           __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     if (!QRef) {
-        std::cerr << "Input QRef is nullptr\n";
+        error_handler("Input QRef is nullptr.", __FILE__, __func__, __LINE__);
         return nullptr;
     }
     try {
         auto Q = unwrap(QRef);
         auto Ptr = aligned_alloc_shared(alignment, size, *Q);
         return wrap(Ptr);
-    } catch (feature_not_supported const &fns) {
-        std::cerr << fns.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -81,7 +82,7 @@ __dpctl_give DPCTLSyclUSMRef
 DPCTLmalloc_host(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     if (!QRef) {
-        std::cerr << "Input QRef is nullptr\n";
+        error_handler("Input QRef is nullptr.", __FILE__, __func__, __LINE__);
         return nullptr;
     }
     // SYCL 2020 spec: for devices without aspect::usm_host_allocations:
@@ -97,7 +98,7 @@ DPCTLaligned_alloc_host(size_t alignment,
                         __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     if (!QRef) {
-        std::cerr << "Input QRef is nullptr\n";
+        error_handler("Input QRef is nullptr.", __FILE__, __func__, __LINE__);
         return nullptr;
     }
     // SYCL 2020 spec: for devices without aspect::usm_host_allocations:
@@ -111,15 +112,15 @@ __dpctl_give DPCTLSyclUSMRef
 DPCTLmalloc_device(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     if (!QRef) {
-        std::cerr << "Input QRef is nullptr\n";
+        error_handler("Input QRef is nullptr.", __FILE__, __func__, __LINE__);
         return nullptr;
     }
     try {
         auto Q = unwrap(QRef);
         auto Ptr = malloc_device(size, *Q);
         return wrap(Ptr);
-    } catch (feature_not_supported const &fns) {
-        std::cerr << fns.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -130,15 +131,15 @@ DPCTLaligned_alloc_device(size_t alignment,
                           __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     if (!QRef) {
-        std::cerr << "Input QRef is nullptr\n";
+        error_handler("Input QRef is nullptr.", __FILE__, __func__, __LINE__);
         return nullptr;
     }
     try {
         auto Q = unwrap(QRef);
         auto Ptr = aligned_alloc_device(alignment, size, *Q);
         return wrap(Ptr);
-    } catch (feature_not_supported const &fns) {
-        std::cerr << fns.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -147,11 +148,12 @@ void DPCTLfree_with_queue(__dpctl_take DPCTLSyclUSMRef MRef,
                           __dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     if (!QRef) {
-        std::cerr << "Input QRef is nullptr\n";
+        error_handler("Input QRef is nullptr.", __FILE__, __func__, __LINE__);
         return;
     }
     if (!MRef) {
-        std::cerr << "Input MRef is nullptr, nothing to free\n";
+        error_handler("Input MRef is nullptr, nothing to free.", __FILE__,
+                      __func__, __LINE__);
         return;
     }
     auto Ptr = unwrap(MRef);
@@ -163,11 +165,12 @@ void DPCTLfree_with_context(__dpctl_take DPCTLSyclUSMRef MRef,
                             __dpctl_keep const DPCTLSyclContextRef CRef)
 {
     if (!CRef) {
-        std::cerr << "Input CRef is nullptr\n";
+        error_handler("Input CRef is nullptr.", __FILE__, __func__, __LINE__);
         return;
     }
     if (!MRef) {
-        std::cerr << "Input MRef is nullptr, nothing to free\n";
+        error_handler("Input MRef is nullptr, nothing to free.", __FILE__,
+                      __func__, __LINE__);
         return;
     }
     auto Ptr = unwrap(MRef);
@@ -179,11 +182,11 @@ const char *DPCTLUSM_GetPointerType(__dpctl_keep const DPCTLSyclUSMRef MRef,
                                     __dpctl_keep const DPCTLSyclContextRef CRef)
 {
     if (!CRef) {
-        std::cerr << "Input CRef is nullptr\n";
+        error_handler("Input CRef is nullptr.", __FILE__, __func__, __LINE__);
         return "unknown";
     }
     if (!MRef) {
-        std::cerr << "Input MRef is nullptr\n";
+        error_handler("Input MRef is nullptr.", __FILE__, __func__, __LINE__);
         return "unknown";
     }
     auto Ptr = unwrap(MRef);
@@ -207,11 +210,11 @@ DPCTLUSM_GetPointerDevice(__dpctl_keep const DPCTLSyclUSMRef MRef,
                           __dpctl_keep const DPCTLSyclContextRef CRef)
 {
     if (!CRef) {
-        std::cerr << "Input CRef is nullptr\n";
+        error_handler("Input CRef is nullptr.", __FILE__, __func__, __LINE__);
         return nullptr;
     }
     if (!MRef) {
-        std::cerr << "Input MRef is nullptr\n";
+        error_handler("Input MRef is nullptr.", __FILE__, __func__, __LINE__);
         return nullptr;
     }
 
