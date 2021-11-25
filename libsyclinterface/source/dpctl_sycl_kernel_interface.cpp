@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_kernel_interface.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "../helper/include/dpctl_string_utils.hpp"
 #include "Support/CBindingWrapping.h"
 #include <CL/sycl.hpp> /* Sycl headers */
@@ -42,7 +43,9 @@ __dpctl_give const char *
 DPCTLKernel_GetFunctionName(__dpctl_keep const DPCTLSyclKernelRef Kernel)
 {
     if (!Kernel) {
-        // \todo record error
+        error_handler("Cannot get the number of arguments "
+                      "as input is a nullptr.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 
@@ -56,7 +59,9 @@ DPCTLKernel_GetFunctionName(__dpctl_keep const DPCTLSyclKernelRef Kernel)
 size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef Kernel)
 {
     if (!Kernel) {
-        // \todo record error
+        error_handler("Cannot get the number of arguments from "
+                      "DPCTLSyclKernelRef as input is a nullptr.",
+                      __FILE__, __func__, __LINE__);
         return -1;
     }
 
