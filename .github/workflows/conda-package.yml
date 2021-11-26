@@ -1,6 +1,10 @@
 name: Conda package
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+    tags:
+  pull_request:
 
 env:
   PACKAGE_NAME: dpctl
