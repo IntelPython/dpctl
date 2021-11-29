@@ -59,6 +59,16 @@ def test_allocate_usm_ndarray(shape, usm_type):
     assert X.shape == X.__sycl_usm_array_interface__["shape"]
 
 
+def test_usm_ndarray_flags():
+    assert dpt.usm_ndarray((5,)).flags == 3
+    assert dpt.usm_ndarray((5, 2)).flags == 1
+    assert dpt.usm_ndarray((5, 2), order="F").flags == 2
+    assert dpt.usm_ndarray((5, 1, 2), order="F").flags == 2
+    assert dpt.usm_ndarray((5, 1, 2), strides=(2, 0, 1)).flags == 1
+    assert dpt.usm_ndarray((5, 1, 2), strides=(1, 0, 5)).flags == 2
+    assert dpt.usm_ndarray((5, 1, 1), strides=(1, 0, 1)).flags == 3
+
+
 @pytest.mark.parametrize(
     "dtype",
     [
@@ -703,11 +713,10 @@ def test_shape_setter():
         5,
     )
     X = dpt.usm_ndarray(sh_s, dtype="d")
-    expected_flags = X.flags
     X.shape = sh_f
     assert X.shape == sh_f
     assert relaxed_strides_equal(X.strides, cc_strides(sh_f), sh_f)
-    assert X.flags == expected_flags
+    assert X.flags & 1, "reshaped array expected to be C-contiguous"
 
     sh_s = (
         2,
@@ -841,6 +850,10 @@ def test_reshape():
         dpt.reshape(Z, Z.shape, order="invalid")
     W = dpt.reshape(Z, (-1,), order="C")
     assert W.shape == (Z.size,)
+
+    X = dpt.usm_ndarray((1,))
+    Y = dpt.reshape(X, X.shape)
+    assert Y.flags == X.flags
 
 
 def test_transpose():
