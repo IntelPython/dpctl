@@ -63,6 +63,9 @@ def _array_info_sequence(li):
             raise ValueError(
                 "Inconsistent dimensions, {} and {}".format(dim, el_dim)
             )
+    if dim is None:
+        dim = tuple()
+        device = _host_set
     return (n,) + dim, dt, device
 
 

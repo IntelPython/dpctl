@@ -80,6 +80,12 @@ def test_asarray_from_sequence():
     Y = dpt.asarray(X, usm_type="device")
     assert type(Y) is dpt.usm_ndarray
     assert Y.ndim == 2
+    assert Y.shape == (len(X), 2)
+
+    X = []
+    Y = dpt.asarray(X, usm_type="device")
+    assert type(Y) is dpt.usm_ndarray
+    assert Y.shape == (0,)
 
 
 def test_asarray_from_object_with_suai():
