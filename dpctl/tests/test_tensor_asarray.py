@@ -87,6 +87,11 @@ def test_asarray_from_sequence():
     assert type(Y) is dpt.usm_ndarray
     assert Y.shape == (0,)
 
+    X = [True, False]
+    Y = dpt.asarray(X, usm_type="device")
+    assert type(Y) is dpt.usm_ndarray
+    assert Y.dtype.kind == "b"
+
 
 def test_asarray_from_object_with_suai():
     """Test that asarray can deal with opaque objects implementing SUAI"""
