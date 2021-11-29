@@ -21,6 +21,7 @@
 /// \file
 /// Helper function to convert a C++ string to a C string.
 //===----------------------------------------------------------------------===//
+#include "../helper/include/dpctl_error_handlers.h"
 #include <cstring>
 #include <iostream>
 #include <string>
@@ -55,9 +56,8 @@ cstring_from_string(const std::string &str)
         // to be null-terminated and the copy function is asked to
         // copy enough characters to include that null-character.
         cstr[cstr_len - 1] = '\0';
-    } catch (std::bad_alloc const &ba) {
-        // \todo log error
-        std::cerr << ba.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
     }
 
     return cstr;

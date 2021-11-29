@@ -174,13 +174,8 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityNuma)
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
             expected_size = subDevices.size();
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << '\n';
-        } catch (feature_not_supported const &fnse) {
-            std::cerr << fnse.what() << '\n';
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            std::cerr << e.what() << std::endl;
         }
 
         if (DVRef && expected_size) {
@@ -210,13 +205,8 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL4Cache)
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
             expected_size = subDevices.size();
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << '\n';
-        } catch (feature_not_supported const &fnse) {
-            std::cerr << fnse.what() << '\n';
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            std::cerr << e.what() << std::endl;
         }
 
         if (DVRef && expected_size) {
@@ -246,13 +236,8 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL3Cache)
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
             expected_size = subDevices.size();
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << '\n';
-        } catch (feature_not_supported const &fnse) {
-            std::cerr << fnse.what() << '\n';
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            std::cerr << e.what() << std::endl;
         }
 
         if (DVRef && expected_size) {
@@ -282,13 +267,8 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL2Cache)
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
             expected_size = subDevices.size();
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << '\n';
-        } catch (feature_not_supported const &fnse) {
-            std::cerr << fnse.what() << '\n';
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            std::cerr << e.what() << std::endl;
         }
 
         if (DVRef && expected_size) {
@@ -318,13 +298,8 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL1Cache)
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
             expected_size = subDevices.size();
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << '\n';
-        } catch (feature_not_supported const &fnse) {
-            std::cerr << fnse.what() << '\n';
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            std::cerr << e.what() << std::endl;
         }
 
         if (DVRef && expected_size) {
@@ -355,13 +330,8 @@ TEST_P(TestDPCTLSyclDeviceInterface,
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
             expected_size = subDevices.size();
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << '\n';
-        } catch (feature_not_supported const &fnse) {
-            std::cerr << fnse.what() << '\n';
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            std::cerr << e.what() << std::endl;
         }
 
         if (DVRef && expected_size) {
