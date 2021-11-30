@@ -43,6 +43,7 @@
 namespace
 {
 constexpr size_t SIZE = 1024;
+static_assert(SIZE % 8 == 0);
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPCTLSyclUSMRef);
 } /* end of anonymous namespace */
 
@@ -111,6 +112,71 @@ TEST_F(TestQueueSubmit, CheckSubmitRange_saxpy)
                                               DPCTL_VOID_PTR, DPCTL_FLOAT};
     auto ERef = DPCTLQueue_SubmitRange(
         AxpyKernel, QRef, args2, addKernelArgTypes, 4, Range, 1, nullptr, 0);
+    ASSERT_TRUE(ERef != nullptr);
+    DPCTLQueue_Wait(QRef);
+
+    // clean ups
+    DPCTLEvent_Delete(ERef);
+    DPCTLKernel_Delete(AxpyKernel);
+    DPCTLfree_with_queue((DPCTLSyclUSMRef)a, QRef);
+    DPCTLfree_with_queue((DPCTLSyclUSMRef)b, QRef);
+    DPCTLfree_with_queue((DPCTLSyclUSMRef)c, QRef);
+    DPCTLQueue_Delete(QRef);
+    DPCTLContext_Delete(CRef);
+    DPCTLProgram_Delete(PRef);
+    DPCTLDevice_Delete(DRef);
+    DPCTLDeviceSelector_Delete(DSRef);
+}
+
+TEST_F(TestQueueSubmit, CheckSubmitNDRange_saxpy)
+{
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    DPCTLDeviceMgr_PrintDeviceInfo(DRef);
+    ASSERT_TRUE(DRef);
+    auto QRef =
+        DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY);
+    ASSERT_TRUE(QRef);
+    auto CRef = DPCTLQueue_GetContext(QRef);
+    ASSERT_TRUE(CRef);
+    auto PRef = DPCTLProgram_CreateFromSpirv(CRef, spirvBuffer.data(),
+                                             spirvFileSize, nullptr);
+    ASSERT_TRUE(PRef != nullptr);
+    ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "axpy"));
+    auto AxpyKernel = DPCTLProgram_GetKernel(PRef, "axpy");
+
+    // Create the input args
+    auto a = DPCTLmalloc_shared(SIZE * sizeof(float), QRef);
+    ASSERT_TRUE(a != nullptr);
+    auto b = DPCTLmalloc_shared(SIZE * sizeof(float), QRef);
+    ASSERT_TRUE(b != nullptr);
+    auto c = DPCTLmalloc_shared(SIZE * sizeof(float), QRef);
+    ASSERT_TRUE(c != nullptr);
+
+    auto a_ptr = reinterpret_cast<float *>(unwrap(a));
+    auto b_ptr = reinterpret_cast<float *>(unwrap(b));
+    // Initialize a,b
+    for (auto i = 0ul; i < SIZE; ++i) {
+        a_ptr[i] = i + 1.0;
+        b_ptr[i] = i + 2.0;
+    }
+
+    // Create kernel args for axpy
+    float d = 10.0;
+    size_t gRange[] = {1, 1, SIZE};
+    size_t lRange[] = {1, 1, 8};
+    void *args2[4] = {unwrap(a), unwrap(b), unwrap(c), (void *)&d};
+    DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR, DPCTL_VOID_PTR,
+                                              DPCTL_VOID_PTR, DPCTL_FLOAT};
+    DPCTLSyclEventRef events[1];
+    events[0] = DPCTLEvent_Create();
+
+    auto ERef =
+        DPCTLQueue_SubmitNDRange(AxpyKernel, QRef, args2, addKernelArgTypes, 4,
+                                 gRange, lRange, 3, events, 1);
     ASSERT_TRUE(ERef != nullptr);
     DPCTLQueue_Wait(QRef);
 
