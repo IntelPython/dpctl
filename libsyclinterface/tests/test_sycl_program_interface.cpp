@@ -98,17 +98,37 @@ TEST_P(TestDPCTLSyclProgramInterface, ChkCreateFromSpirv)
     ASSERT_TRUE(PRef != nullptr);
     ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "add"));
     ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "axpy"));
+    ASSERT_FALSE(DPCTLProgram_HasKernel(PRef, nullptr));
+}
+
+TEST_P(TestDPCTLSyclProgramInterface, ChkHasKernelNullProgram)
+{
+
+    DPCTLSyclProgramRef NullRef = nullptr;
+    ASSERT_FALSE(DPCTLProgram_HasKernel(NullRef, "add"));
 }
 
 TEST_P(TestDPCTLSyclProgramInterface, ChkGetKernel)
 {
     auto AddKernel = DPCTLProgram_GetKernel(PRef, "add");
     auto AxpyKernel = DPCTLProgram_GetKernel(PRef, "axpy");
+    auto NullKernel = DPCTLProgram_GetKernel(PRef, nullptr);
 
     ASSERT_TRUE(AddKernel != nullptr);
     ASSERT_TRUE(AxpyKernel != nullptr);
+    ASSERT_TRUE(NullKernel == nullptr);
     DPCTLKernel_Delete(AddKernel);
     DPCTLKernel_Delete(AxpyKernel);
+    EXPECT_NO_FATAL_FAILURE(DPCTLKernel_Delete(NullKernel));
+}
+
+TEST_P(TestDPCTLSyclProgramInterface, ChkGetKernelNullProgram)
+{
+    DPCTLSyclProgramRef NullRef = nullptr;
+    DPCTLSyclKernelRef KRef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(KRef = DPCTLProgram_GetKernel(NullRef, "add"));
+    EXPECT_TRUE(KRef == nullptr);
 }
 
 struct TestOCLProgramFromSource : public ::testing::Test
@@ -161,6 +181,23 @@ TEST_F(TestOCLProgramFromSource, CheckCreateFromOCLSource)
     ASSERT_TRUE(PRef != nullptr);
     ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "add"));
     ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "axpy"));
+}
+
+TEST_F(TestOCLProgramFromSource, CheckCreateFromOCLSourceNull)
+{
+    const char *InvalidCLProgramStr = R"CLC(
+        kernel void invalid(global foo* a, global bar* b) {
+            size_t index = get_global_id(0);
+            b[index] = a[index];
+        }
+    )CLC";
+    DPCTLSyclProgramRef PRef = nullptr;
+
+    if (!DRef)
+        GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
+
+    EXPECT_NO_FATAL_FAILURE(PRef = DPCTLProgram_CreateFromOCLSource(
+                                CRef, InvalidCLProgramStr, CompileOpts););
 }
 
 TEST_F(TestOCLProgramFromSource, CheckGetKernelOCLSource)
