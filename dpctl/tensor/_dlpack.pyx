@@ -90,6 +90,10 @@ def get_build_dlpack_version():
     """
     Returns the string value of DLPACK_VERSION from dlpack.h
     `dpctl.tensor` was built with.
+
+    Returns:
+        A string value of the version of DLPack used to build
+        `dpctl`.
     """
     return str(DLPACK_VERSION)
 
@@ -112,9 +116,26 @@ cdef void _managed_tensor_deleter(DLManagedTensor *dlm_tensor) with gil:
 
 cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
     """
+    to_dlpack_capsule(usm_ary)
+
     Constructs named Python capsule object referencing
     instance of `DLManagerTensor` from
     :class:`dpctl.tensor.usm_ndarray` instance.
+
+    Args:
+        usm_ary: An instance of :class:`dpctl.tensor.usm_ndarray`
+    Returns:
+        Python a new capsule with name "dltensor" that contains
+        a pointer to `DLManagedTensor` struct.
+    Raises:
+        DLPackCreationError: when array can be represented as
+            DLPack tensor. This may happen when array was allocated
+            on a partitioned sycl device, or its USM allocation is
+            not bound to the platform default SYCL context.
+        MemoryError: when host allocation to needed for `DLManagedTensor`
+            did not succeed.
+        ValueError: when array elements data type could not be represented
+            in `DLManagedTensor`.
     """
     cdef c_dpctl.SyclQueue ary_sycl_queue
     cdef c_dpctl.SyclDevice ary_sycl_device
@@ -144,14 +165,12 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
             "to_dlpack_capsule: DLPack can only export arrays allocated on "
             "non-partitioned SYCL devices."
         )
-    # TODO: check that ary_sycl_context is the default context
     default_context = dpctl.SyclQueue(ary_sycl_device).sycl_context
     if not usm_ary.sycl_context == default_context:
         raise DLPackCreationError(
             "to_dlpack_capsule: DLPack can only export arrays based on USM "
             "allocations bound to a default platform SYCL context"
         )
-
 
     dlm_tensor = <DLManagedTensor *> stdlib.malloc(
         sizeof(DLManagedTensor))
@@ -244,9 +263,25 @@ cdef class _DLManagedTensorOwner:
 
 cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
     """
+    from_dlpack_capsule(caps)
+
     Reconstructs instance of :class:`dpctl.tensor.usm_ndarray` from
     named Python capsule object referencing instance of `DLManagedTensor`
     without copy. The instance forms a view in the memory of the tensor.
+
+    Args:
+        caps: Python capsule with name "dltensor" expected to reference
+            an instance of `DLManagedTensor` struct.
+    Returns:
+        Instance of :class:`dpctl.tensor.usm_ndarray` with a view into
+        memory of the tensor. Capsule is renamed to "used_dltensor" upon
+        success.
+    Raises:
+        TypeError: if argument is not a "dltensor" capsule.
+        ValueError: if argument is "used_dltensor" capsule,
+             if the USM pointer is not bound to the reconstructed
+             sycl context, or the DLPack's device_type is not supported
+             by dpctl.
     """
     cdef DLManagedTensor *dlm_tensor = NULL
     cdef bytes usm_type
@@ -355,7 +390,7 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
             raise ValueError(
                 "Can not import DLPack tensor with type code {}.".format(
                     <object>dlm_tensor.dl_tensor.dtype.code
-                    )
+                )
             )
         res_ary = usm_ndarray(
             py_shape,
@@ -379,6 +414,9 @@ cpdef from_dlpack(array):
     object `obj` that implements `__dlpack__` protocol. The output
     array is always a zero-copy view of the input.
 
+    Args:
+        A Python object representing an array that supports `__dlpack__`
+        protocol.
     Raises:
         TypeError: if `obj` does not implement `__dlpack__` method.
         ValueError: if zero copy view can not be constructed because
