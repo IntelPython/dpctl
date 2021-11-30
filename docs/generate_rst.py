@@ -1,19 +1,40 @@
+#                       Data Parallel Control (dpctl)
+#
+#  Copyright 2020-2021 Intel Corporation
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+""" The module provides helper functions to generate API documentation for
+    dpctl's Python classes.
+"""
+
+import enum
 import inspect
 import io
+import os
+import sys
 
 import dpctl
 
-wrapper_descriptor = type(dpctl.SyclDevice.__init__)
-
 # known property in Cython extension class
-getset_descriptor = type(dpctl.SyclDevice.name)
+_getset_descriptor = type(dpctl.SyclDevice.name)
 # known method (defined using def in Cython extension class)
-cython_method_type = type(dpctl.SyclDevice.get_filter_string)
+_cython_method_type = type(dpctl.SyclDevice.get_filter_string)
 # known builtin method (defined using cpdef in Cython extension class)
-cython_builtin_function_or_method_type = type(dpctl.SyclQueue.mro)
+_cython_builtin_function_or_method_type = type(dpctl.SyclQueue.mro)
 
 
-def get_public_class_name(cls):
+def _get_public_class_name(cls):
     if not inspect.isclass(cls):
         raise TypeError("Expecting class, got {}".format(type(cls)))
     modl = cls.__module__
@@ -28,17 +49,18 @@ def get_public_class_name(cls):
     return res
 
 
-def is_class_property(o):
-    return isinstance(o, property) or (type(o) == getset_descriptor)
+def _is_class_property(o):
+    return isinstance(o, property) or (type(o) == _getset_descriptor)
 
 
-def is_class_method(o):
+def _is_class_method(o):
     return inspect.ismethod(o) or (
-        type(o) in [cython_method_type, cython_builtin_function_or_method_type]
+        type(o)
+        in [_cython_method_type, _cython_builtin_function_or_method_type]
     )
 
 
-def get_filtered_names(cls, selector_func):
+def _get_filtered_names(cls, selector_func):
     return [
         _name
         for _name, _obj in inspect.getmembers(cls, selector_func)
@@ -47,12 +69,18 @@ def get_filtered_names(cls, selector_func):
 
 
 def generate_class_rst(cls):
+    """Generate a rst file with the API documentation for a class.
+
+    Raises:
+        TypeError: When the input is not a Python class
+
+    Returns:
+        [str]: A string with rst nodes that can be written out to a file.
+    """
     if not inspect.isclass(cls):
         raise TypeError("Expecting class, got {}".format(type(cls)))
 
-    cls_qualname = get_public_class_name(cls)
-    # cls_property_names = get_filtered_names(cls, is_class_property)
-    # cls_method_names = get_filtered_names(cls, is_class_method)
+    cls_qualname = _get_public_class_name(cls)
     rst_header = cls_qualname.split(".")[-1]
     rst_module = ".".join(cls_qualname.split(".")[:-1])
     rst_header = "".join([".. _", rst_header, "_api:"])
@@ -77,8 +105,6 @@ def generate_class_rst(cls):
         write_line(output, rst_header)
         write_line(output, empty_line)
         marquee = "#" * len(cls_qualname)
-        write_line(output, marquee)
-        write_line(output, cls_qualname)
         write_line(output, marquee)
         write_line(output, empty_line)
 
@@ -111,7 +137,7 @@ def generate_class_rst(cls):
         write_line(output, empty_line)
 
         # Attributes
-        all_attributes = get_filtered_names(cls, is_class_property)
+        all_attributes = _get_filtered_names(cls, _is_class_property)
         if all_attributes:
             write_underlined(output, attributes_header, "-")
             write_line(output, empty_line)
@@ -123,7 +149,7 @@ def generate_class_rst(cls):
             write_line(output, empty_line)
 
         # Methods, separated into public/private
-        all_methods = get_filtered_names(cls, is_class_method)
+        all_methods = _get_filtered_names(cls, _is_class_method)
         all_public_methods = []
         all_private_methods = []
         for _name in all_methods:
@@ -154,3 +180,28 @@ def generate_class_rst(cls):
             write_line(output, empty_line)
 
         return output.getvalue()
+
+
+def generate_rst_for_all_classes(module, outputpath):
+    """Generates rst API docs for all classes in a module and writes them to
+    given path.
+
+    Args:
+        module ([str]): Name of module that needs to be documented
+        outputpath ([str]): Path where the rst files are to be saved.
+    """
+    mod = None
+    try:
+        mod = sys.modules[module]
+    except KeyError:
+        raise ValueError(
+            module + "is not a valid module name or it is not loaded"
+        )
+
+    if not os.path.lexists(outputpath):
+        raise ValueError("Invalid output path provided")
+    for name, obj in inspect.getmembers(mod):
+        if inspect.isclass(obj) and not issubclass(obj, enum.Enum):
+            out = outputpath + "/" + name + ".rst"
+            with open(out, "w") as rst_file:
+                rst_file.write(generate_class_rst(obj))
