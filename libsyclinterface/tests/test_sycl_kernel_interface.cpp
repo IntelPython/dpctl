@@ -125,6 +125,14 @@ TEST_P(TestDPCTLSyclKernelInterface, CheckGetNumArgs)
     DPCTLKernel_Delete(AxpyKernel);
 }
 
+TEST_P(TestDPCTLSyclKernelInterface, CheckNullPtrArg)
+{
+    DPCTLSyclKernelRef AddKernel = nullptr;
+
+    ASSERT_EQ(DPCTLKernel_GetNumArgs(AddKernel), -1);
+    ASSERT_EQ(DPCTLKernel_GetFunctionName(AddKernel), nullptr);
+}
+
 INSTANTIATE_TEST_SUITE_P(TestKernelInterfaceFunctions,
                          TestDPCTLSyclKernelInterface,
                          ::testing::Values("opencl:gpu:0", "opencl:cpu:0"));
