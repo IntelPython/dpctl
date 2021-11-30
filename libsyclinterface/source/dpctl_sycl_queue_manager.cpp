@@ -115,6 +115,9 @@ DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue()
 // Relies on sycl::queue class' operator= to check for equivalent of queues.
 bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
+    if (!QRef) {
+        return false;
+    }
     auto &qs = QueueManager::getQueueStack();
     if (qs.empty()) {
         error_handler("No currently active queues.", __FILE__, __func__,
