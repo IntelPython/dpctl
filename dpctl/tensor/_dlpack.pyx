@@ -72,18 +72,18 @@ cdef extern from './include/dlpack/dlpack.h' nogil:
         uint16_t lanes
 
     ctypedef struct DLTensor:
-        void* data
+        void *data
         DLDevice device
         int ndim
         DLDataType dtype
-        int64_t* shape
-        int64_t* strides
+        int64_t *shape
+        int64_t *strides
         uint64_t byte_offset
 
     ctypedef struct DLManagedTensor:
         DLTensor dl_tensor
-        void* manager_ctx
-        void (*deleter)(DLManagedTensor*)  # noqa: E211
+        void *manager_ctx
+        void (*deleter)(DLManagedTensor *)  # noqa: E211
 
 
 def get_build_dlpack_version():
@@ -141,15 +141,15 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
     cdef c_dpctl.SyclDevice ary_sycl_device
     cdef DPCTLSyclDeviceRef pDRef = NULL
     cdef DLManagedTensor *dlm_tensor = NULL
-    cdef DLTensor* dl_tensor = NULL
+    cdef DLTensor *dl_tensor = NULL
     cdef int nd = usm_ary.get_ndim()
-    cdef char* data_ptr = usm_ary.get_data()
+    cdef char *data_ptr = usm_ary.get_data()
     cdef Py_ssize_t *shape_ptr = NULL
     cdef Py_ssize_t *strides_ptr = NULL
     cdef int64_t *shape_strides_ptr = NULL
     cdef int i = 0
     cdef int device_id = -1
-    cdef char* base_ptr = NULL
+    cdef char *base_ptr = NULL
     cdef Py_ssize_t element_offset = 0
     cdef Py_ssize_t byte_offset = 0
 
@@ -291,7 +291,7 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
     cdef Py_ssize_t offset_min = 0
     cdef Py_ssize_t offset_max = 0
     cdef int64_t stride_i
-    cdef char* mem_ptr = NULL
+    cdef char *mem_ptr = NULL
     cdef Py_ssize_t element_offset = 0
 
     if not cpython.PyCapsule_IsValid(py_caps, 'dltensor'):
