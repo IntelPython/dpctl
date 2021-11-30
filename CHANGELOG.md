@@ -6,12 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.3] - 11/30/2021
+
+### Fixed
+
+* Set the last byte in allocated char array to zero [cherry picked from #650] (#699)
+
 ## [0.11.2] - 11/29/2021
 
 ### Added
 - Extending `dpctl.device_context` with nested contexts (#678)
 
-## Fixed
+### Fixed
 - Fixed issue #649 about incorrect behavior of `.T` method on sliced arrays (#653)
 
 ## [0.11.1] - 11/10/2021
