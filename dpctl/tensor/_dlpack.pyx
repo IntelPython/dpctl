@@ -89,7 +89,7 @@ cdef extern from './include/dlpack/dlpack.h' nogil:
 def get_build_dlpack_version():
     """
     Returns the string value of DLPACK_VERSION from dlpack.h
-    `dpcl.tensor` was built with.
+    `dpctl.tensor` was built with.
     """
     return str(DLPACK_VERSION)
 
