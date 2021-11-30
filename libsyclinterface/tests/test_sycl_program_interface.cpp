@@ -101,6 +101,16 @@ TEST_P(TestDPCTLSyclProgramInterface, ChkCreateFromSpirv)
     ASSERT_FALSE(DPCTLProgram_HasKernel(PRef, nullptr));
 }
 
+TEST_P(TestDPCTLSyclProgramInterface, ChkCreateFromSpirvNull)
+{
+    DPCTLSyclContextRef Null_CRef = nullptr;
+    const void *null_spirv = nullptr;
+    DPCTLSyclProgramRef PRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(
+        PRef = DPCTLProgram_CreateFromSpirv(Null_CRef, null_spirv, 0, nullptr));
+    ASSERT_TRUE(PRef == nullptr);
+}
+
 TEST_P(TestDPCTLSyclProgramInterface, ChkHasKernelNullProgram)
 {
 
