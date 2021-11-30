@@ -337,6 +337,7 @@ TEST_F(TestDPCTLQueueMgrNullArgs, ChkIsCurrentQueue)
     ASSERT_FALSE(res);
 }
 
+#if 0
 TEST_F(TestDPCTLQueueMgrNullArgs, ChkSetGlobalQueue)
 {
     EXPECT_DEATH(DPCTLQueueMgr_SetGlobalQueue(Null_QRef), "*");
@@ -346,6 +347,7 @@ TEST_F(TestDPCTLQueueMgrNullArgs, ChkPushGlobalQueue)
 {
     EXPECT_DEATH(DPCTLQueueMgr_SetGlobalQueue(Null_QRef), "*");
 }
+#endif
 
 TEST_F(TestDPCTLQueueMgrNullArgs, ChkGetQueueStackSize)
 {
