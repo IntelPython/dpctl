@@ -50,6 +50,11 @@ cstring_from_string(const std::string &str)
 #else
         std::strncpy(cstr, str.c_str(), cstr_len);
 #endif
+        // Added to resolve CheckMarx's false positive.
+        // NB: This is redundant because str.c_str() is guaranteed
+        // to be null-terminated and the copy function is asked to
+        // copy enough characters to include that null-character.
+        cstr[cstr_len - 1] = '\0';
     } catch (std::bad_alloc const &ba) {
         // \todo log error
         std::cerr << ba.what() << '\n';
