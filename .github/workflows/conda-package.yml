@@ -215,7 +215,7 @@ jobs:
 
   upload_linux:
     needs: test_linux
-    if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true)}}
+    if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -240,7 +240,7 @@ jobs:
 
   upload_windows:
     needs: test_windows
-    if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true)}}
+    if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
     runs-on: windows-latest
     strategy:
       matrix:

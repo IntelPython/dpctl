@@ -61,6 +61,7 @@ cdef int _from_input_shape_strides(
         Otherwise they are set to NULL
     """
     cdef int i
+    cdef int j
     cdef int all_incr = 1
     cdef int all_decr = 1
     cdef Py_ssize_t elem_count = 1
@@ -115,6 +116,15 @@ cdef int _from_input_shape_strides(
             contig[0] = USM_ARRAY_C_CONTIGUOUS
         else:
             contig[0] = USM_ARRAY_F_CONTIGUOUS
+        if nd == 1:
+            contig[0] = USM_ARRAY_C_CONTIGUOUS | USM_ARRAY_F_CONTIGUOUS
+        else:
+            j = 0
+            for i in range(nd):
+                if shape_arr[i] > 1:
+                    j = j + 1
+            if j < 2:
+                contig[0] = USM_ARRAY_C_CONTIGUOUS | USM_ARRAY_F_CONTIGUOUS
         min_disp[0] = 0
         max_disp[0] = (elem_count - 1)
         strides_ptr[0] = <Py_ssize_t *>(<size_t>0)
@@ -137,26 +147,42 @@ cdef int _from_input_shape_strides(
         min_disp[0] = min_shift
         max_disp[0] = max_shift
         if max_shift == min_shift + (elem_count - 1):
+            if elem_count == 1:
+                contig[0] = (USM_ARRAY_C_CONTIGUOUS | USM_ARRAY_F_CONTIGUOUS)
+                return 0
             if nd == 1:
                 if strides_arr[0] == 1:
                     contig[0] = USM_ARRAY_C_CONTIGUOUS
                 else:
                     contig[0] = 0
                 return 0
-            for i in range(0, nd - 1):
-                if all_incr:
-                    all_incr = (
-                        (strides_arr[i] > 0) and
-                        (strides_arr[i+1] > 0) and
-                        (strides_arr[i] <= strides_arr[i + 1])
-                    )
-                if all_decr:
-                    all_decr = (
-                        (strides_arr[i] > 0) and
-                        (strides_arr[i+1] > 0) and
-                        (strides_arr[i] >= strides_arr[i + 1])
-                    )
-            if all_incr:
+            i = 0
+            while i < nd:
+                if shape_arr[i] == 1:
+                    i = i + 1
+                    continue
+                j = i + 1
+                while (j < nd and shape_arr[j] == 1):
+                    j = j + 1
+                if j < nd:
+                    if all_incr:
+                        all_incr = (
+                            (strides_arr[i] > 0) and
+                            (strides_arr[j] > 0) and
+                            (strides_arr[i] <= strides_arr[j])
+                        )
+                    if all_decr:
+                        all_decr = (
+                            (strides_arr[i] > 0) and
+                            (strides_arr[j] > 0) and
+                            (strides_arr[i] >= strides_arr[j])
+                        )
+                    i = j
+                else:
+                    break
+            if all_incr and all_decr:
+                contig[0] = (USM_ARRAY_C_CONTIGUOUS | USM_ARRAY_F_CONTIGUOUS)
+            elif all_incr:
                 contig[0] = USM_ARRAY_F_CONTIGUOUS
             elif all_decr:
                 contig[0] = USM_ARRAY_C_CONTIGUOUS

@@ -14,74 +14,49 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os import environ
-from os.path import dirname, join
+import numpy as np
+from setuptools import Extension, setup
 
-from Cython.Build import cythonize
+import dpctl
 
+setup(
+    name="blackscholes_usm",
+    version="0.0.0",
+    description="An example of Cython extension calling SYCL routines",
+    long_description="""
+    Example of using SYCL to work on usm allocations.
 
-def configuration(parent_package="", top_path=None):
-    import numpy as np
-    from numpy.distutils.misc_util import Configuration
-
-    import dpctl
-
-    config = Configuration("", parent_package, top_path)
-
-    oneapi_root = environ.get("ONEAPI_ROOT", None)
-    if not oneapi_root:
-        raise ValueError(
-            "ONEAPI_ROOT must be set, typical value is /opt/intel/oneapi"
+    See README.md for more details.
+    """,
+    license="Apache 2.0",
+    author="Intel Corporation",
+    url="https://github.com/IntelPython/dpctl",
+    ext_modules=[
+        Extension(
+            name="blackscholes_usm",
+            sources=[
+                "blackscholes.pyx",
+                "sycl_blackscholes.cpp",
+            ],
+            include_dirs=[".", np.get_include(), dpctl.get_include()],
+            libraries=["sycl"]
+            + [
+                "mkl_sycl",
+                "mkl_intel_ilp64",
+                "mkl_tbb_thread",
+                "mkl_core",
+                "tbb",
+                "iomp5",
+            ],
+            runtime_library_dirs=[],
+            extra_compile_args=[
+                "-Wall",
+                "-Wextra",
+                "-fsycl",
+                "-fsycl-unnamed-lambda",
+            ],
+            extra_link_args=["-fPIC"],
+            language="c++",
         )
-
-    mkl_info = {
-        "include_dirs": [join(oneapi_root, "mkl", "include")],
-        "library_dirs": [
-            join(oneapi_root, "mkl", "lib"),
-            join(oneapi_root, "mkl", "lib", "intel64"),
-        ],
-        "libraries": [
-            "mkl_sycl",
-            "mkl_intel_ilp64",
-            "mkl_tbb_thread",
-            "mkl_core",
-            "tbb",
-            "iomp5",
-        ],
-    }
-
-    mkl_include_dirs = mkl_info.get("include_dirs")
-    mkl_library_dirs = mkl_info.get("library_dirs")
-    mkl_libraries = mkl_info.get("libraries")
-
-    pdir = dirname(__file__)
-    wdir = join(pdir)
-
-    eca = ["-Wall", "-Wextra", "-fsycl", "-fsycl-unnamed-lambda"]
-
-    config.add_extension(
-        name="blackscholes_usm",
-        sources=[
-            join(pdir, "blackscholes.pyx"),
-            join(wdir, "sycl_blackscholes.cpp"),
-            join(wdir, "sycl_blackscholes.hpp"),
-        ],
-        include_dirs=[wdir, np.get_include(), dpctl.get_include()]
-        + mkl_include_dirs,
-        libraries=["sycl"] + mkl_libraries,
-        runtime_library_dirs=mkl_library_dirs,
-        extra_compile_args=eca,  # + ['-O0', '-g', '-ggdb'],
-        extra_link_args=["-fPIC"],
-        language="c++",
-    )
-
-    config.ext_modules = cythonize(
-        config.ext_modules, include_path=[pdir, wdir]
-    )
-    return config
-
-
-if __name__ == "__main__":
-    from numpy.distutils.core import setup
-
-    setup(configuration=configuration)
+    ],
+)
