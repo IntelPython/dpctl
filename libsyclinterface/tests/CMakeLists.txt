@@ -59,7 +59,7 @@ if(DPCTL_GENERATE_COVERAGE)
     )
     add_custom_target(llvm-cov
         COMMAND ${CMAKE_MAKE_PROGRAM} dpctl_c_api_tests
-        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests
+        COMMAND ${CMAKE_COMMAND} -E env DPCTL_VERBOSITY=error ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests
         COMMAND ${LLVMProfdata_EXE}
             merge
             -sparse default.profraw

@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_manager.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "../helper/include/dpctl_string_utils.hpp"
 #include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
@@ -134,8 +135,9 @@ struct DeviceCacheBuilder
                     auto entry = cache_l.emplace(D, Ctx);
 
                     if (!entry.second) {
-                        std::cerr << "Fatal Error during device cache "
-                                     "construction.\n";
+                        error_handler("Fatal Error during device cache "
+                                      "construction.",
+                                      __FILE__, __func__, __LINE__);
                         std::terminate();
                     }
                 }
@@ -160,9 +162,12 @@ DPCTLDeviceMgr_GetCachedContext(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     DPCTLSyclContextRef CRef = nullptr;
 
     auto Device = unwrap(DRef);
-    if (!Device)
+    if (!Device) {
+        error_handler("Cannot create device from DPCTLSyclDeviceRef"
+                      "as input is a nullptr.",
+                      __FILE__, __func__, __LINE__);
         return CRef;
-
+    }
     auto &cache = DeviceCacheBuilder::getDeviceCache();
     auto entry = cache.find(*Device);
     if (entry != cache.end()) {
@@ -170,14 +175,15 @@ DPCTLDeviceMgr_GetCachedContext(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         try {
             ContextPtr = new context(entry->second);
             CRef = wrap(ContextPtr);
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << std::endl;
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
             delete ContextPtr;
             CRef = nullptr;
         }
     }
     else {
-        std::cerr << "No cached default context for device" << std::endl;
+        error_handler("No cached default context for device.", __FILE__,
+                      __func__, __LINE__);
     }
     return CRef;
 }
@@ -191,8 +197,9 @@ DPCTLDeviceMgr_GetDevices(int device_identifier)
 
     try {
         Devices = new std::vector<DPCTLSyclDeviceRef>();
-    } catch (std::bad_alloc const &ba) {
+    } catch (std::exception const &e) {
         delete Devices;
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 
@@ -226,9 +233,8 @@ DPCTLDeviceMgr_GetDeviceInfoStr(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         try {
             auto infostr = get_device_info_str(*D);
             cstr_info = dpctl::helper::cstring_from_string(infostr);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return cstr_info;
@@ -303,7 +309,8 @@ void DPCTLDeviceMgr_PrintDeviceInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     if (Device)
         std::cout << get_device_info_str(*Device);
     else
-        std::cout << "Device is not valid (NULL). Cannot print device info.\n";
+        error_handler("Device is not valid (NULL). Cannot print device info.",
+                      __FILE__, __func__, __LINE__);
 }
 
 int64_t DPCTLDeviceMgr_GetRelativeId(__dpctl_keep const DPCTLSyclDeviceRef DRef)

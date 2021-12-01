@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_event_interface.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
@@ -49,23 +50,23 @@ __dpctl_give DPCTLSyclEventRef DPCTLEvent_Create()
     try {
         auto E = new event();
         ERef = wrap(E);
-    } catch (std::bad_alloc const &ba) {
-        std::cerr << ba.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
     }
     return ERef;
 }
 
 void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef)
 {
-    // \todo How to handle errors? E.g. when ERef is null or not a valid event.
     if (ERef) {
         auto SyclEvent = unwrap(ERef);
         if (SyclEvent)
             SyclEvent->wait();
     }
     else {
-        std::cerr << "Cannot wait for the event. DPCTLSyclEventRef as input is "
-                     "a nullptr\n";
+        error_handler("Cannot wait for the event. DPCTLSyclEventRef as "
+                      "input is a nullptr.",
+                      __FILE__, __func__, __LINE__);
     }
 }
 
@@ -77,9 +78,9 @@ void DPCTLEvent_WaitAndThrow(__dpctl_keep DPCTLSyclEventRef ERef)
             SyclEvent->wait_and_throw();
     }
     else {
-        std::cerr << "Cannot wait_and_throw for the event. DPCTLSyclEventRef "
-                     "as input is "
-                     "a nullptr\n";
+        error_handler("Cannot wait_and_throw for the event. DPCTLSyclEventRef "
+                      "as input is a nullptr.",
+                      __FILE__, __func__, __LINE__);
     }
 }
 
@@ -93,15 +94,15 @@ DPCTLEvent_Copy(__dpctl_keep DPCTLSyclEventRef ERef)
 {
     auto SyclEvent = unwrap(ERef);
     if (!SyclEvent) {
-        std::cerr << "Cannot copy DPCTLSyclEventRef as input is a nullptr\n";
+        error_handler("Cannot copy DPCTLSyclEventRef as input is a nullptr.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
     try {
         auto CopiedSyclEvent = new event(*SyclEvent);
         return wrap(CopiedSyclEvent);
-    } catch (std::bad_alloc const &ba) {
-        // \todo log error
-        std::cerr << ba.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -114,7 +115,8 @@ DPCTLSyclBackendType DPCTLEvent_GetBackend(__dpctl_keep DPCTLSyclEventRef ERef)
         BTy = DPCTL_SyclBackendToDPCTLBackendType(E->get_backend());
     }
     else {
-        std::cerr << "Backend cannot be looked up for a NULL event\n";
+        error_handler("Backend cannot be looked up for a NULL event.", __FILE__,
+                      __func__, __LINE__);
     }
     return BTy;
 }
@@ -130,9 +132,8 @@ DPCTLEvent_GetCommandExecutionStatus(__dpctl_keep DPCTLSyclEventRef ERef)
             auto SyclESTy =
                 E->get_info<sycl::info::event::command_execution_status>();
             ESTy = DPCTL_SyclEventStatusToDPCTLEventStatusType(SyclESTy);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return ESTy;
@@ -147,9 +148,8 @@ uint64_t DPCTLEvent_GetProfilingInfoSubmit(__dpctl_keep DPCTLSyclEventRef ERef)
             E->wait();
             profilingInfoSubmit = E->get_profiling_info<
                 sycl::info::event_profiling::command_submit>();
-        } catch (invalid_object_error &e) {
-            // \todo log error
-            std::cerr << e.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return profilingInfoSubmit;
@@ -164,9 +164,8 @@ uint64_t DPCTLEvent_GetProfilingInfoStart(__dpctl_keep DPCTLSyclEventRef ERef)
             E->wait();
             profilingInfoStart = E->get_profiling_info<
                 sycl::info::event_profiling::command_start>();
-        } catch (invalid_object_error &e) {
-            // \todo log error
-            std::cerr << e.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return profilingInfoStart;
@@ -181,9 +180,8 @@ uint64_t DPCTLEvent_GetProfilingInfoEnd(__dpctl_keep DPCTLSyclEventRef ERef)
             E->wait();
             profilingInfoEnd = E->get_profiling_info<
                 sycl::info::event_profiling::command_end>();
-        } catch (invalid_object_error &e) {
-            // \todo log error
-            std::cerr << e.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return profilingInfoEnd;
@@ -194,15 +192,15 @@ DPCTLEvent_GetWaitList(__dpctl_keep DPCTLSyclEventRef ERef)
 {
     auto E = unwrap(ERef);
     if (!E) {
-        std::cerr << "Cannot get wait list as input is a nullptr\n";
+        error_handler("Cannot get wait list as input is a nullptr.", __FILE__,
+                      __func__, __LINE__);
         return nullptr;
     }
     std::vector<DPCTLSyclEventRef> *EventsVectorPtr = nullptr;
     try {
         EventsVectorPtr = new std::vector<DPCTLSyclEventRef>();
-    } catch (std::bad_alloc const &ba) {
-        // \todo log error
-        std::cerr << ba.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
     try {
@@ -212,15 +210,9 @@ DPCTLEvent_GetWaitList(__dpctl_keep DPCTLSyclEventRef ERef)
             EventsVectorPtr->emplace_back(wrap(new event(Ev)));
         }
         return wrap(EventsVectorPtr);
-    } catch (std::bad_alloc const &ba) {
+    } catch (std::exception const &e) {
         delete EventsVectorPtr;
-        // \todo log error
-        std::cerr << ba.what() << '\n';
-        return nullptr;
-    } catch (const runtime_error &re) {
-        delete EventsVectorPtr;
-        // \todo log error
-        std::cerr << re.what() << '\n';
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }

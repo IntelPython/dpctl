@@ -47,7 +47,7 @@ DPCTL_C_EXTERN_C_BEGIN
  *
  * @param    CRef           An opaque pointer to a sycl::context.
  * @param    DRef           An opaque pointer to a sycl::device
- * @param    error_handler  A callback function that will be invoked by the
+ * @param    handler        A callback function that will be invoked by the
  *                          async_handler used during queue creation. Can be
  *                          NULL if no async_handler is needed.
  * @param    properties     A combination of bit flags using the values defined
@@ -62,7 +62,7 @@ DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
 DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
                   __dpctl_keep const DPCTLSyclDeviceRef DRef,
-                  error_handler_callback *error_handler,
+                  error_handler_callback *handler,
                   int properties);
 
 /*!
@@ -86,7 +86,7 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
  * function begaves the same way as the SYCL constructor.
  *
  * @param    dRef           An opaque pointer to a ``sycl::device``.
- * @param    error_handler  A callback function that will be invoked by the
+ * @param    handler        A callback function that will be invoked by the
  *                          async_handler used during queue creation. Can be
  *                          NULL if no async_handler is needed.
  * @param    properties     A combination of bit flags using the values defined
@@ -101,7 +101,7 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
 DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef dRef,
-                           error_handler_callback *error_handler,
+                           error_handler_callback *handler,
                            int properties);
 
 /*!

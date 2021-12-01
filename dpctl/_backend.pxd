@@ -281,11 +281,11 @@ cdef extern from "dpctl_sycl_platform_interface.h":
 cdef extern from "dpctl_sycl_context_interface.h":
     cdef DPCTLSyclContextRef DPCTLContext_Create(
         const DPCTLSyclDeviceRef DRef,
-        error_handler_callback *error_handler,
+        error_handler_callback *handler,
         int properties)
     cdef DPCTLSyclContextRef DPCTLContext_CreateFromDevices(
         const DPCTLDeviceVectorRef DVRef,
-        error_handler_callback *error_handler,
+        error_handler_callback *handler,
         int properties)
     cdef DPCTLSyclContextRef DPCTLContext_Copy(
         const DPCTLSyclContextRef CRef)
@@ -323,7 +323,7 @@ cdef extern from "dpctl_sycl_queue_interface.h":
     cdef DPCTLSyclQueueRef DPCTLQueue_Create(
         const DPCTLSyclContextRef CRef,
         const DPCTLSyclDeviceRef DRef,
-        error_handler_callback *error_handler,
+        error_handler_callback *handler,
         int properties)
     cdef DPCTLSyclQueueRef DPCTLQueue_CreateForDevice(
         const DPCTLSyclDeviceRef dRef,

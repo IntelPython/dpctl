@@ -23,20 +23,43 @@
 /// context and queue contructors.
 //===----------------------------------------------------------------------===//
 
-#include "dpctl_async_error_handler.h"
+#pragma once
 
-void DPCTL_AsyncErrorHandler::operator()(
-    const cl::sycl::exception_list &exceptions)
+#include "Support/DllExport.h"
+#include "dpctl_error_handler_type.h"
+#include <CL/sycl.hpp>
+
+/*!
+ * @brief Functor class used by DPCTL to handle SYCL asynchronous errors.
+ */
+class DPCTL_API DPCTL_AsyncErrorHandler
 {
-    for (std::exception_ptr const &e : exceptions) {
-        try {
-            std::rethrow_exception(e);
-        } catch (cl::sycl::exception const &e) {
-            std::cerr << "Caught asynchronous SYCL exception:\n"
-                      << e.what() << std::endl;
-            // FIXME: Change get_cl_code() to code() once DPCPP supports it.
-            auto err_code = e.get_cl_code();
-            handler_(err_code);
-        }
+    error_handler_callback *handler_ = nullptr;
+
+public:
+    DPCTL_AsyncErrorHandler(error_handler_callback *err_handler)
+        : handler_(err_handler)
+    {
     }
-}
+
+    void operator()(const cl::sycl::exception_list &exceptions);
+};
+
+enum error_level : int
+{
+    none = 0,
+    error = 1,
+    warning = 2
+};
+
+void error_handler(const std::exception &e,
+                   const char *file_name,
+                   const char *func_name,
+                   int line_num,
+                   error_level error_type = error_level::error);
+
+void error_handler(const std::string &what,
+                   const char *file_name,
+                   const char *func_name,
+                   int line_num,
+                   error_level error_type = error_level::warning);

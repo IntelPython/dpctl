@@ -30,11 +30,13 @@
 #endif
 
 #include "dpctl_sycl_program_interface.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "Config/dpctl_config.h"
 #include "Support/CBindingWrapping.h"
 #include <CL/cl.h>     /* OpenCL headers     */
 #include <CL/sycl.hpp> /* Sycl headers       */
 #include <CL/sycl/backend/opencl.hpp>
+#include <sstream>
 
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
 #include "../helper/include/dpctl_dynamic_lib_helper.h"
@@ -84,10 +86,11 @@ createOpenCLInterOpProgram(const context &SyclCtx,
     auto CLCtx = get_native<backend::opencl>(SyclCtx);
     auto CLProgram = clCreateProgramWithIL(CLCtx, IL, length, &err);
     if (err) {
-        // \todo: record the error string and any other information.
-        std::cerr << "OpenCL program could not be created from the SPIR-V "
-                     "binary. OpenCL Error "
-                  << err << ".\n";
+        std::stringstream ss;
+        ss << "OpenCL program could not be created from the SPIR-V "
+              "binary. OpenCL Error "
+           << err << ".";
+        error_handler(ss.str(), __FILE__, __func__, __LINE__);
         return nullptr;
     }
     auto SyclDevices = SyclCtx.get_devices();
@@ -104,9 +107,9 @@ createOpenCLInterOpProgram(const context &SyclCtx,
     delete[] CLDevices;
 
     if (err) {
-        // \todo: record the error string and any other information.
-        std::cerr << "OpenCL program could not be built. OpenCL Error " << err
-                  << ".\n";
+        std::stringstream ss;
+        ss << "OpenCL program could not be built. OpenCL Error " << err << ".";
+        error_handler(ss.str(), __FILE__, __func__, __LINE__);
         return nullptr;
     }
 
@@ -114,9 +117,8 @@ createOpenCLInterOpProgram(const context &SyclCtx,
     try {
         auto SyclProgram = new program(SyclCtx, CLProgram);
         return wrap(SyclProgram);
-    } catch (invalid_object_error &e) {
-        // \todo record error
-        std::cerr << e.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -127,9 +129,9 @@ zeModuleCreateFT getZeModuleCreateFn()
 {
     static dpctl::DynamicLibHelper zeLib(zeLoaderName, libLoadFlags);
     if (!zeLib.opened()) {
-        // TODO: handle error
-        std::cerr << "The level zero loader dynamic library could not "
-                     "be opened.\n";
+        error_handler("The level zero loader dynamic library could not "
+                      "be opened.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
     static auto stZeModuleCreateF =
@@ -147,8 +149,8 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
     auto ZeCtx = get_native<backend::level_zero>(SyclCtx);
     auto SyclDevices = SyclCtx.get_devices();
     if (SyclDevices.size() > 1) {
-        std::cerr << "Level zero program can be created for only one device.\n";
-        // TODO: handle error
+        error_handler("Level zero program can be created for only one device.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 
@@ -172,15 +174,16 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
     auto stZeModuleCreateF = getZeModuleCreateFn();
 
     if (!stZeModuleCreateF) {
-        std::cerr << "ZeModuleCreateFn is invalid.\n";
+        error_handler("ZeModuleCreateFn is invalid.", __FILE__, __func__,
+                      __LINE__);
         return nullptr;
     }
 
     auto ret =
         stZeModuleCreateF(ZeCtx, ZeDevice, &ZeModuleDesc, &ZeModule, nullptr);
     if (ret != ZE_RESULT_SUCCESS) {
-        // TODO: handle error
-        std::cerr << "ZeModule creation failed.\n";
+        error_handler("ZeModule creation failed.", __FILE__, __func__,
+                      __LINE__);
         return nullptr;
     }
 
@@ -189,9 +192,8 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
         auto ZeProgram = new program(sycl::level_zero::make_program(
             SyclCtx, reinterpret_cast<uintptr_t>(ZeModule)));
         return wrap(ZeProgram);
-    } catch (invalid_object_error &e) {
-        // \todo record error
-        std::cerr << e.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -208,9 +210,9 @@ DPCTLProgram_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
     DPCTLSyclProgramRef Pref = nullptr;
     context *SyclCtx = nullptr;
     if (!CtxRef) {
-        // \todo handle error
-        std::cerr << "Cannot create program from SPIR-V as the supplied SYCL "
-                     "context is NULL.\n";
+        error_handler("Cannot create program from SPIR-V as the supplied SYCL "
+                      "context is NULL.",
+                      __FILE__, __func__, __LINE__);
         return Pref;
     }
     SyclCtx = unwrap(CtxRef);
@@ -241,12 +243,12 @@ DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
     program *SyclProgram = nullptr;
 
     if (!Ctx) {
-        // \todo handle error
+        error_handler("Input Ctx is nullptr.", __FILE__, __func__, __LINE__);
         return nullptr;
     }
 
     if (!Source) {
-        // \todo handle error message
+        error_handler("Input Source is nullptr.", __FILE__, __func__, __LINE__);
         return nullptr;
     }
 
@@ -265,29 +267,20 @@ DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
         try {
             SyclProgram->build_with_source(source, compileOpts);
             return wrap(SyclProgram);
-        } catch (compile_program_error &e) {
-            std::cerr << e.what() << '\n';
+        } catch (std::exception const &e) {
             delete SyclProgram;
-            // \todo record error
-            return nullptr;
-        } catch (feature_not_supported &e) {
-            std::cerr << e.what() << '\n';
-            delete SyclProgram;
-            // \todo record error
-            return nullptr;
-        } catch (runtime_error &e) {
-            std::cerr << e.what() << '\n';
-            delete SyclProgram;
-            // \todo record error
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
         break;
     case backend::level_zero:
-        std::cerr << "CreateFromSource is not supported in Level Zero.\n";
+        error_handler("CreateFromSource is not supported in Level Zero.",
+                      __FILE__, __func__, __LINE__);
         delete SyclProgram;
         return nullptr;
     default:
-        std::cerr << "CreateFromSource is not supported in unknown backend.\n";
+        error_handler("CreateFromSource is not supported in unknown backend.",
+                      __FILE__, __func__, __LINE__);
         delete SyclProgram;
         return nullptr;
     }
@@ -298,21 +291,21 @@ DPCTLProgram_GetKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
                        __dpctl_keep const char *KernelName)
 {
     if (!PRef) {
-        // \todo record error
+        error_handler("Input PRef is nullptr", __FILE__, __func__, __LINE__);
         return nullptr;
     }
     auto SyclProgram = unwrap(PRef);
     if (!KernelName) {
-        // \todo record error
+        error_handler("Input KernelName is nullptr", __FILE__, __func__,
+                      __LINE__);
         return nullptr;
     }
     std::string name = KernelName;
     try {
         auto SyclKernel = new kernel(SyclProgram->get_kernel(name));
         return wrap(SyclKernel);
-    } catch (invalid_object_error &e) {
-        // \todo record error
-        std::cerr << e.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -321,15 +314,15 @@ bool DPCTLProgram_HasKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
                             __dpctl_keep const char *KernelName)
 {
     if (!PRef) {
-        // \todo handle error
+        error_handler("Input PRef is nullptr", __FILE__, __func__, __LINE__);
         return false;
     }
 
     auto SyclProgram = unwrap(PRef);
     try {
         return SyclProgram->has_kernel(KernelName);
-    } catch (invalid_object_error &e) {
-        std::cerr << e.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return false;
     }
 }
