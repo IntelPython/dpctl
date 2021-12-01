@@ -20,10 +20,9 @@
 import contextlib
 
 import pytest
+from helper import has_cpu, has_gpu, has_sycl_platforms
 
 import dpctl
-
-from ._helper import has_cpu, has_gpu, has_sycl_platforms
 
 
 @pytest.mark.skipif(

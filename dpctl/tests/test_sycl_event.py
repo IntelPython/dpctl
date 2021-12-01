@@ -19,13 +19,12 @@
 
 import numpy as np
 import pytest
+from helper import create_invalid_capsule, has_cpu
 
 import dpctl
 import dpctl.memory as dpctl_mem
 import dpctl.program as dpctl_prog
 from dpctl import event_status_type as esty
-
-from ._helper import create_invalid_capsule, has_cpu
 
 
 def produce_event(profiling=False):

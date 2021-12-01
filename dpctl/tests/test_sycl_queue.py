@@ -21,10 +21,9 @@ import ctypes
 import sys
 
 import pytest
+from helper import create_invalid_capsule
 
 import dpctl
-
-from ._helper import create_invalid_capsule
 
 list_of_standard_selectors = [
     dpctl.select_accelerator_device,
