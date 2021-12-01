@@ -24,6 +24,7 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "dpctl_sycl_queue_manager.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_device_manager.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
@@ -56,16 +57,15 @@ struct QueueManager
                     qs.emplace_back(*unwrap(CRef), *unwrap(DRef));
                 }
                 else {
-                    std::cerr << "Fatal Error: No cached context for default "
-                                 "device.\n";
+                    error_handler("Fatal Error: No cached context for default "
+                                  "device.",
+                                  __FILE__, __func__, __LINE__);
                     std::terminate();
                 }
                 delete unwrap(DRef);
                 delete unwrap(CRef);
-            } catch (std::bad_alloc const &ba) {
-                std::cerr << ba.what() << '\n';
-            } catch (runtime_error const &re) {
-                std::cerr << re.what() << '\n';
+            } catch (std::exception const &e) {
+                error_handler(e, __FILE__, __func__, __LINE__);
             }
 
             return qs;
@@ -85,8 +85,8 @@ bool DPCTLQueueMgr_GlobalQueueIsCurrent()
 {
     auto &qs = QueueManager::getQueueStack();
     if (qs.empty()) {
-        // \todo handle error
-        std::cerr << "Error: No global queue found.\n";
+        error_handler("Error: No global queue found.", __FILE__, __func__,
+                      __LINE__);
         return false;
     }
     // The first entry of the QueueStack is always the global queue. If there
@@ -104,8 +104,8 @@ DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue()
 {
     auto &qs = QueueManager::getQueueStack();
     if (qs.empty()) {
-        // \todo handle error
-        std::cerr << "No currently active queues.\n";
+        error_handler("No currently active queues.", __FILE__, __func__,
+                      __LINE__);
         return nullptr;
     }
     auto last = qs.size() - 1;
@@ -117,8 +117,8 @@ bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     auto &qs = QueueManager::getQueueStack();
     if (qs.empty()) {
-        // \todo handle error
-        std::cerr << "No currently active queues.\n";
+        error_handler("No currently active queues.", __FILE__, __func__,
+                      __LINE__);
         return false;
     }
     auto last = qs.size() - 1;
@@ -135,8 +135,9 @@ void DPCTLQueueMgr_SetGlobalQueue(__dpctl_keep const DPCTLSyclQueueRef qRef)
         qs[0] = *unwrap(qRef);
     }
     else {
-        // TODO: This should be an error and we should not fail silently.
-        std::cerr << "Error: Failed to set the global queue.\n";
+        error_handler("Error: Failed to set the global queue.", __FILE__,
+                      __func__, __LINE__);
+        std::terminate();
     }
 }
 
@@ -148,8 +149,9 @@ void DPCTLQueueMgr_PushQueue(__dpctl_keep const DPCTLSyclQueueRef qRef)
         qs.emplace_back(*unwrap(qRef));
     }
     else {
-        // TODO: This should be an error and we should not fail silently.
-        std::cerr << "Error: Failed to set the current queue.\n";
+        error_handler("Error: Failed to set the current queue.", __FILE__,
+                      __func__, __LINE__);
+        std::terminate();
     }
 }
 
@@ -162,7 +164,7 @@ void DPCTLQueueMgr_PopQueue()
     // The first entry in the QueueStack is the global queue, and should not be
     // removed.
     if (qs.size() <= 1) {
-        std::cerr << "No queue to pop.\n";
+        error_handler("No queue to pop.", __FILE__, __func__, __LINE__);
         return;
     }
     qs.pop_back();
@@ -172,8 +174,8 @@ size_t DPCTLQueueMgr_GetQueueStackSize()
 {
     auto &qs = QueueManager::getQueueStack();
     if (qs.empty()) {
-        // \todo handle error
-        std::cerr << "Error: No global queue found.\n";
+        error_handler("Error: No global queue found.", __FILE__, __func__,
+                      __LINE__);
         return -1;
     }
     // The first entry of the QueueStack is always the global queue. If there
