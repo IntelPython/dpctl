@@ -66,16 +66,16 @@ Overview
 	:ref:`DPCTLContext_Copy<doxid-da/df7/group__ContextInterface_1ga2e2a05150e669d9950155c4884d1b12e>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
-	:ref:`DPCTLContext_Create<doxid-da/df7/group__ContextInterface_1ga02b29e40269ed9e323ff22896c031b53>`(
+	:ref:`DPCTLContext_Create<doxid-da/df7/group__ContextInterface_1gacf091019310a589c547dfe0d1e6f5972>`(
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
-		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* handler,
 		int properties
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
-	:ref:`DPCTLContext_CreateFromDevices<doxid-da/df7/group__ContextInterface_1gae092621d43d78c7cb4d46dfc3fa6b681>`(
+	:ref:`DPCTLContext_CreateFromDevices<doxid-da/df7/group__ContextInterface_1ga2017c4e49a0c88ef7fa8e3195eb685b4>`(
 		__dpctl_keep const :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` DVRef,
-		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* handler,
 		int properties
 		);
 
@@ -483,17 +483,17 @@ Overview
 	:ref:`DPCTLQueue_Copy<doxid-d9/db1/group__QueueInterface_1gad8d2312b954460ad658b2f1080c0dee3>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
-	:ref:`DPCTLQueue_Create<doxid-d9/db1/group__QueueInterface_1ga27d56aeb34230271b80ee158b4c22e7f>`(
+	:ref:`DPCTLQueue_Create<doxid-d9/db1/group__QueueInterface_1gaffc0932f21ca4be9ef6ffa6626d1ee0d>`(
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef,
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
-		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* handler,
 		int properties
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
-	:ref:`DPCTLQueue_CreateForDevice<doxid-d9/db1/group__QueueInterface_1gaefe0a82877a107fc17b3826047fa833d>`(
+	:ref:`DPCTLQueue_CreateForDevice<doxid-d9/db1/group__QueueInterface_1ga49d6da8648e54441a043ea7db496e810>`(
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` dRef,
-		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* handler,
 		int properties
 		);
 

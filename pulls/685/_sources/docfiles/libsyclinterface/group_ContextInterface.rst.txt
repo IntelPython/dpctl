@@ -29,16 +29,16 @@ Overview
 	:ref:`DPCTLContext_Copy<doxid-da/df7/group__ContextInterface_1ga2e2a05150e669d9950155c4884d1b12e>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
-	:ref:`DPCTLContext_Create<doxid-da/df7/group__ContextInterface_1ga02b29e40269ed9e323ff22896c031b53>`(
+	:ref:`DPCTLContext_Create<doxid-da/df7/group__ContextInterface_1gacf091019310a589c547dfe0d1e6f5972>`(
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
-		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* handler,
 		int properties
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
-	:ref:`DPCTLContext_CreateFromDevices<doxid-da/df7/group__ContextInterface_1gae092621d43d78c7cb4d46dfc3fa6b681>`(
+	:ref:`DPCTLContext_CreateFromDevices<doxid-da/df7/group__ContextInterface_1ga2017c4e49a0c88ef7fa8e3195eb685b4>`(
 		__dpctl_keep const :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` DVRef,
-		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* handler,
 		int properties
 		);
 
@@ -137,7 +137,7 @@ Returns a copy of the DPCTLSyclContextRef object.
 A new DPCTLSyclContextRef created by copying the passed in DPCTLSyclContextRef object.
 
 .. index:: pair: function; DPCTLContext_Create
-.. _doxid-da/df7/group__ContextInterface_1ga02b29e40269ed9e323ff22896c031b53:
+.. _doxid-da/df7/group__ContextInterface_1gacf091019310a589c547dfe0d1e6f5972:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -145,7 +145,7 @@ A new DPCTLSyclContextRef created by copying the passed in DPCTLSyclContextRef o
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
 	DPCTLContext_Create(
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
-		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* handler,
 		int properties
 		)
 
@@ -164,7 +164,7 @@ Constructs a new SYCL context for the given SYCL device using the optional async
 		- Opaque pointer to a SYCL device.
 
 	*
-		- error_handler
+		- handler
 
 		- A callback function that will be invoked by the async_handler used during context creation. Can be NULL if no async_handler is needed.
 
@@ -180,7 +180,7 @@ Constructs a new SYCL context for the given SYCL device using the optional async
 A new opaque pointer wrapping a SYCL context.
 
 .. index:: pair: function; DPCTLContext_CreateFromDevices
-.. _doxid-da/df7/group__ContextInterface_1gae092621d43d78c7cb4d46dfc3fa6b681:
+.. _doxid-da/df7/group__ContextInterface_1ga2017c4e49a0c88ef7fa8e3195eb685b4:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -188,7 +188,7 @@ A new opaque pointer wrapping a SYCL context.
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
 	DPCTLContext_CreateFromDevices(
 		__dpctl_keep const :ref:`DPCTLDeviceVectorRef<doxid-d0/d15/group__DeviceManager_1ga69ba4893acc931f2040cba37863a188e>` DVRef,
-		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* handler,
 		int properties
 		)
 
@@ -207,7 +207,7 @@ Constructs a new SYCL context for the given vector of SYCL devices using the opt
 		- An opaque pointer to a std::vector of DPCTLSyclDeviceRef opaque pointers.
 
 	*
-		- error_handler
+		- handler
 
 		- A callback function that will be invoked by the async_handler used during context creation. Can be NULL if no async_handler is needed.
 
