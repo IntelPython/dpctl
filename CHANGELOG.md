@@ -9,9 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `dpctl.tensor.asarray`, `dpctl.tensor.empty` implemented (#646).
 
-### Added
-- Extending `dpctl.device_context` with nested contexts (#678)
-
 ### Changed
 - dpctl-capi is now renamed to `libsyclinterface` (#666).
 
