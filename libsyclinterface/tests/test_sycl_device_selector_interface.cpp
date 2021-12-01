@@ -223,6 +223,13 @@ TEST_F(TestDeviceSelectorInterface, ChkDPCTLGPUSelectorScore)
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef_GPU));
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef_CPU));
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+
+    DPCTLSyclDeviceSelectorRef Null_DSRef = nullptr;
+    DPCTLSyclDeviceRef Null_DRef = nullptr;
+    int score = 1;
+    EXPECT_NO_FATAL_FAILURE(
+        score = DPCTLDeviceSelector_Score(Null_DSRef, Null_DRef));
+    ASSERT_TRUE(score < 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(FilterSelectorCreation,

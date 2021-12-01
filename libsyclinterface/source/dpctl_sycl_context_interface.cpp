@@ -183,6 +183,10 @@ void DPCTLContext_Delete(__dpctl_take DPCTLSyclContextRef CtxRef)
 DPCTLSyclBackendType
 DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef)
 {
+    if (!CtxRef) {
+        return DPCTL_UNKNOWN_BACKEND;
+    }
+
     auto BE = unwrap(CtxRef)->get_platform().get_backend();
 
     switch (BE) {

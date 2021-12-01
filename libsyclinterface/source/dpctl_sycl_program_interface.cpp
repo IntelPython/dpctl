@@ -317,6 +317,11 @@ bool DPCTLProgram_HasKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
         error_handler("Input PRef is nullptr", __FILE__, __func__, __LINE__);
         return false;
     }
+    if (!KernelName) {
+        error_handler("Input KernelName is nullptr", __FILE__, __func__,
+                      __LINE__);
+        return false;
+    }
 
     auto SyclProgram = unwrap(PRef);
     try {

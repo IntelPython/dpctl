@@ -27,11 +27,13 @@
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
+#include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_event_interface.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
 #include "dpctl_sycl_usm_interface.h"
 #include <CL/sycl.hpp>
+#include <cstring>
 #include <gtest/gtest.h>
 
 using namespace cl::sycl;
@@ -162,4 +164,108 @@ TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocHost)
     EXPECT_TRUE(bool(Ptr));
     common_test_body(nbytes, Ptr, Q, "host");
     DPCTLfree_with_queue(Ptr, Q);
+}
+
+struct TestDPCTLSyclUSMNullArgs : public ::testing::Test
+{
+};
+
+TEST_F(TestDPCTLSyclUSMNullArgs, ChkMalloc)
+{
+    DPCTLSyclQueueRef Null_QRef = nullptr;
+    void *ptr = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(ptr = DPCTLmalloc_shared(512, Null_QRef));
+    ASSERT_TRUE(ptr == nullptr);
+
+    EXPECT_NO_FATAL_FAILURE(ptr = DPCTLmalloc_device(512, Null_QRef));
+    ASSERT_TRUE(ptr == nullptr);
+
+    EXPECT_NO_FATAL_FAILURE(ptr = DPCTLmalloc_host(512, Null_QRef));
+    ASSERT_TRUE(ptr == nullptr);
+}
+
+TEST_F(TestDPCTLSyclUSMNullArgs, ChkAlignedAlloc)
+{
+    DPCTLSyclQueueRef Null_QRef = nullptr;
+    void *ptr = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(ptr =
+                                DPCTLaligned_alloc_shared(64, 512, Null_QRef));
+    ASSERT_TRUE(ptr == nullptr);
+
+    EXPECT_NO_FATAL_FAILURE(ptr =
+                                DPCTLaligned_alloc_device(64, 512, Null_QRef));
+    ASSERT_TRUE(ptr == nullptr);
+
+    EXPECT_NO_FATAL_FAILURE(ptr = DPCTLaligned_alloc_host(64, 512, Null_QRef));
+    ASSERT_TRUE(ptr == nullptr);
+}
+
+TEST_F(TestDPCTLSyclUSMNullArgs, ChkFree)
+{
+    DPCTLSyclQueueRef Null_QRef = nullptr;
+    DPCTLSyclUSMRef ptr = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLfree_with_queue(ptr, Null_QRef));
+
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclQueueRef QRef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+    EXPECT_NO_FATAL_FAILURE(QRef = DPCTLQueue_CreateForDevice(
+                                DRef, nullptr, DPCTL_DEFAULT_PROPERTY));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLfree_with_queue(ptr, QRef));
+
+    DPCTLSyclContextRef Null_CRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DPCTLfree_with_context(ptr, Null_CRef));
+
+    DPCTLSyclContextRef CRef = DPCTLQueue_GetContext(QRef);
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(QRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLfree_with_context(ptr, CRef));
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+}
+
+TEST_F(TestDPCTLSyclUSMNullArgs, ChkPointerQueries)
+{
+    DPCTLSyclContextRef Null_CRef = nullptr;
+    DPCTLSyclUSMRef Null_MRef = nullptr;
+    const char *t = nullptr;
+    auto is_unknown = [=](const char *t) -> bool {
+        return strncmp(t, "unknown", 7) == 0;
+    };
+
+    EXPECT_NO_FATAL_FAILURE(t = DPCTLUSM_GetPointerType(Null_MRef, Null_CRef));
+    ASSERT_TRUE(is_unknown(t));
+
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclContextRef CRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+    ASSERT_TRUE(bool(DRef));
+
+    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+
+    t = nullptr;
+    EXPECT_NO_FATAL_FAILURE(t = DPCTLUSM_GetPointerType(Null_MRef, CRef));
+    ASSERT_TRUE(is_unknown(t));
+
+    DPCTLSyclDeviceRef D2Ref = nullptr;
+    EXPECT_NO_FATAL_FAILURE(D2Ref = DPCTLUSM_GetPointerDevice(Null_MRef, CRef));
+    ASSERT_TRUE(D2Ref == nullptr);
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+
+    EXPECT_NO_FATAL_FAILURE(
+        D2Ref = DPCTLUSM_GetPointerDevice(Null_MRef, Null_CRef));
+    ASSERT_TRUE(D2Ref == nullptr);
 }
