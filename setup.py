@@ -463,6 +463,7 @@ setup(
     author="Intel Corporation",
     url="https://github.com/IntelPython/dpctl",
     packages=find_packages(include=["*"]),
+    package_data={"dpctl": ["tests/*", "tests/helper/*.py"]},
     include_package_data=True,
     ext_modules=extensions(),
     zip_safe=False,
