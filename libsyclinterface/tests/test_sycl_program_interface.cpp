@@ -208,6 +208,7 @@ TEST_F(TestOCLProgramFromSource, CheckCreateFromOCLSourceNull)
 
     EXPECT_NO_FATAL_FAILURE(PRef = DPCTLProgram_CreateFromOCLSource(
                                 CRef, InvalidCLProgramStr, CompileOpts););
+    ASSERT_TRUE(PRef == nullptr);
 }
 
 TEST_F(TestOCLProgramFromSource, CheckGetKernelOCLSource)
