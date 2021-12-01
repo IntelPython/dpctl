@@ -14,5 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Top-level module of all dpctl Python unit test cases.
+"""Helper module for dpctl/tests
 """
+
+from ._helper import (
+    create_invalid_capsule,
+    has_cpu,
+    has_gpu,
+    has_sycl_platforms,
+)
+
+__all__ = [
+    "create_invalid_capsule",
+    "has_cpu",
+    "has_gpu",
+    "has_sycl_platforms",
+]

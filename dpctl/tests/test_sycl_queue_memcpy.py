@@ -18,11 +18,10 @@
 """
 
 import pytest
+from helper import has_sycl_platforms
 
 import dpctl
 import dpctl.memory
-
-from ._helper import has_sycl_platforms
 
 
 def _create_memory():
