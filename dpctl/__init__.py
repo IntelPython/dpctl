@@ -61,6 +61,7 @@ from dpctl._sycl_queue_manager import (
     get_current_queue,
     get_num_activated_queues,
     is_in_device_context,
+    nested_context_factories,
     set_global_queue,
 )
 
@@ -111,6 +112,7 @@ __all__ += [
     "get_current_queue",
     "get_num_activated_queues",
     "is_in_device_context",
+    "nested_context_factories",
     "set_global_queue",
 ]
 __all__ += [
