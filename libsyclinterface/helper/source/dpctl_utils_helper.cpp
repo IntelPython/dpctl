@@ -97,7 +97,7 @@ backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy)
     case DPCTLSyclBackendType::DPCTL_OPENCL:
         return backend::opencl;
     default:
-        throw runtime_error("Unsupported backend type", -1);
+        throw std::runtime_error("Unsupported backend type");
     }
 }
 
@@ -135,7 +135,7 @@ info::device_type DPCTL_DPCTLDeviceTypeToSyclDeviceType(DPCTLSyclDeviceType DTy)
     case DPCTLSyclDeviceType::DPCTL_HOST_DEVICE:
         return info::device_type::host;
     default:
-        throw runtime_error("Unsupported device type", -1);
+        throw std::runtime_error("Unsupported device type");
     }
 }
 
@@ -223,7 +223,7 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
         ss << "usm_system_allocator";
         break;
     default:
-        throw runtime_error("Unsupported aspect type", -1);
+        throw std::runtime_error("Unsupported aspect type");
     }
     return ss.str();
 }
@@ -290,7 +290,7 @@ aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
     }
     else {
         // \todo handle the error
-        throw runtime_error("Unsupported aspect type", -1);
+        throw std::runtime_error("Unsupported aspect type");
     }
     return aspectTy;
 }
@@ -335,7 +335,7 @@ aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy)
     case DPCTLSyclAspectType::usm_system_allocator:
         return aspect::usm_system_allocator;
     default:
-        throw runtime_error("Unsupported aspect type", -1);
+        throw std::runtime_error("Unsupported aspect type");
     }
 }
 
@@ -379,7 +379,7 @@ DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(aspect Aspect)
     case aspect::usm_system_allocator:
         return DPCTLSyclAspectType::usm_system_allocator;
     default:
-        throw runtime_error("Unsupported aspect type", -1);
+        throw std::runtime_error("Unsupported aspect type");
     }
 }
 
@@ -402,7 +402,7 @@ info::partition_affinity_domain DPCTL_DPCTLPartitionAffinityDomainTypeToSycl(
     case DPCTLPartitionAffinityDomainType::next_partitionable:
         return info::partition_affinity_domain::next_partitionable;
     default:
-        throw runtime_error("Unsupported partition_affinity_domain type", -1);
+        throw std::runtime_error("Unsupported partition_affinity_domain type");
     }
 }
 
@@ -425,7 +425,7 @@ DPCTLPartitionAffinityDomainType DPCTL_SyclPartitionAffinityDomainToDPCTLType(
     case info::partition_affinity_domain::next_partitionable:
         return DPCTLPartitionAffinityDomainType::next_partitionable;
     default:
-        throw runtime_error("Unsupported partition_affinity_domain type", -1);
+        throw std::runtime_error("Unsupported partition_affinity_domain type");
     }
 }
 
