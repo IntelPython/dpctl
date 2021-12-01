@@ -1,5 +1,6 @@
 include versioneer.py
 recursive-include dpctl/include *.h
+recursive-include dpctl/tensor/include *
 recursive-include dpctl *.pxd
 include dpctl/_sycl_context.h
 include dpctl/_sycl_context_api.h

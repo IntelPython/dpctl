@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - `dpctl.tensor.asarray`, `dpctl.tensor.empty` implemented (#646).
+- `dpctl.tensor.usm_ndarray` adds support for DLPack protocol. `dpctl.tensor.from_dlpack` implemented (#682).
 
 ### Changed
 - dpctl-capi is now renamed to `libsyclinterface` (#666).
