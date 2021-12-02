@@ -240,6 +240,24 @@ def extensions():
             runtime_library_dirs=extension_args["runtime_library_dirs"],
             define_macros=extension_args["define_macros"],
         ),
+        Extension(
+            "dpctl.tensor._dlpack",
+            [
+                os.path.join("dpctl", "tensor", "_dlpack.pyx"),
+            ],
+            depends=extension_args["depends"],
+            language="c++",
+            include_dirs=extension_args["include_dirs"]
+            + [
+                os.path.join("dpctl", "tensor"),
+            ],
+            extra_compile_args=extension_args["extra_compile_args"],
+            extra_link_args=extension_args["extra_link_args"],
+            libraries=extension_args["libraries"],
+            library_dirs=extension_args["library_dirs"],
+            runtime_library_dirs=extension_args["runtime_library_dirs"],
+            define_macros=extension_args["define_macros"],
+        ),
     ]
     return extensions
 
@@ -463,6 +481,7 @@ setup(
     author="Intel Corporation",
     url="https://github.com/IntelPython/dpctl",
     packages=find_packages(include=["*"]),
+    package_data={"dpctl": ["tests/*", "tests/helper/*.py"]},
     include_package_data=True,
     ext_modules=extensions(),
     zip_safe=False,

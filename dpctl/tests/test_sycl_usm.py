@@ -19,6 +19,7 @@
 
 import numpy as np
 import pytest
+from helper import has_cpu, has_gpu, has_sycl_platforms
 
 import dpctl
 from dpctl.memory import (
@@ -27,8 +28,6 @@ from dpctl.memory import (
     MemoryUSMShared,
     as_usm_memory,
 )
-
-from ._helper import has_cpu, has_gpu, has_sycl_platforms
 
 
 class Dummy(MemoryUSMShared):

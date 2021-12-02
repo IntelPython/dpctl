@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_platform_manager.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_platform_interface.h"
@@ -45,8 +46,9 @@ void platform_print_info_impl(const platform &p, size_t verbosity)
     std::stringstream ss;
 
     if (verbosity > 2) {
-        std::cerr << "Illegal verbosity level. Accepted values are 0, 1, or 2. "
-                     "Defaulting to verbosity level 0.\n";
+        error_handler("Illegal verbosity level. Accepted values are 0, 1, or 2."
+                      "Defaulting to verbosity level 0.",
+                      __FILE__, __func__, __LINE__);
         verbosity = 0;
     }
 
@@ -112,6 +114,7 @@ void DPCTLPlatformMgr_PrintInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef,
         platform_print_info_impl(*p, verbosity);
     }
     else {
-        std::cout << "Platform reference is NULL.\n";
+        error_handler("Platform reference is NULL.", __FILE__, __func__,
+                      __LINE__);
     }
 }

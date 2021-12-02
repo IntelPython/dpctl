@@ -18,10 +18,9 @@
 """
 
 import pytest
+from helper import has_sycl_platforms
 
 import dpctl
-
-from ._helper import has_sycl_platforms
 
 list_of_valid_filter_selectors = [
     "opencl",

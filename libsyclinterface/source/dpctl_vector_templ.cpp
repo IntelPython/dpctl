@@ -23,6 +23,7 @@
 /// the wrapper functions for vector operations.
 ///
 //===----------------------------------------------------------------------===//
+#include "../helper/include/dpctl_error_handlers.h"
 #include "../helper/include/dpctl_vector_macros.h"
 #include "Support/MemOwnershipAttrs.h"
 #include <type_traits>
@@ -44,8 +45,9 @@ __dpctl_give VECTOR(EL) FN(EL, Create)()
     try {
         Vec = new std::vector<SYCLREF(EL)>();
         return wrap(Vec);
-    } catch (std::bad_alloc const &ba) {
+    } catch (std::exception const &e) {
         delete Vec;
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -68,8 +70,9 @@ __dpctl_give VECTOR(EL)
                 wrap(new std::remove_pointer<decltype(Ref)>::type(*Ref)));
         }
         return wrap(Vec);
-    } catch (std::bad_alloc const &ba) {
+    } catch (std::exception const &e) {
         delete Vec;
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -133,8 +136,8 @@ SYCLREF(EL) FN(EL, GetAt)(__dpctl_keep VECTOR(EL) VRef, size_t index)
         SYCLREF(EL) ret;
         try {
             ret = Vec->at(index);
-        } catch (std::out_of_range const &oor) {
-            std::cerr << oor.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
         auto Ref = unwrap(ret);
@@ -142,10 +145,9 @@ SYCLREF(EL) FN(EL, GetAt)(__dpctl_keep VECTOR(EL) VRef, size_t index)
         try {
             elPtr = new std::remove_pointer<decltype(Ref)>::type(*Ref);
             copy = wrap(elPtr);
-        } catch (std::bad_alloc const &ba) {
+        } catch (std::exception const &e) {
             delete elPtr;
-            // \todo log error
-            std::cerr << ba.what() << '\n';
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
     }

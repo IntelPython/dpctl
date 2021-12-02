@@ -67,6 +67,7 @@ def _array_info_sequence(li):
             )
     if dim is None:
         dim = tuple()
+        dt = float
         device = _host_set
     return (n,) + dim, dt, device
 

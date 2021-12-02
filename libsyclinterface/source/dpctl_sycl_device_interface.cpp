@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_interface.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "../helper/include/dpctl_string_utils.hpp"
 #include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
@@ -52,15 +53,15 @@ DPCTLDevice_Copy(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto Device = unwrap(DRef);
     if (!Device) {
-        std::cerr << "Cannot copy DPCTLSyclDeviceRef as input is a nullptr\n";
+        error_handler("Cannot copy DPCTLSyclDeviceRef as input is a nullptr",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
     try {
         auto CopiedDevice = new device(*Device);
         return wrap(CopiedDevice);
-    } catch (std::bad_alloc const &ba) {
-        // \todo log error
-        std::cerr << ba.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -70,13 +71,8 @@ __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_Create()
     try {
         auto Device = new device();
         return wrap(Device);
-    } catch (std::bad_alloc const &ba) {
-        // \todo log error
-        std::cerr << ba.what() << '\n';
-        return nullptr;
-    } catch (runtime_error const &re) {
-        // \todo log error
-        std::cerr << re.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -85,19 +81,17 @@ __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
     __dpctl_keep const DPCTLSyclDeviceSelectorRef DSRef)
 {
     auto Selector = unwrap(DSRef);
-    if (!Selector)
-        // \todo : Log error
+    if (!Selector) {
+        error_handler("Cannot difine device selector for DPCTLSyclDeviceRef "
+                      "as input is a nullptr.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
+    }
     try {
         auto Device = new device(*Selector);
         return wrap(Device);
-    } catch (std::bad_alloc const &ba) {
-        // \todo log error
-        std::cerr << ba.what() << '\n';
-        return nullptr;
-    } catch (runtime_error const &re) {
-        // \todo log error
-        std::cerr << re.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -116,9 +110,8 @@ DPCTLDevice_GetDeviceType(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         try {
             auto SyclDTy = D->get_info<info::device::device_type>();
             DTy = DPCTL_SyclDeviceTypeToDPCTLDeviceType(SyclDTy);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return DTy;
@@ -180,9 +173,8 @@ DPCTLDevice_GetMaxComputeUnits(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     if (D) {
         try {
             nComputeUnits = D->get_info<info::device::max_compute_units>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return nComputeUnits;
@@ -196,9 +188,8 @@ DPCTLDevice_GetGlobalMemSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     if (D) {
         try {
             GlobalMemSize = D->get_info<info::device::global_mem_size>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return GlobalMemSize;
@@ -211,9 +202,8 @@ uint64_t DPCTLDevice_GetLocalMemSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     if (D) {
         try {
             LocalMemSize = D->get_info<info::device::local_mem_size>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return LocalMemSize;
@@ -228,9 +218,8 @@ DPCTLDevice_GetMaxWorkItemDims(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         try {
             maxWorkItemDims =
                 D->get_info<info::device::max_work_item_dimensions>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return maxWorkItemDims;
@@ -248,12 +237,8 @@ DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
             for (auto i = 0ul; i < 3; ++i) {
                 sizes[i] = id_sizes[i];
             }
-        } catch (std::bad_alloc const &ba) {
-            // \todo log error
-            std::cerr << ba.what() << '\n';
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return sizes;
@@ -267,9 +252,8 @@ DPCTLDevice_GetMaxWorkGroupSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     if (D) {
         try {
             max_wg_size = D->get_info<info::device::max_work_group_size>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return max_wg_size;
@@ -283,9 +267,8 @@ DPCTLDevice_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     if (D) {
         try {
             max_nsubgroups = D->get_info<info::device::max_num_sub_groups>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return max_nsubgroups;
@@ -299,8 +282,8 @@ DPCTLDevice_GetPlatform(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     if (D) {
         try {
             PRef = wrap(new platform(D->get_platform()));
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return PRef;
@@ -315,9 +298,8 @@ DPCTLDevice_GetName(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         try {
             auto name = D->get_info<info::device::name>();
             cstr_name = dpctl::helper::cstring_from_string(name);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return cstr_name;
@@ -332,9 +314,8 @@ DPCTLDevice_GetVendor(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         try {
             auto vendor = D->get_info<info::device::vendor>();
             cstr_vendor = dpctl::helper::cstring_from_string(vendor);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return cstr_vendor;
@@ -349,9 +330,8 @@ DPCTLDevice_GetDriverVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         try {
             auto driver = D->get_info<info::device::driver_version>();
             cstr_driver = dpctl::helper::cstring_from_string(driver);
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return cstr_driver;
@@ -364,9 +344,8 @@ bool DPCTLDevice_IsHostUnifiedMemory(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     if (D) {
         try {
             ret = D->get_info<info::device::host_unified_memory>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return ret;
@@ -391,9 +370,8 @@ bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     if (D) {
         try {
             hasAspect = D->has(DPCTL_DPCTLAspectTypeToSyclAspect(AT));
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return hasAspect;
@@ -407,8 +385,8 @@ bool DPCTLDevice_HasAspect(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         if (D) {                                                               \
             try {                                                              \
                 result = D->get_info<info::device::NAME>();                    \
-            } catch (runtime_error const &re) {                                \
-                std::cerr << re.what() << '\n';                                \
+            } catch (std::exception const &e) {                                \
+                error_handler(e, __FILE__, __func__, __LINE__);                \
             }                                                                  \
         }                                                                      \
         return result;                                                         \
@@ -431,9 +409,8 @@ bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
         try {
             SubGroupProgress = D->get_info<
                 info::device::sub_group_independent_forward_progress>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return SubGroupProgress;
@@ -448,9 +425,8 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthChar(
         try {
             vector_width_char =
                 D->get_info<info::device::preferred_vector_width_char>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return vector_width_char;
@@ -465,9 +441,8 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthShort(
         try {
             vector_width_short =
                 D->get_info<info::device::preferred_vector_width_short>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return vector_width_short;
@@ -482,9 +457,8 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthInt(
         try {
             vector_width_int =
                 D->get_info<info::device::preferred_vector_width_int>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return vector_width_int;
@@ -499,9 +473,8 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthLong(
         try {
             vector_width_long =
                 D->get_info<info::device::preferred_vector_width_long>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return vector_width_long;
@@ -516,9 +489,8 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthFloat(
         try {
             vector_width_float =
                 D->get_info<info::device::preferred_vector_width_float>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return vector_width_float;
@@ -533,9 +505,8 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthDouble(
         try {
             vector_width_double =
                 D->get_info<info::device::preferred_vector_width_double>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return vector_width_double;
@@ -550,9 +521,8 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(
         try {
             vector_width_half =
                 D->get_info<info::device::preferred_vector_width_half>();
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return vector_width_half;
@@ -566,12 +536,8 @@ DPCTLDevice_GetParentDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         try {
             auto parent_D = D->get_info<info::device::parent_device>();
             return wrap(new device(parent_D));
-        } catch (invalid_object_error const &ioe) {
-            // not a sub device
-            return nullptr;
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
     }
@@ -586,8 +552,8 @@ DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     std::vector<DPCTLSyclDeviceRef> *Devices = nullptr;
     if (DRef) {
         if (count == 0) {
-            std::cerr << "Can not create sub-devices with zero compute units"
-                      << '\n';
+            error_handler("Cannot create sub-devices with zero compute units",
+                          __FILE__, __func__, __LINE__);
             return nullptr;
         }
         auto D = unwrap(DRef);
@@ -598,18 +564,9 @@ DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
             for (const auto &sd : subDevices) {
                 Devices->emplace_back(wrap(new device(sd)));
             }
-        } catch (std::bad_alloc const &ba) {
+        } catch (std::exception const &e) {
             delete Devices;
-            std::cerr << ba.what() << '\n';
-            return nullptr;
-        } catch (feature_not_supported const &fnse) {
-            delete Devices;
-            std::cerr << fnse.what() << '\n';
-            return nullptr;
-        } catch (runtime_error const &re) {
-            delete Devices;
-            // \todo log error
-            std::cerr << re.what() << '\n';
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
     }
@@ -626,8 +583,8 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     vcounts.assign(counts, counts + ncounts);
     size_t min_elem = *std::min_element(vcounts.begin(), vcounts.end());
     if (min_elem == 0) {
-        std::cerr << "Can not create sub-devices with zero compute units"
-                  << '\n';
+        error_handler("Cannot create sub-devices with zero compute units",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
     if (DRef) {
@@ -636,12 +593,8 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         try {
             subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_counts>(vcounts);
-        } catch (feature_not_supported const &fnse) {
-            std::cerr << fnse.what() << '\n';
-            return nullptr;
-        } catch (runtime_error const &re) {
-            // \todo log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
         try {
@@ -649,14 +602,9 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
             for (const auto &sd : subDevices) {
                 Devices->emplace_back(wrap(new device(sd)));
             }
-        } catch (std::bad_alloc const &ba) {
+        } catch (std::exception const &e) {
             delete Devices;
-            std::cerr << ba.what() << '\n';
-            return nullptr;
-        } catch (runtime_error const &re) {
-            delete Devices;
-            // \todo log error
-            std::cerr << re.what() << '\n';
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
     }
@@ -679,18 +627,9 @@ __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
             for (const auto &sd : subDevices) {
                 Devices->emplace_back(wrap(new device(sd)));
             }
-        } catch (std::bad_alloc const &ba) {
+        } catch (std::exception const &e) {
             delete Devices;
-            std::cerr << ba.what() << '\n';
-            return nullptr;
-        } catch (feature_not_supported const &fnse) {
-            delete Devices;
-            std::cerr << fnse.what() << '\n';
-            return nullptr;
-        } catch (runtime_error const &re) {
-            delete Devices;
-            // \todo log error
-            std::cerr << re.what() << '\n';
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
     }
@@ -705,9 +644,7 @@ size_t DPCTLDevice_Hash(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         return hash_fn(*D);
     }
     else {
-        // todo: log error
-        std::cerr << "Argument DRef is null"
-                  << "/n";
+        error_handler("Argument DRef is null", __FILE__, __func__, __LINE__);
         return 0;
     }
 }

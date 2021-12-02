@@ -390,3 +390,286 @@ INSTANTIATE_TEST_SUITE_P(DPCTLDeviceFns,
                                            "gpu:0",
                                            "gpu:1",
                                            "1"));
+
+struct TestDPCTLSyclDeviceNullArgs : public ::testing::Test
+{
+    DPCTLSyclDeviceRef Null_DRef = nullptr;
+    DPCTLSyclDeviceSelectorRef Null_DSRef = nullptr;
+};
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkCopy)
+{
+    DPCTLSyclDeviceRef Copied_DRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(Copied_DRef = DPCTLDevice_Copy(Null_DRef));
+    ASSERT_FALSE(bool(Copied_DRef));
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkCreateFromSelector)
+{
+    DPCTLSyclDeviceRef Created_DRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(Created_DRef =
+                                DPCTLDevice_CreateFromSelector(Null_DSRef));
+    ASSERT_FALSE(bool(Created_DRef));
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkDelete)
+{
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(Null_DRef));
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetDeviceType)
+{
+    DPCTLSyclDeviceType DTy = DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE;
+    EXPECT_NO_FATAL_FAILURE(DTy = DPCTLDevice_GetDeviceType(Null_DRef));
+    ASSERT_TRUE(DTy == DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkIsAccelerator)
+{
+    bool is_acc = true;
+    EXPECT_NO_FATAL_FAILURE(is_acc = DPCTLDevice_IsAccelerator(Null_DRef));
+    ASSERT_FALSE(is_acc);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkIsCPU)
+{
+    bool is_cpu = true;
+    EXPECT_NO_FATAL_FAILURE(is_cpu = DPCTLDevice_IsCPU(Null_DRef));
+    ASSERT_FALSE(is_cpu);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkIsGPU)
+{
+    bool is_gpu = true;
+    EXPECT_NO_FATAL_FAILURE(is_gpu = DPCTLDevice_IsGPU(Null_DRef));
+    ASSERT_FALSE(is_gpu);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkIsHost)
+{
+    bool is_host = true;
+    EXPECT_NO_FATAL_FAILURE(is_host = DPCTLDevice_IsHost(Null_DRef));
+    ASSERT_FALSE(is_host);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxComputeUnits)
+{
+    uint32_t mcu = -1;
+    EXPECT_NO_FATAL_FAILURE(mcu = DPCTLDevice_GetMaxComputeUnits(Null_DRef));
+    ASSERT_TRUE(mcu == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetGlobalMemSize)
+{
+    uint64_t gmsz = -1;
+    EXPECT_NO_FATAL_FAILURE(gmsz = DPCTLDevice_GetGlobalMemSize(Null_DRef));
+    ASSERT_TRUE(gmsz == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetLocalMemSize)
+{
+    uint64_t lmsz = -1;
+    EXPECT_NO_FATAL_FAILURE(lmsz = DPCTLDevice_GetLocalMemSize(Null_DRef));
+    ASSERT_TRUE(lmsz == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxWorkItemDims)
+{
+    uint32_t md = -1;
+    EXPECT_NO_FATAL_FAILURE(md = DPCTLDevice_GetMaxWorkItemDims(Null_DRef));
+    ASSERT_TRUE(md == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxWorkItemSizes)
+{
+    size_t *sz = nullptr;
+    EXPECT_NO_FATAL_FAILURE(sz = DPCTLDevice_GetMaxWorkItemSizes(Null_DRef));
+    ASSERT_TRUE(sz == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxWorkGroupSize)
+{
+    size_t m = -1;
+    EXPECT_NO_FATAL_FAILURE(m = DPCTLDevice_GetMaxWorkGroupSize(Null_DRef));
+    ASSERT_TRUE(m == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxNumSubGroups)
+{
+    uint32_t nsg = -1;
+    EXPECT_NO_FATAL_FAILURE(nsg = DPCTLDevice_GetMaxNumSubGroups(Null_DRef));
+    ASSERT_TRUE(nsg == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetPlatform)
+{
+    DPCTLSyclPlatformRef PRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(PRef = DPCTLDevice_GetPlatform(Null_DRef));
+    ASSERT_TRUE(PRef == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkName)
+{
+    const char *name = nullptr;
+    EXPECT_NO_FATAL_FAILURE(name = DPCTLDevice_GetName(Null_DRef));
+    ASSERT_TRUE(name == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkVendor)
+{
+    const char *vendor = nullptr;
+    EXPECT_NO_FATAL_FAILURE(vendor = DPCTLDevice_GetVendor(Null_DRef));
+    ASSERT_TRUE(vendor == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkDriverVersion)
+{
+    const char *driver_version = nullptr;
+    EXPECT_NO_FATAL_FAILURE(driver_version =
+                                DPCTLDevice_GetDriverVersion(Null_DRef));
+    ASSERT_TRUE(driver_version == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkIsHostUnifiedMemory)
+{
+    bool is_hum = true;
+    EXPECT_NO_FATAL_FAILURE(is_hum =
+                                DPCTLDevice_IsHostUnifiedMemory(Null_DRef));
+    ASSERT_FALSE(is_hum);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkAreEq)
+{
+    bool are_eq = true;
+    EXPECT_NO_FATAL_FAILURE(are_eq = DPCTLDevice_AreEq(Null_DRef, Null_DRef));
+    ASSERT_FALSE(are_eq);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkHasAspect)
+{
+    bool has_fp64 = true;
+    EXPECT_NO_FATAL_FAILURE(has_fp64 = DPCTLDevice_HasAspect(
+                                Null_DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                               DPCTL_StrToAspectType("fp64"))));
+    ASSERT_FALSE(has_fp64);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxReadWriteImageArgs)
+{
+    uint32_t res = 0;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetMaxReadImageArgs(Null_DRef));
+    ASSERT_TRUE(res == 0);
+    uint32_t wes = 0;
+    EXPECT_NO_FATAL_FAILURE(wes = DPCTLDevice_GetMaxWriteImageArgs(Null_DRef));
+    ASSERT_TRUE(wes == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxImageDims)
+{
+    size_t res = 0;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetImage2dMaxWidth(Null_DRef));
+    ASSERT_TRUE(res == 0);
+
+    res = 0;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetImage2dMaxHeight(Null_DRef));
+    ASSERT_TRUE(res == 0);
+
+    res = 0;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetImage3dMaxHeight(Null_DRef));
+    ASSERT_TRUE(res == 0);
+
+    res = 0;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetImage3dMaxWidth(Null_DRef));
+    ASSERT_TRUE(res == 0);
+
+    res = 0;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetImage3dMaxDepth(Null_DRef));
+    ASSERT_TRUE(res == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetSubGroupIndependentForwardProgress)
+{
+    bool indep_pr = true;
+    EXPECT_NO_FATAL_FAILURE(
+        indep_pr =
+            DPCTLDevice_GetSubGroupIndependentForwardProgress(Null_DRef));
+    ASSERT_FALSE(indep_pr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetPreferredVectorWidth)
+{
+    uint32_t w = -1;
+    EXPECT_NO_FATAL_FAILURE(
+        w = DPCTLDevice_GetPreferredVectorWidthChar(Null_DRef));
+    ASSERT_TRUE(w == 0);
+
+    w = -1;
+    EXPECT_NO_FATAL_FAILURE(
+        w = DPCTLDevice_GetPreferredVectorWidthShort(Null_DRef));
+    ASSERT_TRUE(w == 0);
+
+    w = -1;
+    EXPECT_NO_FATAL_FAILURE(
+        w = DPCTLDevice_GetPreferredVectorWidthInt(Null_DRef));
+    ASSERT_TRUE(w == 0);
+
+    w = -1;
+    EXPECT_NO_FATAL_FAILURE(
+        w = DPCTLDevice_GetPreferredVectorWidthLong(Null_DRef));
+    ASSERT_TRUE(w == 0);
+
+    w = -1;
+    EXPECT_NO_FATAL_FAILURE(
+        w = DPCTLDevice_GetPreferredVectorWidthHalf(Null_DRef));
+    ASSERT_TRUE(w == 0);
+
+    w = -1;
+    EXPECT_NO_FATAL_FAILURE(
+        w = DPCTLDevice_GetPreferredVectorWidthFloat(Null_DRef));
+    ASSERT_TRUE(w == 0);
+
+    w = -1;
+    EXPECT_NO_FATAL_FAILURE(
+        w = DPCTLDevice_GetPreferredVectorWidthDouble(Null_DRef));
+    ASSERT_TRUE(w == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetParentDevice)
+{
+    DPCTLSyclDeviceRef pDRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(pDRef = DPCTLDevice_GetParentDevice(Null_DRef));
+    ASSERT_TRUE(pDRef == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkCreateSubDevicesEqually)
+{
+    DPCTLDeviceVectorRef DVRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(
+        DVRef = DPCTLDevice_CreateSubDevicesEqually(Null_DRef, 2));
+    ASSERT_TRUE(DVRef == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkCreateSubDevicesByCounts)
+{
+    DPCTLDeviceVectorRef DVRef = nullptr;
+    size_t counts[2] = {1, 1};
+    EXPECT_NO_FATAL_FAILURE(
+        DVRef = DPCTLDevice_CreateSubDevicesByCounts(Null_DRef, counts, 2));
+    ASSERT_TRUE(DVRef == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkCreateSubDevicesByAffinity)
+{
+    DPCTLDeviceVectorRef DVRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(
+        DVRef = DPCTLDevice_CreateSubDevicesByAffinity(
+            Null_DRef, DPCTLPartitionAffinityDomainType::not_applicable));
+    ASSERT_TRUE(DVRef == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkHash)
+{
+    size_t hash = 0;
+    EXPECT_NO_FATAL_FAILURE(hash = DPCTLDevice_Hash(Null_DRef));
+    ASSERT_TRUE(hash == 0);
+}

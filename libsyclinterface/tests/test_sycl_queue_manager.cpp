@@ -314,3 +314,44 @@ TEST_F(TestDPCTLQueueMgrFeatures,
         GTEST_SKIP_("OpenCL CPU devices are needed, but were not found.");
     }
 }
+
+struct TestDPCTLQueueMgrNullArgs : public ::testing::Test
+{
+    DPCTLSyclQueueRef Null_QRef = nullptr;
+
+    TestDPCTLQueueMgrNullArgs() {}
+    ~TestDPCTLQueueMgrNullArgs() {}
+};
+
+TEST_F(TestDPCTLQueueMgrNullArgs, ChkGlobalQueueIsCurrent)
+{
+    bool res = true;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLQueueMgr_GlobalQueueIsCurrent());
+    ASSERT_TRUE(res == true || res == false);
+}
+
+TEST_F(TestDPCTLQueueMgrNullArgs, ChkIsCurrentQueue)
+{
+    bool res = true;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLQueueMgr_IsCurrentQueue(Null_QRef));
+    ASSERT_FALSE(res);
+}
+
+#if 0
+TEST_F(TestDPCTLQueueMgrNullArgs, ChkSetGlobalQueue)
+{
+    EXPECT_DEATH(DPCTLQueueMgr_SetGlobalQueue(Null_QRef), "*");
+}
+
+TEST_F(TestDPCTLQueueMgrNullArgs, ChkPushGlobalQueue)
+{
+    EXPECT_DEATH(DPCTLQueueMgr_SetGlobalQueue(Null_QRef), "*");
+}
+#endif
+
+TEST_F(TestDPCTLQueueMgrNullArgs, ChkGetQueueStackSize)
+{
+    size_t n = 0;
+    EXPECT_NO_FATAL_FAILURE(n = DPCTLQueueMgr_GetQueueStackSize());
+    ASSERT_TRUE(n < size_t(-1));
+}

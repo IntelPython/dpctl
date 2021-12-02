@@ -115,6 +115,58 @@ struct TestDPCTLSyclPlatformInterface
     }
 };
 
+struct TestDPCTLSyclPlatformNull : public ::testing::Test
+{
+    DPCTLSyclPlatformRef NullPRef = nullptr;
+    DPCTLSyclDeviceSelectorRef NullDSRef = nullptr;
+
+    TestDPCTLSyclPlatformNull() = default;
+    ~TestDPCTLSyclPlatformNull() = default;
+};
+
+TEST_F(TestDPCTLSyclPlatformNull, ChkCopy)
+{
+    DPCTLSyclPlatformRef Copied_PRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(Copied_PRef = DPCTLPlatform_Copy(NullPRef));
+    ASSERT_TRUE(Copied_PRef == nullptr);
+}
+
+TEST_F(TestDPCTLSyclPlatformNull, ChkCreateFromSelector)
+{
+    DPCTLSyclPlatformRef Created_PRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(Created_PRef =
+                                DPCTLPlatform_CreateFromSelector(NullDSRef));
+    ASSERT_TRUE(Created_PRef == nullptr);
+}
+
+TEST_F(TestDPCTLSyclPlatformNull, ChkGetBackend)
+{
+    DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
+    EXPECT_NO_FATAL_FAILURE(BTy = DPCTLPlatform_GetBackend(NullPRef));
+    ASSERT_TRUE(BTy == DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND);
+}
+
+TEST_F(TestDPCTLSyclPlatformNull, ChkGetName)
+{
+    const char *name = nullptr;
+    EXPECT_NO_FATAL_FAILURE(name = DPCTLPlatform_GetName(NullPRef));
+    ASSERT_TRUE(name == nullptr);
+}
+
+TEST_F(TestDPCTLSyclPlatformNull, ChkGetVendor)
+{
+    const char *vendor = nullptr;
+    EXPECT_NO_FATAL_FAILURE(vendor = DPCTLPlatform_GetVendor(NullPRef));
+    ASSERT_TRUE(vendor == nullptr);
+}
+
+TEST_F(TestDPCTLSyclPlatformNull, ChkGetVersion)
+{
+    const char *version = nullptr;
+    EXPECT_NO_FATAL_FAILURE(version = DPCTLPlatform_GetVersion(NullPRef));
+    ASSERT_TRUE(version == nullptr);
+}
+
 struct TestDPCTLSyclDefaultPlatform : public ::testing::Test
 {
     DPCTLSyclPlatformRef PRef = nullptr;
@@ -163,9 +215,24 @@ TEST_P(TestDPCTLSyclPlatformInterface, ChkCopy)
     EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_Delete(Copied_PRef));
 }
 
+TEST_P(TestDPCTLSyclPlatformInterface, ChkCopyNullArg)
+{
+    DPCTLSyclPlatformRef Null_PRef = nullptr;
+    DPCTLSyclPlatformRef Copied_PRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(Copied_PRef = DPCTLPlatform_Copy(Null_PRef));
+    EXPECT_FALSE(bool(Copied_PRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_Delete(Copied_PRef));
+}
+
 TEST_P(TestDPCTLSyclPlatformInterface, ChkPrintInfo)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(PRef, 0));
+}
+
+TEST_P(TestDPCTLSyclPlatformInterface, ChkPrintInfoNullArg)
+{
+    DPCTLSyclPlatformRef Null_PRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(Null_PRef, 0));
 }
 
 TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetName)

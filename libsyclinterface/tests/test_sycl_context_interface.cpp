@@ -211,3 +211,82 @@ INSTANTIATE_TEST_SUITE_P(DPCTLContextTests,
                                            "gpu:0",
                                            "gpu:1",
                                            "1"));
+
+struct TestDPCTLContextNullArgs : public ::testing::Test
+{
+    DPCTLSyclContextRef Null_CRef = nullptr;
+    DPCTLSyclDeviceRef Null_DRef = nullptr;
+    DPCTLDeviceVectorRef Null_DVRef = nullptr;
+    TestDPCTLContextNullArgs() = default;
+    ~TestDPCTLContextNullArgs() = default;
+};
+
+TEST_F(TestDPCTLContextNullArgs, ChkCreate)
+{
+    DPCTLSyclContextRef CRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(Null_DRef, nullptr, 0));
+    ASSERT_FALSE(bool(CRef));
+}
+
+TEST_F(TestDPCTLContextNullArgs, ChkCreateFromDevices)
+{
+    DPCTLSyclContextRef CRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(
+        CRef = DPCTLContext_CreateFromDevices(Null_DVRef, nullptr, 0));
+    ASSERT_FALSE(bool(CRef));
+}
+
+TEST_F(TestDPCTLContextNullArgs, ChkAreEq)
+{
+    DPCTLSyclContextRef Null_C2Ref = nullptr;
+    bool are_eq = true;
+    EXPECT_NO_FATAL_FAILURE(are_eq = DPCTLContext_AreEq(Null_CRef, Null_C2Ref));
+    ASSERT_FALSE(are_eq);
+}
+
+TEST_F(TestDPCTLContextNullArgs, ChkCopy)
+{
+    DPCTLSyclContextRef Copied_CRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(Copied_CRef = DPCTLContext_Copy(Null_CRef));
+    ASSERT_FALSE(bool(Copied_CRef));
+}
+
+TEST_F(TestDPCTLContextNullArgs, ChkGetDevices)
+{
+    DPCTLDeviceVectorRef DVRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DVRef = DPCTLContext_GetDevices(Null_CRef));
+    ASSERT_FALSE(bool(DVRef));
+}
+
+TEST_F(TestDPCTLContextNullArgs, ChkDeviceCount)
+{
+    size_t count = -1;
+    EXPECT_NO_FATAL_FAILURE(count = DPCTLContext_DeviceCount(Null_CRef));
+    ASSERT_TRUE(count == 0);
+}
+
+TEST_F(TestDPCTLContextNullArgs, ChkIsHost)
+{
+    bool is_host = true;
+    EXPECT_NO_FATAL_FAILURE(is_host = DPCTLContext_IsHost(Null_CRef));
+    ASSERT_FALSE(is_host);
+}
+
+TEST_F(TestDPCTLContextNullArgs, ChkHash)
+{
+    size_t hash = 0;
+    EXPECT_NO_FATAL_FAILURE(hash = DPCTLContext_Hash(Null_CRef));
+    ASSERT_TRUE(hash == 0);
+}
+
+TEST_F(TestDPCTLContextNullArgs, ChkGetBackend)
+{
+    DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
+    EXPECT_NO_FATAL_FAILURE(BTy = DPCTLContext_GetBackend(Null_CRef));
+    ASSERT_TRUE(BTy == DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND);
+}
+
+TEST_F(TestDPCTLContextNullArgs, ChkDelete)
+{
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(Null_CRef));
+}

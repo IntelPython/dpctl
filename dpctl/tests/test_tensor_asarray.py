@@ -87,6 +87,11 @@ def test_asarray_from_sequence():
     assert type(Y) is dpt.usm_ndarray
     assert Y.shape == (0,)
 
+    X = [[], []]
+    Y = dpt.asarray(X, usm_type="device")
+    assert type(Y) is dpt.usm_ndarray
+    assert Y.shape == (2, 0)
+
     X = [True, False]
     Y = dpt.asarray(X, usm_type="device")
     assert type(Y) is dpt.usm_ndarray

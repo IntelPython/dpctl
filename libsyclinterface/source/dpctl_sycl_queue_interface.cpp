@@ -25,7 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_queue_interface.h"
-#include "../helper/include/dpctl_async_error_handler.h"
+#include "../helper/include/dpctl_error_handlers.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
@@ -108,9 +108,9 @@ bool set_kernel_arg(handler &cgh,
         cgh.set_arg(idx, Arg);
         break;
     default:
-        // \todo handle errors
         arg_set = false;
-        std::cerr << "Kernel argument could not be created.\n";
+        error_handler("Kernel argument could not be created.", __FILE__,
+                      __func__, __LINE__);
         break;
     }
     return arg_set;
@@ -140,10 +140,10 @@ std::unique_ptr<property_list> create_property_list(int properties)
     }
 
     if (_prop) {
-        // todo: log error
-        std::cerr << "Invalid queue property argument (" << std::hex
-                  << properties << "), interpreted as (" << (properties ^ _prop)
-                  << ")" << '\n';
+        std::stringstream ss;
+        ss << "Invalid queue property argument (" << std::hex << properties
+           << "), interpreted as (" << (properties ^ _prop) << ").";
+        error_handler(ss.str(), __FILE__, __func__, __LINE__);
     }
     return propList;
 }
@@ -165,7 +165,7 @@ DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
 DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
                   __dpctl_keep const DPCTLSyclDeviceRef DRef,
-                  error_handler_callback *error_handler,
+                  error_handler_callback *handler,
                   int properties)
 {
     DPCTLSyclQueueRef q = nullptr;
@@ -173,51 +173,45 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
     auto ctx = unwrap(CRef);
 
     if (!(dev && ctx)) {
-        /* \todo handle error */
+        error_handler("Cannot create queue from DPCTLSyclContextRef and "
+                      "DPCTLSyclDeviceRef as input is a nullptr.",
+                      __FILE__, __func__, __LINE__);
         return q;
     }
     auto propList = create_property_list(properties);
 
-    if (propList && error_handler) {
+    if (propList && handler) {
         try {
-            auto Queue = new queue(
-                *ctx, *dev, DPCTL_AsyncErrorHandler(error_handler), *propList);
+            auto Queue = new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(handler),
+                                   *propList);
             q = wrap(Queue);
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << '\n';
-        } catch (runtime_error &re) {
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     else if (properties) {
         try {
             auto Queue = new queue(*ctx, *dev, *propList);
             q = wrap(Queue);
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << '\n';
-        } catch (runtime_error &re) {
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
-    else if (error_handler) {
+    else if (handler) {
         try {
             auto Queue =
-                new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(error_handler));
+                new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(handler));
             q = wrap(Queue);
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << '\n';
-        } catch (runtime_error &re) {
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     else {
         try {
             auto Queue = new queue(*ctx, *dev);
             q = wrap(Queue);
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << '\n';
-        } catch (runtime_error &re) {
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
 
@@ -234,7 +228,8 @@ DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     auto Device = unwrap(DRef);
 
     if (!Device) {
-        std::cerr << "Cannot create queue from NULL device reference.\n";
+        error_handler("Cannot create queue from NULL device reference.",
+                      __FILE__, __func__, __LINE__);
         return QRef;
     }
     // Check if a cached default context exists for the device.
@@ -248,8 +243,8 @@ DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         try {
             ContextPtr = new context(*Device);
             CRef = wrap(ContextPtr);
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << std::endl;
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
             delete ContextPtr;
             return QRef;
         }
@@ -280,14 +275,14 @@ DPCTLQueue_Copy(__dpctl_keep const DPCTLSyclQueueRef QRef)
         try {
             auto CopiedQueue = new queue(*Queue);
             return wrap(CopiedQueue);
-        } catch (std::bad_alloc &ba) {
-            std::cerr << ba.what() << std::endl;
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
     }
     else {
-        std::cerr << "Can not copy DPCTLSyclQueueRef as input is a nullptr"
-                  << std::endl;
+        error_handler("Cannot copy DPCTLSyclQueueRef as input is a nullptr",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -295,9 +290,11 @@ DPCTLQueue_Copy(__dpctl_keep const DPCTLSyclQueueRef QRef)
 bool DPCTLQueue_AreEq(__dpctl_keep const DPCTLSyclQueueRef QRef1,
                       __dpctl_keep const DPCTLSyclQueueRef QRef2)
 {
-    if (!(QRef1 && QRef2))
-        // \todo handle error
+    if (!(QRef1 && QRef2)) {
+        error_handler("DPCTLSyclQueueRefs are nullptr.", __FILE__, __func__,
+                      __LINE__);
         return false;
+    }
     return (*unwrap(QRef1) == *unwrap(QRef2));
 }
 
@@ -308,9 +305,8 @@ DPCTLSyclBackendType DPCTLQueue_GetBackend(__dpctl_keep DPCTLSyclQueueRef QRef)
         try {
             auto C = Q->get_context();
             return DPCTLContext_GetBackend(wrap(&C));
-        } catch (runtime_error &re) {
-            std::cerr << re.what() << '\n';
-            // store error message
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
             return DPCTL_UNKNOWN_BACKEND;
         }
     }
@@ -327,12 +323,13 @@ DPCTLQueue_GetDevice(__dpctl_keep const DPCTLSyclQueueRef QRef)
         try {
             auto Device = new device(Q->get_device());
             DRef = wrap(Device);
-        } catch (std::bad_alloc const &ba) {
-            std::cerr << ba.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     else {
-        std::cerr << "Could not get the device for this queue.\n";
+        error_handler("Could not get the device for this queue.", __FILE__,
+                      __func__, __LINE__);
     }
     return DRef;
 }
@@ -345,7 +342,8 @@ DPCTLQueue_GetContext(__dpctl_keep const DPCTLSyclQueueRef QRef)
     if (Q)
         CRef = wrap(new context(Q->get_context()));
     else {
-        std::cerr << "Could not get the context for this queue.\n";
+        error_handler("Could not get the context for this queue.", __FILE__,
+                      __func__, __LINE__);
     }
     return CRef;
 }
@@ -374,7 +372,6 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
 
             for (auto i = 0ul; i < NArgs; ++i) {
                 // \todo add support for Sycl buffers
-                // \todo handle errors properly
                 if (!set_kernel_arg(cgh, i, Args[i], ArgTypes[i]))
                     exit(1);
             }
@@ -390,17 +387,12 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                                  *Kernel);
                 break;
             default:
-                // \todo handle the error
                 throw std::runtime_error("Range cannot be greater than three "
                                          "dimensions.");
             }
         });
-    } catch (runtime_error &re) {
-        // \todo fix error handling
-        std::cerr << re.what() << '\n';
-        return nullptr;
-    } catch (std::runtime_error &sre) {
-        std::cerr << sre.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 
@@ -432,7 +424,6 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
 
             for (auto i = 0ul; i < NArgs; ++i) {
                 // \todo add support for Sycl buffers
-                // \todo handle errors properly
                 if (!set_kernel_arg(cgh, i, Args[i], ArgTypes[i]))
                     exit(1);
             }
@@ -452,17 +443,12 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                                  *Kernel);
                 break;
             default:
-                // \todo handle the error
                 throw std::runtime_error("Range cannot be greater than three "
                                          "dimensions.");
             }
         });
-    } catch (runtime_error &re) {
-        // \todo fix error handling
-        std::cerr << re.what() << '\n';
-        return nullptr;
-    } catch (std::runtime_error &sre) {
-        std::cerr << sre.what() << '\n';
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
 
@@ -479,8 +465,7 @@ void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
             SyclQueue->wait();
     }
     else {
-        // todo: log error
-        std::cerr << "Argument QRef is NULL" << '\n';
+        error_handler("Argument QRef is NULL.", __FILE__, __func__, __LINE__);
     }
 }
 
@@ -494,16 +479,15 @@ DPCTLSyclEventRef DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
         sycl::event ev;
         try {
             ev = Q->memcpy(Dest, Src, Count);
-        } catch (const sycl::runtime_error &re) {
-            // todo: log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
         return wrap(new event(ev));
     }
     else {
-        // todo: log error
-        std::cerr << "QRef passed to memcpy was NULL" << '\n';
+        error_handler("QRef passed to memcpy was NULL.", __FILE__, __func__,
+                      __LINE__);
         return nullptr;
     }
 }
@@ -518,23 +502,21 @@ DPCTLSyclEventRef DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
             sycl::event ev;
             try {
                 ev = Q->prefetch(Ptr, Count);
-            } catch (sycl::runtime_error &re) {
-                // todo: log error
-                std::cerr << re.what() << '\n';
+            } catch (std::exception const &e) {
+                error_handler(e, __FILE__, __func__, __LINE__);
                 return nullptr;
             }
             return wrap(new event(ev));
         }
         else {
-            // todo: log error
-            std::cerr << "Attempt to prefetch USM-allocation at nullptr"
-                      << '\n';
+            error_handler("Attempt to prefetch USM-allocation at nullptr.",
+                          __FILE__, __func__, __LINE__);
             return nullptr;
         }
     }
     else {
-        // todo: log error
-        std::cerr << "QRef passed to prefetch was NULL" << '\n';
+        error_handler("QRef passed to prefetch was NULL.", __FILE__, __func__,
+                      __LINE__);
         return nullptr;
     }
 }
@@ -549,16 +531,15 @@ DPCTLSyclEventRef DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
         sycl::event ev;
         try {
             ev = Q->mem_advise(Ptr, Count, static_cast<pi_mem_advice>(Advice));
-        } catch (const sycl::runtime_error &re) {
-            // todo: log error
-            std::cerr << re.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
         return wrap(new event(ev));
     }
     else {
-        // todo: log error
-        std::cerr << "QRef passed to prefetch was NULL" << '\n';
+        error_handler("QRef passed to prefetch was NULL.", __FILE__, __func__,
+                      __LINE__);
         return nullptr;
     }
 }
@@ -591,8 +572,7 @@ size_t DPCTLQueue_Hash(__dpctl_keep const DPCTLSyclQueueRef QRef)
         return hash_fn(*Q);
     }
     else {
-        // todo: log error
-        std::cerr << "Argument QRef is null" << '\n';
+        error_handler("Argument QRef is NULL.", __FILE__, __func__, __LINE__);
         return 0;
     }
 }
@@ -614,20 +594,15 @@ __dpctl_give DPCTLSyclEventRef DPCTLQueue_SubmitBarrierForEvents(
 
                 cgh.barrier();
             });
-        } catch (runtime_error &re) {
-            // \todo fix error handling
-            std::cerr << re.what() << '\n';
-            return nullptr;
-        } catch (std::runtime_error &sre) {
-            std::cerr << sre.what() << '\n';
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
 
         return wrap(new event(e));
     }
     else {
-        // todo: log error
-        std::cerr << "Argument QRef is null" << '\n';
+        error_handler("Argument QRef is NULL", __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }

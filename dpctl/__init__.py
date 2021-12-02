@@ -123,6 +123,13 @@ __all__ += [
 __all__ += [
     "get_include",
 ]
+# add submodules
+__all__ += [
+    "memory",
+    "program",
+    "tensor",
+    "utils",
+]
 
 
 def get_include():
