@@ -485,3 +485,12 @@ cdef api DPCTLSyclContextRef get_context_ref(SyclContext ctx):
     :class:`dpctl.SyclContext` instance.
     """
     return ctx.get_context_ref()
+
+
+cdef api SyclContext make_SyclContext(DPCTLSyclContextRef CRef):
+    """
+    C-API function to create :class:`dpctl.SyclContext` instance
+    from the given opaque context reference.
+    """
+    cdef DPCTLSyclContextRef copied_CRef = DPCTLContext_Copy(CRef)
+    return SyclContext._create(copied_CRef)

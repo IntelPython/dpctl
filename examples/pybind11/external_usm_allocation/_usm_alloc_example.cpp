@@ -33,12 +33,7 @@
 //===----------------------------------------------------------------------===//
 #include <CL/sycl.hpp>
 
-// clang-format off
-#include "dpctl_sycl_types.h"
-#include "../_sycl_queue.h"
-#include "../_sycl_queue_api.h"
-// clang-format on
-
+#include "dpctl4pybind11.hpp"
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
 
@@ -87,19 +82,9 @@ private:
     vec_t vec_;
 };
 
-DMatrix create_matrix(py::object queue, size_t n, size_t m)
+DMatrix create_matrix(sycl::queue &q, size_t n, size_t m)
 {
-    PyObject *queue_ptr = queue.ptr();
-    if (PyObject_TypeCheck(queue_ptr, &PySyclQueueType)) {
-        DPCTLSyclQueueRef QRef =
-            get_queue_ref(reinterpret_cast<PySyclQueueObject *>(queue_ptr));
-        sycl::queue *q = reinterpret_cast<sycl::queue *>(QRef);
-
-        return DMatrix(*q, n, m);
-    }
-    else {
-        throw std::runtime_error("expected dpctl.SyclQueue as argument");
-    }
+    return DMatrix(q, n, m);
 }
 
 py::dict construct_sua_iface(DMatrix &m)
@@ -149,8 +134,8 @@ py::list tolist(DMatrix &m)
 
 PYBIND11_MODULE(external_usm_alloc, m)
 {
-    // Import the dpctl._sycl_queue extension
-    import_dpctl___sycl_queue();
+    // Import the dpctl extensions
+    import_dpctl();
 
     py::class_<DMatrix> dm(m, "DMatrix");
     dm.def(py::init(&create_matrix),

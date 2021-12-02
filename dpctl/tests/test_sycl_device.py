@@ -729,3 +729,48 @@ def test_handle_no_device():
         dpctl.select_device_with_aspects(["gpu", "cpu"])
     with pytest.raises(ValueError):
         dpctl.select_device_with_aspects("cpu", excluded_aspects="cpu")
+
+
+def test_cpython_api_get_device_ref():
+    import ctypes
+    import sys
+
+    d = dpctl.SyclDevice()
+    mod = sys.modules[d.__class__.__module__]
+    # get capsule storign get_device_ref function ptr
+    d_ref_fn_cap = mod.__pyx_capi__["get_device_ref"]
+    # construct Python callable to invoke "get_device_ref"
+    cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
+    cap_ptr_fn.restype = ctypes.c_void_p
+    cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
+    d_ref_fn_ptr = cap_ptr_fn(
+        d_ref_fn_cap, b"DPCTLSyclDeviceRef (struct PySyclDeviceObject *)"
+    )
+    callable_maker = ctypes.PYFUNCTYPE(ctypes.c_void_p, ctypes.py_object)
+    get_device_ref_fn = callable_maker(d_ref_fn_ptr)
+
+    r2 = d.addressof_ref()
+    r1 = get_device_ref_fn(d)
+    assert r1 == r2
+
+
+def test_cpython_api_make_SyclDevice():
+    import ctypes
+    import sys
+
+    d = dpctl.SyclDevice()
+    mod = sys.modules[d.__class__.__module__]
+    # get capsule storign make_SyclContext function ptr
+    make_d_fn_cap = mod.__pyx_capi__["make_SyclDevice"]
+    # construct Python callable to invoke "make_SyclDevice"
+    cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
+    cap_ptr_fn.restype = ctypes.c_void_p
+    cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
+    make_d_fn_ptr = cap_ptr_fn(
+        make_d_fn_cap, b"struct PySyclDeviceObject *(DPCTLSyclDeviceRef)"
+    )
+    callable_maker = ctypes.PYFUNCTYPE(ctypes.py_object, ctypes.c_void_p)
+    make_d_fn = callable_maker(make_d_fn_ptr)
+
+    d2 = make_d_fn(d.addressof_ref())
+    assert d == d2
