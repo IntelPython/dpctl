@@ -284,7 +284,7 @@ def generate_module_summary_rst(module):
                     + mod.__name__
                     + "."
                     + submod.name
-                    + "_api`",
+                    + "_pyapi`",
                 )
                 _submod = import_module(
                     module + "." + submod.name, mod.__name__
@@ -337,11 +337,7 @@ def generate_module_summary_rst(module):
     def _write_functions_summary_table(o, mod, fnobj_list):
         _write_table_header(o)
         for fnobj in fnobj_list:
-            # FIXME link into the page pointing to the actual doc
-            # section for the exception.
-            _write_line(
-                o, indent + "* - :ref:`" + mod.__name__ + "_functions_api`"
-            )
+            _write_line(o, indent + "* - :func:`" + fnobj.__name__ + "()`")
             # For functions, the first line of the docstring is the
             # signature. So we skip that line to pick up the summary.
             fn_summary = _safe_get_docs(fnobj, 1)
