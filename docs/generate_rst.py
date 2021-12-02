@@ -15,9 +15,10 @@
 #  limitations under the License.
 
 """ The module provides helper functions to generate API documentation for
-    dpctl's Python classes.
+    dpctl and its members.
 """
 
+import argparse
 import enum
 import inspect
 import io
@@ -45,7 +46,19 @@ function_groups = {
 
 
 def _get_module(module):
+    """Get the Python object for a module from a string providing the module's
+    name.
 
+    Args:
+        module ([str]): The name of a module to be searched in ``sys.modules``.
+
+    Raises:
+        ValueError: If no corresponding module object was found for the string
+                    module name.
+
+    Returns:
+        [object]: A Python object representing a module.
+    """
     try:
         return sys.modules[module]
     except KeyError:
@@ -55,15 +68,32 @@ def _get_module(module):
 
 
 def _write_line(output, s):
+    """Write a line to specified out stream.
+
+    Args:
+        output (``io.StringIO``): The string stream to be written.
+        s (str): The string that is to be written out as a line.
+    """
     output.write(s)
     output.write("\n")
 
 
 def _write_empty_line(output):
+    """[summary]
+
+    Args:
+        output ([type]): [description]
+    """
     _write_line(output, "")
 
 
 def _write_marquee(o, s):
+    """[summary]
+
+    Args:
+        o ([type]): [description]
+        s ([type]): [description]
+    """
     marquee = "#" * len(s)
     _write_line(o, marquee)
     _write_line(o, s)
@@ -71,11 +101,26 @@ def _write_marquee(o, s):
 
 
 def _write_underlined(o, s, c):
+    """[summary]
+
+    Args:
+        o ([type]): [description]
+        s ([type]): [description]
+        c ([type]): [description]
+    """
     _write_line(o, s)
     _write_line(o, c * len(s))
 
 
 def _get_public_class_name(cls):
+    """[summary]
+
+    Raises:
+        TypeError: [description]
+
+    Returns:
+        [type]: [description]
+    """
     if not inspect.isclass(cls):
         raise TypeError("Expecting class, got {}".format(type(cls)))
     modl = cls.__module__
@@ -91,10 +136,26 @@ def _get_public_class_name(cls):
 
 
 def _is_class_property(o):
+    """[summary]
+
+    Args:
+        o ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     return isinstance(o, property) or (type(o) == _getset_descriptor)
 
 
 def _is_class_method(o):
+    """[summary]
+
+    Args:
+        o ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     return inspect.ismethod(o) or (
         type(o)
         in [_cython_method_type, _cython_builtin_function_or_method_type]
@@ -102,6 +163,14 @@ def _is_class_method(o):
 
 
 def _get_filtered_names(cls, selector_func):
+    """[summary]
+
+    Args:
+        selector_func ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     return [
         _name
         for _name, _obj in inspect.getmembers(cls, selector_func)
@@ -142,7 +211,7 @@ def _group_functions(mod):
     return groups
 
 
-def generate_class_rst(cls):
+def _generate_class_rst(cls):
     """Generate a rst file with the API documentation for a class.
 
     Raises:
@@ -218,9 +287,9 @@ def generate_class_rst(cls):
         all_private_methods = []
         for _name in all_methods:
             if _name.startswith("_"):
-                all_public_methods.append(_name)
-            else:
                 all_private_methods.append(_name)
+            else:
+                all_public_methods.append(_name)
 
         if all_public_methods:
             _write_underlined(output, public_methods_header, "-")
@@ -245,7 +314,7 @@ def generate_class_rst(cls):
         return output.getvalue()
 
 
-def generate_module_summary_rst(module):
+def _generate_module_summary_rst(module):
     """[summary]
 
     Args:
@@ -255,18 +324,47 @@ def generate_module_summary_rst(module):
         [type]: [description]
     """
     rst_header = "".join([".. _", module, "_pyapi:"])
-    pagename = module + " API"
+    pagename = module
     indent = "    "
 
-    def _safe_get_docs(obj, i=0):
+    def _get_doc_summary(obj):
         docstr = getattr(obj, "__doc__")
         if not isinstance(docstr, str):
             docstr = f"[FIXME]: {type(obj)} does not have a docstring"
             return docstr
-        docstr = docstr.split("\n")
-        if len(docstr) < i + 1:
+        # Let us stip out any newlines, tabs, etc. at the start of the docstr
+        docstr = docstr.lstrip()
+        # Check if a signature line is provided. The check only looks for
+        # something like "SyclContext("
+        st = (
+            len(obj.__name__ + "(")
+            if docstr.startswith(obj.__name__ + "(", 0)
+            else 0
+        )
+        # If an apparent signature line was seen, then locate the end of the
+        # signature line.
+        if st:
+            nOpens = 1
+            for i, c in enumerate(docstr[st:]):
+                if c == "(":
+                    nOpens += 1
+                elif c == ")":
+                    stop = i
+                    nOpens -= 1
+                if nOpens == 0:
+                    break
+            st += stop + 1
+        # Strip out the signature in the docstring.
+        docstr = docstr[st:]
+        # The hope is to find the first line (summary) from the docstring
+        # by searching for a period followed by a new line. Not foolproof, but
+        # a best-effort check.
+        docstr = " ".join(
+            docstr[0 : docstr.find(".\n") + 1].replace("\n", " ").split()
+        )
+        if len(docstr) < 1:
             return f"[FIXME]: {type(obj)} has a docstring with no summary"
-        return docstr[i]
+        return docstr
 
     def _write_table_header(o):
         _write_line(o, ".. list-table::")
@@ -274,77 +372,89 @@ def generate_module_summary_rst(module):
         _write_empty_line(o)
 
     def _write_submodules_summary_table(o, mod):
-        _write_table_header(o)
-        for submod in iter_modules(mod.__path__):
-            if submod.ispkg:
+        submods = [
+            submod.name for submod in iter_modules(mod.__path__) if submod.ispkg
+        ]
+        if submods:
+            _write_empty_line(output)
+            _write_underlined(output, "Sub-modules", "-")
+            _write_empty_line(output)
+            _write_table_header(o)
+            for submod in submods:
                 _write_line(
                     o,
                     indent
                     + "* - :ref:`"
                     + mod.__name__
                     + "."
-                    + submod.name
-                    + "_api`",
+                    + submod
+                    + "_pyapi`",
                 )
-                _submod = import_module(
-                    module + "." + submod.name, mod.__name__
-                )
-                mod_summary = _safe_get_docs(_submod)
+                _submod = import_module(module + "." + submod, mod.__name__)
+                mod_summary = _get_doc_summary(_submod)
                 _write_line(o, indent + "  - " + mod_summary)
-        _write_empty_line(o)
+            _write_empty_line(o)
 
     def _write_classes_summary_table(o, mod):
-        _write_table_header(o)
-        for name, obj in inspect.getmembers(mod):
-            if inspect.isclass(obj) and not (
-                issubclass(obj, enum.Enum) or issubclass(obj, Exception)
+        classes = []
+        for mem_tup in inspect.getmembers(mod):
+            cls = mem_tup[1]
+            if inspect.isclass(cls) and not (
+                issubclass(cls, enum.Enum) or issubclass(cls, Exception)
             ):
-                _write_line(o, indent + "* - :ref:`" + name + "_api`")
+                classes.append(cls)
+        if classes:
+            _write_underlined(o, "Classes", "-")
+            _write_empty_line(o)
+            _write_table_header(o)
+            for cls in classes:
+                _write_line(o, indent + "* - :class:`" + cls.__name__ + "`")
                 # For classes, the first line of the docstring is the
                 # signature. So we skip that line to pick up the summary.
-                cls_summary = _safe_get_docs(obj, 1)
+                cls_summary = _get_doc_summary(cls)
                 _write_line(o, indent + "  - " + cls_summary)
-        _write_empty_line(o)
+            _write_empty_line(o)
 
     def _write_enums_summary_table(o, mod):
-        _write_table_header(o)
-        for name, obj in inspect.getmembers(mod):
-            if inspect.isclass(obj) and issubclass(obj, enum.Enum):
-                # FIXME link into the page pointing to the actual doc
-                # section for the enum.
-                _write_line(
-                    o, indent + "* - :ref:`" + mod.__name__ + "_enum_api`"
-                )
-                enum_summary = _safe_get_docs(obj)
+        enums = []
+        for mem_tup in inspect.getmembers(mod):
+            e = mem_tup[1]
+            if inspect.isclass(e) and (issubclass(e, enum.Enum)):
+                enums.append(e)
+        if enums:
+            _write_underlined(o, "Enums", "-")
+            _write_empty_line(o)
+            _write_table_header(o)
+            for e in enums:
+                _write_line(o, indent + "* - :class:`" + e.__name__ + "`")
+                enum_summary = _get_doc_summary(e)
                 _write_line(o, indent + "  - " + enum_summary)
         _write_empty_line(o)
 
     def _write_exceptions_summary_table(o, mod):
-        _write_table_header(o)
-        for name, obj in inspect.getmembers(mod):
-            if inspect.isclass(obj) and issubclass(obj, Exception):
-                # FIXME link into the page pointing to the actual doc
-                # section for the exception.
-                _write_line(
-                    o, indent + "* - :ref:`" + mod.__name__ + "_exception_api`"
-                )
-                # For classes, the first line of the docstring is the
-                # signature. So we skip that line to pick up the summary.
-                excp_summary = _safe_get_docs(obj, 1)
-                _write_line(o, indent + "  - " + excp_summary)
+        exps = []
+        for mem_tup in inspect.getmembers(mod):
+            e = mem_tup[1]
+            if inspect.isclass(e) and (issubclass(e, Exception)):
+                exps.append(e)
+
+        if exps:
+            _write_underlined(o, "Exceptions", "-")
+            _write_empty_line(o)
+            _write_table_header(o)
+            for e in exps:
+                _write_line(o, indent + "* - :class:`" + e.__name__ + "`")
+                excep_summary = _get_doc_summary(e)
+                _write_line(o, indent + "  - " + excep_summary)
         _write_empty_line(o)
 
     def _write_functions_summary_table(o, mod, fnobj_list):
         _write_table_header(o)
         for fnobj in fnobj_list:
-            # FIXME link into the page pointing to the actual doc
-            # section for the exception.
-            _write_line(
-                o, indent + "* - :ref:`" + mod.__name__ + "_functions_api`"
-            )
+            _write_line(o, indent + "* - :func:`" + fnobj.__name__ + "()`")
             # For functions, the first line of the docstring is the
             # signature. So we skip that line to pick up the summary.
-            fn_summary = _safe_get_docs(fnobj, 1)
+            fn_summary = _get_doc_summary(fnobj)
             _write_line(o, indent + "  - " + fn_summary)
         _write_empty_line(o)
 
@@ -365,25 +475,16 @@ def generate_module_summary_rst(module):
         _write_line(output, ".. currentmodule:: " + module)
         _write_empty_line(output)
         _write_line(output, ".. automodule:: " + module)
-        _write_empty_line(output)
-        _write_underlined(output, "Sub-modules", "-")
-        _write_empty_line(output)
         _write_submodules_summary_table(output, mod)
-        _write_underlined(output, "Classes", "-")
-        _write_empty_line(output)
         _write_classes_summary_table(output, mod)
-        _write_underlined(output, "Enums", "-")
-        _write_empty_line(output)
-        _write_enums_summary_table(output, mod)
-        _write_underlined(output, "Exceptions", "-")
-        _write_empty_line(output)
-        _write_exceptions_summary_table(output, mod)
         _write_function_groups_summary(output, mod, _group_functions(mod))
+        _write_enums_summary_table(output, mod)
+        _write_exceptions_summary_table(output, mod)
 
         return output.getvalue()
 
 
-def generate_rst_for_all_classes(module, outputpath):
+def _generate_rst_for_all_classes(module, outputpath):
     """Generates rst API docs for all classes in a module and writes them to
     given path.
 
@@ -401,10 +502,19 @@ def generate_rst_for_all_classes(module, outputpath):
         ):
             out = outputpath + "/" + name + ".rst"
             with open(out, "w") as rst_file:
-                rst_file.write(generate_class_rst(obj))
+                rst_file.write(_generate_class_rst(obj))
 
 
-def generate_rst_for_all_functions(module, outputpath):
+def _generate_rst_for_all_functions(module, outputpath):
+    """[summary]
+
+    Args:
+        module ([type]): [description]
+        outputpath ([type]): [description]
+
+    Raises:
+        ValueError: [description]
+    """
     mod = _get_module(module)
     groups = _group_functions(mod)
 
@@ -436,7 +546,16 @@ def generate_rst_for_all_functions(module, outputpath):
             rst_file.write(output.getvalue())
 
 
-def generate_rst_for_all_exceptions(module, outputpath):
+def _generate_rst_for_all_exceptions(module, outputpath):
+    """[summary]
+
+    Args:
+        module ([type]): [description]
+        outputpath ([type]): [description]
+
+    Raises:
+        ValueError: [description]
+    """
     mod = _get_module(module)
     rst_header = "".join([".. _", module, "_exception_api:"])
     pagename = module + " Exceptions"
@@ -461,7 +580,16 @@ def generate_rst_for_all_exceptions(module, outputpath):
             rst_file.write(output.getvalue())
 
 
-def generate_rst_for_all_enums(module, outputpath):
+def _generate_rst_for_all_enums(module, outputpath):
+    """[summary]
+
+    Args:
+        module ([type]): [description]
+        outputpath ([type]): [description]
+
+    Raises:
+        ValueError: [description]
+    """
     mod = _get_module(module)
     indent = "    "
     rst_header = "".join([".. _", module, "_enum_api:"])
@@ -489,18 +617,36 @@ def generate_rst_for_all_enums(module, outputpath):
 
 
 def generate_all(module, outputpath):
+    """Recursively generate rst files for a root module and all its members.
+
+    Args:
+        module ([str]): Name of a Python module
+        outputpath ([str]): Output directory
+    """
     mod = _get_module(module)
     out = outputpath + "/" + module + "_pyapi.rst"
     # Generate a summary page for the module's API
     with open(out, "w") as rst_file:
-        rst_file.write(generate_module_summary_rst(module))
+        rst_file.write(_generate_module_summary_rst(module))
     # Generate supporting pages for the module
-    generate_rst_for_all_classes(module, outputpath)
-    generate_rst_for_all_enums(module, outputpath)
-    generate_rst_for_all_exceptions(module, outputpath)
-    generate_rst_for_all_functions(module, outputpath)
+    _generate_rst_for_all_classes(module, outputpath)
+    _generate_rst_for_all_enums(module, outputpath)
+    _generate_rst_for_all_exceptions(module, outputpath)
+    _generate_rst_for_all_functions(module, outputpath)
 
     # Now recurse into any submodule and generate all for them too.
     for submod in iter_modules(mod.__path__):
         if submod.ispkg:
             generate_all(module + "." + submod.name, outputpath)
+
+
+parser = argparse.ArgumentParser("Generate rst files for Python source files")
+parser.add_argument("--dir", help="Output directory", required=True)
+parser.add_argument("--module", help="Python module", required=True)
+
+args = parser.parse_args()
+outdir = args.dir
+mod = args.module
+
+# Run generate_all
+generate_all(mod, outdir)
