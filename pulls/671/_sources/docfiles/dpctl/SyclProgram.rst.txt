@@ -26,9 +26,10 @@ dpctl.program.SyclProgram
 Detail
 ======
 
-Private methods
----------------
+Public methods
+--------------
 
 .. autoattribute:: dpctl.program.SyclProgram.addressof_ref
 .. autoattribute:: dpctl.program.SyclProgram.get_sycl_kernel
 .. autoattribute:: dpctl.program.SyclProgram.has_sycl_kernel
+

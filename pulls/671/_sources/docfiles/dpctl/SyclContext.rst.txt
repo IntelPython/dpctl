@@ -34,10 +34,10 @@ Attributes
 Public methods
 --------------
 
-.. autoattribute:: dpctl.SyclContext._get_capsule
+.. autoattribute:: dpctl.SyclContext.addressof_ref
+.. autoattribute:: dpctl.SyclContext.get_devices
 
 Private methods
 ---------------
 
-.. autoattribute:: dpctl.SyclContext.addressof_ref
-.. autoattribute:: dpctl.SyclContext.get_devices
+.. autoattribute:: dpctl.SyclContext._get_capsule

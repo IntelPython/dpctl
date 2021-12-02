@@ -38,12 +38,12 @@ Attributes
 Public methods
 --------------
 
-.. autoattribute:: dpctl.SyclEvent._get_capsule
-
-Private methods
----------------
-
 .. autoattribute:: dpctl.SyclEvent.addressof_ref
 .. autoattribute:: dpctl.SyclEvent.get_wait_list
 .. autoattribute:: dpctl.SyclEvent.wait
 .. autoattribute:: dpctl.SyclEvent.wait_for
+
+Private methods
+---------------
+
+.. autoattribute:: dpctl.SyclEvent._get_capsule

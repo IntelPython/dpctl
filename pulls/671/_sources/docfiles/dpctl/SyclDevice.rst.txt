@@ -82,10 +82,11 @@ Attributes
 .. autoattribute:: dpctl.SyclDevice.sub_group_independent_forward_progress
 .. autoattribute:: dpctl.SyclDevice.vendor
 
-Private methods
----------------
+Public methods
+--------------
 
 .. autoattribute:: dpctl.SyclDevice.addressof_ref
 .. autoattribute:: dpctl.SyclDevice.create_sub_devices
 .. autoattribute:: dpctl.SyclDevice.get_filter_string
 .. autoattribute:: dpctl.SyclDevice.print_device_info
+

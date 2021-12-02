@@ -34,7 +34,8 @@ Attributes
 .. autoattribute:: dpctl.SyclPlatform.vendor
 .. autoattribute:: dpctl.SyclPlatform.version
 
-Private methods
----------------
+Public methods
+--------------
 
 .. autoattribute:: dpctl.SyclPlatform.print_platform_info
+

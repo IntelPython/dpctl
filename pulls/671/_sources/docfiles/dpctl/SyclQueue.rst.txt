@@ -40,11 +40,6 @@ Attributes
 Public methods
 --------------
 
-.. autoattribute:: dpctl.SyclQueue._get_capsule
-
-Private methods
----------------
-
 .. autoattribute:: dpctl.SyclQueue.addressof_ref
 .. autoattribute:: dpctl.SyclQueue.get_sycl_context
 .. autoattribute:: dpctl.SyclQueue.get_sycl_device
@@ -55,3 +50,8 @@ Private methods
 .. autoattribute:: dpctl.SyclQueue.submit
 .. autoattribute:: dpctl.SyclQueue.submit_barrier
 .. autoattribute:: dpctl.SyclQueue.wait
+
+Private methods
+---------------
+
+.. autoattribute:: dpctl.SyclQueue._get_capsule

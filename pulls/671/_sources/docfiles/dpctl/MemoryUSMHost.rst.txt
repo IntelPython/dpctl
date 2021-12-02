@@ -39,11 +39,12 @@ Attributes
 .. autoattribute:: dpctl.memory.MemoryUSMHost.sycl_device
 .. autoattribute:: dpctl.memory.MemoryUSMHost.sycl_queue
 
-Private methods
----------------
+Public methods
+--------------
 
 .. autoattribute:: dpctl.memory.MemoryUSMHost.copy_from_device
 .. autoattribute:: dpctl.memory.MemoryUSMHost.copy_from_host
 .. autoattribute:: dpctl.memory.MemoryUSMHost.copy_to_host
 .. autoattribute:: dpctl.memory.MemoryUSMHost.get_usm_type
 .. autoattribute:: dpctl.memory.MemoryUSMHost.tobytes
+

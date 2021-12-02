@@ -51,9 +51,9 @@ Attributes
 Public methods
 --------------
 
-.. autoattribute:: dpctl.tensor.usm_ndarray._set_namespace
+.. autoattribute:: dpctl.tensor.usm_ndarray.to_device
 
 Private methods
 ---------------
 
-.. autoattribute:: dpctl.tensor.usm_ndarray.to_device
+.. autoattribute:: dpctl.tensor.usm_ndarray._set_namespace
