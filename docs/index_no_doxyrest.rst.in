@@ -7,9 +7,9 @@
    docfiles/user_guides/QuickStart
 
 .. toctree::
-    :maxdepth: 1
-    :caption: API Documentation
+   :maxdepth: 1
+   :caption: API Documentation
 
-    docfiles/dpctl_pyapi
+   docfiles/dpctl/dpctl_pyapi
 
 .. include:: ./docfiles/boilerplate.rst

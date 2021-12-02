@@ -28,15 +28,6 @@ from pkgutil import iter_modules
 
 import dpctl
 
-
-class MissingDocumentationError(Exception):
-    """
-    Indicates that an undocumented class was found.
-    """
-
-    pass
-
-
 # known property in Cython extension class
 _getset_descriptor = type(dpctl.SyclDevice.name)
 # known method (defined using def in Cython extension class)
@@ -267,6 +258,16 @@ def generate_module_summary_rst(module):
     pagename = module + " API"
     indent = "    "
 
+    def _safe_get_docs(obj, i=0):
+        docstr = getattr(obj, "__doc__")
+        if not isinstance(docstr, str):
+            docstr = f"[FIXME]: {type(obj)} does not have a docstring"
+            return docstr
+        docstr = docstr.split("\n")
+        if len(docstr) < i + 1:
+            return f"[FIXME]: {type(obj)} has a docstring with no summary"
+        return docstr[i]
+
     def _write_table_header(o):
         _write_line(o, ".. list-table::")
         _write_line(o, indent + ":widths: 25,50")
@@ -288,14 +289,7 @@ def generate_module_summary_rst(module):
                 _submod = import_module(
                     module + "." + submod.name, mod.__name__
                 )
-                if not _submod.__doc__:
-                    raise MissingDocumentationError(
-                        mod.__name__
-                        + "."
-                        + _submod.__doc__
-                        + " is not documented."
-                    )
-                mod_summary = _submod.__doc__.split("\n")[0]
+                mod_summary = _safe_get_docs(_submod)
                 _write_line(o, indent + "  - " + mod_summary)
         _write_empty_line(o)
 
@@ -308,11 +302,7 @@ def generate_module_summary_rst(module):
                 _write_line(o, indent + "* - :ref:`" + name + "_api`")
                 # For classes, the first line of the docstring is the
                 # signature. So we skip that line to pick up the summary.
-                if not obj.__doc__:
-                    raise MissingDocumentationError(
-                        mod.__name__ + "." + obj.__doc__ + " is not documented."
-                    )
-                cls_summary = obj.__doc__.split("\n")[1]
+                cls_summary = _safe_get_docs(obj, 1)
                 _write_line(o, indent + "  - " + cls_summary)
         _write_empty_line(o)
 
@@ -325,11 +315,7 @@ def generate_module_summary_rst(module):
                 _write_line(
                     o, indent + "* - :ref:`" + mod.__name__ + "_enum_api`"
                 )
-                if not obj.__doc__:
-                    raise MissingDocumentationError(
-                        mod.__name__ + "." + obj.__doc__ + " is not documented."
-                    )
-                enum_summary = obj.__doc__.split("\n")[0]
+                enum_summary = _safe_get_docs(obj)
                 _write_line(o, indent + "  - " + enum_summary)
         _write_empty_line(o)
 
@@ -342,13 +328,9 @@ def generate_module_summary_rst(module):
                 _write_line(
                     o, indent + "* - :ref:`" + mod.__name__ + "_exception_api`"
                 )
-                if not obj.__doc__:
-                    raise MissingDocumentationError(
-                        mod.__name__ + "." + obj.__doc__ + " is not documented."
-                    )
                 # For classes, the first line of the docstring is the
                 # signature. So we skip that line to pick up the summary.
-                excp_summary = obj.__doc__.split("\n")[1]
+                excp_summary = _safe_get_docs(obj, 1)
                 _write_line(o, indent + "  - " + excp_summary)
         _write_empty_line(o)
 
@@ -360,13 +342,9 @@ def generate_module_summary_rst(module):
             _write_line(
                 o, indent + "* - :ref:`" + mod.__name__ + "_functions_api`"
             )
-            if not fnobj.__doc__:
-                raise MissingDocumentationError(
-                    mod.__name__ + "." + fnobj.__doc__ + " is not documented."
-                )
             # For functions, the first line of the docstring is the
             # signature. So we skip that line to pick up the summary.
-            fn_summary = fnobj.__doc__.split("\n")[1]
+            fn_summary = _safe_get_docs(fnobj, 1)
             _write_line(o, indent + "  - " + fn_summary)
         _write_empty_line(o)
 
@@ -378,9 +356,6 @@ def generate_module_summary_rst(module):
             _write_functions_summary_table(o, mod, groups[group])
 
     mod = _get_module(module)
-
-    if not mod.__doc__:
-        raise MissingDocumentationError(mod.__name__ + " is not documented.")
 
     with io.StringIO() as output:
         _write_line(output, rst_header)
