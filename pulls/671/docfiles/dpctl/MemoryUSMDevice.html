@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.memory.MemoryUSMDevice &mdash; Data-parallel Control (dpctl) 0.12.0dev1+71.ge5ab6ae7 documentation</title>
+  <title>dpctl.memory.MemoryUSMDevice &mdash; Data-parallel Control (dpctl) 0.12.0dev1+72.g02ffed1b documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+71.ge5ab6ae7
+                0.12.0dev1+72.g02ffed1b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -96,6 +96,24 @@ is other than ‘device’.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMDevice.nbytes" title="dpctl.memory.MemoryUSMDevice.nbytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nbytes</span></code></a></p></td>
+<td><p>Extent of this USM buffer in bytes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMDevice.reference_obj" title="dpctl.memory.MemoryUSMDevice.reference_obj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reference_obj</span></code></a></p></td>
+<td><p>Reference to the Python object owning this USM buffer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMDevice.size" title="dpctl.memory.MemoryUSMDevice.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a></p></td>
+<td><p>Extent of this USM buffer in bytes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMDevice.sycl_context" title="dpctl.memory.MemoryUSMDevice.sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_context</span></code></a></p></td>
+<td><p><a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> the USM pointer is bound to.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMDevice.sycl_device" title="dpctl.memory.MemoryUSMDevice.sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_device</span></code></a></p></td>
+<td><p><a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> the USM pointer is bound to.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMDevice.sycl_queue" title="dpctl.memory.MemoryUSMDevice.sycl_queue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_queue</span></code></a></p></td>
+<td><p><a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> with <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> the USM allocation is bound to and <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> it was allocated on.</p></td>
+</tr>
 </tbody>
 </table>
 <p class="rubric">Public methods:</p>
@@ -105,6 +123,21 @@ is other than ‘device’.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMDevice.copy_from_device" title="dpctl.memory.MemoryUSMDevice.copy_from_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_from_device</span></code></a></p></td>
+<td><p>Copy SYCL memory underlying the argument object into the memory of the instance</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMDevice.copy_from_host" title="dpctl.memory.MemoryUSMDevice.copy_from_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_from_host</span></code></a></p></td>
+<td><p>Copy content of Python buffer provided by <cite>obj</cite> to instance memory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMDevice.copy_to_host" title="dpctl.memory.MemoryUSMDevice.copy_to_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_to_host</span></code></a></p></td>
+<td><p>Copy content of instance's memory into memory of <code class="docutils literal notranslate"><span class="pre">obj</span></code>, or allocate NumPy array of <code class="docutils literal notranslate"><span class="pre">obj</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMDevice.get_usm_type" title="dpctl.memory.MemoryUSMDevice.get_usm_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_usm_type</span></code></a>([syclobj])</p></td>
+<td><p>Returns the type of USM allocation using Sycl context carried by <cite>syclobj</cite> keyword argument.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMDevice.tobytes" title="dpctl.memory.MemoryUSMDevice.tobytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tobytes</span></code></a></p></td>
+<td><p>Constructs bytes object populated with copy of USM memory.</p></td>
+</tr>
 </tbody>
 </table>
 <p class="rubric">Private methods:</p>
@@ -239,7 +272,7 @@ allocated on.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+71.ge5ab6ae7
+      v: 0.12.0dev1+72.g02ffed1b
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
