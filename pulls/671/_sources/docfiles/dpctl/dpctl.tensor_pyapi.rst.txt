@@ -21,7 +21,7 @@ Classes
 .. list-table::
     :widths: 25,50
 
-    * - :ref:`usm_ndarray_api`
+    * - :class:`usm_ndarray`
       -     usm_ndarray(
 
 Enums

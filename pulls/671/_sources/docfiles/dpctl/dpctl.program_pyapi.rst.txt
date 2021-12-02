@@ -21,9 +21,9 @@ Classes
 .. list-table::
     :widths: 25,50
 
-    * - :ref:`SyclKernel_api`
+    * - :class:`SyclKernel`
       -     
-    * - :ref:`SyclProgram_api`
+    * - :class:`SyclProgram`
       -         program.
 
 Enums
@@ -39,7 +39,7 @@ Exceptions
 .. list-table::
     :widths: 25,50
 
-    * - :ref:`dpctl.program_exception_api`
+    * - :class:`SyclProgramCompilationError`
       -        either a SPIR-V binary file or a string source.
 
 

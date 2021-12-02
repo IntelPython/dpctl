@@ -29,17 +29,17 @@ Classes
 .. list-table::
     :widths: 25,50
 
-    * - :ref:`SyclContext_api`
+    * - :class:`SyclContext`
       -     SyclContext(arg=None)
-    * - :ref:`SyclDevice_api`
+    * - :class:`SyclDevice`
       -     Python equivalent for cl::sycl::device class.
-    * - :ref:`SyclEvent_api`
+    * - :class:`SyclEvent`
       -     SyclEvent(arg=None)
-    * - :ref:`SyclPlatform_api`
+    * - :class:`SyclPlatform`
       -         Python class representing ``cl::sycl::platform`` class.
-    * - :ref:`SyclQueue_api`
+    * - :class:`SyclQueue`
       -     SyclQueue(*args, **kwargs)
-    * - :ref:`SyclTimer_api`
+    * - :class:`SyclTimer`
       -     SyclTimer(host_timer=timeit.default_timer, time_scale=1)
 
 Enums
@@ -48,11 +48,11 @@ Enums
 .. list-table::
     :widths: 25,50
 
-    * - :ref:`dpctl_enum_api`
+    * - :class:`backend_type`
       - 
-    * - :ref:`dpctl_enum_api`
+    * - :class:`device_type`
       - 
-    * - :ref:`dpctl_enum_api`
+    * - :class:`event_status_type`
       - An enumeration.
 
 Exceptions
@@ -61,11 +61,11 @@ Exceptions
 .. list-table::
     :widths: 25,50
 
-    * - :ref:`dpctl_exception_api`
+    * - :class:`SyclKernelInvalidRangeError`
       -     A SyclKernelInvalidRangeError is raised when the provided range has less
-    * - :ref:`dpctl_exception_api`
+    * - :class:`SyclKernelSubmitError`
       -     A SyclKernelSubmitError exception is raised when the provided
-    * - :ref:`dpctl_exception_api`
+    * - :class:`SyclQueueCreationError`
       -     A SyclQueueCreationError exception is raised when a :class:`.SyclQueue`
 
 
