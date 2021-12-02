@@ -21,7 +21,7 @@ Sub-modules
     * - :ref:`dpctl.tensor_api`
       - 
     * - :ref:`dpctl.utils_api`
-      - [FIXME]: <class 'module'> does not have a docstring
+      - 
 
 Classes
 -------
