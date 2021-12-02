@@ -28,12 +28,39 @@ from pkgutil import iter_modules
 
 import dpctl
 
+
+class MissingDocumentationError(Exception):
+    """
+    Indicates that an undocumented class was found.
+    """
+
+    pass
+
+
 # known property in Cython extension class
 _getset_descriptor = type(dpctl.SyclDevice.name)
 # known method (defined using def in Cython extension class)
 _cython_method_type = type(dpctl.SyclDevice.get_filter_string)
 # known builtin method (defined using cpdef in Cython extension class)
 _cython_builtin_function_or_method_type = type(dpctl.SyclQueue.mro)
+
+# Dictionary mapping internal module names to a readable string. so that we
+# can use the module name to logically group functions.
+function_groups = {
+    "dpctl._sycl_device_factory": "Device Selection Functions",
+    "dpctl._device_selection": "Device Selection Functions",
+    "dpctl._sycl_queue_manager": "Queue Management Functions",
+}
+
+
+def _get_module(module):
+
+    try:
+        return sys.modules[module]
+    except KeyError:
+        raise ValueError(
+            module + "is not a valid module name or it is not loaded"
+        )
 
 
 def _write_line(output, s):
@@ -89,6 +116,39 @@ def _get_filtered_names(cls, selector_func):
         for _name, _obj in inspect.getmembers(cls, selector_func)
         if not _name.startswith("__")
     ]
+
+
+def _group_functions(mod):
+    """Bin module functions into a set of logical groups.
+
+    Args:
+        mod (object): A module whose functions will be grouped into bins
+            based on the ``function_groups`` dictionary.
+
+    Returns:
+        [dict]: A dictionary containing  grouping of functions in the
+                module.
+    """
+    groups = {}
+    for name, obj in inspect.getmembers(mod):
+        if inspect.isbuiltin(obj) or inspect.isfunction(obj):
+            if obj.__module__ and obj.__module__ in function_groups:
+                try:
+                    flist = groups[function_groups[obj.__module__]]
+                    flist.append(obj)
+                except KeyError:
+                    groups[function_groups[obj.__module__]] = [
+                        obj,
+                    ]
+            else:
+                try:
+                    flist = groups["Other Functions"]
+                    flist.append(obj)
+                except KeyError:
+                    groups["Other Functions"] = [
+                        obj,
+                    ]
+    return groups
 
 
 def generate_class_rst(cls):
@@ -194,7 +254,7 @@ def generate_class_rst(cls):
         return output.getvalue()
 
 
-def generate_landing_rst(module):
+def generate_module_summary_rst(module):
     """[summary]
 
     Args:
@@ -212,7 +272,7 @@ def generate_landing_rst(module):
         _write_line(o, indent + ":widths: 25,50")
         _write_empty_line(o)
 
-    def _write_submodule_table(o, mod):
+    def _write_submodules_summary_table(o, mod):
         _write_table_header(o)
         for submod in iter_modules(mod.__path__):
             if submod.ispkg:
@@ -220,7 +280,7 @@ def generate_landing_rst(module):
                     o,
                     indent
                     + "* - :ref:`"
-                    + module
+                    + mod.__name__
                     + "."
                     + submod.name
                     + "_api`",
@@ -228,15 +288,18 @@ def generate_landing_rst(module):
                 _submod = import_module(
                     module + "." + submod.name, mod.__name__
                 )
-                mod_summary = (
-                    ""
-                    if not _submod.__doc__
-                    else _submod.__doc__.split("\n")[0]
-                )
+                if not _submod.__doc__:
+                    raise MissingDocumentationError(
+                        mod.__name__
+                        + "."
+                        + _submod.__doc__
+                        + " is not documented."
+                    )
+                mod_summary = _submod.__doc__.split("\n")[0]
                 _write_line(o, indent + "  - " + mod_summary)
         _write_empty_line(o)
 
-    def _write_classes_table(o, mod):
+    def _write_classes_summary_table(o, mod):
         _write_table_header(o)
         for name, obj in inspect.getmembers(mod):
             if inspect.isclass(obj) and not (
@@ -245,41 +308,79 @@ def generate_landing_rst(module):
                 _write_line(o, indent + "* - :ref:`" + name + "_api`")
                 # For classes, the first line of the docstring is the
                 # signature. So we skip that line to pick up the summary.
+                if not obj.__doc__:
+                    raise MissingDocumentationError(
+                        mod.__name__ + "." + obj.__doc__ + " is not documented."
+                    )
                 cls_summary = obj.__doc__.split("\n")[1]
                 _write_line(o, indent + "  - " + cls_summary)
         _write_empty_line(o)
 
-    def _write_enum_table(o, mod):
+    def _write_enums_summary_table(o, mod):
         _write_table_header(o)
         for name, obj in inspect.getmembers(mod):
             if inspect.isclass(obj) and issubclass(obj, enum.Enum):
                 # FIXME link into the page pointing to the actual doc
                 # section for the enum.
-                _write_line(o, indent + "* - :ref:`" + module + "_enum_api`")
+                _write_line(
+                    o, indent + "* - :ref:`" + mod.__name__ + "_enum_api`"
+                )
+                if not obj.__doc__:
+                    raise MissingDocumentationError(
+                        mod.__name__ + "." + obj.__doc__ + " is not documented."
+                    )
                 enum_summary = obj.__doc__.split("\n")[0]
                 _write_line(o, indent + "  - " + enum_summary)
         _write_empty_line(o)
 
-    def _write_exception_table(o, mod):
+    def _write_exceptions_summary_table(o, mod):
         _write_table_header(o)
         for name, obj in inspect.getmembers(mod):
             if inspect.isclass(obj) and issubclass(obj, Exception):
+                # FIXME link into the page pointing to the actual doc
+                # section for the exception.
                 _write_line(
-                    o, indent + "* - :ref:`" + module + "_exception_api`"
+                    o, indent + "* - :ref:`" + mod.__name__ + "_exception_api`"
                 )
+                if not obj.__doc__:
+                    raise MissingDocumentationError(
+                        mod.__name__ + "." + obj.__doc__ + " is not documented."
+                    )
                 # For classes, the first line of the docstring is the
                 # signature. So we skip that line to pick up the summary.
                 excp_summary = obj.__doc__.split("\n")[1]
                 _write_line(o, indent + "  - " + excp_summary)
         _write_empty_line(o)
 
-    mod = None
-    try:
-        mod = sys.modules[module]
-    except KeyError:
-        raise ValueError(
-            module + "is not a valid module name or it is not loaded"
-        )
+    def _write_functions_summary_table(o, mod, fnobj_list):
+        _write_table_header(o)
+        for fnobj in fnobj_list:
+            # FIXME link into the page pointing to the actual doc
+            # section for the exception.
+            _write_line(
+                o, indent + "* - :ref:`" + mod.__name__ + "_functions_api`"
+            )
+            if not fnobj.__doc__:
+                raise MissingDocumentationError(
+                    mod.__name__ + "." + fnobj.__doc__ + " is not documented."
+                )
+            # For functions, the first line of the docstring is the
+            # signature. So we skip that line to pick up the summary.
+            fn_summary = fnobj.__doc__.split("\n")[1]
+            _write_line(o, indent + "  - " + fn_summary)
+        _write_empty_line(o)
+
+    def _write_function_groups_summary(o, mod, groups):
+        for group in groups:
+            _write_empty_line(o)
+            _write_underlined(o, group, "-")
+            _write_empty_line(o)
+            _write_functions_summary_table(o, mod, groups[group])
+
+    mod = _get_module(module)
+
+    if not mod.__doc__:
+        raise MissingDocumentationError(mod.__name__ + " is not documented.")
 
     with io.StringIO() as output:
         _write_line(output, rst_header)
@@ -292,12 +393,18 @@ def generate_landing_rst(module):
         _write_empty_line(output)
         _write_underlined(output, "Sub-modules", "-")
         _write_empty_line(output)
-        _write_submodule_table(output, mod)
+        _write_submodules_summary_table(output, mod)
         _write_underlined(output, "Classes", "-")
         _write_empty_line(output)
-        _write_classes_table(output, mod)
-        _write_enum_table(output, mod)
-        _write_exception_table(output, mod)
+        _write_classes_summary_table(output, mod)
+        _write_underlined(output, "Enums", "-")
+        _write_empty_line(output)
+        _write_enums_summary_table(output, mod)
+        _write_underlined(output, "Exceptions", "-")
+        _write_empty_line(output)
+        _write_exceptions_summary_table(output, mod)
+        _write_function_groups_summary(output, mod, _group_functions(mod))
+
         return output.getvalue()
 
 
@@ -309,18 +416,116 @@ def generate_rst_for_all_classes(module, outputpath):
         module ([str]): Name of module that needs to be documented
         outputpath ([str]): Path where the rst files are to be saved.
     """
-    mod = None
-    try:
-        mod = sys.modules[module]
-    except KeyError:
-        raise ValueError(
-            module + "is not a valid module name or it is not loaded"
-        )
+    mod = _get_module(module)
 
     if not os.path.exists(outputpath):
         raise ValueError("Invalid output path provided")
     for name, obj in inspect.getmembers(mod):
-        if inspect.isclass(obj) and not issubclass(obj, enum.Enum):
+        if inspect.isclass(obj) and not (
+            issubclass(obj, enum.Enum) or issubclass(obj, Exception)
+        ):
             out = outputpath + "/" + name + ".rst"
             with open(out, "w") as rst_file:
                 rst_file.write(generate_class_rst(obj))
+
+
+def generate_rst_for_all_functions(module, outputpath):
+    mod = _get_module(module)
+    groups = _group_functions(mod)
+
+    rst_header = "".join([".. _", module, "_functions_api:"])
+    pagename = module + " Functions"
+
+    if not os.path.exists(outputpath):
+        raise ValueError("Invalid output path provided")
+
+    def _write_function_autodocs(o, groups):
+        for group, fnlist in groups.items():
+            _write_empty_line(o)
+            _write_underlined(o, group, "-")
+            _write_empty_line(o)
+            for fn in fnlist:
+                _write_line(output, ".. autofunction:: " + fn.__name__)
+
+    out = outputpath + "/" + module + "_functions_api.rst"
+    with open(out, "w") as rst_file:
+        with io.StringIO() as output:
+            _write_line(output, rst_header)
+            _write_empty_line(output)
+            _write_marquee(output, pagename)
+            _write_empty_line(output)
+            _write_empty_line(output)
+            _write_line(output, ".. currentmodule:: " + module)
+            _write_empty_line(output)
+            _write_function_autodocs(output, groups)
+            rst_file.write(output.getvalue())
+
+
+def generate_rst_for_all_exceptions(module, outputpath):
+    mod = _get_module(module)
+    rst_header = "".join([".. _", module, "_exception_api:"])
+    pagename = module + " Exceptions"
+
+    if not os.path.exists(outputpath):
+        raise ValueError("Invalid output path provided")
+
+    out = outputpath + "/" + module + "_exception_api.rst"
+    with open(out, "w") as rst_file:
+        with io.StringIO() as output:
+            _write_line(output, rst_header)
+            _write_empty_line(output)
+            _write_marquee(output, pagename)
+            _write_empty_line(output)
+            _write_empty_line(output)
+            _write_line(output, ".. currentmodule:: " + module)
+            _write_empty_line(output)
+            for name, obj in inspect.getmembers(mod):
+                if inspect.isclass(obj) and issubclass(obj, Exception):
+                    _write_line(output, ".. autoexception:: " + obj.__name__)
+
+            rst_file.write(output.getvalue())
+
+
+def generate_rst_for_all_enums(module, outputpath):
+    mod = _get_module(module)
+    indent = "    "
+    rst_header = "".join([".. _", module, "_enum_api:"])
+    pagename = module + " Enums"
+
+    if not os.path.exists(outputpath):
+        raise ValueError("Invalid output path provided")
+
+    out = outputpath + "/" + module + "_enum_api.rst"
+    with open(out, "w") as rst_file:
+        with io.StringIO() as output:
+            _write_line(output, rst_header)
+            _write_empty_line(output)
+            _write_marquee(output, pagename)
+            _write_empty_line(output)
+            _write_empty_line(output)
+            _write_line(output, ".. currentmodule:: " + module)
+            _write_empty_line(output)
+            for name, obj in inspect.getmembers(mod):
+                if inspect.isclass(obj) and issubclass(obj, enum.Enum):
+                    _write_line(output, ".. autoclass:: " + obj.__name__)
+                    _write_line(output, indent + ":members:")
+
+            rst_file.write(output.getvalue())
+
+
+def generate_all(module, outputpath):
+    mod = _get_module(module)
+    out = outputpath + "/" + module + "_pyapi.rst"
+    # Generate a summary page for the module's API
+    with open(out, "w") as rst_file:
+        rst_file.write(generate_module_summary_rst(module))
+    # Generate supporting pages for the module
+    generate_rst_for_all_classes(module, outputpath)
+    generate_rst_for_all_enums(module, outputpath)
+    generate_rst_for_all_exceptions(module, outputpath)
+    generate_rst_for_all_functions(module, outputpath)
+
+    # Now recurse into any submodule and generate all for them too.
+    for submod in iter_modules(mod.__path__):
+        if submod.ispkg:
+            generate_all(module + "." + submod.name, outputpath)
