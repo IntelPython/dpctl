@@ -299,7 +299,7 @@ def generate_module_summary_rst(module):
             if inspect.isclass(obj) and not (
                 issubclass(obj, enum.Enum) or issubclass(obj, Exception)
             ):
-                _write_line(o, indent + "* - :ref:`" + name + "_api`")
+                _write_line(o, indent + "* - :class:`" + obj.__name__ + "`")
                 # For classes, the first line of the docstring is the
                 # signature. So we skip that line to pick up the summary.
                 cls_summary = _safe_get_docs(obj, 1)
@@ -310,11 +310,7 @@ def generate_module_summary_rst(module):
         _write_table_header(o)
         for name, obj in inspect.getmembers(mod):
             if inspect.isclass(obj) and issubclass(obj, enum.Enum):
-                # FIXME link into the page pointing to the actual doc
-                # section for the enum.
-                _write_line(
-                    o, indent + "* - :ref:`" + mod.__name__ + "_enum_api`"
-                )
+                _write_line(o, indent + "* - :class:`" + obj.__name__ + "`")
                 enum_summary = _safe_get_docs(obj)
                 _write_line(o, indent + "  - " + enum_summary)
         _write_empty_line(o)
@@ -323,11 +319,7 @@ def generate_module_summary_rst(module):
         _write_table_header(o)
         for name, obj in inspect.getmembers(mod):
             if inspect.isclass(obj) and issubclass(obj, Exception):
-                # FIXME link into the page pointing to the actual doc
-                # section for the exception.
-                _write_line(
-                    o, indent + "* - :ref:`" + mod.__name__ + "_exception_api`"
-                )
+                _write_line(o, indent + "* - :class:`" + obj.__name__ + "`")
                 # For classes, the first line of the docstring is the
                 # signature. So we skip that line to pick up the summary.
                 excp_summary = _safe_get_docs(obj, 1)
