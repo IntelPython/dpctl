@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.11.3+53.g5831ae30 documentation</title>
+  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.11.3+97.g2f972c26 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.11.3+53.g5831ae30
+                0.11.3+97.g2f972c26
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -159,14 +159,14 @@ DPCTLContext_Copy<span></span><span class="p">(</span><span class="n">__dpctl_ke
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span>
 DPCTLContext_Create<span></span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">,</span>
-    <a class="reference internal" href="#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="o">*</span> <span class="n">error_handler</span><span class="p">,</span>
+    <a class="reference internal" href="#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="o">*</span> <span class="n">handler</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">properties</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span>
 DPCTLContext_CreateFromDevices<span></span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="group_DeviceManager.html#doxid-d0-d15-group-devicemanager-1ga69ba4893acc931f2040cba37863a188e"><span class="std std-ref">DPCTLDeviceVectorRef</span></a><span></span> <span class="n">DVRef</span><span class="p">,</span>
-    <a class="reference internal" href="#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="o">*</span> <span class="n">error_handler</span><span class="p">,</span>
+    <a class="reference internal" href="#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="o">*</span> <span class="n">handler</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">properties</span>
     <span class="p">);</span>
 
@@ -577,14 +577,14 @@ DPCTLQueue_Copy<span></span><span class="p">(</span><span class="n">__dpctl_keep
 DPCTLQueue_Create<span></span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">,</span>
-    <a class="reference internal" href="#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="o">*</span> <span class="n">error_handler</span><span class="p">,</span>
+    <a class="reference internal" href="#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="o">*</span> <span class="n">handler</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">properties</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span>
 DPCTLQueue_CreateForDevice<span></span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">dRef</span><span class="p">,</span>
-    <a class="reference internal" href="#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="o">*</span> <span class="n">error_handler</span><span class="p">,</span>
+    <a class="reference internal" href="#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="o">*</span> <span class="n">handler</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">properties</span>
     <span class="p">);</span>
 
@@ -1123,7 +1123,7 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.11.3+53.g5831ae30
+      v: 0.11.3+97.g2f972c26
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

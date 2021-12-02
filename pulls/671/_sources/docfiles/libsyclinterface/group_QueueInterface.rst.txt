@@ -29,17 +29,17 @@ Overview
 	:ref:`DPCTLQueue_Copy<doxid-d9/db1/group__QueueInterface_1gad8d2312b954460ad658b2f1080c0dee3>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
-	:ref:`DPCTLQueue_Create<doxid-d9/db1/group__QueueInterface_1ga27d56aeb34230271b80ee158b4c22e7f>`(
+	:ref:`DPCTLQueue_Create<doxid-d9/db1/group__QueueInterface_1gaffc0932f21ca4be9ef6ffa6626d1ee0d>`(
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef,
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
-		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* handler,
 		int properties
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
-	:ref:`DPCTLQueue_CreateForDevice<doxid-d9/db1/group__QueueInterface_1gaefe0a82877a107fc17b3826047fa833d>`(
+	:ref:`DPCTLQueue_CreateForDevice<doxid-d9/db1/group__QueueInterface_1ga49d6da8648e54441a043ea7db496e810>`(
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` dRef,
-		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* handler,
 		int properties
 		);
 
@@ -194,7 +194,7 @@ Returns a copy of the DPCTLSyclQueueRef object.
 A new DPCTLSyclQueueRef created by copying the passed in DPCTLSyclQueueRef object.
 
 .. index:: pair: function; DPCTLQueue_Create
-.. _doxid-d9/db1/group__QueueInterface_1ga27d56aeb34230271b80ee158b4c22e7f:
+.. _doxid-d9/db1/group__QueueInterface_1gaffc0932f21ca4be9ef6ffa6626d1ee0d:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -203,7 +203,7 @@ A new DPCTLSyclQueueRef created by copying the passed in DPCTLSyclQueueRef objec
 	DPCTLQueue_Create(
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef,
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
-		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* handler,
 		int properties
 		)
 
@@ -227,7 +227,7 @@ A wrapper for sycl::queue contructor to construct a new queue from the provided 
 		- An opaque pointer to a sycl::device
 
 	*
-		- error_handler
+		- handler
 
 		- A callback function that will be invoked by the async_handler used during queue creation. Can be NULL if no async_handler is needed.
 
@@ -243,7 +243,7 @@ A wrapper for sycl::queue contructor to construct a new queue from the provided 
 An opaque DPCTLSyclQueueRef pointer containing the new sycl::queue object. A nullptr is returned if the queue could not be created.
 
 .. index:: pair: function; DPCTLQueue_CreateForDevice
-.. _doxid-d9/db1/group__QueueInterface_1gaefe0a82877a107fc17b3826047fa833d:
+.. _doxid-d9/db1/group__QueueInterface_1ga49d6da8648e54441a043ea7db496e810:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -251,7 +251,7 @@ An opaque DPCTLSyclQueueRef pointer containing the new sycl::queue object. A nul
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
 	DPCTLQueue_CreateForDevice(
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` dRef,
-		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* error_handler,
+		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* handler,
 		int properties
 		)
 
@@ -282,7 +282,7 @@ Unlike the SYCL queue constructor, we try not to create a new SYCL context for t
 		- An opaque pointer to a ``sycl::device``.
 
 	*
-		- error_handler
+		- handler
 
 		- A callback function that will be invoked by the async_handler used during queue creation. Can be NULL if no async_handler is needed.
 
