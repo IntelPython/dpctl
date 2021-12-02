@@ -218,9 +218,9 @@ def generate_class_rst(cls):
         all_private_methods = []
         for _name in all_methods:
             if _name.startswith("_"):
-                all_public_methods.append(_name)
-            else:
                 all_private_methods.append(_name)
+            else:
+                all_public_methods.append(_name)
 
         if all_public_methods:
             _write_underlined(output, public_methods_header, "-")
