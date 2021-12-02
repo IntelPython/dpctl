@@ -178,6 +178,16 @@ function(_set_current_release)
     endif (GIT_FOUND)
 endfunction()
 
+function(_generate_rst)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/generate_rst.py" ${CMAKE_CURRENT_BINARY_DIR})
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docfiles/dpctl)
+    execute_process(
+        COMMAND ${Python_EXECUTABLE} -c
+            "import generate_rst as grst; grst.generate_all('dpctl', '${CMAKE_CURRENT_SOURCE_DIR}/docfiles/dpctl')"
+        COMMAND_ECHO STDOUT
+    )
+endfunction()
+
 ##----------------------------------------------------------------------------##
 
 # Add the cmake folder so the FindSphinx module is found
@@ -185,6 +195,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 find_package(Git)
 find_package(Sphinx REQUIRED)
 find_package(Doxygen REQUIRED)
+find_package(Python REQUIRED)
+message(STATUS "After find package(python): ${Python_EXECUTABLE}")
+
 if (DPCTL_ENABLE_DOXYREST)
     find_package(Lua REQUIRED)
     find_package(Doxyrest REQUIRED)
@@ -207,4 +220,5 @@ _setup_doxygen()
 if(DPCTL_ENABLE_DOXYREST)
     _setup_doxyrest()
 endif()
+_generate_rst()
 _setup_sphinx()

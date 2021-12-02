@@ -7,10 +7,10 @@
    docfiles/user_guides/QuickStart
 
 .. toctree::
-    :maxdepth: 1
-    :caption: API Documentation
+   :maxdepth: 1
+   :caption: API Documentation
 
-    docfiles/dpctl_pyapi
-    @DOXYREST_OUTPUT_DIR_NAME@/index
+   docfiles/dpctl/dpctl_pyapi
+   @DOXYREST_OUTPUT_DIR_NAME@/index
 
 .. include:: ./docfiles/boilerplate.rst
