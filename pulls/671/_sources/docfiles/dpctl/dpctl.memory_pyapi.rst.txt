@@ -1,0 +1,54 @@
+.. _dpctl.memory_pyapi:
+
+################
+dpctl.memory API
+################
+
+.. currentmodule:: dpctl.memory
+
+.. automodule:: dpctl.memory
+
+Sub-modules
+-----------
+
+.. list-table::
+    :widths: 25,50
+
+
+Classes
+-------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :ref:`MemoryUSMDevice_api`
+      -     MemoryUSMDevice(nbytes, alignment=0, queue=None, copy=False)
+    * - :ref:`MemoryUSMHost_api`
+      -     MemoryUSMHost(nbytes, alignment=0, queue=None, copy=False)
+    * - :ref:`MemoryUSMShared_api`
+      -     MemoryUSMShared(nbytes, alignment=0, queue=None, copy=False)
+
+Enums
+-----
+
+.. list-table::
+    :widths: 25,50
+
+
+Exceptions
+----------
+
+.. list-table::
+    :widths: 25,50
+
+
+
+Other Functions
+---------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :ref:`dpctl.memory_functions_api`
+      -     as_usm_memory(obj)
+

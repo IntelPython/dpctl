@@ -1,0 +1,138 @@
+.. _dpctl_pyapi:
+
+#########
+dpctl API
+#########
+
+.. currentmodule:: dpctl
+
+.. automodule:: dpctl
+
+Sub-modules
+-----------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :ref:`dpctl.memory_api`
+      - 
+    * - :ref:`dpctl.program_api`
+      - 
+    * - :ref:`dpctl.tensor_api`
+      - 
+    * - :ref:`dpctl.utils_api`
+      - [FIXME]: <class 'module'> does not have a docstring
+
+Classes
+-------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :ref:`SyclContext_api`
+      -     SyclContext(arg=None)
+    * - :ref:`SyclDevice_api`
+      -     Python equivalent for cl::sycl::device class.
+    * - :ref:`SyclEvent_api`
+      -     SyclEvent(arg=None)
+    * - :ref:`SyclPlatform_api`
+      -         Python class representing ``cl::sycl::platform`` class.
+    * - :ref:`SyclQueue_api`
+      -     SyclQueue(*args, **kwargs)
+    * - :ref:`SyclTimer_api`
+      -     SyclTimer(host_timer=timeit.default_timer, time_scale=1)
+
+Enums
+-----
+
+.. list-table::
+    :widths: 25,50
+
+    * - :ref:`dpctl_enum_api`
+      - 
+    * - :ref:`dpctl_enum_api`
+      - 
+    * - :ref:`dpctl_enum_api`
+      - An enumeration.
+
+Exceptions
+----------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :ref:`dpctl_exception_api`
+      -     A SyclKernelInvalidRangeError is raised when the provided range has less
+    * - :ref:`dpctl_exception_api`
+      -     A SyclKernelSubmitError exception is raised when the provided
+    * - :ref:`dpctl_exception_api`
+      -     A SyclQueueCreationError exception is raised when a :class:`.SyclQueue`
+
+
+Queue Management Functions
+--------------------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :ref:`dpctl_functions_api`
+      -     Yields a SYCL queue corresponding to the input queue object, device object,
+    * - :ref:`dpctl_functions_api`
+      -     Returns the backend for the current queue as a `backend_type` enum.
+    * - :ref:`dpctl_functions_api`
+      -     Returns current device type as a `device_type` enum.
+    * - :ref:`dpctl_functions_api`
+      -     Returns the currently activate SYCL queue as a new SyclQueue object.
+
+
+Device Selection Functions
+--------------------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :ref:`dpctl_functions_api`
+      -     Returns a list of :class:`dpctl.SyclDevice` instances selected based on
+    * - :ref:`dpctl_functions_api`
+      -     A helper function to return the number of SYCL devices of a given
+    * - :ref:`dpctl_functions_api`
+      -     available.
+    * - :ref:`dpctl_functions_api`
+      - 
+    * - :ref:`dpctl_functions_api`
+      - 
+    * - :ref:`dpctl_functions_api`
+      - 
+    * - :ref:`dpctl_functions_api`
+      - 
+    * - :ref:`dpctl_functions_api`
+      - 
+    * - :ref:`dpctl_functions_api`
+      - 
+    * - :ref:`dpctl_functions_api`
+      -     default selector score among devices that have all aspects in the
+    * - :ref:`dpctl_functions_api`
+      - 
+    * - :ref:`dpctl_functions_api`
+      - 
+
+
+Other Functions
+---------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :ref:`dpctl_functions_api`
+      -     Return the directory that contains the dpctl *.h header files.
+    * - :ref:`dpctl_functions_api`
+      -         Returns the number of currently activated queues for this thread.
+    * - :ref:`dpctl_functions_api`
+      -     Returns a list of all available SYCL platforms on the system.
+    * - :ref:`dpctl_functions_api`
+      -         Checks if the control is inside a :func:`dpctl.device_context()` scope.
+    * - :ref:`dpctl_functions_api`
+      -     Prints out the list of available SYCL platforms, and optionally extra
+    * - :ref:`dpctl_functions_api`
+      -         Sets the global queue to the SYCL queue specified explicitly,
+

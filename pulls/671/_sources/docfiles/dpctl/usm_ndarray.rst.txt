@@ -1,0 +1,59 @@
+.. _usm_ndarray_api:
+
+########################
+dpctl.tensor.usm_ndarray
+########################
+
+.. currentmodule:: dpctl.tensor
+
+.. autoclass:: dpctl.tensor.usm_ndarray
+
+    .. rubric:: Attributes:
+
+    .. autoautosummary:: dpctl.tensor.usm_ndarray
+        :attributes:
+
+    .. rubric:: Public methods:
+
+    .. autoautosummary:: dpctl.tensor.usm_ndarray
+        :methods:
+
+    .. rubric:: Private methods:
+
+    .. autoautosummary:: dpctl.tensor.usm_ndarray
+        :private_methods:
+
+Detail
+======
+
+Attributes
+----------
+
+.. autoattribute:: dpctl.tensor.usm_ndarray.T
+.. autoattribute:: dpctl.tensor.usm_ndarray._pointer
+.. autoattribute:: dpctl.tensor.usm_ndarray.device
+.. autoattribute:: dpctl.tensor.usm_ndarray.dtype
+.. autoattribute:: dpctl.tensor.usm_ndarray.flags
+.. autoattribute:: dpctl.tensor.usm_ndarray.imag
+.. autoattribute:: dpctl.tensor.usm_ndarray.itemsize
+.. autoattribute:: dpctl.tensor.usm_ndarray.nbytes
+.. autoattribute:: dpctl.tensor.usm_ndarray.ndim
+.. autoattribute:: dpctl.tensor.usm_ndarray.real
+.. autoattribute:: dpctl.tensor.usm_ndarray.shape
+.. autoattribute:: dpctl.tensor.usm_ndarray.size
+.. autoattribute:: dpctl.tensor.usm_ndarray.strides
+.. autoattribute:: dpctl.tensor.usm_ndarray.sycl_context
+.. autoattribute:: dpctl.tensor.usm_ndarray.sycl_device
+.. autoattribute:: dpctl.tensor.usm_ndarray.sycl_queue
+.. autoattribute:: dpctl.tensor.usm_ndarray.usm_data
+.. autoattribute:: dpctl.tensor.usm_ndarray.usm_type
+
+Public methods
+--------------
+
+.. autoattribute:: dpctl.tensor.usm_ndarray._set_namespace
+
+Private methods
+---------------
+
+.. autoattribute:: dpctl.tensor.usm_ndarray.to_device

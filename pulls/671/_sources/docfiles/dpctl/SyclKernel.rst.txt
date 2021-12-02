@@ -1,0 +1,34 @@
+.. _SyclKernel_api:
+
+########################
+dpctl.program.SyclKernel
+########################
+
+.. currentmodule:: dpctl.program
+
+.. autoclass:: dpctl.program.SyclKernel
+
+    .. rubric:: Attributes:
+
+    .. autoautosummary:: dpctl.program.SyclKernel
+        :attributes:
+
+    .. rubric:: Public methods:
+
+    .. autoautosummary:: dpctl.program.SyclKernel
+        :methods:
+
+    .. rubric:: Private methods:
+
+    .. autoautosummary:: dpctl.program.SyclKernel
+        :private_methods:
+
+Detail
+======
+
+Private methods
+---------------
+
+.. autoattribute:: dpctl.program.SyclKernel.addressof_ref
+.. autoattribute:: dpctl.program.SyclKernel.get_function_name
+.. autoattribute:: dpctl.program.SyclKernel.get_num_args

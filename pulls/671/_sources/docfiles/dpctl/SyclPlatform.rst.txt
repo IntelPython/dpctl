@@ -1,0 +1,40 @@
+.. _SyclPlatform_api:
+
+##################
+dpctl.SyclPlatform
+##################
+
+.. currentmodule:: dpctl
+
+.. autoclass:: dpctl.SyclPlatform
+
+    .. rubric:: Attributes:
+
+    .. autoautosummary:: dpctl.SyclPlatform
+        :attributes:
+
+    .. rubric:: Public methods:
+
+    .. autoautosummary:: dpctl.SyclPlatform
+        :methods:
+
+    .. rubric:: Private methods:
+
+    .. autoautosummary:: dpctl.SyclPlatform
+        :private_methods:
+
+Detail
+======
+
+Attributes
+----------
+
+.. autoattribute:: dpctl.SyclPlatform.backend
+.. autoattribute:: dpctl.SyclPlatform.name
+.. autoattribute:: dpctl.SyclPlatform.vendor
+.. autoattribute:: dpctl.SyclPlatform.version
+
+Private methods
+---------------
+
+.. autoattribute:: dpctl.SyclPlatform.print_platform_info
