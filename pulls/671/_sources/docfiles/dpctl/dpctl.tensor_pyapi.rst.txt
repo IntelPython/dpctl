@@ -45,22 +45,22 @@ Other Functions
 .. list-table::
     :widths: 25,50
 
-    * - :ref:`dpctl.tensor_functions_api`
+    * - :func:`asarray()`
       -                device=None, usm_type=None, sycl_queue=None)
-    * - :ref:`dpctl.tensor_functions_api`
+    * - :func:`copy_to_numpy()`
       - [FIXME]: <class 'function'> does not have a docstring
-    * - :ref:`dpctl.tensor_functions_api`
+    * - :func:`astype()`
       -     astype(usm_array, new_dtype, order="K", casting="unsafe", copy=True)
-    * - :ref:`dpctl.tensor_functions_api`
+    * - :func:`copy()`
       -     Creates a copy of given instance of `usm_ndarray`.
-    * - :ref:`dpctl.tensor_functions_api`
+    * - :func:`empty()`
       -                           usm_type="device", sycl_queue=None)
-    * - :ref:`dpctl.tensor_functions_api`
+    * - :func:`from_dlpack()`
       -     dpctl.tensor.from_dlpack(obj)
-    * - :ref:`dpctl.tensor_functions_api`
+    * - :func:`copy_from_numpy()`
       - [FIXME]: <class 'function'> has a docstring with no summary
-    * - :ref:`dpctl.tensor_functions_api`
+    * - :func:`reshape()`
       -     reshape(X: usm_ndarray, newshape: tuple, order="C") -> usm_ndarray
-    * - :ref:`dpctl.tensor_functions_api`
+    * - :func:`copy_to_numpy()`
       - [FIXME]: <class 'function'> does not have a docstring
 

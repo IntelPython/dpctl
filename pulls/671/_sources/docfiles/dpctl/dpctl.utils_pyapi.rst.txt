@@ -43,6 +43,6 @@ Other Functions
 .. list-table::
     :widths: 25,50
 
-    * - :ref:`dpctl.utils_functions_api`
+    * - :func:`get_execution_queue()`
       -     returns the execution queue under compute follows data paradigm,
 

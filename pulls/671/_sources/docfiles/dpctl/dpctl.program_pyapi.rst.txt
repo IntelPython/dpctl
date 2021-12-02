@@ -49,8 +49,8 @@ Other Functions
 .. list-table::
     :widths: 25,50
 
-    * - :ref:`dpctl.program_functions_api`
+    * - :func:`create_program_from_source()`
       -         Creates a Sycl interoperability program from an OpenCL source string.
-    * - :ref:`dpctl.program_functions_api`
+    * - :func:`create_program_from_spirv()`
       -         Creates a Sycl interoperability program from an SPIR-V binary.
 

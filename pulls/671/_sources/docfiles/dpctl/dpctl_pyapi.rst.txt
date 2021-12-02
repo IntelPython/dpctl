@@ -14,13 +14,13 @@ Sub-modules
 .. list-table::
     :widths: 25,50
 
-    * - :ref:`dpctl.memory_api`
+    * - :ref:`dpctl.memory_pyapi`
       - 
-    * - :ref:`dpctl.program_api`
+    * - :ref:`dpctl.program_pyapi`
       - 
-    * - :ref:`dpctl.tensor_api`
+    * - :ref:`dpctl.tensor_pyapi`
       - 
-    * - :ref:`dpctl.utils_api`
+    * - :ref:`dpctl.utils_pyapi`
       - 
 
 Classes
@@ -75,13 +75,13 @@ Queue Management Functions
 .. list-table::
     :widths: 25,50
 
-    * - :ref:`dpctl_functions_api`
+    * - :func:`device_context()`
       -     Yields a SYCL queue corresponding to the input queue object, device object,
-    * - :ref:`dpctl_functions_api`
+    * - :func:`get_current_backend()`
       -     Returns the backend for the current queue as a `backend_type` enum.
-    * - :ref:`dpctl_functions_api`
+    * - :func:`get_current_device_type()`
       -     Returns current device type as a `device_type` enum.
-    * - :ref:`dpctl_functions_api`
+    * - :func:`get_current_queue()`
       -     Returns the currently activate SYCL queue as a new SyclQueue object.
 
 
@@ -91,29 +91,29 @@ Device Selection Functions
 .. list-table::
     :widths: 25,50
 
-    * - :ref:`dpctl_functions_api`
+    * - :func:`get_devices()`
       -     Returns a list of :class:`dpctl.SyclDevice` instances selected based on
-    * - :ref:`dpctl_functions_api`
+    * - :func:`get_num_devices()`
       -     A helper function to return the number of SYCL devices of a given
-    * - :ref:`dpctl_functions_api`
+    * - :func:`has_accelerator_devices()`
       -     available.
-    * - :ref:`dpctl_functions_api`
+    * - :func:`has_cpu_devices()`
       - 
-    * - :ref:`dpctl_functions_api`
+    * - :func:`has_gpu_devices()`
       - 
-    * - :ref:`dpctl_functions_api`
+    * - :func:`has_host_device()`
       - 
-    * - :ref:`dpctl_functions_api`
+    * - :func:`select_accelerator_device()`
       - 
-    * - :ref:`dpctl_functions_api`
+    * - :func:`select_cpu_device()`
       - 
-    * - :ref:`dpctl_functions_api`
+    * - :func:`select_default_device()`
       - 
-    * - :ref:`dpctl_functions_api`
+    * - :func:`select_device_with_aspects()`
       -     default selector score among devices that have all aspects in the
-    * - :ref:`dpctl_functions_api`
+    * - :func:`select_gpu_device()`
       - 
-    * - :ref:`dpctl_functions_api`
+    * - :func:`select_host_device()`
       - 
 
 
@@ -123,16 +123,16 @@ Other Functions
 .. list-table::
     :widths: 25,50
 
-    * - :ref:`dpctl_functions_api`
+    * - :func:`get_include()`
       -     Return the directory that contains the dpctl *.h header files.
-    * - :ref:`dpctl_functions_api`
+    * - :func:`get_num_activated_queues()`
       -         Returns the number of currently activated queues for this thread.
-    * - :ref:`dpctl_functions_api`
+    * - :func:`get_platforms()`
       -     Returns a list of all available SYCL platforms on the system.
-    * - :ref:`dpctl_functions_api`
+    * - :func:`is_in_device_context()`
       -         Checks if the control is inside a :func:`dpctl.device_context()` scope.
-    * - :ref:`dpctl_functions_api`
+    * - :func:`lsplatform()`
       -     Prints out the list of available SYCL platforms, and optionally extra
-    * - :ref:`dpctl_functions_api`
+    * - :func:`set_global_queue()`
       -         Sets the global queue to the SYCL queue specified explicitly,
 
