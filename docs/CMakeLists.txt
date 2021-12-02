@@ -29,7 +29,7 @@ function(_setup_doxygen)
     if(DPCTL_ENABLE_DOXYGEN_HTML)
         set(GENERATE_HTML "YES")
     endif()
-    set(DOXYGEN_INPUT_DIR ../libsyclinterface/include)
+    set(DOXYGEN_INPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libsyclinterface/include)
     set(DOXYGEN_OUTPUT_DIR ${DOC_OUTPUT_DIR}/doxygen)
     set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/xml/index.xml)
     set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
@@ -179,12 +179,17 @@ function(_set_current_release)
 endfunction()
 
 function(_generate_rst)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/generate_rst.py" ${CMAKE_CURRENT_BINARY_DIR})
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/generate_rst.py"
+        ${CMAKE_CURRENT_BINARY_DIR}
+    )
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docfiles/dpctl)
     execute_process(
         COMMAND ${Python_EXECUTABLE} -c
-            "import generate_rst as grst; grst.generate_all('dpctl', '${CMAKE_CURRENT_SOURCE_DIR}/docfiles/dpctl')"
-        COMMAND_ECHO STDOUT
+            "import generate_rst as grst;                                      \
+            grst.generate_all(                                                 \
+                'dpctl', '${CMAKE_CURRENT_SOURCE_DIR}/docfiles/dpctl'          \
+            )"
     )
 endfunction()
 
@@ -196,7 +201,6 @@ find_package(Git)
 find_package(Sphinx REQUIRED)
 find_package(Doxygen REQUIRED)
 find_package(Python REQUIRED)
-message(STATUS "After find package(python): ${Python_EXECUTABLE}")
 
 if (DPCTL_ENABLE_DOXYREST)
     find_package(Lua REQUIRED)
