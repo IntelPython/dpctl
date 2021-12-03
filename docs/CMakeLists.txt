@@ -29,7 +29,7 @@ function(_setup_doxygen)
     if(DPCTL_ENABLE_DOXYGEN_HTML)
         set(GENERATE_HTML "YES")
     endif()
-    set(DOXYGEN_INPUT_DIR ../libsyclinterface/include)
+    set(DOXYGEN_INPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../libsyclinterface/include)
     set(DOXYGEN_OUTPUT_DIR ${DOC_OUTPUT_DIR}/doxygen)
     set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/xml/index.xml)
     set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
@@ -62,20 +62,23 @@ endfunction()
 
 function(_setup_doxyrest)
     set(DOXYREST_OUTPUT_DIR_NAME docfiles/libsyclinterface)
+    # Set the DOXYREST_OUTPUT_DIR variable in both current and parent scope.
+    # The variable is used by _setup_sphinx when generating the conf.py file.
     set(DOXYREST_OUTPUT_DIR
         ${CMAKE_CURRENT_SOURCE_DIR}/${DOXYREST_OUTPUT_DIR_NAME}
         PARENT_SCOPE
     )
     set(DOXYREST_OUTPUT_DIR
        ${CMAKE_CURRENT_SOURCE_DIR}/${DOXYREST_OUTPUT_DIR_NAME}
-
     )
     set(DOXYREST_CONFIG_IN ${CMAKE_CURRENT_SOURCE_DIR}/doxyrest-config.lua.in)
     set(DOXYREST_CONFIG_OUT ${CMAKE_CURRENT_SOURCE_DIR}/doxyrest-config.lua)
     set(DOXYREST_OUTPUT ${DOXYREST_OUTPUT_DIR}/index.rst)
     set(DOXYGEN_OUTPUT_DIR ${DOC_OUTPUT_DIR}/doxygen)
+
     configure_file(${DOXYREST_CONFIG_IN} ${DOXYREST_CONFIG_OUT} @ONLY)
     configure_file(${INDEX_DOXYREST_IN} ${INDEX_OUT} @ONLY)
+
     add_custom_command(
         OUTPUT ${DOXYREST_OUTPUT}
         COMMAND
@@ -83,9 +86,9 @@ function(_setup_doxyrest)
             ${DOXYREST_CONFIG_OUT}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         DEPENDS
-        # Other docs files that can be edited manually
-        ${INDEX_OUT}
-        ${DOXYGEN_INDEX_FILE}
+            # Other docs files that can be edited manually
+            ${INDEX_OUT}
+            ${DOXYGEN_INDEX_FILE}
         MAIN_DEPENDENCY ${DOXYREST_CONFIG_OUT} ${DOXYREST_CONFIG_IN}
         COMMENT "Generating Doxyrest documentation"
     )
@@ -98,58 +101,58 @@ function(_setup_doxyrest)
 endfunction()
 
 function(_setup_sphinx)
+    set(GENERATE_RST_OUTPUT_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}/docfiles/dpctl
+    )
     set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
     set(SPHINX_OUTPUT_DIR ${DOC_OUTPUT_DIR}/docs)
     set(SPHINX_INDEX_FILE ${SPHINX_OUTPUT_DIR}/index.html)
     set(SPHINX_CONF_IN ${SPHINX_SOURCE}/conf.in)
     set(SPHINX_CONF_OUT ${SPHINX_SOURCE}/conf.py)
-    # Only regenerate Sphinx when:
-    # - Doxygen has rerun
-    # - Our doc files have been updated
-    # - The Sphinx config has been updated
+    set(DPCTL_PYAPI_RST_FILE ${GENERATE_RST_OUTPUT_DIR}/dpctl_pyapi.rst)
+
     if(DPCTL_ENABLE_DOXYREST)
-        add_custom_command(
-            OUTPUT ${SPHINX_INDEX_FILE}
-            COMMAND
-                ${SPHINX_EXECUTABLE} -b html
-                ${SPHINX_SOURCE}
-                ${SPHINX_OUTPUT_DIR}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            DEPENDS
-            # Other docs files that can be edited manually
-            ${CMAKE_CURRENT_SOURCE_DIR}/index.rst
-            ${DOXYGEN_INDEX_FILE}
-            MAIN_DEPENDENCY ${SPHINX_CONF_OUT} ${SPHINX_CONF_IN}
-            COMMENT "Generating Sphinx documentation"
-        )
-        # Target to generate Sphinx
-        add_custom_target(
-            Sphinx
-            ALL
-            DEPENDS Doxyrest ${SPHINX_INDEX_FILE}
-        )
+        set(DEPEND_ON_DOXYREST "Doxyrest")
     else()
         configure_file(${INDEX_NO_DOXYREST_IN} ${INDEX_OUT} @ONLY)
-        add_custom_command(
-            OUTPUT ${SPHINX_INDEX_FILE}
-            COMMAND
-                ${SPHINX_EXECUTABLE} -b html
-                ${SPHINX_SOURCE}
-                ${SPHINX_OUTPUT_DIR}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            DEPENDS
-            # Other docs files that can be edited manually
-            ${CMAKE_CURRENT_SOURCE_DIR}/index.rst
-            MAIN_DEPENDENCY ${SPHINX_CONF_OUT} ${SPHINX_CONF_IN}
-            COMMENT "Generating Sphinx documentation"
-        )
-        # Target to generate Sphinx
-        add_custom_target(
-            Sphinx
-            ALL
-            DEPENDS ${SPHINX_INDEX_FILE}
-        )
     endif()
+
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/generate_rst.py"
+        ${CMAKE_CURRENT_BINARY_DIR}
+    )
+    # A custom command to generate the Python API rst files
+    add_custom_command(
+        OUTPUT ${DPCTL_PYAPI_RST_FILE}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${GENERATE_RST_OUTPUT_DIR}
+        COMMAND
+            "${Python_EXECUTABLE}"
+            "${CMAKE_CURRENT_BINARY_DIR}/generate_rst.py"
+            --dir "${GENERATE_RST_OUTPUT_DIR}"
+            --module "dpctl"
+        COMMENT "Generating RST files for Python API of dpctl"
+    )
+    add_custom_command(
+        OUTPUT ${SPHINX_INDEX_FILE}
+        COMMAND
+            ${SPHINX_EXECUTABLE} -b html
+            ${SPHINX_SOURCE}
+            ${SPHINX_OUTPUT_DIR}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/index.rst
+        MAIN_DEPENDENCY ${SPHINX_CONF_OUT} ${SPHINX_CONF_IN}
+        COMMENT "Generating Sphinx documentation"
+    )
+    # Target to generate Sphinx. Note that the order of the dependencies is
+    # important, we want the rst files to generate prior to sphinx build.
+    add_custom_target(
+        Sphinx
+        ALL
+        DEPENDS
+            ${DEPEND_ON_DOXYREST}
+            ${DPCTL_PYAPI_RST_FILE}
+            ${SPHINX_INDEX_FILE}
+    )
     # Create a conf.py by replacing variables inside @@ with the current values
     configure_file(${SPHINX_CONF_IN} ${SPHINX_CONF_OUT} @ONLY)
 endfunction()
@@ -185,6 +188,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 find_package(Git)
 find_package(Sphinx REQUIRED)
 find_package(Doxygen REQUIRED)
+find_package(Python REQUIRED)
 
 if (DPCTL_ENABLE_DOXYREST)
     find_package(Lua REQUIRED)
@@ -208,5 +212,12 @@ _setup_doxygen()
 if(DPCTL_ENABLE_DOXYREST)
     _setup_doxyrest()
 endif()
-_generate_rst()
 _setup_sphinx()
+
+set_property(
+    DIRECTORY
+    PROPERTY
+    ADDITIONAL_CLEAN_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/docfiles/dpctl"
+        "${CMAKE_CURRENT_SOURCE_DIR}/docfiles/libsyclinterface"
+)
