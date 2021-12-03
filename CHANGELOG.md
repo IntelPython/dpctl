@@ -6,10 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.4] - 12/03/2021
+
+### Fixed
+* Fix tests for nested context factories expecting for integration environment by @PokhodenkoSA in https://github.com/IntelPython/dpctl/pull/705
+
 ## [0.11.3] - 11/30/2021
 
 ### Fixed
-
 * Set the last byte in allocated char array to zero [cherry picked from #650] (#699)
 
 ## [0.11.2] - 11/29/2021
