@@ -14,11 +14,11 @@ Classes
     :widths: 25,50
 
     * - :class:`MemoryUSMDevice`
-      -     MemoryUSMDevice(nbytes, alignment=0, queue=None, copy=False)
+      - allocates nbytes of USM device memory.
     * - :class:`MemoryUSMHost`
-      -     MemoryUSMHost(nbytes, alignment=0, queue=None, copy=False)
+      - allocates nbytes of USM host memory.
     * - :class:`MemoryUSMShared`
-      -     MemoryUSMShared(nbytes, alignment=0, queue=None, copy=False)
+      - allocates nbytes of USM shared memory.
 
 
 Other Functions
@@ -28,7 +28,7 @@ Other Functions
     :widths: 25,50
 
     * - :func:`as_usm_memory()`
-      -     as_usm_memory(obj)
+      - Converts Python object with `__sycl_usm_array_interface__` property to one of :class:`.MemoryUSMShared`, :class:`.MemoryUSMDevice`, or :class:`.MemoryUSMHost` instances depending on the type of USM allocation they represent.
 
 
 
