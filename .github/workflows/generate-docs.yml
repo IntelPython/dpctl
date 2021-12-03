@@ -75,7 +75,7 @@ jobs:
           cmake .. -DDPCTL_USE_MULTIVERSION_TEMPLATE=ON \
                    -DDPCTL_ENABLE_DOXYREST=ON \
                    -DDoxyrest_DIR=`pwd`/doxyrest-2.1.2-linux-amd64
-          make Sphinx
+          make Sphinx || exit 1
           cd ..
           mv generated_docs/docs ~/docs
           git clean -dfx
@@ -90,7 +90,7 @@ jobs:
           echo `pwd`
           cd master
           git rm -rf *
-          mv ~/docs/* .
+          mv ~/docs/* . || exot 1
           git add .
           git config --global user.name 'github-actions[doc-deploy-bot]'
           git config --global user.email 'github-actions[doc-deploy-bot]@users.noreply.github.com'
