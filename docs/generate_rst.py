@@ -324,7 +324,7 @@ def _generate_module_summary_rst(module):
         [type]: [description]
     """
     rst_header = "".join([".. _", module, "_pyapi:"])
-    pagename = module + " API"
+    pagename = module
     indent = "    "
 
     def _safe_get_docs(obj, i=0):
