@@ -1,0 +1,50 @@
+.. _MemoryUSMHost_api:
+
+##########################
+dpctl.memory.MemoryUSMHost
+##########################
+
+.. currentmodule:: dpctl.memory
+
+.. autoclass:: dpctl.memory.MemoryUSMHost
+
+    .. rubric:: Attributes:
+
+    .. autoautosummary:: dpctl.memory.MemoryUSMHost
+        :attributes:
+
+    .. rubric:: Public methods:
+
+    .. autoautosummary:: dpctl.memory.MemoryUSMHost
+        :methods:
+
+    .. rubric:: Private methods:
+
+    .. autoautosummary:: dpctl.memory.MemoryUSMHost
+        :private_methods:
+
+Detail
+======
+
+Attributes
+----------
+
+.. autoattribute:: dpctl.memory.MemoryUSMHost._context
+.. autoattribute:: dpctl.memory.MemoryUSMHost._pointer
+.. autoattribute:: dpctl.memory.MemoryUSMHost._queue
+.. autoattribute:: dpctl.memory.MemoryUSMHost.nbytes
+.. autoattribute:: dpctl.memory.MemoryUSMHost.reference_obj
+.. autoattribute:: dpctl.memory.MemoryUSMHost.size
+.. autoattribute:: dpctl.memory.MemoryUSMHost.sycl_context
+.. autoattribute:: dpctl.memory.MemoryUSMHost.sycl_device
+.. autoattribute:: dpctl.memory.MemoryUSMHost.sycl_queue
+
+Public methods
+--------------
+
+.. autoattribute:: dpctl.memory.MemoryUSMHost.copy_from_device
+.. autoattribute:: dpctl.memory.MemoryUSMHost.copy_from_host
+.. autoattribute:: dpctl.memory.MemoryUSMHost.copy_to_host
+.. autoattribute:: dpctl.memory.MemoryUSMHost.get_usm_type
+.. autoattribute:: dpctl.memory.MemoryUSMHost.tobytes
+

@@ -1,0 +1,138 @@
+.. _dpctl_pyapi:
+
+#####
+dpctl
+#####
+
+.. currentmodule:: dpctl
+
+.. automodule:: dpctl
+
+Sub-modules
+-----------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :ref:`dpctl.memory_pyapi`
+      - 
+    * - :ref:`dpctl.program_pyapi`
+      - 
+    * - :ref:`dpctl.tensor_pyapi`
+      - 
+    * - :ref:`dpctl.utils_pyapi`
+      - 
+
+Classes
+-------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`SyclContext`
+      -     SyclContext(arg=None)
+    * - :class:`SyclDevice`
+      -     Python equivalent for cl::sycl::device class.
+    * - :class:`SyclEvent`
+      -     SyclEvent(arg=None)
+    * - :class:`SyclPlatform`
+      -         Python class representing ``cl::sycl::platform`` class.
+    * - :class:`SyclQueue`
+      -     SyclQueue(*args, **kwargs)
+    * - :class:`SyclTimer`
+      -     SyclTimer(host_timer=timeit.default_timer, time_scale=1)
+
+
+Queue Management Functions
+--------------------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`device_context()`
+      -     Yields a SYCL queue corresponding to the input queue object, device object,
+    * - :func:`get_current_backend()`
+      -     Returns the backend for the current queue as a `backend_type` enum.
+    * - :func:`get_current_device_type()`
+      -     Returns current device type as a `device_type` enum.
+    * - :func:`get_current_queue()`
+      -     Returns the currently activate SYCL queue as a new SyclQueue object.
+
+
+Device Selection Functions
+--------------------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`get_devices()`
+      -     Returns a list of :class:`dpctl.SyclDevice` instances selected based on
+    * - :func:`get_num_devices()`
+      -     A helper function to return the number of SYCL devices of a given
+    * - :func:`has_accelerator_devices()`
+      -     available.
+    * - :func:`has_cpu_devices()`
+      - 
+    * - :func:`has_gpu_devices()`
+      - 
+    * - :func:`has_host_device()`
+      - 
+    * - :func:`select_accelerator_device()`
+      - 
+    * - :func:`select_cpu_device()`
+      - 
+    * - :func:`select_default_device()`
+      - 
+    * - :func:`select_device_with_aspects()`
+      -     default selector score among devices that have all aspects in the
+    * - :func:`select_gpu_device()`
+      - 
+    * - :func:`select_host_device()`
+      - 
+
+
+Other Functions
+---------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`get_include()`
+      -     Return the directory that contains the dpctl *.h header files.
+    * - :func:`get_num_activated_queues()`
+      -         Returns the number of currently activated queues for this thread.
+    * - :func:`get_platforms()`
+      -     Returns a list of all available SYCL platforms on the system.
+    * - :func:`is_in_device_context()`
+      -         Checks if the control is inside a :func:`dpctl.device_context()` scope.
+    * - :func:`lsplatform()`
+      -     Prints out the list of available SYCL platforms, and optionally extra
+    * - :func:`set_global_queue()`
+      -         Sets the global queue to the SYCL queue specified explicitly,
+
+Enums
+-----
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`backend_type`
+      - 
+    * - :class:`device_type`
+      - 
+    * - :class:`event_status_type`
+      - An enumeration.
+
+Exceptions
+----------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`SyclKernelInvalidRangeError`
+      -     A SyclKernelInvalidRangeError is raised when the provided range has less
+    * - :class:`SyclKernelSubmitError`
+      -     A SyclKernelSubmitError exception is raised when the provided
+    * - :class:`SyclQueueCreationError`
+      -     A SyclQueueCreationError exception is raised when a :class:`.SyclQueue`
+

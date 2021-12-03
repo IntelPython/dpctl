@@ -1,0 +1,43 @@
+.. _SyclContext_api:
+
+#################
+dpctl.SyclContext
+#################
+
+.. currentmodule:: dpctl
+
+.. autoclass:: dpctl.SyclContext
+
+    .. rubric:: Attributes:
+
+    .. autoautosummary:: dpctl.SyclContext
+        :attributes:
+
+    .. rubric:: Public methods:
+
+    .. autoautosummary:: dpctl.SyclContext
+        :methods:
+
+    .. rubric:: Private methods:
+
+    .. autoautosummary:: dpctl.SyclContext
+        :private_methods:
+
+Detail
+======
+
+Attributes
+----------
+
+.. autoattribute:: dpctl.SyclContext.device_count
+
+Public methods
+--------------
+
+.. autoattribute:: dpctl.SyclContext.addressof_ref
+.. autoattribute:: dpctl.SyclContext.get_devices
+
+Private methods
+---------------
+
+.. autoattribute:: dpctl.SyclContext._get_capsule
