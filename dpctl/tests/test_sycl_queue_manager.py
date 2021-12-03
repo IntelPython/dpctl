@@ -160,9 +160,8 @@ def test_get_current_backend():
         dpctl.set_global_queue("cpu")
 
 
-def test_nested_context_factory_is_empty_list():
+def test_nested_context_factory_is_list():
     assert isinstance(dpctl.nested_context_factories, list)
-    assert not dpctl.nested_context_factories
 
 
 @contextlib.contextmanager
@@ -182,7 +181,7 @@ def test_register_nested_context_factory_context():
         assert factory in dpctl.nested_context_factories
 
     assert isinstance(dpctl.nested_context_factories, list)
-    assert not dpctl.nested_context_factories
+    assert factory not in dpctl.nested_context_factories
 
 
 @pytest.mark.skipif(not has_cpu(), reason="No OpenCL CPU queues available")
