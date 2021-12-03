@@ -90,7 +90,7 @@ jobs:
           echo `pwd`
           cd master
           git rm -rf *
-          mv ~/docs/* . || exot 1
+          mv ~/docs/* . || exit 1
           git add .
           git config --global user.name 'github-actions[doc-deploy-bot]'
           git config --global user.email 'github-actions[doc-deploy-bot]@users.noreply.github.com'
