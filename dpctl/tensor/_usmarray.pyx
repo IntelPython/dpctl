@@ -884,13 +884,13 @@ cdef class usm_ndarray:
         except (ValueError, IndexError) as e:
             raise e
         from ._copy_utils import (
-            copy_from_numpy_into,
-            copy_from_usm_ndarray_to_usm_ndarray,
+            _copy_from_numpy_into,
+            _copy_from_usm_ndarray_to_usm_ndarray,
         )
         if isinstance(val, usm_ndarray):
-            copy_from_usm_ndarray_to_usm_ndarray(Xv, val)
+            _copy_from_usm_ndarray_to_usm_ndarray(Xv, val)
         else:
-            copy_from_numpy_into(Xv, np.asarray(val))
+            _copy_from_numpy_into(Xv, np.asarray(val))
 
     def __sub__(first, other):
         "See comment in __add__"
