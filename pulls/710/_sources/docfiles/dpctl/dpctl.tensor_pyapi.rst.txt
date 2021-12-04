@@ -1,0 +1,46 @@
+.. _dpctl.tensor_pyapi:
+
+############
+dpctl.tensor
+############
+
+.. currentmodule:: dpctl.tensor
+
+.. automodule:: dpctl.tensor
+Classes
+-------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`usm_ndarray`
+      - See :class:`dpctl.memory.MemoryUSMShared` for allowed keyword arguments.
+
+
+Other Functions
+---------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`asarray()`
+      - Converts `obj` to :class:`dpctl.tensor.usm_ndarray`.
+    * - :func:`copy_to_numpy()`
+      - [FIXME]: <class 'function'> does not have a docstring
+    * - :func:`astype()`
+      - Returns a copy of the array, cast to a specified type.
+    * - :func:`copy()`
+      - Creates a copy of given instance of `usm_ndarray`.
+    * - :func:`empty()`
+      - dpctl.tensor.empty(shape, dtype="f8", order="C", device=None, usm_type="device", sycl_queue=None) Creates `usm_ndarray` from uninitialized USM allocation.
+    * - :func:`from_dlpack()`
+      - dpctl.tensor.from_dlpack(obj) Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python object `obj` that implements `__dlpack__` protocol. The output array is always a zero-copy view of the input.
+    * - :func:`copy_from_numpy()`
+      - [FIXME]: <class 'function'> has a docstring with no summary
+    * - :func:`reshape()`
+      - -> usm_ndarray Reshapes given usm_ndarray into new shape. Returns a view, if possible, a copy otherwise. Memory layout of the copy is controlled by order keyword.
+    * - :func:`copy_to_numpy()`
+      - [FIXME]: <class 'function'> does not have a docstring
+
+
+
