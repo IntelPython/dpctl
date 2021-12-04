@@ -747,13 +747,13 @@ def test_to_device():
 
 
 def test_astype():
-    X = dpt.usm_ndarray((5, 5), "i4")
+    X = dpt.empty((5, 5), dtype="i4")
     X[:] = np.full((5, 5), 7, dtype="i4")
     Y = dpt.astype(X, "c16", order="C")
     assert np.allclose(dpt.to_numpy(Y), np.full((5, 5), 7, dtype="c16"))
-    Y = dpt.astype(X, "f2", order="K")
-    assert np.allclose(dpt.to_numpy(Y), np.full((5, 5), 7, dtype="f2"))
-    Y = dpt.astype(X, "i4", order="K", copy=False)
+    Y = dpt.astype(X[::2, ::-1], "f2", order="K")
+    assert np.allclose(dpt.to_numpy(Y), np.full(Y.shape, 7, dtype="f2"))
+    Y = dpt.astype(X[::2, ::-1], "i4", order="K", copy=False)
     assert Y.usm_data is X.usm_data
 
 
