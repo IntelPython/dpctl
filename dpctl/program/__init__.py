@@ -15,10 +15,9 @@
 # limitations under the License.
 
 """
-    **Data Parallel Control Program**
-
-    `dpctl.program` module provides a way to create a SYCL kernel from either a
-    source string or SPIR-V binary file.
+    **Data Parallel Control Program** provides a way to create a SYCL kernel
+    from either an OpenCL program represented as a string or a SPIR-V binary
+    file.
 
 """
 from ._program import (
