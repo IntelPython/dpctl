@@ -233,9 +233,7 @@ def asarray(
     sycl_queue=None,
     order="K",
 ):
-    """asarray(obj, dtype=None, copy=None, order="K",
-               device=None, usm_type=None, sycl_queue=None)
-
+    """
     Converts `obj` to :class:`dpctl.tensor.usm_ndarray`.
 
     Args:
@@ -395,9 +393,7 @@ def asarray(
 def empty(
     sh, dtype="f8", order="C", device=None, usm_type="device", sycl_queue=None
 ):
-    """dpctl.tensor.empty(shape, dtype="f8", order="C", device=None,
-                          usm_type="device", sycl_queue=None)
-
+    """
     Creates `usm_ndarray` from uninitialized USM allocation.
 
     Args:

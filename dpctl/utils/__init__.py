@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """
-Collection of utilities.
+A collection of utility functions.
 """
 
 from ._compute_follows_data import get_execution_queue

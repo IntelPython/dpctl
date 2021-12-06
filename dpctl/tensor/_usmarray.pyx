@@ -100,14 +100,7 @@ cdef class InternalUSMArrayError(Exception):
 
 
 cdef class usm_ndarray:
-    """
-    usm_ndarray(
-        shape, dtype="|f8", strides=None, buffer='device',
-        offset=0, order='C',
-        buffer_ctor_kwargs=dict(),
-        array_namespace=None
-    )
-
+    """ usm_ndarray(shape, dtype="|f8", strides=None, buffer="device", offset=0, order="C", buffer_ctor_kwargs=dict(), array_namespace=None)
     See :class:`dpctl.memory.MemoryUSMShared` for allowed
     keyword arguments.
 
