@@ -8,8 +8,8 @@ dpctl.tensor Functions
 .. currentmodule:: dpctl.tensor
 
 
-Other Functions
----------------
+Array Construction
+------------------
 
 .. autofunction:: asarray
 .. autofunction:: asnumpy
@@ -18,5 +18,9 @@ Other Functions
 .. autofunction:: empty
 .. autofunction:: from_dlpack
 .. autofunction:: from_numpy
-.. autofunction:: reshape
 .. autofunction:: to_numpy
+
+Array Manipulation
+------------------
+
+.. autofunction:: reshape

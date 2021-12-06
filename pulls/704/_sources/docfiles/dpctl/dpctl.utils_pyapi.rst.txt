@@ -8,8 +8,8 @@ dpctl.utils
 
 .. automodule:: dpctl.utils
 
-Other Functions
----------------
+Functions
+---------
 
 .. list-table::
     :widths: 25,50

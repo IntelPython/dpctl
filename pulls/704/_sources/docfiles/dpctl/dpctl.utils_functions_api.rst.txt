@@ -8,7 +8,7 @@ dpctl.utils Functions
 .. currentmodule:: dpctl.utils
 
 
-Other Functions
----------------
+Functions
+---------
 
 .. autofunction:: get_execution_queue

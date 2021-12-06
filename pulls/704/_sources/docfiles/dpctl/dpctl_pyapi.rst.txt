@@ -23,13 +23,13 @@ Sub-modules
     :widths: 25,50
 
     * - :ref:`dpctl.memory_pyapi`
-      - **Data Parallel Control Memory** `dpctl.memory` provides Python objects for untyped USM memory container of bytes for each kind of USM pointers: shared pointers, device pointers and host pointers.
+      - **Data Parallel Control Memory** provides Python objects for untyped USM memory container of bytes for each kind of USM pointers: shared pointers, device pointers and host pointers.
     * - :ref:`dpctl.program_pyapi`
-      - **Data Parallel Control Program** `dpctl.program` module provides a way to create a SYCL kernel from either a source string or SPIR-V binary file.
+      - **Data Parallel Control Program** provides a way to create a SYCL kernel from either an OpenCL program represented as a string or a SPIR-V binary file.
     * - :ref:`dpctl.tensor_pyapi`
-      - **Data Parallel Tensor Collection** ``dpctl.tensor`` is an experimental collection of tensor implementations that will implement future Python data API (https://data-apis.github.io/array-api/latest/).
+      - **Data Parallel Tensor Collection** is a collection of tensor implementations that implement Python data API (https://data-apis.github.io/array-api/latest/) standard.
     * - :ref:`dpctl.utils_pyapi`
-      - Collection of utilities.
+      - A collection of utility functions.
 
 Classes
 -------
@@ -48,7 +48,7 @@ Classes
     :widths: 25,50
 
     * - :class:`SyclContext`
-      - Python class representing ``cl::sycl::context``. There are multiple ways to create a :class:`dpctl.SyclContext` object: - Invoking the constructor with no arguments creates a context using the default selector.
+      - A Python wrapper for the `sycl context`_ C++ class.
     * - :class:`SyclDevice`
       - Python equivalent for cl::sycl::device class.
     * - :class:`SyclEvent`

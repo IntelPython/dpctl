@@ -28,8 +28,8 @@ Classes
       - allocates nbytes of USM shared memory.
 
 
-Other Functions
----------------
+Functions
+---------
 
 .. list-table::
     :widths: 25,50
