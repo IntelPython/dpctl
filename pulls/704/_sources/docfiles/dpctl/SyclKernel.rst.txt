@@ -23,3 +23,5 @@ Public methods
 .. autoattribute:: dpctl.program.SyclKernel.get_function_name
 .. autoattribute:: dpctl.program.SyclKernel.get_num_args
 
+
+.. include:: ../urls.rst

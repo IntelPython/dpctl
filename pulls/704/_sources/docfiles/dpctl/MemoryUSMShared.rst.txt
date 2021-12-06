@@ -43,3 +43,5 @@ Public methods
 .. autoattribute:: dpctl.memory.MemoryUSMShared.get_usm_type
 .. autoattribute:: dpctl.memory.MemoryUSMShared.tobytes
 
+
+.. include:: ../urls.rst

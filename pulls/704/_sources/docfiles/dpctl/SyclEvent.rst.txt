@@ -47,3 +47,5 @@ Private methods
 ---------------
 
 .. autoattribute:: dpctl.SyclEvent._get_capsule
+
+.. include:: ../urls.rst

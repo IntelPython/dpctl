@@ -21,3 +21,5 @@ Attributes
 
 .. autoattribute:: dpctl.SyclTimer.dt
 
+
+.. include:: ../urls.rst

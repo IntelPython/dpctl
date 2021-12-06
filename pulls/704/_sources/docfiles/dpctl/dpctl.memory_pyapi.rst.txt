@@ -10,6 +10,13 @@ dpctl.memory
 Classes
 -------
 
+.. toctree::
+   :hidden:
+
+   MemoryUSMDevice
+   MemoryUSMHost
+   MemoryUSMShared
+
 .. list-table::
     :widths: 25,50
 

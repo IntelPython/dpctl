@@ -10,6 +10,12 @@ dpctl.tensor
 Classes
 -------
 
+.. toctree::
+   :hidden:
+
+   Device
+   usm_ndarray
+
 .. list-table::
     :widths: 25,50
 

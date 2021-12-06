@@ -33,3 +33,5 @@ Public methods
 
 .. autoattribute:: dpctl.tensor.Device.create_device
 
+
+.. include:: ../urls.rst
