@@ -15,10 +15,8 @@
 # limitations under the License.
 
 """
-    **Data Parallel Control Memory**
-
-    `dpctl.memory` provides Python objects for untyped USM memory
-    container of bytes for each kind of USM pointers: shared pointers,
+    **Data Parallel Control Memory** provides Python objects for untyped USM
+    memory container of bytes for each kind of USM pointers: shared pointers,
     device pointers and host pointers.
 
     Shared and host pointers are accessible from both host and a device,

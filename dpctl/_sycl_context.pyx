@@ -86,8 +86,9 @@ cdef class _SyclContext:
 cdef class SyclContext(_SyclContext):
     """
     SyclContext(arg=None)
-    Python class representing ``cl::sycl::context``. There are multiple
-    ways to create a :class:`dpctl.SyclContext` object:
+    A Python wrapper for the `sycl context`_ C++ class.
+
+    There are multiple ways to create a :class:`dpctl.SyclContext` object:
 
         - Invoking the constructor with no arguments creates a context using
           the default selector.
