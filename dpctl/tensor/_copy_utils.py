@@ -312,10 +312,9 @@ def copy(usm_ary, order="K"):
 
        - "C": C-contiguous memory layout
        - "F": Fortran-contiguous memory layout
-       - "A": Fortran-contiguous if the input array is
-              F-contiguous, and C-contiguous otherwise
-       - "K": match the layout of `usm_ary` as closely
-              as possible.
+       - "A": Fortran-contiguous if the input array is also Fortran-contiguous,
+         otherwise C-contiguous
+       - "K": match the layout of `usm_ary` as closely as possible.
 
     """
     if not isinstance(usm_ary, dpt.usm_ndarray):

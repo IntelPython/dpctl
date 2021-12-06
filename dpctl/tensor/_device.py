@@ -35,8 +35,6 @@ class Device:
     @classmethod
     def create_device(cls, dev):
         """
-        Device.create_device(device)
-
         Creates instance of Device from argument.
 
         Args:
