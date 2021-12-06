@@ -40,3 +40,5 @@ Exceptions
     * - :class:`SyclProgramCompilationError`
       - This exception is raised when a ``sycl::program`` could not be built from either a SPIR-V binary file or a string source.
 
+
+.. include:: ../urls.rst

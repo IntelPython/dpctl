@@ -136,3 +136,5 @@ Exceptions
     * - :class:`SyclQueueCreationError`
       - A SyclQueueCreationError exception is raised when a :class:`.SyclQueue` could not be created. :class:`.SyclQueue` creation can fail if the filter string is invalid, or the backend or device type values are not supported.
 
+
+.. include:: ../urls.rst
