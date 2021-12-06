@@ -23,8 +23,6 @@ dpctl.SyclEvent
     .. autoautosummary:: dpctl.SyclEvent
         :private_methods:
 
-Detail
-======
 
 Attributes
 ----------

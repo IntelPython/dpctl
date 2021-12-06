@@ -13,8 +13,6 @@ dpctl.SyclTimer
     .. autoautosummary:: dpctl.SyclTimer
         :attributes:
 
-Detail
-======
 
 Attributes
 ----------

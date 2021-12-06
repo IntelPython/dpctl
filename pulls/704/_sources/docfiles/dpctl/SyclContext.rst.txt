@@ -23,8 +23,6 @@ dpctl.SyclContext
     .. autoautosummary:: dpctl.SyclContext
         :private_methods:
 
-Detail
-======
 
 Attributes
 ----------

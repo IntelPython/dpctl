@@ -13,8 +13,6 @@ dpctl.program.SyclKernel
     .. autoautosummary:: dpctl.program.SyclKernel
         :methods:
 
-Detail
-======
 
 Public methods
 --------------

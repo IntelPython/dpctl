@@ -18,8 +18,6 @@ dpctl.memory.MemoryUSMHost
     .. autoautosummary:: dpctl.memory.MemoryUSMHost
         :methods:
 
-Detail
-======
 
 Attributes
 ----------

@@ -18,8 +18,6 @@ dpctl.SyclPlatform
     .. autoautosummary:: dpctl.SyclPlatform
         :methods:
 
-Detail
-======
 
 Attributes
 ----------

@@ -13,8 +13,6 @@ dpctl.program.SyclProgram
     .. autoautosummary:: dpctl.program.SyclProgram
         :methods:
 
-Detail
-======
 
 Public methods
 --------------

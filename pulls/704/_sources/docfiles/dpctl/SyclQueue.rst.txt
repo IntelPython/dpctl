@@ -23,8 +23,6 @@ dpctl.SyclQueue
     .. autoautosummary:: dpctl.SyclQueue
         :private_methods:
 
-Detail
-======
 
 Attributes
 ----------

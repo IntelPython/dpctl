@@ -23,8 +23,6 @@ dpctl.tensor.usm_ndarray
     .. autoautosummary:: dpctl.tensor.usm_ndarray
         :private_methods:
 
-Detail
-======
 
 Attributes
 ----------

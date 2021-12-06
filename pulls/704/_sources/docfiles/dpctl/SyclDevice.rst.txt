@@ -18,8 +18,6 @@ dpctl.SyclDevice
     .. autoautosummary:: dpctl.SyclDevice
         :methods:
 
-Detail
-======
 
 Attributes
 ----------
