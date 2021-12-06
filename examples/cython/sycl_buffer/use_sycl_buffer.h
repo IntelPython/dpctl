@@ -1,4 +1,4 @@
-#include "dpctl_sycl_types.h"
+#include "dpctl_sycl_interface.h"
 #include <CL/sycl.hpp>
 
 extern int c_columnwise_total(DPCTLSyclQueueRef q,

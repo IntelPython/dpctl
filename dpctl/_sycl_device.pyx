@@ -1136,3 +1136,12 @@ cdef api DPCTLSyclDeviceRef get_device_ref(SyclDevice dev):
     :class:`dpctl.SyclDevice` instance.
     """
     return dev.get_device_ref()
+
+
+cdef api SyclDevice make_SyclDevice(DPCTLSyclDeviceRef DRef):
+    """
+    C-API function to create :class:`dpctl.SyclDevice` instance
+    from the given opaque device reference.
+    """
+    cdef DPCTLSyclDeviceRef copied_DRef = DPCTLDevice_Copy(DRef)
+    return SyclDevice._create(copied_DRef)

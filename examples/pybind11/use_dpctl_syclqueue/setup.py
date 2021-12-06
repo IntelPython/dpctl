@@ -21,8 +21,8 @@ import dpctl
 
 exts = [
     Pybind11Extension(
-        "pybind11_example",
-        ["./pybind11_example.cpp"],
+        "use_queue_device_ext",
+        ["./_example.cpp"],
         include_dirs=[dpctl.get_include()],
         extra_compile_args=["-fPIC"],
         extra_link_args=["-fPIC"],

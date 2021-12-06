@@ -18,13 +18,12 @@ import ctypes
 import numbers
 
 import numpy as np
-import numpy.lib.stride_tricks as np_st
 import pytest
 
 import dpctl
 import dpctl.memory as dpm
 import dpctl.tensor as dpt
-from dpctl.tensor._usmarray import Device
+from dpctl.tensor import Device
 
 
 @pytest.mark.parametrize(
@@ -125,6 +124,7 @@ def test_properties(dt):
     assert isinstance(X.nbytes, numbers.Integral)
     assert isinstance(X.ndim, numbers.Integral)
     assert isinstance(X._pointer, numbers.Integral)
+    assert isinstance(X.device, Device)
 
 
 @pytest.mark.parametrize("func", [bool, float, int, complex])
@@ -198,49 +198,10 @@ def test_basic_slice(ind):
     assert S.dtype == X.dtype
 
 
-def _from_numpy(np_ary, device=None, usm_type="shared"):
-    if type(np_ary) is np.ndarray:
-        if np_ary.flags["FORC"]:
-            x = np_ary
-        else:
-            x = np.ascontiguous(np_ary)
-        R = dpt.usm_ndarray(
-            np_ary.shape,
-            dtype=np_ary.dtype,
-            buffer=usm_type,
-            buffer_ctor_kwargs={
-                "queue": Device.create_device(device).sycl_queue
-            },
-        )
-        R.usm_data.copy_from_host(x.reshape((-1)).view("|u1"))
-        return R
-    else:
-        raise ValueError("Expected numpy.ndarray, got {}".format(type(np_ary)))
-
-
-def _to_numpy(usm_ary):
-    if type(usm_ary) is dpt.usm_ndarray:
-        usm_buf = usm_ary.usm_data
-        s = usm_buf.nbytes
-        host_buf = usm_buf.copy_to_host().view(usm_ary.dtype)
-        usm_ary_itemsize = usm_ary.itemsize
-        R_offset = (
-            usm_ary.__sycl_usm_array_interface__["offset"] * usm_ary_itemsize
-        )
-        R = np.ndarray((s,), dtype="u1", buffer=host_buf)
-        R = R[R_offset:].view(usm_ary.dtype)
-        R_strides = (usm_ary_itemsize * si for si in usm_ary.strides)
-        return np_st.as_strided(R, shape=usm_ary.shape, strides=R_strides)
-    else:
-        raise ValueError(
-            "Expected dpctl.tensor.usm_ndarray, got {}".format(type(usm_ary))
-        )
-
-
 def test_slice_constructor_1d():
     Xh = np.arange(37, dtype="i4")
     default_device = dpctl.select_default_device()
-    Xusm = _from_numpy(Xh, device=default_device, usm_type="device")
+    Xusm = dpt.from_numpy(Xh, device=default_device, usm_type="device")
     for ind in [
         slice(1, None, 2),
         slice(0, None, 3),
@@ -252,14 +213,14 @@ def test_slice_constructor_1d():
         slice(None, None, -13),
     ]:
         assert np.array_equal(
-            _to_numpy(Xusm[ind]), Xh[ind]
+            dpt.asnumpy(Xusm[ind]), Xh[ind]
         ), "Failed for {}".format(ind)
 
 
 def test_slice_constructor_3d():
     Xh = np.empty((37, 24, 35), dtype="i4")
     default_device = dpctl.select_default_device()
-    Xusm = _from_numpy(Xh, device=default_device, usm_type="device")
+    Xusm = dpt.from_numpy(Xh, device=default_device, usm_type="device")
     for ind in [
         slice(1, None, 2),
         slice(0, None, 3),
@@ -272,7 +233,7 @@ def test_slice_constructor_3d():
         (slice(None, None, -2), Ellipsis, None, 15),
     ]:
         assert np.array_equal(
-            _to_numpy(Xusm[ind]), Xh[ind]
+            dpt.to_numpy(Xusm[ind]), Xh[ind]
         ), "Failed for {}".format(ind)
 
 
@@ -280,7 +241,7 @@ def test_slice_constructor_3d():
 def test_slice_suai(usm_type):
     Xh = np.arange(0, 10, dtype="u1")
     default_device = dpctl.select_default_device()
-    Xusm = _from_numpy(Xh, device=default_device, usm_type=usm_type)
+    Xusm = dpt.from_numpy(Xh, device=default_device, usm_type=usm_type)
     for ind in [slice(2, 3, None), slice(5, 7, None), slice(3, 9, None)]:
         assert np.array_equal(
             dpm.as_usm_memory(Xusm[ind]).copy_to_host(), Xh[ind]
@@ -786,13 +747,13 @@ def test_to_device():
 
 
 def test_astype():
-    X = dpt.usm_ndarray((5, 5), "i4")
+    X = dpt.empty((5, 5), dtype="i4")
     X[:] = np.full((5, 5), 7, dtype="i4")
     Y = dpt.astype(X, "c16", order="C")
     assert np.allclose(dpt.to_numpy(Y), np.full((5, 5), 7, dtype="c16"))
-    Y = dpt.astype(X, "f2", order="K")
-    assert np.allclose(dpt.to_numpy(Y), np.full((5, 5), 7, dtype="f2"))
-    Y = dpt.astype(X, "i4", order="K", copy=False)
+    Y = dpt.astype(X[::2, ::-1], "f2", order="K")
+    assert np.allclose(dpt.to_numpy(Y), np.full(Y.shape, 7, dtype="f2"))
+    Y = dpt.astype(X[::2, ::-1], "i4", order="K", copy=False)
     assert Y.usm_data is X.usm_data
 
 

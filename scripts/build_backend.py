@@ -213,8 +213,14 @@ def build_backend(
         shutil.rmtree(include_dir)
 
     shutil.copytree(
-        os.path.join(dpctl_dir, "libsyclinterface", "include"), include_dir
+        os.path.join(dpctl_dir, "libsyclinterface", "include"),
+        os.path.join(include_dir, "syclinterface"),
     )
+
+    for file in glob.glob(
+        os.path.join(dpctl_dir, "dpctl", "apis", "include", "*.h*")
+    ):
+        shutil.copy(file, include_dir)
 
 
 if __name__ == "__main__":

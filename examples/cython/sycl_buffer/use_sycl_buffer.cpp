@@ -28,7 +28,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "use_sycl_buffer.h"
-#include "dpctl_sycl_types.h"
+#include "dpctl_sycl_interface.h"
 #include <CL/sycl.hpp>
 #include <oneapi/mkl.hpp>
 
