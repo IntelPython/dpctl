@@ -236,6 +236,18 @@ def _generate_class_rst(cls):
         _write_empty_line(o)
 
     with io.StringIO() as output:
+        # Attributes
+        all_attributes = _get_filtered_names(cls, _is_class_property)
+        # Methods, separated into public/private
+        all_methods = _get_filtered_names(cls, _is_class_method)
+        all_public_methods = []
+        all_private_methods = []
+        for _name in all_methods:
+            if _name.startswith("_"):
+                all_private_methods.append(_name)
+            else:
+                all_public_methods.append(_name)
+
         _write_line(output, rst_header)
         _write_empty_line(output)
         _write_marquee(output, cls_qualname)
@@ -248,29 +260,38 @@ def _generate_class_rst(cls):
         _write_empty_line(output)
 
         indent = "    "
-
         attributes_header = "Attributes"
-        write_rubric(
-            output, indent, attributes_header + ":", "attributes", cls_qualname
-        )
-        public_methods_header = "Public methods"
-        write_rubric(
-            output, indent, public_methods_header + ":", "methods", cls_qualname
-        )
         private_methods_header = "Private methods"
-        write_rubric(
-            output,
-            indent,
-            private_methods_header + ":",
-            "private_methods",
-            cls_qualname,
-        )
+        public_methods_header = "Public methods"
+
+        if all_attributes:
+            write_rubric(
+                output,
+                indent,
+                attributes_header + ":",
+                "attributes",
+                cls_qualname,
+            )
+        if all_public_methods:
+            write_rubric(
+                output,
+                indent,
+                public_methods_header + ":",
+                "methods",
+                cls_qualname,
+            )
+        if all_private_methods:
+            write_rubric(
+                output,
+                indent,
+                private_methods_header + ":",
+                "private_methods",
+                cls_qualname,
+            )
 
         _write_underlined(output, "Detail", "=")
         _write_empty_line(output)
 
-        # Attributes
-        all_attributes = _get_filtered_names(cls, _is_class_property)
         if all_attributes:
             _write_underlined(output, attributes_header, "-")
             _write_empty_line(output)
@@ -281,23 +302,13 @@ def _generate_class_rst(cls):
                 )
             _write_empty_line(output)
 
-        # Methods, separated into public/private
-        all_methods = _get_filtered_names(cls, _is_class_method)
-        all_public_methods = []
-        all_private_methods = []
-        for _name in all_methods:
-            if _name.startswith("_"):
-                all_private_methods.append(_name)
-            else:
-                all_public_methods.append(_name)
-
         if all_public_methods:
             _write_underlined(output, public_methods_header, "-")
             _write_empty_line(output)
             for n in all_public_methods:
                 _write_line(
                     output,
-                    ".. autoattribute:: " + ".".join([cls_qualname, n]),
+                    ".. autofunction:: " + ".".join([cls_qualname, n]),
                 )
             _write_empty_line(output)
 
@@ -308,7 +319,7 @@ def _generate_class_rst(cls):
             for n in all_private_methods:
                 _write_line(
                     output,
-                    ".. autoattribute:: " + ".".join([cls_qualname, n]),
+                    ".. autofunction:: " + ".".join([cls_qualname, n]),
                 )
 
         return output.getvalue()
