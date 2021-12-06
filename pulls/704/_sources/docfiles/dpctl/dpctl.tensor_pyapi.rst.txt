@@ -40,7 +40,7 @@ Other Functions
     * - :func:`copy()`
       - Creates a copy of given instance of `usm_ndarray`.
     * - :func:`empty()`
-      - Creates `usm_ndarray` from uninitialized USM allocation.
+      - dpctl.tensor.empty(shape, dtype="f8", order="C", device=None, usm_type="device", sycl_queue=None) Creates `usm_ndarray` from uninitialized USM allocation.
     * - :func:`from_dlpack()`
       - dpctl.tensor.from_dlpack(obj) Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python object `obj` that implements `__dlpack__` protocol. The output array is always a zero-copy view of the input.
     * - :func:`from_numpy()`
