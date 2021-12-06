@@ -42,6 +42,13 @@ function_groups = {
     "dpctl._sycl_device_factory": "Device Selection Functions",
     "dpctl._device_selection": "Device Selection Functions",
     "dpctl._sycl_queue_manager": "Queue Management Functions",
+    "dpctl.tensor._ctors": "Array Construction",
+    "dpctl.tensor._copy_utils": "Array Construction",
+    "dpctl.tensor._dlpack": "Array Construction",
+    "dpctl.tensor._reshape": "Array Manipulation",
+    "dpctl.memory._memory": "Functions",
+    "dpctl.program._program": "Functions",
+    "dpctl.utils._compute_follows_data": "Functions",
 }
 
 
