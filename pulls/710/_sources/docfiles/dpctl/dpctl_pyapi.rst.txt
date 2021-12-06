@@ -30,7 +30,7 @@ Classes
     :widths: 25,50
 
     * - :class:`SyclContext`
-      - A Python wrapper for the `sycl context_` C++ class.
+      - A Python wrapper for the `sycl context`_ C++ class.
     * - :class:`SyclDevice`
       - Python equivalent for cl::sycl::device class.
     * - :class:`SyclEvent`
