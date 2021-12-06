@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.11.3+96.g97185b8 documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.12.0dev1+86.g46be65d1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.11.3+96.g97185b8
+                0.12.0dev1+86.g46be65d1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -97,6 +97,7 @@
 <span class="kn">import</span> <span class="nn">dpctl.memory</span> <span class="k">as</span> <span class="nn">dpm</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.utils</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._device</span> <span class="kn">import</span> <span class="n">normalize_queue_device</span>
 
 <span class="n">_empty_tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
 <span class="n">_host_set</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="kc">None</span><span class="p">])</span>
@@ -149,29 +150,6 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">n</span><span class="p">,)</span> <span class="o">+</span> <span class="n">dim</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">device</span>
 
 
-<span class="k">def</span> <span class="nf">_normalize_queue_device</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">_device</span><span class="o">.</span><span class="n">Device</span><span class="o">.</span><span class="n">create_device</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="n">sycl_queue</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.SyclQueue, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">q</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">_device</span><span class="o">.</span><span class="n">Device</span><span class="o">.</span><span class="n">create_device</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-        <span class="n">qq</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">q</span><span class="p">,</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">qq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;sycl_queue and device keywords can not be both specified&quot;</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="n">qq</span>
-
-
 <span class="k">def</span> <span class="nf">_asarray_from_usm_ndarray</span><span class="p">(</span>
     <span class="n">usm_ndary</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -192,7 +170,7 @@
         <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">(</span>
             <span class="p">[</span><span class="n">usm_ndary</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">copy_q</span> <span class="o">=</span> <span class="n">_normalize_queue_device</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+        <span class="n">copy_q</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">copy_q</span> <span class="o">=</span> <span class="n">usm_ndary</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="c1"># Conditions for zero copy:</span>
@@ -271,7 +249,7 @@
         <span class="n">usm_type</span> <span class="o">=</span> <span class="s2">&quot;device&quot;</span>
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">dtype</span>
-    <span class="n">copy_q</span> <span class="o">=</span> <span class="n">_normalize_queue_device</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="n">copy_q</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
     <span class="n">f_contig</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;F&quot;</span><span class="p">]</span>
     <span class="n">c_contig</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span>
     <span class="n">fc_contig</span> <span class="o">=</span> <span class="n">f_contig</span> <span class="ow">or</span> <span class="n">c_contig</span>
@@ -404,7 +382,9 @@
             <span class="p">)</span>
     <span class="c1"># 5. Normalize device/sycl_queue [keep it None if was None]</span>
     <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">sycl_queue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">_normalize_queue_device</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+        <span class="p">)</span>
 
     <span class="c1"># handle instance(obj, usm_ndarray)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
@@ -465,7 +445,7 @@
         <span class="n">_</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">devs</span> <span class="o">=</span> <span class="n">_array_info_sequence</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">devs</span> <span class="o">==</span> <span class="n">_host_set</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_asarray_from_numpy_ndarray</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">),</span>
                 <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
                 <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
                 <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
@@ -536,7 +516,7 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Expected usm_type to be of type str, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-    <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">_normalize_queue_device</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
         <span class="n">sh</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
@@ -572,7 +552,7 @@
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.11.3+96.g97185b8
+      v: 0.12.0dev1+86.g46be65d1
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
