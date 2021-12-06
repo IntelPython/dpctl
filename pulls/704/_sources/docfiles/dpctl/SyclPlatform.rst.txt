@@ -18,11 +18,6 @@ dpctl.SyclPlatform
     .. autoautosummary:: dpctl.SyclPlatform
         :methods:
 
-    .. rubric:: Private methods:
-
-    .. autoautosummary:: dpctl.SyclPlatform
-        :private_methods:
-
 Detail
 ======
 

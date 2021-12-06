@@ -18,11 +18,6 @@ dpctl.memory.MemoryUSMDevice
     .. autoautosummary:: dpctl.memory.MemoryUSMDevice
         :methods:
 
-    .. rubric:: Private methods:
-
-    .. autoautosummary:: dpctl.memory.MemoryUSMDevice
-        :private_methods:
-
 Detail
 ======
 

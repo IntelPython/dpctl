@@ -18,11 +18,6 @@ dpctl.memory.MemoryUSMHost
     .. autoautosummary:: dpctl.memory.MemoryUSMHost
         :methods:
 
-    .. rubric:: Private methods:
-
-    .. autoautosummary:: dpctl.memory.MemoryUSMHost
-        :private_methods:
-
 Detail
 ======
 

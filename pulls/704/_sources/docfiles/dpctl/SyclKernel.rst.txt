@@ -8,20 +8,10 @@ dpctl.program.SyclKernel
 
 .. autoclass:: dpctl.program.SyclKernel
 
-    .. rubric:: Attributes:
-
-    .. autoautosummary:: dpctl.program.SyclKernel
-        :attributes:
-
     .. rubric:: Public methods:
 
     .. autoautosummary:: dpctl.program.SyclKernel
         :methods:
-
-    .. rubric:: Private methods:
-
-    .. autoautosummary:: dpctl.program.SyclKernel
-        :private_methods:
 
 Detail
 ======

@@ -18,11 +18,6 @@ dpctl.SyclDevice
     .. autoautosummary:: dpctl.SyclDevice
         :methods:
 
-    .. rubric:: Private methods:
-
-    .. autoautosummary:: dpctl.SyclDevice
-        :private_methods:
-
 Detail
 ======
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.12.0dev1+83.ge907b159 documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.12.0dev1+91.g60e08794 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+83.ge907b159
+                0.12.0dev1+91.g60e08794
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -97,6 +97,7 @@
 
 <span class="kn">import</span> <span class="nn">dpctl.memory</span> <span class="k">as</span> <span class="nn">dpm</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._device</span> <span class="kn">import</span> <span class="n">normalize_queue_device</span>
 
 
 <span class="k">def</span> <span class="nf">contract_iter2</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">strides1</span><span class="p">,</span> <span class="n">strides2</span><span class="p">):</span>
@@ -142,7 +143,7 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">sh</span><span class="p">,</span> <span class="n">st1</span><span class="p">,</span> <span class="n">disp1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">disp2</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">has_memory_overlap</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_has_memory_overlap</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
     <span class="n">m1</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">as_usm_memory</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
     <span class="n">m2</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">as_usm_memory</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">m1</span><span class="o">.</span><span class="n">sycl_device</span> <span class="o">==</span> <span class="n">m2</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">:</span>
@@ -155,7 +156,7 @@
         <span class="k">return</span> <span class="kc">False</span>
 
 
-<span class="k">def</span> <span class="nf">copy_to_numpy</span><span class="p">(</span><span class="n">ary</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_copy_to_numpy</span><span class="p">(</span><span class="n">ary</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span>
     <span class="n">h</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">usm_data</span><span class="o">.</span><span class="n">copy_to_host</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
@@ -171,7 +172,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">copy_from_numpy</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_copy_from_numpy</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="s2">&quot;Copies numpy array `np_ary` into a new usm_ndarray&quot;</span>
     <span class="c1"># This may peform a copy to meet stated requirements</span>
     <span class="n">Xnp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">requirements</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">])</span>
@@ -189,7 +190,8 @@
     <span class="k">return</span> <span class="n">Xusm</span>
 
 
-<span class="k">def</span> <span class="nf">copy_from_numpy_into</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">np_ary</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_copy_from_numpy_into</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">np_ary</span><span class="p">):</span>
+    <span class="s2">&quot;Copies `np_ary` into `dst` of type :class:`dpctl.tensor.usm_ndarray&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected numpy.ndarray, got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">np_ary</span><span class="p">)))</span>
     <span class="n">src_ary</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dst</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">dst</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
@@ -198,6 +200,54 @@
         <span class="n">host_buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">src_ary</span><span class="p">[</span><span class="n">mi</span><span class="p">],</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="s2">&quot;u1&quot;</span><span class="p">)</span>
         <span class="n">usm_mem</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">as_usm_memory</span><span class="p">(</span><span class="n">dst</span><span class="p">[</span><span class="n">mi</span><span class="p">])</span>
         <span class="n">usm_mem</span><span class="o">.</span><span class="n">copy_from_host</span><span class="p">(</span><span class="n">host_buf</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="from_numpy"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.from_numpy">[docs]</a><span class="k">def</span> <span class="nf">from_numpy</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    from_numpy(arg, device=None, usm_type=&quot;device&quot;, sycl_queue=None)</span>
+
+<span class="sd">    Creates :class:`dpctl.tensor.usm_ndarray` from instance of</span>
+<span class="sd">    `numpy.ndarray`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        arg: An instance of `numpy.ndarray`</span>
+<span class="sd">        device: array API specification of device where the output array</span>
+<span class="sd">            is created.</span>
+<span class="sd">        sycl_queue: a :class:`dpctl.SyclQueue` used to create the output</span>
+<span class="sd">            array is created</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_copy_from_numpy</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="to_numpy"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.to_numpy">[docs]</a><span class="k">def</span> <span class="nf">to_numpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    to_numpy(usm_ary)</span>
+
+<span class="sd">    Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary`</span>
+<span class="sd">    into `numpy.ndarray` instance of the same shape and same data type.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        usm_ary: An instance of :class:`dpctl.tensor.usm_ndarray`</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        An instance of `numpy.ndarray` populated with content of `usm_ary`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_copy_to_numpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="asnumpy"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.asnumpy">[docs]</a><span class="k">def</span> <span class="nf">asnumpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    asnumpy(usm_ary)</span>
+
+<span class="sd">    Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary`</span>
+<span class="sd">    into `numpy.ndarray` instance of the same shape and same data type.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        usm_ary: An instance of :class:`dpctl.tensor.usm_ndarray`</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        An instance of `numpy.ndarray` populated with content of `usm_ary`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_copy_to_numpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">Dummy</span><span class="p">:</span>
@@ -216,9 +266,9 @@
         <span class="k">raise</span> <span class="ne">ValueError</span>
 
     <span class="c1"># check that memory regions do not overlap</span>
-    <span class="k">if</span> <span class="n">has_memory_overlap</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">):</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="n">copy_to_numpy</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-        <span class="n">copy_from_numpy_into</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">_has_memory_overlap</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">):</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">_copy_to_numpy</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+        <span class="n">_copy_from_numpy_into</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
         <span class="k">return</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">dst</span><span class="o">.</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">):</span>
@@ -262,10 +312,10 @@
         <span class="k">return</span>
 
     <span class="c1"># check that memory regions do not overlap</span>
-    <span class="k">if</span> <span class="n">has_memory_overlap</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">):</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="n">copy_to_numpy</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">_has_memory_overlap</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">):</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">_copy_to_numpy</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dst</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="n">copy_from_numpy_into</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
+        <span class="n">_copy_from_numpy_into</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
         <span class="k">return</span>
 
     <span class="c1"># simplify strides</span>
@@ -296,7 +346,7 @@
         <span class="n">mdst</span><span class="o">.</span><span class="n">copy_from_host</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="s2">&quot;u1&quot;</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">copy_from_usm_ndarray_to_usm_ndarray</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_copy_from_usm_ndarray_to_usm_ndarray</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span>
 
@@ -467,7 +517,7 @@
                 <span class="n">buffer</span><span class="o">=</span><span class="n">R</span><span class="o">.</span><span class="n">usm_data</span><span class="p">,</span>
                 <span class="n">strides</span><span class="o">=</span><span class="n">new_strides</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="n">copy_from_usm_ndarray_to_usm_ndarray</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">usm_ary</span><span class="p">)</span>
+        <span class="n">_copy_from_usm_ndarray_to_usm_ndarray</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">usm_ary</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">R</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">usm_ary</span></div>
@@ -498,7 +548,7 @@
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+83.ge907b159
+      v: 0.12.0dev1+91.g60e08794
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
