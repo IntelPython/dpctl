@@ -18,13 +18,6 @@ dpctl.memory.MemoryUSMShared
     .. autoautosummary:: dpctl.memory.MemoryUSMShared
         :methods:
 
-    .. rubric:: Private methods:
-
-    .. autoautosummary:: dpctl.memory.MemoryUSMShared
-        :private_methods:
-
-Detail
-======
 
 Attributes
 ----------
@@ -42,9 +35,11 @@ Attributes
 Public methods
 --------------
 
-.. autoattribute:: dpctl.memory.MemoryUSMShared.copy_from_device
-.. autoattribute:: dpctl.memory.MemoryUSMShared.copy_from_host
-.. autoattribute:: dpctl.memory.MemoryUSMShared.copy_to_host
-.. autoattribute:: dpctl.memory.MemoryUSMShared.get_usm_type
-.. autoattribute:: dpctl.memory.MemoryUSMShared.tobytes
+.. autofunction:: dpctl.memory.MemoryUSMShared.copy_from_device
+.. autofunction:: dpctl.memory.MemoryUSMShared.copy_from_host
+.. autofunction:: dpctl.memory.MemoryUSMShared.copy_to_host
+.. autofunction:: dpctl.memory.MemoryUSMShared.get_usm_type
+.. autofunction:: dpctl.memory.MemoryUSMShared.tobytes
 
+
+.. include:: ../urls.rst

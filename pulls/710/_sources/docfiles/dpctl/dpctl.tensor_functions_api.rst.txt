@@ -12,11 +12,11 @@ Other Functions
 ---------------
 
 .. autofunction:: asarray
-.. autofunction:: copy_to_numpy
+.. autofunction:: asnumpy
 .. autofunction:: astype
 .. autofunction:: copy
 .. autofunction:: empty
 .. autofunction:: from_dlpack
-.. autofunction:: copy_from_numpy
+.. autofunction:: from_numpy
 .. autofunction:: reshape
-.. autofunction:: copy_to_numpy
+.. autofunction:: to_numpy

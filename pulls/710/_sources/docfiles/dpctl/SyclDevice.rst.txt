@@ -18,13 +18,6 @@ dpctl.SyclDevice
     .. autoautosummary:: dpctl.SyclDevice
         :methods:
 
-    .. rubric:: Private methods:
-
-    .. autoautosummary:: dpctl.SyclDevice
-        :private_methods:
-
-Detail
-======
 
 Attributes
 ----------
@@ -85,8 +78,10 @@ Attributes
 Public methods
 --------------
 
-.. autoattribute:: dpctl.SyclDevice.addressof_ref
-.. autoattribute:: dpctl.SyclDevice.create_sub_devices
-.. autoattribute:: dpctl.SyclDevice.get_filter_string
-.. autoattribute:: dpctl.SyclDevice.print_device_info
+.. autofunction:: dpctl.SyclDevice.addressof_ref
+.. autofunction:: dpctl.SyclDevice.create_sub_devices
+.. autofunction:: dpctl.SyclDevice.get_filter_string
+.. autofunction:: dpctl.SyclDevice.print_device_info
 
+
+.. include:: ../urls.rst

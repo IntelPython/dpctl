@@ -18,13 +18,6 @@ dpctl.memory.MemoryUSMDevice
     .. autoautosummary:: dpctl.memory.MemoryUSMDevice
         :methods:
 
-    .. rubric:: Private methods:
-
-    .. autoautosummary:: dpctl.memory.MemoryUSMDevice
-        :private_methods:
-
-Detail
-======
 
 Attributes
 ----------
@@ -42,9 +35,11 @@ Attributes
 Public methods
 --------------
 
-.. autoattribute:: dpctl.memory.MemoryUSMDevice.copy_from_device
-.. autoattribute:: dpctl.memory.MemoryUSMDevice.copy_from_host
-.. autoattribute:: dpctl.memory.MemoryUSMDevice.copy_to_host
-.. autoattribute:: dpctl.memory.MemoryUSMDevice.get_usm_type
-.. autoattribute:: dpctl.memory.MemoryUSMDevice.tobytes
+.. autofunction:: dpctl.memory.MemoryUSMDevice.copy_from_device
+.. autofunction:: dpctl.memory.MemoryUSMDevice.copy_from_host
+.. autofunction:: dpctl.memory.MemoryUSMDevice.copy_to_host
+.. autofunction:: dpctl.memory.MemoryUSMDevice.get_usm_type
+.. autofunction:: dpctl.memory.MemoryUSMDevice.tobytes
 
+
+.. include:: ../urls.rst

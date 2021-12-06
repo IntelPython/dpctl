@@ -10,6 +10,12 @@ dpctl.program
 Classes
 -------
 
+.. toctree::
+   :hidden:
+
+   SyclKernel
+   SyclProgram
+
 .. list-table::
     :widths: 25,50
 

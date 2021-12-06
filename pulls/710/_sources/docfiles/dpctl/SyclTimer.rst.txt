@@ -13,21 +13,11 @@ dpctl.SyclTimer
     .. autoautosummary:: dpctl.SyclTimer
         :attributes:
 
-    .. rubric:: Public methods:
-
-    .. autoautosummary:: dpctl.SyclTimer
-        :methods:
-
-    .. rubric:: Private methods:
-
-    .. autoautosummary:: dpctl.SyclTimer
-        :private_methods:
-
-Detail
-======
 
 Attributes
 ----------
 
 .. autoattribute:: dpctl.SyclTimer.dt
 
+
+.. include:: ../urls.rst

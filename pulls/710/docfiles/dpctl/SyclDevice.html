@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.12.0dev1+87.gb38eae74 documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.12.0dev1+96.gb4389fef documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -20,7 +20,9 @@
         <script src="../../_static/target-highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="dpctl.SyclEvent" href="SyclEvent.html" />
+    <link rel="prev" title="dpctl.SyclContext" href="SyclContext.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -31,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+87.gb38eae74
+                0.12.0dev1+96.gb4389fef
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -46,8 +48,29 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi.html">dpctl</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dpctl_pyapi.html">dpctl</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#sub-modules">Sub-modules</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="dpctl_pyapi.html#classes">Classes</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="SyclContext.html">dpctl.SyclContext</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl.SyclDevice</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#attributes">Attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#public-methods">Public methods</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="SyclEvent.html">dpctl.SyclEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclPlatform.html">dpctl.SyclPlatform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclQueue.html">dpctl.SyclQueue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclTimer.html">dpctl.SyclTimer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#queue-management-functions">Queue Management Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#device-selection-functions">Device Selection Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#other-functions">Other Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#exceptions">Exceptions</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../libsyclinterface/index.html">libsyclinterface</a></li>
 </ul>
 
@@ -65,6 +88,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="dpctl_pyapi.html">dpctl</a> &raquo;</li>
       <li>dpctl.SyclDevice</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/docfiles/dpctl/SyclDevice.rst.txt" rel="nofollow"> View page source</a>
@@ -308,21 +332,10 @@ constructor. The filter string needs to conform to the
 </tr>
 </tbody>
 </table>
-<p class="rubric">Private methods:</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-</tbody>
-</table>
 </dd></dl>
 
-<section id="detail">
-<h2>Detail<a class="headerlink" href="#detail" title="Permalink to this headline"></a></h2>
 <section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h3>
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h2>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.backend">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">backend</span></span><a class="headerlink" href="#dpctl.SyclDevice.backend" title="Permalink to this definition"></a></dt>
@@ -766,35 +779,148 @@ sub-groups with respect to other sub-groups in the same work-group.</p>
 
 </section>
 <section id="public-methods">
-<h3>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline"></a></h3>
-<dl class="py attribute">
+<h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline"></a></h2>
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.addressof_ref">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'addressof_ref'</span> <span class="pre">of</span> <span class="pre">'dpctl._sycl_device.SyclDevice'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.SyclDevice.addressof_ref" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.addressof_ref" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclDeviceRef</span></code> pointer as a
+<code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclDeviceRef</span></code> object used to create
+this <a class="reference internal" href="#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> cast to a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="py attribute">
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.create_sub_devices">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">create_sub_devices</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'create_sub_devices'</span> <span class="pre">of</span> <span class="pre">'dpctl._sycl_device.SyclDevice'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.SyclDevice.create_sub_devices" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">create_sub_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">parition_spec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.create_sub_devices" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a list of sub-devices by partitioning a root device based on the
+provided partion specifier.</p>
+<p>A partition specifier must be provided using a “partition”
+keyword argument. Possible values for the specifier are: an int, a
+string specifying the affinity domain, or a collection of ints.</p>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
 
-<dl class="py attribute">
+<span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="n">cpu_count</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">max_compute_units</span>
+<span class="n">sub_devs</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="n">cpu_count</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">sub_devs</span><span class="p">:</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">print_device_info</span><span class="p">()</span>
+
+<span class="c1">#Create sub-devices partitioning by affinity.</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">sd</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="s2">&quot;numa&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> sub-devices were created with respective &quot;</span>
+        <span class="s2">&quot;#EUs being </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">sd</span><span class="p">),</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">max_compute_units</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">sd</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Device partitioning by affinity was not successful.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>partition</strong> – <p>Specification to partition the device as follows:</p>
+<ul class="simple">
+<li><p>Specifying an int (<cite>count</cite>). The returned list contains as
+many sub-devices as can be created such that each sub-device
+contains <cite>count</cite> compute units. If the device’s total number
+of compute units is not evenly divided by <cite>count</cite>, then the
+remaining compute units are not included in any of the
+sub-devices.</p></li>
+<li><p>Specifying an affinity domain as a string. The supported
+values are: <cite>numa</cite>, <cite>L4_cache</cite>, <cite>L3_cache</cite>, <cite>L2_cache</cite>,
+<cite>L1_cache</cite>, <cite>next_partitionable</cite>.</p></li>
+<li><p>Specifying a collection of int values. For each non-zero value
+<cite>M</cite> in the collection, a sub-device with <cite>M</cite> compute units is
+created.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of <a class="reference internal" href="#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> objects</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – If the “partition” keyword arg is not specified or the
+    affinity domain string is not legal or is not one of the
+    three supported options.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.get_filter_string">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">get_filter_string</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'get_filter_string'</span> <span class="pre">of</span> <span class="pre">'dpctl._sycl_device.SyclDevice'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.SyclDevice.get_filter_string" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">get_filter_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_device_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_filter_string" title="Permalink to this definition"></a></dt>
+<dd><p>For a parent device, returns a filter selector string
+that includes backend or device type based on the value
+of the given keyword arguments.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>include_backend</strong> (<em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+A boolean flag indicating if the backend should be included in
+the filter string.</p></li>
+<li><p><strong>include_device_type</strong> (<em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+A boolean flag indicating if the device type should be included
+in the filter string.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Python string representing a filter selector string.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the device is a sub-device.</p></li>
+<li><p><strong>ValueError</strong> – If no match for the device was found in the vector
+    returned by <code class="docutils literal notranslate"><span class="pre">sycl::device::get_devices()</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
 
-<dl class="py attribute">
+<span class="c1"># Create a GPU SyclDevice</span>
+<span class="n">gpu_dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;gpu:0&quot;</span><span class="p">)</span>
+<span class="c1"># filter string should be &quot;gpu:0&quot;</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">gpu_dev</span><span class="o">.</span><span class="n">get_filter_string</span><span class="p">(</span><span class="n">use_backend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">gpu</span> <span class="n">_dev</span> <span class="o">==</span> <span class="n">dev</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.print_device_info">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">print_device_info</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'print_device_info'</span> <span class="pre">of</span> <span class="pre">'dpctl._sycl_device.SyclDevice'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.SyclDevice.print_device_info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">print_device_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.print_device_info" title="Permalink to this definition"></a></dt>
+<dd><p>Print information about the SYCL device.</p>
+</dd></dl>
 
-</section>
 </section>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="SyclContext.html" class="btn btn-neutral float-left" title="dpctl.SyclContext" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="SyclEvent.html" class="btn btn-neutral float-right" title="dpctl.SyclEvent" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
@@ -817,7 +943,7 @@ sub-groups with respect to other sub-groups in the same work-group.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+87.gb38eae74
+      v: 0.12.0dev1+96.gb4389fef
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclEvent &mdash; Data-parallel Control (dpctl) 0.12.0dev1+87.gb38eae74 documentation</title>
+  <title>dpctl.SyclEvent &mdash; Data-parallel Control (dpctl) 0.12.0dev1+96.gb4389fef documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -20,7 +20,9 @@
         <script src="../../_static/target-highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="dpctl.SyclPlatform" href="SyclPlatform.html" />
+    <link rel="prev" title="dpctl.SyclDevice" href="SyclDevice.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -31,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+87.gb38eae74
+                0.12.0dev1+96.gb4389fef
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -46,8 +48,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi.html">dpctl</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dpctl_pyapi.html">dpctl</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#sub-modules">Sub-modules</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="dpctl_pyapi.html#classes">Classes</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="SyclContext.html">dpctl.SyclContext</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclDevice.html">dpctl.SyclDevice</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl.SyclEvent</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#attributes">Attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#public-methods">Public methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#private-methods">Private methods</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="SyclPlatform.html">dpctl.SyclPlatform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclQueue.html">dpctl.SyclQueue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclTimer.html">dpctl.SyclTimer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#queue-management-functions">Queue Management Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#device-selection-functions">Device Selection Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#other-functions">Other Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#exceptions">Exceptions</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../libsyclinterface/index.html">libsyclinterface</a></li>
 </ul>
 
@@ -65,6 +89,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="dpctl_pyapi.html">dpctl</a> &raquo;</li>
       <li>dpctl.SyclEvent</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/docfiles/dpctl/SyclEvent.rst.txt" rel="nofollow"> View page source</a>
@@ -180,10 +205,8 @@ named <code class="docutils literal notranslate"><span class="pre">PyCapsule</sp
 </table>
 </dd></dl>
 
-<section id="detail">
-<h2>Detail<a class="headerlink" href="#detail" title="Permalink to this headline"></a></h2>
 <section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h3>
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h2>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclEvent.backend">
 <span class="sig-prename descclassname"><span class="pre">SyclEvent.</span></span><span class="sig-name descname"><span class="pre">backend</span></span><a class="headerlink" href="#dpctl.SyclEvent.backend" title="Permalink to this definition"></a></dt>
@@ -228,43 +251,76 @@ when <code class="docutils literal notranslate"><span class="pre">cl::sycl::comm
 
 </section>
 <section id="public-methods">
-<h3>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline"></a></h3>
-<dl class="py attribute">
+<h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline"></a></h2>
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclEvent.addressof_ref">
-<span class="sig-prename descclassname"><span class="pre">SyclEvent.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'addressof_ref'</span> <span class="pre">of</span> <span class="pre">'dpctl._sycl_event.SyclEvent'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.SyclEvent.addressof_ref" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclEvent.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent.addressof_ref" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the address of the C API <cite>DPCTLSyclEventRef</cite> pointer as
+a size_t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The address of the <cite>DPCTLSyclEventRef</cite> object used to create this
+<cite>SyclEvent</cite> cast to a size_t.</p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="py attribute">
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclEvent.get_wait_list">
-<span class="sig-prename descclassname"><span class="pre">SyclEvent.</span></span><span class="sig-name descname"><span class="pre">get_wait_list</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'get_wait_list'</span> <span class="pre">of</span> <span class="pre">'dpctl._sycl_event.SyclEvent'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.SyclEvent.get_wait_list" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclEvent.</span></span><span class="sig-name descname"><span class="pre">get_wait_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent.get_wait_list" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the list of <a class="reference internal" href="#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a> objects that depend
+on this event.</p>
+</dd></dl>
 
-<dl class="py attribute">
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclEvent.wait">
-<span class="sig-prename descclassname"><span class="pre">SyclEvent.</span></span><span class="sig-name descname"><span class="pre">wait</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'wait'</span> <span class="pre">of</span> <span class="pre">'dpctl._sycl_event.SyclEvent'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.SyclEvent.wait" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclEvent.</span></span><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent.wait" title="Permalink to this definition"></a></dt>
+<dd><p>Synchronously wait for completion of this event.</p>
+</dd></dl>
 
-<dl class="py attribute">
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclEvent.wait_for">
-<span class="sig-prename descclassname"><span class="pre">SyclEvent.</span></span><span class="sig-name descname"><span class="pre">wait_for</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">wait_for&gt;</span></em><a class="headerlink" href="#dpctl.SyclEvent.wait_for" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclEvent.</span></span><span class="sig-name descname"><span class="pre">wait_for</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent.wait_for" title="Permalink to this definition"></a></dt>
+<dd><p>Waits for a given event or a sequence of events.</p>
+</dd></dl>
 
 </section>
 <section id="private-methods">
-<h3>Private methods<a class="headerlink" href="#private-methods" title="Permalink to this headline"></a></h3>
-<dl class="py attribute">
+<h2>Private methods<a class="headerlink" href="#private-methods" title="Permalink to this headline"></a></h2>
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclEvent._get_capsule">
-<span class="sig-prename descclassname"><span class="pre">SyclEvent.</span></span><span class="sig-name descname"><span class="pre">_get_capsule</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'_get_capsule'</span> <span class="pre">of</span> <span class="pre">'dpctl._sycl_event.SyclEvent'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.SyclEvent._get_capsule" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclEvent.</span></span><span class="sig-name descname"><span class="pre">_get_capsule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent._get_capsule" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a copy of the underlying <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code> pointer as a void
+pointer inside a named <code class="docutils literal notranslate"><span class="pre">PyCapsule</span></code> that has the name
+<strong>SyclEventRef</strong>. The ownership of the pointer inside the capsule is
+passed to the caller, and pointer is deleted when the capsule goes out
+of scope.
+:returns: A capsule object storing a copy of the</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code> pointer belonging to thus
+<a class="reference internal" href="#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a> instance.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pycapsule</span></code></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the <code class="docutils literal notranslate"><span class="pre">DPCTLEvent_Copy</span></code> fails to copy the
+    <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code> pointer.</p>
+</dd>
+</dl>
+</dd></dl>
 
-</section>
 </section>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="SyclDevice.html" class="btn btn-neutral float-left" title="dpctl.SyclDevice" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="SyclPlatform.html" class="btn btn-neutral float-right" title="dpctl.SyclPlatform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
@@ -287,7 +343,7 @@ when <code class="docutils literal notranslate"><span class="pre">cl::sycl::comm
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+87.gb38eae74
+      v: 0.12.0dev1+96.gb4389fef
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

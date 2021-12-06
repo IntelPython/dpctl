@@ -10,9 +10,17 @@ dpctl.tensor
 Classes
 -------
 
+.. toctree::
+   :hidden:
+
+   Device
+   usm_ndarray
+
 .. list-table::
     :widths: 25,50
 
+    * - :class:`Device`
+      - Class representing Data-API concept of device.
     * - :class:`usm_ndarray`
       - See :class:`dpctl.memory.MemoryUSMShared` for allowed keyword arguments.
 
@@ -25,8 +33,8 @@ Other Functions
 
     * - :func:`asarray()`
       - Converts `obj` to :class:`dpctl.tensor.usm_ndarray`.
-    * - :func:`copy_to_numpy()`
-      - [FIXME]: <class 'function'> does not have a docstring
+    * - :func:`asnumpy()`
+      - Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary` into `numpy.ndarray` instance of the same shape and same data type.
     * - :func:`astype()`
       - Returns a copy of the array, cast to a specified type.
     * - :func:`copy()`
@@ -35,12 +43,12 @@ Other Functions
       - dpctl.tensor.empty(shape, dtype="f8", order="C", device=None, usm_type="device", sycl_queue=None) Creates `usm_ndarray` from uninitialized USM allocation.
     * - :func:`from_dlpack()`
       - dpctl.tensor.from_dlpack(obj) Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python object `obj` that implements `__dlpack__` protocol. The output array is always a zero-copy view of the input.
-    * - :func:`copy_from_numpy()`
-      - [FIXME]: <class 'function'> has a docstring with no summary
+    * - :func:`from_numpy()`
+      - Creates :class:`dpctl.tensor.usm_ndarray` from instance of `numpy.ndarray`.
     * - :func:`reshape()`
       - -> usm_ndarray Reshapes given usm_ndarray into new shape. Returns a view, if possible, a copy otherwise. Memory layout of the copy is controlled by order keyword.
-    * - :func:`copy_to_numpy()`
-      - [FIXME]: <class 'function'> does not have a docstring
+    * - :func:`to_numpy()`
+      - Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary` into `numpy.ndarray` instance of the same shape and same data type.
 
 
 

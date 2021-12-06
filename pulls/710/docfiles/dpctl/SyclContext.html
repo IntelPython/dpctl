@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclContext &mdash; Data-parallel Control (dpctl) 0.12.0dev1+87.gb38eae74 documentation</title>
+  <title>dpctl.SyclContext &mdash; Data-parallel Control (dpctl) 0.12.0dev1+96.gb4389fef documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -20,7 +20,9 @@
         <script src="../../_static/target-highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="dpctl.SyclDevice" href="SyclDevice.html" />
+    <link rel="prev" title="dpctl.utils" href="dpctl.utils_pyapi.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -31,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+87.gb38eae74
+                0.12.0dev1+96.gb4389fef
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -46,8 +48,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi.html">dpctl</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dpctl_pyapi.html">dpctl</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#sub-modules">Sub-modules</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="dpctl_pyapi.html#classes">Classes</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl.SyclContext</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#attributes">Attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#public-methods">Public methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#private-methods">Private methods</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="SyclDevice.html">dpctl.SyclDevice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclEvent.html">dpctl.SyclEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclPlatform.html">dpctl.SyclPlatform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclQueue.html">dpctl.SyclQueue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyclTimer.html">dpctl.SyclTimer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#queue-management-functions">Queue Management Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#device-selection-functions">Device Selection Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#other-functions">Other Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#exceptions">Exceptions</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../libsyclinterface/index.html">libsyclinterface</a></li>
 </ul>
 
@@ -65,6 +89,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="dpctl_pyapi.html">dpctl</a> &raquo;</li>
       <li>dpctl.SyclContext</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/docfiles/dpctl/SyclContext.rst.txt" rel="nofollow"> View page source</a>
@@ -80,7 +105,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.SyclContext">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclContext" title="Permalink to this definition"></a></dt>
-<dd><p>A Python wrapper for the <a href="#id1"><span class="problematic" id="id2">`sycl context`_</span></a> C++ class.</p>
+<dd><p>A Python wrapper for the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/context.html">sycl context</a> C++ class.</p>
 <p>There are multiple ways to create a <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> object:</p>
 <blockquote>
 <div><ul class="simple">
@@ -219,10 +244,8 @@ named <code class="docutils literal notranslate"><span class="pre">PyCapsule</sp
 </table>
 </dd></dl>
 
-<section id="detail">
-<h2>Detail<a class="headerlink" href="#detail" title="Permalink to this headline"></a></h2>
 <section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h3>
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h2>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclContext.device_count">
 <span class="sig-prename descclassname"><span class="pre">SyclContext.</span></span><span class="sig-name descname"><span class="pre">device_count</span></span><a class="headerlink" href="#dpctl.SyclContext.device_count" title="Permalink to this definition"></a></dt>
@@ -244,33 +267,81 @@ named <code class="docutils literal notranslate"><span class="pre">PyCapsule</sp
 
 </section>
 <section id="public-methods">
-<h3>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline"></a></h3>
-<dl class="py attribute">
+<h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline"></a></h2>
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclContext.addressof_ref">
-<span class="sig-prename descclassname"><span class="pre">SyclContext.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'addressof_ref'</span> <span class="pre">of</span> <span class="pre">'dpctl._sycl_context.SyclContext'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.SyclContext.addressof_ref" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclContext.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclContext.addressof_ref" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclContextRef</span></code> pointer as a
+<code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclContextRef</span></code> object
+used to create this <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> cast to a
+<code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="py attribute">
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclContext.get_devices">
-<span class="sig-prename descclassname"><span class="pre">SyclContext.</span></span><span class="sig-name descname"><span class="pre">get_devices</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'get_devices'</span> <span class="pre">of</span> <span class="pre">'dpctl._sycl_context.SyclContext'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.SyclContext.get_devices" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclContext.</span></span><span class="sig-name descname"><span class="pre">get_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclContext.get_devices" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the list of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> objects associated with
+<a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> objects
+that belong to this context.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the <code class="docutils literal notranslate"><span class="pre">DPCTLContext_GetDevices</span></code> call returned
+    <code class="docutils literal notranslate"><span class="pre">NULL</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">DPCTLDeviceVectorRef</span></code> object.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="private-methods">
-<h3>Private methods<a class="headerlink" href="#private-methods" title="Permalink to this headline"></a></h3>
-<dl class="py attribute">
+<h2>Private methods<a class="headerlink" href="#private-methods" title="Permalink to this headline"></a></h2>
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclContext._get_capsule">
-<span class="sig-prename descclassname"><span class="pre">SyclContext.</span></span><span class="sig-name descname"><span class="pre">_get_capsule</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'_get_capsule'</span> <span class="pre">of</span> <span class="pre">'dpctl._sycl_context.SyclContext'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.SyclContext._get_capsule" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclContext.</span></span><span class="sig-name descname"><span class="pre">_get_capsule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclContext._get_capsule" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a copy of the underlying <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> pointer as a void
+pointer inside a named <code class="docutils literal notranslate"><span class="pre">PyCapsule</span></code> that has the name
+<strong>SyclContextRef</strong>. The ownership of the pointer inside the capsule is
+passed to the caller, and pointer is deleted when the capsule goes out
+of scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A capsule object storing a copy of the
+<code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> pointer belonging to thus
+<a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> instance.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pycapsule</span></code></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the <code class="docutils literal notranslate"><span class="pre">DPCTLContext_Copy</span></code> fails to copy the
+    <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> pointer.</p>
+</dd>
+</dl>
+</dd></dl>
 
-</section>
 </section>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dpctl.utils_pyapi.html" class="btn btn-neutral float-left" title="dpctl.utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="SyclDevice.html" class="btn btn-neutral float-right" title="dpctl.SyclDevice" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
@@ -293,7 +364,7 @@ named <code class="docutils literal notranslate"><span class="pre">PyCapsule</sp
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+87.gb38eae74
+      v: 0.12.0dev1+96.gb4389fef
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

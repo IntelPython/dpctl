@@ -23,8 +23,6 @@ dpctl.tensor.usm_ndarray
     .. autoautosummary:: dpctl.tensor.usm_ndarray
         :private_methods:
 
-Detail
-======
 
 Attributes
 ----------
@@ -51,9 +49,11 @@ Attributes
 Public methods
 --------------
 
-.. autoattribute:: dpctl.tensor.usm_ndarray.to_device
+.. autofunction:: dpctl.tensor.usm_ndarray.to_device
 
 Private methods
 ---------------
 
-.. autoattribute:: dpctl.tensor.usm_ndarray._set_namespace
+.. autofunction:: dpctl.tensor.usm_ndarray._set_namespace
+
+.. include:: ../urls.rst

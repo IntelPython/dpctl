@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.program.SyclKernel &mdash; Data-parallel Control (dpctl) 0.12.0dev1+87.gb38eae74 documentation</title>
+  <title>dpctl.program.SyclKernel &mdash; Data-parallel Control (dpctl) 0.12.0dev1+96.gb4389fef documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -20,7 +20,9 @@
         <script src="../../_static/target-highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="dpctl.program.SyclProgram" href="SyclProgram.html" />
+    <link rel="prev" title="dpctl.program" href="dpctl.program_pyapi.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -31,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+87.gb38eae74
+                0.12.0dev1+96.gb4389fef
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -46,8 +48,28 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="dpctl_pyapi.html">dpctl</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dpctl_pyapi.html">dpctl</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dpctl_pyapi.html#sub-modules">Sub-modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dpctl.memory_pyapi.html">dpctl.memory</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="dpctl.program_pyapi.html">dpctl.program</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="dpctl.program_pyapi.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.program_pyapi.html#other-functions">Other Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.program_pyapi.html#exceptions">Exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.tensor_pyapi.html">dpctl.tensor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.utils_pyapi.html">dpctl.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#queue-management-functions">Queue Management Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#device-selection-functions">Device Selection Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#other-functions">Other Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#exceptions">Exceptions</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../libsyclinterface/index.html">libsyclinterface</a></li>
 </ul>
 
@@ -65,6 +87,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="dpctl_pyapi.html">dpctl</a> &raquo;</li>
+          <li><a href="dpctl.program_pyapi.html">dpctl.program</a> &raquo;</li>
       <li>dpctl.program.SyclKernel</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/docfiles/dpctl/SyclKernel.rst.txt" rel="nofollow"> View page source</a>
@@ -80,16 +104,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.program.SyclKernel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">SyclKernel</span></span><a class="headerlink" href="#dpctl.program.SyclKernel" title="Permalink to this definition"></a></dt>
-<dd><p class="rubric">Attributes:</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-</tbody>
-</table>
-<p class="rubric">Public methods:</p>
+<dd><p class="rubric">Public methods:</p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -107,44 +122,45 @@
 </tr>
 </tbody>
 </table>
-<p class="rubric">Private methods:</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-</tbody>
-</table>
 </dd></dl>
 
-<section id="detail">
-<h2>Detail<a class="headerlink" href="#detail" title="Permalink to this headline"></a></h2>
 <section id="public-methods">
-<h3>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline"></a></h3>
-<dl class="py attribute">
+<h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline"></a></h2>
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.program.SyclKernel.addressof_ref">
-<span class="sig-prename descclassname"><span class="pre">SyclKernel.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'addressof_ref'</span> <span class="pre">of</span> <span class="pre">'dpctl.program._program.SyclKernel'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.program.SyclKernel.addressof_ref" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.program.SyclKernel.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclKernel.addressof_ref" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the address of the C API <code class="docutils literal notranslate"><span class="pre">DPCTLSyclKernelRef</span></code> pointer
+as a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclKernelRef</span></code> pointer used to create
+this <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclKernel</span></code> object cast to a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="py attribute">
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.program.SyclKernel.get_function_name">
-<span class="sig-prename descclassname"><span class="pre">SyclKernel.</span></span><span class="sig-name descname"><span class="pre">get_function_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'get_function_name'</span> <span class="pre">of</span> <span class="pre">'dpctl.program._program.SyclKernel'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.program.SyclKernel.get_function_name" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.program.SyclKernel.</span></span><span class="sig-name descname"><span class="pre">get_function_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclKernel.get_function_name" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the name of the <code class="docutils literal notranslate"><span class="pre">sycl::kernel</span></code> function.</p>
+</dd></dl>
 
-<dl class="py attribute">
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.program.SyclKernel.get_num_args">
-<span class="sig-prename descclassname"><span class="pre">SyclKernel.</span></span><span class="sig-name descname"><span class="pre">get_num_args</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'get_num_args'</span> <span class="pre">of</span> <span class="pre">'dpctl.program._program.SyclKernel'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.program.SyclKernel.get_num_args" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.program.SyclKernel.</span></span><span class="sig-name descname"><span class="pre">get_num_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclKernel.get_num_args" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the number of arguments for this kernel function.</p>
+</dd></dl>
 
-</section>
 </section>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dpctl.program_pyapi.html" class="btn btn-neutral float-left" title="dpctl.program" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="SyclProgram.html" class="btn btn-neutral float-right" title="dpctl.program.SyclProgram" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
@@ -167,7 +183,7 @@
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+87.gb38eae74
+      v: 0.12.0dev1+96.gb4389fef
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
