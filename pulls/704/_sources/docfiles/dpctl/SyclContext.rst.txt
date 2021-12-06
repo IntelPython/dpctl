@@ -32,12 +32,12 @@ Attributes
 Public methods
 --------------
 
-.. autoattribute:: dpctl.SyclContext.addressof_ref
-.. autoattribute:: dpctl.SyclContext.get_devices
+.. autofunction:: dpctl.SyclContext.addressof_ref
+.. autofunction:: dpctl.SyclContext.get_devices
 
 Private methods
 ---------------
 
-.. autoattribute:: dpctl.SyclContext._get_capsule
+.. autofunction:: dpctl.SyclContext._get_capsule
 
 .. include:: ../urls.rst

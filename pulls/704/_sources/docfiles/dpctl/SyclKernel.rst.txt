@@ -17,9 +17,9 @@ dpctl.program.SyclKernel
 Public methods
 --------------
 
-.. autoattribute:: dpctl.program.SyclKernel.addressof_ref
-.. autoattribute:: dpctl.program.SyclKernel.get_function_name
-.. autoattribute:: dpctl.program.SyclKernel.get_num_args
+.. autofunction:: dpctl.program.SyclKernel.addressof_ref
+.. autofunction:: dpctl.program.SyclKernel.get_function_name
+.. autofunction:: dpctl.program.SyclKernel.get_num_args
 
 
 .. include:: ../urls.rst

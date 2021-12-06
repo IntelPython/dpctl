@@ -35,11 +35,11 @@ Attributes
 Public methods
 --------------
 
-.. autoattribute:: dpctl.memory.MemoryUSMHost.copy_from_device
-.. autoattribute:: dpctl.memory.MemoryUSMHost.copy_from_host
-.. autoattribute:: dpctl.memory.MemoryUSMHost.copy_to_host
-.. autoattribute:: dpctl.memory.MemoryUSMHost.get_usm_type
-.. autoattribute:: dpctl.memory.MemoryUSMHost.tobytes
+.. autofunction:: dpctl.memory.MemoryUSMHost.copy_from_device
+.. autofunction:: dpctl.memory.MemoryUSMHost.copy_from_host
+.. autofunction:: dpctl.memory.MemoryUSMHost.copy_to_host
+.. autofunction:: dpctl.memory.MemoryUSMHost.get_usm_type
+.. autofunction:: dpctl.memory.MemoryUSMHost.tobytes
 
 
 .. include:: ../urls.rst

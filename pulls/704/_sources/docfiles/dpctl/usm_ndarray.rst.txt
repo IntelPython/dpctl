@@ -49,11 +49,11 @@ Attributes
 Public methods
 --------------
 
-.. autoattribute:: dpctl.tensor.usm_ndarray.to_device
+.. autofunction:: dpctl.tensor.usm_ndarray.to_device
 
 Private methods
 ---------------
 
-.. autoattribute:: dpctl.tensor.usm_ndarray._set_namespace
+.. autofunction:: dpctl.tensor.usm_ndarray._set_namespace
 
 .. include:: ../urls.rst

@@ -38,20 +38,20 @@ Attributes
 Public methods
 --------------
 
-.. autoattribute:: dpctl.SyclQueue.addressof_ref
-.. autoattribute:: dpctl.SyclQueue.get_sycl_context
-.. autoattribute:: dpctl.SyclQueue.get_sycl_device
-.. autoattribute:: dpctl.SyclQueue.mem_advise
-.. autoattribute:: dpctl.SyclQueue.memcpy
-.. autoattribute:: dpctl.SyclQueue.prefetch
-.. autoattribute:: dpctl.SyclQueue.print_device_info
-.. autoattribute:: dpctl.SyclQueue.submit
-.. autoattribute:: dpctl.SyclQueue.submit_barrier
-.. autoattribute:: dpctl.SyclQueue.wait
+.. autofunction:: dpctl.SyclQueue.addressof_ref
+.. autofunction:: dpctl.SyclQueue.get_sycl_context
+.. autofunction:: dpctl.SyclQueue.get_sycl_device
+.. autofunction:: dpctl.SyclQueue.mem_advise
+.. autofunction:: dpctl.SyclQueue.memcpy
+.. autofunction:: dpctl.SyclQueue.prefetch
+.. autofunction:: dpctl.SyclQueue.print_device_info
+.. autofunction:: dpctl.SyclQueue.submit
+.. autofunction:: dpctl.SyclQueue.submit_barrier
+.. autofunction:: dpctl.SyclQueue.wait
 
 Private methods
 ---------------
 
-.. autoattribute:: dpctl.SyclQueue._get_capsule
+.. autofunction:: dpctl.SyclQueue._get_capsule
 
 .. include:: ../urls.rst

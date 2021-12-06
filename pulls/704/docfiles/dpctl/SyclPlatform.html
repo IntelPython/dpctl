@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclPlatform &mdash; Data-parallel Control (dpctl) 0.12.0dev1+94.g9aef9959 documentation</title>
+  <title>dpctl.SyclPlatform &mdash; Data-parallel Control (dpctl) 0.12.0dev1+95.g0c1ac876 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+94.g9aef9959
+                0.12.0dev1+95.g0c1ac876
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -180,10 +180,32 @@ selector</p>
 </section>
 <section id="public-methods">
 <h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline"></a></h2>
-<dl class="py attribute">
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclPlatform.print_platform_info">
-<span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">print_platform_info</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method</span> <span class="pre">'print_platform_info'</span> <span class="pre">of</span> <span class="pre">'dpctl._sycl_platform.SyclPlatform'</span> <span class="pre">objects&gt;</span></em><a class="headerlink" href="#dpctl.SyclPlatform.print_platform_info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">print_platform_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclPlatform.print_platform_info" title="Permalink to this definition"></a></dt>
+<dd><p>Print information about the SYCL platform.</p>
+<p>The level of information printed out by the function can be controlled
+by the optional <code class="docutils literal notranslate"><span class="pre">vebosity</span></code> setting.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Verbosity level 0</strong>: Prints out the list of platforms and their
+names.</p></li>
+<li><p><strong>Verbosity level 1</strong>: Prints out the name, version, vendor,
+backend, number of devices for each platform.</p></li>
+<li><p><strong>Verbosity level 2</strong>: At the highest level of verbosity
+everything in the previous levels along with the name, version,
+and filter string for each device is printed.</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>verbosity</strong> (<em>optional</em>) – Defaults to 0.
+The verbosity controls how much information is printed by the
+function. 0 is the lowest level set by default and 2 is the
+highest level to print the most verbose output.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 </section>
@@ -217,7 +239,7 @@ selector</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+94.g9aef9959
+      v: 0.12.0dev1+95.g0c1ac876
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

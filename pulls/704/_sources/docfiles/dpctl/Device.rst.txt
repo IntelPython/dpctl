@@ -29,7 +29,7 @@ Attributes
 Public methods
 --------------
 
-.. autoattribute:: dpctl.tensor.Device.create_device
+.. autofunction:: dpctl.tensor.Device.create_device
 
 
 .. include:: ../urls.rst
