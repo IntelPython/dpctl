@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.12.0dev1+72.g99aba3b documentation</title>
+  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.12.0dev1+73.g2e989fc documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+72.g99aba3b
+                0.12.0dev1+73.g2e989fc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -77,16 +77,9 @@
              
   <section id="module-dpctl.tensor">
 <span id="dpctl-tensor"></span><span id="dpctl-tensor-api"></span><h1>dpctl.tensor<a class="headerlink" href="#module-dpctl.tensor" title="Permalink to this headline"></a></h1>
-<p><strong>Data Parallel Tensor Collection</strong></p>
-<p><code class="docutils literal notranslate"><span class="pre">dpctl.tensor</span></code> is an experimental collection of tensor implementations
-that will implement future Python data API
-(<a class="reference external" href="https://data-apis.github.io/array-api/latest/">https://data-apis.github.io/array-api/latest/</a>).</p>
-<p>Available tensor implementations:</p>
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">numpy_usm_shared</span></code>:</dt><dd><p>Provides a <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> sub-class whose underlying memory buffer
-is allocated with a USM shared memory allocator.</p>
-</dd>
-</dl>
+<p><strong>Data Parallel Tensor Collection</strong> is a collection of tensor
+implementations that implement Python data API
+(<a class="reference external" href="https://data-apis.github.io/array-api/latest/">https://data-apis.github.io/array-api/latest/</a>) standard.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.tensor.Device">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">Device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dpctl/tensor/_device.html#Device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.Device" title="Permalink to this definition"></a></dt>
@@ -99,7 +92,7 @@ in Array-API functions.</p>
 or <code class="docutils literal notranslate"><span class="pre">sycl_device</span></code>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpctl.tensor.Device.create_device">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dpctl/tensor/_device.html#Device.create_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.Device.create_device" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dev</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dpctl/tensor/_device.html#Device.create_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.Device.create_device" title="Permalink to this definition"></a></dt>
 <dd><p>Creates instance of Device from argument.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -141,11 +134,7 @@ device.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.asarray">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">asarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dpctl/tensor/_ctors.html#asarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.asarray" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>asarray(obj, dtype=None, copy=None, order=”K”,</dt><dd><p>device=None, usm_type=None, sycl_queue=None)</p>
-</dd>
-</dl>
-<p>Converts <cite>obj</cite> to <a class="reference internal" href="#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>.</p>
+<dd><p>Converts <cite>obj</cite> to <a class="reference internal" href="#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -216,27 +205,20 @@ into <cite>numpy.ndarray</cite> instance of the same shape and same data type.</
 following NumPy’s conventions. The <cite>order</cite> keywords can be
 one of the following:</p>
 <blockquote>
-<div><p>“C”: C-contiguous memory layout
-“F”: Fotrant-contiguous memory layout
-“A”: Fotrant-contiguous if the input array is</p>
-<blockquote>
-<div><p>F-contiguous, and C-contiguous otherwise</p>
-</div></blockquote>
-<dl class="simple">
-<dt>“K”: match the layout of <cite>usm_ary</cite> as closely</dt><dd><p>as possible.</p>
-</dd>
-</dl>
+<div><ul class="simple">
+<li><p>“C”: C-contiguous memory layout</p></li>
+<li><p>“F”: Fortran-contiguous memory layout</p></li>
+<li><p>“A”: Fortran-contiguous if the input array is also Fortran-contiguous,
+otherwise C-contiguous</p></li>
+<li><p>“K”: match the layout of <cite>usm_ary</cite> as closely as possible.</p></li>
+</ul>
 </div></blockquote>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.empty">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'f8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dpctl/tensor/_ctors.html#empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.empty" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>dpctl.tensor.empty(shape, dtype=”f8”, order=”C”, device=None,</dt><dd><p>usm_type=”device”, sycl_queue=None)</p>
-</dd>
-</dl>
-<p>Creates <cite>usm_ndarray</cite> from uninitialized USM allocation.</p>
+<dd><p>Creates <cite>usm_ndarray</cite> from uninitialized USM allocation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -330,16 +312,8 @@ into <cite>numpy.ndarray</cite> instance of the same shape and same data type.</
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>usm_ndarray(</dt><dd><p>shape, dtype=”<a href="#id1"><span class="problematic" id="id2">|</span></a>f8”, strides=None, buffer=’device’,
-offset=0, order=’C’,
-buffer_ctor_kwargs=dict(),
-array_namespace=None</p>
-</dd>
-</dl>
-<p>)</p>
-<p>See <a class="reference internal" href="dpctl.memory_api.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a> for allowed
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'|f8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strides</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_ctor_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">dict()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="dpctl.memory_api.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a> for allowed
 keyword arguments.</p>
 <p><cite>buffer</cite> can be ‘shared’, ‘host’, ‘device’ to allocate
 new device memory by calling respective constructor with
@@ -491,7 +465,7 @@ change of respective index.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+72.g99aba3b
+      v: 0.12.0dev1+73.g2e989fc
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
