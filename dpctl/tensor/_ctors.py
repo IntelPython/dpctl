@@ -388,7 +388,7 @@ def asarray(
         _, dt, devs = _array_info_sequence(obj)
         if devs == _host_set:
             return _asarray_from_numpy_ndarray(
-                np.asarray(obj, dt, order=order),
+                np.asarray(obj, dtype=dtype, order=order),
                 dtype=dtype,
                 usm_type=usm_type,
                 sycl_queue=sycl_queue,
