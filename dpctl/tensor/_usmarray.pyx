@@ -107,7 +107,6 @@ cdef class usm_ndarray:
         buffer_ctor_kwargs=dict(),
         array_namespace=None
     )
-
     See :class:`dpctl.memory.MemoryUSMShared` for allowed
     keyword arguments.
 
