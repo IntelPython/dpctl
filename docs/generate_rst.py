@@ -362,7 +362,7 @@ def _generate_module_summary_rst(module):
         docstr = " ".join(
             docstr[0 : docstr.find(".\n") + 1].replace("\n", " ").split()
         )
-        if len(docstr) < 1:
+        if not docstr:
             return f"[FIXME]: {type(obj)} has a docstring with no summary"
         return docstr
 
@@ -465,6 +465,10 @@ def _generate_module_summary_rst(module):
             _write_empty_line(o)
             _write_functions_summary_table(o, mod, groups[group])
 
+    def _write_include_urls(o):
+        _write_empty_line(o)
+        _write_line(o, ".. include:: ../urls.rst")
+
     mod = _get_module(module)
 
     with io.StringIO() as output:
@@ -480,6 +484,7 @@ def _generate_module_summary_rst(module):
         _write_function_groups_summary(output, mod, _group_functions(mod))
         _write_enums_summary_table(output, mod)
         _write_exceptions_summary_table(output, mod)
+        _write_include_urls(output)
 
         return output.getvalue()
 
