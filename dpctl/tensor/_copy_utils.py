@@ -19,6 +19,7 @@ import numpy as np
 
 import dpctl.memory as dpm
 import dpctl.tensor as dpt
+from dpctl.tensor._device import normalize_queue_device
 
 
 def contract_iter2(shape, strides1, strides2):
@@ -64,7 +65,7 @@ def contract_iter2(shape, strides1, strides2):
     return (sh, st1, disp1, st2, disp2)
 
 
-def has_memory_overlap(x1, x2):
+def _has_memory_overlap(x1, x2):
     m1 = dpm.as_usm_memory(x1)
     m2 = dpm.as_usm_memory(x2)
     if m1.sycl_device == m2.sycl_device:
@@ -77,7 +78,7 @@ def has_memory_overlap(x1, x2):
         return False
 
 
-def copy_to_numpy(ary):
+def _copy_to_numpy(ary):
     if type(ary) is not dpt.usm_ndarray:
         raise TypeError
     h = ary.usm_data.copy_to_host().view(ary.dtype)
@@ -93,7 +94,7 @@ def copy_to_numpy(ary):
     )
 
 
-def copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
+def _copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
     "Copies numpy array `np_ary` into a new usm_ndarray"
     # This may peform a copy to meet stated requirements
     Xnp = np.require(np_ary, requirements=["A", "O", "C", "E"])
@@ -111,7 +112,8 @@ def copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
     return Xusm
 
 
-def copy_from_numpy_into(dst, np_ary):
+def _copy_from_numpy_into(dst, np_ary):
+    "Copies `np_ary` into `dst` of type :class:`dpctl.tensor.usm_ndarray"
     if not isinstance(np_ary, np.ndarray):
         raise TypeError("Expected numpy.ndarray, got {}".format(type(np_ary)))
     src_ary = np.broadcast_to(np.asarray(np_ary, dtype=dst.dtype), dst.shape)
@@ -120,6 +122,54 @@ def copy_from_numpy_into(dst, np_ary):
         host_buf = np.array(src_ary[mi], ndmin=1).view("u1")
         usm_mem = dpm.as_usm_memory(dst[mi])
         usm_mem.copy_from_host(host_buf)
+
+
+def from_numpy(np_ary, device=None, usm_type="device", sycl_queue=None):
+    """
+    from_numpy(arg, device=None, usm_type="device", sycl_queue=None)
+
+    Creates :class:`dpctl.tensor.usm_ndarray` from instance of
+    `numpy.ndarray`.
+
+    Args:
+        arg: An instance of `numpy.ndarray`
+        device: array API specification of device where the output array
+            is created.
+        sycl_queue: a :class:`dpctl.SyclQueue` used to create the output
+            array is created
+    """
+    q = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    return _copy_from_numpy(np_ary, usm_type=usm_type, sycl_queue=q)
+
+
+def to_numpy(usm_ary):
+    """
+    to_numpy(usm_ary)
+
+    Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary`
+    into `numpy.ndarray` instance of the same shape and same data type.
+
+    Args:
+        usm_ary: An instance of :class:`dpctl.tensor.usm_ndarray`
+    Returns:
+        An instance of `numpy.ndarray` populated with content of `usm_ary`.
+    """
+    return _copy_to_numpy(usm_ary)
+
+
+def asnumpy(usm_ary):
+    """
+    asnumpy(usm_ary)
+
+    Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary`
+    into `numpy.ndarray` instance of the same shape and same data type.
+
+    Args:
+        usm_ary: An instance of :class:`dpctl.tensor.usm_ndarray`
+    Returns:
+        An instance of `numpy.ndarray` populated with content of `usm_ary`.
+    """
+    return _copy_to_numpy(usm_ary)
 
 
 class Dummy:
@@ -138,9 +188,9 @@ def copy_same_dtype(dst, src):
         raise ValueError
 
     # check that memory regions do not overlap
-    if has_memory_overlap(dst, src):
-        tmp = copy_to_numpy(src)
-        copy_from_numpy_into(dst, tmp)
+    if _has_memory_overlap(dst, src):
+        tmp = _copy_to_numpy(src)
+        _copy_from_numpy_into(dst, tmp)
         return
 
     if (dst.flags & 1) and (src.flags & 1):
@@ -184,10 +234,10 @@ def copy_same_shape(dst, src):
         return
 
     # check that memory regions do not overlap
-    if has_memory_overlap(dst, src):
-        tmp = copy_to_numpy(src)
+    if _has_memory_overlap(dst, src):
+        tmp = _copy_to_numpy(src)
         tmp = tmp.astype(dst.dtype)
-        copy_from_numpy_into(dst, tmp)
+        _copy_from_numpy_into(dst, tmp)
         return
 
     # simplify strides
@@ -218,7 +268,7 @@ def copy_same_shape(dst, src):
         mdst.copy_from_host(tmp.view("u1"))
 
 
-def copy_from_usm_ndarray_to_usm_ndarray(dst, src):
+def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
     if type(dst) is not dpt.usm_ndarray or type(src) is not dpt.usm_ndarray:
         raise TypeError
 
@@ -389,7 +439,7 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
                 buffer=R.usm_data,
                 strides=new_strides,
             )
-        copy_from_usm_ndarray_to_usm_ndarray(R, usm_ary)
+        _copy_from_usm_ndarray_to_usm_ndarray(R, usm_ary)
         return R
     else:
         return usm_ary

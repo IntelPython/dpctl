@@ -105,3 +105,54 @@ class Device:
         except TypeError:
             # This is a sub-device
             return repr(self.sycl_queue)
+
+
+def normalize_queue_device(sycl_queue=None, device=None):
+    """
+    normalize_queue_device(sycl_queue=None, device=None)
+
+    Utility to process exclusive keyword arguments 'device'
+    and 'sycl_queue' in functions of `dpctl.tensor`.
+
+    Args:
+        sycl_queue(:class:`dpctl.SyclQueue`, optional):
+            explicitly indicates where USM allocation is done
+            and the population code (if any) is executed.
+            Value `None` is interpreted as get the SYCL queue
+            from `device` keyword, or use default queue.
+            Default: None
+        device (string, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue,
+            :class:`dpctl.tensor.Device`, optional):
+            array-API keyword indicating non-partitioned SYCL device
+            where array is allocated.
+    Returns
+        :class:`dpctl.SyclQueue` object implied by either of provided
+        keywords. If both are None, `dpctl.SyclQueue()` is returned.
+        If both are specified and imply the same queue, `sycl_queue`
+        is returned.
+    Raises:
+        TypeError: if argument is not of the expected type, or keywords
+            imply incompatible queues.
+    """
+    q = sycl_queue
+    d = device
+    if q is None:
+        d = Device.create_device(d)
+        return d.sycl_queue
+    else:
+        if not isinstance(q, dpctl.SyclQueue):
+            raise TypeError(f"Expected dpctl.SyclQueue, got {type(q)}")
+        if d is None:
+            return q
+        d = Device.create_device(d)
+        qq = dpctl.utils.get_execution_queue(
+            (
+                q,
+                d.sycl_queue,
+            )
+        )
+        if qq is None:
+            raise TypeError(
+                "sycl_queue and device keywords can not be both specified"
+            )
+        return qq

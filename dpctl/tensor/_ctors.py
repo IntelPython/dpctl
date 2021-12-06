@@ -20,6 +20,7 @@ import dpctl
 import dpctl.memory as dpm
 import dpctl.tensor as dpt
 import dpctl.utils
+from dpctl.tensor._device import normalize_queue_device
 
 _empty_tuple = tuple()
 _host_set = frozenset([None])
@@ -72,29 +73,6 @@ def _array_info_sequence(li):
     return (n,) + dim, dt, device
 
 
-def _normalize_queue_device(q=None, d=None):
-    if q is None:
-        d = dpt._device.Device.create_device(d)
-        return d.sycl_queue
-    else:
-        if not isinstance(q, dpctl.SyclQueue):
-            raise TypeError(f"Expected dpctl.SyclQueue, got {type(q)}")
-        if d is None:
-            return q
-        d = dpt._device.Device.create_device(d)
-        qq = dpctl.utils.get_execution_queue(
-            (
-                q,
-                d.sycl_queue,
-            )
-        )
-        if qq is None:
-            raise TypeError(
-                "sycl_queue and device keywords can not be both specified"
-            )
-        return qq
-
-
 def _asarray_from_usm_ndarray(
     usm_ndary,
     dtype=None,
@@ -115,7 +93,7 @@ def _asarray_from_usm_ndarray(
         exec_q = dpctl.utils.get_execution_queue(
             [usm_ndary.sycl_queue, sycl_queue]
         )
-        copy_q = _normalize_queue_device(q=sycl_queue, d=exec_q)
+        copy_q = normalize_queue_device(sycl_queue=sycl_queue, device=exec_q)
     else:
         copy_q = usm_ndary.sycl_queue
     # Conditions for zero copy:
@@ -194,7 +172,7 @@ def _asarray_from_numpy_ndarray(
         usm_type = "device"
     if dtype is None:
         dtype = ary.dtype
-    copy_q = _normalize_queue_device(q=None, d=sycl_queue)
+    copy_q = normalize_queue_device(sycl_queue=None, device=sycl_queue)
     f_contig = ary.flags["F"]
     c_contig = ary.flags["C"]
     fc_contig = f_contig or c_contig
@@ -327,7 +305,9 @@ def asarray(
             )
     # 5. Normalize device/sycl_queue [keep it None if was None]
     if device is not None or sycl_queue is not None:
-        sycl_queue = _normalize_queue_device(q=sycl_queue, d=device)
+        sycl_queue = normalize_queue_device(
+            sycl_queue=sycl_queue, device=device
+        )
 
     # handle instance(obj, usm_ndarray)
     if isinstance(obj, dpt.usm_ndarray):
@@ -459,7 +439,7 @@ def empty(
         raise TypeError(
             f"Expected usm_type to be of type str, got {type(usm_type)}"
         )
-    sycl_queue = _normalize_queue_device(q=sycl_queue, d=device)
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     res = dpt.usm_ndarray(
         sh,
         dtype=dtype,
