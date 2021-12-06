@@ -112,6 +112,35 @@ def _write_underlined(o, s, c):
     _write_line(o, c * len(s))
 
 
+def _write_include_urls(o):
+    """[summary]
+
+    Args:
+        o ([type]): [description]
+    """
+    _write_empty_line(o)
+    _write_line(o, ".. include:: ../urls.rst")
+
+
+def _write_hidden_toc(o, list_of_obj_names, prefix_str="", suffix_str=""):
+    """[summary]
+
+    Args:
+        o ([type]): [description]
+        list_of_objs ([type]): [description]
+        prefix_str ([type]): [description]
+        suffix_str ([type]): [description]
+    """
+    if not list_of_obj_names:
+        return
+    _write_line(o, ".. toctree::")
+    _write_line(o, "   :hidden:")
+    _write_empty_line(o)
+    for obj in list_of_obj_names:
+        _write_line(o, "   " + prefix_str + obj + suffix_str)
+    _write_empty_line(o)
+
+
 def _get_public_class_name(cls):
     """[summary]
 
@@ -289,7 +318,6 @@ def _generate_class_rst(cls):
                 cls_qualname,
             )
 
-        _write_underlined(output, "Detail", "=")
         _write_empty_line(output)
 
         if all_attributes:
@@ -321,6 +349,8 @@ def _generate_class_rst(cls):
                     output,
                     ".. autofunction:: " + ".".join([cls_qualname, n]),
                 )
+
+        _write_include_urls(output)
 
         return output.getvalue()
 
@@ -390,6 +420,7 @@ def _generate_module_summary_rst(module):
             _write_empty_line(output)
             _write_underlined(output, "Sub-modules", "-")
             _write_empty_line(output)
+            _write_hidden_toc(output, submods, mod.__name__ + ".", "_pyapi")
             _write_table_header(o)
             for submod in submods:
                 _write_line(
@@ -408,15 +439,18 @@ def _generate_module_summary_rst(module):
 
     def _write_classes_summary_table(o, mod):
         classes = []
+        class_names = []
         for mem_tup in inspect.getmembers(mod):
             cls = mem_tup[1]
             if inspect.isclass(cls) and not (
                 issubclass(cls, enum.Enum) or issubclass(cls, Exception)
             ):
                 classes.append(cls)
+                class_names.append(mem_tup[0])
         if classes:
             _write_underlined(o, "Classes", "-")
             _write_empty_line(o)
+            _write_hidden_toc(output, class_names)
             _write_table_header(o)
             for cls in classes:
                 _write_line(o, indent + "* - :class:`" + cls.__name__ + "`")
@@ -475,10 +509,6 @@ def _generate_module_summary_rst(module):
             _write_underlined(o, group, "-")
             _write_empty_line(o)
             _write_functions_summary_table(o, mod, groups[group])
-
-    def _write_include_urls(o):
-        _write_empty_line(o)
-        _write_line(o, ".. include:: ../urls.rst")
 
     mod = _get_module(module)
 
