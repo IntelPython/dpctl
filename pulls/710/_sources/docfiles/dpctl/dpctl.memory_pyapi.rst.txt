@@ -32,3 +32,5 @@ Other Functions
 
 
 
+
+.. include:: ../urls.rst
