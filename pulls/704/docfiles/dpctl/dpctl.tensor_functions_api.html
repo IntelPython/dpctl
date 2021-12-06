@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.12.0dev1+95.g0c1ac876 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.12.0dev1+96.g87efe4b5 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+95.g0c1ac876
+                0.12.0dev1+96.g87efe4b5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -82,11 +82,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.asarray">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">asarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#asarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.asarray" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>asarray(obj, dtype=None, copy=None, order=”K”,</dt><dd><p>device=None, usm_type=None, sycl_queue=None)</p>
-</dd>
-</dl>
-<p>Converts <cite>obj</cite> to <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>.</p>
+<dd><p>Converts <cite>obj</cite> to <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -157,27 +153,20 @@ into <cite>numpy.ndarray</cite> instance of the same shape and same data type.</
 following NumPy’s conventions. The <cite>order</cite> keywords can be
 one of the following:</p>
 <blockquote>
-<div><p>“C”: C-contiguous memory layout
-“F”: Fotrant-contiguous memory layout
-“A”: Fotrant-contiguous if the input array is</p>
-<blockquote>
-<div><p>F-contiguous, and C-contiguous otherwise</p>
-</div></blockquote>
-<dl class="simple">
-<dt>“K”: match the layout of <cite>usm_ary</cite> as closely</dt><dd><p>as possible.</p>
-</dd>
-</dl>
+<div><ul class="simple">
+<li><p>“C”: C-contiguous memory layout</p></li>
+<li><p>“F”: Fortran-contiguous memory layout</p></li>
+<li><p>“A”: Fortran-contiguous if the input array is also Fortran-contiguous,
+otherwise C-contiguous</p></li>
+<li><p>“K”: match the layout of <cite>usm_ary</cite> as closely as possible.</p></li>
+</ul>
 </div></blockquote>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.empty">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'f8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.empty" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>dpctl.tensor.empty(shape, dtype=”f8”, order=”C”, device=None,</dt><dd><p>usm_type=”device”, sycl_queue=None)</p>
-</dd>
-</dl>
-<p>Creates <cite>usm_ndarray</cite> from uninitialized USM allocation.</p>
+<dd><p>Creates <cite>usm_ndarray</cite> from uninitialized USM allocation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -298,7 +287,7 @@ into <cite>numpy.ndarray</cite> instance of the same shape and same data type.</
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+95.g0c1ac876
+      v: 0.12.0dev1+96.g87efe4b5
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
