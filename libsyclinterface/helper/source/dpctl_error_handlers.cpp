@@ -40,23 +40,26 @@ void DPCTL_AsyncErrorHandler::operator()(
     }
 }
 
-inline int get_requested_level(void)
+namespace
+{
+int requested_verbosity_level(void)
 {
     int requested_level = 0;
 
     const char *verbose = std::getenv("DPCTL_VERBOSITY");
 
     if (verbose) {
-        if (!strncmp(verbose, "none", 4))
+        if (!std::strncmp(verbose, "none", 4))
             requested_level = error_level::none;
-        else if (!strncmp(verbose, "error", 5))
+        else if (!std::strncmp(verbose, "error", 5))
             requested_level = error_level::error;
-        else if (!strncmp(verbose, "warning", 7))
+        else if (!std::strncmp(verbose, "warning", 7))
             requested_level = error_level::warning;
     }
 
     return requested_level;
 }
+} // namespace
 
 void error_handler(const std::exception &e,
                    const char *file_name,
@@ -64,10 +67,10 @@ void error_handler(const std::exception &e,
                    int line_num,
                    error_level error_type)
 {
-    int requested_level = get_requested_level();
+    int requested_level = requested_verbosity_level();
     int error_level = static_cast<int>(error_type);
 
-    if (requested_level <= error_level) {
+    if (requested_level >= error_level) {
         std::cerr << e.what() << " in " << func_name << " at " << file_name
                   << ":" << line_num << std::endl;
     }
@@ -79,10 +82,10 @@ void error_handler(const std::string &what,
                    int line_num,
                    error_level error_type)
 {
+    int requested_level = requested_verbosity_level();
     int error_level = static_cast<int>(error_type);
-    int requested_level = get_requested_level();
 
-    if (requested_level <= error_level) {
+    if (requested_level >= error_level) {
         std::cerr << what << " In " << func_name << " at " << file_name << ":"
                   << line_num << std::endl;
     }
