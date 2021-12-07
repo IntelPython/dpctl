@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl Enums &mdash; Data-parallel Control (dpctl) 0.12.0dev1+84.g07d27602 documentation</title>
+  <title>dpctl Enums &mdash; Data-parallel Control (dpctl) 0.12.0dev1+85.gb60d928b documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+84.g07d27602
+                0.12.0dev1+85.gb60d928b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -81,68 +81,56 @@
 <dt class="sig sig-object py" id="dpctl.backend_type">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">backend_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/enum_types.html#backend_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.backend_type" title="Permalink to this definition"></a></dt>
 <dd><p>An enumeration of supported SYCL backends.</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 60%" />
-<col style="width: 40%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Name of backend</p></th>
-<th class="head"><p>Enum value</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>opencl</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-odd"><td><p>level_zero</p></td>
-<td><p>2</p></td>
-</tr>
-<tr class="row-even"><td><p>cuda</p></td>
-<td><p>3</p></td>
-</tr>
-<tr class="row-odd"><td><p>host</p></td>
-<td><p>4</p></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+
+<span class="c1"># create a SYCL device with OpenCL backend using filter selector</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;opencl&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">backend</span><span class="p">)</span>
+<span class="c1"># Possible output: &lt;backend_type.opencl: 5&gt;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.device_type">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">device_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/enum_types.html#device_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.device_type" title="Permalink to this definition"></a></dt>
 <dd><p>An enumeration of supported SYCL device types.</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 60%" />
-<col style="width: 40%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Device type</p></th>
-<th class="head"><p>Enum value</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>gpu</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-odd"><td><p>cpu</p></td>
-<td><p>2</p></td>
-</tr>
-<tr class="row-even"><td><p>accelerator</p></td>
-<td><p>3</p></td>
-</tr>
-<tr class="row-odd"><td><p>host</p></td>
-<td><p>4</p></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+
+<span class="c1"># filter GPU devices amongst available SYCL devices</span>
+<span class="n">gpu_devs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">get_devices</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">device_type</span> <span class="o">==</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">device_type</span><span class="o">.</span><span class="n">gpu</span>
+    <span class="p">)</span> <span class="p">]</span>
+
+<span class="c1"># alternatively, get GPU devices directly</span>
+<span class="n">gpu_devs2</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">get_devices</span><span class="p">(</span><span class="n">device_type</span><span class="o">=</span><span class="n">dpctl</span><span class="o">.</span><span class="n">device_type</span><span class="o">.</span><span class="n">gpu</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.event_status_type">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">event_status_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/enum_types.html#event_status_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.event_status_type" title="Permalink to this definition"></a></dt>
-<dd><p>An enumeration.</p>
+<dd><p>An enumeration of SYCL event states.</p>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="n">ev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">execution_status</span> <span class="p">)</span>
+<span class="c1"># Possible output: &lt;event_status_type.complete: 4&gt;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -173,7 +161,7 @@
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+84.g07d27602
+      v: 0.12.0dev1+85.gb60d928b
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

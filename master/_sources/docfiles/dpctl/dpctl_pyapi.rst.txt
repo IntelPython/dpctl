@@ -139,7 +139,7 @@ Enums
     * - :class:`device_type`
       - An enumeration of supported SYCL device types.
     * - :class:`event_status_type`
-      - [FIXME]: <class 'enum.EnumMeta'> has a docstring with no summary
+      - An enumeration of SYCL event states.
 
 Exceptions
 ----------
