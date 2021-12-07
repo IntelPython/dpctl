@@ -7,10 +7,10 @@
    docfiles/user_guides/QuickStart
 
 .. toctree::
-    :maxdepth: 1
-    :caption: API Documentation
+   :maxdepth: 1
+   :caption: API Documentation
 
-    docfiles/dpctl_pyapi
-    docfiles/libsyclinterface/index
+   docfiles/dpctl/dpctl_pyapi
+   docfiles/libsyclinterface/index
 
 .. include:: ./docfiles/boilerplate.rst

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.12.0dev1+73.g2e989fc documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.12.0dev1+84.g07d27602 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+73.g2e989fc
+                0.12.0dev1+84.g07d27602
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -46,7 +46,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../docfiles/dpctl_pyapi.html">dpctl Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docfiles/dpctl/dpctl_pyapi.html">dpctl</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../docfiles/libsyclinterface/index.html">libsyclinterface</a></li>
 </ul>
 
@@ -65,6 +65,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../dpctl.html">dpctl</a> &raquo;</li>
       <li>dpctl.tensor._copy_utils</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -201,7 +202,7 @@
         <span class="n">usm_mem</span><span class="o">.</span><span class="n">copy_from_host</span><span class="p">(</span><span class="n">host_buf</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="from_numpy"><a class="viewcode-back" href="../../../docfiles/dpctl.tensor_api.html#dpctl.tensor.from_numpy">[docs]</a><span class="k">def</span> <span class="nf">from_numpy</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="from_numpy"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.from_numpy">[docs]</a><span class="k">def</span> <span class="nf">from_numpy</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    from_numpy(arg, device=None, usm_type=&quot;device&quot;, sycl_queue=None)</span>
 
@@ -219,7 +220,7 @@
     <span class="k">return</span> <span class="n">_copy_from_numpy</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="to_numpy"><a class="viewcode-back" href="../../../docfiles/dpctl.tensor_api.html#dpctl.tensor.to_numpy">[docs]</a><span class="k">def</span> <span class="nf">to_numpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">):</span>
+<div class="viewcode-block" id="to_numpy"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.to_numpy">[docs]</a><span class="k">def</span> <span class="nf">to_numpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    to_numpy(usm_ary)</span>
 
@@ -234,7 +235,7 @@
     <span class="k">return</span> <span class="n">_copy_to_numpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="asnumpy"><a class="viewcode-back" href="../../../docfiles/dpctl.tensor_api.html#dpctl.tensor.asnumpy">[docs]</a><span class="k">def</span> <span class="nf">asnumpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">):</span>
+<div class="viewcode-block" id="asnumpy"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.asnumpy">[docs]</a><span class="k">def</span> <span class="nf">asnumpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    asnumpy(usm_ary)</span>
 
@@ -379,7 +380,7 @@
     <span class="n">copy_same_shape</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src_same_shape</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="copy"><a class="viewcode-back" href="../../../docfiles/dpctl.tensor_api.html#dpctl.tensor.copy">[docs]</a><span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="copy"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.copy">[docs]</a><span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a copy of given instance of `usm_ndarray`.</span>
 
@@ -443,7 +444,7 @@
     <span class="k">return</span> <span class="n">R</span></div>
 
 
-<div class="viewcode-block" id="astype"><a class="viewcode-back" href="../../../docfiles/dpctl.tensor_api.html#dpctl.tensor.astype">[docs]</a><span class="k">def</span> <span class="nf">astype</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">,</span> <span class="n">newdtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="astype"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.astype">[docs]</a><span class="k">def</span> <span class="nf">astype</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">,</span> <span class="n">newdtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    astype(usm_array, new_dtype, order=&quot;K&quot;, casting=&quot;unsafe&quot;, copy=True)</span>
 
@@ -546,7 +547,7 @@
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+73.g2e989fc
+      v: 0.12.0dev1+84.g07d27602
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
