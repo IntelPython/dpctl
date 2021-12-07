@@ -1,6 +1,7 @@
 docs
 generated_docs
 docfiles/libsyclinterface
+docfiles/dpctl
 api
 build
 conf.py
