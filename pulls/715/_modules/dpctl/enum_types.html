@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.enum_types &mdash; Data-parallel Control (dpctl) 0.12.0dev1+86.ga6ca01c4 documentation</title>
+  <title>dpctl.enum_types &mdash; Data-parallel Control (dpctl) 0.12.0dev1+86.g103b6241 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+86.ga6ca01c4
+                0.12.0dev1+86.g103b6241
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -111,14 +111,18 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An enumeration of supported SYCL device types.</span>
 
-<span class="sd">    ==================   ============</span>
-<span class="sd">    Device type          Enum value</span>
-<span class="sd">    ==================   ============</span>
-<span class="sd">    gpu                  1</span>
-<span class="sd">    cpu                  2</span>
-<span class="sd">    accelerator          3</span>
-<span class="sd">    host                 4</span>
-<span class="sd">    ==================   ============</span>
+<span class="sd">    :Example:</span>
+<span class="sd">        .. code-block:: python</span>
+<span class="sd">            import dpctl</span>
+
+<span class="sd">            # filter GPU devices amongst available SYCL devices</span>
+<span class="sd">            gpu_devs = [</span>
+<span class="sd">                d for d in dpctl.get_devices() if (</span>
+<span class="sd">                    d.device_type == dpctl.device_type.gpu</span>
+<span class="sd">                ) ]</span>
+
+<span class="sd">            # alternatively, get GPU devices directly</span>
+<span class="sd">            gpu_devs2 = dpctl.get_devices(device_type=dpctl.device_type.gpu)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">all</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -134,15 +138,14 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An enumeration of supported SYCL backends.</span>
 
-<span class="sd">    ==================   ============</span>
-<span class="sd">    Name of backend      Enum value</span>
-<span class="sd">    ==================   ============</span>
-<span class="sd">    opencl               1</span>
-<span class="sd">    level_zero           2</span>
-<span class="sd">    cuda                 3</span>
-<span class="sd">    host                 4</span>
-<span class="sd">    ==================   ============</span>
+<span class="sd">    :Example:</span>
+<span class="sd">        .. code-block:: python</span>
+<span class="sd">            import dpctl</span>
 
+<span class="sd">            # create a SYCL device with OpenCL backend using filter selector</span>
+<span class="sd">            d = dpctl.SyclDevice(&quot;opencl&quot;)</span>
+<span class="sd">            print(d.backend)</span>
+<span class="sd">            # Possible output: &lt;backend_type.opencl: 5&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">all</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -156,15 +159,12 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An enumeration of SYCL event states.</span>
 
-<span class="sd">    ==================   ============</span>
-<span class="sd">    Name of backend      Enum value</span>
-<span class="sd">    ==================   ============</span>
-<span class="sd">    unknown_status       1</span>
-<span class="sd">    submitted            2</span>
-<span class="sd">    running              3</span>
-<span class="sd">    complete             4</span>
-<span class="sd">    ==================   ============</span>
-
+<span class="sd">    :Example:</span>
+<span class="sd">        .. conda-block:: python</span>
+<span class="sd">            import dpctl</span>
+<span class="sd">            ev = dpctl.SyclEvent()</span>
+<span class="sd">            print(ev.execution_status )</span>
+<span class="sd">            # Possible output: &lt;event_status_type.complete: 4&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">unknown_status</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -198,7 +198,7 @@
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+86.ga6ca01c4
+      v: 0.12.0dev1+86.g103b6241
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
