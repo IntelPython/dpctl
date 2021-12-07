@@ -33,14 +33,19 @@ class device_type(Enum):
     """
     An enumeration of supported SYCL device types.
 
-    ==================   ============
-    Device type          Enum value
-    ==================   ============
-    gpu                  1
-    cpu                  2
-    accelerator          3
-    host                 4
-    ==================   ============
+    :Example:
+        .. code-block:: python
+
+            import dpctl
+
+            # filter GPU devices amongst available SYCL devices
+            gpu_devs = [
+                d for d in dpctl.get_devices() if (
+                    d.device_type == dpctl.device_type.gpu
+                ) ]
+
+            # alternatively, get GPU devices directly
+            gpu_devs2 = dpctl.get_devices(device_type=dpctl.device_type.gpu)
     """
 
     all = auto()
@@ -56,15 +61,15 @@ class backend_type(Enum):
     """
     An enumeration of supported SYCL backends.
 
-    ==================   ============
-    Name of backend      Enum value
-    ==================   ============
-    opencl               1
-    level_zero           2
-    cuda                 3
-    host                 4
-    ==================   ============
+    :Example:
+        .. code-block:: python
 
+            import dpctl
+
+            # create a SYCL device with OpenCL backend using filter selector
+            d = dpctl.SyclDevice("opencl")
+            print(d.backend)
+            # Possible output: <backend_type.opencl: 5>
     """
 
     all = auto()
@@ -75,6 +80,17 @@ class backend_type(Enum):
 
 
 class event_status_type(Enum):
+    """
+    An enumeration of SYCL event states.
+
+    :Example:
+        .. code-block:: python
+
+            import dpctl
+            ev = dpctl.SyclEvent()
+            print(ev.execution_status )
+            # Possible output: <event_status_type.complete: 4>
+    """
 
     unknown_status = auto()
     submitted = auto()
