@@ -1,0 +1,20 @@
+.. _queues:
+
+#####
+Queue
+#####
+
+.. contents::
+   :local:
+   :backlinks: none
+   :depth: 1
+
+Types of queues
+---------------
+
+Creating a queue
+----------------
+
+.. todo::
+
+    How to create a queue for a certain device?

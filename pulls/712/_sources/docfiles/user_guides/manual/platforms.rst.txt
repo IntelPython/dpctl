@@ -1,7 +1,9 @@
 .. _querying_platforms:
 
-Querying Platforms
-------------------
+#########
+Platforms
+#########
+
 
 .. todo::
 

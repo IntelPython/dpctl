@@ -3,6 +3,20 @@
 Introduction
 ------------
 
+The dpctl package enables Python application developers and extension developers
+to access the data-parallel computing resource available on a modern
+heterogeneous system. The goal of this user guide is to introduce the core
+features of dpctl and the underlying concepts.
+
+Dpctl is a Python abstraction over the C++ SYCL standard and as such shares the
+core concepts with SYCL.
+
+.. Talk about basic concepts and define them
+
+.. Who should use dpctl?
+
+.. Go over dpctl and dpctl tensor
+
 .. todo::
 
     Introduce the basic concepts of Platforms, Devices, Contexts, Queues,

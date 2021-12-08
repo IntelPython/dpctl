@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Introduction &mdash; Data-parallel Control (dpctl) 0.12.0dev1+90.gbff19b65 documentation</title>
+  <title>Introduction &mdash; Data-parallel Control (dpctl) 0.12.0dev1+91.g34778823 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -21,7 +21,7 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Querying Platforms" href="platforms.html" />
+    <link rel="next" title="Platforms" href="platforms.html" />
     <link rel="prev" title="User Manual" href="../UserManual.html" /> 
 </head>
 
@@ -33,7 +33,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+90.gbff19b65
+                0.12.0dev1+91.g34778823
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -47,15 +47,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../QuickStart.html">Quick Start Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../UserManual.html">User Manual</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="platforms.html">Querying Platforms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="devices.html">Listing devices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="devices.html#selecting-a-device">Selecting a device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="devices.html#query-device-properties">Query device properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="devices.html#creating-a-sub-device">Creating a sub-device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="platforms.html">Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devices.html">Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queues.html">Queue</a></li>
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../dpctl/dpctl_pyapi.html">dpctl</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../libsyclinterface/index.html">libsyclinterface</a></li>
@@ -88,6 +85,12 @@
              
   <section id="introduction">
 <span id="user-manual-intro"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h1>
+<p>The dpctl package enables Python application developers and extension developers
+to access the data-parallel computing resource available on a modern
+heterogeneous system. The goal of this user guide is to introduce the core
+features of dpctl and the underlying concepts.</p>
+<p>Dpctl is a Python abstraction over the C++ SYCL standard and as such shares the
+core concepts with SYCL.</p>
 <div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
 <p>Introduce the basic concepts of Platforms, Devices, Contexts, Queues,
@@ -100,7 +103,7 @@ Events, and USM.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../UserManual.html" class="btn btn-neutral float-left" title="User Manual" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="platforms.html" class="btn btn-neutral float-right" title="Querying Platforms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="platforms.html" class="btn btn-neutral float-right" title="Platforms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
@@ -124,7 +127,7 @@ Events, and USM.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+90.gbff19b65
+      v: 0.12.0dev1+91.g34778823
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
