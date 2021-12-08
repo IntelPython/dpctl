@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Platforms &mdash; Data-parallel Control (dpctl) 0.12.0dev1+91.g34778823 documentation</title>
+  <title>Platform &mdash; Data-parallel Control (dpctl) 0.12.0dev1+94.gd2091c88 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+91.g34778823
+                0.12.0dev1+94.gd2091c88
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -47,7 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../QuickStart.html">Quick Start Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../UserManual.html">User Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Platforms</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Platform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="devices.html">Device</a></li>
 <li class="toctree-l2"><a class="reference internal" href="queues.html">Queue</a></li>
 </ul>
@@ -73,7 +73,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../UserManual.html">User Manual</a> &raquo;</li>
-      <li>Platforms</li>
+      <li>Platform</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../_sources/docfiles/user_guides/manual/platforms.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -83,11 +83,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="platforms">
-<span id="querying-platforms"></span><h1>Platforms<a class="headerlink" href="#platforms" title="Permalink to this headline"></a></h1>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<p>Demonstrate use of <code class="docutils literal notranslate"><span class="pre">lsplatform</span></code></p>
+  <section id="platform">
+<span id="querying-platforms"></span><h1>Platform<a class="headerlink" href="#platform" title="Permalink to this headline"></a></h1>
+<p>A platform abstracts one or more XPU that is connected to the host and that can
+be used for computation. The platforms queryable using dpctl depends on the
+device drivers that are installed on a system. A single driver may control
+multiple physical XPU, thus a platform may also consist of multiple XPUs.</p>
+<p>In dpctl, the class <a class="reference internal" href="../../dpctl/SyclPlatform.html#dpctl.SyclPlatform" title="dpctl.SyclPlatform"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclPlatform</span></code></a> represents a platform and
+abstracts the <a href="#id1"><span class="problematic" id="id2">`sycl platform`_</span></a> SYCL runtime class.</p>
+<p>The platforms available on a system can be queried using the
+<a class="reference internal" href="../../dpctl/dpctl_functions_api.html#dpctl.lsplatform" title="dpctl.lsplatform"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.lsplatform()</span></code></a> function. In addition, as illustrated in the following
+example it is possible to print out metadata about a platform.</p>
+<p>The example is can be executed as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python dpctl/examples/python/lsplatform.py -r all
+</pre></div>
+</div>
+<p>The possible output for the example may be:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example print_available_platforms
+INFO: ===========================
+
+INFO: Executing example list_available_platforms
+&lt;dpctl.SyclPlatform [Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) Corporation,  OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3] at 0x7fc30dd8a470&gt;
+&lt;dpctl.SyclPlatform [Intel(R) OpenCL, Intel(R) Corporation,  OpenCL 3.0 LINUX] at 0x7fc30dd8a6b0&gt;
+&lt;dpctl.SyclPlatform [SYCL host platform, ,  1.2] at 0x7fc30dd8a6f0&gt;
+INFO: ===========================
+Intel(R) FPGA Emulation Platform for OpenCL(TM) OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3
+Intel(R) OpenCL OpenCL 3.0 LINUX
+SYCL host platform 1.2
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The verbosity for the output can be controlled using the <code class="docutils literal notranslate"><span class="pre">verbosity</span></code>
+keyword argument. Refer <a class="reference internal" href="../../dpctl/dpctl_functions_api.html#dpctl.lsplatform" title="dpctl.lsplatform"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.lsplatform()</span></code></a>.</p>
 </div>
 </section>
 
@@ -120,7 +148,7 @@
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+91.g34778823
+      v: 0.12.0dev1+94.gd2091c88
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

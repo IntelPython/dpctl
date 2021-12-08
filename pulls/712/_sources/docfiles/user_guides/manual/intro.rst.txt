@@ -20,4 +20,4 @@ core concepts with SYCL.
 .. todo::
 
     Introduce the basic concepts of Platforms, Devices, Contexts, Queues,
-    Events, and USM.
+    Events, and USM. Introduce common terms: XPU, host.
