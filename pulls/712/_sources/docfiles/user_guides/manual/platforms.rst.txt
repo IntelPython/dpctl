@@ -4,13 +4,12 @@
 Platform
 ########
 
-A platform abstracts one or more XPU that is connected to the host and that can
-be used for computation. The platforms queryable using dpctl depends on the
-device drivers that are installed on a system. A single driver may control
-multiple physical XPU, thus a platform may also consist of multiple XPUs.
-
 In dpctl, the class :class:`dpctl.SyclPlatform` represents a platform and
-abstracts the `sycl platform`_ SYCL runtime class.
+abstracts the `sycl::platform`_ SYCL runtime class. A platform abstracts one or
+more XPU that is connected to the host and that can be used for computation. The
+platforms queryable using dpctl depends on the device drivers that are installed
+on a system. A single driver may control multiple physical XPU, thus a platform
+may also consist of multiple XPUs.
 
 The platforms available on a system can be queried using the
 :func:`dpctl.lsplatform` function. In addition, as illustrated in the following
@@ -18,8 +17,8 @@ example it is possible to print out metadata about a platform.
 
 .. literalinclude:: ../../../../examples/python/lsplatform.py
     :language: python
-    :start-after: #START
-    :end-before: #END
+    :start-after: # START
+    :end-before: # END
 
 The example is can be executed as follows:
 
@@ -35,4 +34,4 @@ The possible output for the example may be:
     The verbosity for the output can be controlled using the ``verbosity``
     keyword argument. Refer :func:`dpctl.lsplatform`.
 
-.. include:: ../../../urls.rst
+.. include:: ../../urls.rst
