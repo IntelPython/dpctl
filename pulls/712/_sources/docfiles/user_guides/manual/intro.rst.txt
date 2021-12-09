@@ -3,15 +3,15 @@
 Introduction
 ------------
 
-Data Parallel Control (dpctl) is a Python package that enables Python
-application developers and extension developers to access the data-parallel
-computing resource available on a modern heterogeneous system. Dpctl's objective
-is to provide a runtime to control or to manage data-parallel devices with out
-the need for other Python packages to create such a runtime themselves. The
-runtime is built on top of the C++ SYCL standard and is envisioned to be both
-vendor and architecture agnostic. If the underlying SYCL runtime supports a
-type of architecture, the dpctl runtime will allow managing that architecture
-from Python.
+The Data Parallel Control (dpctl) package enables Python application developers
+and extension developers to access the data-parallel computing resource
+available on a modern heterogeneous system. Dpctl's objective is to provide
+a runtime to control or to manage data-parallel devices without the need for
+other Python packages to create such a runtime themselves. The runtime is built
+on top of the C++ SYCL standard and is envisioned to be both vendor and
+architecture agnostic. If the underlying SYCL runtime supports a type of
+architecture, the dpctl runtime will allow managing that architecture from
+Python.
 
 In its current implementation, dpctl supports only the DPC++ SYCL
 implementation. Thus, support for architectures is limited to those supported by
