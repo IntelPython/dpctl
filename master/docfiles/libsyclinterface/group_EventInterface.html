@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Event class C wrapper &mdash; Data-parallel Control (dpctl) 0.12.0dev1+88.geee7d490 documentation</title>
+  <title>Event class C wrapper &mdash; Data-parallel Control (dpctl) 0.12.0dev1+89.g7fecbd14 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+88.geee7d490
+                0.12.0dev1+89.g7fecbd14
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -103,7 +103,7 @@
            <div itemprop="articleBody">
              
   <section id="event-class-c-wrapper">
-<span id="doxid-d6-d8a-group-eventinterface"></span><span id="index-0"></span><h1>Event class C wrapper<a class="headerlink" href="#event-class-c-wrapper" title="Permalink to this headline"></a></h1>
+<span id="doxid-df-d2d-group-event-interface"></span><span id="index-0"></span><h1>Event class C wrapper<a class="headerlink" href="#event-class-c-wrapper" title="Permalink to this headline"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <section id="overview">
@@ -111,43 +111,43 @@
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// global functions</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
-DPCTLEvent_Copy<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+<a class="reference internal" href="#doxid-df-d2d-group-event-interface-1ga0e67256b553c86cc2c01b8ba2ed18378"><span class="std std-ref">DPCTLEvent_Copy</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
-DPCTLEvent_Create<span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<a class="reference internal" href="#doxid-df-d2d-group-event-interface-1ga9e1f10306d442c2253fd549fec3a045f"><span class="std std-ref">DPCTLEvent_Create</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
-DPCTLEvent_Delete<span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+<a class="reference internal" href="#doxid-df-d2d-group-event-interface-1gae16fbf7465ec6d86a63e042100feba77"><span class="std std-ref">DPCTLEvent_Delete</span></a><span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclBackendType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1aa217d239d7e3752c49bd9fd42c71c933"><span class="std std-ref">DPCTLSyclBackendType</span></a><span></span>
-DPCTLEvent_GetBackend<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+<a class="reference internal" href="#doxid-df-d2d-group-event-interface-1ga30a3bc34163bac7dcb7d03b5666e157c"><span class="std std-ref">DPCTLEvent_GetBackend</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclEventStatusType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021"><span class="std std-ref">DPCTLSyclEventStatusType</span></a><span></span>
-DPCTLEvent_GetCommandExecutionStatus<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+<a class="reference internal" href="#doxid-df-d2d-group-event-interface-1gaba5717c1481def3ceb1fc0ee6c3dabe9"><span class="std std-ref">DPCTLEvent_GetCommandExecutionStatus</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
-DPCTLEvent_GetProfilingInfoEnd<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+<a class="reference internal" href="#doxid-df-d2d-group-event-interface-1ga87d98a9b0d6d7de64cf10b7782a746dd"><span class="std std-ref">DPCTLEvent_GetProfilingInfoEnd</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
-DPCTLEvent_GetProfilingInfoStart<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+<a class="reference internal" href="#doxid-df-d2d-group-event-interface-1ga82b888e75071bab550a39257f32ef993"><span class="std std-ref">DPCTLEvent_GetProfilingInfoStart</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
-DPCTLEvent_GetProfilingInfoSubmit<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+<a class="reference internal" href="#doxid-df-d2d-group-event-interface-1gaa1e8ec801992e1fdb0836463f73fcc85"><span class="std std-ref">DPCTLEvent_GetProfilingInfoSubmit</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span>
-DPCTLEvent_GetWaitList<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+<a class="reference internal" href="#doxid-df-d2d-group-event-interface-1ga77eab99e200776384c7c345c0f2011c7"><span class="std std-ref">DPCTLEvent_GetWaitList</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
-DPCTLEvent_Wait<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
+<a class="reference internal" href="#doxid-df-d2d-group-event-interface-1ga3befe2587ca487628646214b7cf3b96e"><span class="std std-ref">DPCTLEvent_Wait</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
-DPCTLEvent_WaitAndThrow<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span></pre>
+<a class="reference internal" href="#doxid-df-d2d-group-event-interface-1ga4b955b64cc76d942f20384e4fd566bbf"><span class="std std-ref">DPCTLEvent_WaitAndThrow</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">);</span></pre>
 </section>
 <section id="detailed-documentation">
-<span id="details-d6-d8a-group-eventinterface"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this headline"></a></h2>
+<span id="details-df-d2d-group-event-interface"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this headline"></a></h2>
 <section id="global-functions">
 <h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this headline"></a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga0e67256b553c86cc2c01b8ba2ed18378"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d2d-group-event-interface-1ga0e67256b553c86cc2c01b8ba2ed18378"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
 <span class="n">DPCTLEvent_Copy</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
 <p>Returns a copy of the DPCTLSyclEventRef object.</p>
 <p class="rubric">Parameters:</p>
@@ -164,12 +164,12 @@ DPCTLEvent_WaitAndThrow<span></span><span class="p">(</span><span class="n">__dp
 </table>
 <p class="rubric">Returns:</p>
 <p>A new DPCTLSyclEventRef created by copying the passed in DPCTLSyclEventRef object.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga9e1f10306d442c2253fd549fec3a045f"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d2d-group-event-interface-1ga9e1f10306d442c2253fd549fec3a045f"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
 <span class="n">DPCTLEvent_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
 <p>A wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> contructor to construct a new event.</p>
 <p class="rubric">Returns:</p>
 <p>An opaque DPCTLSyclEventRef pointer wrapping a <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code>.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1gae16fbf7465ec6d86a63e042100feba77"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d2d-group-event-interface-1gae16fbf7465ec6d86a63e042100feba77"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLEvent_Delete</span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
 <p>Deletes the DPCTLSyclEventRef after casting it to a <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code>.</p>
 <p class="rubric">Parameters:</p>
@@ -184,7 +184,7 @@ DPCTLEvent_WaitAndThrow<span></span><span class="p">(</span><span class="n">__dp
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga30a3bc34163bac7dcb7d03b5666e157c"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclBackendType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1aa217d239d7e3752c49bd9fd42c71c933"><span class="std std-ref">DPCTLSyclBackendType</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d2d-group-event-interface-1ga30a3bc34163bac7dcb7d03b5666e157c"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclBackendType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1aa217d239d7e3752c49bd9fd42c71c933"><span class="std std-ref">DPCTLSyclBackendType</span></a><span></span>
 <span class="n">DPCTLEvent_GetBackend</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
 <p>Returns a DPCTLSyclBackendType enum value identifying the SYCL backend associated with the event.</p>
 <p class="rubric">Parameters:</p>
@@ -201,7 +201,7 @@ DPCTLEvent_WaitAndThrow<span></span><span class="p">(</span><span class="n">__dp
 </table>
 <p class="rubric">Returns:</p>
 <p>A DPCTLSyclBackendType enum value identifying the SYCL backend associated with the event.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1gaba5717c1481def3ceb1fc0ee6c3dabe9"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclEventStatusType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021"><span class="std std-ref">DPCTLSyclEventStatusType</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d2d-group-event-interface-1gaba5717c1481def3ceb1fc0ee6c3dabe9"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclEventStatusType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021"><span class="std std-ref">DPCTLSyclEventStatusType</span></a><span></span>
 <span class="n">DPCTLEvent_GetCommandExecutionStatus</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
 <p>Returns the DPCTLSyclEventStatusType enum value for the DPCTLSyclEventRef argument.</p>
 <p class="rubric">Parameters:</p>
@@ -218,7 +218,7 @@ DPCTLEvent_WaitAndThrow<span></span><span class="p">(</span><span class="n">__dp
 </table>
 <p class="rubric">Returns:</p>
 <p>The DPCTLSyclDEventStatusType value corresponding to the event.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga87d98a9b0d6d7de64cf10b7782a746dd"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d2d-group-event-interface-1ga87d98a9b0d6d7de64cf10b7782a746dd"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
 <span class="n">DPCTLEvent_GetProfilingInfoEnd</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
 <p>Wrapper over <code class="docutils literal notranslate"><span class="pre">event.get_profiling_info&lt;info::event_profiling::command_end&gt;()</span></code></p>
 <p class="rubric">Parameters:</p>
@@ -235,7 +235,7 @@ DPCTLEvent_WaitAndThrow<span></span><span class="p">(</span><span class="n">__dp
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns a value describing the time in nanoseconds when the action associated with the command group (e.g. kernel invocation) finished executing on the device.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga82b888e75071bab550a39257f32ef993"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d2d-group-event-interface-1ga82b888e75071bab550a39257f32ef993"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
 <span class="n">DPCTLEvent_GetProfilingInfoStart</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
 <p>Wrapper over <code class="docutils literal notranslate"><span class="pre">event.get_profiling_info&lt;info::event_profiling::command_start&gt;()</span></code></p>
 <p class="rubric">Parameters:</p>
@@ -252,7 +252,7 @@ DPCTLEvent_WaitAndThrow<span></span><span class="p">(</span><span class="n">__dp
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns a value describing the time in nanoseconds when the action associated with the command group (e.g. kernel invocation) started executing on the device.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1gaa1e8ec801992e1fdb0836463f73fcc85"><span id="index-8"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d2d-group-event-interface-1gaa1e8ec801992e1fdb0836463f73fcc85"><span id="index-8"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
 <span class="n">DPCTLEvent_GetProfilingInfoSubmit</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
 <p>Wrapper over <code class="docutils literal notranslate"><span class="pre">event.get_profiling_info&lt;info::event_profiling::command_submit&gt;()</span></code></p>
 <p class="rubric">Parameters:</p>
@@ -269,7 +269,7 @@ DPCTLEvent_WaitAndThrow<span></span><span class="p">(</span><span class="n">__dp
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns a value describing the time in nanoseconds when the associated command group was submitted to the queue.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga77eab99e200776384c7c345c0f2011c7"><span id="index-9"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d2d-group-event-interface-1ga77eab99e200776384c7c345c0f2011c7"><span id="index-9"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span>
 <span class="n">DPCTLEvent_GetWaitList</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
 <p>C-API wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::event::get_wait_list</span></code>. Returns a vector of events that this event still waits for.</p>
 <p class="rubric">Parameters:</p>
@@ -286,7 +286,7 @@ DPCTLEvent_WaitAndThrow<span></span><span class="p">(</span><span class="n">__dp
 </table>
 <p class="rubric">Returns:</p>
 <p>A DPCTLEventVectorRef of DPCTLSyclEventRef objects.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga3befe2587ca487628646214b7cf3b96e"><span id="index-10"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d2d-group-event-interface-1ga3befe2587ca487628646214b7cf3b96e"><span id="index-10"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLEvent_Wait</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
 <p>C-API wrapper for sycl::event.wait.</p>
 <p class="rubric">Parameters:</p>
@@ -301,7 +301,7 @@ DPCTLEvent_WaitAndThrow<span></span><span class="p">(</span><span class="n">__dp
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d6-d8a-group-eventinterface-1ga4b955b64cc76d942f20384e4fd566bbf"><span id="index-11"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d2d-group-event-interface-1ga4b955b64cc76d942f20384e4fd566bbf"><span id="index-11"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLEvent_WaitAndThrow</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span> <span class="n">ERef</span><span class="p">)</span></pre>
 <p>C-API wrapper for ‘sycl::event.wait_and_throw’.</p>
 <p class="rubric">Parameters:</p>
@@ -349,7 +349,7 @@ DPCTLEvent_WaitAndThrow<span></span><span class="p">(</span><span class="n">__dp
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+88.geee7d490
+      v: 0.12.0dev1+89.g7fecbd14
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

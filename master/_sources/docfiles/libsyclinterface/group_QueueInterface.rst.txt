@@ -1,5 +1,5 @@
 .. index:: pair: group; Queue class C wrapper
-.. _doxid-d9/db1/group__QueueInterface:
+.. _doxid-d2/d22/group___queue_interface:
 
 Queue class C wrapper
 =====================
@@ -20,16 +20,16 @@ Overview
 	// global functions
 
 	DPCTL_API bool
-	:ref:`DPCTLQueue_AreEq<doxid-d9/db1/group__QueueInterface_1ga8a957bd257ec77b0f57bcb3c35e1e479>`(
+	:ref:`DPCTLQueue_AreEq<doxid-d2/d22/group___queue_interface_1ga8a957bd257ec77b0f57bcb3c35e1e479>`(
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef1,
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef2
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
-	:ref:`DPCTLQueue_Copy<doxid-d9/db1/group__QueueInterface_1gad8d2312b954460ad658b2f1080c0dee3>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+	:ref:`DPCTLQueue_Copy<doxid-d2/d22/group___queue_interface_1gad8d2312b954460ad658b2f1080c0dee3>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
-	:ref:`DPCTLQueue_Create<doxid-d9/db1/group__QueueInterface_1gaffc0932f21ca4be9ef6ffa6626d1ee0d>`(
+	:ref:`DPCTLQueue_Create<doxid-d2/d22/group___queue_interface_1gaffc0932f21ca4be9ef6ffa6626d1ee0d>`(
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef,
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
 		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* handler,
@@ -37,35 +37,35 @@ Overview
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`
-	:ref:`DPCTLQueue_CreateForDevice<doxid-d9/db1/group__QueueInterface_1ga49d6da8648e54441a043ea7db496e810>`(
+	:ref:`DPCTLQueue_CreateForDevice<doxid-d2/d22/group___queue_interface_1ga49d6da8648e54441a043ea7db496e810>`(
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` dRef,
 		:ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`* handler,
 		int properties
 		);
 
 	DPCTL_API void
-	:ref:`DPCTLQueue_Delete<doxid-d9/db1/group__QueueInterface_1ga44557847663338a67f423a06ecf9192a>`(__dpctl_take :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+	:ref:`DPCTLQueue_Delete<doxid-d2/d22/group___queue_interface_1ga44557847663338a67f423a06ecf9192a>`(__dpctl_take :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
 	DPCTL_API :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`
-	:ref:`DPCTLQueue_GetBackend<doxid-d9/db1/group__QueueInterface_1ga8c3629a8627e9748cdec34688f6ce908>`(__dpctl_keep :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+	:ref:`DPCTLQueue_GetBackend<doxid-d2/d22/group___queue_interface_1ga8c3629a8627e9748cdec34688f6ce908>`(__dpctl_keep :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
-	:ref:`DPCTLQueue_GetContext<doxid-d9/db1/group__QueueInterface_1gad11e27086f2cee7f3d22f33de1a24bc9>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+	:ref:`DPCTLQueue_GetContext<doxid-d2/d22/group___queue_interface_1gad11e27086f2cee7f3d22f33de1a24bc9>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
-	:ref:`DPCTLQueue_GetDevice<doxid-d9/db1/group__QueueInterface_1ga44095b28dfb5c357e6c065749e9aa8c0>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+	:ref:`DPCTLQueue_GetDevice<doxid-d2/d22/group___queue_interface_1ga44095b28dfb5c357e6c065749e9aa8c0>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
 	DPCTL_API bool
-	:ref:`DPCTLQueue_HasEnableProfiling<doxid-d9/db1/group__QueueInterface_1ga348ae09783aa4defd1eb864eb04418a2>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+	:ref:`DPCTLQueue_HasEnableProfiling<doxid-d2/d22/group___queue_interface_1ga348ae09783aa4defd1eb864eb04418a2>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
 	DPCTL_API size_t
-	:ref:`DPCTLQueue_Hash<doxid-d9/db1/group__QueueInterface_1ga17f54699da3f3ab226cf8e3c9c57a7dc>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+	:ref:`DPCTLQueue_Hash<doxid-d2/d22/group___queue_interface_1ga17f54699da3f3ab226cf8e3c9c57a7dc>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
 	DPCTL_API bool
-	:ref:`DPCTLQueue_IsInOrder<doxid-d9/db1/group__QueueInterface_1ga0738e262108a1ac8f43f227548724f07>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+	:ref:`DPCTLQueue_IsInOrder<doxid-d2/d22/group___queue_interface_1ga0738e262108a1ac8f43f227548724f07>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
 	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	:ref:`DPCTLQueue_MemAdvise<doxid-d9/db1/group__QueueInterface_1ga8de50ef93a90b6eb5492b6e38eeb5c6c>`(
+	:ref:`DPCTLQueue_MemAdvise<doxid-d2/d22/group___queue_interface_1ga8de50ef93a90b6eb5492b6e38eeb5c6c>`(
 		__dpctl_keep :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
 		const void* Ptr,
 		size_t Count,
@@ -73,7 +73,7 @@ Overview
 		);
 
 	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	:ref:`DPCTLQueue_Memcpy<doxid-d9/db1/group__QueueInterface_1gae543a1633f10fc45e64ef746f5222c79>`(
+	:ref:`DPCTLQueue_Memcpy<doxid-d2/d22/group___queue_interface_1gae543a1633f10fc45e64ef746f5222c79>`(
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
 		void* Dest,
 		const void* Src,
@@ -81,14 +81,14 @@ Overview
 		);
 
 	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	:ref:`DPCTLQueue_Prefetch<doxid-d9/db1/group__QueueInterface_1gac30d3b463b68c5d0f2abdeb608c54aa3>`(
+	:ref:`DPCTLQueue_Prefetch<doxid-d2/d22/group___queue_interface_1gac30d3b463b68c5d0f2abdeb608c54aa3>`(
 		__dpctl_keep :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
 		const void* Ptr,
 		size_t Count
 		);
 
 	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	:ref:`DPCTLQueue_SubmitNDRange<doxid-d9/db1/group__QueueInterface_1gaac9356153363bb89ade3116816fca94b>`(
+	:ref:`DPCTLQueue_SubmitNDRange<doxid-d2/d22/group___queue_interface_1gaac9356153363bb89ade3116816fca94b>`(
 		__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef,
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
 		__dpctl_keep void** Args,
@@ -102,7 +102,7 @@ Overview
 		);
 
 	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	:ref:`DPCTLQueue_SubmitRange<doxid-d9/db1/group__QueueInterface_1ga9ed0d59f789b4fb0959b0af022fdbe23>`(
+	:ref:`DPCTLQueue_SubmitRange<doxid-d2/d22/group___queue_interface_1ga9ed0d59f789b4fb0959b0af022fdbe23>`(
 		__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef,
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
 		__dpctl_keep void** Args,
@@ -115,9 +115,9 @@ Overview
 		);
 
 	DPCTL_API void
-	:ref:`DPCTLQueue_Wait<doxid-d9/db1/group__QueueInterface_1ga3411357b2a09bad80be5b4fee8a8ed44>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
+	:ref:`DPCTLQueue_Wait<doxid-d2/d22/group___queue_interface_1ga3411357b2a09bad80be5b4fee8a8ed44>`(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
-.. _details-d9/db1/group__QueueInterface:
+.. _details-d2/d22/group___queue_interface:
 
 Detailed Documentation
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -128,7 +128,7 @@ Global Functions
 ----------------
 
 .. index:: pair: function; DPCTLQueue_AreEq
-.. _doxid-d9/db1/group__QueueInterface_1ga8a957bd257ec77b0f57bcb3c35e1e479:
+.. _doxid-d2/d22/group___queue_interface_1ga8a957bd257ec77b0f57bcb3c35e1e479:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -165,7 +165,7 @@ Checks if two DPCTLSyclQueueRef objects point to the same ``sycl::queue``.
 True if the underlying sycl::queue are same, false otherwise.
 
 .. index:: pair: function; DPCTLQueue_Copy
-.. _doxid-d9/db1/group__QueueInterface_1gad8d2312b954460ad658b2f1080c0dee3:
+.. _doxid-d2/d22/group___queue_interface_1gad8d2312b954460ad658b2f1080c0dee3:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -194,7 +194,7 @@ Returns a copy of the DPCTLSyclQueueRef object.
 A new DPCTLSyclQueueRef created by copying the passed in DPCTLSyclQueueRef object.
 
 .. index:: pair: function; DPCTLQueue_Create
-.. _doxid-d9/db1/group__QueueInterface_1gaffc0932f21ca4be9ef6ffa6626d1ee0d:
+.. _doxid-d2/d22/group___queue_interface_1gaffc0932f21ca4be9ef6ffa6626d1ee0d:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -243,7 +243,7 @@ A wrapper for sycl::queue contructor to construct a new queue from the provided 
 An opaque DPCTLSyclQueueRef pointer containing the new sycl::queue object. A nullptr is returned if the queue could not be created.
 
 .. index:: pair: function; DPCTLQueue_CreateForDevice
-.. _doxid-d9/db1/group__QueueInterface_1ga49d6da8648e54441a043ea7db496e810:
+.. _doxid-d2/d22/group___queue_interface_1ga49d6da8648e54441a043ea7db496e810:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -298,7 +298,7 @@ Unlike the SYCL queue constructor, we try not to create a new SYCL context for t
 An opaque DPCTLSyclQueueRef pointer containing the new ``sycl::queue`` object. A nullptr is returned if the queue could not be created.
 
 .. index:: pair: function; DPCTLQueue_Delete
-.. _doxid-d9/db1/group__QueueInterface_1ga44557847663338a67f423a06ecf9192a:
+.. _doxid-d2/d22/group___queue_interface_1ga44557847663338a67f423a06ecf9192a:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -321,7 +321,7 @@ Delete the pointer after casting it to sycl::queue.
 		- A DPCTLSyclQueueRef pointer that gets deleted.
 
 .. index:: pair: function; DPCTLQueue_GetBackend
-.. _doxid-d9/db1/group__QueueInterface_1ga8c3629a8627e9748cdec34688f6ce908:
+.. _doxid-d2/d22/group___queue_interface_1ga8c3629a8627e9748cdec34688f6ce908:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -350,7 +350,7 @@ Returns the Sycl backend for the provided sycl::queue.
 A enum DPCTLSyclBackendType corresponding to the backed for the queue.
 
 .. index:: pair: function; DPCTLQueue_GetContext
-.. _doxid-d9/db1/group__QueueInterface_1gad11e27086f2cee7f3d22f33de1a24bc9:
+.. _doxid-d2/d22/group___queue_interface_1gad11e27086f2cee7f3d22f33de1a24bc9:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -379,7 +379,7 @@ Returns the Sycl context for the queue.
 A DPCTLSyclContextRef pointer to the sycl context for the queue.
 
 .. index:: pair: function; DPCTLQueue_GetDevice
-.. _doxid-d9/db1/group__QueueInterface_1ga44095b28dfb5c357e6c065749e9aa8c0:
+.. _doxid-d2/d22/group___queue_interface_1ga44095b28dfb5c357e6c065749e9aa8c0:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -408,7 +408,7 @@ returns the Sycl device for the queue.
 A DPCTLSyclDeviceRef pointer to the sycl device for the queue.
 
 .. index:: pair: function; DPCTLQueue_HasEnableProfiling
-.. _doxid-d9/db1/group__QueueInterface_1ga348ae09783aa4defd1eb864eb04418a2:
+.. _doxid-d2/d22/group___queue_interface_1ga348ae09783aa4defd1eb864eb04418a2:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -431,7 +431,7 @@ C-API wrapper for sycl::queue::has_property<sycl::property::queue::enable_profil
 		- An opaque pointer to the ``sycl::queue``.
 
 .. index:: pair: function; DPCTLQueue_Hash
-.. _doxid-d9/db1/group__QueueInterface_1ga17f54699da3f3ab226cf8e3c9c57a7dc:
+.. _doxid-d2/d22/group___queue_interface_1ga17f54699da3f3ab226cf8e3c9c57a7dc:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -460,7 +460,7 @@ C-API wrapper for std::hash<sycl::queue>'s operator().
 Hash value of the underlying ``sycl::queue`` instance.
 
 .. index:: pair: function; DPCTLQueue_IsInOrder
-.. _doxid-d9/db1/group__QueueInterface_1ga0738e262108a1ac8f43f227548724f07:
+.. _doxid-d2/d22/group___queue_interface_1ga0738e262108a1ac8f43f227548724f07:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -483,7 +483,7 @@ C-API wrapper for sycl::queue::is_in_order that indicates whether the referenced
 		- An opaque pointer to the ``sycl::queue``.
 
 .. index:: pair: function; DPCTLQueue_MemAdvise
-.. _doxid-d9/db1/group__QueueInterface_1ga8de50ef93a90b6eb5492b6e38eeb5c6c:
+.. _doxid-d2/d22/group___queue_interface_1ga8de50ef93a90b6eb5492b6e38eeb5c6c:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -532,7 +532,7 @@ C-API wrapper for ``sycl::queue::mem_advise``.
 An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::mem_advise`` function.
 
 .. index:: pair: function; DPCTLQueue_Memcpy
-.. _doxid-d9/db1/group__QueueInterface_1gae543a1633f10fc45e64ef746f5222c79:
+.. _doxid-d2/d22/group___queue_interface_1gae543a1633f10fc45e64ef746f5222c79:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -581,7 +581,7 @@ C-API wrapper for ``sycl::queue::memcpy``.
 An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::memcpy`` function.
 
 .. index:: pair: function; DPCTLQueue_Prefetch
-.. _doxid-d9/db1/group__QueueInterface_1gac30d3b463b68c5d0f2abdeb608c54aa3:
+.. _doxid-d2/d22/group___queue_interface_1gac30d3b463b68c5d0f2abdeb608c54aa3:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -624,7 +624,7 @@ C-API wrapper for ``sycl::queue::prefetch``.
 An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::prefetch`` function.
 
 .. index:: pair: function; DPCTLQueue_SubmitNDRange
-.. _doxid-d9/db1/group__QueueInterface_1gaac9356153363bb89ade3116816fca94b:
+.. _doxid-d2/d22/group___queue_interface_1gaac9356153363bb89ade3116816fca94b:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -715,7 +715,7 @@ Add support for id<Dims> WorkItemOffset
 An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue.submit()`` function.
 
 .. index:: pair: function; DPCTLQueue_SubmitRange
-.. _doxid-d9/db1/group__QueueInterface_1ga9ed0d59f789b4fb0959b0af022fdbe23:
+.. _doxid-d2/d22/group___queue_interface_1ga9ed0d59f789b4fb0959b0af022fdbe23:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -800,7 +800,7 @@ Add support for id<Dims> WorkItemOffset
 An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue.submit()`` function.
 
 .. index:: pair: function; DPCTLQueue_Wait
-.. _doxid-d9/db1/group__QueueInterface_1ga3411357b2a09bad80be5b4fee8a8ed44:
+.. _doxid-d2/d22/group___queue_interface_1ga3411357b2a09bad80be5b4fee8a8ed44:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

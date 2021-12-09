@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Platform class helper functions &mdash; Data-parallel Control (dpctl) 0.12.0dev1+88.geee7d490 documentation</title>
+  <title>Platform class helper functions &mdash; Data-parallel Control (dpctl) 0.12.0dev1+89.g7fecbd14 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+88.geee7d490
+                0.12.0dev1+89.g7fecbd14
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -103,54 +103,54 @@
            <div itemprop="articleBody">
              
   <section id="platform-class-helper-functions">
-<span id="doxid-d7-d69-group-platformmanager"></span><span id="index-0"></span><h1>Platform class helper functions<a class="headerlink" href="#platform-class-helper-functions" title="Permalink to this headline"></a></h1>
+<span id="doxid-d5-dcf-group-platform-manager"></span><span id="index-0"></span><h1>Platform class helper functions<a class="headerlink" href="#platform-class-helper-functions" title="Permalink to this headline"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
-<p>Helper functions for <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> objects that do not directly map to any <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> member function. <a class="reference internal" href="#details-d7-d69-group-platformmanager"><span class="std std-ref">More…</span></a></p>
+<p>Helper functions for <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> objects that do not directly map to any <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> member function. <a class="reference internal" href="#details-d5-dcf-group-platform-manager"><span class="std std-ref">More…</span></a></p>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
 
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLPlatformVector</span><span class="o">*</span> <span class="doxyrest-code-target target" id="doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span></span><span class="n">DPCTLPlatformVectorRef</span></span><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLPlatformVector</span><span class="o">*</span> <span class="doxyrest-code-target target" id="doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span></span><span class="n">DPCTLPlatformVectorRef</span></span><span></span><span class="p">;</span>
 
 <span class="c1">// global functions</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
-DPCTLPlatformMgr_PrintInfo<span></span><span class="p">(</span>
+<a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga8e44adac75e0ecf8705b089404a8fb86"><span class="std std-ref">DPCTLPlatformMgr_PrintInfo</span></a><span></span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">verbosity</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
-DPCTLPlatformVector_Clear<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">);</span>
+<a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga89b9b23802931f2354d8acb91f72ba6c"><span class="std std-ref">DPCTLPlatformVector_Clear</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">);</span>
 
-<span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
-DPCTLPlatformVector_Create<span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga9d5773827c527bc445bf60ffbf6a6e60"><span class="std std-ref">DPCTLPlatformVector_Create</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
-<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
-DPCTLPlatformVector_CreateFromArray<span></span><span class="p">(</span>
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1gac4e4722d083773b839113fb32cca632c"><span class="std std-ref">DPCTLPlatformVector_CreateFromArray</span></a><span></span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span><span class="o">*</span> <span class="n">elems</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
-DPCTLPlatformVector_Delete<span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">);</span>
+<a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1gaef25f3448c038f7a8ac3dd99a3d69249"><span class="std std-ref">DPCTLPlatformVector_Delete</span></a><span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span>
-DPCTLPlatformVector_GetAt<span></span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">,</span>
+<a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga131427438ea4f1cbca1fe4c93e11e21a"><span class="std std-ref">DPCTLPlatformVector_GetAt</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">index</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">size_t</span>
-DPCTLPlatformVector_Size<span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">);</span></pre>
+<a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga713c99c0d385de070ae32d4d7657401e"><span class="std std-ref">DPCTLPlatformVector_Size</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">);</span></pre>
 </section>
 <section id="detailed-documentation">
-<span id="details-d7-d69-group-platformmanager"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this headline"></a></h2>
+<span id="details-d5-dcf-group-platform-manager"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this headline"></a></h2>
 <p>Helper functions for <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> objects that do not directly map to any <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> member function.</p>
 <section id="global-functions">
 <h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this headline"></a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d7-d69-group-platformmanager-1ga8e44adac75e0ecf8705b089404a8fb86"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga8e44adac75e0ecf8705b089404a8fb86"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLPlatformMgr_PrintInfo</span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">verbosity</span>
@@ -173,8 +173,8 @@ DPCTLPlatformVector_Size<span></span><span class="p">(</span><span class="n">__d
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d7-d69-group-platformmanager-1ga89b9b23802931f2354d8acb91f72ba6c"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
-<span class="n">DPCTLPlatformVector_Clear</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga89b9b23802931f2354d8acb91f72ba6c"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<span class="n">DPCTLPlatformVector_Clear</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
 <p>Delete all the elements of the std::vector.</p>
 <p class="rubric">Parameters:</p>
 <table class="colwidths-given docutils align-default">
@@ -188,12 +188,12 @@ DPCTLPlatformVector_Size<span></span><span class="p">(</span><span class="n">__d
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d7-d69-group-platformmanager-1ga9d5773827c527bc445bf60ffbf6a6e60"><span id="index-3"></span><span></span><span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga9d5773827c527bc445bf60ffbf6a6e60"><span id="index-3"></span><span></span><span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
 <span class="n">DPCTLPlatformVector_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
 <p>Create an opaque pointer to a std::vector of opaque pointers wrapping the SYCL data type.</p>
 <p class="rubric">Returns:</p>
 <p>Returns a new opaque pointer to a vector.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d7-d69-group-platformmanager-1gac4e4722d083773b839113fb32cca632c"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1gac4e4722d083773b839113fb32cca632c"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
 <span class="n">DPCTLPlatformVector_CreateFromArray</span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span><span class="o">*</span> <span class="n">elems</span>
@@ -216,8 +216,8 @@ DPCTLPlatformVector_Size<span></span><span class="p">(</span><span class="n">__d
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns a new opaque pointer to a vector.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d7-d69-group-platformmanager-1gaef25f3448c038f7a8ac3dd99a3d69249"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
-<span class="n">DPCTLPlatformVector_Delete</span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1gaef25f3448c038f7a8ac3dd99a3d69249"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<span class="n">DPCTLPlatformVector_Delete</span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
 <p>Delete all elements in the vector and then delete the vector.</p>
 <p class="rubric">Parameters:</p>
 <table class="colwidths-given docutils align-default">
@@ -231,9 +231,9 @@ DPCTLPlatformVector_Size<span></span><span class="p">(</span><span class="n">__d
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d7-d69-group-platformmanager-1ga131427438ea4f1cbca1fe4c93e11e21a"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga131427438ea4f1cbca1fe4c93e11e21a"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span>
 <span class="n">DPCTLPlatformVector_GetAt</span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">index</span>
     <span class="p">)</span></pre>
 <p>Returns the element at the specified index.</p>
@@ -254,8 +254,8 @@ DPCTLPlatformVector_Size<span></span><span class="p">(</span><span class="n">__d
 </table>
 <p class="rubric">Returns:</p>
 <p>The element at the specified postion, if the index position is out of bounds then a nullptr is returned.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d7-d69-group-platformmanager-1ga713c99c0d385de070ae32d4d7657401e"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
-<span class="n">DPCTLPlatformVector_Size</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d7-d69-group-platformmanager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga713c99c0d385de070ae32d4d7657401e"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<span class="n">DPCTLPlatformVector_Size</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
 <p>Returns the number of elements in the vector.</p>
 <p class="rubric">Parameters:</p>
 <table class="colwidths-given docutils align-default">
@@ -304,7 +304,7 @@ DPCTLPlatformVector_Size<span></span><span class="p">(</span><span class="n">__d
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+88.geee7d490
+      v: 0.12.0dev1+89.g7fecbd14
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
