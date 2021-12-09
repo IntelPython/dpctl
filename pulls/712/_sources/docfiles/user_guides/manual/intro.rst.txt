@@ -3,21 +3,32 @@
 Introduction
 ------------
 
-The dpctl package enables Python application developers and extension developers
-to access the data-parallel computing resource available on a modern
-heterogeneous system. The goal of this user guide is to introduce the core
-features of dpctl and the underlying concepts.
+Data Parallel Control (dpctl) is a Python package that enables Python
+application developers and extension developers to access the data-parallel
+computing resource available on a modern heterogeneous system. Dpctl's objective
+is to provide a runtime to control or to manage data-parallel devices with out
+the need for other Python packages to create such a runtime themselves. The
+runtime is built on top of the C++ SYCL standard and is envisioned to be both
+vendor and architecture agnostic. If the underlying SYCL runtime supports a
+type of architecture, the dpctl runtime will allow managing that architecture
+from Python.
 
-Dpctl is a Python abstraction over the C++ SYCL standard and as such shares the
-core concepts with SYCL.
+In its current implementation, dpctl supports only the DPC++ SYCL
+implementation. Thus, support for architectures is limited to those supported by
+DPC++. By default, dpctl uses the proprietary DPC++ runtime bundled as part of
+oneAPI and supports Intel XPU devices only. However, dpctl is compatible with
+the open-source DPC++ runtime that supports a wide range of architectures
+including CUDA, AMD ROC, and HIP.
 
-.. Talk about basic concepts and define them
+The user guide introduces the core features of dpctl and the underlying
+concepts. The guide is meant primarily for users of the Python package. Library
+and native extension developers should refer to the programmer's guide.
 
-.. Who should use dpctl?
-
-.. Go over dpctl and dpctl tensor
-
+Basic Concepts
+--------------
 .. todo::
 
     Introduce the basic concepts of Platforms, Devices, Contexts, Queues,
     Events, and USM. Introduce common terms: XPU, host.
+
+.. Go over dpctl and dpctl tensor

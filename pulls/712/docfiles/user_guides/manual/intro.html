@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Introduction &mdash; Data-parallel Control (dpctl) 0.12.0dev1+97.gf58b1925 documentation</title>
+  <title>Introduction &mdash; Data-parallel Control (dpctl) 0.12.0dev1+98.gd13e5abf documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+97.gf58b1925
+                0.12.0dev1+98.gd13e5abf
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../QuickStart.html">Quick Start Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../UserManual.html">User Manual</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-concepts">Basic Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="platforms.html">Platform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="devices.html">Device</a></li>
 <li class="toctree-l2"><a class="reference internal" href="queues.html">Queue</a></li>
@@ -86,12 +87,27 @@
              
   <section id="introduction">
 <span id="user-manual-intro"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h1>
-<p>The dpctl package enables Python application developers and extension developers
-to access the data-parallel computing resource available on a modern
-heterogeneous system. The goal of this user guide is to introduce the core
-features of dpctl and the underlying concepts.</p>
-<p>Dpctl is a Python abstraction over the C++ SYCL standard and as such shares the
-core concepts with SYCL.</p>
+<p>Data Parallel Control (dpctl) is a Python package that enables Python
+application developers and extension developers to access the data-parallel
+computing resource available on a modern heterogeneous system. Dpctl’s objective
+is to provide a runtime to control or to manage data-parallel devices with out
+the need for other Python packages to create such a runtime themselves. The
+runtime is built on top of the C++ SYCL standard and is envisioned to be both
+vendor and architecture agnostic. If the underlying SYCL runtime supports a
+type of architecture, the dpctl runtime will allow managing that architecture
+from Python.</p>
+<p>In its current implementation, dpctl supports only the DPC++ SYCL
+implementation. Thus, support for architectures is limited to those supported by
+DPC++. By default, dpctl uses the proprietary DPC++ runtime bundled as part of
+oneAPI and supports Intel XPU devices only. However, dpctl is compatible with
+the open-source DPC++ runtime that supports a wide range of architectures
+including CUDA, AMD ROC, and HIP.</p>
+<p>The user guide introduces the core features of dpctl and the underlying
+concepts. The guide is meant primarily for users of the Python package. Library
+and native extension developers should refer to the programmer’s guide.</p>
+</section>
+<section id="basic-concepts">
+<h1>Basic Concepts<a class="headerlink" href="#basic-concepts" title="Permalink to this headline"></a></h1>
 <div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
 <p>Introduce the basic concepts of Platforms, Devices, Contexts, Queues,
@@ -128,7 +144,7 @@ Events, and USM. Introduce common terms: XPU, host.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+97.gf58b1925
+      v: 0.12.0dev1+98.gd13e5abf
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
