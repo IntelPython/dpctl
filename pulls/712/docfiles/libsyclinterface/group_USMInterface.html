@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>USM Interface &mdash; Data-parallel Control (dpctl) 0.12.0dev1+95.gf878fe87 documentation</title>
+  <title>USM Interface &mdash; Data-parallel Control (dpctl) 0.12.0dev1+96.g807c1279 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+95.gf878fe87
+                0.12.0dev1+96.g807c1279
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -102,7 +102,7 @@
            <div itemprop="articleBody">
              
   <section id="usm-interface">
-<span id="doxid-d9-d27-group-usminterface"></span><span id="index-0"></span><h1>USM Interface<a class="headerlink" href="#usm-interface" title="Permalink to this headline"></a></h1>
+<span id="doxid-df-d6e-group-u-s-m-interface"></span><span id="index-0"></span><h1>USM Interface<a class="headerlink" href="#usm-interface" title="Permalink to this headline"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <section id="overview">
@@ -110,73 +110,73 @@
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// global functions</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
-DPCTLaligned_alloc_device<span></span><span class="p">(</span>
+<a class="reference internal" href="#doxid-df-d6e-group-u-s-m-interface-1ga40c3e68d157d775bbe6daa188b84b3e3"><span class="std std-ref">DPCTLaligned_alloc_device</span></a><span></span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
-DPCTLaligned_alloc_host<span></span><span class="p">(</span>
+<a class="reference internal" href="#doxid-df-d6e-group-u-s-m-interface-1ga327bba1e6a5a1f6922e74ab6914e58ff"><span class="std std-ref">DPCTLaligned_alloc_host</span></a><span></span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
-DPCTLaligned_alloc_shared<span></span><span class="p">(</span>
+<a class="reference internal" href="#doxid-df-d6e-group-u-s-m-interface-1ga7c3e58848a979723dc350d2a8016edd8"><span class="std std-ref">DPCTLaligned_alloc_shared</span></a><span></span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
-DPCTLfree_with_context<span></span><span class="p">(</span>
+<a class="reference internal" href="#doxid-df-d6e-group-u-s-m-interface-1gad1da9c1cb7fca0b3c1bc0edc9467c0a9"><span class="std std-ref">DPCTLfree_with_context</span></a><span></span><span class="p">(</span>
     <span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
-DPCTLfree_with_queue<span></span><span class="p">(</span>
+<a class="reference internal" href="#doxid-df-d6e-group-u-s-m-interface-1ga0d8486b09ea0a677a3fb6cbe677f8633"><span class="std std-ref">DPCTLfree_with_queue</span></a><span></span><span class="p">(</span>
     <span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
-DPCTLmalloc_device<span></span><span class="p">(</span>
+<a class="reference internal" href="#doxid-df-d6e-group-u-s-m-interface-1gac1927ffcb3ca7ef43366a8b64e211ef2"><span class="std std-ref">DPCTLmalloc_device</span></a><span></span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
-DPCTLmalloc_host<span></span><span class="p">(</span>
+<a class="reference internal" href="#doxid-df-d6e-group-u-s-m-interface-1ga699b56970ac78f3b3ca87a2ad6ff4615"><span class="std std-ref">DPCTLmalloc_host</span></a><span></span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
-DPCTLmalloc_shared<span></span><span class="p">(</span>
+<a class="reference internal" href="#doxid-df-d6e-group-u-s-m-interface-1ga7c9316842db74f4730fab04a4e4f4eb5"><span class="std std-ref">DPCTLmalloc_shared</span></a><span></span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
-DPCTLUSM_GetPointerDevice<span></span><span class="p">(</span>
+<a class="reference internal" href="#doxid-df-d6e-group-u-s-m-interface-1ga7ebb5012408e40e3e78b4da551da8412"><span class="std std-ref">DPCTLUSM_GetPointerDevice</span></a><span></span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span>
     <span class="p">);</span>
 
 <span class="k">const</span> <span class="n">DPCTL_API</span> <span class="kt">char</span><span class="o">*</span>
-DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
+<a class="reference internal" href="#doxid-df-d6e-group-u-s-m-interface-1ga1e8658653d946578f1b4deb3333ec41c"><span class="std std-ref">DPCTLUSM_GetPointerType</span></a><span></span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span>
     <span class="p">);</span></pre>
 </section>
 <section id="detailed-documentation">
-<span id="details-d9-d27-group-usminterface"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this headline"></a></h2>
+<span id="details-df-d6e-group-u-s-m-interface"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this headline"></a></h2>
 <section id="global-functions">
 <h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this headline"></a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga40c3e68d157d775bbe6daa188b84b3e3"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d6e-group-u-s-m-interface-1ga40c3e68d157d775bbe6daa188b84b3e3"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
 <span class="n">DPCTLaligned_alloc_device</span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
@@ -203,7 +203,7 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
 </table>
 <p class="rubric">Returns:</p>
 <p>The pointer to USM device memory with requested alignment. On failure, returns nullptr.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga327bba1e6a5a1f6922e74ab6914e58ff"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d6e-group-u-s-m-interface-1ga327bba1e6a5a1f6922e74ab6914e58ff"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
 <span class="n">DPCTLaligned_alloc_host</span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
@@ -230,7 +230,7 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
 </table>
 <p class="rubric">Returns:</p>
 <p>The pointer to USM host memory with the requested alignment. On failure, returns nullptr.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga7c3e58848a979723dc350d2a8016edd8"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d6e-group-u-s-m-interface-1ga7c3e58848a979723dc350d2a8016edd8"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
 <span class="n">DPCTLaligned_alloc_shared</span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">alignment</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
@@ -257,7 +257,7 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
 </table>
 <p class="rubric">Returns:</p>
 <p>The pointer to USM shared memory with the requested alignment. On failure, returns nullptr.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1gad1da9c1cb7fca0b3c1bc0edc9467c0a9"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d6e-group-u-s-m-interface-1gad1da9c1cb7fca0b3c1bc0edc9467c0a9"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLfree_with_context</span><span class="p">(</span>
     <span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span>
@@ -278,7 +278,7 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga0d8486b09ea0a677a3fb6cbe677f8633"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d6e-group-u-s-m-interface-1ga0d8486b09ea0a677a3fb6cbe677f8633"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLfree_with_queue</span><span class="p">(</span>
     <span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
@@ -300,7 +300,7 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1gac1927ffcb3ca7ef43366a8b64e211ef2"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d6e-group-u-s-m-interface-1gac1927ffcb3ca7ef43366a8b64e211ef2"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
 <span class="n">DPCTLmalloc_device</span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
@@ -323,7 +323,7 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
 </table>
 <p class="rubric">Returns:</p>
 <p>The pointer to USM device memory. On failure, returns nullptr.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga699b56970ac78f3b3ca87a2ad6ff4615"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d6e-group-u-s-m-interface-1ga699b56970ac78f3b3ca87a2ad6ff4615"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
 <span class="n">DPCTLmalloc_host</span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
@@ -346,7 +346,7 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
 </table>
 <p class="rubric">Returns:</p>
 <p>The pointer to USM host memory. On failure, returns nullptr.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga7c9316842db74f4730fab04a4e4f4eb5"><span id="index-8"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d6e-group-u-s-m-interface-1ga7c9316842db74f4730fab04a4e4f4eb5"><span id="index-8"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span>
 <span class="n">DPCTLmalloc_shared</span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span>
@@ -369,7 +369,7 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
 </table>
 <p class="rubric">Returns:</p>
 <p>The pointer to USM shared memory. On failure, returns nullptr.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga7ebb5012408e40e3e78b4da551da8412"><span id="index-9"></span><span></span><span class="n">DPCTL_API</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d6e-group-u-s-m-interface-1ga7ebb5012408e40e3e78b4da551da8412"><span id="index-9"></span><span></span><span class="n">DPCTL_API</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
 <span class="n">DPCTLUSM_GetPointerDevice</span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span>
@@ -392,7 +392,7 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
 </table>
 <p class="rubric">Returns:</p>
 <p>A DPCTLSyclDeviceRef pointer to the sycl device.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d9-d27-group-usminterface-1ga1e8658653d946578f1b4deb3333ec41c"><span id="index-10"></span><span></span><span class="k">const</span> <span class="n">DPCTL_API</span> <span class="kt">char</span><span class="o">*</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d6e-group-u-s-m-interface-1ga1e8658653d946578f1b4deb3333ec41c"><span id="index-10"></span><span></span><span class="k">const</span> <span class="n">DPCTL_API</span> <span class="kt">char</span><span class="o">*</span>
 <span class="n">DPCTLUSM_GetPointerType</span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span> <span class="n">MRef</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span>
@@ -448,7 +448,7 @@ DPCTLUSM_GetPointerType<span></span><span class="p">(</span>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+95.gf878fe87
+      v: 0.12.0dev1+96.g807c1279
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

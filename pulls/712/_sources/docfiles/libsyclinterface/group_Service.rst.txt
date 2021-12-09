@@ -1,5 +1,5 @@
 .. index:: pair: group; Service functions
-.. _doxid-d8/dff/group__Service:
+.. _doxid-d8/d1a/group___service:
 
 Service functions
 =================
@@ -20,9 +20,9 @@ Overview
 	// global functions
 
 	DPCTL_API const __dpctl_give char*
-	:ref:`DPCTLService_GetDPCPPVersion<doxid-d8/dff/group__Service_1ga644b14f0bee03243f0ce30679e3c8d41>`(void);
+	:ref:`DPCTLService_GetDPCPPVersion<doxid-d8/d1a/group___service_1ga644b14f0bee03243f0ce30679e3c8d41>`(void);
 
-.. _details-d8/dff/group__Service:
+.. _details-d8/d1a/group___service:
 
 Detailed Documentation
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -33,7 +33,7 @@ Global Functions
 ----------------
 
 .. index:: pair: function; DPCTLService_GetDPCPPVersion
-.. _doxid-d8/dff/group__Service_1ga644b14f0bee03243f0ce30679e3c8d41:
+.. _doxid-d8/d1a/group___service_1ga644b14f0bee03243f0ce30679e3c8d41:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

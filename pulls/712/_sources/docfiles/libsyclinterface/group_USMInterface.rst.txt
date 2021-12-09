@@ -1,5 +1,5 @@
 .. index:: pair: group; USM Interface
-.. _doxid-d9/d27/group__USMInterface:
+.. _doxid-df/d6e/group___u_s_m_interface:
 
 USM Interface
 =============
@@ -20,69 +20,69 @@ Overview
 	// global functions
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
-	:ref:`DPCTLaligned_alloc_device<doxid-d9/d27/group__USMInterface_1ga40c3e68d157d775bbe6daa188b84b3e3>`(
+	:ref:`DPCTLaligned_alloc_device<doxid-df/d6e/group___u_s_m_interface_1ga40c3e68d157d775bbe6daa188b84b3e3>`(
 		size_t alignment,
 		size_t size,
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
-	:ref:`DPCTLaligned_alloc_host<doxid-d9/d27/group__USMInterface_1ga327bba1e6a5a1f6922e74ab6914e58ff>`(
+	:ref:`DPCTLaligned_alloc_host<doxid-df/d6e/group___u_s_m_interface_1ga327bba1e6a5a1f6922e74ab6914e58ff>`(
 		size_t alignment,
 		size_t size,
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
-	:ref:`DPCTLaligned_alloc_shared<doxid-d9/d27/group__USMInterface_1ga7c3e58848a979723dc350d2a8016edd8>`(
+	:ref:`DPCTLaligned_alloc_shared<doxid-df/d6e/group___u_s_m_interface_1ga7c3e58848a979723dc350d2a8016edd8>`(
 		size_t alignment,
 		size_t size,
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
 		);
 
 	DPCTL_API void
-	:ref:`DPCTLfree_with_context<doxid-d9/d27/group__USMInterface_1gad1da9c1cb7fca0b3c1bc0edc9467c0a9>`(
+	:ref:`DPCTLfree_with_context<doxid-df/d6e/group___u_s_m_interface_1gad1da9c1cb7fca0b3c1bc0edc9467c0a9>`(
 		__dpctl_take :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef
 		);
 
 	DPCTL_API void
-	:ref:`DPCTLfree_with_queue<doxid-d9/d27/group__USMInterface_1ga0d8486b09ea0a677a3fb6cbe677f8633>`(
+	:ref:`DPCTLfree_with_queue<doxid-df/d6e/group___u_s_m_interface_1ga0d8486b09ea0a677a3fb6cbe677f8633>`(
 		__dpctl_take :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
-	:ref:`DPCTLmalloc_device<doxid-d9/d27/group__USMInterface_1gac1927ffcb3ca7ef43366a8b64e211ef2>`(
+	:ref:`DPCTLmalloc_device<doxid-df/d6e/group___u_s_m_interface_1gac1927ffcb3ca7ef43366a8b64e211ef2>`(
 		size_t size,
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
-	:ref:`DPCTLmalloc_host<doxid-d9/d27/group__USMInterface_1ga699b56970ac78f3b3ca87a2ad6ff4615>`(
+	:ref:`DPCTLmalloc_host<doxid-df/d6e/group___u_s_m_interface_1ga699b56970ac78f3b3ca87a2ad6ff4615>`(
 		size_t size,
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`
-	:ref:`DPCTLmalloc_shared<doxid-d9/d27/group__USMInterface_1ga7c9316842db74f4730fab04a4e4f4eb5>`(
+	:ref:`DPCTLmalloc_shared<doxid-df/d6e/group___u_s_m_interface_1ga7c9316842db74f4730fab04a4e4f4eb5>`(
 		size_t size,
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef
 		);
 
 	DPCTL_API :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
-	:ref:`DPCTLUSM_GetPointerDevice<doxid-d9/d27/group__USMInterface_1ga7ebb5012408e40e3e78b4da551da8412>`(
+	:ref:`DPCTLUSM_GetPointerDevice<doxid-df/d6e/group___u_s_m_interface_1ga7ebb5012408e40e3e78b4da551da8412>`(
 		__dpctl_keep const :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef
 		);
 
 	const DPCTL_API char*
-	:ref:`DPCTLUSM_GetPointerType<doxid-d9/d27/group__USMInterface_1ga1e8658653d946578f1b4deb3333ec41c>`(
+	:ref:`DPCTLUSM_GetPointerType<doxid-df/d6e/group___u_s_m_interface_1ga1e8658653d946578f1b4deb3333ec41c>`(
 		__dpctl_keep const :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef
 		);
 
-.. _details-d9/d27/group__USMInterface:
+.. _details-df/d6e/group___u_s_m_interface:
 
 Detailed Documentation
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -93,7 +93,7 @@ Global Functions
 ----------------
 
 .. index:: pair: function; DPCTLaligned_alloc_device
-.. _doxid-d9/d27/group__USMInterface_1ga40c3e68d157d775bbe6daa188b84b3e3:
+.. _doxid-df/d6e/group___u_s_m_interface_1ga40c3e68d157d775bbe6daa188b84b3e3:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -136,7 +136,7 @@ Create USM device memory.
 The pointer to USM device memory with requested alignment. On failure, returns nullptr.
 
 .. index:: pair: function; DPCTLaligned_alloc_host
-.. _doxid-d9/d27/group__USMInterface_1ga327bba1e6a5a1f6922e74ab6914e58ff:
+.. _doxid-df/d6e/group___u_s_m_interface_1ga327bba1e6a5a1f6922e74ab6914e58ff:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -179,7 +179,7 @@ Create USM host memory.
 The pointer to USM host memory with the requested alignment. On failure, returns nullptr.
 
 .. index:: pair: function; DPCTLaligned_alloc_shared
-.. _doxid-d9/d27/group__USMInterface_1ga7c3e58848a979723dc350d2a8016edd8:
+.. _doxid-df/d6e/group___u_s_m_interface_1ga7c3e58848a979723dc350d2a8016edd8:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -222,7 +222,7 @@ Create USM shared memory.
 The pointer to USM shared memory with the requested alignment. On failure, returns nullptr.
 
 .. index:: pair: function; DPCTLfree_with_context
-.. _doxid-d9/d27/group__USMInterface_1gad1da9c1cb7fca0b3c1bc0edc9467c0a9:
+.. _doxid-df/d6e/group___u_s_m_interface_1gad1da9c1cb7fca0b3c1bc0edc9467c0a9:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -253,7 +253,7 @@ Free USM memory.
 		- Sycl context reference to use.
 
 .. index:: pair: function; DPCTLfree_with_queue
-.. _doxid-d9/d27/group__USMInterface_1ga0d8486b09ea0a677a3fb6cbe677f8633:
+.. _doxid-df/d6e/group___u_s_m_interface_1ga0d8486b09ea0a677a3fb6cbe677f8633:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -286,7 +286,7 @@ USM pointer must have been allocated using the same context as the one used to c
 		- Sycl queue reference to use.
 
 .. index:: pair: function; DPCTLmalloc_device
-.. _doxid-d9/d27/group__USMInterface_1gac1927ffcb3ca7ef43366a8b64e211ef2:
+.. _doxid-df/d6e/group___u_s_m_interface_1gac1927ffcb3ca7ef43366a8b64e211ef2:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -323,7 +323,7 @@ Create USM device memory.
 The pointer to USM device memory. On failure, returns nullptr.
 
 .. index:: pair: function; DPCTLmalloc_host
-.. _doxid-d9/d27/group__USMInterface_1ga699b56970ac78f3b3ca87a2ad6ff4615:
+.. _doxid-df/d6e/group___u_s_m_interface_1ga699b56970ac78f3b3ca87a2ad6ff4615:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -360,7 +360,7 @@ Create USM host memory.
 The pointer to USM host memory. On failure, returns nullptr.
 
 .. index:: pair: function; DPCTLmalloc_shared
-.. _doxid-d9/d27/group__USMInterface_1ga7c9316842db74f4730fab04a4e4f4eb5:
+.. _doxid-df/d6e/group___u_s_m_interface_1ga7c9316842db74f4730fab04a4e4f4eb5:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -397,7 +397,7 @@ Create USM shared memory.
 The pointer to USM shared memory. On failure, returns nullptr.
 
 .. index:: pair: function; DPCTLUSM_GetPointerDevice
-.. _doxid-d9/d27/group__USMInterface_1ga7ebb5012408e40e3e78b4da551da8412:
+.. _doxid-df/d6e/group___u_s_m_interface_1ga7ebb5012408e40e3e78b4da551da8412:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -434,7 +434,7 @@ Get the device associated with USM pointer.
 A DPCTLSyclDeviceRef pointer to the sycl device.
 
 .. index:: pair: function; DPCTLUSM_GetPointerType
-.. _doxid-d9/d27/group__USMInterface_1ga1e8658653d946578f1b4deb3333ec41c:
+.. _doxid-df/d6e/group___u_s_m_interface_1ga1e8658653d946578f1b4deb3333ec41c:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
