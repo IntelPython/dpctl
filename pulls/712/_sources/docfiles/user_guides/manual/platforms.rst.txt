@@ -20,7 +20,7 @@ example it is possible to print out metadata about a platform.
     :start-after: # START
     :end-before: # END
 
-The example is can be executed as follows:
+The example can be executed as follows:
 
 .. code-block:: bash
 

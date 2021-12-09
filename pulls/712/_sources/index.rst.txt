@@ -10,11 +10,10 @@ How-to Guides
    docfiles/user_guides/QuickStart
    docfiles/user_guides/UserManual
 
-API Documentation
-=================
 
 .. toctree::
    :maxdepth: 1
+   :caption: API Documentation
 
    docfiles/dpctl/dpctl_pyapi
    docfiles/libsyclinterface/index
