@@ -54,7 +54,7 @@ such as the `SYCL 2020 spec`_ for more details.
     contain multiple devices. Note that the same physical hardware (say, a GPU)
     may be reflected as two separate devices if they can be programmed by more
     than one platform, *e.g.*, the same GPU hardware can be listed as an
-    OenCL GPU device and a Level-Zero GPU device.
+    OpenCL GPU device and a Level-Zero GPU device.
 
 * **Context**
    A context holds the run-time information needed to operate on a device or a
