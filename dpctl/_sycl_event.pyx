@@ -259,13 +259,15 @@ cdef class SyclEvent(_SyclEvent):
         **SyclEventRef**. The ownership of the pointer inside the capsule is
         passed to the caller, and pointer is deleted when the capsule goes out
         of scope.
+
         Returns:
             :class:`pycapsule`: A capsule object storing a copy of the
-            ``cl::sycl::event`` pointer belonging to thus
+            ``cl::sycl::event`` pointer belonging to a
             :class:`dpctl.SyclEvent` instance.
         Raises:
             ValueError: If the ``DPCTLEvent_Copy`` fails to copy the
                         ``cl::sycl::event`` pointer.
+
         """
         cdef DPCTLSyclEventRef ERef = NULL
         ERef = DPCTLEvent_Copy(self._event_ref)

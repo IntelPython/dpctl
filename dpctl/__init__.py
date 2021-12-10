@@ -133,8 +133,8 @@ __all__ += [
 
 
 def get_include():
-    """
-    Return the directory that contains the dpctl *.h header files.
+    r"""
+    Return the directory that contains the dpctl \*.h header files.
 
     Extension modules that need to be compiled against dpctl should use
     this function to locate the appropriate include directory.
