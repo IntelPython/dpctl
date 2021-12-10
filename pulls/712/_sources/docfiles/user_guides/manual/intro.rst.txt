@@ -29,10 +29,12 @@ and native extension developers should refer to the programmer's guide.
 Basic Concepts
 --------------
 
-Although dpctl is based on SYCL and shares the same basic concepts, users of
-dpctl need not have any prior experience with SYCL. This section recaps the most
-important basic concepts. Readers should refer to a more topical SYCL reference
-such as the `SYCL 2020 spec`_ for more details.
+The section introduces the basic concepts for XPU management used by dpctl.
+As dpctl is based on SYCL the concepts should be familiar to users with prior
+experience with SYCL. However, users of dpctl need not have any prior experience
+with SYCL and the concepts presented here should be self-sufficient. We do not
+go into all the SYCL-level details here and if needed readers should refer to a
+more topical SYCL reference such as the `SYCL 2020 spec`_.
 
 * **Heterogeneous computing**
     Refers to using multiple devices in a program.
