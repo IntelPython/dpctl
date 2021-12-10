@@ -8,6 +8,9 @@ dpctl.utils
 
 .. automodule:: dpctl.utils
 
+
+
+
 Functions
 ---------
 
@@ -16,6 +19,9 @@ Functions
 
     * - :func:`get_execution_queue()`
       - Given a list of :class:`dpctl.SyclQueue` objects returns the execution queue under compute follows data paradigm, or returns `None` if queues are not equivalent.
+
+
+
 
 
 

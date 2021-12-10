@@ -8,6 +8,7 @@ dpctl
 
 .. automodule:: dpctl
 
+
 Sub-modules
 -----------
 
@@ -30,6 +31,7 @@ Sub-modules
       - **Data Parallel Tensor Collection** is a collection of tensor implementations that implement Python data API (https://data-apis.github.io/array-api/latest/) standard.
     * - :ref:`dpctl.utils_pyapi`
       - A collection of utility functions.
+
 
 Classes
 -------
@@ -59,6 +61,7 @@ Classes
       - Python class representing ``cl::sycl::queue``. There are multiple ways to create a :class:`dpctl.SyclQueue` object: - Invoking the constructor with no arguments creates a context using the default selector.
     * - :class:`SyclTimer`
       - Python class to measure device time of execution of commands submitted to :class:`dpctl.SyclQueue` as well as the wall-time.
+
 
 
 Queue Management Functions
@@ -116,7 +119,7 @@ Other Functions
     :widths: 25,50
 
     * - :func:`get_include()`
-      - Return the directory that contains the dpctl *.h header files.
+      - Return the directory that contains the dpctl \*.h header files.
     * - :func:`get_num_activated_queues()`
       - Returns the number of currently activated queues for this thread.
     * - :func:`get_platforms()`
@@ -127,6 +130,7 @@ Other Functions
       - Prints out the list of available SYCL platforms, and optionally extra metadata about each platform.
     * - :func:`set_global_queue()`
       - Sets the global queue to the SYCL queue specified explicitly, or created from given arguments.
+
 
 Enums
 -----
@@ -141,6 +145,7 @@ Enums
     * - :class:`event_status_type`
       - An enumeration of SYCL event states.
 
+
 Exceptions
 ----------
 
@@ -153,6 +158,7 @@ Exceptions
       - A SyclKernelSubmitError exception is raised when the provided :class:`.SyclKernel` could not be submitted to the :class:`.SyclQueue`.
     * - :class:`SyclQueueCreationError`
       - A SyclQueueCreationError exception is raised when a :class:`.SyclQueue` could not be created. :class:`.SyclQueue` creation can fail if the filter string is invalid, or the backend or device type values are not supported.
+
 
 
 .. include:: ../urls.rst

@@ -7,6 +7,8 @@ dpctl.program
 .. currentmodule:: dpctl.program
 
 .. automodule:: dpctl.program
+
+
 Classes
 -------
 
@@ -25,6 +27,7 @@ Classes
       - Wraps a ``sycl::program`` object created from an OpenCL interoperability program.
 
 
+
 Functions
 ---------
 
@@ -37,6 +40,8 @@ Functions
       - Creates a Sycl interoperability program from an SPIR-V binary.
 
 
+
+
 Exceptions
 ----------
 
@@ -45,6 +50,7 @@ Exceptions
 
     * - :class:`SyclProgramCompilationError`
       - This exception is raised when a ``sycl::program`` could not be built from either a SPIR-V binary file or a string source.
+
 
 
 .. include:: ../urls.rst

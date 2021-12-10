@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclEvent &mdash; Data-parallel Control (dpctl) 0.12.0dev1+89.g7fecbd14 documentation</title>
+  <title>dpctl.SyclEvent &mdash; Data-parallel Control (dpctl) 0.12.0dev1+90.g6bf0dbe documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+89.g7fecbd14
+                0.12.0dev1+90.g6bf0dbe
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -199,7 +199,7 @@ named <code class="docutils literal notranslate"><span class="pre">PyCapsule</sp
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclEvent._get_capsule" title="dpctl.SyclEvent._get_capsule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_capsule</span></code></a></p></td>
-<td><p>Returns a copy of the underlying <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code> pointer as a void pointer inside a named <code class="docutils literal notranslate"><span class="pre">PyCapsule</span></code> that has the name <strong>SyclEventRef</strong>. The ownership of the pointer inside the capsule is passed to the caller, and pointer is deleted when the capsule goes out of scope. :returns: A capsule object storing a copy of the           <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code> pointer belonging to thus           <a class="reference internal" href="#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a> instance. :rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">pycapsule</span></code>.</p></td>
+<td><p>Returns a copy of the underlying <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code> pointer as a void pointer inside a named <code class="docutils literal notranslate"><span class="pre">PyCapsule</span></code> that has the name <strong>SyclEventRef</strong>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -294,18 +294,18 @@ on this event.</p>
 pointer inside a named <code class="docutils literal notranslate"><span class="pre">PyCapsule</span></code> that has the name
 <strong>SyclEventRef</strong>. The ownership of the pointer inside the capsule is
 passed to the caller, and pointer is deleted when the capsule goes out
-of scope.
-:returns: A capsule object storing a copy of the</p>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code> pointer belonging to thus
-<a class="reference internal" href="#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a> instance.</p>
-</div></blockquote>
+of scope.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pycapsule</span></code></p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A capsule object storing a copy of the
+<code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code> pointer belonging to a
+<a class="reference internal" href="#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a> instance.</p>
 </dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If the <code class="docutils literal notranslate"><span class="pre">DPCTLEvent_Copy</span></code> fails to copy the
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pycapsule</span></code></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the <code class="docutils literal notranslate"><span class="pre">DPCTLEvent_Copy</span></code> fails to copy the
     <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code> pointer.</p>
 </dd>
 </dl>
@@ -343,7 +343,7 @@ of scope.
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+89.g7fecbd14
+      v: 0.12.0dev1+90.g6bf0dbe
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
