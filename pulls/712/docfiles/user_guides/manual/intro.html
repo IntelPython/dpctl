@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Introduction &mdash; Data-parallel Control (dpctl) 0.12.0dev1+104.g7b6592af documentation</title>
+  <title>Introduction &mdash; Data-parallel Control (dpctl) 0.12.0dev1+105.g67f4c385 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+104.g7b6592af
+                0.12.0dev1+105.g67f4c385
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -101,7 +101,7 @@ that architecture from Python.</p>
 <p>In its current form, dpctl relies on certain DPC++ extensions of SYCL standard.
 Moreover, the binary distribution of dpctl uses the proprietary Intel(R) oneAPI
 DPC++ runtime bundled as part of oneAPI and supports Intel XPU devices only.
-However, dpctl is compatible with the runtime of open-source DPC++ sycl bundle
+However, dpctl is compatible with the runtime of open-source DPC++ SYCL bundle
 that can be compiled to support a wide range of architectures including CUDA,
 AMD ROC, and HIP.</p>
 <p>The user guide introduces the core features of dpctl and the underlying
@@ -110,24 +110,63 @@ and native extension developers should refer to the programmer’s guide.</p>
 </section>
 <section id="basic-concepts">
 <h1>Basic Concepts<a class="headerlink" href="#basic-concepts" title="Permalink to this headline"></a></h1>
-<p>Every program starts by running on a <strong>host</strong>, and most of the lines
-of code in a program, in particular lines of code implementing the
-Python interpreter itself, are usually for the host. Hosts are
-customarily CPUs.</p>
-<p>Host connected to one or more <strong>devices</strong> (XPUs) programmable with a
-specific driver is referred to as a <strong>platform</strong>. These devices can
-have different architectures (CPUs, GPUs, FPGA, ASICs, DSP), but can
-be programmed using the same unified programming model, <a href="#id2"><span class="problematic" id="id3">`oneAPI`_</span></a> .</p>
-<p>Note that the same physical hardware (say, a GPU) may be reflected as two
-separate devices if they can be programmed by more than one driver,
-e.g. one can encounter an OpenCL GPU device and a Level-Zero GPU
-device. Heterogeneous computing refers to using multiple devices in a
-program.</p>
-<p><strong>Context</strong> holds run-time information needed to operate on a device
-or a group of devices, and a <strong>queue</strong> holds command groups to be
-executed on the associated device.</p>
-<p>Data parallelism enables access to parallel resources in a modern
-heterogeous system.</p>
+<p>Although dpctl is based on SYCL and shares the same basic concepts, users of
+dpctl need not have any prior experience with SYCL. This section recaps the most
+important basic concepts. Readers should refer to a more topical SYCL reference
+such as the <a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html">SYCL 2020 spec</a> for more details.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>Heterogeneous computing</strong></dt><dd><p>Refers to using multiple devices in a program.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Host</strong></dt><dd><p>Every program starts by running on a host, and most of the lines of code in
+a program, in particular lines of code implementing the Python interpreter
+itself, are usually for the host. Hosts are customarily CPUs.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Device</strong></dt><dd><p>A device is an XPU connected to a host that is programmable with a specific
+device driver. Different types of devices can have different architectures
+(CPUs, GPUs, FPGA, ASICs, DSP), but are programmable using the same
+<a class="reference external" href="https://www.oneapi.io/">oneAPI</a>  programming model.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Platform</strong></dt><dd><p>A device driver installed on the system is termed as a platform. As multiple
+devices of the same type can share the same device driver, a platform may
+contain multiple devices. Note that the same physical hardware (say, a GPU)
+may be reflected as two separate devices if they can be programmed by more
+than one platform, <em>e.g.</em>, the same GPU hardware can be listed as an
+OenCL GPU device and a Level-Zero GPU device.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Context</strong></dt><dd><p>A context holds the run-time information needed to operate on a device or a
+group of devices.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Queue</strong></dt><dd><p>A queue is needed to execute any computation on a device.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Event</strong></dt><dd><p><em>Needs updating</em></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>USM</strong></dt><dd><p><em>Needs updating</em></p>
+</dd>
+</dl>
+</li>
+</ul>
 <div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
 <ol class="arabic simple">
@@ -168,7 +207,7 @@ Events, and USM.</p></li>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+104.g7b6592af
+      v: 0.12.0dev1+105.g67f4c385
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
