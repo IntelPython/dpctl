@@ -4,21 +4,23 @@ Introduction
 ------------
 
 The Data Parallel Control (dpctl) package enables Python application developers
-and extension developers to access the data-parallel computing resource
-available on a modern heterogeneous system. Dpctl's objective is to provide
-a runtime to control or to manage data-parallel devices without the need for
-other Python packages to create such a runtime themselves. The runtime is built
-on top of the C++ SYCL standard and is envisioned to be both vendor and
-architecture agnostic. If the underlying SYCL runtime supports a type of
-architecture, the dpctl runtime will allow managing that architecture from
-Python.
+and extension developers to access a data-parallel computing resource or XPU
+available on a modern heterogeneous system. The "X" in XPU can stand for
+a diverse range of compute architectures such as a CPU, GPU, FPGA, *etc.*, and
+can be tailored to the needs of an application. Dpctl's objective is to provide
+a Python runtime to control or to manage an XPU from any Python application or
+library, without the need for other Python packages to develop such a runtime
+themselves. The runtime is built on top of the C++ SYCL standard and is
+envisioned to be both vendor and architecture agnostic. If the underlying SYCL
+runtime supports a type of architecture, the dpctl runtime will allow managing
+that architecture from Python.
 
-In its current implementation, dpctl supports only the DPC++ SYCL
-implementation. Thus, support for architectures is limited to those supported by
-DPC++. By default, dpctl uses the proprietary DPC++ runtime bundled as part of
-oneAPI and supports Intel XPU devices only. However, dpctl is compatible with
-the open-source DPC++ runtime that supports a wide range of architectures
-including CUDA, AMD ROC, and HIP.
+In its current form, dpctl relies on certain DPC++ extensions of SYCL standard.
+Moreover, the binary distribution of dpctl uses the proprietary Intel(R) oneAPI
+DPC++ runtime bundled as part of oneAPI and supports Intel XPU devices only.
+However, dpctl is compatible with the runtime of open-source DPC++ sycl bundle
+that can be compiled to support a wide range of architectures including CUDA,
+AMD ROC, and HIP.
 
 The user guide introduces the core features of dpctl and the underlying
 concepts. The guide is meant primarily for users of the Python package. Library
@@ -28,7 +30,9 @@ Basic Concepts
 --------------
 .. todo::
 
-    Introduce the basic concepts of Platforms, Devices, Contexts, Queues,
-    Events, and USM. Introduce common terms: XPU, host.
+    #. Introduce the basic concepts of Platforms, Devices, Contexts, Queues,
+       Events, and USM.
+    #. Introduce common terms: XPU, host.
+    #. Add citations/references
 
 .. Go over dpctl and dpctl tensor
