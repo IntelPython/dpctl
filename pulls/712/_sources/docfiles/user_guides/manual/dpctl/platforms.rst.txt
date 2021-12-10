@@ -15,7 +15,7 @@ The platforms available on a system can be queried using the
 :func:`dpctl.lsplatform` function. In addition, as illustrated in the following
 example it is possible to print out metadata about a platform.
 
-.. literalinclude:: ../../../../examples/python/lsplatform.py
+.. literalinclude:: ../../../../../examples/python/lsplatform.py
     :language: python
     :start-after: # START
     :end-before: # END
@@ -34,4 +34,4 @@ The possible output for the example may be:
     The verbosity for the output can be controlled using the ``verbosity``
     keyword argument. Refer :func:`dpctl.lsplatform`.
 
-.. include:: ../../urls.rst
+.. include:: ../../../urls.rst
