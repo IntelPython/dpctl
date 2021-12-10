@@ -28,6 +28,30 @@ and native extension developers should refer to the programmer's guide.
 
 Basic Concepts
 --------------
+
+Every program starts by running on a **host**, and most of the lines
+of code in a program, in particular lines of code implementing the
+Python interpreter itself, are usually for the host. Hosts are
+customarily CPUs.
+
+Host connected to one or more **device**s (XPUs) programmable with a
+specific driver is referred to as a **platform**. These devices can
+have different architectures (CPUs, GPUs, FPGA, ASICs, DSP), but can
+be programmed using the same unified programming model, `oneAPI`_.
+
+Note that the same physical hardware (say GPU) may be reflected as two
+separate devices if they can be programmed by more than one driver,
+e.g. one can encounter an OpenCL GPU device and a Level-Zero GPU
+device. Heterogeneous computing refers to using multiple devices in a
+program.
+
+**Context** holds run-time information needed to operate on a device
+or a group of devices, and a **queue** holds command groups to be
+executed on the associated device.
+
+Data parallelism enables access to parallel resources in a modern
+heterogeous system.
+
 .. todo::
 
     #. Introduce the basic concepts of Platforms, Devices, Contexts, Queues,

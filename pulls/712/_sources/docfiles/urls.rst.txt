@@ -1,6 +1,6 @@
 
 .. _buffer protocol: https://docs.python.org/3/c-api/buffer.html
-.. _Data API: https://data-apis.github.io/array-api/latest/
+.. _array API: https://data-apis.github.io/array-api/latest/
 
 .. _Section 4.6: https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes
 .. _SYCL 2020 spec: https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html
@@ -9,3 +9,4 @@
 .. _sycl queue: https://sycl.readthedocs.io/en/latest/iface/queue.html
 .. _sycl event: https://sycl.readthedocs.io/en/latest/iface/event.html
 .. _sycl context: https://sycl.readthedocs.io/en/latest/iface/context.html
+.. _oneAPI: https://www.oneapi.io/
