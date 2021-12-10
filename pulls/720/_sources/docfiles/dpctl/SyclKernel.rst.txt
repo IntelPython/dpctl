@@ -1,0 +1,25 @@
+.. _SyclKernel_api:
+
+########################
+dpctl.program.SyclKernel
+########################
+
+.. currentmodule:: dpctl.program
+
+.. autoclass:: dpctl.program.SyclKernel
+
+    .. rubric:: Public methods:
+
+    .. autoautosummary:: dpctl.program.SyclKernel
+        :methods:
+
+
+Public methods
+--------------
+
+.. autofunction:: dpctl.program.SyclKernel.addressof_ref
+.. autofunction:: dpctl.program.SyclKernel.get_function_name
+.. autofunction:: dpctl.program.SyclKernel.get_num_args
+
+
+.. include:: ../urls.rst
