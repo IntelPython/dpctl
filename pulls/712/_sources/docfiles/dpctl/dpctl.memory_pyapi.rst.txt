@@ -7,6 +7,8 @@ dpctl.memory
 .. currentmodule:: dpctl.memory
 
 .. automodule:: dpctl.memory
+
+
 Classes
 -------
 
@@ -28,6 +30,7 @@ Classes
       - allocates nbytes of USM shared memory.
 
 
+
 Functions
 ---------
 
@@ -36,6 +39,9 @@ Functions
 
     * - :func:`as_usm_memory()`
       - Converts Python object with `__sycl_usm_array_interface__` property to one of :class:`.MemoryUSMShared`, :class:`.MemoryUSMDevice`, or :class:`.MemoryUSMHost` instances depending on the type of USM allocation they represent.
+
+
+
 
 
 

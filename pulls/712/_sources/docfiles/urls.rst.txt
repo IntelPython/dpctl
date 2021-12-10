@@ -1,4 +1,3 @@
-.. __urls:
 
 .. _buffer protocol: https://docs.python.org/3/c-api/buffer.html
 .. _Data API: https://data-apis.github.io/array-api/latest/
