@@ -39,7 +39,6 @@ _cython_builtin_function_or_method_type = type(dpctl.SyclQueue.mro)
 # Dictionary mapping internal module names to a readable string. so that we
 # can use the module name to logically group functions.
 function_groups = {
-    "dpctl._sycl_device_factory": "Device Selection Functions",
     "dpctl._device_selection": "Device Selection Functions",
     "dpctl._sycl_queue_manager": "Queue Management Functions",
     "dpctl.tensor._ctors": "Array Construction",
@@ -237,13 +236,26 @@ def _group_functions(mod):
                         obj,
                     ]
             else:
-                try:
-                    flist = groups["Other Functions"]
-                    flist.append(obj)
-                except KeyError:
-                    groups["Other Functions"] = [
-                        obj,
-                    ]
+                # Special case for _sycl_device_factory
+                if (
+                    obj.__module__ == "dpctl._sycl_device_factory"
+                    and "select_" in obj.__name__
+                ):
+                    try:
+                        flist = groups["Device Selection Functions"]
+                        flist.append(obj)
+                    except KeyError:
+                        groups["Device Selection Functions"] = [
+                            obj,
+                        ]
+                else:
+                    try:
+                        flist = groups["Other Functions"]
+                        flist.append(obj)
+                    except KeyError:
+                        groups["Other Functions"] = [
+                            obj,
+                        ]
     return groups
 
 
@@ -455,6 +467,8 @@ def _generate_module_summary_rst(module):
                 classes.append(cls)
                 class_names.append(mem_tup[0])
         if classes:
+            _write_line(o, ".. _" + mod.__name__.lower() + "_classes:")
+            _write_empty_line(o)
             _write_underlined(o, "Classes", "-")
             _write_empty_line(o)
             _write_hidden_toc(output, class_names)
@@ -511,11 +525,35 @@ def _generate_module_summary_rst(module):
         _write_empty_line(o)
 
     def _write_function_groups_summary(o, mod, groups):
+
         for group in groups:
+            if group != "Other Functions":
+                _write_line(
+                    o,
+                    ".. _"
+                    + mod.__name__.lower()
+                    + "_"
+                    + group.lower().replace(" ", "_")
+                    + ":",
+                )
+                _write_empty_line(o)
+                _write_underlined(o, group, "-")
+                _write_empty_line(o)
+                _write_functions_summary_table(o, mod, groups[group])
+
+        # We want to write "Other Functions" in the end always
+        try:
+            other_fns = groups["Other Functions"]
+            _write_line(
+                o,
+                ".. _" + mod.__name__.lower() + "_other_functions:",
+            )
             _write_empty_line(o)
-            _write_underlined(o, group, "-")
+            _write_underlined(o, "Other Functions", "-")
             _write_empty_line(o)
-            _write_functions_summary_table(o, mod, groups[group])
+            _write_functions_summary_table(o, mod, other_fns)
+        except KeyError:
+            pass
 
     mod = _get_module(module)
 
