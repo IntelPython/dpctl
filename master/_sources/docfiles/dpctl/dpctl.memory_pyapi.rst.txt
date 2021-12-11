@@ -9,6 +9,8 @@ dpctl.memory
 .. automodule:: dpctl.memory
 
 
+.. _dpctl.memory_classes:
+
 Classes
 -------
 
@@ -30,6 +32,7 @@ Classes
       - allocates nbytes of USM shared memory.
 
 
+.. _dpctl.memory_functions:
 
 Functions
 ---------

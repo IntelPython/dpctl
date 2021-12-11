@@ -9,6 +9,8 @@ dpctl.program
 .. automodule:: dpctl.program
 
 
+.. _dpctl.program_classes:
+
 Classes
 -------
 
@@ -27,6 +29,7 @@ Classes
       - Wraps a ``sycl::program`` object created from an OpenCL interoperability program.
 
 
+.. _dpctl.program_functions:
 
 Functions
 ---------

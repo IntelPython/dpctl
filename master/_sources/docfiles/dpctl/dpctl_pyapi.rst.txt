@@ -33,6 +33,8 @@ Sub-modules
       - A collection of utility functions.
 
 
+.. _dpctl_classes:
+
 Classes
 -------
 
@@ -63,6 +65,7 @@ Classes
       - Python class to measure device time of execution of commands submitted to :class:`dpctl.SyclQueue` as well as the wall-time.
 
 
+.. _dpctl_queue_management_functions:
 
 Queue Management Functions
 --------------------------
@@ -79,6 +82,7 @@ Queue Management Functions
     * - :func:`get_current_queue()`
       - Returns the currently activate SYCL queue as a new SyclQueue object.
 
+.. _dpctl_device_selection_functions:
 
 Device Selection Functions
 --------------------------
@@ -86,18 +90,6 @@ Device Selection Functions
 .. list-table::
     :widths: 25,50
 
-    * - :func:`get_devices()`
-      - Returns a list of :class:`dpctl.SyclDevice` instances selected based on the given :class:`dpctl.device_type` and :class:`dpctl.backend_type` values.
-    * - :func:`get_num_devices()`
-      - A helper function to return the number of SYCL devices of a given :class:`dpctl.device_type` and :class:`dpctl.backend_type`.
-    * - :func:`has_accelerator_devices()`
-      - A helper function to check if there are any SYCL Accelerator devices available.
-    * - :func:`has_cpu_devices()`
-      - A helper function to check if there are any SYCL CPU devices available.
-    * - :func:`has_gpu_devices()`
-      - A helper function to check if there are any SYCL GPU devices available.
-    * - :func:`has_host_device()`
-      - A helper function to check if there are any SYCL Host devices available.
     * - :func:`select_accelerator_device()`
       - A wrapper for SYCL's ``accelerator_selector`` class.
     * - :func:`select_cpu_device()`
@@ -111,6 +103,7 @@ Device Selection Functions
     * - :func:`select_host_device()`
       - A wrapper for SYCL's ``host_selector`` class.
 
+.. _dpctl_other_functions:
 
 Other Functions
 ---------------
@@ -118,12 +111,24 @@ Other Functions
 .. list-table::
     :widths: 25,50
 
+    * - :func:`get_devices()`
+      - Returns a list of :class:`dpctl.SyclDevice` instances selected based on the given :class:`dpctl.device_type` and :class:`dpctl.backend_type` values.
     * - :func:`get_include()`
       - Return the directory that contains the dpctl \*.h header files.
     * - :func:`get_num_activated_queues()`
       - Returns the number of currently activated queues for this thread.
+    * - :func:`get_num_devices()`
+      - A helper function to return the number of SYCL devices of a given :class:`dpctl.device_type` and :class:`dpctl.backend_type`.
     * - :func:`get_platforms()`
       - Returns a list of all available SYCL platforms on the system.
+    * - :func:`has_accelerator_devices()`
+      - A helper function to check if there are any SYCL Accelerator devices available.
+    * - :func:`has_cpu_devices()`
+      - A helper function to check if there are any SYCL CPU devices available.
+    * - :func:`has_gpu_devices()`
+      - A helper function to check if there are any SYCL GPU devices available.
+    * - :func:`has_host_device()`
+      - A helper function to check if there are any SYCL Host devices available.
     * - :func:`is_in_device_context()`
       - Checks if the control is inside a :func:`dpctl.device_context()` scope.
     * - :func:`lsplatform()`
