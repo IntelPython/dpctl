@@ -1,0 +1,24 @@
+.. _device_selection:
+
+################
+Device Selection
+################
+
+Device selection is the most fundamental operation provided by dpctl. Most
+other operations, such as queue creation and kernel submission, depend on first
+selecting a device. Dpctl offers several ways to programmatically select a
+device that are discussed in this section.
+
+Selecting a specific type of device
+-----------------------------------
+
+If a user needs to select a specific type of device such as a GPU, they can
+directly use one of the helper functions included inside dpctl. Dpctl includes
+:ref:`helper functions <dpctl_device_selection_functions>` for selecting
+a ``host``, a ``cpu``, a ``gpu``, an ``accelerator``, or the ``default`` device.
+These functions are analogous to SYCL's built-in `sycl::device_selector`_
+classes. The scoring and selection of a specific device when multiple devices of
+the same type are available on a system is deferred to the underlying SYCL
+runtime.
+
+.. include:: ../../../urls.rst

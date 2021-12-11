@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Basic Concepts &mdash; Data-parallel Control (dpctl) 0.12.0dev1+110.gf5d221fe documentation</title>
+  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.12.0dev1+110.gf5d221fe documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -21,8 +21,8 @@
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="Device Selection" href="device_selection.html" />
-    <link rel="prev" title="dpctl" href="intro.html" /> 
+    <link rel="next" title="Platform" href="platforms.html" />
+    <link rel="prev" title="Basic Concepts" href="basic_concepts.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,8 +48,8 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../../UserManual.html">User Manual</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="intro.html">dpctl</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="intro.html#table-of-contents">Table of contents</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Basic Concepts</a></li>
-<li class="toctree-l4"><a class="reference internal" href="device_selection.html">Device Selection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="basic_concepts.html">Basic Concepts</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Device Selection</a></li>
 <li class="toctree-l4"><a class="reference internal" href="platforms.html">Platform</a></li>
 <li class="toctree-l4"><a class="reference internal" href="devices.html">Device</a></li>
 </ul>
@@ -81,9 +81,9 @@
       <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../UserManual.html">User Manual</a> &raquo;</li>
           <li><a href="intro.html">dpctl</a> &raquo;</li>
-      <li>Basic Concepts</li>
+      <li>Device Selection</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../../../_sources/docfiles/user_guides/manual/dpctl/basic_concepts.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../_sources/docfiles/user_guides/manual/dpctl/device_selection.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -91,84 +91,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="basic-concepts">
-<span id="id1"></span><h1>Basic Concepts<a class="headerlink" href="#basic-concepts" title="Permalink to this headline"></a></h1>
-<p>The section introduces the basic concepts for XPU management used by dpctl.
-As dpctl is based on SYCL the concepts should be familiar to users with prior
-experience with SYCL. However, users of dpctl need not have any prior experience
-with SYCL and the concepts presented here should be self-sufficient. We do not
-go into all the SYCL-level details here and if needed readers should refer to a
-more topical SYCL reference such as the <a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html">SYCL 2020 spec</a>.</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt><strong>Heterogeneous computing</strong></dt><dd><p>Refers to using multiple devices in a program.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><strong>Host</strong></dt><dd><p>Every program starts by running on a host, and most of the lines of code in
-a program, in particular lines of code implementing the Python interpreter
-itself, are usually for the host. Hosts are customarily CPUs.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><strong>Device</strong></dt><dd><p>A device is an XPU connected to a host that is programmable with a specific
-device driver. Different types of devices can have different architectures
-(CPUs, GPUs, FPGA, ASICs, DSP), but are programmable using the same
-<a class="reference external" href="https://www.oneapi.io/">oneAPI</a>  programming model.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><strong>Platform</strong></dt><dd><p>A device driver installed on the system is termed as a platform. As multiple
-devices of the same type can share the same device driver, a platform may
-contain multiple devices. Note that the same physical hardware (say, a GPU)
-may be reflected as two separate devices if they can be programmed by more
-than one platform, <em>e.g.</em>, the same GPU hardware can be listed as an
-OpenCL GPU device and a Level-Zero GPU device.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><strong>Context</strong></dt><dd><p>A context holds the run-time information needed to operate on a device or a
-group of devices.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><strong>Queue</strong></dt><dd><p>A queue is needed to execute any computation on a device.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><strong>Event</strong></dt><dd><p><em>Needs updating</em></p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><strong>USM</strong></dt><dd><p><em>Needs updating</em></p>
-</dd>
-</dl>
-</li>
-</ul>
-<div class="admonition-todo admonition" id="id2">
-<p class="admonition-title">Todo</p>
-<ol class="arabic simple">
-<li><p>Introduce the basic concepts of Platforms, Devices, Contexts, Queues,
-Events, and USM.</p></li>
-<li><p>Introduce common terms: XPU, host.</p></li>
-<li><p>Add citations/references</p></li>
-</ol>
-</div>
+  <section id="device-selection">
+<span id="id1"></span><h1>Device Selection<a class="headerlink" href="#device-selection" title="Permalink to this headline"></a></h1>
+<p>Device selection is the most fundamental operation provided by dpctl. Most
+other operations, such as queue creation and kernel submission, depend on first
+selecting a device. Dpctl offers several ways to programmatically select a
+device that are discussed in this section.</p>
+<section id="selecting-a-specific-type-of-device">
+<h2>Selecting a specific type of device<a class="headerlink" href="#selecting-a-specific-type-of-device" title="Permalink to this headline"></a></h2>
+<p>If a user needs to select a specific type of device such as a GPU, they can
+directly use one of the helper functions included inside dpctl. Dpctl includes
+<span class="xref std std-ref">helper functions</span> for selecting
+a <code class="docutils literal notranslate"><span class="pre">host</span></code>, a <code class="docutils literal notranslate"><span class="pre">cpu</span></code>, a <code class="docutils literal notranslate"><span class="pre">gpu</span></code>, an <code class="docutils literal notranslate"><span class="pre">accelerator</span></code>, or the <code class="docutils literal notranslate"><span class="pre">default</span></code> device.
+These functions are analogous to SYCL’s built-in <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device-selector.html">sycl::device_selector</a>
+classes. The scoring and selection of a specific device when multiple devices of
+the same type are available on a system is deferred to the underlying SYCL
+runtime.</p>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="intro.html" class="btn btn-neutral float-left" title="dpctl" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="device_selection.html" class="btn btn-neutral float-right" title="Device Selection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="basic_concepts.html" class="btn btn-neutral float-left" title="Basic Concepts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="platforms.html" class="btn btn-neutral float-right" title="Platform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

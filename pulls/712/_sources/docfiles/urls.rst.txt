@@ -5,6 +5,7 @@
 .. _Section 4.6: https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes
 .. _SYCL 2020 spec: https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html
 .. _sycl::platform: https://sycl.readthedocs.io/en/latest/iface/platform.html
+.. _sycl::device_selector: https://sycl.readthedocs.io/en/latest/iface/device-selector.html
 .. _sycl device: https://sycl.readthedocs.io/en/latest/iface/device.html
 .. _sycl queue: https://sycl.readthedocs.io/en/latest/iface/queue.html
 .. _sycl event: https://sycl.readthedocs.io/en/latest/iface/event.html
