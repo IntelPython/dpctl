@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.12.0dev1+110.gf5d221fe documentation</title>
+  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.12.0dev1+112.ge74ecb68 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+110.gf5d221fe
+                0.12.0dev1+112.ge74ecb68
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -139,7 +139,7 @@ to create a queue object for use only within a specific scope.</p>
 </table>
 </section>
 <section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h2>
+<span id="dpctl-classes"></span><h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h2>
 <div class="toctree-wrapper compound">
 </div>
 <table class="colwidths-given docutils align-default">
@@ -170,7 +170,7 @@ to create a queue object for use only within a specific scope.</p>
 </table>
 </section>
 <section id="queue-management-functions">
-<h2>Queue Management Functions<a class="headerlink" href="#queue-management-functions" title="Permalink to this headline"></a></h2>
+<span id="dpctl-queue-management-functions"></span><h2>Queue Management Functions<a class="headerlink" href="#queue-management-functions" title="Permalink to this headline"></a></h2>
 <table class="colwidths-given docutils align-default">
 <colgroup>
 <col style="width: 33%" />
@@ -193,31 +193,13 @@ to create a queue object for use only within a specific scope.</p>
 </table>
 </section>
 <section id="device-selection-functions">
-<h2>Device Selection Functions<a class="headerlink" href="#device-selection-functions" title="Permalink to this headline"></a></h2>
+<span id="dpctl-device-selection-functions"></span><h2>Device Selection Functions<a class="headerlink" href="#device-selection-functions" title="Permalink to this headline"></a></h2>
 <table class="colwidths-given docutils align-default">
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 67%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_devices()</span></code></a></p></td>
-<td><p>Returns a list of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instances selected based on the given <a class="reference internal" href="dpctl_enum_api.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> and <a class="reference internal" href="dpctl_enum_api.html#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> values.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.get_num_devices" title="dpctl.get_num_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_num_devices()</span></code></a></p></td>
-<td><p>A helper function to return the number of SYCL devices of a given <a class="reference internal" href="dpctl_enum_api.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> and <a class="reference internal" href="dpctl_enum_api.html#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a>.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.has_accelerator_devices" title="dpctl.has_accelerator_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_accelerator_devices()</span></code></a></p></td>
-<td><p>A helper function to check if there are any SYCL Accelerator devices available.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.has_cpu_devices" title="dpctl.has_cpu_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_cpu_devices()</span></code></a></p></td>
-<td><p>A helper function to check if there are any SYCL CPU devices available.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.has_gpu_devices" title="dpctl.has_gpu_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_gpu_devices()</span></code></a></p></td>
-<td><p>A helper function to check if there are any SYCL GPU devices available.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.has_host_device" title="dpctl.has_host_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_host_device()</span></code></a></p></td>
-<td><p>A helper function to check if there are any SYCL Host devices available.</p></td>
-</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.select_accelerator_device" title="dpctl.select_accelerator_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">select_accelerator_device()</span></code></a></p></td>
 <td><p>A wrapper for SYCL’s <code class="docutils literal notranslate"><span class="pre">accelerator_selector</span></code> class.</p></td>
 </tr>
@@ -240,21 +222,39 @@ to create a queue object for use only within a specific scope.</p>
 </table>
 </section>
 <section id="other-functions">
-<h2>Other Functions<a class="headerlink" href="#other-functions" title="Permalink to this headline"></a></h2>
+<span id="dpctl-other-functions"></span><h2>Other Functions<a class="headerlink" href="#other-functions" title="Permalink to this headline"></a></h2>
 <table class="colwidths-given docutils align-default">
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 67%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.get_include" title="dpctl.get_include"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_include()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_devices()</span></code></a></p></td>
+<td><p>Returns a list of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instances selected based on the given <a class="reference internal" href="dpctl_enum_api.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> and <a class="reference internal" href="dpctl_enum_api.html#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.get_include" title="dpctl.get_include"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_include()</span></code></a></p></td>
 <td><p>Return the directory that contains the dpctl *.h header files.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.get_num_activated_queues" title="dpctl.get_num_activated_queues"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_num_activated_queues()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.get_num_activated_queues" title="dpctl.get_num_activated_queues"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_num_activated_queues()</span></code></a></p></td>
 <td><p>Returns the number of currently activated queues for this thread.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.get_num_devices" title="dpctl.get_num_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_num_devices()</span></code></a></p></td>
+<td><p>A helper function to return the number of SYCL devices of a given <a class="reference internal" href="dpctl_enum_api.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> and <a class="reference internal" href="dpctl_enum_api.html#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.get_platforms" title="dpctl.get_platforms"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_platforms()</span></code></a></p></td>
 <td><p>Returns a list of all available SYCL platforms on the system.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.has_accelerator_devices" title="dpctl.has_accelerator_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_accelerator_devices()</span></code></a></p></td>
+<td><p>A helper function to check if there are any SYCL Accelerator devices available.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.has_cpu_devices" title="dpctl.has_cpu_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_cpu_devices()</span></code></a></p></td>
+<td><p>A helper function to check if there are any SYCL CPU devices available.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.has_gpu_devices" title="dpctl.has_gpu_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_gpu_devices()</span></code></a></p></td>
+<td><p>A helper function to check if there are any SYCL GPU devices available.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.has_host_device" title="dpctl.has_host_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_host_device()</span></code></a></p></td>
+<td><p>A helper function to check if there are any SYCL Host devices available.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.is_in_device_context" title="dpctl.is_in_device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_in_device_context()</span></code></a></p></td>
 <td><p>Checks if the control is inside a <a class="reference internal" href="dpctl_functions_api.html#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scope.</p></td>
@@ -339,7 +339,7 @@ to create a queue object for use only within a specific scope.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+110.gf5d221fe
+      v: 0.12.0dev1+112.ge74ecb68
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

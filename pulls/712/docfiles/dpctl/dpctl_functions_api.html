@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl Functions &mdash; Data-parallel Control (dpctl) 0.12.0dev1+110.gf5d221fe documentation</title>
+  <title>dpctl Functions &mdash; Data-parallel Control (dpctl) 0.12.0dev1+112.ge74ecb68 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+110.gf5d221fe
+                0.12.0dev1+112.ge74ecb68
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -180,8 +180,8 @@ is garbage collected.</p>
 </dd></dl>
 
 </section>
-<section id="device-selection-functions">
-<h2>Device Selection Functions<a class="headerlink" href="#device-selection-functions" title="Permalink to this headline"></a></h2>
+<section id="other-functions">
+<h2>Other Functions<a class="headerlink" href="#other-functions" title="Permalink to this headline"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.get_devices">
 <span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">backend_type.all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">device_type_t.all</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_devices" title="Permalink to this definition"></a></dt>
@@ -215,6 +215,37 @@ satisfy the provided <a class="reference internal" href="dpctl_enum_api.html#dpc
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dpctl.get_include">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_include</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl.html#get_include"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.get_include" title="Permalink to this definition"></a></dt>
+<dd><p>Return the directory that contains the dpctl *.h header files.</p>
+<p>Extension modules that need to be compiled against dpctl should use
+this function to locate the appropriate include directory.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.get_num_activated_queues">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_num_activated_queues</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_activated_queues" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the number of currently activated queues for this thread.</p>
+<p>Whenever a program’s control enters a <a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a>
+scope, either a new SYCL queue is created or a previously created
+queue is retrieved from a cache and yielded. The queue yielded by the
+context manager is termed to be “activated”. If a program creates
+multiple nested <a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scopes then multiple
+queues can be activated at the same time, although only the latest
+activated queue is usable directly via calling
+<a class="reference internal" href="#dpctl.get_current_queue" title="dpctl.get_current_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code></a>. This function returns the number of
+currently activated queues.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of currently activated queues.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.get_num_devices">
 <span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_num_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">backend_type.all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">device_type_t.all</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_devices" title="Permalink to this definition"></a></dt>
 <dd><p>A helper function to return the number of SYCL devices of a given
@@ -238,6 +269,20 @@ specifies a SYCL device type. Currently, accepted values are:
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.get_platforms">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_platforms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_platforms" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a list of all available SYCL platforms on the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of SYCL platforms on the system.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
@@ -303,6 +348,110 @@ present, <code class="docutils literal notranslate"><span class="pre">False</spa
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.is_in_device_context">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">is_in_device_context</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.is_in_device_context" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if the control is inside a <a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the control is within a
+<a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scope, otherwise False.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.lsplatform">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">lsplatform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.lsplatform" title="Permalink to this definition"></a></dt>
+<dd><p>Prints out the list of available SYCL platforms, and optionally extra
+metadata about each platform.</p>
+<p>The level of information printed out by the function can be controlled by
+the optional <code class="docutils literal notranslate"><span class="pre">vebosity</span></code> setting.</p>
+<ul class="simple">
+<li><p><strong>Verbosity level 0</strong>: Prints out the list of platforms and their names.</p></li>
+<li><p><strong>Verbosity level 1</strong>: Prints out the name, version, vendor, backend,
+number of devices for each platform.</p></li>
+<li><p><strong>Verbosity level 2</strong>: At the highest level of verbosity everything in the
+previous levels along with the name, version, and filter string for each
+device is printed.</p></li>
+</ul>
+<p>At verbosity level 2 (highest level) the following output is generated.</p>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p>On a system with an OpenCL CPU driver, OpenCL GPU driver,
+Level Zero GPU driver, running the command.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span>$python -c &quot;import dpctl; dpctl.lsplatform()&quot;
+</pre></div>
+</div>
+<p>returns</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Platform</span> <span class="mi">0</span><span class="p">::</span>
+    <span class="n">Name</span>        <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">OpenCL</span>
+    <span class="n">Version</span>     <span class="n">OpenCL</span> <span class="mf">2.1</span> <span class="n">LINUX</span>
+    <span class="n">Vendor</span>      <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Corporation</span>
+    <span class="n">Profile</span>     <span class="n">FULL_PROFILE</span>
+    <span class="n">Backend</span>     <span class="n">opencl</span>
+    <span class="n">Devices</span>     <span class="mi">1</span>
+        <span class="n">Device</span> <span class="mi">0</span><span class="p">::</span>
+        <span class="n">Name</span>            <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Core</span><span class="p">(</span><span class="n">TM</span><span class="p">)</span> <span class="n">i7</span><span class="o">-</span><span class="mi">9700</span> <span class="n">CPU</span> <span class="o">@</span> <span class="mf">3.00</span><span class="n">GHz</span>
+        <span class="n">Driver</span> <span class="n">version</span>  <span class="mf">2020.11.11.0.13_160000</span>
+        <span class="n">Device</span> <span class="nb">type</span>     <span class="n">cpu</span>
+<span class="n">Platform</span> <span class="mi">1</span><span class="p">::</span>
+    <span class="n">Name</span>        <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">OpenCL</span> <span class="n">HD</span> <span class="n">Graphics</span>
+    <span class="n">Version</span>     <span class="n">OpenCL</span> <span class="mf">3.0</span>
+    <span class="n">Vendor</span>      <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Corporation</span>
+    <span class="n">Profile</span>     <span class="n">FULL_PROFILE</span>
+    <span class="n">Backend</span>     <span class="n">opencl</span>
+    <span class="n">Devices</span>     <span class="mi">1</span>
+        <span class="n">Device</span> <span class="mi">0</span><span class="p">::</span>
+        <span class="n">Name</span>            <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Graphics</span> <span class="n">Gen9</span> <span class="p">[</span><span class="mh">0x3e98</span><span class="p">]</span>
+        <span class="n">Driver</span> <span class="n">version</span>  <span class="mf">20.47.18513</span>
+        <span class="n">Device</span> <span class="nb">type</span>     <span class="n">gpu</span>
+<span class="n">Platform</span> <span class="mi">2</span><span class="p">::</span>
+    <span class="n">Name</span>        <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Level</span><span class="o">-</span><span class="n">Zero</span>
+    <span class="n">Version</span>     <span class="mf">1.0</span>
+    <span class="n">Vendor</span>      <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Corporation</span>
+    <span class="n">Profile</span>     <span class="n">FULL_PROFILE</span>
+    <span class="n">Backend</span>     <span class="n">level_zero</span>
+    <span class="n">Devices</span>     <span class="mi">1</span>
+        <span class="n">Device</span> <span class="mi">0</span><span class="p">::</span>
+        <span class="n">Name</span>            <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Graphics</span> <span class="n">Gen9</span> <span class="p">[</span><span class="mh">0x3e98</span><span class="p">]</span>
+        <span class="n">Driver</span> <span class="n">version</span>  <span class="mf">1.0.18513</span>
+        <span class="n">Device</span> <span class="nb">type</span>     <span class="n">gpu</span>
+</pre></div>
+</div>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>verbosity</strong> (<em>optional</em>) – Defaults to 0.
+The verbosity controls how much information is printed by the
+function. 0 is the lowest level set by default and 2 is the highest
+level to print the most verbose output.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.set_global_queue">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">set_global_queue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.set_global_queue" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the global queue to the SYCL queue specified explicitly,
+or created from given arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arg</strong> – An instance of <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> or a filter selector
+string to be used to construct a <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>. The
+queue is stored in the dpctl queue manager as the default queue.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="dpctl_exception_api.html#dpctl.SyclQueueCreationError" title="dpctl.SyclQueueCreationError"><strong>SyclQueueCreationError</strong></a> – If a SYCL queue could not be created.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="device-selection-functions">
+<h2>Device Selection Functions<a class="headerlink" href="#device-selection-functions" title="Permalink to this headline"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.select_accelerator_device">
 <span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">select_accelerator_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.select_accelerator_device" title="Permalink to this definition"></a></dt>
@@ -424,155 +573,6 @@ returned by the SYCL <code class="docutils literal notranslate"><span class="pre
 </dd></dl>
 
 </section>
-<section id="other-functions">
-<h2>Other Functions<a class="headerlink" href="#other-functions" title="Permalink to this headline"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.get_include">
-<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_include</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl.html#get_include"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.get_include" title="Permalink to this definition"></a></dt>
-<dd><p>Return the directory that contains the dpctl *.h header files.</p>
-<p>Extension modules that need to be compiled against dpctl should use
-this function to locate the appropriate include directory.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.get_num_activated_queues">
-<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_num_activated_queues</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_activated_queues" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the number of currently activated queues for this thread.</p>
-<p>Whenever a program’s control enters a <a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a>
-scope, either a new SYCL queue is created or a previously created
-queue is retrieved from a cache and yielded. The queue yielded by the
-context manager is termed to be “activated”. If a program creates
-multiple nested <a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scopes then multiple
-queues can be activated at the same time, although only the latest
-activated queue is usable directly via calling
-<a class="reference internal" href="#dpctl.get_current_queue" title="dpctl.get_current_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code></a>. This function returns the number of
-currently activated queues.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The number of currently activated queues.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.get_platforms">
-<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_platforms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_platforms" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a list of all available SYCL platforms on the system.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A list of SYCL platforms on the system.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.is_in_device_context">
-<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">is_in_device_context</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.is_in_device_context" title="Permalink to this definition"></a></dt>
-<dd><p>Checks if the control is inside a <a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scope.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if the control is within a
-<a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scope, otherwise False.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.lsplatform">
-<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">lsplatform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.lsplatform" title="Permalink to this definition"></a></dt>
-<dd><p>Prints out the list of available SYCL platforms, and optionally extra
-metadata about each platform.</p>
-<p>The level of information printed out by the function can be controlled by
-the optional <code class="docutils literal notranslate"><span class="pre">vebosity</span></code> setting.</p>
-<ul class="simple">
-<li><p><strong>Verbosity level 0</strong>: Prints out the list of platforms and their names.</p></li>
-<li><p><strong>Verbosity level 1</strong>: Prints out the name, version, vendor, backend,
-number of devices for each platform.</p></li>
-<li><p><strong>Verbosity level 2</strong>: At the highest level of verbosity everything in the
-previous levels along with the name, version, and filter string for each
-device is printed.</p></li>
-</ul>
-<p>At verbosity level 2 (highest level) the following output is generated.</p>
-<dl class="field-list">
-<dt class="field-odd">Example</dt>
-<dd class="field-odd"><p>On a system with an OpenCL CPU driver, OpenCL GPU driver,
-Level Zero GPU driver, running the command.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span>$python -c &quot;import dpctl; dpctl.lsplatform()&quot;
-</pre></div>
-</div>
-<p>returns</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Platform</span> <span class="mi">0</span><span class="p">::</span>
-    <span class="n">Name</span>        <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">OpenCL</span>
-    <span class="n">Version</span>     <span class="n">OpenCL</span> <span class="mf">2.1</span> <span class="n">LINUX</span>
-    <span class="n">Vendor</span>      <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Corporation</span>
-    <span class="n">Profile</span>     <span class="n">FULL_PROFILE</span>
-    <span class="n">Backend</span>     <span class="n">opencl</span>
-    <span class="n">Devices</span>     <span class="mi">1</span>
-        <span class="n">Device</span> <span class="mi">0</span><span class="p">::</span>
-        <span class="n">Name</span>            <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Core</span><span class="p">(</span><span class="n">TM</span><span class="p">)</span> <span class="n">i7</span><span class="o">-</span><span class="mi">9700</span> <span class="n">CPU</span> <span class="o">@</span> <span class="mf">3.00</span><span class="n">GHz</span>
-        <span class="n">Driver</span> <span class="n">version</span>  <span class="mf">2020.11.11.0.13_160000</span>
-        <span class="n">Device</span> <span class="nb">type</span>     <span class="n">cpu</span>
-<span class="n">Platform</span> <span class="mi">1</span><span class="p">::</span>
-    <span class="n">Name</span>        <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">OpenCL</span> <span class="n">HD</span> <span class="n">Graphics</span>
-    <span class="n">Version</span>     <span class="n">OpenCL</span> <span class="mf">3.0</span>
-    <span class="n">Vendor</span>      <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Corporation</span>
-    <span class="n">Profile</span>     <span class="n">FULL_PROFILE</span>
-    <span class="n">Backend</span>     <span class="n">opencl</span>
-    <span class="n">Devices</span>     <span class="mi">1</span>
-        <span class="n">Device</span> <span class="mi">0</span><span class="p">::</span>
-        <span class="n">Name</span>            <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Graphics</span> <span class="n">Gen9</span> <span class="p">[</span><span class="mh">0x3e98</span><span class="p">]</span>
-        <span class="n">Driver</span> <span class="n">version</span>  <span class="mf">20.47.18513</span>
-        <span class="n">Device</span> <span class="nb">type</span>     <span class="n">gpu</span>
-<span class="n">Platform</span> <span class="mi">2</span><span class="p">::</span>
-    <span class="n">Name</span>        <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Level</span><span class="o">-</span><span class="n">Zero</span>
-    <span class="n">Version</span>     <span class="mf">1.0</span>
-    <span class="n">Vendor</span>      <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Corporation</span>
-    <span class="n">Profile</span>     <span class="n">FULL_PROFILE</span>
-    <span class="n">Backend</span>     <span class="n">level_zero</span>
-    <span class="n">Devices</span>     <span class="mi">1</span>
-        <span class="n">Device</span> <span class="mi">0</span><span class="p">::</span>
-        <span class="n">Name</span>            <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Graphics</span> <span class="n">Gen9</span> <span class="p">[</span><span class="mh">0x3e98</span><span class="p">]</span>
-        <span class="n">Driver</span> <span class="n">version</span>  <span class="mf">1.0.18513</span>
-        <span class="n">Device</span> <span class="nb">type</span>     <span class="n">gpu</span>
-</pre></div>
-</div>
-</dd>
-<dt class="field-even">Parameters</dt>
-<dd class="field-even"><p><strong>verbosity</strong> (<em>optional</em>) – Defaults to 0.
-The verbosity controls how much information is printed by the
-function. 0 is the lowest level set by default and 2 is the highest
-level to print the most verbose output.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.set_global_queue">
-<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">set_global_queue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.set_global_queue" title="Permalink to this definition"></a></dt>
-<dd><p>Sets the global queue to the SYCL queue specified explicitly,
-or created from given arguments.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>arg</strong> – An instance of <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> or a filter selector
-string to be used to construct a <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>. The
-queue is stored in the dpctl queue manager as the default queue.</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference internal" href="dpctl_exception_api.html#dpctl.SyclQueueCreationError" title="dpctl.SyclQueueCreationError"><strong>SyclQueueCreationError</strong></a> – If a SYCL queue could not be created.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
 </section>
 
 
@@ -601,7 +601,7 @@ queue is stored in the dpctl queue manager as the default queue.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+110.gf5d221fe
+      v: 0.12.0dev1+112.ge74ecb68
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

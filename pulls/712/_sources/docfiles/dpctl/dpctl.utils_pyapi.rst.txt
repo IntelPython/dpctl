@@ -10,6 +10,7 @@ dpctl.utils
 
 
 
+.. _dpctl.utils_functions:
 
 Functions
 ---------
