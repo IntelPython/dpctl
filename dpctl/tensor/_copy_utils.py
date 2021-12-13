@@ -117,6 +117,12 @@ def _copy_from_numpy_into(dst, np_ary):
     if not isinstance(np_ary, np.ndarray):
         raise TypeError("Expected numpy.ndarray, got {}".format(type(np_ary)))
     src_ary = np.broadcast_to(np.asarray(np_ary, dtype=dst.dtype), dst.shape)
+    if src_ary.size and (dst.flags & 1) and src_ary.flags["C"]:
+        dpm.as_usm_memory(dst).copy_from_host(src_ary.reshape((-1,)).view("u1"))
+        return
+    if src_ary.size and (dst.flags & 2) and src_ary.flags["F"]:
+        dpm.as_usm_memory(dst).copy_from_host(src_ary.reshape((-1,)).view("u1"))
+        return
     for i in range(dst.size):
         mi = np.unravel_index(i, dst.shape)
         host_buf = np.array(src_ary[mi], ndmin=1).view("u1")
