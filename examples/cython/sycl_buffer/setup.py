@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os.path
+import sysconfig
+
 import numpy as np
 from setuptools import Extension, setup
 
@@ -39,7 +42,12 @@ setup(
                 "_buffer_example.pyx",
                 "use_sycl_buffer.cpp",
             ],
-            include_dirs=[".", np.get_include(), dpctl.get_include()],
+            include_dirs=[
+                ".",
+                np.get_include(),
+                dpctl.get_include(),
+                os.path.join(sysconfig.get_paths()["include"], ".."),
+            ],
             libraries=["sycl"]
             + [
                 "mkl_sycl",
