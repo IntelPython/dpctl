@@ -3,17 +3,17 @@
 dpctl
 -----
 
-The Data Parallel Control (dpctl) package enables Python application developers
-and extension developers to access a data-parallel computing resource or XPU
-available on a modern heterogeneous system. The "X" in XPU can stand for
-a diverse range of compute architectures such as a CPU, GPU, FPGA, *etc.*, and
-can be tailored to the needs of an application. Dpctl's objective is to provide
-a Python runtime to access an XPU from any Python application or library,
-alleviating the need for other Python packages to develop such a runtime
-themselves. The runtime is built on top of the C++ SYCL standard and is
-envisioned to be both vendor and architecture agnostic. If the underlying SYCL
-runtime supports a type of architecture, the dpctl runtime will allow managing
-that architecture from Python.
+The Data Parallel Control (dpctl) package provides a Python runtime to access a
+data-parallel computing resource or *XPU* from another Python application or
+library, alleviating the need for the other Python packages to develop such a
+runtime themselves. The term XPU denotes a diverse range of compute
+architectures such as a CPU, GPU, FPGA, *etc.*, available to programmers on a
+modern heterogeneous system.
+
+The dpctl runtime is built on top of the C++ SYCL standard and is designed to be
+both vendor and architecture agnostic. If the underlying SYCL runtime supports
+a type of architecture, the dpctl runtime will allow managing that architecture
+from Python.
 
 In its current form, dpctl relies on certain DPC++ extensions of SYCL standard.
 Moreover, the binary distribution of dpctl uses the proprietary Intel(R) oneAPI
