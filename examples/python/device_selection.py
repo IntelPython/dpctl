@@ -54,11 +54,13 @@ def create_gpu_device():
     SYCL_DEVICE_FILTER, which determines SYCL devices seen by the
     SYCL runtime.
     """
-    d1 = dpctl.SyclDevice("gpu")
-    d2 = dpctl.select_gpu_device()
-    assert d1 == d2
-    print_device(d1)
-    return d1
+    try:
+        d1 = dpctl.SyclDevice("gpu")
+        d2 = dpctl.select_gpu_device()
+        assert d1 == d2
+        print_device(d1)
+    except ValueError:
+        print("A GPU device is not available on the system")
 
 
 def create_gpu_device_if_present():
