@@ -67,7 +67,19 @@ def test_asarray_from_numpy():
     Xnp = np.arange(10)
     Y = dpt.asarray(Xnp, usm_type="device")
     assert type(Y) is dpt.usm_ndarray
-    assert Y.shape == (10,)
+    assert Y.shape == Xnp.shape
+    assert Y.dtype == Xnp.dtype
+    # Fortan contiguous case
+    Xnp = np.array([[1, 2, 3], [4, 5, 6]], dtype="f4", order="F")
+    Y = dpt.asarray(Xnp, usm_type="shared")
+    assert type(Y) is dpt.usm_ndarray
+    assert Y.shape == Xnp.shape
+    assert Y.dtype == Xnp.dtype
+    # general strided case
+    Xnp = np.array([[1, 2, 3], [4, 5, 6]], dtype="i8")
+    Y = dpt.asarray(Xnp[::-1, ::-1], usm_type="host")
+    assert type(Y) is dpt.usm_ndarray
+    assert Y.shape == Xnp.shape
     assert Y.dtype == Xnp.dtype
 
 
