@@ -38,10 +38,10 @@ more topical SYCL reference such as the `SYCL 2020 spec`_.
    to create and should be reused as much as possible.
 
 * **Queue**
-   A queue is needed to schedule executition of any computation, or data
+   A queue is needed to schedule execution of any computation, or data
    copying on the device. Queue construction requires specifying a device
    and a context targeting that device as well as additional properties,
-   such as whether it collects profiling information or whether submitted
+   such as whether profiling information should be collected or whether submitted
    tasks are executed in the order in which they were submitted.
 
 * **Event**
