@@ -12,3 +12,5 @@
 .. _sycl context: https://sycl.readthedocs.io/en/latest/iface/context.html
 .. _oneAPI: https://www.oneapi.io/
 .. _oneAPI filter selection extension: https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc
+.. _DPCPP environment variables: https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md
+.. _SYCL 2020 aspects: https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#table.device.aspect

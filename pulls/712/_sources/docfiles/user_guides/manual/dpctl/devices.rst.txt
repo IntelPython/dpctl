@@ -16,33 +16,32 @@ type of accelerator.
 Listing Devices
 ---------------
 
-`dpctl` has a fixed number of :ref:`root devices<RootDevice>` which does not vary as the application executes.
+``dpctl`` has a fixed number of :ref:`root devices<RootDevice>` which does not vary as the application executes.
 
 Function :func:`dpctl.get_devices` can be used to retrieve these devices. This list is determined by
 available hardware, installed drivers, as well as by
-`environment variables <https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md>`
-influencing SYCL runtime such as `SYCL_DEVICE_FILTER` or `SYCL_DEVICE_ALLOWLIST`. Thanks for SYCL runtime
+`environment variables <DPCPP environment variables>`_
+influencing SYCL runtime such as ``SYCL_DEVICE_FILTER`` or ``SYCL_DEVICE_ALLOWLIST``. Thanks for SYCL runtime
 determinism, this list does not change from run to run provided all other conditions stay the same.
 
-The list can be filtered based on `backend` and `device_type` keywords. The 0-based ordinal position
-of a device in the output of `dpctl.get_devices` corresponds to device id in the filter selector string.
-For example, "opencl:gpu:0" refers to the first device in the list returned by
-`dpctl.get_devices(backend="opencl", device_type="gpu")`. If such a list is empty device construction call
-`dpctl.SyclDevice("opencl:gpu:0")` will raise a `ValueError`.
+The list can be filtered based on ``backend`` and ``device_type`` keywords. The 0-based ordinal position
+of a device in the output of ``dpctl.get_devices`` corresponds to device id in the filter selector string.
+For example, ``"opencl:gpu:0"`` refers to the first device in the list returned by
+``dpctl.get_devices(backend="opencl", device_type="gpu")``. If such a list is empty device construction call
+``dpctl.SyclDevice("opencl:gpu:0")`` will raise a ``ValueError``.
 
 Device Aspects and Properties
 -----------------------------
 
 :class:`dpctl.SyclDevice` exposes various Python properties describing device's aspects and characteristics.
 
-`Aspects <https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#table.device.aspect>`_ are
-boolean characterstics of the device. Property `dev.has_aspect_fp16` returns a boolean expression indicating
-whether the particular device has aspect "fp16", indicating whether it supposts IEEE-754 half-precision
-floating point type.
+`Aspects <SYCL 2020 aspects>`_ are boolean characterstics of the device.
+Property ``dev.has_aspect_fp16`` returns a boolean expression indicating whether a particular device has
+aspect ``"fp16"``, indicating whether it supposts IEEE-754 half-precision floating point type.
 
 Non-boolean characteristics as exposed as :class:`dpctl.SyclDevice` instance properties with a
-non-boolean value type. For example, `dev.name` returns a string with a name of the device, while
-`dev.max_compute_units` returns a positive integer reflecting the number of parallel compute units
+non-boolean value type. For example, ``dev.name`` returns a string with a name of the device, while
+``dev.max_compute_units`` returns a positive integer reflecting the number of parallel compute units
 available to the device.
 
 The list of available properties can be retrieved programmatically, or found in documentation page of
@@ -71,20 +70,21 @@ by calling :func:`dpctl.SyclDevice.create_sub_devices`, which returns a list of 
 sub-device instances of type :class:`dpctl.SyclDevice`. These instances can be partitioned
 further.
 
-The requested partitioning is indicated with use of required `partition` keyword, which
+The requested partitioning is indicated with use of required ``partition`` keyword, which
 can be a positive integers (indicating equal partitioning with each sub-device having
 the requested number of parallel compute units), a list of positive integers
 (indicating the requested number of parallel compute units in each sub-device), or
 a string indicate partitioning by affinity domain (creating sub-devices sharing a common
-resource, such as L2-cache).
+resource, such as certain low level cache). Use ``partition="next_partitionable"``
+to partition along the next level of architectural hierarchy.
 
-A sub-device's parent device can be retrived using `dev.parent_device` property.
-When called on a root device, `root_dev.parent_device` returns `None`.
+A sub-device's parent device can be retrived using ``dev.parent_device`` property.
+When called on a root device, ``root_dev.parent_device`` returns ``None``.
 
 For non-partitioned devices, its corresponding filter selector string can be retrieved
-using `dev.filter_string` which returns a fully specified triplet. Method
-:func:`dpctl.SyclDevice.get_filter_string(include_backend=True, include_device_type=True)`
-can be used to obtain a partially qualified filter selector string.
+using ``dev.filter_string`` which returns a fully specified triplet. Method
+:func:`dpctl.SyclDevice.get_filter_string` can be used to obtain a partially
+qualified filter selector string.
 
 .. code-block:: Python
 
@@ -92,9 +92,15 @@ can be used to obtain a partially qualified filter selector string.
     dev = dpctl.SyclDevice()
 
     print(dev.filter_string)
-    # The following prints fully qualified string, i.e. same as dev.filter_string
+
+    # The following prints fully qualified string same as dev.filter_string
+    # possible output: "opencl:cpu:0"
     print(dev.get_filter_string())
-    # do not include backend, i.e. "cpu:0"
+
+    # do not include backend
+    # possible output: "cpu:0"
     print(dev.get_filter_string(include_backend=False))
-    # include neither backend, nor device type, e.g. "1"
+
+    # include neither backend, nor device Type
+    # possible output: "1"
     print(dev.get_filter_string(include_backend=False, include_device_type=False)
