@@ -20,17 +20,6 @@
 import dpctl
 
 
-def print_device(d):
-    "Display information about given device argument."
-    if type(d) is not dpctl.SyclDevice:
-        raise ValueError
-    print("Name: ", d.name)
-    print("Vendor: ", d.vendor)
-    print("Driver version: ", d.driver_version)
-    print("Backend: ", d.backend)
-    print("Max EU: ", d.max_compute_units)
-
-
 def create_default_device():
     """
     Create default SyclDevice using `cl::sycl::default_selector`.
@@ -42,7 +31,7 @@ def create_default_device():
     d1 = dpctl.SyclDevice()
     d2 = dpctl.select_default_device()
     assert d1 == d2
-    print_device(d1)
+    d1.print_device_info()
     return d1
 
 
@@ -58,7 +47,7 @@ def create_gpu_device():
         d1 = dpctl.SyclDevice("gpu")
         d2 = dpctl.select_gpu_device()
         assert d1 == d2
-        print_device(d1)
+        d1.print_device_info()
     except ValueError:
         print("A GPU device is not available on the system")
 
@@ -96,10 +85,22 @@ def custom_select_device():
             max_score = d.default_selector_score
             selected_dev = d
     if selected_dev:
-        print_device(selected_dev)
+        selected_dev.print_device_info()
     else:
         print("No device with half-precision support is available.")
     return selected_dev
+
+
+def create_device_with_aspects():
+    """
+    Programmatically select a device based on specific set of aspects.
+
+    Demonstrate the usage of :func:`dpctl.select_device_with_aspects()`.
+    """
+    dev = dpctl.select_device_with_aspects(
+        required_aspects=["fp64", "gpu", "usm_shared_allocations"]
+    )
+    dev.print_device_info()
 
 
 if __name__ == "__main__":

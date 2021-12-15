@@ -20,17 +20,6 @@
 import dpctl
 
 
-def print_device(d):
-    "Display information about given device argument."
-    if type(d) is not dpctl.SyclDevice:
-        raise ValueError
-    print("Name: ", d.name)
-    print("Vendor: ", d.vendor)
-    print("Driver version: ", d.driver_version)
-    print("Backend: ", d.backend)
-    print("Max EU: ", d.max_compute_units)
-
-
 def select_using_filter():
     """
     Demonstrate the usage of a filter string to create a SyclDevice.
@@ -38,22 +27,22 @@ def select_using_filter():
     """
     try:
         d1 = dpctl.SyclDevice("cpu")
-        print_device(d1)
+        d1.print_device_info()
     except ValueError:
         print("A CPU type device is not available on the system")
 
     try:
         d1 = dpctl.SyclDevice("opencl:cpu:0")
-        print_device(d1)
+        d1.print_device_info()
     except ValueError:
         print("An OpenCL CPU driver needs to be installed on the system")
 
     d1 = dpctl.SyclDevice("0")
-    print_device(d1)
+    d1.print_device_info()
 
     try:
         d1 = dpctl.SyclDevice("gpu")
-        print_device(d1)
+        d1.print_device_info()
     except ValueError:
         print("A GPU type device is not available on the system")
 
