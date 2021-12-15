@@ -123,6 +123,8 @@ stored in :attr:`dpctl.SyclDevice.default_selector_score` is used to select a
 single device. Refer the documentation of :class:`dpctl.SyclDevice` for a list
 of hardware properties that may be used for device selection.
 
+.._RootDevice:
+
 .. Note::
     A **root** device implies an unpartitioned device. A root device can be
     partitioned into two or more :ref:`sub-devices <sec-devices-sub-devices>`
