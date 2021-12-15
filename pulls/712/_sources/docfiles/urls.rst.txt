@@ -11,3 +11,4 @@
 .. _sycl event: https://sycl.readthedocs.io/en/latest/iface/event.html
 .. _sycl context: https://sycl.readthedocs.io/en/latest/iface/context.html
 .. _oneAPI: https://www.oneapi.io/
+.. _oneAPI filter selection extension: https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc

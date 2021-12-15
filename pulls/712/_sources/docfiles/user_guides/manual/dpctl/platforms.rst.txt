@@ -19,6 +19,7 @@ example it is possible to print out metadata about a platform.
     :language: python
     :start-after: # START
     :end-before: # END
+    :linenos:
 
 The example can be executed as follows:
 

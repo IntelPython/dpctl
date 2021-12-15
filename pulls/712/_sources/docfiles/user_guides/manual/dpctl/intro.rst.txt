@@ -12,7 +12,7 @@ modern heterogeneous system.
 
 The dpctl runtime is built on top of the C++ SYCL standard and is designed to be
 both vendor and architecture agnostic. If the underlying SYCL runtime supports
-a type of architecture, the dpctl runtime will allow managing that architecture
+a type of architecture, the dpctl runtime will allow accessing that architecture
 from Python.
 
 In its current form, dpctl relies on certain DPC++ extensions of SYCL standard.
