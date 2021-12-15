@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device &mdash; Data-parallel Control (dpctl) 0.12.0dev1+139.g3f57a250 documentation</title>
+  <title>Device &mdash; Data-parallel Control (dpctl) 0.12.0dev1+141.g59f00772 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+139.g3f57a250
+                0.12.0dev1+141.g59f00772
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -95,9 +95,9 @@
 <span id="devices"></span><h1>Device<a class="headerlink" href="#device" title="Permalink to this headline"></a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#listing-devices" id="id4">Listing Devices</a></p></li>
-<li><p><a class="reference internal" href="#device-aspects-and-properties" id="id5">Device Aspects and Properties</a></p></li>
-<li><p><a class="reference internal" href="#sub-devices" id="id6">Sub-devices</a></p></li>
+<li><p><a class="reference internal" href="#listing-devices" id="id3">Listing Devices</a></p></li>
+<li><p><a class="reference internal" href="#device-aspects-and-properties" id="id4">Device Aspects and Properties</a></p></li>
+<li><p><a class="reference internal" href="#sub-devices" id="id5">Sub-devices</a></p></li>
 </ul>
 </div>
 <p>The <a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> class is an abstract representation of a
@@ -105,23 +105,73 @@ data-parallel computation device. A device can be a CPU, GPU, FPGA, or other
 type of accelerator.</p>
 <section id="listing-devices">
 <h2>Listing Devices<a class="headerlink" href="#listing-devices" title="Permalink to this headline"></a></h2>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<p>Get a list of devices</p>
-</div>
+<p><cite>dpctl</cite> has a fixed number of <a class="reference internal" href="device_selection.html#rootdevice"><span class="std std-ref">root devices</span></a> which does not vary as the application executes.</p>
+<p>Function <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code></a> can be used to retrieve these devices. This list is determined by
+available hardware, installed drivers, as well as by
+<span class="xref std std-ref">environment variables</span>
+influencing SYCL runtime such as <cite>SYCL_DEVICE_FILTER</cite> or <cite>SYCL_DEVICE_ALLOWLIST</cite>. Thanks for SYCL runtime
+determinism, this list does not change from run to run provided all other conditions stay the same.</p>
+<p>The list can be filtered based on <cite>backend</cite> and <cite>device_type</cite> keywords. The 0-based ordinal position
+of a device in the output of <cite>dpctl.get_devices</cite> corresponds to device id in the filter selector string.
+For example, “opencl:gpu:0” refers to the first device in the list returned by
+<cite>dpctl.get_devices(backend=”opencl”, device_type=”gpu”)</cite>. If such a list is empty device construction call
+<cite>dpctl.SyclDevice(“opencl:gpu:0”)</cite> will raise a <cite>ValueError</cite>.</p>
 </section>
 <section id="device-aspects-and-properties">
 <h2>Device Aspects and Properties<a class="headerlink" href="#device-aspects-and-properties" title="Permalink to this headline"></a></h2>
-<div class="admonition-todo admonition" id="id2">
-<p class="admonition-title">Todo</p>
-<p>Demonstrate how to query a device’s various aspects and properties.</p>
+<p><a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> exposes various Python properties describing device’s aspects and characteristics.</p>
+<p><a href="#id1"><span class="problematic" id="id2">:ref:`Aspects&lt;https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#table.device.aspect&gt;`_</span></a> are
+boolean characterstics of the device. Property <cite>dev.has_aspect_fp16</cite> returns a boolean expression indicating
+whether the particular device has aspect “fp16”, indicating whether it supposts IEEE-754 half-precision
+floating point type.</p>
+<p>Non-boolean characteristics as exposed as <a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instance properties with a
+non-boolean value type. For example, <cite>dev.name</cite> returns a string with a name of the device, while
+<cite>dev.max_compute_units</cite> returns a positive integer reflecting the number of parallel compute units
+available to the device.</p>
+<p>The list of available properties can be retrieved programmatically, or found in documentation page of
+<a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> class.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="k">def</span> <span class="nf">get_properties</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">):</span>
+    <span class="s2">&quot;Get name of properties of a class known to have `prop_name`&quot;</span>
+    <span class="n">known_property_t</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">known_property_t</span><span class="p">)]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">get_properties</span><span class="p">(</span><span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)))</span>
+<span class="c1"># Output: 52</span>
+</pre></div>
 </div>
 </section>
 <section id="sub-devices">
 <span id="sec-devices-sub-devices"></span><h2>Sub-devices<a class="headerlink" href="#sub-devices" title="Permalink to this headline"></a></h2>
-<div class="admonition-todo admonition" id="id3">
-<p class="admonition-title">Todo</p>
-<p>Talk about sub-device creation</p>
+<p>Certain devices supporting such capability can be partitioned into multiple devices
+by calling <a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice.create_sub_devices" title="dpctl.SyclDevice.create_sub_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.SyclDevice.create_sub_devices()</span></code></a>, which returns a list of created
+sub-device instances of type <a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>. These instances can be partitioned
+further.</p>
+<p>The requested partitioning is indicated with use of required <cite>partition</cite> keyword, which
+can be a positive integers (indicating equal partitioning with each sub-device having
+the requested number of parallel compute units), a list of positive integers
+(indicating the requested number of parallel compute units in each sub-device), or
+a string indicate partitioning by affinity domain (creating sub-devices sharing a common
+resource, such as L2-cache).</p>
+<p>A sub-device’s parent device can be retrived using <cite>dev.parent_device</cite> property.
+When called on a root device, <cite>root_dev.parent_device</cite> returns <cite>None</cite>.</p>
+<p>For non-partitioned devices, its corresponding filter selector string can be retrieved
+using <cite>dev.filter_string</cite> which returns a fully specified triplet. Method
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.SyclDevice.get_filter_string(include_backend=True,</span> <span class="pre">include_device_type=True)()</span></code>
+can be used to obtain a partially qualified filter selector string.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="n">dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">dev</span><span class="o">.</span><span class="n">filter_string</span><span class="p">)</span>
+<span class="c1"># The following prints fully qualified string, i.e. same as dev.filter_string</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dev</span><span class="o">.</span><span class="n">get_filter_string</span><span class="p">())</span>
+<span class="c1"># do not include backend, i.e. &quot;cpu:0&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dev</span><span class="o">.</span><span class="n">get_filter_string</span><span class="p">(</span><span class="n">include_backend</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="c1"># include neither backend, nor device type, e.g. &quot;1&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dev</span><span class="o">.</span><span class="n">get_filter_string</span><span class="p">(</span><span class="n">include_backend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_device_type</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
 </div>
 </section>
 </section>
@@ -155,7 +205,7 @@ type of accelerator.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+139.g3f57a250
+      v: 0.12.0dev1+141.g59f00772
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

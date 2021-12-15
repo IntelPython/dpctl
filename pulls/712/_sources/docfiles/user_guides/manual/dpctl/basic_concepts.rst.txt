@@ -69,11 +69,12 @@ more topical SYCL reference such as the `SYCL 2020 spec`_.
    synchronization of host's and device's view into shared allocations. Initial
    placement of the shared allocations is not defined.
 
+* **Backend**
+   Refers to an implementation of `oneAPI`_ programming model exposed by the
+   underlying runtime.
+
 .. todo::
 
-    #. Introduce the basic concepts of Platforms, Devices, Contexts, Queues,
-       Events, and USM.
-    #. Introduce common terms: XPU, host.
     #. Add citations/references
 
 .. Go over dpctl and dpctl tensor
