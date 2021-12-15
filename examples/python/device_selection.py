@@ -98,7 +98,7 @@ def create_device_with_aspects():
     Demonstrate the usage of :func:`dpctl.select_device_with_aspects()`.
     """
     dev = dpctl.select_device_with_aspects(
-        required_aspects=["fp64", "gpu", "usm_shared_allocations"]
+        required_aspects=["fp64", "usm_shared_allocations"]
     )
     dev.print_device_info()
 
