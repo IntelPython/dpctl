@@ -20,7 +20,7 @@ Listing Devices
 
 Function :func:`dpctl.get_devices` can be used to retrieve these devices. This list is determined by
 available hardware, installed drivers, as well as by
-:ref:`environment variables<https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md>`
+`environment variables <https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md>`
 influencing SYCL runtime such as `SYCL_DEVICE_FILTER` or `SYCL_DEVICE_ALLOWLIST`. Thanks for SYCL runtime
 determinism, this list does not change from run to run provided all other conditions stay the same.
 
@@ -35,7 +35,7 @@ Device Aspects and Properties
 
 :class:`dpctl.SyclDevice` exposes various Python properties describing device's aspects and characteristics.
 
-:ref:`Aspects<https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#table.device.aspect>`_ are
+`Aspects <https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#table.device.aspect>`_ are
 boolean characterstics of the device. Property `dev.has_aspect_fp16` returns a boolean expression indicating
 whether the particular device has aspect "fp16", indicating whether it supposts IEEE-754 half-precision
 floating point type.
