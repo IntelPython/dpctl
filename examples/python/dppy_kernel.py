@@ -44,7 +44,14 @@ a = np.arange(X * X, dtype=np.float32).reshape(X, X)
 b = np.array(np.random.random(X * X), dtype=np.float32).reshape(X, X)
 c = np.ones_like(a).reshape(X, X)
 
-q = dpctl.SyclQueue("opencl:gpu", property="enable_profiling")
+try:
+    q = dpctl.SyclQueue("opencl:gpu", property="enable_profiling")
+except dpctl.SyclQueueCreationError:
+    print(
+        "Skipping the example, as dpctl.SyclQueue targeting "
+        "opencl:gpu device could not be created"
+    )
+    exit(0)
 timer = SyclTimer(time_scale=1)
 with dpctl.device_context(q):
     with timer(q):

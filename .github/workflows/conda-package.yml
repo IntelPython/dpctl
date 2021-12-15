@@ -1,6 +1,10 @@
 name: Conda package
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 env:
   PACKAGE_NAME: dpctl
@@ -115,6 +119,7 @@ jobs:
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
       - name: Install conda-build
+        # Needed to be able to run conda index
         run: conda install conda-build
       - name: Create conda channel
         run: |
@@ -178,6 +183,7 @@ jobs:
           auto-activate-base: true
           activate-environment: ""
       - name: Install conda-build
+        # Needed to be able to run conda index
         run: conda install conda-build
       - name: Create conda channel
         run: |
@@ -263,3 +269,111 @@ jobs:
         run: |
           conda install anaconda-client
           anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
+
+  test_examples_linux:
+    needs: build_linux
+    runs-on:  ${{ matrix.runner }}
+    strategy:
+      matrix:
+        python: [3.8]
+        experimental: [false]
+        runner: [ubuntu-latest]
+    continue-on-error: ${{ matrix.experimental }}
+    env:
+      CHANNELS: -c intel -c defaults --override-channels
+
+    steps:
+      - name: Install conda-build
+        # Needed to be able to run conda index
+        run: conda install conda-build python=${{ matrix.python }}
+      - name: Checkout dpctl repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+      - name: Add conda to system path
+        run: echo $CONDA/bin >> $GITHUB_PATH
+      - name: Create conda channel
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/channel/linux-64
+          mv ${PACKAGE_NAME}-*.tar.bz2 $GITHUB_WORKSPACE/channel/linux-64
+          conda index $GITHUB_WORKSPACE/channel
+          # Test channel
+          conda search $PACKAGE_NAME -c $GITHUB_WORKSPACE/channel --override-channels
+      - name: Collect dependencies
+        run: |
+          CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          conda install $PACKAGE_NAME python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
+      - name: Set pkgs_dirs
+        run: |
+          echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
+      - name: Cache conda packages
+        uses: actions/cache@v2
+        env:
+          CACHE_NUMBER: 0  # Increase to reset cache
+        with:
+          path: ~/.conda/pkgs
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+      - name: Install dpctl
+        shell: bash -l {0}
+        run: |
+          source $CONDA/etc/profile.d/conda.sh
+          conda activate
+          CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          conda install -y $PACKAGE_NAME pytest python=${{ matrix.python }} $CHANNELS
+          # Test installed packages
+          conda list
+      - name: Install example requirements
+        shell: bash -l {0}
+        run: |
+          source $CONDA/etc/profile.d/conda.sh
+          conda install -y pybind11 cython
+          conda install -y -c intel mkl-dpcpp mkl-devel-dpcpp numba-dppy
+          conda create -y -n build_env -c intel dpcpp_linux-64
+      - name: Build and run examples with native extensions
+        shell: bash -l {0}
+        run: |
+          source $CONDA/etc/profile.d/conda.sh
+          export OCL_ICD_FILENAMES=libintelocl.so
+          export SYCL_ENABLE_HOST_DEVICE=1
+          conda activate
+          cd examples/pybind11
+          export CC=dpcpp
+          export CXX=dpcpp
+          for d in $(ls)
+          do
+            pushd $d
+            conda activate --stack build_env
+            python setup.py build_ext --inplace || exit 1
+            conda deactivate
+            python example.py
+            popd
+          done
+          cd ../cython
+          for d in $(ls)
+          do
+            pushd $d
+            conda activate --stack build_env
+            python setup.py build_ext --inplace || exit 1
+            conda deactivate
+            python run.py
+            popd
+          done
+      - name: Run Python examples
+        shell: bash -l {0}
+        run: |
+          cd examples/python
+          export OCL_ICD_FILENAMES=libintelocl.so
+          export SYCL_ENABLE_HOST_DEVICE=1
+          for script in $(find . \( -not -name "_*" -and -name "*.py" \))
+          do
+            echo "Executing ${script}"
+            python ${script} || exit 1
+          done

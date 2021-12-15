@@ -22,7 +22,7 @@ import numpy as np
 import dpctl
 import dpctl.memory as dpm
 
-q = dpctl.SyclQueue("gpu")
+q = dpctl.SyclQueue()
 matr = eua.DMatrix(q, 5, 5)
 
 print(matr)

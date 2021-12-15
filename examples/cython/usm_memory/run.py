@@ -64,59 +64,48 @@ print(
 n_opts = 3 * 10 ** 6
 
 # compute on CPU sycl device
-cpu_q = dpctl.SyclQueue("opencl:cpu:0")
-opts1 = gen_option_params(
-    n_opts,
-    20.0,
-    30.0,
-    22.0,
-    29.0,
-    18.0,
-    24.0,
-    0.01,
-    0.05,
-    0.01,
-    0.05,
-    "d",
-    queue=cpu_q,
-)
 
-gpu_q = dpctl.SyclQueue("level_zero:gpu:0")
-opts2 = gen_option_params(
-    n_opts,
-    20.0,
-    30.0,
-    22.0,
-    29.0,
-    18.0,
-    24.0,
-    0.01,
-    0.05,
-    0.01,
-    0.05,
-    "d",
-    queue=gpu_q,
-)
+queues = []
+for filter_str in ["cpu", "gpu"]:
+    try:
+        q = dpctl.SyclQueue(filter_str)
+        queues.append(q)
+    except dpctl.SyclQueueCreationError:
+        continue
 
-cpu_times = []
-gpu_times = []
-for _ in range(5):
+if not queues:
+    print("No queues could not created, nothing to do.")
+    exit(0)
 
-    t0 = timeit.default_timer()
-    X1 = bs.black_scholes_price(opts1, queue=cpu_q)
-    t1 = timeit.default_timer()
+opt_params_list = []
+for q in queues:
+    opt_params = gen_option_params(
+        n_opts,
+        20.0,
+        30.0,
+        22.0,
+        29.0,
+        18.0,
+        24.0,
+        0.01,
+        0.05,
+        0.01,
+        0.05,
+        "d",
+        queue=q,
+    )
+    opt_params_list.append(opt_params)
 
-    cpu_times.append(t1 - t0)
+times_dict = dict()
+for q, params in zip(queues, opt_params_list):
+    times_list = []
+    for _ in range(5):
+        t0 = timeit.default_timer()
+        X1 = bs.black_scholes_price(params, queue=q)
+        t1 = timeit.default_timer()
+        times_list.append(t1 - t0)
+    times_dict[q.name] = times_list
 
-    # compute on GPU sycl device
-
-    t0 = timeit.default_timer()
-    X2 = bs.black_scholes_price(opts2, queue=gpu_q)
-    t1 = timeit.default_timer()
-    gpu_times.append(t1 - t0)
-
-print("Using      : {}".format(cpu_q.sycl_device.name))
-print("Wall times : {}".format(cpu_times))
-
-print("Using      : {}".format(gpu_q.sycl_device.name))
-print("Wall times : {}".format(gpu_times))
+for dev_name, wall_times in times_dict.items():
+    print("Using      : {}".format(dev_name))
+    print("Wall times : {}".format(wall_times))

@@ -23,18 +23,31 @@ X = np.random.randn(100, 4)
 
 print("Result computed by NumPy")
 print(X.sum(axis=0))
-print("Result computed by SYCL extension using default offloading target")
-print(sb.columnwise_total(X))
 
+try:
+    res = sb.columnwise_total(X)
+    print("Result computed by SYCL extension using default offloading target")
+    print(res)
+except dpctl.SyclQueueCreationError:
+    print(
+        "Could not create SyclQueue for default selected device. Nothing to do."
+    )
+    exit(0)
 
 print("")
 
 # controlling where to offload
 
-q = dpctl.SyclQueue("opencl:gpu")
-print("Running on: ", q.sycl_device.name)
-print(sb.columnwise_total(X, queue=q))
+try:
+    q = dpctl.SyclQueue("opencl:gpu")
+    print("Running on: ", q.sycl_device.name)
+    print(sb.columnwise_total(X, queue=q))
+except dpctl.SyclQueueCreationError:
+    print("Not running onf opencl:gpu, queue could not be created")
 
-q = dpctl.SyclQueue("opencl:cpu")
-print("Running on: ", q.sycl_device.name)
-print(sb.columnwise_total(X, queue=q))
+try:
+    q = dpctl.SyclQueue("opencl:cpu")
+    print("Running on: ", q.sycl_device.name)
+    print(sb.columnwise_total(X, queue=q))
+except dpctl.SyclQueueCreationError:
+    print("Not running onf opencl:cpu, queue could not be created")
