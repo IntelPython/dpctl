@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data-parallel Control (dpctl) 0.12.0dev1+142.ge71d1d2f documentation</title>
+  <title>Quick Start Guide &mdash; Data-parallel Control (dpctl) 0.12.0dev1+146.ge7096c4e documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+142.ge71d1d2f
+                0.12.0dev1+146.ge7096c4e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -48,7 +48,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#installing-from-oneapi">Installing from oneAPI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#install-wheel-package-from-pypi">Install Wheel package from Pypi</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#building-from-source">Building from source</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#building-using-oneapi-dpcpp">Building using oneAPI dpcpp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-using-oneapi-dpcpp">Building using oneAPI dpcpp</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#activate-oneapi-as-follows">Activate oneAPI as follows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#build-and-install-using-conda-build">Build and install using conda-build</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#build-and-install-with-setuptools">Build and install with setuptools</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#building-using-custom-dpcpp">Building using custom dpcpp</a></li>
 </ul>
 </li>
@@ -58,7 +63,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#running-the-python-tests">Running the Python tests</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#building-the-c-api-shared-library">Building the C API shared library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-the-dpctlsyclinterface-library">Building the DPCTLSyclInterface library</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="UserManual.html">User Manual</a></li>
@@ -95,27 +100,6 @@
              
   <section id="quick-start-guide">
 <span id="id1"></span><h1>Quick Start Guide<a class="headerlink" href="#quick-start-guide" title="Permalink to this headline"></a></h1>
-<div class="contents local topic" id="table-of-contents">
-<p class="topic-title">Table of contents</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#installing-from-oneapi" id="id2">Installing from oneAPI</a></p></li>
-<li><p><a class="reference internal" href="#install-wheel-package-from-pypi" id="id3">Install Wheel package from Pypi</a></p></li>
-<li><p><a class="reference internal" href="#building-from-source" id="id4">Building from source</a></p>
-<ul>
-<li><p><a class="reference internal" href="#building-using-oneapi-dpcpp" id="id5">Building using oneAPI dpcpp</a></p></li>
-<li><p><a class="reference internal" href="#building-using-custom-dpcpp" id="id6">Building using custom dpcpp</a></p></li>
-</ul>
-</li>
-<li><p><a class="reference internal" href="#using-dpctl" id="id7">Using dpctl</a></p></li>
-<li><p><a class="reference internal" href="#running-examples-and-tests" id="id8">Running examples and tests</a></p>
-<ul>
-<li><p><a class="reference internal" href="#running-the-examples" id="id9">Running the examples</a></p></li>
-<li><p><a class="reference internal" href="#running-the-python-tests" id="id10">Running the Python tests</a></p></li>
-</ul>
-</li>
-<li><p><a class="reference internal" href="#building-the-c-api-shared-library" id="id11">Building the C API shared library</a></p></li>
-</ul>
-</div>
 <section id="installing-from-oneapi">
 <h2>Installing from oneAPI<a class="headerlink" href="#installing-from-oneapi" title="Permalink to this headline"></a></h2>
 <p>Dpctl is available as part of the oneAPI Intel Distribution of Python (IDP).
@@ -184,7 +168,8 @@ especially if you want to enable CUDA support.</p>
 <h3>Building using oneAPI dpcpp<a class="headerlink" href="#building-using-oneapi-dpcpp" title="Permalink to this headline"></a></h3>
 <p>As before, oneAPI and graphics drivers should be installed on the system prior
 to proceeding further.</p>
-<p><strong>Activate oneAPI as follows</strong></p>
+<section id="activate-oneapi-as-follows">
+<h4>Activate oneAPI as follows<a class="headerlink" href="#activate-oneapi-as-follows" title="Permalink to this headline"></a></h4>
 <p>On Linux</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span> <span class="si">${</span><span class="nv">ONEAPI_ROOT</span><span class="si">}</span>/setvars.sh
 </pre></div>
@@ -193,7 +178,9 @@ to proceeding further.</p>
 <div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">call</span> <span class="s2">&quot;</span><span class="nv">%ONEAPI_ROOT%</span><span class="s2">\setvars.bat&quot;</span>
 </pre></div>
 </div>
-<p><strong>Build and install using conda-build</strong></p>
+</section>
+<section id="build-and-install-using-conda-build">
+<h4>Build and install using conda-build<a class="headerlink" href="#build-and-install-using-conda-build" title="Permalink to this headline"></a></h4>
 <p>The conda-recipe included with the sources can be used to build the dpctl
 package. The advantage of this approach is that all dependencies are pulled in
 from oneAPI’s intelpython conda channel that was installed as part of oneAPI.</p>
@@ -216,7 +203,9 @@ conda build --croot=C:/tmp conda-recipe -c <span class="s2">&quot;</span><span c
 <p>You could face issues with conda-build version 3.20. Use conda-build
 3.18 instead.</p>
 </div>
-<p><strong>Build and Install with setuptools</strong></p>
+</section>
+<section id="build-and-install-with-setuptools">
+<h4>Build and install with setuptools<a class="headerlink" href="#build-and-install-with-setuptools" title="Permalink to this headline"></a></h4>
 <p>To build using Python <code class="docutils literal notranslate"><span class="pre">setuptools</span></code>, the following packages should be
 installed:</p>
 <blockquote>
@@ -240,12 +229,13 @@ usual steps</p>
 </pre></div>
 </div>
 </section>
+</section>
 <section id="building-using-custom-dpcpp">
 <h3>Building using custom dpcpp<a class="headerlink" href="#building-using-custom-dpcpp" title="Permalink to this headline"></a></h3>
 <p>It is possible to build dpctl from source using .. _DPC++ toolchain: <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md">https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md</a>
 instead of the DPC++ compiler that comes with oneAPI. One reason for doing this
 may be to enable support for CUDA devices.</p>
-<p>Following steps in <span class="xref std std-ref">Build and Install with setuptools</span> use command line
+<p>Following steps in <a class="reference internal" href="#build-and-install-with-setuptools">Build and install with setuptools</a> use command line
 option <code class="code docutils literal notranslate"><span class="pre">--sycl-compiler-prefix</span></code>, for example:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop --sycl-compiler-prefix<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/llvm/build
 </pre></div>
@@ -289,13 +279,12 @@ examples.</p>
 </div>
 </section>
 </section>
-<section id="building-the-c-api-shared-library">
-<h2>Building the C API shared library<a class="headerlink" href="#building-the-c-api-shared-library" title="Permalink to this headline"></a></h2>
-<p>The dpctl C API is a shared library called libDPCTLSyclInterface and is built
-together when build the Python package. However, it is possible to only build
-the C API as a standalone library. To do so, you will need <code class="docutils literal notranslate"><span class="pre">cmake</span></code>,
+<section id="building-the-dpctlsyclinterface-library">
+<h2>Building the DPCTLSyclInterface library<a class="headerlink" href="#building-the-dpctlsyclinterface-library" title="Permalink to this headline"></a></h2>
+<p>The libDPCTLSyclInterface is a shared library used by the Python package.
+To build the library you will need <code class="docutils literal notranslate"><span class="pre">DPC++</span></code> toolchain, <code class="docutils literal notranslate"><span class="pre">cmake</span></code>,
 <code class="docutils literal notranslate"><span class="pre">ninja</span></code> or <code class="docutils literal notranslate"><span class="pre">make</span></code>, and optionally <code class="docutils literal notranslate"><span class="pre">gtest</span> <span class="pre">1.10</span></code> if you wish to run the
-C API test suite.</p>
+test suite.</p>
 <p>For example, on Linux the following script can be used to build the C oneAPI
 library.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
@@ -355,7 +344,7 @@ make <span class="nv">V</span><span class="o">=</span><span class="m">1</span> -
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+142.ge71d1d2f
+      v: 0.12.0dev1+146.ge7096c4e
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

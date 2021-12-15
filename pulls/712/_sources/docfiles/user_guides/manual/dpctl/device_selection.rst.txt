@@ -4,10 +4,8 @@
 Device Selection
 ################
 
-Device selection is the most fundamental operation provided by dpctl. Most
-other operations, such as queue creation and kernel submission, depend on first
-selecting a device. Dpctl offers several ways to programmatically select a
-device that are discussed in this section.
+Device selection refers to programmatically selecting a single device from
+the set of  `devices`_ available on the system.
 
 Selecting a Specific Type of Device
 -----------------------------------
@@ -134,7 +132,7 @@ of hardware properties that may be used for device selection.
 
 A convenience function :func:`dpctl.select_device_with_aspects()` is available
 that makes it easy to select a device based on a set of specific aspects. The
-example :ref:`fig-select-device-with-aspects` selects a GPU device that
+example :ref:`fig-select-device-with-aspects` selects a device that
 supports double precision arithmetic and SYCL USM shared memory allocation.
 
 .. _fig-select-device-with-aspects:

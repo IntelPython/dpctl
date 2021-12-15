@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.12.0dev1+142.ge71d1d2f documentation</title>
+  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.12.0dev1+146.ge7096c4e documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+142.ge71d1d2f
+                0.12.0dev1+146.ge7096c4e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -93,10 +93,8 @@
              
   <section id="device-selection">
 <span id="id1"></span><h1>Device Selection<a class="headerlink" href="#device-selection" title="Permalink to this headline"></a></h1>
-<p>Device selection is the most fundamental operation provided by dpctl. Most
-other operations, such as queue creation and kernel submission, depend on first
-selecting a device. Dpctl offers several ways to programmatically select a
-device that are discussed in this section.</p>
+<p>Device selection refers to programmatically selecting a single device from
+the set of  <a href="#id7"><span class="problematic" id="id8">`devices`_</span></a> available on the system.</p>
 <section id="selecting-a-specific-type-of-device">
 <h2>Selecting a Specific Type of Device<a class="headerlink" href="#selecting-a-specific-type-of-device" title="Permalink to this headline"></a></h2>
 <p>If a user needs to select a specific type of device such as a GPU, they can
@@ -191,13 +189,13 @@ strings.</p>
 </div>
 <p>A possible output for the example <a class="reference internal" href="#fig-filter-selection"><span class="std std-ref">Device Creation With Filter Strings</span></a> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example select_using_filter
-    Name            Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz
+    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
     Driver version  2021.12.9.0.24_005321
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
     Filter string   opencl:cpu:0
 
-    Name            Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz
+    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
     Driver version  2021.12.9.0.24_005321
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
@@ -314,7 +312,7 @@ sub-device.</p>
 </div>
 <p>A convenience function <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.select_device_with_aspects" title="dpctl.select_device_with_aspects"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.select_device_with_aspects()</span></code></a> is available
 that makes it easy to select a device based on a set of specific aspects. The
-example <a class="reference internal" href="#fig-select-device-with-aspects"><span class="std std-ref">Device Selection Using Aspects</span></a> selects a GPU device that
+example <a class="reference internal" href="#fig-select-device-with-aspects"><span class="std std-ref">Device Selection Using Aspects</span></a> selects a device that
 supports double precision arithmetic and SYCL USM shared memory allocation.</p>
 <div class="literal-block-wrapper docutils container" id="id6">
 <span id="fig-select-device-with-aspects"></span><div class="code-block-caption"><span class="caption-text">Device Selection Using Aspects</span><a class="headerlink" href="#id6" title="Permalink to this code"></a></div>
@@ -335,7 +333,7 @@ supports double precision arithmetic and SYCL USM shared memory allocation.</p>
 </div>
 <p>A possible output for the example <a class="reference internal" href="#fig-select-device-with-aspects"><span class="std std-ref">Device Selection Using Aspects</span></a> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_device_with_aspects
-    Name            Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz
+    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
     Driver version  2021.12.9.0.24_005321
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
@@ -376,7 +374,7 @@ INFO: ===========================
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+142.ge71d1d2f
+      v: 0.12.0dev1+146.ge7096c4e
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

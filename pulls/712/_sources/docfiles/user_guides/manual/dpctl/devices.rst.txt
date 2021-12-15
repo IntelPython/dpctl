@@ -4,11 +4,6 @@
 Device
 ######
 
-.. contents::
-   :local:
-   :backlinks: none
-   :depth: 1
-
 The :class:`dpctl.SyclDevice` class is an abstract representation of a
 data-parallel computation device. A device can be a CPU, GPU, FPGA, or other
 type of accelerator.
@@ -16,7 +11,7 @@ type of accelerator.
 Listing Devices
 ---------------
 
-``dpctl`` has a fixed number of :ref:`root devices<RootDevice>` which does not vary as the application executes.
+:py:mod:`dpctl` has a fixed number of :ref:`root devices<RootDevice>` which does not vary as the application executes.
 
 Function :func:`dpctl.get_devices` can be used to retrieve these devices. This list is determined by
 available hardware, installed drivers, as well as by
