@@ -11,6 +11,9 @@ platforms queryable using dpctl depends on the device drivers that are installed
 on a system. A single driver may control multiple physical XPU, thus a platform
 may also consist of multiple XPUs.
 
+Listing Available Platforms
+---------------------------
+
 The platforms available on a system can be queried using the
 :func:`dpctl.lsplatform` function. In addition, as illustrated in the following
 example it is possible to print out metadata about a platform.

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Platform &mdash; Data-parallel Control (dpctl) 0.12.0dev1+127.g5984823b documentation</title>
+  <title>Platform &mdash; Data-parallel Control (dpctl) 0.12.0dev1+128.ge824bfcf documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+127.g5984823b
+                0.12.0dev1+128.ge824bfcf
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -99,6 +99,8 @@ more XPU that is connected to the host and that can be used for computation. The
 platforms queryable using dpctl depends on the device drivers that are installed
 on a system. A single driver may control multiple physical XPU, thus a platform
 may also consist of multiple XPUs.</p>
+<section id="listing-available-platforms">
+<h2>Listing Available Platforms<a class="headerlink" href="#listing-available-platforms" title="Permalink to this headline"></a></h2>
 <p>The platforms available on a system can be queried using the
 <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.lsplatform" title="dpctl.lsplatform"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.lsplatform()</span></code></a> function. In addition, as illustrated in the following
 example it is possible to print out metadata about a platform.</p>
@@ -140,9 +142,9 @@ example it is possible to print out metadata about a platform.</p>
 INFO: ===========================
 
 INFO: Executing example list_available_platforms
-&lt;dpctl.SyclPlatform [Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) Corporation,  OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3] at 0x7f62c770c0f0&gt;
-&lt;dpctl.SyclPlatform [Intel(R) OpenCL, Intel(R) Corporation,  OpenCL 3.0 LINUX] at 0x7f62c770c2f0&gt;
-&lt;dpctl.SyclPlatform [SYCL host platform, ,  1.2] at 0x7f62c770c330&gt;
+&lt;dpctl.SyclPlatform [Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) Corporation,  OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3] at 0x7f22629252b0&gt;
+&lt;dpctl.SyclPlatform [Intel(R) OpenCL, Intel(R) Corporation,  OpenCL 3.0 LINUX] at 0x7f22629254f0&gt;
+&lt;dpctl.SyclPlatform [SYCL host platform, ,  1.2] at 0x7f2262925530&gt;
 INFO: ===========================
 Intel(R) FPGA Emulation Platform for OpenCL(TM) OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3
 Intel(R) OpenCL OpenCL 3.0 LINUX
@@ -154,6 +156,7 @@ SYCL host platform 1.2
 <p>The verbosity for the output can be controlled using the <code class="docutils literal notranslate"><span class="pre">verbosity</span></code>
 keyword argument. Refer <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.lsplatform" title="dpctl.lsplatform"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.lsplatform()</span></code></a>.</p>
 </div>
+</section>
 </section>
 
 
@@ -185,7 +188,7 @@ keyword argument. Refer <a class="reference internal" href="../../../dpctl/dpctl
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+127.g5984823b
+      v: 0.12.0dev1+128.ge824bfcf
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

@@ -13,7 +13,7 @@ The :class:`dpctl.SyclDevice` class is an abstract representation of a
 data-parallel computation device. A device can be a CPU, GPU, FPGA, or other
 type of accelerator.
 
-Listing devices
+Listing Devices
 ---------------
 
 .. todo::
