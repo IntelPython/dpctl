@@ -85,17 +85,18 @@ A possible output for the example :ref:`fig-adv-device-selection` may be:
     A **filter string** is a three-tuple that may specify the *backend*,
     *device type*, and *device number* as a colon (:) separated string. The
     backend specifies the type of device driver and can have a value such as
-    *opencl*, *level-zero*, or *cuda*. The device type can be *gpu*, *cpu*,
-    *accelerator*. And, the device number is a numeric value specifying the
-    ordinality of the device in the listing of devices as determined by the SYCL
-    runtime. The filter values are dependent of what the underlying SYCL runtime
-    supports.
+    *host*, *opencl*, *level-zero*, or *cuda*. The device type can be *host*,
+    *gpu*, *cpu*, *accelerator*. And, the device number is a numeric value
+    specifying the ordinality of the device in the listing of devices as
+    determined by the SYCL runtime. Each of the backend, device type, and device
+    number value is optional, but at least one of them should be provided,
+    *i.e.*, ``opencl:gpu:0``, ``gpu:0``, ``gpu``, ``0``, and ``opencl:0`` are
+    all valid filter strings.
 
-    Each of the backend, device type, and device number value is optional, but
-    at least one of them should be provided, *i.e.*, ``opencl:gpu:0``,
-    ``gpu:0``, ``gpu``, ``0``, and ``opencl:0`` are all valid filter strings.
-
-    Please refer `oneAPI filter selection extension`_ for more details.
+    The device listing including the device number value remain stable for
+    a given system unless the driver configuration is changed or the SYCL
+    runtime setting is changed using the **SYCL_DEVICE_FILTER** environment
+    variable. Please refer `oneAPI filter selection extension`_ for more detail.
 
 Advanced Device Selection
 -------------------------
@@ -115,12 +116,19 @@ to accomplish more advanced device selection.
 
 The example :ref:`fig-custom-device-selection` shows a way of selecting a device
 based off a specific hardware property. The :func:`dpctl.get_devices()` returns
-a list of all devices on the system, out of that list the devices that support
-half-precision floating-point arithmetic are selected. Finally, a "score"
-computed using the SYCL runtime's default device scoring logic that is stored in
-:attr:`dpctl.SyclDevice.default_selector_score` is used to select a single
-device. Refer the documentation of :class:`dpctl.SyclDevice` for a list of
-hardware properties that may be used for device selection.
+a list of all *root* devices on the system, out of that list the devices that
+support half-precision floating-point arithmetic are selected. Finally, a
+"score" computed using the SYCL runtime's default device scoring logic that is
+stored in :attr:`dpctl.SyclDevice.default_selector_score` is used to select a
+single device. Refer the documentation of :class:`dpctl.SyclDevice` for a list
+of hardware properties that may be used for device selection.
+
+.. Note::
+    A **root** device implies an unpartitioned device. A root device can be
+    partitioned into two or more :ref:`sub-devices <sec-devices-sub-devices>`
+    based on various criteria. For example, a CPU device with multiple NUMA
+    domains may be partitioned into multiple sub-devices, each representing a
+    sub-device.
 
 A convenience function :func:`dpctl.select_device_with_aspects()` is available
 that makes it easy to select a device based on a set of specific aspects. The

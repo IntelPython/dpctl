@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.12.0dev1+126.g78029deb documentation</title>
+  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.12.0dev1+127.g5984823b documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+126.g78029deb
+                0.12.0dev1+127.g5984823b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -191,20 +191,20 @@ strings.</p>
 </div>
 <p>A possible output for the example <a class="reference internal" href="#fig-filter-selection"><span class="std std-ref">Device Creation With Filter Strings</span></a> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example select_using_filter
-    Name            Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz
-    Driver version  2021.13.11.0.23_160000
+    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
+    Driver version  2021.12.9.0.24_005321
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
     Filter string   opencl:cpu:0
 
-    Name            Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz
-    Driver version  2021.13.11.0.23_160000
+    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
+    Driver version  2021.12.9.0.24_005321
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
     Filter string   opencl:cpu:0
 
     Name            Intel(R) FPGA Emulation Device
-    Driver version  2021.13.11.0.23_160000
+    Driver version  2021.12.9.0.24_005321
     Vendor          Intel(R) Corporation
     Profile         EMBEDDED_PROFILE
     Filter string   opencl:accelerator:0
@@ -248,15 +248,17 @@ INFO: ===========================
 <p>A <strong>filter string</strong> is a three-tuple that may specify the <em>backend</em>,
 <em>device type</em>, and <em>device number</em> as a colon (:) separated string. The
 backend specifies the type of device driver and can have a value such as
-<em>opencl</em>, <em>level-zero</em>, or <em>cuda</em>. The device type can be <em>gpu</em>, <em>cpu</em>,
-<em>accelerator</em>. And, the device number is a numeric value specifying the
-ordinality of the device in the listing of devices as determined by the SYCL
-runtime. The filter values are dependent of what the underlying SYCL runtime
-supports.</p>
-<p>Each of the backend, device type, and device number value is optional, but
-at least one of them should be provided, <em>i.e.</em>, <code class="docutils literal notranslate"><span class="pre">opencl:gpu:0</span></code>,
-<code class="docutils literal notranslate"><span class="pre">gpu:0</span></code>, <code class="docutils literal notranslate"><span class="pre">gpu</span></code>, <code class="docutils literal notranslate"><span class="pre">0</span></code>, and <code class="docutils literal notranslate"><span class="pre">opencl:0</span></code> are all valid filter strings.</p>
-<p>Please refer <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc">oneAPI filter selection extension</a> for more details.</p>
+<em>host</em>, <em>opencl</em>, <em>level-zero</em>, or <em>cuda</em>. The device type can be <em>host</em>,
+<em>gpu</em>, <em>cpu</em>, <em>accelerator</em>. And, the device number is a numeric value
+specifying the ordinality of the device in the listing of devices as
+determined by the SYCL runtime. Each of the backend, device type, and device
+number value is optional, but at least one of them should be provided,
+<em>i.e.</em>, <code class="docutils literal notranslate"><span class="pre">opencl:gpu:0</span></code>, <code class="docutils literal notranslate"><span class="pre">gpu:0</span></code>, <code class="docutils literal notranslate"><span class="pre">gpu</span></code>, <code class="docutils literal notranslate"><span class="pre">0</span></code>, and <code class="docutils literal notranslate"><span class="pre">opencl:0</span></code> are
+all valid filter strings.</p>
+<p>The device listing including the device number value remain stable for
+a given system unless the driver configuration is changed or the SYCL
+runtime setting is changed using the <strong>SYCL_DEVICE_FILTER</strong> environment
+variable. Please refer <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc">oneAPI filter selection extension</a> for more detail.</p>
 </div>
 </section>
 <section id="advanced-device-selection">
@@ -296,12 +298,20 @@ to accomplish more advanced device selection.</p>
 </div>
 <p>The example <a class="reference internal" href="#fig-custom-device-selection"><span class="std std-ref">Custom Device Selection</span></a> shows a way of selecting a device
 based off a specific hardware property. The <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code></a> returns
-a list of all devices on the system, out of that list the devices that support
-half-precision floating-point arithmetic are selected. Finally, a “score”
-computed using the SYCL runtime’s default device scoring logic that is stored in
-<a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice.default_selector_score" title="dpctl.SyclDevice.default_selector_score"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.SyclDevice.default_selector_score</span></code></a> is used to select a single
-device. Refer the documentation of <a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> for a list of
-hardware properties that may be used for device selection.</p>
+a list of all <em>root</em> devices on the system, out of that list the devices that
+support half-precision floating-point arithmetic are selected. Finally, a
+“score” computed using the SYCL runtime’s default device scoring logic that is
+stored in <a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice.default_selector_score" title="dpctl.SyclDevice.default_selector_score"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.SyclDevice.default_selector_score</span></code></a> is used to select a
+single device. Refer the documentation of <a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> for a list
+of hardware properties that may be used for device selection.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A <strong>root</strong> device implies an unpartitioned device. A root device can be
+partitioned into two or more <a class="reference internal" href="devices.html#sec-devices-sub-devices"><span class="std std-ref">sub-devices</span></a>
+based on various criteria. For example, a CPU device with multiple NUMA
+domains may be partitioned into multiple sub-devices, each representing a
+sub-device.</p>
+</div>
 <p>A convenience function <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.select_device_with_aspects" title="dpctl.select_device_with_aspects"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.select_device_with_aspects()</span></code></a> is available
 that makes it easy to select a device based on a set of specific aspects. The
 example <a class="reference internal" href="#fig-select-device-with-aspects"><span class="std std-ref">Device Selection Using Aspects</span></a> selects a GPU device that
@@ -369,7 +379,7 @@ ValueError: Requested device is unavailable: required_aspects=[&#39;fp64&#39;, &
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+126.g78029deb
+      v: 0.12.0dev1+127.g5984823b
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

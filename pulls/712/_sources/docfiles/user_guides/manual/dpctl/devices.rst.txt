@@ -20,20 +20,15 @@ Listing devices
 
     Get a list of devices
 
-Selecting a device
-------------------
-
-.. todo::
-
-    Demonstrate all the ways we can select devices.
-
-Query device properties
------------------------
+Device Aspects and Properties
+-----------------------------
 
 .. todo::
 
     Demonstrate how to query a device's various aspects and properties.
 
+
+.. _sec-devices-sub-devices:
 
 Sub-devices
 -----------
