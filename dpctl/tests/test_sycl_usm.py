@@ -530,9 +530,10 @@ def test_cpython_api(memory_ctor):
     mobj = memory_ctor(1024)
     mod = sys.modules[mobj.__class__.__module__]
     # get capsules storing function pointers
-    mem_ptr_fn_cap = mod.__pyx_capi__["get_usm_pointer"]
-    mem_ctx_ref_fn_cap = mod.__pyx_capi__["get_context_ref"]
-    mem_nby_fn_cap = mod.__pyx_capi__["get_nbytes"]
+    mem_ptr_fn_cap = mod.__pyx_capi__["Memory_get_usm_pointer"]
+    mem_q_ref_fn_cap = mod.__pyx_capi__["Memory_get_queue_ref"]
+    mem_ctx_ref_fn_cap = mod.__pyx_capi__["Memory_get_context_ref"]
+    mem_nby_fn_cap = mod.__pyx_capi__["Memory_get_nbytes"]
     # construct Python callable to invoke "get_usm_pointer"
     cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
     cap_ptr_fn.restype = ctypes.c_void_p
@@ -543,12 +544,16 @@ def test_cpython_api(memory_ctor):
     mem_ctx_ref_fn_ptr = cap_ptr_fn(
         mem_ctx_ref_fn_cap, b"DPCTLSyclContextRef (struct Py_MemoryObject *)"
     )
+    mem_q_ref_fn_ptr = cap_ptr_fn(
+        mem_q_ref_fn_cap, b"DPCTLSyclQueueRef (struct Py_MemoryObject *)"
+    )
     mem_nby_fn_ptr = cap_ptr_fn(
         mem_nby_fn_cap, b"size_t (struct Py_MemoryObject *)"
     )
     callable_maker = ctypes.PYFUNCTYPE(ctypes.c_void_p, ctypes.py_object)
     get_ptr_fn = callable_maker(mem_ptr_fn_ptr)
     get_ctx_ref_fn = callable_maker(mem_ctx_ref_fn_ptr)
+    get_q_ref_fn = callable_maker(mem_q_ref_fn_ptr)
     get_nby_fn = callable_maker(mem_nby_fn_ptr)
 
     capi_ptr = get_ptr_fn(mobj)
@@ -557,6 +562,9 @@ def test_cpython_api(memory_ctor):
     capi_ctx_ref = get_ctx_ref_fn(mobj)
     direct_ctx_ref = mobj._context.addressof_ref()
     assert capi_ctx_ref == direct_ctx_ref
+    capi_q_ref = get_q_ref_fn(mobj)
+    direct_q_ref = mobj.sycl_queue.addressof_ref()
+    assert capi_q_ref == direct_q_ref
     capi_nbytes = get_nby_fn(mobj)
     direct_nbytes = mobj.nbytes
     assert capi_nbytes == direct_nbytes
