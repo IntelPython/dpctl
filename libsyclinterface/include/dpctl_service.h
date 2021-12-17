@@ -44,3 +44,7 @@ DPCTL_API
 __dpctl_give const char *DPCTLService_GetDPCPPVersion(void);
 
 DPCTL_C_EXTERN_C_END
+
+void DPCTLService_InitLogger(const char *app_name, const char *log_dir);
+
+void DPCTLService_ShutdownLogger(void);

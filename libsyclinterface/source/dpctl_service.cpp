@@ -26,13 +26,49 @@
 #include "dpctl_service.h"
 #include "Config/dpctl_config.h"
 
-#include "../helper/include/dpctl_string_utils.hpp"
+#include "dpctl_string_utils.hpp"
 #include <algorithm>
 #include <cstring>
 #include <iostream>
+#include <sys/stat.h>
+#ifdef ENABLE_GLOG
+#include <glog/logging.h>
+#endif
 
 __dpctl_give const char *DPCTLService_GetDPCPPVersion(void)
 {
     std::string version = DPCTL_DPCPP_VERSION;
     return dpctl::helper::cstring_from_string(version);
 }
+
+#ifdef ENABLE_GLOG
+
+void DPCTLService_InitLogger(const char *app_name, const char *log_dir)
+{
+    google::InitGoogleLogging(app_name);
+    google::EnableLogCleaner(0);
+    google::InstallFailureSignalHandler();
+    FLAGS_colorlogtostderr = true;
+    FLAGS_stderrthreshold = google::FATAL;
+    struct stat buffer;
+    if (stat(log_dir, &buffer) != 0) {
+        FLAGS_log_dir = log_dir;
+    }
+    else {
+        std::cerr << "Directory not found. Log files will be created in the "
+                     "default logging directory.\n";
+    }
+}
+
+void DPCTLService_ShutdownLogger(void)
+{
+    google::ShutdownGoogleLogging();
+}
+
+#else
+void DPCTLService_InitLogger([[maybe_unused]] const char *app_name,
+                             [[maybe_unused]] const char *log_dir){};
+
+void DPCTLService_ShutdownLogger(void){};
+
+#endif

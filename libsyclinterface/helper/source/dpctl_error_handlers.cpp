@@ -24,7 +24,12 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_error_handlers.h"
+#include "dpctl_service.h"
 #include <cstring>
+#include <sstream>
+#ifdef ENABLE_GLOG
+#include <glog/logging.h>
+#endif
 
 void DPCTL_AsyncErrorHandler::operator()(
     const cl::sycl::exception_list &exceptions)
@@ -59,6 +64,25 @@ int requested_verbosity_level(void)
 
     return requested_level;
 }
+
+void output_message(std::string ss_str, [[maybe_unused]] error_level error_type)
+{
+#ifdef ENABLE_GLOG
+    switch (error_type) {
+    case error_level::error:
+        LOG(ERROR) << ss_str;
+        break;
+    case error_level::warning:
+        LOG(WARNING) << ss_str;
+        break;
+    default:
+        LOG(FATAL) << ss_str;
+    }
+#else
+    std::cerr << ss_str;
+#endif
+}
+
 } // namespace
 
 void error_handler(const std::exception &e,
@@ -70,9 +94,14 @@ void error_handler(const std::exception &e,
     int requested_level = requested_verbosity_level();
     int error_level = static_cast<int>(error_type);
 
-    if (requested_level >= error_level) {
-        std::cerr << e.what() << " in " << func_name << " at " << file_name
-                  << ":" << line_num << std::endl;
+    bool to_output = requested_level >= error_level;
+
+    if (to_output) {
+        std::stringstream ss;
+        ss << e.what() << " in " << func_name << " at " << file_name << ":"
+           << line_num << std::endl;
+
+        output_message(ss.str(), error_type);
     }
 }
 
@@ -85,8 +114,13 @@ void error_handler(const std::string &what,
     int requested_level = requested_verbosity_level();
     int error_level = static_cast<int>(error_type);
 
-    if (requested_level >= error_level) {
-        std::cerr << what << " In " << func_name << " at " << file_name << ":"
-                  << line_num << std::endl;
+    bool to_output = requested_level >= error_level;
+
+    if (to_output) {
+        std::stringstream ss;
+        ss << what << " in " << func_name << " at " << file_name << ":"
+           << line_num << std::endl;
+
+        output_message(ss.str(), error_type);
     }
 }
