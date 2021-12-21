@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device &mdash; Data-parallel Control (dpctl) 0.12.0dev1+116.g91e5cf18 documentation</title>
+  <title>Device &mdash; Data-parallel Control (dpctl) 0.12.0dev1+116.g4aa21b30 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+116.g91e5cf18
+                0.12.0dev1+116.g4aa21b30
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -96,12 +96,19 @@
 <p>A device is an abstract representation for an XPU. The <a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>
 class represents a device and is a wrapper over the
 <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device.html">sycl::device</a> SYCL runtime class.</p>
+<section id="creating-devices">
+<h2>Creating Devices<a class="headerlink" href="#creating-devices" title="Permalink to this headline"></a></h2>
+<p>We touched upon device creation under the <a class="reference internal" href="device_selection.html#device-selection"><span class="std std-ref">Device Selection</span></a> section. the
+<a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> class includes a default constructor to create a
+“default” device that is selected by the SYCL runtime. Users can also use
+explicit <a class="reference internal" href="device_selection.html#sec-filter-selection"><span class="std std-ref">filter selector strings</span></a> to create a
+device.</p>
+</section>
 <section id="listing-devices">
 <h2>Listing Devices<a class="headerlink" href="#listing-devices" title="Permalink to this headline"></a></h2>
 <p><a class="reference internal" href="../../../dpctl/dpctl_pyapi.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> provides the <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code></a> utility function to list
-the available devices on a user’s system. The function only lists
-<a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instances. The list of devices returned depends on
-available hardware, installed drivers, as well as by
+the available devices on a user’s system. The list of devices returned depends
+on available hardware, installed drivers, as well as by
 <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md">environment variables</a> influencing SYCL runtime
 such as <code class="docutils literal notranslate"><span class="pre">SYCL_DEVICE_FILTER</span></code> or <code class="docutils literal notranslate"><span class="pre">SYCL_DEVICE_ALLOWLIST</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
@@ -147,7 +154,7 @@ Get a list of all devices:
     Profile         EMBEDDED_PROFILE
     Filter string   opencl:accelerator:0
 
-    Name            Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz
+    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
     Driver version  2021.13.11.0.23_160000
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
@@ -163,7 +170,7 @@ Get the list of only OpenCL devices:
     Profile         EMBEDDED_PROFILE
     Filter string   opencl:accelerator:0
 
-    Name            Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz
+    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
     Driver version  2021.13.11.0.23_160000
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
@@ -173,7 +180,7 @@ Get the list of only OpenCL devices:
 
 Get all OpenCL CPU devices:
 
-    Name            Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz
+    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
     Driver version  2021.13.11.0.23_160000
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
@@ -186,7 +193,7 @@ INFO: ===========================
 </div>
 <p>The example <a class="reference internal" href="#fig-listing-devices"><span class="std std-ref">Listing Available Devices</span></a> demonstrates the usage of
 <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code></a>. The list can be filtered based on
-<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend`</span></code> and <a class="reference internal" href="../../../dpctl/dpctl_enum_api.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a>. The 0-based ordinal
+<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend</span></code> and <a class="reference internal" href="../../../dpctl/dpctl_enum_api.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a>. The 0-based ordinal
 position of a device in the output of <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code></a> corresponds to
 the <code class="docutils literal notranslate"><span class="pre">device</span> <span class="pre">id</span></code> value in the filter selector string corresponding to the
 device. For example, <code class="docutils literal notranslate"><span class="pre">&quot;opencl:cpu:0&quot;</span></code> refers to the first device in the list
@@ -267,53 +274,33 @@ certain hardware cache levels.</p>
 <p>Use <code class="docutils literal notranslate"><span class="pre">partition=&quot;next_partitionable&quot;</span></code> to partition along the next level of
 architectural hierarchy.</p>
 </div>
-<p>The following example shows the partitioning of a CPU device into sub-devices
-using the equal partitioning scheme.</p>
+<p>The following example shows an affinity-based partitioning of a CPU device
+into sub-devices based on the available NUMA domains.</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <span id="fig-partition-cpu"></span><div class="code-block-caption"><span class="caption-text">Partitioning a CPU device</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="linenos"> 2</span><span class="k">def</span> <span class="nf">subdivide_root_cpu_device</span><span class="p">():</span>
+<span class="linenos"> 2</span><span class="k">def</span> <span class="nf">subdivide_by_affinity</span><span class="p">(</span><span class="n">affinity</span><span class="o">=</span><span class="s2">&quot;numa&quot;</span><span class="p">):</span>
 <span class="linenos"> 3</span>    <span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos"> 4</span><span class="sd">    Create root CPU device, and equally partition it</span>
-<span class="linenos"> 5</span><span class="sd">    into smaller CPU devices 4 execution units each,</span>
-<span class="linenos"> 6</span><span class="sd">    and then further parition those subdevice into</span>
-<span class="linenos"> 7</span><span class="sd">    smaller sub-devices</span>
-<span class="linenos"> 8</span><span class="sd">    &quot;&quot;&quot;</span>
-<span class="linenos"> 9</span>    <span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
-<span class="linenos">10</span>    <span class="nb">print</span><span class="p">(</span>
-<span class="linenos">11</span>        <span class="s2">&quot;cpu_d is &quot;</span>
-<span class="linenos">12</span>        <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;a root device.&quot;</span> <span class="k">if</span> <span class="n">is_root_device</span><span class="p">(</span><span class="n">cpu_d</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;not a root device.&quot;</span><span class="p">)</span>
-<span class="linenos">13</span>    <span class="p">)</span>
-<span class="linenos">14</span>    <span class="n">sub_devs</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<span class="linenos">15</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sub-device #EU: &quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">max_compute_units</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">sub_devs</span><span class="p">])</span>
-<span class="linenos">16</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sub-device is_root: &quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">is_root_device</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">sub_devs</span><span class="p">])</span>
-<span class="linenos">17</span>    <span class="nb">print</span><span class="p">(</span>
-<span class="linenos">18</span>        <span class="s2">&quot;Sub-device parent is what we expected: &quot;</span><span class="p">,</span>
-<span class="linenos">19</span>        <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">parent_device</span> <span class="o">==</span> <span class="n">cpu_d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">sub_devs</span><span class="p">],</span>
-<span class="linenos">20</span>    <span class="p">)</span>
-<span class="linenos">21</span>
-<span class="linenos">22</span>    <span class="c1"># Further partition each sub-device</span>
-<span class="linenos">23</span>    <span class="n">subsub_dev_eu_count</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos">24</span>        <span class="p">[</span><span class="n">sd</span><span class="o">.</span><span class="n">max_compute_units</span> <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))]</span>
-<span class="linenos">25</span>        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">sub_devs</span>
-<span class="linenos">26</span>    <span class="p">]</span>
-<span class="linenos">27</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sub-sub-device #EU: &quot;</span><span class="p">,</span> <span class="n">subsub_dev_eu_count</span><span class="p">)</span>
+<span class="linenos"> 4</span><span class="sd">    Create sub-devices partitioning by affinity.</span>
+<span class="linenos"> 5</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 6</span>    <span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="linenos"> 7</span>    <span class="k">try</span><span class="p">:</span>
+<span class="linenos"> 8</span>        <span class="n">sub_devs</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="n">affinity</span><span class="p">)</span>
+<span class="linenos"> 9</span>        <span class="nb">print</span><span class="p">(</span>
+<span class="linenos">10</span>            <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> sub-devices were created with respective &quot;</span>
+<span class="linenos">11</span>            <span class="s2">&quot;#EUs being </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<span class="linenos">12</span>                <span class="nb">len</span><span class="p">(</span><span class="n">sub_devs</span><span class="p">),</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">max_compute_units</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">sub_devs</span><span class="p">]</span>
+<span class="linenos">13</span>            <span class="p">)</span>
+<span class="linenos">14</span>        <span class="p">)</span>
+<span class="linenos">15</span>    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+<span class="linenos">16</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Device partitioning by affinity was not successful.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>A possible output for the example <a class="reference internal" href="#fig-listing-devices"><span class="std std-ref">Listing Available Devices</span></a> may be:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example subdivide_root_cpu_device
-cpu_d is a root device.
-Traceback (most recent call last):
-  File &quot;../examples/python/subdevices.py&quot;, line 112, in &lt;module&gt;
-    runner.run_examples(
-  File &quot;/home/runner/work/dpctl/dpctl/examples/python/_runner.py&quot;, line 84, in run_examples
-    clbl()
-  File &quot;../examples/python/subdevices.py&quot;, line 46, in subdivide_root_cpu_device
-    sub_devs = cpu_d.create_sub_devices(partition=4)
-  File &quot;dpctl/_sycl_device.pyx&quot;, line 875, in dpctl._sycl_device.SyclDevice.create_sub_devices
-  File &quot;dpctl/_sycl_device.pyx&quot;, line 748, in dpctl._sycl_device.SyclDevice.create_sub_devices_equally
-dpctl._sycl_device.SubDeviceCreationError: Sub-devices were not created.
+<p>A possible output for the example <a class="reference internal" href="#fig-partition-cpu"><span class="std std-ref">Partitioning a CPU device</span></a> may be:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example subdivide_by_affinity
+Device partitioning by affinity was not successful.
+INFO: ===========================
 </pre></div>
 </div>
 </section>
@@ -348,7 +335,7 @@ dpctl._sycl_device.SubDeviceCreationError: Sub-devices were not created.
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+116.g91e5cf18
+      v: 0.12.0dev1+116.g4aa21b30
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

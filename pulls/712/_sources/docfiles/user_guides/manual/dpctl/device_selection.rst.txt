@@ -37,6 +37,8 @@ A possible output for the example :ref:`fig-gpu-device-selection` may be:
 
 .. program-output:: python ../examples/python/device_selection.py -r create_gpu_device
 
+.. _sec-filter-selection:
+
 Selecting a Device Using a Filter String
 ----------------------------------------
 

@@ -8,14 +8,21 @@ A device is an abstract representation for an XPU. The :class:`dpctl.SyclDevice`
 class represents a device and is a wrapper over the
 :sycl_device:`sycl::device <>` SYCL runtime class.
 
+Creating Devices
+----------------
+
+We touched upon device creation under the :ref:`device_selection` section. the
+:class:`dpctl.SyclDevice` class includes a default constructor to create a
+"default" device that is selected by the SYCL runtime. Users can also use
+explicit :ref:`filter selector strings <sec-filter-selection>` to create a
+device.
 
 Listing Devices
 ---------------
 
 :py:mod:`dpctl` provides the :func:`dpctl.get_devices` utility function to list
-the available devices on a user's system. The function only lists
-:class:`dpctl.SyclDevice` instances. The list of devices returned depends on
-available hardware, installed drivers, as well as by
+the available devices on a user's system. The list of devices returned depends
+on available hardware, installed drivers, as well as by
 :dpcpp_envar:`environment variables <>` influencing SYCL runtime
 such as ``SYCL_DEVICE_FILTER`` or ``SYCL_DEVICE_ALLOWLIST``.
 
@@ -33,7 +40,7 @@ A possible output for the example :ref:`fig-listing-devices` may be:
 
 The example :ref:`fig-listing-devices` demonstrates the usage of
 :func:`dpctl.get_devices`. The list can be filtered based on
-:class:`dpctl.backend`` and :class:`dpctl.device_type`. The 0-based ordinal
+:class:`dpctl.backend` and :class:`dpctl.device_type`. The 0-based ordinal
 position of a device in the output of :func:`dpctl.get_devices` corresponds to
 the ``device id`` value in the filter selector string corresponding to the
 device. For example, ``"opencl:cpu:0"`` refers to the first device in the list
@@ -117,17 +124,17 @@ available:
     Use ``partition="next_partitionable"`` to partition along the next level of
     architectural hierarchy.
 
-The following example shows the partitioning of a CPU device into sub-devices
-using the equal partitioning scheme.
+The following example shows an affinity-based partitioning of a CPU device
+into sub-devices based on the available NUMA domains.
 
 .. _fig-partition-cpu:
 
 .. literalinclude:: ../../../../../examples/python/subdevices.py
     :language: python
-    :lines: 17, 34-59
+    :lines: 17, 62-76
     :caption: Partitioning a CPU device
     :linenos:
 
-A possible output for the example :ref:`fig-listing-devices` may be:
+A possible output for the example :ref:`fig-partition-cpu` may be:
 
-.. program-output:: python ../examples/python/subdevices.py -r subdivide_root_cpu_device
+.. program-output:: python ../examples/python/subdevices.py -r subdivide_by_affinity
