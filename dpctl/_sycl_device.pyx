@@ -175,13 +175,13 @@ cdef void _init_helper(_SyclDevice device, DPCTLSyclDeviceRef DRef):
 
 cdef class SyclDevice(_SyclDevice):
     """ SyclDevice(arg=None)
-    Python equivalent for cl::sycl::device class.
+    A Python wrapper for the :sycl_device:`sycl::device <>` C++ class.
 
     There are two ways of creating a SyclDevice instance:
 
         - by directly passing in a filter string to the class
           constructor. The filter string needs to conform to the
-          `DPC++ filter selector SYCL extension <https://bit.ly/37kqANT>`_.
+          :oneapi_filter_selection:`DPC++ filter selector SYCL extension <>`.
 
         :Example:
             .. code-block:: python
