@@ -118,16 +118,6 @@ def _write_underlined(o, s, c):
     _write_line(o, c * len(s))
 
 
-def _write_include_urls(o):
-    """[summary]
-
-    Args:
-        o ([type]): [description]
-    """
-    _write_empty_line(o)
-    _write_line(o, ".. include:: ../urls.rst")
-
-
 def _write_hidden_toc(o, list_of_obj_names, prefix_str="", suffix_str=""):
     """[summary]
 
@@ -368,9 +358,6 @@ def _generate_class_rst(cls):
                     output,
                     ".. autofunction:: " + ".".join([cls_qualname, n]),
                 )
-
-        _write_include_urls(output)
-
         return output.getvalue()
 
 
@@ -576,7 +563,6 @@ def _generate_module_summary_rst(module):
         _write_empty_line(output)
         _write_exceptions_summary_table(output, mod)
         _write_empty_line(output)
-        _write_include_urls(output)
 
         return output.getvalue()
 
