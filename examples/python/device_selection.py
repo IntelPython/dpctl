@@ -103,6 +103,32 @@ def create_device_with_aspects():
     dev.print_device_info()
 
 
+def list_devices():
+    """Programmatically get a list of the available devices.
+
+    The list can be filtered based on backend or device_type.
+    """
+    print("Get a list of all devices:\n")
+
+    for d in dpctl.get_devices():
+        d.print_device_info()
+    print("=======================================\n")
+
+    print("Get the list of only OpenCL devices:\n")
+
+    for d in dpctl.get_devices(backend="opencl"):
+        d.print_device_info()
+
+    print("=======================================\n")
+
+    print("Get all OpenCL CPU devices:\n")
+
+    for d in dpctl.get_devices(backend="opencl", device_type="cpu"):
+        d.print_device_info()
+
+    print("=======================================\n")
+
+
 if __name__ == "__main__":
     import _runner as runner
 
