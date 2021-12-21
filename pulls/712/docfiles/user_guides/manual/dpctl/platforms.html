@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Platform &mdash; Data-parallel Control (dpctl) 0.12.0dev1+146.ge7096c4e documentation</title>
+  <title>Platform &mdash; Data-parallel Control (dpctl) 0.12.0dev1+147.ge16d8ee0 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+146.ge7096c4e
+                0.12.0dev1+147.ge16d8ee0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -93,12 +93,9 @@
              
   <section id="platform">
 <span id="querying-platforms"></span><h1>Platform<a class="headerlink" href="#platform" title="Permalink to this headline"></a></h1>
-<p>In dpctl, the class <a class="reference internal" href="../../../dpctl/SyclPlatform.html#dpctl.SyclPlatform" title="dpctl.SyclPlatform"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclPlatform</span></code></a> represents a platform and
-abstracts the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/platform.html">sycl::platform</a> SYCL runtime class. A platform abstracts one or
-more XPU that is connected to the host and that can be used for computation. The
-platforms queryable using dpctl depends on the device drivers that are installed
-on a system. A single driver may control multiple physical XPU, thus a platform
-may also consist of multiple XPUs.</p>
+<p>A platform abstracts a device driver for one or more XPU that is connected to
+a host. The <a class="reference internal" href="../../../dpctl/SyclPlatform.html#dpctl.SyclPlatform" title="dpctl.SyclPlatform"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclPlatform</span></code></a> class represents a platform and
+abstracts the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/platform.html">sycl::platform</a> SYCL runtime class.</p>
 <section id="listing-available-platforms">
 <h2>Listing Available Platforms<a class="headerlink" href="#listing-available-platforms" title="Permalink to this headline"></a></h2>
 <p>The platforms available on a system can be queried using the
@@ -126,11 +123,6 @@ example it is possible to print out metadata about a platform.</p>
 <span class="linenos">20</span>    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">get_platforms</span><span class="p">():</span>
 <span class="linenos">21</span>        <span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 <span class="linenos">22</span>
-<span class="linenos">23</span>
-<span class="linenos">24</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-<span class="linenos">25</span>    <span class="kn">import</span> <span class="nn">_runner</span> <span class="k">as</span> <span class="nn">runner</span>
-<span class="linenos">26</span>
-<span class="linenos">27</span>    <span class="n">runner</span><span class="o">.</span><span class="n">run_examples</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </div>
 <p>The example can be executed as follows:</p>
@@ -142,9 +134,9 @@ example it is possible to print out metadata about a platform.</p>
 INFO: ===========================
 
 INFO: Executing example list_available_platforms
-&lt;dpctl.SyclPlatform [Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) Corporation,  OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3] at 0x7f9390d61270&gt;
-&lt;dpctl.SyclPlatform [Intel(R) OpenCL, Intel(R) Corporation,  OpenCL 3.0 LINUX] at 0x7f9390d614b0&gt;
-&lt;dpctl.SyclPlatform [SYCL host platform, ,  1.2] at 0x7f9390d614f0&gt;
+&lt;dpctl.SyclPlatform [Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) Corporation,  OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3] at 0x7fcb94a56eb0&gt;
+&lt;dpctl.SyclPlatform [Intel(R) OpenCL, Intel(R) Corporation,  OpenCL 3.0 LINUX] at 0x7fcb97ea2ef0&gt;
+&lt;dpctl.SyclPlatform [SYCL host platform, ,  1.2] at 0x7fcb8c7461b0&gt;
 INFO: ===========================
 Intel(R) FPGA Emulation Platform for OpenCL(TM) OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3
 Intel(R) OpenCL OpenCL 3.0 LINUX
@@ -170,7 +162,7 @@ keyword argument. Refer <a class="reference internal" href="../../../dpctl/dpctl
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Intel Corp..</p>
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -188,7 +180,7 @@ keyword argument. Refer <a class="reference internal" href="../../../dpctl/dpctl
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+146.ge7096c4e
+      v: 0.12.0dev1+147.ge16d8ee0
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

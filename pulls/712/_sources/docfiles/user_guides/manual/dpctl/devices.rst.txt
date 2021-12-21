@@ -4,45 +4,70 @@
 Device
 ######
 
-The :class:`dpctl.SyclDevice` class is an abstract representation of a
-data-parallel computation device. A device can be a CPU, GPU, FPGA, or other
-type of accelerator.
+A device is an abstract representation for an XPU. The :class:`dpctl.SyclDevice`
+class represents a device and is a wrapper over the `sycl::device`_ SYCL runtime
+class.
+
 
 Listing Devices
 ---------------
 
-:py:mod:`dpctl` has a fixed number of :ref:`root devices<RootDevice>` which does not vary as the application executes.
-
-Function :func:`dpctl.get_devices` can be used to retrieve these devices. This list is determined by
+:py:mod:`dpctl` provides the :func:`dpctl.get_devices` utility function to list
+the available devices on a user's system. The function only lists
+:class:`dpctl.SyclDevice` instances. The list of devices returned depends on
 available hardware, installed drivers, as well as by
-`environment variables <DPCPP environment variables>`_
-influencing SYCL runtime such as ``SYCL_DEVICE_FILTER`` or ``SYCL_DEVICE_ALLOWLIST``. Thanks for SYCL runtime
-determinism, this list does not change from run to run provided all other conditions stay the same.
+`environment variables <DPCPP environment variables>`_ influencing SYCL runtime
+such as ``SYCL_DEVICE_FILTER`` or ``SYCL_DEVICE_ALLOWLIST``.
 
-The list can be filtered based on ``backend`` and ``device_type`` keywords. The 0-based ordinal position
-of a device in the output of ``dpctl.get_devices`` corresponds to device id in the filter selector string.
-For example, ``"opencl:gpu:0"`` refers to the first device in the list returned by
-``dpctl.get_devices(backend="opencl", device_type="gpu")``. If such a list is empty device construction call
-``dpctl.SyclDevice("opencl:gpu:0")`` will raise a ``ValueError``.
+.. _fig-listing-devices:
 
-Device Aspects and Properties
------------------------------
+.. literalinclude:: ../../../../../examples/python/device_selection.py
+    :language: python
+    :lines: 20-22, 107-131
+    :caption: Listing Available Devices
+    :linenos:
 
-:class:`dpctl.SyclDevice` exposes various Python properties describing device's aspects and characteristics.
+A possible output for the example :ref:`fig-listing-devices` may be:
 
-`Aspects <SYCL 2020 aspects>`_ are boolean characterstics of the device.
-Property ``dev.has_aspect_fp16`` returns a boolean expression indicating whether a particular device has
-aspect ``"fp16"``, indicating whether it supposts IEEE-754 half-precision floating point type.
+.. program-output:: python ../examples/python/device_selection.py -r list_devices
 
-Non-boolean characteristics as exposed as :class:`dpctl.SyclDevice` instance properties with a
-non-boolean value type. For example, ``dev.name`` returns a string with a name of the device, while
-``dev.max_compute_units`` returns a positive integer reflecting the number of parallel compute units
-available to the device.
+The example :ref:`fig-listing-devices` demonstrates the usage of
+:func:`dpctl.get_devices`. The list can be filtered based on
+:class:`dpctl.backend`` and :class:`dpctl.device_type`. The 0-based ordinal
+position of a device in the output of :func:`dpctl.get_devices` corresponds to
+the ``device id`` value in the filter selector string corresponding to the
+device. For example, ``"opencl:cpu:0"`` refers to the first device in the list
+returned by ``dpctl.get_devices(backend="opencl", device_type="cpu")``. If such
+a list is empty, device construction call ``dpctl.SyclDevice("opencl:gpu:0")``
+will raise a ``ValueError``.
 
-The list of available properties can be retrieved programmatically, or found in documentation page of
-:class:`dpctl.SyclDevice` class.
+.. Note::
+
+    Unless the system configuration changes, the list of devices returned by
+    :func:`dpctl.get_devices` and the relative ordering of devices in the list
+    is stable for every call to the function, even across different runs of an
+    application.
+
+Device Aspects and Information Descriptors
+------------------------------------------
+
+A device can have various *aspects* and *information descriptors* that describe
+its hardware characteristics. :sycl_aspects:`Aspects <>` are boolean
+characteristics of the device, whereas
+:sycl_device_info:`information descriptors <>` are non-boolean characteristics
+that provide more verbose information about the device.
+:class:`dpctl.SyclDevice` exposes various Python properties that describe a
+device's aspects and information descriptors. For example, the property
+``has_aspect_fp16`` returns a boolean expression indicating whether a
+particular device has aspect ``"fp16"``, indicating whether it supports the
+IEEE-754 half-precision floating point type. Whereas, the ``name`` property is
+an information descriptor that returns a string with the name of the device.
+
+.. _fig-available-properties:
 
 .. code-block:: Python
+    :caption: Listing Available Device Aspects and Information Descriptors
+    :linenos:
 
     import dpctl
     import inspect
@@ -55,47 +80,56 @@ The list of available properties can be retrieved programmatically, or found in 
     print(len(get_properties(dpctl.SyclDevice, "name")))
     # Output: 52
 
+The example :ref:`fig-available-properties` demonstrates a programmatic way of
+listing all the aspects and information descriptor properties in
+:class:`dpctl.SyclDevice`.
+
 .. _sec-devices-sub-devices:
 
 Sub-devices
 -----------
 
-Certain devices supporting such capability can be partitioned into multiple devices
-by calling :func:`dpctl.SyclDevice.create_sub_devices`, which returns a list of created
-sub-device instances of type :class:`dpctl.SyclDevice`. These instances can be partitioned
-further.
+It is possible for a device to be partitioned into "sub-devices". A sub-device
+represents a sub-set of the computational units within a device that are grouped
+based on some hardware criteria. For example, a two socket CPU device may be
+partitioned into two sub-devices, where each sub-device represents a separate
+:numa_domain:`NUMA domain <>`. Depending on the hardware characteristics and
+the capabilities of the SYCL runtime, a sub-device may be partitioned further.
 
-The requested partitioning is indicated with use of required ``partition`` keyword, which
-can be a positive integers (indicating equal partitioning with each sub-device having
-the requested number of parallel compute units), a list of positive integers
-(indicating the requested number of parallel compute units in each sub-device), or
-a string indicate partitioning by affinity domain (creating sub-devices sharing a common
-resource, such as certain low level cache). Use ``partition="next_partitionable"``
-to partition along the next level of architectural hierarchy.
+For devices that support partitioning, the
+:func:`dpctl.SyclDevice.create_sub_devices` can be used to create a list of
+sub-devices. The requested partitioning scheme is indicated with use of the
+required ``partition`` keyword. Several types of partitioning schemes are
+available:
 
-A sub-device's parent device can be retrived using ``dev.parent_device`` property.
-When called on a root device, ``root_dev.parent_device`` returns ``None``.
+* **Equal partitioning**
+    The partitioning scheme is specified as a list of positive integers
+    indicating a partitioning with each sub-device having the requested number
+    of parallel compute units.
 
-For non-partitioned devices, its corresponding filter selector string can be retrieved
-using ``dev.filter_string`` which returns a fully specified triplet. Method
-:func:`dpctl.SyclDevice.get_filter_string` can be used to obtain a partially
-qualified filter selector string.
+* **Affinity partitioning**
+    The partitioning scheme is specified as a string indicating an affinity
+    domain used to create sub-devices that sharing a common resource, such as
+    certain hardware cache levels.
 
-.. code-block:: Python
+.. Note::
 
-    import dpctl
-    dev = dpctl.SyclDevice()
+    Use ``partition="next_partitionable"`` to partition along the next level of
+    architectural hierarchy.
 
-    print(dev.filter_string)
+The following example shows the partitioning of a CPU device into sub-devices
+using the equal partitioning scheme.
 
-    # The following prints fully qualified string same as dev.filter_string
-    # possible output: "opencl:cpu:0"
-    print(dev.get_filter_string())
+.. _fig-partition-cpu:
 
-    # do not include backend
-    # possible output: "cpu:0"
-    print(dev.get_filter_string(include_backend=False))
+.. literalinclude:: ../../../../../examples/python/subdevices.py
+    :language: python
+    :lines: 17, 34-59
+    :caption: Partitioning a CPU device
+    :linenos:
 
-    # include neither backend, nor device Type
-    # possible output: "1"
-    print(dev.get_filter_string(include_backend=False, include_device_type=False)
+A possible output for the example :ref:`fig-listing-devices` may be:
+
+.. program-output:: python ../examples/python/subdevices.py -r subdivide_root_cpu_device
+
+.. include:: ../../../urls.rst

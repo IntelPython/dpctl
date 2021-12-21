@@ -4,12 +4,9 @@
 Platform
 ########
 
-In dpctl, the class :class:`dpctl.SyclPlatform` represents a platform and
-abstracts the `sycl::platform`_ SYCL runtime class. A platform abstracts one or
-more XPU that is connected to the host and that can be used for computation. The
-platforms queryable using dpctl depends on the device drivers that are installed
-on a system. A single driver may control multiple physical XPU, thus a platform
-may also consist of multiple XPUs.
+A platform abstracts a device driver for one or more XPU that is connected to
+a host. The :class:`dpctl.SyclPlatform` class represents a platform and
+abstracts the `sycl::platform`_ SYCL runtime class.
 
 Listing Available Platforms
 ---------------------------
@@ -20,8 +17,7 @@ example it is possible to print out metadata about a platform.
 
 .. literalinclude:: ../../../../../examples/python/lsplatform.py
     :language: python
-    :start-after: # START
-    :end-before: # END
+    :lines: 20-41
     :linenos:
 
 The example can be executed as follows:

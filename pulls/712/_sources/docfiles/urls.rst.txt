@@ -6,7 +6,7 @@
 .. _SYCL 2020 spec: https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html
 .. _sycl::platform: https://sycl.readthedocs.io/en/latest/iface/platform.html
 .. _sycl::device_selector: https://sycl.readthedocs.io/en/latest/iface/device-selector.html
-.. _sycl device: https://sycl.readthedocs.io/en/latest/iface/device.html
+.. _sycl::device: https://sycl.readthedocs.io/en/latest/iface/device.html
 .. _sycl queue: https://sycl.readthedocs.io/en/latest/iface/queue.html
 .. _sycl event: https://sycl.readthedocs.io/en/latest/iface/event.html
 .. _sycl context: https://sycl.readthedocs.io/en/latest/iface/context.html
@@ -14,3 +14,4 @@
 .. _oneAPI filter selection extension: https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc
 .. _DPCPP environment variables: https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md
 .. _SYCL 2020 aspects: https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#table.device.aspect
+.. _SYCL device info: https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_device_information_descriptors

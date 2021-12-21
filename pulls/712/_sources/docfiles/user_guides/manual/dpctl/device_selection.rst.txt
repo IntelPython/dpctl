@@ -5,7 +5,7 @@ Device Selection
 ################
 
 Device selection refers to programmatically selecting a single device from
-the set of  `devices`_ available on the system.
+the set of  :ref:`devices <devices>` available on the system.
 
 Selecting a Specific Type of Device
 -----------------------------------
@@ -93,7 +93,7 @@ A possible output for the example :ref:`fig-adv-device-selection` may be:
 
     The device listing including the device number value remain stable for
     a given system unless the driver configuration is changed or the SYCL
-    runtime setting is changed using the **SYCL_DEVICE_FILTER** environment
+    runtime setting is changed using the ``SYCL_DEVICE_FILTER`` environment
     variable. Please refer `oneAPI filter selection extension`_ for more detail.
 
 Advanced Device Selection

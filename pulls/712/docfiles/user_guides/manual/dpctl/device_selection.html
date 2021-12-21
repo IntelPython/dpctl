@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.12.0dev1+146.ge7096c4e documentation</title>
+  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.12.0dev1+147.ge16d8ee0 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+146.ge7096c4e
+                0.12.0dev1+147.ge16d8ee0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -94,7 +94,7 @@
   <section id="device-selection">
 <span id="id1"></span><h1>Device Selection<a class="headerlink" href="#device-selection" title="Permalink to this headline"></a></h1>
 <p>Device selection refers to programmatically selecting a single device from
-the set of  <a href="#id7"><span class="problematic" id="id8">`devices`_</span></a> available on the system.</p>
+the set of  <a class="reference internal" href="devices.html#devices"><span class="std std-ref">devices</span></a> available on the system.</p>
 <section id="selecting-a-specific-type-of-device">
 <h2>Selecting a Specific Type of Device<a class="headerlink" href="#selecting-a-specific-type-of-device" title="Permalink to this headline"></a></h2>
 <p>If a user needs to select a specific type of device such as a GPU, they can
@@ -190,19 +190,19 @@ strings.</p>
 <p>A possible output for the example <a class="reference internal" href="#fig-filter-selection"><span class="std std-ref">Device Creation With Filter Strings</span></a> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example select_using_filter
     Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
-    Driver version  2021.12.9.0.24_005321
+    Driver version  2021.13.11.0.23_160000
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
     Filter string   opencl:cpu:0
 
     Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
-    Driver version  2021.12.9.0.24_005321
+    Driver version  2021.13.11.0.23_160000
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
     Filter string   opencl:cpu:0
 
     Name            Intel(R) FPGA Emulation Device
-    Driver version  2021.12.9.0.24_005321
+    Driver version  2021.13.11.0.23_160000
     Vendor          Intel(R) Corporation
     Profile         EMBEDDED_PROFILE
     Filter string   opencl:accelerator:0
@@ -255,7 +255,7 @@ number value is optional, but at least one of them should be provided,
 all valid filter strings.</p>
 <p>The device listing including the device number value remain stable for
 a given system unless the driver configuration is changed or the SYCL
-runtime setting is changed using the <strong>SYCL_DEVICE_FILTER</strong> environment
+runtime setting is changed using the <code class="docutils literal notranslate"><span class="pre">SYCL_DEVICE_FILTER</span></code> environment
 variable. Please refer <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc">oneAPI filter selection extension</a> for more detail.</p>
 </div>
 </section>
@@ -334,7 +334,7 @@ supports double precision arithmetic and SYCL USM shared memory allocation.</p>
 <p>A possible output for the example <a class="reference internal" href="#fig-select-device-with-aspects"><span class="std std-ref">Device Selection Using Aspects</span></a> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_device_with_aspects
     Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
-    Driver version  2021.12.9.0.24_005321
+    Driver version  2021.13.11.0.23_160000
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
     Filter string   opencl:cpu:0
@@ -356,7 +356,7 @@ INFO: ===========================
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Intel Corp..</p>
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -374,7 +374,7 @@ INFO: ===========================
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+146.ge7096c4e
+      v: 0.12.0dev1+147.ge16d8ee0
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
