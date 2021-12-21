@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.12.0dev1+142.g8eb02821 documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.12.0dev1+116.g91e5cf18 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+142.g8eb02821
+                0.12.0dev1+116.g91e5cf18
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -104,13 +104,13 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.SyclDevice">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice" title="Permalink to this definition"></a></dt>
-<dd><p>Python equivalent for cl::sycl::device class.</p>
+<dd><p>A Python wrapper for the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device.html">sycl::device</a> C++ class.</p>
 <p>There are two ways of creating a SyclDevice instance:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>by directly passing in a filter string to the class
 constructor. The filter string needs to conform to the
-<a class="reference external" href="https://bit.ly/37kqANT">DPC++ filter selector SYCL extension</a>.</p></li>
+<a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc">DPC++ filter selector SYCL extension</a>.</p></li>
 </ul>
 <dl class="field-list">
 <dt class="field-odd">Example</dt>
@@ -943,7 +943,7 @@ in the filter string.</p></li>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+142.g8eb02821
+      v: 0.12.0dev1+116.g91e5cf18
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Basic Concepts &mdash; Data-parallel Control (dpctl) 0.12.0dev1+142.g8eb02821 documentation</title>
+  <title>Basic Concepts &mdash; Data-parallel Control (dpctl) 0.12.0dev1+116.g91e5cf18 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+142.g8eb02821
+                0.12.0dev1+116.g91e5cf18
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -116,7 +116,7 @@ itself, are usually for the host. Hosts are customarily CPUs.</p>
 <dt><strong>Device</strong></dt><dd><p>A device is an XPU connected to a host that is programmable with a specific
 device driver. Different types of devices can have different architectures
 (CPUs, GPUs, FPGA, ASICs, DSP), but are programmable using the same
-<a class="reference external" href="https://www.oneapi.io/">oneAPI</a>  programming model.</p>
+<a class="reference external" href="https://www.oneapi.io/">oneAPI</a> programming model.</p>
 </dd>
 </dl>
 </li>
@@ -160,13 +160,14 @@ dependencies as well as to synchronize host and devices.</p>
 USM allocations are bound to context. In other words, a pointer representing
 USM allocation can be unambiguously mapped to the data it represents only
 if the associated context is known. USM allocations are accessible by
-computational kernels that are executed on a device, provided that the allocation
-is bound to the same context that was used to construct the queue where the
-kernel was scheduled for execution.</p>
+computational kernels that are executed on a device, provided that the
+allocation is bound to the same context that was used to construct the queue
+where the kernel was scheduled for execution.</p>
 <p>Depending on the capability of the device, USM allocations can be a “device”
-allocation, a “shared” allocation, or a “host” allocation. A “device” allocation
-is not accessible from host, while “shared” or “host” allocations are. “Host”
-allocation refers to an allocation in host memory that is accessible from a device.</p>
+allocation, a “shared” allocation, or a “host” allocation. A “device”
+allocation is not accessible from host, while “shared” or “host” allocations
+are. “Host” allocation refers to an allocation in host memory that is
+accessible from a device.</p>
 <p>“Shared” allocations are accessible by both host and device. Runtime manages
 synchronization of host’s and device’s view into shared allocations. Initial
 placement of the shared allocations is not defined.</p>
@@ -174,18 +175,12 @@ placement of the shared allocations is not defined.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><strong>Backend</strong></dt><dd><p>Refers to an implementation of <a class="reference external" href="https://www.oneapi.io/">oneAPI</a> programming model exposed by the
-underlying runtime.</p>
+<dt><strong>Backend</strong></dt><dd><p>Refers to an implementation of <a class="reference external" href="https://www.oneapi.io/">oneAPI</a> programming model exposed
+by the underlying runtime.</p>
 </dd>
 </dl>
 </li>
 </ul>
-<div class="admonition-todo admonition" id="id2">
-<p class="admonition-title">Todo</p>
-<ol class="arabic simple">
-<li><p>Add citations/references</p></li>
-</ol>
-</div>
 </section>
 
 
@@ -217,7 +212,7 @@ underlying runtime.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+142.g8eb02821
+      v: 0.12.0dev1+116.g91e5cf18
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

@@ -83,5 +83,3 @@ Public methods
 .. autofunction:: dpctl.SyclDevice.get_filter_string
 .. autofunction:: dpctl.SyclDevice.print_device_info
 
-
-.. include:: ../urls.rst

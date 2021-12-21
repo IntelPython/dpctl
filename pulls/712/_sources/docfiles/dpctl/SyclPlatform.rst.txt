@@ -32,5 +32,3 @@ Public methods
 
 .. autofunction:: dpctl.SyclPlatform.print_platform_info
 
-
-.. include:: ../urls.rst

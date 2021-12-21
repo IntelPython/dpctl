@@ -21,5 +21,3 @@ Public methods
 .. autofunction:: dpctl.program.SyclKernel.get_function_name
 .. autofunction:: dpctl.program.SyclKernel.get_num_args
 
-
-.. include:: ../urls.rst

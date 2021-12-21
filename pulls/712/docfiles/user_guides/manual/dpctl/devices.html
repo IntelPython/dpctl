@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device &mdash; Data-parallel Control (dpctl) 0.12.0dev1+142.g8eb02821 documentation</title>
+  <title>Device &mdash; Data-parallel Control (dpctl) 0.12.0dev1+116.g91e5cf18 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+142.g8eb02821
+                0.12.0dev1+116.g91e5cf18
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -94,15 +94,15 @@
   <section id="device">
 <span id="devices"></span><h1>Device<a class="headerlink" href="#device" title="Permalink to this headline"></a></h1>
 <p>A device is an abstract representation for an XPU. The <a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>
-class represents a device and is a wrapper over the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device.html">sycl::device</a> SYCL runtime
-class.</p>
+class represents a device and is a wrapper over the
+<a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device.html">sycl::device</a> SYCL runtime class.</p>
 <section id="listing-devices">
 <h2>Listing Devices<a class="headerlink" href="#listing-devices" title="Permalink to this headline"></a></h2>
 <p><a class="reference internal" href="../../../dpctl/dpctl_pyapi.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> provides the <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code></a> utility function to list
 the available devices on a user’s system. The function only lists
 <a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instances. The list of devices returned depends on
 available hardware, installed drivers, as well as by
-<a class="reference external" href="DPCPPenvironmentvariables">environment variables</a> influencing SYCL runtime
+<a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md">environment variables</a> influencing SYCL runtime
 such as <code class="docutils literal notranslate"><span class="pre">SYCL_DEVICE_FILTER</span></code> or <code class="docutils literal notranslate"><span class="pre">SYCL_DEVICE_ALLOWLIST</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <span id="fig-listing-devices"></span><div class="code-block-caption"><span class="caption-text">Listing Available Devices</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
@@ -348,7 +348,7 @@ dpctl._sycl_device.SubDeviceCreationError: Sub-devices were not created.
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+142.g8eb02821
+      v: 0.12.0dev1+116.g91e5cf18
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

@@ -36,5 +36,3 @@ Table of contents
     device_selection
     platforms
     devices
-
-.. include:: ../../../urls.rst

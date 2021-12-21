@@ -53,5 +53,3 @@ Private methods
 ---------------
 
 .. autofunction:: dpctl.SyclQueue._get_capsule
-
-.. include:: ../urls.rst

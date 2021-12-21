@@ -14,10 +14,10 @@ If a user needs to select a specific type of device such as a GPU, they can
 directly use one of the helper functions included inside dpctl. Dpctl includes
 :ref:`helper functions <dpctl_device_selection_functions>` for selecting
 a ``host``, a ``cpu``, a ``gpu``, an ``accelerator``, or the ``default`` device.
-These functions are analogous to SYCL's built-in `sycl::device_selector`_
-classes. The scoring and selection of a specific device when multiple devices of
-the same type are available on a system is deferred to the underlying SYCL
-runtime.
+These functions are analogous to SYCL's built-in
+:sycl_device_selector:`sycl::device_selector <>` classes. The scoring and
+selection of a specific device when multiple devices of the same type are
+available on a system is deferred to the underlying SYCL runtime.
 
 The example :ref:`fig-gpu-device-selection` shows the usage of the
 :func:`dpctl.select_gpu_device()` device selection function. In case multiple
@@ -42,7 +42,7 @@ Selecting a Device Using a Filter String
 
 Along with using the default device selection functions, a more explicit way of
 device selection involves the use of *filter strings* (refer
-`oneAPI filter selection extension`_). The example
+:oneapi_filter_selection:`oneAPI filter selection extension <>`). The example
 :ref:`fig-gpu-device-selection` also demonstrates the use of a filter string
 to create a GPU device directly. Using a filter string allows much more
 fine-grained control for selecting a device. The following example
@@ -94,7 +94,9 @@ A possible output for the example :ref:`fig-adv-device-selection` may be:
     The device listing including the device number value remain stable for
     a given system unless the driver configuration is changed or the SYCL
     runtime setting is changed using the ``SYCL_DEVICE_FILTER`` environment
-    variable. Please refer `oneAPI filter selection extension`_ for more detail.
+    variable. Please refer
+    :oneapi_filter_selection:`oneAPI filter selection extension <>` for more
+    detail.
 
 Advanced Device Selection
 -------------------------
@@ -146,6 +148,3 @@ supports double precision arithmetic and SYCL USM shared memory allocation.
 A possible output for the example :ref:`fig-select-device-with-aspects` may be:
 
 .. program-output:: python ../examples/python/device_selection.py -r create_device_with_aspects
-
-
-.. include:: ../../../urls.rst

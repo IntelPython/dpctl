@@ -5,8 +5,8 @@ Device
 ######
 
 A device is an abstract representation for an XPU. The :class:`dpctl.SyclDevice`
-class represents a device and is a wrapper over the `sycl::device`_ SYCL runtime
-class.
+class represents a device and is a wrapper over the
+:sycl_device:`sycl::device <>` SYCL runtime class.
 
 
 Listing Devices
@@ -16,7 +16,7 @@ Listing Devices
 the available devices on a user's system. The function only lists
 :class:`dpctl.SyclDevice` instances. The list of devices returned depends on
 available hardware, installed drivers, as well as by
-`environment variables <DPCPP environment variables>`_ influencing SYCL runtime
+:dpcpp_envar:`environment variables <>` influencing SYCL runtime
 such as ``SYCL_DEVICE_FILTER`` or ``SYCL_DEVICE_ALLOWLIST``.
 
 .. _fig-listing-devices:
@@ -131,5 +131,3 @@ using the equal partitioning scheme.
 A possible output for the example :ref:`fig-listing-devices` may be:
 
 .. program-output:: python ../examples/python/subdevices.py -r subdivide_root_cpu_device
-
-.. include:: ../../../urls.rst

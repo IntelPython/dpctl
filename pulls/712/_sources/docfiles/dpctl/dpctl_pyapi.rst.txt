@@ -52,9 +52,9 @@ Classes
     :widths: 25,50
 
     * - :class:`SyclContext`
-      - A Python wrapper for the `sycl context`_ C++ class.
+      - A Python wrapper for the :sycl_context:`sycl::context <>` C++ class.
     * - :class:`SyclDevice`
-      - Python equivalent for cl::sycl::device class.
+      - A Python wrapper for the :sycl_device:`sycl::device <>` C++ class.
     * - :class:`SyclEvent`
       - Python class representing ``cl::sycl::event``. There are multiple ways to create a :class:`dpctl.SyclEvent` object: - Invoking the constructor with no arguments creates a ready event using the default constructor of the ``cl::sycl::event``.
     * - :class:`SyclPlatform`
@@ -165,5 +165,3 @@ Exceptions
       - A SyclQueueCreationError exception is raised when a :class:`.SyclQueue` could not be created. :class:`.SyclQueue` creation can fail if the filter string is invalid, or the backend or device type values are not supported.
 
 
-
-.. include:: ../urls.rst

@@ -8,7 +8,7 @@ As dpctl is based on SYCL the concepts should be familiar to users with prior
 experience with SYCL. However, users of dpctl need not have any prior experience
 with SYCL and the concepts presented here should be self-sufficient. We do not
 go into all the SYCL-level details here and if needed readers should refer to a
-more topical SYCL reference such as the `SYCL 2020 spec`_.
+more topical SYCL reference such as the :sycl_spec_2020:`SYCL 2020 spec <>`.
 
 * **Heterogeneous computing**
     Refers to using multiple devices in a program.
@@ -22,7 +22,7 @@ more topical SYCL reference such as the `SYCL 2020 spec`_.
     A device is an XPU connected to a host that is programmable with a specific
     device driver. Different types of devices can have different architectures
     (CPUs, GPUs, FPGA, ASICs, DSP), but are programmable using the same
-    `oneAPI`_  programming model.
+    :oneapi:`oneAPI <>` programming model.
 
 * **Platform**
     A device driver installed on the system is termed as a platform. As multiple
@@ -56,27 +56,20 @@ more topical SYCL reference such as the `SYCL 2020 spec`_.
    USM allocations are bound to context. In other words, a pointer representing
    USM allocation can be unambiguously mapped to the data it represents only
    if the associated context is known. USM allocations are accessible by
-   computational kernels that are executed on a device, provided that the allocation
-   is bound to the same context that was used to construct the queue where the
-   kernel was scheduled for execution.
+   computational kernels that are executed on a device, provided that the
+   allocation is bound to the same context that was used to construct the queue
+   where the kernel was scheduled for execution.
 
    Depending on the capability of the device, USM allocations can be a "device"
-   allocation, a "shared" allocation, or a "host" allocation. A "device" allocation
-   is not accessible from host, while "shared" or "host" allocations are. "Host"
-   allocation refers to an allocation in host memory that is accessible from a device.
+   allocation, a "shared" allocation, or a "host" allocation. A "device"
+   allocation is not accessible from host, while "shared" or "host" allocations
+   are. "Host" allocation refers to an allocation in host memory that is
+   accessible from a device.
 
    "Shared" allocations are accessible by both host and device. Runtime manages
    synchronization of host's and device's view into shared allocations. Initial
    placement of the shared allocations is not defined.
 
 * **Backend**
-   Refers to an implementation of `oneAPI`_ programming model exposed by the
-   underlying runtime.
-
-.. todo::
-
-    #. Add citations/references
-
-.. Go over dpctl and dpctl tensor
-
-.. include:: ../../../urls.rst
+   Refers to an implementation of :oneapi:`oneAPI <>` programming model exposed
+   by the underlying runtime.

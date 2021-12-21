@@ -26,5 +26,3 @@ Functions
 
 
 
-
-.. include:: ../urls.rst

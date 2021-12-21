@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.12.0dev1+142.g8eb02821 documentation</title>
+  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.12.0dev1+116.g91e5cf18 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+142.g8eb02821
+                0.12.0dev1+116.g91e5cf18
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -101,10 +101,10 @@ the set of  <a class="reference internal" href="devices.html#devices"><span clas
 directly use one of the helper functions included inside dpctl. Dpctl includes
 <a class="reference internal" href="../../../dpctl/dpctl_pyapi.html#dpctl-device-selection-functions"><span class="std std-ref">helper functions</span></a> for selecting
 a <code class="docutils literal notranslate"><span class="pre">host</span></code>, a <code class="docutils literal notranslate"><span class="pre">cpu</span></code>, a <code class="docutils literal notranslate"><span class="pre">gpu</span></code>, an <code class="docutils literal notranslate"><span class="pre">accelerator</span></code>, or the <code class="docutils literal notranslate"><span class="pre">default</span></code> device.
-These functions are analogous to SYCL’s built-in <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device-selector.html">sycl::device_selector</a>
-classes. The scoring and selection of a specific device when multiple devices of
-the same type are available on a system is deferred to the underlying SYCL
-runtime.</p>
+These functions are analogous to SYCL’s built-in
+<a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device-selector.html">sycl::device_selector</a> classes. The scoring and
+selection of a specific device when multiple devices of the same type are
+available on a system is deferred to the underlying SYCL runtime.</p>
 <p>The example <a class="reference internal" href="#fig-gpu-device-selection"><span class="std std-ref">Selecting a GPU Device</span></a> shows the usage of the
 <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.select_gpu_device" title="dpctl.select_gpu_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.select_gpu_device()</span></code></a> device selection function. In case multiple
 GPU devices are available, only one is returned based on the underlying scoring
@@ -256,7 +256,9 @@ all valid filter strings.</p>
 <p>The device listing including the device number value remain stable for
 a given system unless the driver configuration is changed or the SYCL
 runtime setting is changed using the <code class="docutils literal notranslate"><span class="pre">SYCL_DEVICE_FILTER</span></code> environment
-variable. Please refer <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc">oneAPI filter selection extension</a> for more detail.</p>
+variable. Please refer
+<a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc">oneAPI filter selection extension</a> for more
+detail.</p>
 </div>
 </section>
 <section id="advanced-device-selection">
@@ -374,7 +376,7 @@ INFO: ===========================
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+142.g8eb02821
+      v: 0.12.0dev1+116.g91e5cf18
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
