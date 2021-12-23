@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.12.0dev1+104.gccd21b68 documentation</title>
+  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.12.0dev1+117.g0de1218b documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+104.gccd21b68
+                0.12.0dev1+117.g0de1218b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -40,9 +40,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
-<ul>
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../docfiles/user_guides/QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docfiles/user_guides/UserManual.html">User Manual</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul>
@@ -95,11 +95,12 @@
 <span class="sd">    **Data Parallel Control (dpctl)** is a Python abstraction layer over SYCL.</span>
 
 <span class="sd">    Dpctl implements a subset of SYCL&#39;s API providing wrappers for the</span>
-<span class="sd">    SYCL runtime classes described in `Section 4.6`_ of the `SYCL 2020 spec`_.</span>
-<span class="sd">    Note that the SYCL ``device_selector`` class is not implemented, instead</span>
-<span class="sd">    there are device selection helper functions that can be used to simulate</span>
-<span class="sd">    the same behavior. Dpctl implements the ``ONEPI::filter_selector`` extension</span>
-<span class="sd">    that is included in Intel&#39;s DPC++ SYCL compiler.</span>
+<span class="sd">    SYCL runtime classes described in :sycl_runtime_classes:`Section 4.6 &lt;&gt;` of</span>
+<span class="sd">    the :sycl_spec_2020:`SYCL 2020 spec &lt;&gt;`. Note that the SYCL</span>
+<span class="sd">    ``device_selector`` class is not implemented, instead there are device</span>
+<span class="sd">    selection helper functions that can be used to simulate the same behavior.</span>
+<span class="sd">    Dpctl implements the ``ONEPI::filter_selector`` extension that is included</span>
+<span class="sd">    in Intel&#39;s DPC++ SYCL compiler.</span>
 
 <span class="sd">    The module also includes a global SYCL queue manager. The queue manager</span>
 <span class="sd">    provides convenience functions to create a global instance of</span>
@@ -232,7 +233,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Intel Corp..</p>
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -250,7 +251,7 @@
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+104.gccd21b68
+      v: 0.12.0dev1+117.g0de1218b
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

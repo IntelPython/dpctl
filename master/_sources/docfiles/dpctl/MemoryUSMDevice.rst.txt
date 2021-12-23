@@ -41,5 +41,3 @@ Public methods
 .. autofunction:: dpctl.memory.MemoryUSMDevice.get_usm_type
 .. autofunction:: dpctl.memory.MemoryUSMDevice.tobytes
 
-
-.. include:: ../urls.rst

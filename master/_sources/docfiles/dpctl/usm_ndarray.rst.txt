@@ -55,5 +55,3 @@ Private methods
 ---------------
 
 .. autofunction:: dpctl.tensor.usm_ndarray._set_namespace
-
-.. include:: ../urls.rst

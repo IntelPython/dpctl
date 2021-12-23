@@ -31,5 +31,3 @@ Public methods
 
 .. autofunction:: dpctl.tensor.Device.create_device
 
-
-.. include:: ../urls.rst

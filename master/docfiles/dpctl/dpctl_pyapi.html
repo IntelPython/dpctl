@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.12.0dev1+104.gccd21b68 documentation</title>
+  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.12.0dev1+117.g0de1218b documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpctl.memory" href="dpctl.memory_pyapi.html" />
-    <link rel="prev" title="Quick Start Guide" href="../user_guides/QuickStart.html" /> 
+    <link rel="prev" title="Device" href="../user_guides/manual/dpctl/devices.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+104.gccd21b68
+                0.12.0dev1+117.g0de1218b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -43,9 +43,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
-<ul>
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/UserManual.html">User Manual</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
@@ -104,11 +104,12 @@
 <span id="dpctl"></span><span id="dpctl-pyapi"></span><h1>dpctl<a class="headerlink" href="#module-dpctl" title="Permalink to this headline"></a></h1>
 <p><strong>Data Parallel Control (dpctl)</strong> is a Python abstraction layer over SYCL.</p>
 <p>Dpctl implements a subset of SYCL’s API providing wrappers for the
-SYCL runtime classes described in <a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes">Section 4.6</a> of the <a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html">SYCL 2020 spec</a>.
-Note that the SYCL <code class="docutils literal notranslate"><span class="pre">device_selector</span></code> class is not implemented, instead
-there are device selection helper functions that can be used to simulate
-the same behavior. Dpctl implements the <code class="docutils literal notranslate"><span class="pre">ONEPI::filter_selector</span></code> extension
-that is included in Intel’s DPC++ SYCL compiler.</p>
+SYCL runtime classes described in <a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes">Section 4.6</a> of
+the <a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html">SYCL 2020 spec</a>. Note that the SYCL
+<code class="docutils literal notranslate"><span class="pre">device_selector</span></code> class is not implemented, instead there are device
+selection helper functions that can be used to simulate the same behavior.
+Dpctl implements the <code class="docutils literal notranslate"><span class="pre">ONEPI::filter_selector</span></code> extension that is included
+in Intel’s DPC++ SYCL compiler.</p>
 <p>The module also includes a global SYCL queue manager. The queue manager
 provides convenience functions to create a global instance of
 a <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, to create a nested stack of queue objects, and
@@ -149,10 +150,10 @@ to create a queue object for use only within a specific scope.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclContext</span></code></a></p></td>
-<td><p>A Python wrapper for the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/context.html">sycl context</a> C++ class.</p></td>
+<td><p>A Python wrapper for the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/context.html">sycl::context</a> C++ class.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevice</span></code></a></p></td>
-<td><p>Python equivalent for cl::sycl::device class.</p></td>
+<td><p>A Python wrapper for the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device.html">sycl::device</a> C++ class.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclEvent</span></code></a></p></td>
 <td><p>Python class representing <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code>. There are multiple ways to create a <a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a> object: - Invoking the constructor with no arguments creates a ready event using the default constructor of the <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code>.</p></td>
@@ -314,14 +315,14 @@ to create a queue object for use only within a specific scope.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../user_guides/QuickStart.html" class="btn btn-neutral float-left" title="Quick Start Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../user_guides/manual/dpctl/devices.html" class="btn btn-neutral float-left" title="Device" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="dpctl.memory_pyapi.html" class="btn btn-neutral float-right" title="dpctl.memory" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Intel Corp..</p>
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -339,7 +340,7 @@ to create a queue object for use only within a specific scope.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+104.gccd21b68
+      v: 0.12.0dev1+117.g0de1218b
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
