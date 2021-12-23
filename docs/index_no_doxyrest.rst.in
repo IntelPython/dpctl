@@ -1,10 +1,14 @@
 .. include:: ./docfiles/intro.rst
 
+How-to Guides
+=============
+
 .. toctree::
    :maxdepth: 1
-   :caption: User Guides
 
    docfiles/user_guides/QuickStart
+   docfiles/user_guides/UserManual
+
 
 .. toctree::
    :maxdepth: 1

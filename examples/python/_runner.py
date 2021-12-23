@@ -55,7 +55,7 @@ def run_examples(example_description, glbls_dict):
             print("Available examples:")
             print(", ".join(fns))
         else:
-            print("No examples are availble.")
+            print("No examples are available.")
         exit(0)
     if args.run == "all":
         fns = []

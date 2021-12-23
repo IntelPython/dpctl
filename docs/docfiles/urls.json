@@ -1,0 +1,16 @@
+{
+    "dpcpp_envar": "https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md",
+    "numa_domain": "https://en.wikipedia.org/wiki/Non-uniform_memory_access",
+    "oneapi": "https://www.oneapi.io/",
+    "oneapi_filter_selection": "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc",
+    "sycl_aspects": "https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#table.device.aspect",
+    "sycl_context": "https://sycl.readthedocs.io/en/latest/iface/context.html",
+    "sycl_device": "https://sycl.readthedocs.io/en/latest/iface/device.html",
+    "sycl_device_info": "https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_device_information_descriptors",
+    "sycl_device_selector": "https://sycl.readthedocs.io/en/latest/iface/device-selector.html",
+    "sycl_event": "https://sycl.readthedocs.io/en/latest/iface/event.html",
+    "sycl_platform": "https://sycl.readthedocs.io/en/latest/iface/platform.html",
+    "sycl_queue": "https://sycl.readthedocs.io/en/latest/iface/queue.html",
+    "sycl_runtime_classes": "https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes",
+    "sycl_spec_2020": "https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html"
+}

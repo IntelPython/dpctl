@@ -4,14 +4,8 @@
 Quick Start Guide
 #################
 
-
-.. contents:: Table of contents
-   :local:
-   :backlinks: none
-   :depth: 3
-
 Installing from oneAPI
-----------------------
+======================
 
 Dpctl is available as part of the oneAPI Intel Distribution of Python (IDP).
 Please follow `oneAPI installation guide`_ to install oneAPI. In this quick
@@ -50,7 +44,7 @@ On Windows
     `GPU driver installation guide`_.
 
 Install Wheel package from Pypi
--------------------------------
+===============================
 
 Dpctl can also be istalled from Pypi.
 
@@ -79,7 +73,7 @@ On Windows
     set PATH=<path_to_your_env>\bin;<path_to_your_env>\Library\bin;%PATH%
 
 Building from source
---------------------
+====================
 
 To build dpctl from source, we need dpcpp and GPU drivers (and optionally CPU
 OpenCL drivers). It is preferable to use the dpcpp compiler packaged as part of
@@ -87,12 +81,13 @@ oneAPI. However, it is possible to use a custom build of dpcpp to build dpctl,
 especially if you want to enable CUDA support.
 
 Building using oneAPI dpcpp
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------
 
 As before, oneAPI and graphics drivers should be installed on the system prior
 to proceeding further.
 
-**Activate oneAPI as follows**
+Activate oneAPI as follows
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 On Linux
 
@@ -106,7 +101,8 @@ On Windows
 
     call "%ONEAPI_ROOT%\setvars.bat"
 
-**Build and install using conda-build**
+Build and install using conda-build
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The conda-recipe included with the sources can be used to build the dpctl
 package. The advantage of this approach is that all dependencies are pulled in
@@ -136,7 +132,9 @@ After building the conda package you may install it by executing:
     You could face issues with conda-build version 3.20. Use conda-build
     3.18 instead.
 
-**Build and Install with setuptools**
+
+Build and install with setuptools
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To build using Python ``setuptools``, the following packages should be
 installed:
@@ -164,13 +162,13 @@ to build and install
     python setup.py develop
 
 Building using custom dpcpp
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------
 
 It is possible to build dpctl from source using .. _DPC++ toolchain: https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md
 instead of the DPC++ compiler that comes with oneAPI. One reason for doing this
 may be to enable support for CUDA devices.
 
-Following steps in :ref:`Build and Install with setuptools` use command line
+Following steps in `Build and install with setuptools`_ use command line
 option :code:`--sycl-compiler-prefix`, for example:
 
 .. code-block:: bash
@@ -181,7 +179,7 @@ Available options and their descriptions can be retrieved using option
 :code:`--help`.
 
 Using dpctl
------------
+===========
 
 Dpctl requires a DPC++ runtime. When dpctl is installed via conda then it uses
 the DPC++ runtime from ``dpcpp_cpp_rt`` package that is part of IDP. When using
@@ -190,10 +188,10 @@ the system. The easiest way to setup a DPC++ runtime will be by activating
 oneAPI.
 
 Running examples and tests
---------------------------
+==========================
 
 Running the examples
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 After setting up dpctl you can try out the Python examples as follows:
 
@@ -213,7 +211,7 @@ located under *examples/cython*. Each example in the folder can be built using
 examples.
 
 Running the Python tests
-~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------
 
 The dpctl Python test suite can be executed as follows:
 
@@ -222,14 +220,13 @@ The dpctl Python test suite can be executed as follows:
     pytest --pyargs dpctl
 
 
-Building the C API shared library
----------------------------------
+Building the DPCTLSyclInterface library
+=======================================
 
-The dpctl C API is a shared library called libDPCTLSyclInterface and is built
-together when build the Python package. However, it is possible to only build
-the C API as a standalone library. To do so, you will need ``cmake``,
+The libDPCTLSyclInterface is a shared library used by the Python package.
+To build the library you will need ``DPC++`` toolchain, ``cmake``,
 ``ninja`` or ``make``, and optionally ``gtest 1.10`` if you wish to run the
-C API test suite.
+test suite.
 
 For example, on Linux the following script can be used to build the C oneAPI
 library.

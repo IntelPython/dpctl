@@ -18,11 +18,12 @@
     **Data Parallel Control (dpctl)** is a Python abstraction layer over SYCL.
 
     Dpctl implements a subset of SYCL's API providing wrappers for the
-    SYCL runtime classes described in `Section 4.6`_ of the `SYCL 2020 spec`_.
-    Note that the SYCL ``device_selector`` class is not implemented, instead
-    there are device selection helper functions that can be used to simulate
-    the same behavior. Dpctl implements the ``ONEPI::filter_selector`` extension
-    that is included in Intel's DPC++ SYCL compiler.
+    SYCL runtime classes described in :sycl_runtime_classes:`Section 4.6 <>` of
+    the :sycl_spec_2020:`SYCL 2020 spec <>`. Note that the SYCL
+    ``device_selector`` class is not implemented, instead there are device
+    selection helper functions that can be used to simulate the same behavior.
+    Dpctl implements the ``ONEPI::filter_selector`` extension that is included
+    in Intel's DPC++ SYCL compiler.
 
     The module also includes a global SYCL queue manager. The queue manager
     provides convenience functions to create a global instance of

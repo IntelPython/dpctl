@@ -86,7 +86,7 @@ cdef class _SyclContext:
 cdef class SyclContext(_SyclContext):
     """
     SyclContext(arg=None)
-    A Python wrapper for the `sycl context`_ C++ class.
+    A Python wrapper for the :sycl_context:`sycl::context <>` C++ class.
 
     There are multiple ways to create a :class:`dpctl.SyclContext` object:
 
