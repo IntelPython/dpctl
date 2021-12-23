@@ -109,10 +109,11 @@ sub-devices. The requested partitioning scheme is indicated with use of the
 required ``partition`` keyword. Several types of partitioning schemes are
 available:
 
-* **Equal partitioning**
+* **Count partitioning**
     The partitioning scheme is specified as a list of positive integers
     indicating a partitioning with each sub-device having the requested number
-    of parallel compute units.
+    of parallel compute units, or as a single positive integer indicating
+    equal-counts partition.
 
 * **Affinity partitioning**
     The partitioning scheme is specified as a string indicating an affinity
