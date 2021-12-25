@@ -10,9 +10,12 @@ jobs:
     runs-on: ubuntu-20.04
 
     env:
-      OCLCPUEXP_FN: oclcpuexp-2021.12.9.0.24_rel.tar.gz
-      FPGAEMU_FN: fpgaemu-2021.12.9.0.24_rel.tar.gz
-      TBB_FN: oneapi-tbb-2021.4.0-lin.tgz
+      DOWNLOAD_URL_PREFIX: https://github.com/intel/llvm/releases/download
+      DRIVER_PATH: 2021-WW50
+      OCLCPUEXP_FN: oclcpuexp-2021.13.11.0.23_rel.tar.gz
+      FPGAEMU_FN: fpgaemu-2021.13.11.0.23_rel.tar.gz
+      TBB_URL: https://github.com/oneapi-src/oneTBB/releases/download/v2021.5.0
+      TBB_FN: oneapi-tbb-2021.5.0-lin.tgz
 
     steps:
       - name: Cancel Previous Runs
@@ -45,19 +48,18 @@ jobs:
           if [[ -f bundle_id.txt && ( "$(cat bundle_id.txt)" == "${LATEST_LLVM_TAG_SHA}" ) ]]; then
               echo "Using cached download of ${LATEST_LLVM_TAG}"
           else
-              export DOWNLOAD_URL_PREFIX=https://github.com/intel/llvm/releases/download
               rm -rf dpcpp-compiler.tar.gz
               wget ${DOWNLOAD_URL_PREFIX}/${NIGHTLY_TAG}/dpcpp-compiler.tar.gz && echo ${LATEST_LLVM_TAG_SHA} > bundle_id.txt || rm -rf bundle_id.txt
-              [ -f ${OCLCPUEXP_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/2021-09/${OCLCPUEXP_FN} || rm -rf bundle_id.txt
-              [ -f ${FPGAEMU_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/2021-09/${FPGAEMU_FN} || rm -rf bundle_id.txt
-              [ -f ${TBB_FN} ] || wget https://github.com/oneapi-src/oneTBB/releases/download/v2021.4.0/${TBB_FN} || rm -rf bundle_id.txt
+              [ -f ${OCLCPUEXP_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/${DRIVER_PATH}/${OCLCPUEXP_FN} || rm -rf bundle_id.txt
+              [ -f ${FPGAEMU_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/${DRIVER_PATH}/${FPGAEMU_FN} || rm -rf bundle_id.txt
+              [ -f ${TBB_FN} ] || wget ${TBB_URL}/${TBB_FN} || rm -rf bundle_id.txt
               rm -rf dpcpp_compiler
               tar xf dpcpp-compiler.tar.gz
               mkdir -p oclcpuexp
               mkdir -p fpgaemu
               [ -d oclcpuexp/x64 ] || tar xf ${OCLCPUEXP_FN} -C oclcpuexp
               [ -d fpgaemu/x64 ] || tar xf ${FPGAEMU_FN} -C fpgaemu
-              [ -d oneapi-tbb-2021.4.0/lib ] || tar xf ${TBB_FN}
+              [ -d oneapi-tbb-2021.5.0/lib ] || tar xf ${TBB_FN}
               mkdir -p dpcpp_compiler/lib
               mkdir -p dpcpp_compiler/lib/oclfpga
               touch dpcpp_compiler/lib/oclfpga/fpgavars.sh
@@ -91,7 +93,7 @@ jobs:
           source ${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/startup.sh
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/fpgaemu/x64:${LD_LIBRARY_PATH}
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oneapi-tbb-2021.4.0/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oneapi-tbb-2021.5.0/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
           export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
           clang++ --version
           sycl-ls
