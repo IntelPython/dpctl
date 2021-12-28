@@ -227,8 +227,8 @@ cdef extern from "syclinterface/dpctl_sycl_device_selector_interface.h":
 cdef extern from "syclinterface/dpctl_sycl_event_interface.h":
     cdef DPCTLSyclEventRef DPCTLEvent_Create()
     cdef DPCTLSyclEventRef DPCTLEvent_Copy(const DPCTLSyclEventRef ERef)
-    cdef void DPCTLEvent_Wait(DPCTLSyclEventRef ERef)
-    cdef void DPCTLEvent_WaitAndThrow(DPCTLSyclEventRef ERef)
+    cdef void DPCTLEvent_Wait(DPCTLSyclEventRef ERef) nogil
+    cdef void DPCTLEvent_WaitAndThrow(DPCTLSyclEventRef ERef) nogil
     cdef void DPCTLEvent_Delete(DPCTLSyclEventRef ERef)
     cdef _event_status_type DPCTLEvent_GetCommandExecutionStatus(DPCTLSyclEventRef ERef)
     cdef _backend_type DPCTLEvent_GetBackend(DPCTLSyclEventRef ERef)
@@ -356,7 +356,7 @@ cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
         size_t NDims,
         const DPCTLSyclEventRef *DepEvents,
         size_t NDepEvents)
-    cdef void DPCTLQueue_Wait(const DPCTLSyclQueueRef QRef)
+    cdef void DPCTLQueue_Wait(const DPCTLSyclQueueRef QRef) nogil
     cdef DPCTLSyclEventRef DPCTLQueue_Memcpy(
         const DPCTLSyclQueueRef Q,
         void *Dest,
