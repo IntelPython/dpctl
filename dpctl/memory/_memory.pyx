@@ -94,8 +94,7 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
         src_ptr,
         nbytes
     )
-    with nogil:
-        DPCTLEvent_Wait(E1Ref)
+    with nogil: DPCTLEvent_Wait(E1Ref)
 
     E2Ref = DPCTLQueue_Memcpy(
         dest_queue.get_queue_ref(),
@@ -103,8 +102,7 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
         <void *>&host_buf[0],
         nbytes
     )
-    with nogil:
-        DPCTLEvent_Wait(E2Ref)
+    with nogil: DPCTLEvent_Wait(E2Ref)
     DPCTLEvent_Delete(E1Ref)
     DPCTLEvent_Delete(E2Ref)
 
@@ -400,8 +398,7 @@ cdef class _Memory:
             <void *>self.memory_ptr,  # source
             <size_t>self.nbytes
         )
-        with nogil:
-            DPCTLEvent_Wait(ERef)
+        with nogil: DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
 
         return obj
@@ -426,8 +423,7 @@ cdef class _Memory:
             <void *>&host_buf[0],     # source
             <size_t>buf_len
         )
-        with nogil:
-            DPCTLEvent_Wait(ERef)
+        with nogil: DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
 
     cpdef copy_from_device(self, object sycl_usm_ary):
@@ -469,8 +465,7 @@ cdef class _Memory:
                     <void *>src_buf.p,
                     <size_t>src_buf.nbytes
                 )
-                with nogil:
-                    DPCTLEvent_Wait(ERef)
+                with nogil: DPCTLEvent_Wait(ERef)
                 DPCTLEvent_Delete(ERef)
             else:
                 copy_via_host(
