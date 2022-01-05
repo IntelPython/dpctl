@@ -824,7 +824,7 @@ cdef class SyclQueue(_SyclQueue):
         return SyclEvent._create(Eref, args)
 
     cpdef void wait(self):
-        DPCTLQueue_Wait(self._queue_ref)
+        with nogil: DPCTLQueue_Wait(self._queue_ref)
 
     cpdef memcpy(self, dest, src, size_t count):
         cdef void *c_dest
@@ -846,7 +846,7 @@ cdef class SyclQueue(_SyclQueue):
             raise RuntimeError(
                 "SyclQueue.memcpy operation encountered an error"
             )
-        DPCTLEvent_Wait(ERef)
+        with nogil: DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
 
     cpdef prefetch(self, mem, size_t count=0):
@@ -866,7 +866,7 @@ cdef class SyclQueue(_SyclQueue):
             raise RuntimeError(
                 "SyclQueue.prefetch encountered an error"
             )
-        DPCTLEvent_Wait(ERef)
+        with nogil: DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
 
     cpdef mem_advise(self, mem, size_t count, int advice):
@@ -886,7 +886,7 @@ cdef class SyclQueue(_SyclQueue):
             raise RuntimeError(
                 "SyclQueue.mem_advise operation encountered an error"
             )
-        DPCTLEvent_Wait(ERef)
+        with nogil: DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
 
     @property

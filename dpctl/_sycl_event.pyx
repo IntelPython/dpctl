@@ -98,7 +98,7 @@ cdef class _SyclEvent:
 
     def __dealloc__(self):
         if (self._event_ref):
-            DPCTLEvent_Wait(self._event_ref)
+            with nogil: DPCTLEvent_Wait(self._event_ref)
             DPCTLEvent_Delete(self._event_ref)
         self._event_ref = NULL
         self.args = None
@@ -224,7 +224,7 @@ cdef class SyclEvent(_SyclEvent):
 
     @staticmethod
     cdef void _wait(SyclEvent event):
-        DPCTLEvent_WaitAndThrow(event._event_ref)
+        with nogil: DPCTLEvent_WaitAndThrow(event._event_ref)
 
     @staticmethod
     def wait_for(event):
@@ -370,4 +370,4 @@ cdef class SyclEvent(_SyclEvent):
 
     cpdef void wait(self):
         "Synchronously wait for completion of this event."
-        DPCTLEvent_Wait(self._event_ref)
+        with nogil: DPCTLEvent_Wait(self._event_ref)

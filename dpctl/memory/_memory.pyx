@@ -94,7 +94,7 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
         src_ptr,
         nbytes
     )
-    DPCTLEvent_Wait(E1Ref)
+    with nogil: DPCTLEvent_Wait(E1Ref)
 
     E2Ref = DPCTLQueue_Memcpy(
         dest_queue.get_queue_ref(),
@@ -102,7 +102,7 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
         <void *>&host_buf[0],
         nbytes
     )
-    DPCTLEvent_Wait(E2Ref)
+    with nogil: DPCTLEvent_Wait(E2Ref)
     DPCTLEvent_Delete(E1Ref)
     DPCTLEvent_Delete(E2Ref)
 
@@ -142,6 +142,7 @@ cdef class _Memory:
     cdef _cinit_alloc(self, Py_ssize_t alignment, Py_ssize_t nbytes,
                       bytes ptr_type, SyclQueue queue):
         cdef DPCTLSyclUSMRef p = NULL
+        cdef DPCTLSyclQueueRef QRef = NULL
 
         self._cinit_empty()
 
@@ -149,27 +150,28 @@ cdef class _Memory:
             if queue is None:
                 queue = dpctl.SyclQueue()
 
+            QRef = queue.get_queue_ref()
             if (ptr_type == b"shared"):
                 if alignment > 0:
-                    p = DPCTLaligned_alloc_shared(
-                        alignment, nbytes, queue.get_queue_ref()
+                    with nogil: p = DPCTLaligned_alloc_shared(
+                        alignment, nbytes, QRef
                     )
                 else:
-                    p = DPCTLmalloc_shared(nbytes, queue.get_queue_ref())
+                    with nogil: p = DPCTLmalloc_shared(nbytes, QRef)
             elif (ptr_type == b"host"):
                 if alignment > 0:
-                    p = DPCTLaligned_alloc_host(
-                        alignment, nbytes, queue.get_queue_ref()
+                    with nogil: p = DPCTLaligned_alloc_host(
+                        alignment, nbytes, QRef
                     )
                 else:
-                    p = DPCTLmalloc_host(nbytes, queue.get_queue_ref())
+                    with nogil: p = DPCTLmalloc_host(nbytes, QRef)
             elif (ptr_type == b"device"):
                 if (alignment > 0):
-                    p = DPCTLaligned_alloc_device(
-                        alignment, nbytes, queue.get_queue_ref()
+                    with nogil: p = DPCTLaligned_alloc_device(
+                        alignment, nbytes, QRef
                     )
                 else:
-                    p = DPCTLmalloc_device(nbytes, queue.get_queue_ref())
+                    with nogil: p = DPCTLmalloc_device(nbytes, QRef)
             else:
                 raise RuntimeError(
                     "Pointer type is unknown: {}".format(
@@ -398,7 +400,7 @@ cdef class _Memory:
             <void *>self.memory_ptr,  # source
             <size_t>self.nbytes
         )
-        DPCTLEvent_Wait(ERef)
+        with nogil: DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
 
         return obj
@@ -423,7 +425,7 @@ cdef class _Memory:
             <void *>&host_buf[0],     # source
             <size_t>buf_len
         )
-        DPCTLEvent_Wait(ERef)
+        with nogil: DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
 
     cpdef copy_from_device(self, object sycl_usm_ary):
@@ -465,7 +467,7 @@ cdef class _Memory:
                     <void *>src_buf.p,
                     <size_t>src_buf.nbytes
                 )
-                DPCTLEvent_Wait(ERef)
+                with nogil: DPCTLEvent_Wait(ERef)
                 DPCTLEvent_Delete(ERef)
             else:
                 copy_via_host(
