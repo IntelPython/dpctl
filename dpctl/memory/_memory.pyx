@@ -142,6 +142,7 @@ cdef class _Memory:
     cdef _cinit_alloc(self, Py_ssize_t alignment, Py_ssize_t nbytes,
                       bytes ptr_type, SyclQueue queue):
         cdef DPCTLSyclUSMRef p = NULL
+        cdef DPCTLSyclQueueRef QRef = NULL
 
         self._cinit_empty()
 
@@ -149,27 +150,28 @@ cdef class _Memory:
             if queue is None:
                 queue = dpctl.SyclQueue()
 
+            QRef = queue.get_queue_ref()
             if (ptr_type == b"shared"):
                 if alignment > 0:
-                    p = DPCTLaligned_alloc_shared(
-                        alignment, nbytes, queue.get_queue_ref()
+                    with nogil: p = DPCTLaligned_alloc_shared(
+                        alignment, nbytes, QRef
                     )
                 else:
-                    p = DPCTLmalloc_shared(nbytes, queue.get_queue_ref())
+                    with nogil: p = DPCTLmalloc_shared(nbytes, QRef)
             elif (ptr_type == b"host"):
                 if alignment > 0:
-                    p = DPCTLaligned_alloc_host(
-                        alignment, nbytes, queue.get_queue_ref()
+                    with nogil: p = DPCTLaligned_alloc_host(
+                        alignment, nbytes, QRef
                     )
                 else:
-                    p = DPCTLmalloc_host(nbytes, queue.get_queue_ref())
+                    with nogil: p = DPCTLmalloc_host(nbytes, QRef)
             elif (ptr_type == b"device"):
                 if (alignment > 0):
-                    p = DPCTLaligned_alloc_device(
-                        alignment, nbytes, queue.get_queue_ref()
+                    with nogil: p = DPCTLaligned_alloc_device(
+                        alignment, nbytes, QRef
                     )
                 else:
-                    p = DPCTLmalloc_device(nbytes, queue.get_queue_ref())
+                    with nogil: p = DPCTLmalloc_device(nbytes, QRef)
             else:
                 raise RuntimeError(
                     "Pointer type is unknown: {}".format(

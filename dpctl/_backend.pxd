@@ -394,23 +394,25 @@ cdef extern from "syclinterface/dpctl_sycl_queue_manager.h":
 cdef extern from "syclinterface/dpctl_sycl_usm_interface.h":
     cdef DPCTLSyclUSMRef DPCTLmalloc_shared(
         size_t size,
-        DPCTLSyclQueueRef QRef)
+        DPCTLSyclQueueRef QRef) nogil
     cdef DPCTLSyclUSMRef DPCTLmalloc_host(
         size_t size,
-        DPCTLSyclQueueRef QRef)
-    cdef DPCTLSyclUSMRef DPCTLmalloc_device(size_t size, DPCTLSyclQueueRef QRef)
+        DPCTLSyclQueueRef QRef) nogil
+    cdef DPCTLSyclUSMRef DPCTLmalloc_device(
+        size_t size,
+        DPCTLSyclQueueRef QRef) nogil
     cdef DPCTLSyclUSMRef DPCTLaligned_alloc_shared(
         size_t alignment,
         size_t size,
-        DPCTLSyclQueueRef QRef)
+        DPCTLSyclQueueRef QRef) nogil
     cdef DPCTLSyclUSMRef DPCTLaligned_alloc_host(
         size_t alignment,
         size_t size,
-        DPCTLSyclQueueRef QRef)
+        DPCTLSyclQueueRef QRef) nogil
     cdef DPCTLSyclUSMRef DPCTLaligned_alloc_device(
         size_t alignment,
         size_t size,
-        DPCTLSyclQueueRef QRef)
+        DPCTLSyclQueueRef QRef) nogil
     cdef void DPCTLfree_with_queue(
         DPCTLSyclUSMRef MRef,
         DPCTLSyclQueueRef QRef)
