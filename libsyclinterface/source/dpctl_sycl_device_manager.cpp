@@ -286,7 +286,10 @@ size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier)
     if (!device_identifier)
         return 0;
 
+    default_selector mRanker;
     for (const auto &entry : cache) {
+        if (mRanker(entry.first) < 0)
+            continue;
         auto Bty(DPCTL_SyclBackendToDPCTLBackendType(
             entry.first.get_platform().get_backend()));
         auto Dty(DPCTL_SyclDeviceTypeToDPCTLDeviceType(
