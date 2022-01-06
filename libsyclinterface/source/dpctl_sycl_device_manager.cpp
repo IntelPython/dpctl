@@ -126,19 +126,18 @@ struct DeviceCacheBuilder
                     if (mRanker(D) < 0)
                         continue;
 
-                    // Per https://github.com/intel/llvm/blob/sycl/sycl/doc/
-                    // extensions/PlatformContext/PlatformContext.adoc
-                    // sycl::queue(D) would create default platform context
-                    // for capable compiler, sycl::context(D) otherwise
-                    auto Q = queue(D);
-                    auto Ctx = Q.get_context();
-                    auto entry = cache_l.emplace(D, Ctx);
-
-                    if (!entry.second) {
-                        error_handler("Fatal Error during device cache "
-                                      "construction.",
-                                      __FILE__, __func__, __LINE__);
-                        std::terminate();
+                    try {
+                        // Per https://github.com/intel/llvm/blob/sycl/sycl/doc/
+                        // extensions/PlatformContext/PlatformContext.adoc
+                        // sycl::queue(D) would create default platform context
+                        // for capable compiler, sycl::context(D) otherwise
+                        auto Q = queue(D);
+                        auto Ctx = Q.get_context();
+                        cache_l.emplace(D, Ctx);
+                    } catch (const std::exception &e) {
+                        // Nothing is added to the cache_l by guarantees of
+                        // emplace
+                        error_handler(e, __FILE__, __func__, __LINE__);
                     }
                 }
             }
