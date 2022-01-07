@@ -152,6 +152,11 @@ jobs:
           conda install $PACKAGE_NAME pytest python=${{ matrix.python }} $CHANNELS
           # Test installed packages
           conda list
+      - name: Smoke test
+        run: |
+          export OCL_ICD_FILENAMES=libintelocl.so
+          export SYCL_ENABLE_HOST_DEVICE=1
+          python -c "import dpctl; dpctl.lsplatform()"
       - name: Run tests
         run: |
           # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
@@ -213,10 +218,48 @@ jobs:
           # Test installed packages
           conda list
       - name: Add library
-        run: echo "OCL_ICD_FILENAMES=C:\Miniconda\Library\lib\intelocl64.dll" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        run: |
+          echo "OCL_ICD_FILENAMES=C:\Miniconda\Library\lib\intelocl64.dll" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          try {$list = Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors | Select-Object -ExpandProperty Property } catch {$list=@()}
+          if ($list.count -eq 0) {
+              if (-not (Test-Path -Path HKLM:\SOFTWARE\Khronos)) {
+                 New-Item -Path HKLM:\SOFTWARE\Khronos
+              }
+              if (-not (Test-Path -Path HKLM:\SOFTWARE\Khronos\OpenCL)) {
+                 New-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL
+              }
+              if (-not (Test-Path -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors)) {
+                 New-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors
+              }
+              New-ItemProperty -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors -Name C:\Miniconda\Library\lib\intelocl64.dll -Value 0
+              try {$list = Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors | Select-Object -ExpandProperty Property } catch {$list=@()}
+              Write-Output $(Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors)
+              # Now copy OpenCL.dll into system folder
+              $system_ocl_icd_loader="C:\Windows\System32\OpenCL.dll"
+              $python_ocl_icd_loader="C:\Miniconda\Library\bin\OpenCL.dll"
+              Copy-Item -Path $python_ocl_icd_loader -Destination $system_ocl_icd_loader
+              if (Test-Path -Path $system_ocl_icd_loader) {
+                 Write-Output "$system_ocl_icd_loader has been copied"
+                 $acl = Get-Acl $system_ocl_icd_loader
+                 Write-Output $acl
+              } else {
+                 Write-Output "OCL-ICD-Loader was not copied"
+              }
+              # Create symbolic links to tbb next to OpenCL's task_executor, where it expects to find them
+              New-Item -ItemType HardLink -Path "C:\Miniconda\Library\lib\tbb12.dll" -Target "C:\Miniconda\Library\bin\tbb12.dll"
+              New-Item -ItemType HardLink -Path "C:\Miniconda\Library\lib\tbbmalloc.dll" -Target "C:\Miniconda\Library\bin\tbbmalloc.dll"
+          }
+      - name: Smoke test
+        run: |
+          set SYCL_ENABLE_HOST_DEVICE=1
+          & { [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Miniconda\Library\bin\", [EnvironmentVariableTarget]::Machine) }
+          python -c "import dpctl; dpctl.lsplatform()"
+          python -c "import dpctl; print(dpctl.get_devices(backend='opencl', device_type='gpu'))"
+          python -c "import dpctl; print(dpctl.get_num_devices(backend='opencl', device_type='gpu'))"
       - name: Run tests
         run: |
           set SYCL_ENABLE_HOST_DEVICE=1
+          & { [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Miniconda\Library\bin\", [EnvironmentVariableTarget]::Machine) }
           python -m pytest --pyargs ${{ env.MODULE_NAME }}
 
   upload_linux:
