@@ -1,4 +1,4 @@
-.. _querying_platforms:
+.. _platforms:
 
 ########
 Platform
