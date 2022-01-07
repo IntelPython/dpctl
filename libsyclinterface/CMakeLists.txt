@@ -125,7 +125,7 @@ elseif(UNIX)
         "-fsycl "
     )
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CFLAGS}")
-    set(CMAKE_CXX_FLAGS "${CXXFLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXXFLAGS}")
     set(CMAKE_C_FLAGS_DEBUG
         "${CMAKE_C_FLAGS_DEBUG} ${CFLAGS} -ggdb3 -DDEBUG"
     )
@@ -157,8 +157,11 @@ add_library(DPCTLSyclInterface
 )
 
 target_include_directories(DPCTLSyclInterface
-    PRIVATE
+    PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Support
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Config
+    PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/include/
     ${IntelSycl_SYCL_INCLUDE_DIR}
 )
@@ -186,29 +189,55 @@ if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
     )
 endif()
 
+# Install all headers
+
+file(GLOB MAIN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
+file(GLOB SUPPORT_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Support/*.h")
+file(GLOB CONFIG_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Config/*.h")
+
+if (0)
+set(ALL_HEADERS)
+foreach(HEADER ${MAIN_HEADERS})
+  list(APPEND ALL_HEADERS ${HEADER})
+endforeach()
+foreach(HEADER ${SUPPORT_HEADERS})
+  list(APPEND ALL_HEADERS ${HEADER})
+endforeach()
+foreach(HEADER ${CONFIG_HEADERS})
+  list(APPEND ALL_HEADERS ${HEADER})
+endforeach()
+endif()
+
+set_target_properties(DPCTLSyclInterface
+    PROPERTIES PUBLIC_HEADER
+    "${MAIN_HEADERS}"
+)
+
+if (SKBUILD)
+    set(_lib_destination dpctl)
+    set(_include_destination dpctl/include/syclinterface)
+else()
+    set(_lib_destination ${CMAKE_INSTALL_PREFIX}/lib)
+    set(_include_destination ${CMAKE_INSTALL_PREFIX}/include)
+endif()
+
 install(TARGETS
     DPCTLSyclInterface
     LIBRARY
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
+    DESTINATION ${_lib_destination}
+    PUBLIC_HEADER
+    DESTINATION ${_include_destination}
 )
-
-# Install all headers
-file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
-foreach(HEADER ${HEADERS})
-  install(FILES "${HEADER}" DESTINATION include)
-endforeach()
-
-# Install all headers in include/Support
-file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Support/*.h")
-foreach(HEADER ${HEADERS})
-  install(FILES "${HEADER}" DESTINATION include/Support)
-endforeach()
-
-# Install all headers in include/Config
-file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Config/*.h")
-foreach(HEADER ${HEADERS})
-  install(FILES "${HEADER}" DESTINATION include/Config)
-endforeach()
+install(
+    FILES ${SUPPORT_HEADERS}
+    DESTINATION ${_include_destination}/Support
+    COMPONENT SupportHeaders
+)
+install(
+    FILES ${CONFIG_HEADERS}
+    DESTINATION ${_include_destination}/Config
+    COMPONENT ConfigHeaders
+)
 
 # Enable code coverage related settings
 if(DPCTL_GENERATE_COVERAGE)
