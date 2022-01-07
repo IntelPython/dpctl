@@ -190,15 +190,15 @@ def test_context_repr():
     assert type(ctx.__repr__()) is str
 
 
-def test_cpython_api_get_context_ref():
+def test_cpython_api_SyclContext_GetContextRef():
     import ctypes
     import sys
 
     ctx = dpctl.SyclContext()
     mod = sys.modules[ctx.__class__.__module__]
-    # get capsule storign get_context_ref function ptr
-    ctx_ref_fn_cap = mod.__pyx_capi__["get_context_ref"]
-    # construct Python callable to invoke "get_context_ref"
+    # get capsule storign SyclContext_GetContextRef function ptr
+    ctx_ref_fn_cap = mod.__pyx_capi__["SyclContext_GetContextRef"]
+    # construct Python callable to invoke "SyclContext_GetContextRef"
     cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
     cap_ptr_fn.restype = ctypes.c_void_p
     cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
@@ -213,15 +213,15 @@ def test_cpython_api_get_context_ref():
     assert r1 == r2
 
 
-def test_cpython_api_make_SyclContext():
+def test_cpython_api_SyclContext_Make():
     import ctypes
     import sys
 
     ctx = dpctl.SyclContext()
     mod = sys.modules[ctx.__class__.__module__]
-    # get capsule storign make_SyclContext function ptr
-    make_ctx_fn_cap = mod.__pyx_capi__["make_SyclContext"]
-    # construct Python callable to invoke "make_SyclContext"
+    # get capsule storign SyclContext_Make function ptr
+    make_ctx_fn_cap = mod.__pyx_capi__["SyclContext_Make"]
+    # construct Python callable to invoke "SyclContext_Make"
     cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
     cap_ptr_fn.restype = ctypes.c_void_p
     cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]

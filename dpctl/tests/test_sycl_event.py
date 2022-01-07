@@ -234,15 +234,15 @@ def test_addressof_ref():
     assert type(ref) is int
 
 
-def test_cpython_api_get_event_ref():
+def test_cpython_api_SyclEvent_GetEventRef():
     import ctypes
     import sys
 
     ev = dpctl.SyclEvent()
     mod = sys.modules[ev.__class__.__module__]
-    # get capsule storign get_event_ref function ptr
-    ev_ref_fn_cap = mod.__pyx_capi__["get_event_ref"]
-    # construct Python callable to invoke "get_event_ref"
+    # get capsule storign SyclEvent_GetEventRef function ptr
+    ev_ref_fn_cap = mod.__pyx_capi__["SyclEvent_GetEventRef"]
+    # construct Python callable to invoke "SyclEvent_GetEventRef"
     cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
     cap_ptr_fn.restype = ctypes.c_void_p
     cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
@@ -257,15 +257,15 @@ def test_cpython_api_get_event_ref():
     assert r1 == r2
 
 
-def test_cpython_api_make_SyclEvent():
+def test_cpython_api_SyclEvent_Make():
     import ctypes
     import sys
 
     ev = dpctl.SyclEvent()
     mod = sys.modules[ev.__class__.__module__]
-    # get capsule storing make_SyclEvent function ptr
-    make_e_fn_cap = mod.__pyx_capi__["make_SyclEvent"]
-    # construct Python callable to invoke "make_SyclDevice"
+    # get capsule storing SyclEvent_Make function ptr
+    make_e_fn_cap = mod.__pyx_capi__["SyclEvent_Make"]
+    # construct Python callable to invoke "SyclDevice_Make"
     cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
     cap_ptr_fn.restype = ctypes.c_void_p
     cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]

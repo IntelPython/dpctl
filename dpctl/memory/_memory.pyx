@@ -751,24 +751,24 @@ def as_usm_memory(obj):
         )
 
 
-cdef api DPCTLSyclUSMRef Memory_get_usm_pointer(_Memory obj):
+cdef api DPCTLSyclUSMRef Memory_GetUsmPointer(_Memory obj):
     "Pointer of USM allocation"
     return obj.memory_ptr
 
-cdef api DPCTLSyclContextRef Memory_get_context_ref(_Memory obj):
+cdef api DPCTLSyclContextRef Memory_GetContextRef(_Memory obj):
     "Context reference to which USM allocation is bound"
     return obj.queue._context.get_context_ref()
 
-cdef api DPCTLSyclQueueRef Memory_get_queue_ref(_Memory obj):
+cdef api DPCTLSyclQueueRef Memory_GetQueueRef(_Memory obj):
     """Queue associated with this allocation, used
     for copying, population, etc."""
     return obj.queue.get_queue_ref()
 
-cdef api size_t Memory_get_nbytes(_Memory obj):
+cdef api size_t Memory_GetNumBytes(_Memory obj):
     "Size of the allocation in bytes."
     return <size_t>obj.nbytes
 
-cdef api object make_Memory(
+cdef api object Memory_Make(
     DPCTLSyclUSMRef ptr,
     size_t nbytes,
     DPCTLSyclQueueRef QRef,

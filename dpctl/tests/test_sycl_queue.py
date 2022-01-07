@@ -469,12 +469,12 @@ def test_queue_capsule():
     assert q2 != []  # compare with other types
 
 
-def test_cpython_api_get_queue_ref():
+def test_cpython_api_SyclQueue_GetQueueRef():
     q = dpctl.SyclQueue()
     mod = sys.modules[q.__class__.__module__]
-    # get capsule storign get_queue_ref function ptr
-    q_ref_fn_cap = mod.__pyx_capi__["get_queue_ref"]
-    # construct Python callable to invoke "get_queue_ref"
+    # get capsule storign SyclQueue_GetQueueRef function ptr
+    q_ref_fn_cap = mod.__pyx_capi__["SyclQueue_GetQueueRef"]
+    # construct Python callable to invoke "SyclQueue_GetQueueRef"
     cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
     cap_ptr_fn.restype = ctypes.c_void_p
     cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
@@ -489,12 +489,12 @@ def test_cpython_api_get_queue_ref():
     assert r1 == r2
 
 
-def test_cpython_api_make_SyclQueue():
+def test_cpython_api_SyclQueue_Make():
     q = dpctl.SyclQueue()
     mod = sys.modules[q.__class__.__module__]
-    # get capsule storing make_SyclQueue function ptr
-    make_SyclQueue_fn_cap = mod.__pyx_capi__["make_SyclQueue"]
-    # construct Python callable to invoke "make_SyclQueue"
+    # get capsule storing SyclQueue_Make function ptr
+    make_SyclQueue_fn_cap = mod.__pyx_capi__["SyclQueue_Make"]
+    # construct Python callable to invoke "SyclQueue_Make"
     cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
     cap_ptr_fn.restype = ctypes.c_void_p
     cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]

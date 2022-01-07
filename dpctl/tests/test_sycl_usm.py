@@ -530,11 +530,11 @@ def test_cpython_api(memory_ctor):
     mobj = memory_ctor(1024)
     mod = sys.modules[mobj.__class__.__module__]
     # get capsules storing function pointers
-    mem_ptr_fn_cap = mod.__pyx_capi__["Memory_get_usm_pointer"]
-    mem_q_ref_fn_cap = mod.__pyx_capi__["Memory_get_queue_ref"]
-    mem_ctx_ref_fn_cap = mod.__pyx_capi__["Memory_get_context_ref"]
-    mem_nby_fn_cap = mod.__pyx_capi__["Memory_get_nbytes"]
-    # construct Python callable to invoke "get_usm_pointer"
+    mem_ptr_fn_cap = mod.__pyx_capi__["Memory_GetUsmPointer"]
+    mem_q_ref_fn_cap = mod.__pyx_capi__["Memory_GetQueueRef"]
+    mem_ctx_ref_fn_cap = mod.__pyx_capi__["Memory_GetContextRef"]
+    mem_nby_fn_cap = mod.__pyx_capi__["Memory_GetNumBytes"]
+    # construct Python callable to invoke functions
     cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
     cap_ptr_fn.restype = ctypes.c_void_p
     cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
