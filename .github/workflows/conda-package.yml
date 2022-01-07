@@ -245,9 +245,8 @@ jobs:
               } else {
                  Write-Output "OCL-ICD-Loader was not copied"
               }
-              # Create symbolic links to tbb next to OpenCL's task_executor, where it expects to find them
-              New-Item -ItemType HardLink -Path "C:\Miniconda\Library\lib\tbb12.dll" -Target "C:\Miniconda\Library\bin\tbb12.dll"
-              New-Item -ItemType HardLink -Path "C:\Miniconda\Library\lib\tbbmalloc.dll" -Target "C:\Miniconda\Library\bin\tbbmalloc.dll"
+              # Variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
+              echo "TBB_DLL_PATH=C:\Miniconda\Library\bin" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           }
       - name: Smoke test
         run: |
