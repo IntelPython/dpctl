@@ -1136,37 +1136,37 @@ cdef usm_ndarray _zero_like(usm_ndarray ary):
     return r
 
 
-cdef api char* usm_ndarray_get_data(usm_ndarray arr):
+cdef api char* UsmNDArray_GetData(usm_ndarray arr):
     """
     """
     return arr.get_data()
 
 
-cdef api int usm_ndarray_get_ndim(usm_ndarray arr):
+cdef api int UsmNDArray_GetNDim(usm_ndarray arr):
     """"""
     return arr.get_ndim()
 
 
-cdef api Py_ssize_t* usm_ndarray_get_shape(usm_ndarray arr):
+cdef api Py_ssize_t* UsmNDArray_GetShape(usm_ndarray arr):
     """ """
     return arr.get_shape()
 
 
-cdef api Py_ssize_t* usm_ndarray_get_strides(usm_ndarray arr):
+cdef api Py_ssize_t* UsmNDArray_GetStrides(usm_ndarray arr):
     """ """
     return arr.get_strides()
 
 
-cdef api int usm_ndarray_get_typenum(usm_ndarray arr):
+cdef api int UsmNDArray_GetTypenum(usm_ndarray arr):
     """ """
     return arr.get_typenum()
 
 
-cdef api int usm_ndarray_get_flags(usm_ndarray arr):
+cdef api int UsmNDArray_GetFlags(usm_ndarray arr):
     """ """
     return arr.get_flags()
 
 
-cdef api c_dpctl.DPCTLSyclQueueRef usm_ndarray_get_queue_ref(usm_ndarray arr):
+cdef api c_dpctl.DPCTLSyclQueueRef UsmNDArray_GetQueueRef(usm_ndarray arr):
     """ """
     return arr.get_queue_ref()
