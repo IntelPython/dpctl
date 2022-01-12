@@ -38,6 +38,8 @@
 #include "../_sycl_queue_api.h"
 #include "../memory/_memory.h"
 #include "../memory/_memory_api.h"
+#include "../tensor/_usmarray.h"
+#include "../tensor/_usmarray_api.h"
 // clang-format on
 
 /*
@@ -53,5 +55,6 @@ void import_dpctl(void)
     import_dpctl___sycl_event();
     import_dpctl___sycl_queue();
     import_dpctl__memory___memory();
+    import_dpctl__tensor___usmarray();
     return;
 }
