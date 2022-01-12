@@ -1,0 +1,10 @@
+.. _dpctl.program_exception_api:
+
+########################
+dpctl.program Exceptions
+########################
+
+
+.. currentmodule:: dpctl.program
+
+.. autoexception:: SyclProgramCompilationError
