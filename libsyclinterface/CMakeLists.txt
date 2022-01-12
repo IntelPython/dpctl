@@ -6,7 +6,7 @@ project(
 )
 
 # Load our CMake modules to search for DPCPP and Level Zero
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
 find_package(Git REQUIRED)
 
 option(DPCTL_DPCPP_HOME_DIR
@@ -69,8 +69,8 @@ if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
 endif()
 
 configure_file(
-    ${CMAKE_SOURCE_DIR}/include/Config/dpctl_config.h.in
-    ${CMAKE_SOURCE_DIR}/include/Config/dpctl_config.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Config/dpctl_config.h.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Config/dpctl_config.h
 )
 
 # Set the C++ standard to C++17
@@ -158,8 +158,8 @@ add_library(DPCTLSyclInterface
 
 target_include_directories(DPCTLSyclInterface
     PRIVATE
-    ${CMAKE_SOURCE_DIR}/include/
-    ${CMAKE_SOURCE_DIR}/helper/include/
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/include/
     ${IntelSycl_SYCL_INCLUDE_DIR}
 )
 
@@ -193,19 +193,19 @@ install(TARGETS
 )
 
 # Install all headers
-file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
+file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION include)
 endforeach()
 
 # Install all headers in include/Support
-file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/Support/*.h")
+file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Support/*.h")
 foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION include/Support)
 endforeach()
 
 # Install all headers in include/Config
-file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/Config/*.h")
+file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Config/*.h")
 foreach(HEADER ${HEADERS})
   install(FILES "${HEADER}" DESTINATION include/Config)
 endforeach()
