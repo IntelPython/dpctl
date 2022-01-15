@@ -1137,36 +1137,35 @@ cdef usm_ndarray _zero_like(usm_ndarray ary):
 
 
 cdef api char* UsmNDArray_GetData(usm_ndarray arr):
-    """
-    """
+    """Get allocation pointer of zero index element of array """
     return arr.get_data()
 
 
 cdef api int UsmNDArray_GetNDim(usm_ndarray arr):
-    """"""
+    """Get array rank: length of its shape"""
     return arr.get_ndim()
 
 
 cdef api Py_ssize_t* UsmNDArray_GetShape(usm_ndarray arr):
-    """ """
+    """Get host pointer to shape vector"""
     return arr.get_shape()
 
 
 cdef api Py_ssize_t* UsmNDArray_GetStrides(usm_ndarray arr):
-    """ """
+    """Get host pointer to strides vector"""
     return arr.get_strides()
 
 
 cdef api int UsmNDArray_GetTypenum(usm_ndarray arr):
-    """ """
+    """Get type number for data type of array elements"""
     return arr.get_typenum()
 
 
 cdef api int UsmNDArray_GetFlags(usm_ndarray arr):
-    """ """
+    """Get flags of array"""
     return arr.get_flags()
 
 
 cdef api c_dpctl.DPCTLSyclQueueRef UsmNDArray_GetQueueRef(usm_ndarray arr):
-    """ """
+    """Get DPCTLSyclQueueRef for queue associated with the array"""
     return arr.get_queue_ref()
