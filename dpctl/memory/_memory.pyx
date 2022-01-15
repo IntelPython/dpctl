@@ -774,6 +774,7 @@ cdef api object Memory_Make(
     DPCTLSyclQueueRef QRef,
     object owner
 ):
+    "Create _Memory Python object from preallocated memory."
     return _Memory.create_from_usm_pointer_size_qref(
         ptr, nbytes, QRef, memory_owner=owner
     )
