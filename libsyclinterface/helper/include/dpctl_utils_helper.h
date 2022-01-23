@@ -24,8 +24,8 @@
 
 #pragma once
 
-#include "../include/dpctl_sycl_enum_types.h"
 #include "Support/DllExport.h"
+#include "dpctl_sycl_enum_types.h"
 #include <CL/sycl.hpp>
 
 /*!

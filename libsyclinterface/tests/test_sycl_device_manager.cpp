@@ -24,11 +24,11 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "../helper/include/dpctl_utils_helper.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_utils.h"
+#include "dpctl_utils_helper.h"
 #include <gtest/gtest.h>
 #include <string>
 

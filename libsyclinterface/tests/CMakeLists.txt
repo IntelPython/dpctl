@@ -51,6 +51,10 @@ if(DPCTL_GENERATE_COVERAGE)
         ${dpctl_sources}
         ${helper_sources}
     )
+    target_include_directories(dpctl_c_api_tests
+        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../helper/include"
+        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../include"
+    )
     target_link_libraries(dpctl_c_api_tests
         ${CMAKE_THREAD_LIBS_INIT}
         GTest::GTest
