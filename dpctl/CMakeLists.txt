@@ -3,6 +3,68 @@ find_package(PythonExtensions REQUIRED)
 find_package(NumPy REQUIRED)
 find_package(Cython REQUIRED)
 
+if(WIN32)
+    string(CONCAT WARNING_FLAGS
+        "-Wall "
+        "-Wextra "
+        "-Winit-self "
+        "-Wunused-function "
+        "-Wuninitialized "
+        "-Wmissing-declarations "
+    )
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Ox ${WARNING_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ox ${WARNING_FLAGS}")
+    set(CMAKE_C_FLAGS_DEBUG
+        "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG"
+    )
+    set(CMAKE_CXX_FLAGS_DEBUG
+        "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG"
+    )
+    set(DPCTL_LDFLAGS "/NXCompat /DynamicBase")
+elseif(UNIX)
+    string(CONCAT WARNING_FLAGS
+        "-Wall "
+        "-Wextra "
+        "-Winit-self "
+        "-Wunused-function "
+        "-Wuninitialized "
+        "-Wmissing-declarations "
+        "-fdiagnostics-color=auto "
+        "-Wno-deprecated-declarations "
+    )
+    string(CONCAT SDL_FLAGS
+        "-fstack-protector "
+        "-fstack-protector-all "
+        "-fpic "
+        "-fPIC "
+        "-D_FORTIFY_SOURCE=2 "
+        "-Wformat "
+        "-Wformat-security "
+        "-fno-strict-overflow "
+        "-fno-delete-null-pointer-checks "
+    )
+    string(CONCAT CFLAGS
+        "${WARNING_FLAGS}"
+        "${SDL_FLAGS}"
+    )
+    string(CONCAT CXXFLAGS
+        "${WARNING_FLAGS}"
+        "${SDL_FLAGS}"
+        "-fsycl "
+    )
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 ${CFLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 ${CXXFLAGS}")
+    set(CMAKE_C_FLAGS_DEBUG
+        "${CMAKE_C_FLAGS_DEBUG} ${CFLAGS} -ggdb3 -DDEBUG"
+    )
+    set(CMAKE_CXX_FLAGS_DEBUG
+        "${CMAKE_CXX_FLAGS_DEBUG} ${CXXFLAGS} -ggdb3 -DDEBUG"
+    )
+    set(DPCTL_LDFLAGS "-z,noexecstack,-z,relro,-z,now")
+else()
+    message(FATAL_ERROR "Unsupported system.")
+endif()
+
 # at build time create include/ directory and copy header files over
 set(DPCTL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_custom_target(_build_time_create_dpctl_include ALL
@@ -21,6 +83,7 @@ function(build_dpctl_ext _trgt _src _dest)
     target_include_directories(${_trgt} PRIVATE ${NumPy_INCLUDE_DIR} ${DPCTL_INCLUDE_DIR})
     add_dependencies(${_trgt} _build_time_create_dpctl_include)
     target_link_libraries(${_trgt} DPCTLSyclInterface)
+    target_link_options(${_trgt} PRIVATE "LINKER:${DPCTL_LDFLAGS}")
     python_extension_module(${_trgt})
     get_filename_component(_name_wle ${_generated_src} NAME_WLE)
     get_filename_component(_generated_src_dir ${_generated_src} DIRECTORY)
