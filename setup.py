@@ -14,8 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os.path
+import pathlib
+import shutil
+
+import skbuild
+import skbuild.setuptools_wrap
+import skbuild.utils
 from setuptools import find_packages
-from skbuild import setup
 
 import versioneer
 
@@ -29,7 +35,51 @@ def _get_cmdclass():
     return cmdclass
 
 
-setup(
+def cleanup_destination(cmake_manifest):
+    """Delete library files from dpctl/ folder before
+    letting skbuild copy them over to avoid errors.
+    """
+    _to_unlink = []
+    for fn in cmake_manifest:
+        bn = os.path.basename(fn)
+        # delete
+        if "DPCTLSyclInterface" in bn:
+            lib_fn = os.path.join("dpctl", bn)
+            if os.path.exists(lib_fn):
+                _to_unlink.append(lib_fn)
+    for fn in _to_unlink:
+        pathlib.Path(fn).unlink()
+    return cmake_manifest
+
+
+def _patched_copy_file(src_file, dest_file, hide_listing=True):
+    """Copy ``src_file`` to ``dest_file`` ensuring parent directory exists.
+
+    By default, message like `creating directory /path/to/package` and
+    `copying directory /src/path/to/package -> path/to/package` are displayed
+    on standard output. Setting ``hide_listing`` to False avoids message from
+    being displayed.
+
+    NB: Patched here to not follows symbolic links
+    """
+    # Create directory if needed
+    dest_dir = os.path.dirname(dest_file)
+    if dest_dir != "" and not os.path.exists(dest_dir):
+        if not hide_listing:
+            print("creating directory {}".format(dest_dir))
+        skbuild.utils.mkdir_p(dest_dir)
+
+    # Copy file
+    if not hide_listing:
+        print("copying {} -> {}".format(src_file, dest_file))
+    shutil.copyfile(src_file, dest_file, follow_symlinks=False)
+    shutil.copymode(src_file, dest_file, follow_symlinks=False)
+
+
+skbuild.setuptools_wrap._copy_file = _patched_copy_file
+
+
+skbuild.setup(
     name="dpctl",
     version=versioneer.get_version(),
     cmdclass=_get_cmdclass(),
@@ -54,4 +104,5 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
+    cmake_process_manifest_hook=cleanup_destination,
 )
