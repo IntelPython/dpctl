@@ -22,12 +22,13 @@ requirements:
         - python
         - make                     # [unix]
         - ninja                    # [win]
+        - scikit-build
         - numpy 1.19
         - wheel
     run:
         - python
         - {{ pin_compatible('numpy') }}
-        - dpcpp-cpp-rt >=2021.2
+        - dpcpp-cpp-rt >=2022.0
 
 test:
     requires:

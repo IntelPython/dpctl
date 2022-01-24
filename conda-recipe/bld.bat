@@ -4,7 +4,7 @@ set "LIB=%BUILD_PREFIX%\Library\lib;%BUILD_PREFIX%\compiler\lib;%LIB%"
 set "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
 
 "%PYTHON%" setup.py clean --all
-set "INSTALL_CMD=install --sycl-compiler-prefix=%BUILD_PREFIX%\Library"
+set "INSTALL_CMD=install -- -G Ninja -DDPCTL_DPCPP_HOME_DIR=%BUILD_PREFIX%\Library -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON"
 
 if NOT "%WHEELS_OUTPUT_FOLDER%"=="" (
     rem Install and assemble wheel package from the build bits
