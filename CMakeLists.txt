@@ -8,7 +8,7 @@ project(dpctl
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-find_package(IntelDPCPP REQUIRED)
+find_package(IntelDPCPP REQUIRED PATHS ${CMAKE_SOURCE_DIR}/cmake NO_DEFAULT_PATH)
 
 add_subdirectory(libsyclinterface)
 
