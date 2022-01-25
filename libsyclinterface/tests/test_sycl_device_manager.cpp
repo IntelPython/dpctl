@@ -139,17 +139,29 @@ INSTANTIATE_TEST_SUITE_P(
 
 struct TestGetNumDevicesForDTy : public ::testing::TestWithParam<int>
 {
-    size_t nDevices = 0;
+    int param;
+    sycl::info::device_type sycl_dty;
+
     TestGetNumDevicesForDTy()
     {
-        cl::sycl::info::device_type sycl_dty =
-            DPCTL_DPCTLDeviceTypeToSyclDeviceType(
-                DPCTLSyclDeviceType(GetParam()));
-
-        auto devices = cl::sycl::device::get_devices(sycl_dty);
-        EXPECT_TRUE(devices.size() == DPCTLDeviceMgr_GetNumDevices(GetParam()));
+        param = GetParam();
+        DPCTLSyclDeviceType DTy = DPCTLSyclDeviceType(param);
+        sycl_dty = DPCTL_DPCTLDeviceTypeToSyclDeviceType(DTy);
     }
 };
+
+TEST_P(TestGetNumDevicesForDTy, ChkGetNumDevices)
+{
+    auto devices = sycl::device::get_devices(sycl_dty);
+    size_t nDevices = 0;
+    sycl::default_selector mRanker;
+    for (const sycl::device &d : devices) {
+        if (mRanker(d) < 0)
+            continue;
+        ++nDevices;
+    }
+    EXPECT_TRUE(nDevices == DPCTLDeviceMgr_GetNumDevices(param));
+}
 
 INSTANTIATE_TEST_SUITE_P(
     GetDevices,
@@ -162,22 +174,33 @@ INSTANTIATE_TEST_SUITE_P(
 
 struct TestGetNumDevicesForBTy : public ::testing::TestWithParam<int>
 {
-    size_t nDevices = 0;
+    int param;
+    sycl::backend sycl_bty;
     TestGetNumDevicesForBTy()
     {
-        cl::sycl::backend sycl_bty = DPCTL_DPCTLBackendTypeToSyclBackend(
-            DPCTLSyclBackendType(GetParam()));
+        param = GetParam();
+        sycl_bty =
+            DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType(param));
+    }
+};
 
-        auto platforms = cl::sycl::platform::get_platforms();
-        for (const auto &P : platforms) {
-            if (P.get_backend() == sycl_bty) {
-                auto devices = P.get_devices();
-                EXPECT_TRUE(devices.size() ==
-                            DPCTLDeviceMgr_GetNumDevices(GetParam()));
+TEST_P(TestGetNumDevicesForBTy, ChkGetNumDevices)
+{
+    auto platforms = cl::sycl::platform::get_platforms();
+    size_t nDevices = 0;
+    sycl::default_selector mRanker;
+    for (const auto &P : platforms) {
+        if ((P.get_backend() == sycl_bty) || (sycl_bty == sycl::backend::all)) {
+            auto devices = P.get_devices();
+            for (const sycl::device &d : devices) {
+                if (mRanker(d) < 0)
+                    continue;
+                ++nDevices;
             }
         }
     }
-};
+    EXPECT_TRUE(nDevices == DPCTLDeviceMgr_GetNumDevices(param));
+}
 
 INSTANTIATE_TEST_SUITE_P(
     GetDevices,
