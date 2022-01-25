@@ -353,7 +353,7 @@ def test_pyx_capi_get_data():
     X = dpt.usm_ndarray(17)[1::2]
     get_data_fn = _pyx_capi_fnptr_to_callable(
         X,
-        "usm_ndarray_get_data",
+        "UsmNDArray_GetData",
         b"char *(struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_void_p,
     )
@@ -366,7 +366,7 @@ def test_pyx_capi_get_shape():
     X = dpt.usm_ndarray(17)[1::2]
     get_shape_fn = _pyx_capi_fnptr_to_callable(
         X,
-        "usm_ndarray_get_shape",
+        "UsmNDArray_GetShape",
         b"Py_ssize_t *(struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_void_p,
     )
@@ -379,7 +379,7 @@ def test_pyx_capi_get_strides():
     X = dpt.usm_ndarray(17)[1::2]
     get_strides_fn = _pyx_capi_fnptr_to_callable(
         X,
-        "usm_ndarray_get_strides",
+        "UsmNDArray_GetStrides",
         b"Py_ssize_t *(struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_void_p,
     )
@@ -395,7 +395,7 @@ def test_pyx_capi_get_ndim():
     X = dpt.usm_ndarray(17)[1::2]
     get_ndim_fn = _pyx_capi_fnptr_to_callable(
         X,
-        "usm_ndarray_get_ndim",
+        "UsmNDArray_GetNDim",
         b"int (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_int,
     )
@@ -406,7 +406,7 @@ def test_pyx_capi_get_typenum():
     X = dpt.usm_ndarray(17)[1::2]
     get_typenum_fn = _pyx_capi_fnptr_to_callable(
         X,
-        "usm_ndarray_get_typenum",
+        "UsmNDArray_GetTypenum",
         b"int (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_int,
     )
@@ -419,7 +419,7 @@ def test_pyx_capi_get_flags():
     X = dpt.usm_ndarray(17)[1::2]
     get_flags_fn = _pyx_capi_fnptr_to_callable(
         X,
-        "usm_ndarray_get_flags",
+        "UsmNDArray_GetFlags",
         b"int (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_int,
     )
@@ -431,7 +431,7 @@ def test_pyx_capi_get_queue_ref():
     X = dpt.usm_ndarray(17)[1::2]
     get_queue_ref_fn = _pyx_capi_fnptr_to_callable(
         X,
-        "usm_ndarray_get_queue_ref",
+        "UsmNDArray_GetQueueRef",
         b"DPCTLSyclQueueRef (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_void_p,
     )

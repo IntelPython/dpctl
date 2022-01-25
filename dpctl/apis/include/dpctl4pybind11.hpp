@@ -49,8 +49,8 @@ public:
     {
         PyObject *source = src.ptr();
         if (PyObject_TypeCheck(source, &PySyclQueueType)) {
-            DPCTLSyclQueueRef QRef =
-                get_queue_ref(reinterpret_cast<PySyclQueueObject *>(source));
+            DPCTLSyclQueueRef QRef = SyclQueue_GetQueueRef(
+                reinterpret_cast<PySyclQueueObject *>(source));
             sycl::queue *q = reinterpret_cast<sycl::queue *>(QRef);
             value = *q;
             return true;
@@ -63,7 +63,7 @@ public:
 
     static handle cast(sycl::queue src, return_value_policy, handle)
     {
-        auto tmp = make_SyclQueue(reinterpret_cast<DPCTLSyclQueueRef>(&src));
+        auto tmp = SyclQueue_Make(reinterpret_cast<DPCTLSyclQueueRef>(&src));
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 };
@@ -87,8 +87,8 @@ public:
     {
         PyObject *source = src.ptr();
         if (PyObject_TypeCheck(source, &PySyclDeviceType)) {
-            DPCTLSyclDeviceRef DRef =
-                get_device_ref(reinterpret_cast<PySyclDeviceObject *>(source));
+            DPCTLSyclDeviceRef DRef = SyclDevice_GetDeviceRef(
+                reinterpret_cast<PySyclDeviceObject *>(source));
             sycl::device *d = reinterpret_cast<sycl::device *>(DRef);
             value = *d;
             return true;
@@ -101,7 +101,7 @@ public:
 
     static handle cast(sycl::device src, return_value_policy, handle)
     {
-        auto tmp = make_SyclDevice(reinterpret_cast<DPCTLSyclDeviceRef>(&src));
+        auto tmp = SyclDevice_Make(reinterpret_cast<DPCTLSyclDeviceRef>(&src));
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 };
@@ -125,7 +125,7 @@ public:
     {
         PyObject *source = src.ptr();
         if (PyObject_TypeCheck(source, &PySyclContextType)) {
-            DPCTLSyclContextRef CRef = get_context_ref(
+            DPCTLSyclContextRef CRef = SyclContext_GetContextRef(
                 reinterpret_cast<PySyclContextObject *>(source));
             sycl::context *ctx = reinterpret_cast<sycl::context *>(CRef);
             value = *ctx;
@@ -140,7 +140,7 @@ public:
     static handle cast(sycl::context src, return_value_policy, handle)
     {
         auto tmp =
-            make_SyclContext(reinterpret_cast<DPCTLSyclContextRef>(&src));
+            SyclContext_Make(reinterpret_cast<DPCTLSyclContextRef>(&src));
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 };
@@ -164,8 +164,8 @@ public:
     {
         PyObject *source = src.ptr();
         if (PyObject_TypeCheck(source, &PySyclEventType)) {
-            DPCTLSyclEventRef ERef =
-                get_event_ref(reinterpret_cast<PySyclEventObject *>(source));
+            DPCTLSyclEventRef ERef = SyclEvent_GetEventRef(
+                reinterpret_cast<PySyclEventObject *>(source));
             sycl::event *ev = reinterpret_cast<sycl::event *>(ERef);
             value = *ev;
             return true;
@@ -178,7 +178,7 @@ public:
 
     static handle cast(sycl::event src, return_value_policy, handle)
     {
-        auto tmp = make_SyclEvent(reinterpret_cast<DPCTLSyclEventRef>(&src));
+        auto tmp = SyclEvent_Make(reinterpret_cast<DPCTLSyclEventRef>(&src));
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 };

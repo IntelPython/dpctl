@@ -480,7 +480,7 @@ cdef class SyclContext(_SyclContext):
             &_context_capsule_deleter
         )
 
-cdef api DPCTLSyclContextRef get_context_ref(SyclContext ctx):
+cdef api DPCTLSyclContextRef SyclContext_GetContextRef(SyclContext ctx):
     """
     C-API function to get opaque context reference from
     :class:`dpctl.SyclContext` instance.
@@ -488,7 +488,7 @@ cdef api DPCTLSyclContextRef get_context_ref(SyclContext ctx):
     return ctx.get_context_ref()
 
 
-cdef api SyclContext make_SyclContext(DPCTLSyclContextRef CRef):
+cdef api SyclContext SyclContext_Make(DPCTLSyclContextRef CRef):
     """
     C-API function to create :class:`dpctl.SyclContext` instance
     from the given opaque context reference.

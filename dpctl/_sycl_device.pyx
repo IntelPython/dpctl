@@ -1130,7 +1130,7 @@ cdef class SyclDevice(_SyclDevice):
                 else:
                     return str(relId)
 
-cdef api DPCTLSyclDeviceRef get_device_ref(SyclDevice dev):
+cdef api DPCTLSyclDeviceRef SyclDevice_GetDeviceRef(SyclDevice dev):
     """
     C-API function to get opaque device reference from
     :class:`dpctl.SyclDevice` instance.
@@ -1138,7 +1138,7 @@ cdef api DPCTLSyclDeviceRef get_device_ref(SyclDevice dev):
     return dev.get_device_ref()
 
 
-cdef api SyclDevice make_SyclDevice(DPCTLSyclDeviceRef DRef):
+cdef api SyclDevice SyclDevice_Make(DPCTLSyclDeviceRef DRef):
     """
     C-API function to create :class:`dpctl.SyclDevice` instance
     from the given opaque device reference.

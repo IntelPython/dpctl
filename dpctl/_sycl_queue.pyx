@@ -1001,7 +1001,7 @@ cdef class SyclQueue(_SyclQueue):
         self.sycl_device.print_device_info()
 
 
-cdef api DPCTLSyclQueueRef get_queue_ref(SyclQueue q):
+cdef api DPCTLSyclQueueRef SyclQueue_GetQueueRef(SyclQueue q):
     """
     C-API function to get opaque queue reference from
     :class:`dpctl.SyclQueue` instance.
@@ -1009,7 +1009,7 @@ cdef api DPCTLSyclQueueRef get_queue_ref(SyclQueue q):
     return q.get_queue_ref()
 
 
-cdef api SyclQueue make_SyclQueue(DPCTLSyclQueueRef QRef):
+cdef api SyclQueue SyclQueue_Make(DPCTLSyclQueueRef QRef):
     """
     C-API function to create :class:`dpctl.SyclQueue` instance
     from the given opaque queue reference.
