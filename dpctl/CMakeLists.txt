@@ -11,6 +11,7 @@ if(WIN32)
         "-Wunused-function "
         "-Wuninitialized "
         "-Wmissing-declarations "
+        "-Wno-unused-parameter "
     )
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Ox ${WARNING_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ox ${WARNING_FLAGS}")
@@ -70,10 +71,38 @@ set(DPCTL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_custom_target(_build_time_create_dpctl_include ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory ${DPCTL_INCLUDE_DIR}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${DPCTL_INCLUDE_DIR}/syclinterface
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/libsyclinterface/include/* ${DPCTL_INCLUDE_DIR}/syclinterface
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/apis/include/* ${DPCTL_INCLUDE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${DPCTL_INCLUDE_DIR}/syclinterface/Support
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${DPCTL_INCLUDE_DIR}/syclinterface/Config
     DEPENDS DPCTLSyclInterface
 )
+
+file(GLOB _syclinterface_h ${CMAKE_SOURCE_DIR}/libsyclinterface/include/*.h)
+foreach(hf ${_syclinterface_h})
+   add_custom_command(TARGET _build_time_create_dpctl_include
+       COMMAND ${CMAKE_COMMAND} -E copy ${hf} ${DPCTL_INCLUDE_DIR}/syclinterface
+   )
+endforeach()
+
+file(GLOB _syclinterface_Support_h ${CMAKE_SOURCE_DIR}/libsyclinterface/include/Support/*.h)
+foreach(hf ${_syclinterface_Support_h})
+   add_custom_command(TARGET _build_time_create_dpctl_include
+       COMMAND ${CMAKE_COMMAND} -E copy ${hf} ${DPCTL_INCLUDE_DIR}/syclinterface/Support
+   )
+endforeach()
+
+file(GLOB _syclinterface_Config_h ${CMAKE_SOURCE_DIR}/libsyclinterface/include/Config/*.h)
+foreach(hf ${_syclinterface_Config_h})
+   add_custom_command(TARGET _build_time_create_dpctl_include
+       COMMAND ${CMAKE_COMMAND} -E copy ${hf} ${DPCTL_INCLUDE_DIR}/syclinterface/Config
+   )
+endforeach()
+
+file(GLOB _apis_h ${CMAKE_CURRENT_SOURCE_DIR}/apis/include/*)
+foreach(hf ${_apis_h})
+   add_custom_command(TARGET _build_time_create_dpctl_include
+       COMMAND ${CMAKE_COMMAND} -E copy ${hf} ${DPCTL_INCLUDE_DIR}
+   )
+endforeach()
 
 set(CMAKE_INSTALL_RPATH "$ORIGIN")
 

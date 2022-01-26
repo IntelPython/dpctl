@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10...3.22 FATAL_ERROR)
 
 project(
     "libDPCTLSYCLInterface"
@@ -84,6 +84,7 @@ if(WIN32)
         "-Wunused-function "
         "-Wuninitialized "
         "-Wmissing-declarations "
+        "-Wno-deprecated-declarations "
     )
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WARNING_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS}")
@@ -195,19 +196,6 @@ file(GLOB MAIN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 file(GLOB SUPPORT_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Support/*.h")
 file(GLOB CONFIG_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Config/*.h")
 
-if (0)
-set(ALL_HEADERS)
-foreach(HEADER ${MAIN_HEADERS})
-  list(APPEND ALL_HEADERS ${HEADER})
-endforeach()
-foreach(HEADER ${SUPPORT_HEADERS})
-  list(APPEND ALL_HEADERS ${HEADER})
-endforeach()
-foreach(HEADER ${CONFIG_HEADERS})
-  list(APPEND ALL_HEADERS ${HEADER})
-endforeach()
-endif()
-
 set_target_properties(DPCTLSyclInterface
     PROPERTIES PUBLIC_HEADER
     "${MAIN_HEADERS}"
@@ -224,6 +212,10 @@ endif()
 install(TARGETS
     DPCTLSyclInterface
     LIBRARY
+    DESTINATION ${_lib_destination}
+    ARCHIVE
+    DESTINATION ${_lib_destination}
+    RUNTIME
     DESTINATION ${_lib_destination}
     PUBLIC_HEADER
     DESTINATION ${_include_destination}
