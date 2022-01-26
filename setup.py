@@ -97,6 +97,17 @@ skbuild.setup(
     install_requires=[
         "numpy",
     ],
+    extra_require={
+        "docs": [
+            "Cython",
+            "sphinx",
+            "sphinx_rtd_theme",
+            "pydot",
+            "graphviz",
+            "sphinxcontrib-programoutput",
+        ],
+        "coverage": ["Cython", "pytest", "pytest-cov", "coverage", "tomli"],
+    },
     keywords="dpctl",
     classifiers=[
         "Development Status :: 3 - Alpha",
