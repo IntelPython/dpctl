@@ -24,7 +24,7 @@ def run(
         raise RuntimeError(
             "This scripts only supports coverage collection on Linux"
         )
-    setup_dir = os.path.dirname(os.path.dirname(__file__))
+    setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     cmake_args = [
         sys.executable,
         "setup.py",
