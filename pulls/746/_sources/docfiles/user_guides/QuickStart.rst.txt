@@ -166,7 +166,7 @@ Developing on Linux can also be done using driver script:
 
 .. code-block:: bash
 
-    python scripts/build_sycl_nightly.py --oneapi
+    python scripts/build_locally.py --oneapi
 
 
 Building using custom dpcpp
@@ -176,8 +176,7 @@ It is possible to build dpctl from source using .. _DPC++ toolchain: https://git
 instead of the DPC++ compiler that comes with oneAPI. One reason for doing this
 may be to enable support for CUDA devices.
 
-Following steps in `Build and install with scikit-build`_ use command line
-option :code:`--sycl-compiler-prefix`, for example:
+Following steps in `Build and install with scikit-build`_ use command line option to set relevant cmake variables, for example:
 
 .. code-block:: bash
 
@@ -187,7 +186,7 @@ Alterantively, the driver script can be used
 
 .. code-block:: bash
 
-    python scripts/build_sycl_nightly.py --c-compiler=clang --cxx-compiler=clang++ --compiler-root=${DPCPP_ROOT}/llvm/build
+    python scripts/build_locally.py --c-compiler=clang --cxx-compiler=clang++ --compiler-root=${DPCPP_ROOT}/llvm/build
 
 Available options and their descriptions can be retrieved using option
 :code:`--help`.

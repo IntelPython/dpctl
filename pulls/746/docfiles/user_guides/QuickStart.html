@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data-parallel Control (dpctl) 0.12.0dev1+158.g8aa49416 documentation</title>
+  <title>Quick Start Guide &mdash; Data-parallel Control (dpctl) 0.12.0dev1+159.gbfa3ccc4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+158.g8aa49416
+                0.12.0dev1+159.gbfa3ccc4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -230,7 +230,7 @@ installed:</p>
 </div>
 <p>On Windows, use <code class="docutils literal notranslate"><span class="pre">icx</span></code> for both C and CXX compilers, and use <code class="code docutils literal notranslate"><span class="pre">-G</span> <span class="pre">Ninja</span></code> for cmake generator.</p>
 <p>Developing on Linux can also be done using driver script:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python scripts/build_sycl_nightly.py --oneapi
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python scripts/build_locally.py --oneapi
 </pre></div>
 </div>
 </section>
@@ -240,13 +240,12 @@ installed:</p>
 <p>It is possible to build dpctl from source using .. _DPC++ toolchain: <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md">https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md</a>
 instead of the DPC++ compiler that comes with oneAPI. One reason for doing this
 may be to enable support for CUDA devices.</p>
-<p>Following steps in <a class="reference internal" href="#build-and-install-with-scikit-build">Build and install with scikit-build</a> use command line
-option <code class="code docutils literal notranslate"><span class="pre">--sycl-compiler-prefix</span></code>, for example:</p>
+<p>Following steps in <a class="reference internal" href="#build-and-install-with-scikit-build">Build and install with scikit-build</a> use command line option to set relevant cmake variables, for example:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop -- -G Unix<span class="se">\ </span>Makefiles -DCMAKE_C_COMPILER:PATH<span class="o">=</span>clang -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>clang++ -DDPCTL_ENABLE_LO_PROGRAM_CREATION<span class="o">=</span>ONE -DDPCTL_DPCPP_HOME_DIR<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/llvm/build -DDPCTL_DPCPP_FROM_ONEAPI<span class="o">=</span>OFF
 </pre></div>
 </div>
 <p>Alterantively, the driver script can be used</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python scripts/build_sycl_nightly.py --c-compiler<span class="o">=</span>clang --cxx-compiler<span class="o">=</span>clang++ --compiler-root<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/llvm/build
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python scripts/build_locally.py --c-compiler<span class="o">=</span>clang --cxx-compiler<span class="o">=</span>clang++ --compiler-root<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/llvm/build
 </pre></div>
 </div>
 <p>Available options and their descriptions can be retrieved using option
@@ -353,7 +352,7 @@ make <span class="nv">V</span><span class="o">=</span><span class="m">1</span> -
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+158.g8aa49416
+      v: 0.12.0dev1+159.gbfa3ccc4
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
