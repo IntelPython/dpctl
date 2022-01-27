@@ -169,7 +169,6 @@ target_include_directories(DPCTLSyclInterface
 
 target_link_libraries(DPCTLSyclInterface
     PRIVATE ${IntelSycl_SYCL_LIBRARY}
-    PRIVATE ${IntelSycl_OPENCL_LIBRARY}
 )
 
 include(GetProjectVersion)
