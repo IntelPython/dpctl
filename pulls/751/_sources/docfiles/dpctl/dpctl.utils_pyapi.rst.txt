@@ -1,0 +1,28 @@
+.. _dpctl.utils_pyapi:
+
+###########
+dpctl.utils
+###########
+
+.. currentmodule:: dpctl.utils
+
+.. automodule:: dpctl.utils
+
+
+
+.. _dpctl.utils_functions:
+
+Functions
+---------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`get_execution_queue()`
+      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+
+
+
+
+
+

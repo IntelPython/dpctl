@@ -1,0 +1,47 @@
+.. _SyclEvent_api:
+
+###############
+dpctl.SyclEvent
+###############
+
+.. currentmodule:: dpctl
+
+.. autoclass:: dpctl.SyclEvent
+
+    .. rubric:: Attributes:
+
+    .. autoautosummary:: dpctl.SyclEvent
+        :attributes:
+
+    .. rubric:: Public methods:
+
+    .. autoautosummary:: dpctl.SyclEvent
+        :methods:
+
+    .. rubric:: Private methods:
+
+    .. autoautosummary:: dpctl.SyclEvent
+        :private_methods:
+
+
+Attributes
+----------
+
+.. autoattribute:: dpctl.SyclEvent.backend
+.. autoattribute:: dpctl.SyclEvent.execution_status
+.. autoattribute:: dpctl.SyclEvent.profiling_info_end
+.. autoattribute:: dpctl.SyclEvent.profiling_info_start
+.. autoattribute:: dpctl.SyclEvent.profiling_info_submit
+
+Public methods
+--------------
+
+.. autofunction:: dpctl.SyclEvent.addressof_ref
+.. autofunction:: dpctl.SyclEvent.get_wait_list
+.. autofunction:: dpctl.SyclEvent.wait
+.. autofunction:: dpctl.SyclEvent.wait_for
+
+Private methods
+---------------
+
+.. autofunction:: dpctl.SyclEvent._get_capsule
