@@ -39,7 +39,7 @@ import dpctl
 import dpctl.memory as dpmem
 
 
-cdef extern from './include/dlpack/dlpack.h' nogil:
+cdef extern from 'dlpack/dlpack.h' nogil:
     cdef int DLPACK_VERSION
 
     cdef enum DLDeviceType:

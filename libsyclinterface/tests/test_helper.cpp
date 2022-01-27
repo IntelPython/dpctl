@@ -24,8 +24,8 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "../helper/include/dpctl_utils_helper.h"
 #include "Config/dpctl_config.h"
+#include "dpctl_utils_helper.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 #include <string>

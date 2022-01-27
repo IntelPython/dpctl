@@ -21,7 +21,7 @@
 from ._usmarray cimport usm_ndarray
 
 
-cdef extern from './include/dlpack/dlpack.h' nogil:
+cdef extern from 'dlpack/dlpack.h' nogil:
     int device_CPU 'kDLCPU'
     int device_oneAPI 'kDLOneAPI'
     int device_OpenCL 'kDLOpenCL'

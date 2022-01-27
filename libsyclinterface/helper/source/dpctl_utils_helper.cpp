@@ -96,6 +96,8 @@ backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy)
         return backend::level_zero;
     case DPCTLSyclBackendType::DPCTL_OPENCL:
         return backend::opencl;
+    case DPCTLSyclBackendType::DPCTL_ALL_BACKENDS:
+        return backend::all;
     default:
         throw std::runtime_error("Unsupported backend type");
     }

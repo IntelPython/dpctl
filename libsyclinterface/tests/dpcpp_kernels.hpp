@@ -1,4 +1,8 @@
 #pragma once
+#ifndef __SYCL_INTERNAL_API
+// make sure that sycl::program is defined and implemented
+#define __SYCL_INTERNAL_API
+#endif
 #include <CL/sycl.hpp>
 
 namespace dpcpp_kernels
