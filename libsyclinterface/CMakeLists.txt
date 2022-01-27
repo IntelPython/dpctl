@@ -170,6 +170,12 @@ target_include_directories(DPCTLSyclInterface
 target_link_libraries(DPCTLSyclInterface
     PRIVATE ${IntelSycl_SYCL_LIBRARY}
 )
+if(WIN32)
+    target_link_libraries(DPCTLSyclInterface
+        PRIVATE ${IntelSycl_OPENCL_LIBRARY}
+    )
+endif()
+
 
 include(GetProjectVersion)
 # the get_version function is defined in the GetProjectVersion module and
