@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor.usm_ndarray &mdash; Data-parallel Control (dpctl) 0.12.0dev1+139.ga2b6a9ce documentation</title>
+  <title>dpctl.tensor.usm_ndarray &mdash; Data-parallel Control (dpctl) 0.12.0dev1+159.g8b17f1c2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+139.ga2b6a9ce
+                0.12.0dev1+159.g8b17f1c2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -103,18 +103,8 @@
 <span id="usm-ndarray-api"></span><h1>dpctl.tensor.usm_ndarray<a class="headerlink" href="#dpctl-tensor-usm-ndarray" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'|f8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strides</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_ctor_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">dict()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray" title="Permalink to this definition"></a></dt>
-<dd><p>See <a class="reference internal" href="MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a> for allowed
-keyword arguments.</p>
-<p><cite>buffer</cite> can be ‘shared’, ‘host’, ‘device’ to allocate
-new device memory by calling respective constructor with
-the specified <cite>buffer_ctor_kwrds</cite>; <cite>buffer</cite> can be an
-instance of <a class="reference internal" href="MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a>,
-<a class="reference internal" href="MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMDevice</span></code></a>, or
-<a class="reference internal" href="MemoryUSMHost.html#dpctl.memory.MemoryUSMHost" title="dpctl.memory.MemoryUSMHost"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMHost</span></code></a>; <cite>buffer</cite> can also be
-another usm_ndarray instance, in which case its underlying
-MemoryUSM* buffer is used for buffer.</p>
-<p class="rubric">Attributes:</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray" title="Permalink to this definition"></a></dt>
+<dd><p class="rubric">Attributes:</p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -182,7 +172,7 @@ MemoryUSM* buffer is used for buffer.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.to_device" title="dpctl.tensor.usm_ndarray.to_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_device</span></code></a></p></td>
-<td><p>Transfer array to target device</p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
@@ -194,7 +184,7 @@ MemoryUSM* buffer is used for buffer.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray._set_namespace" title="dpctl.tensor.usm_ndarray._set_namespace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_set_namespace</span></code></a></p></td>
-<td><p>Sets array namespace to given module <cite>mod</cite>.</p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
@@ -319,8 +309,7 @@ change of respective index.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.to_device">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">to_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.to_device" title="Permalink to this definition"></a></dt>
-<dd><p>Transfer array to target device</p>
-</dd></dl>
+<dd></dd></dl>
 
 </section>
 <section id="private-methods">
@@ -328,8 +317,7 @@ change of respective index.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray._set_namespace">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">_set_namespace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray._set_namespace" title="Permalink to this definition"></a></dt>
-<dd><p>Sets array namespace to given module <cite>mod</cite>.</p>
-</dd></dl>
+<dd></dd></dl>
 
 </section>
 </section>
@@ -363,7 +351,7 @@ change of respective index.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+139.ga2b6a9ce
+      v: 0.12.0dev1+159.g8b17f1c2
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.memory.MemoryUSMHost &mdash; Data-parallel Control (dpctl) 0.12.0dev1+139.ga2b6a9ce documentation</title>
+  <title>dpctl.memory.MemoryUSMHost &mdash; Data-parallel Control (dpctl) 0.12.0dev1+159.g8b17f1c2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+139.ga2b6a9ce
+                0.12.0dev1+159.g8b17f1c2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -102,17 +102,8 @@
 <span id="memoryusmhost-api"></span><h1>dpctl.memory.MemoryUSMHost<a class="headerlink" href="#dpctl-memory-memoryusmhost" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.memory.</span></span><span class="sig-name descname"><span class="pre">MemoryUSMHost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alignment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost" title="Permalink to this definition"></a></dt>
-<dd><p>allocates nbytes of USM host memory.</p>
-<p>Non-positive alignments are not used (malloc_host is used instead).
-For the queue=None case the <code class="docutils literal notranslate"><span class="pre">dpctl.SyclQueue()</span></code> is used to allocate
-memory.</p>
-<p>MemoryUSMDevice(usm_obj) constructor create instance from <cite>usm_obj</cite>
-expected to implement <cite>__sycl_usm_array_interface__</cite> protocol and to expose
-a contiguous block of USM host allocation. Use <cite>copy=True</cite> to
-perform a copy if USM type of the allocation represented by the argument
-is other than ‘host’.</p>
-<p class="rubric">Attributes:</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.memory.</span></span><span class="sig-name descname"><span class="pre">MemoryUSMHost</span></span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost" title="Permalink to this definition"></a></dt>
+<dd><p class="rubric">Attributes:</p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -147,19 +138,19 @@ is other than ‘host’.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.copy_from_device" title="dpctl.memory.MemoryUSMHost.copy_from_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_from_device</span></code></a></p></td>
-<td><p>Copy SYCL memory underlying the argument object into the memory of the instance</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.copy_from_host" title="dpctl.memory.MemoryUSMHost.copy_from_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_from_host</span></code></a></p></td>
-<td><p>Copy content of Python buffer provided by <cite>obj</cite> to instance memory.</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.copy_to_host" title="dpctl.memory.MemoryUSMHost.copy_to_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_to_host</span></code></a></p></td>
-<td><p>Copy content of instance's memory into memory of <code class="docutils literal notranslate"><span class="pre">obj</span></code>, or allocate NumPy array of <code class="docutils literal notranslate"><span class="pre">obj</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.get_usm_type" title="dpctl.memory.MemoryUSMHost.get_usm_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_usm_type</span></code></a>([syclobj])</p></td>
-<td><p>Returns the type of USM allocation using Sycl context carried by <cite>syclobj</cite> keyword argument.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.get_usm_type" title="dpctl.memory.MemoryUSMHost.get_usm_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_usm_type</span></code></a></p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.tobytes" title="dpctl.memory.MemoryUSMHost.tobytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tobytes</span></code></a></p></td>
-<td><p>Constructs bytes object populated with copy of USM memory.</p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
@@ -232,37 +223,27 @@ allocated on.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.copy_from_device">
 <span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">copy_from_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.copy_from_device" title="Permalink to this definition"></a></dt>
-<dd><p>Copy SYCL memory underlying the argument object into
-the memory of the instance</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.copy_from_host">
 <span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">copy_from_host</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.copy_from_host" title="Permalink to this definition"></a></dt>
-<dd><p>Copy content of Python buffer provided by <cite>obj</cite> to instance memory.</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.copy_to_host">
 <span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">copy_to_host</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.copy_to_host" title="Permalink to this definition"></a></dt>
-<dd><p>Copy content of instance’s memory into memory of <code class="docutils literal notranslate"><span class="pre">obj</span></code>, or allocate
-NumPy array of <code class="docutils literal notranslate"><span class="pre">obj</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.get_usm_type">
-<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">get_usm_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syclobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.get_usm_type" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the type of USM allocation using Sycl context carried by
-<cite>syclobj</cite> keyword argument. Value of None is understood to query
-against <cite>self.sycl_context</cite> - the context used to create the
-allocation.</p>
-</dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">get_usm_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.get_usm_type" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.tobytes">
 <span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">tobytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.tobytes" title="Permalink to this definition"></a></dt>
-<dd><p>Constructs bytes object populated with copy of USM memory.</p>
-</dd></dl>
+<dd></dd></dl>
 
 </section>
 </section>
@@ -296,7 +277,7 @@ allocation.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+139.ga2b6a9ce
+      v: 0.12.0dev1+159.g8b17f1c2
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

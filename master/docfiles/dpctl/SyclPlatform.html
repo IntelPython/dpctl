@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclPlatform &mdash; Data-parallel Control (dpctl) 0.12.0dev1+139.ga2b6a9ce documentation</title>
+  <title>dpctl.SyclPlatform &mdash; Data-parallel Control (dpctl) 0.12.0dev1+159.g8b17f1c2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+139.ga2b6a9ce
+                0.12.0dev1+159.g8b17f1c2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -103,12 +103,8 @@
 <span id="syclplatform-api"></span><h1>dpctl.SyclPlatform<a class="headerlink" href="#dpctl-syclplatform" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.SyclPlatform">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclPlatform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclPlatform" title="Permalink to this definition"></a></dt>
-<dd><p>Python class representing <code class="docutils literal notranslate"><span class="pre">cl::sycl::platform</span></code> class.</p>
-<p>SyclPlatform() - create platform selected by sycl::default_selector
-SyclPlatform(filter_selector) - create platform selected by filter
-selector</p>
-<p class="rubric">Attributes:</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclPlatform</span></span><a class="headerlink" href="#dpctl.SyclPlatform" title="Permalink to this definition"></a></dt>
+<dd><p class="rubric">Attributes:</p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -137,7 +133,7 @@ selector</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclPlatform.print_platform_info" title="dpctl.SyclPlatform.print_platform_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_platform_info</span></code></a></p></td>
-<td><p>Print information about the SYCL platform.</p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
@@ -183,29 +179,7 @@ selector</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclPlatform.print_platform_info">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">print_platform_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclPlatform.print_platform_info" title="Permalink to this definition"></a></dt>
-<dd><p>Print information about the SYCL platform.</p>
-<p>The level of information printed out by the function can be controlled
-by the optional <code class="docutils literal notranslate"><span class="pre">vebosity</span></code> setting.</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><strong>Verbosity level 0</strong>: Prints out the list of platforms and their
-names.</p></li>
-<li><p><strong>Verbosity level 1</strong>: Prints out the name, version, vendor,
-backend, number of devices for each platform.</p></li>
-<li><p><strong>Verbosity level 2</strong>: At the highest level of verbosity
-everything in the previous levels along with the name, version,
-and filter string for each device is printed.</p></li>
-</ul>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>verbosity</strong> (<em>optional</em>) – Defaults to 0.
-The verbosity controls how much information is printed by the
-function. 0 is the lowest level set by default and 2 is the
-highest level to print the most verbose output.</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 </section>
 </section>
@@ -239,7 +213,7 @@ highest level to print the most verbose output.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+139.ga2b6a9ce
+      v: 0.12.0dev1+159.g8b17f1c2
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
