@@ -112,7 +112,7 @@ function(build_dpctl_ext _trgt _src _dest)
     target_include_directories(${_trgt} PRIVATE ${NumPy_INCLUDE_DIR} ${DPCTL_INCLUDE_DIR})
     add_dependencies(${_trgt} _build_time_create_dpctl_include)
     if (DPCTL_GENERATE_COVERAGE)
-        target_compile_definitions(${_trgt} PRIVATE CYTHON_TRACE=1 CYTHON_PROFILE=1)
+        target_compile_definitions(${_trgt} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
         target_compile_options(${_trgt} PRIVATE -fno-sycl-use-footer)
     endif()
     target_link_libraries(${_trgt} DPCTLSyclInterface)
@@ -128,11 +128,11 @@ function(build_dpctl_ext _trgt _src _dest)
          COMMAND ${CMAKE_COMMAND}
 	     -DSOURCE_FILE=${_generated_public_h}
 	     -DDEST=${CMAKE_CURRENT_SOURCE_DIR}
-	     -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_generated_headers.cmake
+	     -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_existing.cmake
          COMMAND ${CMAKE_COMMAND}
 	     -DSOURCE_FILE=${_generated_api_h}
 	     -DDEST=${CMAKE_CURRENT_SOURCE_DIR}
-	     -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_generated_headers.cmake
+	     -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_existing.cmake
 	 DEPENDS ${_trgt}
 	 VERBATIM
          COMMENT "Copying Cython-generated headers to destination"
