@@ -1,3 +1,34 @@
+//===--- _host_tasl_util.hpp - Implements async DECREF =//
+//
+//                      Data Parallel Control (dpctl)
+//
+// Copyright 2020-2021 Intel Corporation
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file implements a utility function to schedule host task to a sycl
+/// queue depending on given array of sycl events to decrement reference counts
+/// for the given array of Python objects.
+///
+/// N.B.: The host task attempts to acquire GIL, so queue wait, event wait and
+/// other synchronization mechanisms should be called after releasing the GIL to
+/// avoid deadlocks.
+///
+//===----------------------------------------------------------------------===//
+
 #include "Python.h"
 #include "syclinterface/dpctl_data_types.h"
 #include <CL/sycl.hpp>
