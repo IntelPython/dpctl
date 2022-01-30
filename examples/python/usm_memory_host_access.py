@@ -34,7 +34,7 @@ msv = memoryview(ms)
 # populate buffer from host one byte at a type
 for i in range(len(ms)):
     ir = i % 256
-    msv[i] = ir ** 2 % 256
+    msv[i] = ir**2 % 256
 
 mh = dpmem.MemoryUSMHost(64)
 mhv = memoryview(mh)

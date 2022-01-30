@@ -61,7 +61,7 @@ print(
     np.allclose(Xgpu, X_ref, atol=1e-5),
 )
 
-n_opts = 3 * 10 ** 6
+n_opts = 3 * 10**6
 
 # compute on CPU sycl device
 
