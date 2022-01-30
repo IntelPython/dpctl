@@ -1,6 +1,8 @@
 
 find_package(PythonExtensions REQUIRED)
 find_package(NumPy REQUIRED)
+
+set(CYTHON_FLAGS "-w ${CMAKE_SOURCE_DIR}")
 find_package(Cython REQUIRED)
 
 if(WIN32)
@@ -135,8 +137,21 @@ function(build_dpctl_ext _trgt _src _dest)
 	     -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_existing.cmake
 	 DEPENDS ${_trgt}
 	 VERBATIM
-         COMMENT "Copying Cython-generated headers to destination"
+         COMMENT "Copying Cython-generated headers to dpctl"
     )
+    if (DPCTL_GENERATE_COVERAGE)
+         set(_copy_cxx_trgt "${_trgt}_copy_cxx")
+         add_custom_target(
+             ${_copy_cxx_trgt} ALL
+             COMMAND ${CMAKE_COMMAND}
+	         -DSOURCE_FILE=${_generated_src}
+	         -DDEST=${CMAKE_CURRENT_SOURCE_DIR}
+	         -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_existing.cmake
+	     DEPENDS ${_trgt}
+	     VERBATIM
+             COMMENT "Copying Cython-generated source to dpctl"
+         )
+    endif()
     install(TARGETS ${_trgt} LIBRARY DESTINATION ${_dest})
 endfunction()
 
