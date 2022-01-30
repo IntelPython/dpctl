@@ -11,19 +11,15 @@ def run(
     compiler_root=None,
     cmake_executable=None,
 ):
-    IS_LIN = False
+    build_system = None
 
     if "linux" in sys.platform:
-        IS_LIN = True
+        build_system = "Unix Makefiles"
     elif sys.platform in ["win32", "cygwin"]:
-        pass
+        build_system = "Ninja"
     else:
         assert False, sys.platform + " not supported"
 
-    if not IS_LIN:
-        raise RuntimeError(
-            "This scripts only supports coverage collection on Linux"
-        )
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     cmake_args = [
         sys.executable,
@@ -37,7 +33,7 @@ def run(
     cmake_args += [
         "--",
         "-G",
-        "Unix Makefiles",
+        build_system,
         "-DCMAKE_BUILD_TYPE=Debug",
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
@@ -86,7 +82,7 @@ if __name__ == "__main__":
 
     if args.oneapi:
         args.c_compiler = "icx"
-        args.cxx_compiler = "icpx"
+        args.cxx_compiler = "icpx" if "linux" in sys.platform else "icx"
         args.compiler_root = None
     else:
         args_to_validate = [
