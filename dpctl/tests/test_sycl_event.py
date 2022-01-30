@@ -202,7 +202,7 @@ def test_sycl_timer():
         # device task
         m1.copy_from_device(m2)
         # host task
-        [x ** 2 for x in range(1024)]
+        [x**2 for x in range(1024)]
     host_dt, device_dt = timer.dt
     assert host_dt > device_dt
     q_no_profiling = dpctl.SyclQueue()
