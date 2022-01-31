@@ -110,17 +110,22 @@ def test___version__():
 
 
 def test_dev_utils():
-    import dpctl._dev as dd
+    import tempfile
 
-    with dd.verbose():
+    import dpctl._diagnostics as dd
+
+    ctx_mngr = dd.syclinterface_diagnostics
+
+    with ctx_mngr():
         dpctl.SyclDevice().parent_device
-    with dd.verbose(verbosity="error"):
+    with ctx_mngr(verbosity="error"):
         dpctl.SyclDevice().parent_device
     with pytest.raises(ValueError):
-        with dd.verbose(verbosity="blah"):
+        with ctx_mngr(verbosity="blah"):
             dpctl.SyclDevice().parent_device
-    with dd.verbose(log_dir="/tmp"):
-        dpctl.SyclDevice().parent_device
+    with tempfile.TemporaryDirectory() as temp_dir:
+        with ctx_mngr(log_dir=temp_dir):
+            dpctl.SyclDevice().parent_device
     with pytest.raises(ValueError):
-        with dd.verbose(log_dir="/not_a_dir"):
+        with ctx_mngr(log_dir="/not_a_dir"):
             dpctl.SyclDevice().parent_device

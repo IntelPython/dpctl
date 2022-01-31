@@ -46,21 +46,22 @@ __dpctl_give const char *DPCTLService_GetDPCPPVersion(void)
 void DPCTLService_InitLogger(const char *app_name, const char *log_dir)
 {
     google::InitGoogleLogging(app_name);
-    google::EnableLogCleaner(0);
     google::InstallFailureSignalHandler();
-    FLAGS_colorlogtostderr = true;
-    FLAGS_stderrthreshold = google::FATAL;
 
-    namespace fs = std::filesystem;
-    const fs::path path(log_dir);
-    std::error_code ec;
+    if (log_dir) {
+        namespace fs = std::filesystem;
+        const fs::path path(log_dir);
+        std::error_code ec;
 
-    if (fs::is_directory(path, ec)) {
-        FLAGS_log_dir = log_dir;
+        if (fs::is_directory(path, ec)) {
+            google::EnableLogCleaner(0);
+            FLAGS_log_dir = log_dir;
+        }
     }
     else {
-        std::cerr << "Directory not found. Log files will be created in the "
-                     "default logging directory.\n";
+        FLAGS_colorlogtostderr = true;
+        FLAGS_stderrthreshold = google::FATAL;
+        FLAGS_logtostderr = 1;
     }
 }
 

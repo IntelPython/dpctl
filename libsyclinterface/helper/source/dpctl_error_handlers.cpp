@@ -65,21 +65,30 @@ int requested_verbosity_level(void)
     return requested_level;
 }
 
-void output_message(std::string ss_str, [[maybe_unused]] error_level error_type)
+void output_message(std::string ss_str, error_level error_type)
 {
 #ifdef ENABLE_GLOG
     switch (error_type) {
     case error_level::error:
-        LOG(ERROR) << ss_str;
+        LOG(ERROR) << "[ERR] " << ss_str;
         break;
     case error_level::warning:
-        LOG(WARNING) << ss_str;
+        LOG(WARNING) << "[WARN] " << ss_str;
         break;
     default:
-        LOG(FATAL) << ss_str;
+        LOG(FATAL) << "[FATAL] " << ss_str;
     }
 #else
-    std::cerr << ss_str;
+    switch (error_type) {
+    case error_level::error:
+        std::cerr << "[ERR] " << ss_str;
+        break;
+    case error_level::warning:
+        std::cerr << "[WARN] " << ss_str;
+        break;
+    default:
+        std::cerr << "[FATAL] " << ss_str;
+    }
 #endif
 }
 

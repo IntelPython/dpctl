@@ -29,26 +29,27 @@ cdef extern from "syclinterface/dpctl_service.h":
    cdef void DPCTLService_ShutdownLogger()
 
 
-def init_logger(log_dir=None):
+def _init_logger(log_dir=None):
     """Initialize logger to use given directory to save logs.
 
     The call has no effect if `dpctl` was not built to use logger.
     """
     cdef bytes p = b""
     cdef const char *app_name = "dpctl"
-    if log_dir is None:
-        log_dir = os.getcwd()
-    if not os.path.exists(log_dir):
-        raise ValueError(f"Path {log_dir} does not exist")
-    if isinstance(log_dir, str):
-        p = bytes(log_dir, "utf-8")
-    else:
-        p = bytes(log_dir)
-    DPCTLService_InitLogger(app_name, <char *>p)
+    cdef char *ld_cstr = NULL
+    if log_dir:
+        if not os.path.exists(log_dir):
+            raise ValueError(f"Path {log_dir} does not exist")
+        if isinstance(log_dir, str):
+            p = bytes(log_dir, "utf-8")
+        else:
+            p = bytes(log_dir)
+        ld_cstr = <char *>p
+    DPCTLService_InitLogger(app_name, ld_cstr)
 
 
-def fini_logger():
-    """Finilize logger.
+def _shutdown_logger():
+    """Finalize logger.
 
     The call has no effect if `dpctl` was not built to use logger.
     """
@@ -56,22 +57,24 @@ def fini_logger():
 
 
 @contextlib.contextmanager
-def verbose(verbosity="warning", log_dir=None):
-    """Context manager that activate verbosity"""
+def syclinterface_diagnostics(verbosity="warning", log_dir=None):
+    """Context manager that activate verbosity of DPCTLSyclInterface
+    function calls.
+    """
     _allowed_verbosity = ["warning", "error"]
     if not verbosity in _allowed_verbosity:
         raise ValueError(
             f"Verbosity argument not understood. "
             f"Permitted values are {_allowed_verbosity}"
         )
-    init_logger(log_dir=log_dir)
-    _saved = os.environ.get("DPCTL_VERBOSITY", None)
+    _init_logger(log_dir=log_dir)
+    _saved_verbosity = os.environ.get("DPCTL_VERBOSITY", None)
     os.environ["DPCTL_VERBOSITY"] = verbosity
     try:
         yield
     finally:
-        fini_logger()
-        if _saved:
-            os.environ["DPCTL_VERBOSITY"] = _saved
+        _shutdown_logger()
+        if _saved_verbosity:
+            os.environ["DPCTL_VERBOSITY"] = _saved_verbosity
         else:
             del os.environ["DPCTL_VERBOSITY"]
