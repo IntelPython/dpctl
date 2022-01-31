@@ -107,3 +107,20 @@ def test___version__():
         r"0|[1-9][0-9]*))?(\+.*)?$"
     )
     assert re.match(reg_expr, dpctl_ver) is not None
+
+
+def test_dev_utils():
+    import dpctl._dev as dd
+
+    with dd.verbose():
+        dpctl.SyclDevice().parent_device
+    with dd.verbose(verbosity="error"):
+        dpctl.SyclDevice().parent_device
+    with pytest.raises(ValueError):
+        with dd.verbose(verbosity="blah"):
+            dpctl.SyclDevice().parent_device
+    with dd.verbose(log_dir="/tmp"):
+        dpctl.SyclDevice().parent_device
+    with pytest.raises(ValueError):
+        with dd.verbose(log_dir="/not_a_dir"):
+            dpctl.SyclDevice().parent_device

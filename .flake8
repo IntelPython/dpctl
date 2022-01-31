@@ -13,6 +13,7 @@ exclude =
     .git
 
 per-file-ignores =
+    dpctl/_dev.pyx: E999
     dpctl/_sycl_context.pyx: E999, E225, E227
     dpctl/_sycl_device.pyx: E999, E225
     dpctl/_sycl_device_factory.pyx: E999, E225
