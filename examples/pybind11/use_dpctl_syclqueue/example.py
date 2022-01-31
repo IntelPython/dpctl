@@ -36,7 +36,7 @@ print("Device's local memory size:  {} bytes".format(local_mem_size))
 print("")
 print("Computing modular reduction using SYCL on a NumPy array")
 
-X = np.random.randint(low=1, high=2 ** 16 - 1, size=10 ** 6, dtype=np.longlong)
+X = np.random.randint(low=1, high=2**16 - 1, size=10**6, dtype=np.longlong)
 modulus_p = 347
 
 Y = eg.offloaded_array_mod(

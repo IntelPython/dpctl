@@ -19,7 +19,7 @@ import timeit
 import numpy as np
 import syclbuffer_naive as sb
 
-X = np.full((10 ** 4, 4098), 1e-4, dtype="d")
+X = np.full((10**4, 4098), 1e-4, dtype="d")
 
 # warm-up
 print("=" * 10 + " Executing warm-up " + "=" * 10)
