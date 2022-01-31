@@ -5,7 +5,7 @@ import sys
 
 def run(
     use_oneapi=True,
-    build_type="Relese",
+    build_type="Release",
     c_compiler=None,
     cxx_compiler=None,
     level_zero=True,
