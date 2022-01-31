@@ -65,7 +65,7 @@ import ctypes
 from .enum_types import backend_type
 
 from cpython cimport pycapsule
-from cpython.ref cimport Py_INCREF, PyObject
+from cpython.ref cimport Py_DECREF, Py_INCREF, PyObject
 from libc.stdlib cimport free, malloc
 
 import collections.abc
@@ -835,7 +835,13 @@ cdef class SyclQueue(_SyclQueue):
             Py_INCREF(<object> arg_objects[i])
 
         # schedule decrement
-        async_dec_ref(self.get_queue_ref(), arg_objects, len(args), &Eref, 1)
+        if async_dec_ref(self.get_queue_ref(), arg_objects, len(args), &Eref, 1):
+            # async task submission failed, decrement ref counts and wait
+            for i in range(len(args)):
+                arg_objects[i] = <PyObject *>(args[i])
+                Py_DECREF(<object> arg_objects[i])
+            with nogil: DPCTLEvent_Wait(Eref)
+
         # free memory
         free(arg_objects)
 
