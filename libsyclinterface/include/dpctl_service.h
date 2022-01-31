@@ -43,8 +43,22 @@ DPCTL_C_EXTERN_C_BEGIN
 DPCTL_API
 __dpctl_give const char *DPCTLService_GetDPCPPVersion(void);
 
-DPCTL_C_EXTERN_C_END
-
+/*!
+ * @brief Initialize logger if compiled to use logger, no-op otherwise.
+ *
+ * @param app_name  C-string for application name reflected in the log.
+ * @paral log_dir   C-string for directory where log files are placed.
+ * @ingroup Service
+ */
+DPCTL_API
 void DPCTLService_InitLogger(const char *app_name, const char *log_dir);
 
+/*!
+ * @brief Finilize logger if enabled, no-op otherwise.
+ *
+ * @ingroup Service
+ */
+DPCTL_API
 void DPCTLService_ShutdownLogger(void);
+
+DPCTL_C_EXTERN_C_END

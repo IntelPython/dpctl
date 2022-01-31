@@ -30,8 +30,8 @@
 #include <algorithm>
 #include <cstring>
 #include <iostream>
-#include <sys/stat.h>
 #ifdef ENABLE_GLOG
+#include <filesystem>
 #include <glog/logging.h>
 #endif
 
@@ -50,8 +50,12 @@ void DPCTLService_InitLogger(const char *app_name, const char *log_dir)
     google::InstallFailureSignalHandler();
     FLAGS_colorlogtostderr = true;
     FLAGS_stderrthreshold = google::FATAL;
-    struct stat buffer;
-    if (stat(log_dir, &buffer) != 0) {
+
+    namespace fs = std::filesystem;
+    const fs::path path(log_dir);
+    std::error_code ec;
+
+    if (fs::is_directory(path, ec)) {
         FLAGS_log_dir = log_dir;
     }
     else {
