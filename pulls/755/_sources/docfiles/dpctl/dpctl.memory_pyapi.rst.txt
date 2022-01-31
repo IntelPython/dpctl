@@ -1,0 +1,50 @@
+.. _dpctl.memory_pyapi:
+
+############
+dpctl.memory
+############
+
+.. currentmodule:: dpctl.memory
+
+.. automodule:: dpctl.memory
+
+
+.. _dpctl.memory_classes:
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   MemoryUSMDevice
+   MemoryUSMHost
+   MemoryUSMShared
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`MemoryUSMDevice`
+      - [FIXME]: <class 'type'> does not have a docstring
+    * - :class:`MemoryUSMHost`
+      - [FIXME]: <class 'type'> does not have a docstring
+    * - :class:`MemoryUSMShared`
+      - [FIXME]: <class 'type'> does not have a docstring
+
+
+.. _dpctl.memory_functions:
+
+Functions
+---------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`as_usm_memory()`
+      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+
+
+
+
+
+
