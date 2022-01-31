@@ -5,6 +5,7 @@ import sys
 
 def run(
     use_oneapi=True,
+    build_type="Relese",
     c_compiler=None,
     cxx_compiler=None,
     level_zero=True,
@@ -34,7 +35,7 @@ def run(
         "--",
         "-G",
         build_system,
-        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DCMAKE_BUILD_TYPE=" + build_type,
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
         "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=" + ("ON" if level_zero else "OFF"),
@@ -65,6 +66,13 @@ if __name__ == "__main__":
         help="Is one-API installation",
         dest="oneapi",
         action="store_true",
+    )
+    driver.add_argument(
+        "--debug",
+        default="Release",
+        const="Debug",
+        action="store_const",
+        help="Set the compilation mode to debugging",
     )
     driver.add_argument(
         "--compiler-root", type=str, help="Path to compiler home directory"
@@ -103,6 +111,7 @@ if __name__ == "__main__":
 
     run(
         use_oneapi=args.oneapi,
+        build_type=args.debug,
         c_compiler=args.c_compiler,
         cxx_compiler=args.cxx_compiler,
         level_zero=args.level_zero,
