@@ -66,15 +66,20 @@ def contract_iter2(shape, strides1, strides2):
 
 
 def _has_memory_overlap(x1, x2):
-    m1 = dpm.as_usm_memory(x1)
-    m2 = dpm.as_usm_memory(x2)
-    if m1.sycl_device == m2.sycl_device:
-        p1_beg = m1._pointer
-        p1_end = p1_beg + m1.nbytes
-        p2_beg = m2._pointer
-        p2_end = p2_beg + m2.nbytes
-        return p1_beg > p2_end or p2_beg < p1_end
+    if x1.size and x2.size:
+        m1 = dpm.as_usm_memory(x1)
+        m2 = dpm.as_usm_memory(x2)
+        # can only overlap if bound to the same context
+        if m1.sycl_context == m2.sycl_context:
+            p1_beg = m1._pointer
+            p1_end = p1_beg + m1.nbytes
+            p2_beg = m2._pointer
+            p2_end = p2_beg + m2.nbytes
+            return p1_beg > p2_end or p2_beg < p1_end
+        else:
+            return False
     else:
+        # zero element array do not overlap anything
         return False
 
 
@@ -192,6 +197,9 @@ def copy_same_dtype(dst, src):
 
     if dst.dtype != src.dtype:
         raise ValueError
+
+    if dst.size == 0:
+        return
 
     # check that memory regions do not overlap
     if _has_memory_overlap(dst, src):
