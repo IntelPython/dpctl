@@ -816,6 +816,32 @@ def test_reshape():
     Y = dpt.reshape(X, X.shape)
     assert Y.flags == X.flags
 
+    A = dpt.usm_ndarray((0,), "i4")
+    A1 = dpt.reshape(A, (0,))
+    assert A1.shape == (0,)
+    A2 = dpt.reshape(
+        A,
+        (
+            2,
+            0,
+        ),
+    )
+    assert A2.shape == (
+        2,
+        0,
+    )
+    A3 = dpt.reshape(A, (0, 2))
+    assert A3.shape == (
+        0,
+        2,
+    )
+    A4 = dpt.reshape(A, (1, 0, 2))
+    assert A4.shape == (
+        1,
+        0,
+        2,
+    )
+
 
 def test_transpose():
     n, m = 2, 3
