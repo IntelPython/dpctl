@@ -5,6 +5,7 @@ import sys
 
 def run(
     use_oneapi=True,
+    build_type="Release",
     c_compiler=None,
     cxx_compiler=None,
     level_zero=True,
@@ -12,19 +13,15 @@ def run(
     cmake_executable=None,
     use_glog=False,
 ):
-    IS_LIN = False
+    build_system = None
 
     if "linux" in sys.platform:
-        IS_LIN = True
+        build_system = "Unix Makefiles"
     elif sys.platform in ["win32", "cygwin"]:
-        pass
+        build_system = "Ninja"
     else:
         assert False, sys.platform + " not supported"
 
-    if not IS_LIN:
-        raise RuntimeError(
-            "This scripts only supports coverage collection on Linux"
-        )
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     cmake_args = [
         sys.executable,
@@ -38,8 +35,8 @@ def run(
     cmake_args += [
         "--",
         "-G",
-        "Unix Makefiles",
-        "-DCMAKE_BUILD_TYPE=Debug",
+        build_system,
+        "-DCMAKE_BUILD_TYPE=" + build_type,
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
         "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=" + ("ON" if level_zero else "OFF"),
@@ -73,6 +70,13 @@ if __name__ == "__main__":
         action="store_true",
     )
     driver.add_argument(
+        "--debug",
+        default="Release",
+        const="Debug",
+        action="store_const",
+        help="Set the compilation mode to debugging",
+    )
+    driver.add_argument(
         "--compiler-root", type=str, help="Path to compiler home directory"
     )
     driver.add_argument(
@@ -94,7 +98,7 @@ if __name__ == "__main__":
 
     if args.oneapi:
         args.c_compiler = "icx"
-        args.cxx_compiler = "icpx"
+        args.cxx_compiler = "icpx" if "linux" in sys.platform else "icx"
         args.compiler_root = None
     else:
         args_to_validate = [
@@ -115,6 +119,7 @@ if __name__ == "__main__":
 
     run(
         use_oneapi=args.oneapi,
+        build_type=args.debug,
         c_compiler=args.c_compiler,
         cxx_compiler=args.cxx_compiler,
         level_zero=args.level_zero,
