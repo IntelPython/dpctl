@@ -39,7 +39,7 @@ void DPCTL_AsyncErrorHandler::operator()(
             std::rethrow_exception(e);
         } catch (sycl::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
-            auto err_code = e.get_cl_code();
+            auto err_code = e.code();
             handler_(static_cast<int>(err_code));
         }
     }

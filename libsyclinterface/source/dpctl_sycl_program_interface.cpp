@@ -223,7 +223,7 @@ DPCTLProgram_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
     case backend::opencl:
         Pref = createOpenCLInterOpProgram(*SyclCtx, IL, length, CompileOpts);
         break;
-    case backend::level_zero:
+    case backend::ext_oneapi_level_zero:
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
         Pref = createLevelZeroInterOpProgram(*SyclCtx, IL, length, CompileOpts);
 #endif
@@ -274,7 +274,7 @@ DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
             return nullptr;
         }
         break;
-    case backend::level_zero:
+    case backend::ext_oneapi_level_zero:
         error_handler("CreateFromSource is not supported in Level Zero.",
                       __FILE__, __func__, __LINE__);
         delete SyclProgram;

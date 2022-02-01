@@ -221,8 +221,8 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
     case aspect::usm_restricted_shared_allocations:
         ss << "usm_restricted_shared_allocations";
         break;
-    case aspect::usm_system_allocator:
-        ss << "usm_system_allocator";
+    case aspect::usm_system_allocations:
+        ss << "usm_system_allocations";
         break;
     default:
         throw std::runtime_error("Unsupported aspect type");
@@ -287,8 +287,8 @@ aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
     else if (aspectTyStr == "usm_restricted_shared_allocations") {
         aspectTy = aspect::usm_restricted_shared_allocations;
     }
-    else if (aspectTyStr == "usm_system_allocator") {
-        aspectTy = aspect::usm_system_allocator;
+    else if (aspectTyStr == "usm_system_allocations") {
+        aspectTy = aspect::usm_system_allocations;
     }
     else {
         // \todo handle the error
@@ -334,8 +334,8 @@ aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy)
         return aspect::usm_shared_allocations;
     case DPCTLSyclAspectType::usm_restricted_shared_allocations:
         return aspect::usm_restricted_shared_allocations;
-    case DPCTLSyclAspectType::usm_system_allocator:
-        return aspect::usm_system_allocator;
+    case DPCTLSyclAspectType::usm_system_allocations:
+        return aspect::usm_system_allocations;
     default:
         throw std::runtime_error("Unsupported aspect type");
     }
@@ -378,8 +378,8 @@ DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(aspect Aspect)
         return DPCTLSyclAspectType::usm_shared_allocations;
     case aspect::usm_restricted_shared_allocations:
         return DPCTLSyclAspectType::usm_restricted_shared_allocations;
-    case aspect::usm_system_allocator:
-        return DPCTLSyclAspectType::usm_system_allocator;
+    case aspect::usm_system_allocations:
+        return DPCTLSyclAspectType::usm_system_allocations;
     default:
         throw std::runtime_error("Unsupported aspect type");
     }

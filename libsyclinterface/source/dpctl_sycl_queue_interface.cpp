@@ -530,7 +530,7 @@ DPCTLSyclEventRef DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
     if (Q) {
         sycl::event ev;
         try {
-            ev = Q->mem_advise(Ptr, Count, static_cast<pi_mem_advice>(Advice));
+            ev = Q->mem_advise(Ptr, Count, Advice);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
@@ -592,7 +592,7 @@ __dpctl_give DPCTLSyclEventRef DPCTLQueue_SubmitBarrierForEvents(
                     for (auto i = 0ul; i < NDepEvents; ++i)
                         cgh.depends_on(*unwrap(DepEvents[i]));
 
-                cgh.barrier();
+                cgh.ext_oneapi_barrier();
             });
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
