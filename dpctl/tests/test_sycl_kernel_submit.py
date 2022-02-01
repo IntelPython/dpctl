@@ -25,6 +25,7 @@ import pytest
 import dpctl
 import dpctl.memory as dpctl_mem
 import dpctl.program as dpctl_prog
+import dpctl.tensor as dpt
 
 
 @pytest.mark.parametrize(
@@ -107,4 +108,99 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
             ref_c = a * np.array(d, dtype=dtype) + b
         host_dt, device_dt = timer.dt
         assert type(host_dt) is float and type(device_dt) is float
-        assert np.allclose(c, ref_c), "Faled for {}, {}".formatg(r, lr)
+        assert np.allclose(c, ref_c), "Failed for {}, {}".formatg(r, lr)
+
+
+def test_async_submit():
+    try:
+        q = dpctl.SyclQueue("opencl")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL queue could not be created")
+    oclSrc = (
+        "kernel void kern1(global unsigned int *res, unsigned int mod) {"
+        "   size_t index = get_global_id(0);"
+        "   int ri = (index % mod);"
+        "   res[index] = (ri * ri) % mod;"
+        "}"
+        " "
+        "kernel void kern2(global unsigned int *res, unsigned int mod) {"
+        "   size_t index = get_global_id(0);"
+        "   int ri = (index % mod);"
+        "   int ri2 = (ri * ri) % mod;"
+        "   res[index] = (ri2 * ri) % mod;"
+        "}"
+        " "
+        "kernel void kern3("
+        "   global unsigned int *res, global unsigned int *arg1, "
+        "   global unsigned int *arg2)"
+        "{"
+        "  size_t index = get_global_id(0);"
+        "  res[index] = "
+        "      (arg1[index] < arg2[index]) ? arg1[index] : arg2[index];"
+        "}"
+    )
+    prog = dpctl_prog.create_program_from_source(q, oclSrc)
+    kern1Kernel = prog.get_sycl_kernel("kern1")
+    kern2Kernel = prog.get_sycl_kernel("kern2")
+    kern3Kernel = prog.get_sycl_kernel("kern3")
+
+    assert isinstance(kern1Kernel, dpctl_prog.SyclKernel)
+    assert isinstance(kern2Kernel, dpctl_prog.SyclKernel)
+    assert isinstance(kern2Kernel, dpctl_prog.SyclKernel)
+
+    n = 1024 * 1024
+    X = dpt.empty((3, n), dtype="u4", usm_type="device", sycl_queue=q)
+    first_row = dpctl_mem.as_usm_memory(X[0])
+    second_row = dpctl_mem.as_usm_memory(X[1])
+    third_row = dpctl_mem.as_usm_memory(X[2])
+
+    e1 = q.submit(
+        kern1Kernel,
+        [
+            first_row,
+            ctypes.c_uint(17),
+        ],
+        [
+            n,
+        ],
+    )
+    e2 = q.submit(
+        kern2Kernel,
+        [
+            second_row,
+            ctypes.c_uint(27),
+        ],
+        [
+            n,
+        ],
+    )
+    e3 = q.submit(
+        kern3Kernel,
+        [third_row, first_row, second_row],
+        [
+            n,
+        ],
+        None,
+        [e1, e2],
+    )
+    status_complete = dpctl.event_status_type.complete
+    assert not all(
+        [
+            e == status_complete
+            for e in (
+                e1.execution_status,
+                e2.execution_status,
+                e3.execution_status,
+            )
+        ]
+    )
+
+    e3.wait()
+    Xnp = dpt.asnumpy(X)
+    Xref = np.empty((3, n), dtype="u4")
+    for i in range(n):
+        Xref[0, i] = (i * i) % 17
+        Xref[1, i] = (i * i * i) % 27
+        Xref[2, i] = min(Xref[0, i], Xref[1, i])
+
+    assert np.array_equal(Xnp, Xref)

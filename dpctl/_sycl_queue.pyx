@@ -65,10 +65,16 @@ import ctypes
 from .enum_types import backend_type
 
 from cpython cimport pycapsule
+from cpython.ref cimport Py_DECREF, Py_INCREF, PyObject
 from libc.stdlib cimport free, malloc
 
 import collections.abc
 import logging
+
+
+cdef extern from "_host_task_util.hpp":
+    int async_dec_ref(DPCTLSyclQueueRef, PyObject **, size_t, DPCTLSyclEventRef *, size_t) nogil
+
 
 __all__ = [
     "SyclQueue",
@@ -714,12 +720,14 @@ cdef class SyclQueue(_SyclQueue):
         cdef _arg_data_type *kargty = NULL
         cdef DPCTLSyclEventRef *depEvents = NULL
         cdef DPCTLSyclEventRef Eref = NULL
-        cdef int ret
+        cdef int ret = 0
         cdef size_t gRange[3]
         cdef size_t lRange[3]
         cdef size_t nGS = len(gS)
         cdef size_t nLS = len(lS) if lS is not None else 0
         cdef size_t nDE = len(dEvents) if dEvents is not None else 0
+        cdef PyObject **arg_objects = NULL
+        cdef ssize_t i = 0
 
         # Allocate the arrays to be sent to DPCTLQueue_Submit
         kargs = <void**>malloc(len(args) * sizeof(void*))
@@ -820,8 +828,24 @@ cdef class SyclQueue(_SyclQueue):
             raise SyclKernelSubmitError(
                 "Kernel submission to Sycl queue failed."
             )
+        # increment reference counts to each argument
+        arg_objects = <PyObject **>malloc(len(args) * sizeof(PyObject *))
+        for i in range(len(args)):
+            arg_objects[i] = <PyObject *>(args[i])
+            Py_INCREF(<object> arg_objects[i])
 
-        return SyclEvent._create(Eref, args)
+        # schedule decrement
+        if async_dec_ref(self.get_queue_ref(), arg_objects, len(args), &Eref, 1):
+            # async task submission failed, decrement ref counts and wait
+            for i in range(len(args)):
+                arg_objects[i] = <PyObject *>(args[i])
+                Py_DECREF(<object> arg_objects[i])
+            with nogil: DPCTLEvent_Wait(Eref)
+
+        # free memory
+        free(arg_objects)
+
+        return SyclEvent._create(Eref, [])
 
     cpdef void wait(self):
         with nogil: DPCTLQueue_Wait(self._queue_ref)
