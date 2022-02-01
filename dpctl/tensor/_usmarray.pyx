@@ -428,6 +428,7 @@ cdef class usm_ndarray:
         cdef int contig_flag = 0
         cdef Py_ssize_t *shape_ptr = NULL
         cdef Py_ssize_t *strides_ptr = NULL
+        cdef Py_ssize_t size = -1
         import operator
 
         from ._reshape import reshaped_strides
@@ -439,15 +440,19 @@ cdef class usm_ndarray:
             raise TypeError(
                 "Target shape must be a finite iterable of integers"
             )
-        if not np.prod(new_shape) == shape_to_elem_count(self.nd_, self.shape_):
+        size = shape_to_elem_count(self.nd_, self.shape_)
+        if not np.prod(new_shape) == size:
             raise TypeError(
                 f"Can not reshape array of size {self.size} into {new_shape}"
             )
-        new_strides = reshaped_strides(
-            self.shape,
-            self.strides,
-            new_shape
-        )
+        if size > 0:
+            new_strides = reshaped_strides(
+               self.shape,
+               self.strides,
+               new_shape
+            )
+        else:
+            new_strides = (1,) * len(new_shape)
         if new_strides is None:
             raise AttributeError(
                 "Incompatible shape for in-place modification. "

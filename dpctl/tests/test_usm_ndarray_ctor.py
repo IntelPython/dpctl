@@ -713,6 +713,21 @@ def test_shape_setter():
     X = dpt.usm_ndarray((4, 4), dtype="d")[::2, ::2]
     with pytest.raises(AttributeError):
         X.shape = (4,)
+    X = dpt.usm_ndarray((0,), dtype="i4")
+    X.shape = (0,)
+    X.shape = (
+        2,
+        0,
+    )
+    X.shape = (
+        0,
+        2,
+    )
+    X.shape = (
+        1,
+        0,
+        1,
+    )
 
 
 def test_len():
