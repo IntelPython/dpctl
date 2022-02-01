@@ -600,6 +600,8 @@ def test_setitem_same_dtype(dtype, src_usm_type, dst_usm_type):
     R2 = np.broadcast_to(Xnp[0], R1.shape)
     assert R1.shape == R2.shape
     assert np.allclose(R1, R2)
+    Zusm_empty = Zusm_1d[0:0]
+    Zusm_empty[Ellipsis] = Zusm_3d[0, 0, 0:0]
 
 
 @pytest.mark.parametrize(
