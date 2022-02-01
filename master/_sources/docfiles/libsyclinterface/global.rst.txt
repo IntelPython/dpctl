@@ -56,6 +56,15 @@ Overview
 	DPCTL_API const __dpctl_give char*
 	:ref:`DPCTLService_GetDPCPPVersion<doxid-d8/d1a/group___service_1ga644b14f0bee03243f0ce30679e3c8d41>`(void);
 
+	DPCTL_API void
+	:ref:`DPCTLService_InitLogger<doxid-d8/d1a/group___service_1gabbfc206297f96578e9cdef4eea7c1505>`(
+		const char* app_name,
+		const char* log_dir
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLService_ShutdownLogger<doxid-d8/d1a/group___service_1ga9699c638b54314fc1398af7d48df0353>`(void);
+
 	DPCTL_API bool
 	:ref:`DPCTLContext_AreEq<doxid-d6/dad/group___context_interface_1gaa6938cd391c1cea91998fae97ba05141>`(
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef1,
