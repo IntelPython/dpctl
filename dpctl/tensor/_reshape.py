@@ -104,7 +104,10 @@ def reshape(X, newshape, order="C"):
         newshape = [v if d == -1 else d for d in newshape]
     if X.size != np.prod(newshape):
         raise ValueError("Can not reshape into {}".format(newshape))
-    newsts = reshaped_strides(X.shape, X.strides, newshape, order=order)
+    if X.size:
+        newsts = reshaped_strides(X.shape, X.strides, newshape, order=order)
+    else:
+        newsts = (1,) * len(newshape)
     if newsts is None:
         # must perform a copy
         flat_res = dpt.usm_ndarray(

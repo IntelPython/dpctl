@@ -713,6 +713,21 @@ def test_shape_setter():
     X = dpt.usm_ndarray((4, 4), dtype="d")[::2, ::2]
     with pytest.raises(AttributeError):
         X.shape = (4,)
+    X = dpt.usm_ndarray((0,), dtype="i4")
+    X.shape = (0,)
+    X.shape = (
+        2,
+        0,
+    )
+    X.shape = (
+        0,
+        2,
+    )
+    X.shape = (
+        1,
+        0,
+        1,
+    )
 
 
 def test_len():
@@ -815,6 +830,32 @@ def test_reshape():
     X = dpt.usm_ndarray((1,))
     Y = dpt.reshape(X, X.shape)
     assert Y.flags == X.flags
+
+    A = dpt.usm_ndarray((0,), "i4")
+    A1 = dpt.reshape(A, (0,))
+    assert A1.shape == (0,)
+    A2 = dpt.reshape(
+        A,
+        (
+            2,
+            0,
+        ),
+    )
+    assert A2.shape == (
+        2,
+        0,
+    )
+    A3 = dpt.reshape(A, (0, 2))
+    assert A3.shape == (
+        0,
+        2,
+    )
+    A4 = dpt.reshape(A, (1, 0, 2))
+    assert A4.shape == (
+        1,
+        0,
+        2,
+    )
 
 
 def test_transpose():
