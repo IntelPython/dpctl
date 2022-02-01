@@ -146,7 +146,7 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
                               size_t length,
                               const char *CompileOpts)
 {
-    auto ZeCtx = get_native<backend::level_zero>(SyclCtx);
+    auto ZeCtx = get_native<backend::ext_oneapi_level_zero>(SyclCtx);
     auto SyclDevices = SyclCtx.get_devices();
     if (SyclDevices.size() > 1) {
         error_handler("Level zero program can be created for only one device.",
@@ -168,7 +168,7 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
     ZeModuleDesc.pBuildFlags = CompileOpts;
     ZeModuleDesc.pConstants = &ZeSpecConstants;
 
-    auto ZeDevice = get_native<backend::level_zero>(SyclDevices[0]);
+    auto ZeDevice = get_native<backend::ext_oneapi_level_zero>(SyclDevices[0]);
     ze_module_handle_t ZeModule;
 
     auto stZeModuleCreateF = getZeModuleCreateFn();
@@ -189,8 +189,9 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
 
     // Create the Sycl program from the ZeModule
     try {
-        auto ZeProgram = new program(sycl::level_zero::make_program(
-            SyclCtx, reinterpret_cast<uintptr_t>(ZeModule)));
+        auto ZeProgram =
+            new program(sycl::ext::oneapi::level_zero::make_program(
+                SyclCtx, reinterpret_cast<uintptr_t>(ZeModule)));
         return wrap(ZeProgram);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);

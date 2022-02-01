@@ -93,7 +93,7 @@ backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy)
     case DPCTLSyclBackendType::DPCTL_HOST:
         return backend::host;
     case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO:
-        return backend::level_zero;
+        return backend::ext_oneapi_level_zero;
     case DPCTLSyclBackendType::DPCTL_OPENCL:
         return backend::opencl;
     case DPCTLSyclBackendType::DPCTL_ALL_BACKENDS:
@@ -110,7 +110,7 @@ DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(backend B)
         return DPCTLSyclBackendType::DPCTL_CUDA;
     case backend::host:
         return DPCTLSyclBackendType::DPCTL_HOST;
-    case backend::level_zero:
+    case backend::ext_oneapi_level_zero:
         return DPCTLSyclBackendType::DPCTL_LEVEL_ZERO;
     case backend::opencl:
         return DPCTLSyclBackendType::DPCTL_OPENCL;
