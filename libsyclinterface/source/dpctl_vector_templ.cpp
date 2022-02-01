@@ -23,9 +23,9 @@
 /// the wrapper functions for vector operations.
 ///
 //===----------------------------------------------------------------------===//
-#include "../helper/include/dpctl_error_handlers.h"
-#include "../helper/include/dpctl_vector_macros.h"
 #include "Support/MemOwnershipAttrs.h"
+#include "dpctl_error_handlers.h"
+#include "dpctl_vector_macros.h"
 #include <type_traits>
 #include <vector>
 

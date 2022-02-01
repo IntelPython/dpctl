@@ -21,7 +21,7 @@
 /// \file
 /// Helper function to convert a C++ string to a C string.
 //===----------------------------------------------------------------------===//
-#include "../helper/include/dpctl_error_handlers.h"
+#include "dpctl_error_handlers.h"
 #include <cstring>
 #include <iostream>
 #include <string>

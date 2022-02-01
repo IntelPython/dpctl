@@ -24,8 +24,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_selector_interface.h"
-#include "../helper/include/dpctl_error_handlers.h"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_error_handlers.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 
 using namespace cl::sycl;

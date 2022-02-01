@@ -30,9 +30,9 @@
 #endif
 
 #include "dpctl_sycl_program_interface.h"
-#include "../helper/include/dpctl_error_handlers.h"
 #include "Config/dpctl_config.h"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_error_handlers.h"
 #include <CL/cl.h>     /* OpenCL headers     */
 #include <CL/sycl.hpp> /* Sycl headers       */
 #include <CL/sycl/backend/opencl.hpp>

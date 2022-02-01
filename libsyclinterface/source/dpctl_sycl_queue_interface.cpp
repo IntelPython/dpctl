@@ -25,8 +25,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_queue_interface.h"
-#include "../helper/include/dpctl_error_handlers.h"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_error_handlers.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_manager.h"
