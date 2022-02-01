@@ -10,6 +10,7 @@ def run(
     level_zero=True,
     compiler_root=None,
     cmake_executable=None,
+    use_glog=False,
 ):
     IS_LIN = False
 
@@ -43,6 +44,7 @@ def run(
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
         "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=" + ("ON" if level_zero else "OFF"),
         "-DDPCTL_DPCPP_FROM_ONEAPI:BOOL=" + ("ON" if use_oneapi else "OFF"),
+        "-DDPCTL_ENABLE_GLOG:BOOL=" + ("ON" if use_glog else "OFF"),
     ]
     if compiler_root:
         cmake_args += [
@@ -82,6 +84,12 @@ if __name__ == "__main__":
         dest="level_zero",
         action="store_false",
     )
+    driver.add_argument(
+        "--glog",
+        help="DPCTLSyclInterface uses Google logger",
+        dest="glog",
+        action="store_true",
+    )
     args = parser.parse_args()
 
     if args.oneapi:
@@ -112,4 +120,5 @@ if __name__ == "__main__":
         level_zero=args.level_zero,
         compiler_root=args.compiler_root,
         cmake_executable=args.cmake_executable,
+        use_glog=args.glog,
     )

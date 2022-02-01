@@ -38,6 +38,11 @@ option(DPCTL_BUILD_CAPI_TESTS
     "Build dpctl C API google tests"
     OFF
 )
+# Option to turn on logging support for dpctl C API
+option(DPCTL_ENABLE_GLOG
+    "Enable the Google logging module"
+    OFF
+)
 
 # Minimum version requirement only when oneAPI dpcpp is used.
 if(DPCTL_DPCPP_FROM_ONEAPI)
@@ -166,11 +171,24 @@ target_include_directories(DPCTLSyclInterface
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/include/
     ${IntelSycl_SYCL_INCLUDE_DIR}
 )
-
 target_link_libraries(DPCTLSyclInterface
-    PRIVATE ${IntelSycl_SYCL_LIBRARY}
-    PRIVATE ${IntelSycl_OPENCL_LIBRARY}
+  PRIVATE ${IntelSycl_SYCL_LIBRARY}
+  PRIVATE ${IntelSycl_OPENCL_LIBRARY}
 )
+
+if(DPCTL_ENABLE_GLOG)
+    find_package(glog REQUIRED)
+
+    target_include_directories(DPCTLSyclInterface
+        PRIVATE
+        glog::glog
+    )
+    target_compile_definitions(DPCTLSyclInterface PRIVATE ENABLE_GLOG)
+    target_link_libraries(DPCTLSyclInterface
+        PRIVATE glog::glog
+    )
+endif()
+
 
 include(GetProjectVersion)
 # the get_version function is defined in the GetProjectVersion module and

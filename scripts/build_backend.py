@@ -19,7 +19,7 @@
 
 
 def build_backend(
-    l0_support=False, code_coverage=False, sycl_compiler_prefix=None
+    l0_support=False, code_coverage=False, glog=False, sycl_compiler_prefix=None
 ):
     import glob
     import os
@@ -99,6 +99,8 @@ def build_backend(
                 "-DCMAKE_CXX_COMPILER:PATH="
                 + os.path.join(DPCPP_ROOT, "bin", "clang++"),
             ]
+        if glog:
+            cmake_compiler_args.append("-DDPCTL_ENABLE_GLOG=ON")
         if code_coverage:
             cmake_args = (
                 [
@@ -177,6 +179,8 @@ def build_backend(
                 "-DCMAKE_CXX_COMPILER:PATH="
                 + os.path.join(DPCPP_ROOT, "bin", "clang++.exe"),
             ]
+        if glog:
+            cmake_compiler_args.append("-DDPCTL_ENABLE_GLOG=ON")
         cmake_args = (
             [
                 "cmake",

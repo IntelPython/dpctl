@@ -161,13 +161,12 @@ these steps:
 3. Build dpctl with code coverage support.
 
     ```bash
-    python setup.py develop --coverage=True
-    pytest -q -ra --disable-warnings --cov dpctl --cov-report term-missing --pyargs dpctl -vv
+    python scripts/gen_coverage.py --oneapi
     coverage html
     ```
 
     Note that code coverage builds the C sources with debug symbols. For this
-    reason, the coverage flag is only available with the `develop` mode of
+    reason, the coverage script builds the package in `develop` mode of
     `setup.py`.
 
     The coverage results for the C and Python sources will be printed to the
@@ -191,3 +190,52 @@ these steps:
 >    ```
 >    The error is related to the `tcl` package. You should uninstall the `tcl`
 > package to resolve the error.
+
+## Error Reporting and Logging
+
+The SyclInterface library responds to `DPCTL_VERBOSITY` environment variable that controls the severity level of errors printed to console.
+One can specify one of the following severity levels (in increasing order of severity): `warning` and `error`.
+
+```bash
+export DPCTL_VERBOSITY=warning
+```
+
+Messages of a given severity are shown not only in the console for that severity, but also for the higher severity. For example, the severity level `warning` will output severity errors for `error` and `warning` to the console.
+
+### Optional use of the Google logging library (glog)
+
+Dpctl's error handler for libsyclinterface can be optionally configured to use [glog](https://github.com/google/glog). To use glog, follow the following steps:
+
+1. Install glog package of the latest version (0.5.0)
+
+```bash
+conda install glog
+```
+2. Build dpctl with glog support
+
+```bash
+python scripts/build_locally.py --oneapi --glog
+```
+
+3. Use `dpctl._diagnostics.syclinterface_diagnostics(verbosity="warning", log_dir=None)` context manager to switch library diagnostics on for a block of Python code.
+Use `DPCTLService_InitLogger` and `DPCTLService_ShutdownLogger` library C functions during library development to initialize the Google's logging library and de-initialize accordingly
+
+```python
+from dpctl._diagnostics import syclinterface_diagnostics
+import dpctl
+
+with syclinterface_diagnostics():
+    code
+```
+
+```c
+DPCTLService_InitLogger(const char *app_name, const char *log_dir);
+DPCTLService_ShutdownLogger();
+```
+
+ - `*app_name` - name of the executable file (prefix for logs of various levels).
+ - `*log_dir` - directory path for writing log files. Specifying `NULL` results in logging to ``std::cerr``.
+
+> **_NOTE:_**
+>
+> If `InitGoogleLogging` is not called before first use of glog, the library will self-initialize to `logtostderr` mode and log files will not be generated.
