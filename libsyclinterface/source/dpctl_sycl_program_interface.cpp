@@ -39,11 +39,13 @@
 #include <sstream>
 
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
-#include "../helper/include/dpctl_dynamic_lib_helper.h"
-#include <zet_api.h> /* Level Zero headers */
+#include "dpctl_dynamic_lib_helper.h"
 // Note: include ze_api.h before level_zero.hpp. Make sure clang-format does
 // not reorder the includes.
-#include <CL/sycl/backend/level_zero.hpp>
+// clang-format off
+#include "ze_api.h" /* Level Zero headers */
+#include "sycl/ext/oneapi/backend/level_zero.hpp"
+// clang-format on
 #endif
 
 using namespace cl::sycl;
