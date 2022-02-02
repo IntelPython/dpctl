@@ -24,9 +24,9 @@ Classes
     :widths: 25,50
 
     * - :class:`SyclKernel`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - [FIXME]: <class 'type'> has a docstring with no summary
     * - :class:`SyclProgram`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - Wraps a ``sycl::program`` object created from an OpenCL interoperability program.
 
 
 .. _dpctl.program_functions:
@@ -38,9 +38,9 @@ Functions
     :widths: 25,50
 
     * - :func:`create_program_from_source()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - Creates a Sycl interoperability program from an OpenCL source string.
     * - :func:`create_program_from_spirv()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - Creates a Sycl interoperability program from an SPIR-V binary.
 
 
 
@@ -52,6 +52,6 @@ Exceptions
     :widths: 25,50
 
     * - :class:`SyclProgramCompilationError`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - This exception is raised when a ``sycl::program`` could not be built from either a SPIR-V binary file or a string source.
 
 

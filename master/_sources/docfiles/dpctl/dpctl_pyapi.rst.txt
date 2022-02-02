@@ -52,15 +52,15 @@ Classes
     :widths: 25,50
 
     * - :class:`SyclContext`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - A Python wrapper for the :sycl_context:`sycl::context <>` C++ class.
     * - :class:`SyclDevice`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - A Python wrapper for the :sycl_device:`sycl::device <>` C++ class.
     * - :class:`SyclEvent`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - Python class representing ``cl::sycl::event``. There are multiple ways to create a :class:`dpctl.SyclEvent` object: - Invoking the constructor with no arguments creates a ready event using the default constructor of the ``cl::sycl::event``.
     * - :class:`SyclPlatform`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - Python class representing ``cl::sycl::platform`` class.
     * - :class:`SyclQueue`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - Python class representing ``cl::sycl::queue``. There are multiple ways to create a :class:`dpctl.SyclQueue` object: - Invoking the constructor with no arguments creates a context using the default selector.
     * - :class:`SyclTimer`
       - Python class to measure device time of execution of commands submitted to :class:`dpctl.SyclQueue` as well as the wall-time.
 
@@ -74,13 +74,13 @@ Queue Management Functions
     :widths: 25,50
 
     * - :func:`device_context()`
-      - [FIXME]: <class 'function'> does not have a docstring
+      - Yields a SYCL queue corresponding to the input queue object, device object, or device filter selector string.
     * - :func:`get_current_backend()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - Returns the backend for the current queue as a `backend_type` enum.
     * - :func:`get_current_device_type()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - Returns current device type as a `device_type` enum.
     * - :func:`get_current_queue()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - Returns the currently activate SYCL queue as a new SyclQueue object.
 
 .. _dpctl_device_selection_functions:
 
@@ -91,17 +91,17 @@ Device Selection Functions
     :widths: 25,50
 
     * - :func:`select_accelerator_device()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - A wrapper for SYCL's ``accelerator_selector`` class.
     * - :func:`select_cpu_device()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - A wrapper for SYCL's ``cpu_selector`` class.
     * - :func:`select_default_device()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - A wrapper for SYCL's ``default_selector`` class.
     * - :func:`select_device_with_aspects()`
       - Selects the root :class:`dpctl.SyclDevice` that has the highest default selector score among devices that have all aspects in the `required_aspects` list, and do not have any aspects in `excluded_aspects` list.
     * - :func:`select_gpu_device()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - A wrapper for SYCL's ``gpu_selector`` class.
     * - :func:`select_host_device()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - A wrapper for SYCL's ``host_selector`` class.
 
 .. _dpctl_other_functions:
 
@@ -112,29 +112,29 @@ Other Functions
     :widths: 25,50
 
     * - :func:`get_devices()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - Returns a list of :class:`dpctl.SyclDevice` instances selected based on the given :class:`dpctl.device_type` and :class:`dpctl.backend_type` values.
     * - :func:`get_include()`
       - Return the directory that contains the dpctl \*.h header files.
     * - :func:`get_num_activated_queues()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - Returns the number of currently activated queues for this thread.
     * - :func:`get_num_devices()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - A helper function to return the number of SYCL devices of a given :class:`dpctl.device_type` and :class:`dpctl.backend_type`.
     * - :func:`get_platforms()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - Returns a list of all available SYCL platforms on the system.
     * - :func:`has_accelerator_devices()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - A helper function to check if there are any SYCL Accelerator devices available.
     * - :func:`has_cpu_devices()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - A helper function to check if there are any SYCL CPU devices available.
     * - :func:`has_gpu_devices()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - A helper function to check if there are any SYCL GPU devices available.
     * - :func:`has_host_device()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - A helper function to check if there are any SYCL Host devices available.
     * - :func:`is_in_device_context()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - Checks if the control is inside a :func:`dpctl.device_context()` scope.
     * - :func:`lsplatform()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - Prints out the list of available SYCL platforms, and optionally extra metadata about each platform.
     * - :func:`set_global_queue()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - Sets the global queue to the SYCL queue specified explicitly, or created from given arguments.
 
 
 Enums
@@ -158,10 +158,10 @@ Exceptions
     :widths: 25,50
 
     * - :class:`SyclKernelInvalidRangeError`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - A SyclKernelInvalidRangeError is raised when the provided range has less than one or more than three dimensions.
     * - :class:`SyclKernelSubmitError`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - A SyclKernelSubmitError exception is raised when the provided :class:`.SyclKernel` could not be submitted to the :class:`.SyclQueue`.
     * - :class:`SyclQueueCreationError`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - A SyclQueueCreationError exception is raised when a :class:`.SyclQueue` could not be created. :class:`.SyclQueue` creation can fail if the filter string is invalid, or the backend or device type values are not supported.
 
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.program.SyclProgram &mdash; Data-parallel Control (dpctl) 0.12.0dev2+25.gf9d7498a documentation</title>
+  <title>dpctl.program.SyclProgram &mdash; Data-parallel Control (dpctl) 0.12.0dev3+6.g024a23b6 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev2+25.gf9d7498a
+                0.12.0dev3+6.g024a23b6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -104,7 +104,12 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.program.SyclProgram">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">SyclProgram</span></span><a class="headerlink" href="#dpctl.program.SyclProgram" title="Permalink to this definition"></a></dt>
-<dd><p class="rubric">Public methods:</p>
+<dd><p>Wraps a <code class="docutils literal notranslate"><span class="pre">sycl::program</span></code> object created from an OpenCL interoperability
+program.</p>
+<p>SyclProgram exposes the C API from <code class="docutils literal notranslate"><span class="pre">dpctl_sycl_program_interface.h</span></code>. A
+SyclProgram can be created from either a source string or a SPIR-V
+binary file.</p>
+<p class="rubric">Public methods:</p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -112,7 +117,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.program.SyclProgram.addressof_ref" title="dpctl.program.SyclProgram.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns the address of the C API DPCTLSyclProgramRef pointer as a long.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.program.SyclProgram.get_sycl_kernel" title="dpctl.program.SyclProgram.get_sycl_kernel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_kernel</span></code></a></p></td>
 <td><p></p></td>
@@ -129,7 +134,15 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.program.SyclProgram.addressof_ref">
 <span class="sig-prename descclassname"><span class="pre">dpctl.program.SyclProgram.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclProgram.addressof_ref" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the address of the C API DPCTLSyclProgramRef pointer
+as a long.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclProgramRef</span></code> pointer used to create
+this <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclProgram</span></code> object cast to a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.program.SyclProgram.get_sycl_kernel">
@@ -173,7 +186,7 @@
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev2+25.gf9d7498a
+      v: 0.12.0dev3+6.g024a23b6
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">

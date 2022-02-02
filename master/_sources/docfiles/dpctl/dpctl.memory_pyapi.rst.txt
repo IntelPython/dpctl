@@ -25,11 +25,11 @@ Classes
     :widths: 25,50
 
     * - :class:`MemoryUSMDevice`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - allocates nbytes of USM device memory.
     * - :class:`MemoryUSMHost`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - allocates nbytes of USM host memory.
     * - :class:`MemoryUSMShared`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - allocates nbytes of USM shared memory.
 
 
 .. _dpctl.memory_functions:
@@ -41,7 +41,7 @@ Functions
     :widths: 25,50
 
     * - :func:`as_usm_memory()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - Converts Python object with `__sycl_usm_array_interface__` property to one of :class:`.MemoryUSMShared`, :class:`.MemoryUSMDevice`, or :class:`.MemoryUSMHost` instances depending on the type of USM allocation they represent.
 
 
 

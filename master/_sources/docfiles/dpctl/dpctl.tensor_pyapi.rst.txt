@@ -26,7 +26,7 @@ Classes
     * - :class:`Device`
       - Class representing Data-API concept of device.
     * - :class:`usm_ndarray`
-      - [FIXME]: <class 'type'> does not have a docstring
+      - See :class:`dpctl.memory.MemoryUSMShared` for allowed keyword arguments.
 
 
 .. _dpctl.tensor_array_construction:
@@ -48,7 +48,7 @@ Array Construction
     * - :func:`empty()`
       - Creates `usm_ndarray` from uninitialized USM allocation.
     * - :func:`from_dlpack()`
-      - [FIXME]: <class 'builtin_function_or_method'> does not have a docstring
+      - dpctl.tensor.from_dlpack(obj) Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python object `obj` that implements `__dlpack__` protocol. The output array is always a zero-copy view of the input.
     * - :func:`from_numpy()`
       - Creates :class:`dpctl.tensor.usm_ndarray` from instance of `numpy.ndarray`.
     * - :func:`to_numpy()`

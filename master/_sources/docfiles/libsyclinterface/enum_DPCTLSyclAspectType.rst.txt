@@ -30,6 +30,6 @@ DPCTL device has an associated set of aspects which identify characteristics of 
 	    :target:`usm_host_allocations<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389aa29fa8e1b2b9250b22c14ba4423e0da9>`,
 	    :target:`usm_shared_allocations<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389ac9129a99e643d379ab61dc2bfaf5d632>`,
 	    :target:`usm_restricted_shared_allocations<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389abe3d4dc3ff8ce2f0a3c42119fe073bfd>`,
-	    :target:`usm_system_allocator<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389af64b9c3851292a892731e97e5823efe1>`,
+	    :target:`usm_system_allocations<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389a4f236ece53a3c1a3081bc3f5eaaabda0>`,
 	};
 
