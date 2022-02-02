@@ -211,11 +211,11 @@ def check_has_aspect_usm_restricted_shared_allocations(device):
         pytest.fail("has_aspect_usm_restricted_shared_allocations call failed")
 
 
-def check_has_aspect_usm_system_allocator(device):
+def check_has_aspect_usm_system_allocations(device):
     try:
-        device.has_aspect_usm_system_allocator
+        device.has_aspect_usm_system_allocations
     except Exception:
-        pytest.fail("has_aspect_usm_system_allocator call failed")
+        pytest.fail("has_aspect_usm_system_allocations call failed")
 
 
 def check_is_accelerator(device):
@@ -273,7 +273,7 @@ list_of_checks = [
     check_has_aspect_usm_host_allocations,
     check_has_aspect_usm_shared_allocations,
     check_has_aspect_usm_restricted_shared_allocations,
-    check_has_aspect_usm_system_allocator,
+    check_has_aspect_usm_system_allocations,
 ]
 
 

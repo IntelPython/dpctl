@@ -149,7 +149,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityNotApplicable)
                 EXPECT_TRUE(DPCTLDeviceVector_Size(DVRef) == expected_size);
                 EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
             }
-        } catch (runtime_error const &re) {
+        } catch (exception const &e) {
         }
     }
 }
