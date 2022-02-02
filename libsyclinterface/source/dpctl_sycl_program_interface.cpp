@@ -30,20 +30,22 @@
 #endif
 
 #include "dpctl_sycl_program_interface.h"
-#include "../helper/include/dpctl_error_handlers.h"
 #include "Config/dpctl_config.h"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_error_handlers.h"
 #include <CL/cl.h>     /* OpenCL headers     */
 #include <CL/sycl.hpp> /* Sycl headers       */
 #include <CL/sycl/backend/opencl.hpp>
 #include <sstream>
 
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
-#include "../helper/include/dpctl_dynamic_lib_helper.h"
-#include <zet_api.h> /* Level Zero headers */
+#include "dpctl_dynamic_lib_helper.h"
 // Note: include ze_api.h before level_zero.hpp. Make sure clang-format does
 // not reorder the includes.
-#include <CL/sycl/backend/level_zero.hpp>
+// clang-format off
+#include "ze_api.h" /* Level Zero headers */
+#include "sycl/ext/oneapi/backend/level_zero.hpp"
+// clang-format on
 #endif
 
 using namespace cl::sycl;
@@ -146,7 +148,7 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
                               size_t length,
                               const char *CompileOpts)
 {
-    auto ZeCtx = get_native<backend::level_zero>(SyclCtx);
+    auto ZeCtx = get_native<backend::ext_oneapi_level_zero>(SyclCtx);
     auto SyclDevices = SyclCtx.get_devices();
     if (SyclDevices.size() > 1) {
         error_handler("Level zero program can be created for only one device.",
@@ -168,7 +170,7 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
     ZeModuleDesc.pBuildFlags = CompileOpts;
     ZeModuleDesc.pConstants = &ZeSpecConstants;
 
-    auto ZeDevice = get_native<backend::level_zero>(SyclDevices[0]);
+    auto ZeDevice = get_native<backend::ext_oneapi_level_zero>(SyclDevices[0]);
     ze_module_handle_t ZeModule;
 
     auto stZeModuleCreateF = getZeModuleCreateFn();
@@ -189,8 +191,9 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
 
     // Create the Sycl program from the ZeModule
     try {
-        auto ZeProgram = new program(sycl::level_zero::make_program(
-            SyclCtx, reinterpret_cast<uintptr_t>(ZeModule)));
+        auto ZeProgram =
+            new program(sycl::ext::oneapi::level_zero::make_program(
+                SyclCtx, reinterpret_cast<uintptr_t>(ZeModule)));
         return wrap(ZeProgram);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
@@ -222,7 +225,7 @@ DPCTLProgram_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
     case backend::opencl:
         Pref = createOpenCLInterOpProgram(*SyclCtx, IL, length, CompileOpts);
         break;
-    case backend::level_zero:
+    case backend::ext_oneapi_level_zero:
 #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
         Pref = createLevelZeroInterOpProgram(*SyclCtx, IL, length, CompileOpts);
 #endif
@@ -273,7 +276,7 @@ DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
             return nullptr;
         }
         break;
-    case backend::level_zero:
+    case backend::ext_oneapi_level_zero:
         error_handler("CreateFromSource is not supported in Level Zero.",
                       __FILE__, __func__, __LINE__);
         delete SyclProgram;

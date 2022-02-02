@@ -25,9 +25,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_kernel_interface.h"
-#include "../helper/include/dpctl_error_handlers.h"
-#include "../helper/include/dpctl_string_utils.hpp"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_error_handlers.h"
+#include "dpctl_string_utils.hpp"
 #include <CL/sycl.hpp> /* Sycl headers */
 
 using namespace cl::sycl;
