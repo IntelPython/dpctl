@@ -67,13 +67,7 @@ public:
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 };
-} // namespace detail
-} // namespace pybind11
 
-namespace pybind11
-{
-namespace detail
-{
 /* This type caster associates ``sycl::device`` C++ class with
  * :class:`dpctl.SyclDevice` for the purposes of generation of
  * Python bindings by pybind11.
@@ -105,13 +99,7 @@ public:
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 };
-} // namespace detail
-} // namespace pybind11
 
-namespace pybind11
-{
-namespace detail
-{
 /* This type caster associates ``sycl::context`` C++ class with
  * :class:`dpctl.SyclContext` for the purposes of generation of
  * Python bindings by pybind11.
@@ -144,13 +132,7 @@ public:
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 };
-} // namespace detail
-} // namespace pybind11
 
-namespace pybind11
-{
-namespace detail
-{
 /* This type caster associates ``sycl::event`` C++ class with
  * :class:`dpctl.SyclEvent` for the purposes of generation of
  * Python bindings by pybind11.
