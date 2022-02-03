@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dir_17dc252e814b1af7aac911436770c806" kind="dir">
+    <compoundname>libsyclinterface</compoundname>
+    <innerdir refid="dir_a8d3181178ce58cce805c021ec290ce9">include</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/"/>
+  </compounddef>
+</doxygen>

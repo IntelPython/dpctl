@@ -1,0 +1,906 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="d2/d22/group___queue_interface" kind="group">
+    <compoundname>QueueInterface</compoundname>
+    <title>Queue class C wrapper</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1ga8a957bd257ec77b0f57bcb3c35e1e479" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API bool</type>
+        <definition>DPCTL_API bool DPCTLQueue_AreEq</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclQueueRef QRef1, __dpctl_keep const DPCTLSyclQueueRef QRef2)</argsstring>
+        <name>DPCTLQueue_AreEq</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef1</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef2</declname>
+        </param>
+        <briefdescription>
+<para>Checks if two DPCTLSyclQueueRef objects point to the same <computeroutput>sycl::queue</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>First opaque pointer to the <computeroutput>sycl::queue</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Second opaque pointer to the <computeroutput>sycl::queue</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the underlying sycl::queue are same, false otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="138" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="138" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1gad8d2312b954460ad658b2f1080c0dee3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclQueueRef DPCTLQueue_Copy</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLQueue_Copy</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a copy of the DPCTLSyclQueueRef object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DPCTLSyclQueueRef object to be copied. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A new DPCTLSyclQueueRef created by copying the passed in DPCTLSyclQueueRef object. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="126" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="126" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1gaffc0932f21ca4be9ef6ffa6626d1ee0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclQueueRef DPCTLQueue_Create</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclContextRef CRef, __dpctl_keep const DPCTLSyclDeviceRef DRef, error_handler_callback *handler, int properties)</argsstring>
+        <name>DPCTLQueue_Create</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08" kindref="member">DPCTLSyclContextRef</ref></type>
+          <declname>CRef</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <param>
+          <type><ref refid="de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe" kindref="member">error_handler_callback</ref> *</type>
+          <declname>handler</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>A wrapper for sycl::queue contructor to construct a new queue from the provided context, device, async handler and propertis bit flags. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>CRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to a sycl::context. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>handler</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A callback function that will be invoked by the async_handler used during queue creation. Can be NULL if no async_handler is needed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A combination of bit flags using the values defined in the DPCTLQueuePropertyType enum. The bit flags are used to create a sycl::property_list that is passed to the SYCL queue constructor. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An opaque DPCTLSyclQueueRef pointer containing the new sycl::queue object. A nullptr is returned if the queue could not be created. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="63" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="63" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1ga49d6da8648e54441a043ea7db496e810" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclQueueRef DPCTLQueue_CreateForDevice</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef dRef, error_handler_callback *handler, int properties)</argsstring>
+        <name>DPCTLQueue_CreateForDevice</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>dRef</declname>
+        </param>
+        <param>
+          <type><ref refid="de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe" kindref="member">error_handler_callback</ref> *</type>
+          <declname>handler</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Constructs a <computeroutput>sycl::queue</computeroutput> object of the specified SYCL device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Constructs a new SYCL queue for the specified SYCL device. The behaviour of this function differs from the following queue constructor:</para>
+<para><programlisting><codeline><highlight class="normal">queue(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>device<sp/>&amp;syclDevice,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>async_handler<sp/>&amp;asyncHandler,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>property_list<sp/>&amp;propList<sp/>=<sp/>{}</highlight></codeline>
+<codeline><highlight class="normal">)</highlight></codeline>
+</programlisting></para>
+<para>Unlike the SYCL queue constructor, we try not to create a new SYCL context for the device and instead look to reuse a previously cached SYCL context for the device (refer dpctl_sycl_device_manager.cpp). DPCTL caches contexts only for root devices and for all custom devices the function begaves the same way as the SYCL constructor.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to a <computeroutput>sycl::device</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>handler</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A callback function that will be invoked by the async_handler used during queue creation. Can be NULL if no async_handler is needed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A combination of bit flags using the values defined in the DPCTLQueuePropertyType enum. The bit flags are used to create a <computeroutput>sycl::property_list</computeroutput> that is passed to the SYCL queue constructor. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An opaque DPCTLSyclQueueRef pointer containing the new <computeroutput>sycl::queue</computeroutput> object. A nullptr is returned if the queue could not be created. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="103" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="103" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1ga44557847663338a67f423a06ecf9192a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLQueue_Delete</definition>
+        <argsstring>(__dpctl_take DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLQueue_Delete</name>
+        <param>
+          <type>__dpctl_take <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Delete the pointer after casting it to sycl::queue. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A DPCTLSyclQueueRef pointer that gets deleted. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="114" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="114" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1ga8c3629a8627e9748cdec34688f6ce908" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" kindref="member">DPCTLSyclBackendType</ref></type>
+        <definition>DPCTL_API DPCTLSyclBackendType DPCTLQueue_GetBackend</definition>
+        <argsstring>(__dpctl_keep DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLQueue_GetBackend</name>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns the Sycl backend for the provided sycl::queue. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to the sycl queue. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A enum DPCTLSyclBackendType corresponding to the backed for the queue. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="150" column="22" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="150" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1gad11e27086f2cee7f3d22f33de1a24bc9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08" kindref="member">DPCTLSyclContextRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclContextRef DPCTLQueue_GetContext</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLQueue_GetContext</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns the Sycl context for the queue. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to the sycl queue. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A DPCTLSyclContextRef pointer to the sycl context for the queue. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="161" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="161" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1ga44095b28dfb5c357e6c065749e9aa8c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclDeviceRef DPCTLQueue_GetDevice</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLQueue_GetDevice</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>returns the Sycl device for the queue. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to the sycl queue. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A DPCTLSyclDeviceRef pointer to the sycl device for the queue. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="172" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="172" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1ga348ae09783aa4defd1eb864eb04418a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API bool</type>
+        <definition>DPCTL_API bool DPCTLQueue_HasEnableProfiling</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLQueue_HasEnableProfiling</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>C-API wrapper for sycl::queue::has_property&lt;sycl::property::queue::enable_profiling&gt;() that indicates whether the referenced queue was constructed with this property. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to the <computeroutput>sycl::queue</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="348" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="348" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1ga17f54699da3f3ab226cf8e3c9c57a7dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API size_t</type>
+        <definition>DPCTL_API size_t DPCTLQueue_Hash</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLQueue_Hash</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>C-API wrapper for std::hash&lt;sycl::queue&gt;&apos;s operator(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to the <computeroutput>sycl::queue</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Hash value of the underlying <computeroutput>sycl::queue</computeroutput> instance. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="358" column="8" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="358" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1ga0738e262108a1ac8f43f227548724f07" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API bool</type>
+        <definition>DPCTL_API bool DPCTLQueue_IsInOrder</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLQueue_IsInOrder</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>C-API wrapper for sycl::queue::is_in_order that indicates whether the referenced queue is in-order or out-of-order. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to the <computeroutput>sycl::queue</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="337" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="337" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1ga8de50ef93a90b6eb5492b6e38eeb5c6c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+        <definition>DPCTL_API DPCTLSyclEventRef DPCTLQueue_MemAdvise</definition>
+        <argsstring>(__dpctl_keep DPCTLSyclQueueRef QRef, const void *Ptr, size_t Count, int Advice)</argsstring>
+        <name>DPCTLQueue_MemAdvise</name>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>Ptr</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>Count</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>Advice</declname>
+        </param>
+        <briefdescription>
+<para>C-API wrapper for <computeroutput>sycl::queue::mem_advise</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to the <computeroutput>sycl::queue</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Ptr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An USM pointer to memory. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Count</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A number of bytes to prefetch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Advice</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Device-defined advice for the specified allocation. A value of 0 reverts the advice for Ptr to the default behavior. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An opaque pointer to the <computeroutput>sycl::event</computeroutput> returned by the <computeroutput>sycl::queue::mem_advise</computeroutput> function. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="324" column="19" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="324" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1gae543a1633f10fc45e64ef746f5222c79" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+        <definition>DPCTL_API DPCTLSyclEventRef DPCTLQueue_Memcpy</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclQueueRef QRef, void *Dest, const void *Src, size_t Count)</argsstring>
+        <name>DPCTLQueue_Memcpy</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>Dest</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>Src</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>Count</declname>
+        </param>
+        <briefdescription>
+<para>C-API wrapper for <computeroutput>sycl::queue::memcpy</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to the <computeroutput>sycl::queue</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Dest</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An USM pointer to the destination memory. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Src</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An USM pointer to the source memory. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Count</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A number of bytes to copy. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An opaque pointer to the <computeroutput>sycl::event</computeroutput> returned by the <computeroutput>sycl::queue::memcpy</computeroutput> function. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="290" column="19" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="290" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1gac30d3b463b68c5d0f2abdeb608c54aa3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+        <definition>DPCTL_API DPCTLSyclEventRef DPCTLQueue_Prefetch</definition>
+        <argsstring>(__dpctl_keep DPCTLSyclQueueRef QRef, const void *Ptr, size_t Count)</argsstring>
+        <name>DPCTLQueue_Prefetch</name>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>Ptr</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>Count</declname>
+        </param>
+        <briefdescription>
+<para>C-API wrapper for <computeroutput>sycl::queue::prefetch</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to the <computeroutput>sycl::queue</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Ptr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An USM pointer to memory. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Count</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A number of bytes to prefetch. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An opaque pointer to the <computeroutput>sycl::event</computeroutput> returned by the <computeroutput>sycl::queue::prefetch</computeroutput> function. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="306" column="19" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="306" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1gaac9356153363bb89ade3116816fca94b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+        <definition>DPCTL_API DPCTLSyclEventRef DPCTLQueue_SubmitNDRange</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclKernelRef KRef, __dpctl_keep const DPCTLSyclQueueRef QRef, __dpctl_keep void **Args, __dpctl_keep const DPCTLKernelArgType *ArgTypes, size_t NArgs, __dpctl_keep const size_t gRange[3], __dpctl_keep const size_t lRange[3], size_t NDims, __dpctl_keep const DPCTLSyclEventRef *DepEvents, size_t NDepEvents)</argsstring>
+        <name>DPCTLQueue_SubmitNDRange</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844" kindref="member">DPCTLSyclKernelRef</ref></type>
+          <declname>KRef</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep void **</type>
+          <declname>Args</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089" kindref="member">DPCTLKernelArgType</ref> *</type>
+          <declname>ArgTypes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>NArgs</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const size_t</type>
+          <declname>gRange</declname>
+          <array>[3]</array>
+        </param>
+        <param>
+          <type>__dpctl_keep const size_t</type>
+          <declname>lRange</declname>
+          <array>[3]</array>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>NDims</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref> *</type>
+          <declname>DepEvents</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>NDepEvents</declname>
+        </param>
+        <briefdescription>
+<para>Submits the kernel to the specified queue with the provided nd_range argument. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>A wrapper over <computeroutput>sycl::queue.submit()</computeroutput>. The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as <computeroutput>parallel_for(nd_range&lt;NRange&gt;, *unwrap(KRef))</computeroutput>.</para>
+<para><xrefsect id="dd/da0/todo_1_todo000003"><xreftitle>Todo</xreftitle><xrefdescription><para>sycl::buffer arguments are not supported yet. </para>
+<para>Add support for id&lt;Dims&gt; WorkItemOffset</para>
+</xrefdescription></xrefsect></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>KRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to an OpenCL interoperability kernel wrapped inside a sycl::kernel. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to the sycl::queue where the kernel will be enqueued. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Args</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An array of void* pointers that represent the kernel arguments for the kernel. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ArgTypes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An array of DPCTLKernelArgType enum values that represent the type of each kernel argument. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>NArgs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Size of Args. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>gRange</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Defines the overall dimension of the dispatch for the kernel. The array can have up to three dimensions. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lRange</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Defines the iteration domain of a single work-group in a parallel dispatch. The array can have up to three dimensions. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>NDims</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of dimensions for both local and global ranges. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>DepEvents</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>List of dependent DPCTLSyclEventRef objects (events) for the kernel. We call <computeroutput>sycl::handler.depends_on</computeroutput> for each of the provided events. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>NDepEvents</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Size of the DepEvents list. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An opaque pointer to the <computeroutput>sycl::event</computeroutput> returned by the <computeroutput>sycl::queue.submit()</computeroutput> function. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="257" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="257" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1ga9ed0d59f789b4fb0959b0af022fdbe23" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+        <definition>DPCTL_API DPCTLSyclEventRef DPCTLQueue_SubmitRange</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclKernelRef KRef, __dpctl_keep const DPCTLSyclQueueRef QRef, __dpctl_keep void **Args, __dpctl_keep const DPCTLKernelArgType *ArgTypes, size_t NArgs, __dpctl_keep const size_t Range[3], size_t NRange, __dpctl_keep const DPCTLSyclEventRef *DepEvents, size_t NDepEvents)</argsstring>
+        <name>DPCTLQueue_SubmitRange</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844" kindref="member">DPCTLSyclKernelRef</ref></type>
+          <declname>KRef</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep void **</type>
+          <declname>Args</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089" kindref="member">DPCTLKernelArgType</ref> *</type>
+          <declname>ArgTypes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>NArgs</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const size_t</type>
+          <declname>Range</declname>
+          <array>[3]</array>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>NRange</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref> *</type>
+          <declname>DepEvents</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>NDepEvents</declname>
+        </param>
+        <briefdescription>
+<para>Submits the kernel to the specified queue with the provided range argument. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>A wrapper over <computeroutput>sycl::queue.submit()</computeroutput>. The function takes an interoperability kernel, the kernel arguments, and a <computeroutput>sycl::queue</computeroutput> as input. The kernel is submitted as <computeroutput>parallel_for(range&lt;NRange&gt;, *unwrap(KRef))</computeroutput>.</para>
+<para><xrefsect id="dd/da0/todo_1_todo000002"><xreftitle>Todo</xreftitle><xrefdescription><para><computeroutput>sycl::buffer</computeroutput> arguments are not supported yet. </para>
+<para>Add support for id&lt;Dims&gt; WorkItemOffset</para>
+</xrefdescription></xrefsect></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>KRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to an OpenCL interoperability kernel wrapped inside a sycl::kernel. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to the sycl::queue where the kernel will be enqueued. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Args</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An array of void* pointers that represent the kernel arguments for the kernel. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ArgTypes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An array of DPCTLKernelArgType enum values that represent the type of each kernel argument. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>NArgs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Size of Args and ArgTypes. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Range</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Defines the overall dimension of the dispatch for the kernel. The array can have up to three dimensions. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>NRange</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Size of the gRange array. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>DepEvents</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>List of dependent DPCTLSyclEventRef objects (events) for the kernel. We call <computeroutput>sycl::handler.depends_on</computeroutput> for each of the provided events. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>NDepEvents</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Size of the DepEvents list. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An opaque pointer to the <computeroutput>sycl::event</computeroutput> returned by the <computeroutput>sycl::queue.submit()</computeroutput> function. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="209" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="209" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d2/d22/group___queue_interface_1ga3411357b2a09bad80be5b4fee8a8ed44" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLQueue_Wait</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLQueue_Wait</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Calls the <computeroutput>sycl::queue::submit</computeroutput> function to do a blocking wait on all enqueued tasks in the queue. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::queue</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" line="276" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_queue_interface.h" declline="276" declcolumn="6"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

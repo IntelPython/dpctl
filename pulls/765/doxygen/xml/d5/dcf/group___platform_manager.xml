@@ -1,0 +1,267 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="d5/dcf/group___platform_manager" kind="group">
+    <compoundname>PlatformManager</compoundname>
+    <title>Platform class helper functions</title>
+      <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="d5/dcf/group___platform_manager_1ga18dc8588af45614eb2f4a9f7b25a6047" prot="public" static="no">
+        <type>struct DPCTLPlatformVector *</type>
+        <definition>typedef struct DPCTLPlatformVector* DPCTLPlatformVectorRef</definition>
+        <argsstring></argsstring>
+        <name>DPCTLPlatformVectorRef</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" line="44" column="34" bodyfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="d5/dcf/group___platform_manager_1ga8e44adac75e0ecf8705b089404a8fb86" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLPlatformMgr_PrintInfo</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclPlatformRef PRef, size_t verbosity)</argsstring>
+        <name>DPCTLPlatformMgr_PrintInfo</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref></type>
+          <declname>PRef</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>verbosity</declname>
+        </param>
+        <briefdescription>
+<para>Prints out information about the sycl::platform argument. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The helper function is used to print metadata about a given platform. The amount of information printed out is controlled by the verbosity level.</para>
+<para>Verbosity level 0: Prints only the name of the platform. Verbosity level 1: Prints the name, version, vendor, backend, number of devices in the platform. Verbosity level 2: Prints everything in level 1 and also prints the name, version, and filter string for each device in the platform.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>PRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref> opaque pointer. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>verbosity</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Verbosilty level to control how much information is printed out. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" line="64" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" declline="64" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="d5/dcf/group___platform_manager_1ga89b9b23802931f2354d8acb91f72ba6c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLPlatformVector_Clear</definition>
+        <argsstring>(__dpctl_keep DPCTLPlatformVectorRef VRef)</argsstring>
+        <name>DPCTLPlatformVector_Clear</name>
+        <param>
+          <type>__dpctl_keep <ref refid="d5/dcf/group___platform_manager_1ga18dc8588af45614eb2f4a9f7b25a6047" kindref="member">DPCTLPlatformVectorRef</ref></type>
+          <declname>VRef</declname>
+        </param>
+        <briefdescription>
+<para>Delete all the elements of the std::vector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>VRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a vector. <linebreak/>
+ </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" line="44" column="301" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" declline="44" declcolumn="301"/>
+      </memberdef>
+      <memberdef kind="function" id="d5/dcf/group___platform_manager_1ga9d5773827c527bc445bf60ffbf6a6e60" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__dpctl_give <ref refid="d5/dcf/group___platform_manager_1ga18dc8588af45614eb2f4a9f7b25a6047" kindref="member">DPCTLPlatformVectorRef</ref></type>
+        <definition>__dpctl_give DPCTLPlatformVectorRef DPCTLPlatformVector_Create</definition>
+        <argsstring>(void)</argsstring>
+        <name>DPCTLPlatformVector_Create</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Create an opaque pointer to a std::vector of opaque pointers wrapping the SYCL data type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Returns a new opaque pointer to a vector. <linebreak/>
+ </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" line="44" column="103" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" declline="44" declcolumn="103"/>
+      </memberdef>
+      <memberdef kind="function" id="d5/dcf/group___platform_manager_1gac4e4722d083773b839113fb32cca632c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="d5/dcf/group___platform_manager_1ga18dc8588af45614eb2f4a9f7b25a6047" kindref="member">DPCTLPlatformVectorRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLPlatformVectorRef DPCTLPlatformVector_CreateFromArray</definition>
+        <argsstring>(size_t len, __dpctl_keep DPCTLSyclPlatformRef *elems)</argsstring>
+        <name>DPCTLPlatformVector_CreateFromArray</name>
+        <param>
+          <type>size_t</type>
+          <declname>len</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref> *</type>
+          <declname>elems</declname>
+        </param>
+        <briefdescription>
+<para>Create an opaque pointer to a std::vector created from the input raw array. The elements of the input array are deep copied before inserting the copies into the vector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>len</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of elements in the input array.</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>elems</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A C array whose elements will be copied into the returned vector. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns a new opaque pointer to a vector. <linebreak/>
+ </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" line="44" column="183" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" declline="44" declcolumn="183"/>
+      </memberdef>
+      <memberdef kind="function" id="d5/dcf/group___platform_manager_1gaef25f3448c038f7a8ac3dd99a3d69249" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLPlatformVector_Delete</definition>
+        <argsstring>(__dpctl_take DPCTLPlatformVectorRef VRef)</argsstring>
+        <name>DPCTLPlatformVector_Delete</name>
+        <param>
+          <type>__dpctl_take <ref refid="d5/dcf/group___platform_manager_1ga18dc8588af45614eb2f4a9f7b25a6047" kindref="member">DPCTLPlatformVectorRef</ref></type>
+          <declname>VRef</declname>
+        </param>
+        <briefdescription>
+<para>Delete all elements in the vector and then delete the vector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>VRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a vector to be deleted. <linebreak/>
+ </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" line="44" column="250" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" declline="44" declcolumn="250"/>
+      </memberdef>
+      <memberdef kind="function" id="d5/dcf/group___platform_manager_1ga131427438ea4f1cbca1fe4c93e11e21a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclPlatformRef DPCTLPlatformVector_GetAt</definition>
+        <argsstring>(__dpctl_keep DPCTLPlatformVectorRef VRef, size_t index)</argsstring>
+        <name>DPCTLPlatformVector_GetAt</name>
+        <param>
+          <type>__dpctl_keep <ref refid="d5/dcf/group___platform_manager_1ga18dc8588af45614eb2f4a9f7b25a6047" kindref="member">DPCTLPlatformVectorRef</ref></type>
+          <declname>VRef</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Returns the element at the specified index. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>VRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a vector.</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index postion of the element to be returned. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The element at the specified postion, if the index position is out of bounds then a nullptr is returned. <linebreak/>
+ </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" line="44" column="431" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" declline="44" declcolumn="431"/>
+      </memberdef>
+      <memberdef kind="function" id="d5/dcf/group___platform_manager_1ga713c99c0d385de070ae32d4d7657401e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API size_t</type>
+        <definition>DPCTL_API size_t DPCTLPlatformVector_Size</definition>
+        <argsstring>(__dpctl_keep DPCTLPlatformVectorRef VRef)</argsstring>
+        <name>DPCTLPlatformVector_Size</name>
+        <param>
+          <type>__dpctl_keep <ref refid="d5/dcf/group___platform_manager_1ga18dc8588af45614eb2f4a9f7b25a6047" kindref="member">DPCTLPlatformVectorRef</ref></type>
+          <declname>VRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns the number of elements in the vector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>VRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a vector. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The current size of the vector. <linebreak/>
+ </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" line="44" column="353" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_manager.h" declline="44" declcolumn="353"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Helper functions for <computeroutput>sycl::platform</computeroutput> objects that do not directly map to any <computeroutput>sycl::platform</computeroutput> member function. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,1673 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="d4/d5a/dpctl__sycl__device__interface_8h" kind="file" language="C++">
+    <compoundname>dpctl_sycl_device_interface.h</compoundname>
+    <includes local="yes">Support/DllExport.h</includes>
+    <includes local="yes">Support/ExternC.h</includes>
+    <includes local="yes">Support/MemOwnershipAttrs.h</includes>
+    <includes local="yes">dpctl_data_types.h</includes>
+    <includes refid="de/d2f/dpctl__sycl__device__manager_8h" local="yes">dpctl_sycl_device_manager.h</includes>
+    <includes refid="d3/d94/dpctl__sycl__enum__types_8h" local="yes">dpctl_sycl_enum_types.h</includes>
+    <includes refid="df/d57/dpctl__sycl__types_8h" local="yes">dpctl_sycl_types.h</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>dpctl_sycl_device_interface.h</label>
+        <link refid="d4/d5a/dpctl__sycl__device__interface_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Support/MemOwnershipAttrs.h</label>
+      </node>
+      <node id="2">
+        <label>Support/DllExport.h</label>
+      </node>
+      <node id="7">
+        <label>dpctl_sycl_types.h</label>
+        <link refid="df/d57/dpctl__sycl__types_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>Support/ExternC.h</label>
+      </node>
+      <node id="6">
+        <label>dpctl_sycl_device_manager.h</label>
+        <link refid="de/d2f/dpctl__sycl__device__manager_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>dpctl_sycl_enum_types.h</label>
+        <link refid="d3/d94/dpctl__sycl__enum__types_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>dpctl_data_types.h</label>
+      </node>
+      <node id="8">
+        <label>dpctl_vector.h</label>
+      </node>
+    </incdepgraph>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gaba5f155a106aa09f770639cc22ee0ddd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API bool</type>
+        <definition>DPCTL_API bool DPCTLDevice_AreEq</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef1, __dpctl_keep const DPCTLSyclDeviceRef DRef2)</argsstring>
+        <name>DPCTLDevice_AreEq</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef1</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef2</declname>
+        </param>
+        <briefdescription>
+<para>Checks if two DPCTLSyclDeviceRef objects point to the same sycl::device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>First opaque pointer to a <computeroutput>sycl::device</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>DRef2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Second opaque pointer to a <computeroutput>sycl::device</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the underlying sycl::device are same, false otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="303" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="303" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga02c7b900248b1aac0fe096c874c71c2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_Copy</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_Copy</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a copy of the DPCTLSyclDeviceRef object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DPCTLSyclDeviceRef object to be copied. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A new DPCTLSyclDeviceRef created by copying the passed in DPCTLSyclDeviceRef object. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="54" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="54" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gaa0f24449bcf7721e2a23cc6b2c1d291a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_Create</definition>
+        <argsstring>(void)</argsstring>
+        <name>DPCTLDevice_Create</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Returns a new DPCTLSyclDeviceRef opaque object wrapping a SYCL device instance as a host device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>An opaque pointer to a <computeroutput>sycl::device</computeroutput> created as an instance of the host device. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="65" column="33" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="65" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga371463122c4ec271be68364d1e9a284d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceSelectorRef DSRef)</argsstring>
+        <name>DPCTLDevice_CreateFromSelector</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83" kindref="member">DPCTLSyclDeviceSelectorRef</ref></type>
+          <declname>DSRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a new DPCTLSyclDeviceRef opaque object created using the provided device_selector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DSRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to a <computeroutput>sycl::device_selector</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns an opaque pointer to a SYCL device created using the device_selector, if the requested device could not be created a nullptr is returned. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="78" column="33" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="78" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gae0b93c3e13a3882ba5599a7321a2253c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef, DPCTLPartitionAffinityDomainType PartAffDomTy)</argsstring>
+        <name>DPCTLDevice_CreateSubDevicesByAffinity</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <param>
+          <type><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670" kindref="member">DPCTLPartitionAffinityDomainType</ref></type>
+          <declname>PartAffDomTy</declname>
+        </param>
+        <briefdescription>
+<para>Returns a vector of sub-devices partitioned from this SYCL device by affinity domain based on the domain parameter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>PartAffDomTy</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A DPCTLPartitionAffinityDomainType enum value</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A <ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref> containing <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref> objects </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="459" column="35" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="459" declcolumn="35"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga794e3f46e0c4805e6eb56b55524fd3f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByCounts</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef, __dpctl_keep size_t *counts, size_t ncounts)</argsstring>
+        <name>DPCTLDevice_CreateSubDevicesByCounts</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep size_t *</type>
+          <declname>counts</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ncounts</declname>
+        </param>
+        <briefdescription>
+<para>Returns a vector of sub devices partitioned from this SYCL device based on the counts parameter. For each non-zero value M in the counts vector, a sub device with M compute units is created. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>counts</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Array with count compute units that need to contains in subdevices </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ncounts</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of counts </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A <ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref> containing <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref> objects </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="443" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="443" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga75e3383f16c69d7ccb8377609e61964a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesEqually</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef, size_t count)</argsstring>
+        <name>DPCTLDevice_CreateSubDevicesEqually</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>count</declname>
+        </param>
+        <briefdescription>
+<para>Returns a vector of sub devices partitioned from this SYCL device based on the count parameter. The returned vector contains as many sub devices as can be created such that each sub device contains count compute units. If the device’s total number of compute units is not evenly divided by count, then the remaining compute units are not included in any of the sub devices. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>count</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Count compute units that need to contains in subdevices </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A <ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref> containing <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref> objects </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="425" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="425" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga062853b5082debfcae7d7b840907b667" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLDevice_Delete</definition>
+        <argsstring>(__dpctl_take DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_Delete</name>
+        <param>
+          <type>__dpctl_take <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Deletes a DPCTLSyclDeviceRef pointer after casting to to sycl::device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The DPCTLSyclDeviceRef pointer to be freed. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="88" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="88" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gac031eb6d9209db0c88c545e221d37692" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" kindref="member">DPCTLSyclBackendType</ref></type>
+        <definition>DPCTL_API DPCTLSyclBackendType DPCTLDevice_GetBackend</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetBackend</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns the backend for the device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A DPCTLSyclBackendType enum value representing the <computeroutput>sycl::backend</computeroutput> for the device. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="143" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="143" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga312596705e48023c62735ca1fe7a380f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff" kindref="member">DPCTLSyclDeviceType</ref></type>
+        <definition>DPCTL_API DPCTLSyclDeviceType DPCTLDevice_GetDeviceType</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetDeviceType</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns the DPCTLSyclDeviceType enum value for the DPCTLSyclDeviceRef argument. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The DPCTLSyclDeviceType value corresponding to the device. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="155" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="155" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gacb59e0e106b1538a8e974db4fed7228c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API const __dpctl_give char *</type>
+        <definition>DPCTL_API const __dpctl_give char* DPCTLDevice_GetDriverVersion</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetDriverVersion</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns the OpenCL software driver version as a C string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A C string in the form major_number.minor.number that corresponds to the OpenCL driver version if this is a OpenCL device. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="167" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="167" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gaa0035ff7868faf6763f1543b14dc5dee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint64_t</type>
+        <definition>DPCTL_API uint64_t DPCTLDevice_GetGlobalMemSize</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetGlobalMemSize</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::global_mem_size&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="189" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="189" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d4/d5a/dpctl__sycl__device__interface_8h_1a4ef25a38cbf63e618016302e8ebf480d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API size_t</type>
+        <definition>DPCTL_API size_t DPCTLDevice_GetImage2dMaxHeight</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetImage2dMaxHeight</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::image2d_max_height&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the maximum height of a 2D image or 1D image in pixels. The minimum value is 8192 if the SYCL device has aspect::image. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="368" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="368" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d4/d5a/dpctl__sycl__device__interface_8h_1ad1f6957fdc5fb51ed873fa444af17c13" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API size_t</type>
+        <definition>DPCTL_API size_t DPCTLDevice_GetImage2dMaxWidth</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetImage2dMaxWidth</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::image2d_max_width&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the maximum width of a 2D image or 1D image in pixels. The minimum value is 8192 if the SYCL device has aspect::image. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="355" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="355" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d4/d5a/dpctl__sycl__device__interface_8h_1ac64423a160a010d1841b36ae2ab48658" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API size_t</type>
+        <definition>DPCTL_API size_t DPCTLDevice_GetImage3dMaxDepth</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetImage3dMaxDepth</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::image3d_max_depth&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the maximum depth of a 3D image The minimum value is 2048 if the SYCL device has aspect::image. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="407" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="407" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d4/d5a/dpctl__sycl__device__interface_8h_1ac041263954e4e4c2a5bf58eeb08c0b7e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API size_t</type>
+        <definition>DPCTL_API size_t DPCTLDevice_GetImage3dMaxHeight</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetImage3dMaxHeight</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::image3d_max_height&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the maximum height of a 3D image The minimum value is 2048 if the SYCL device has aspect::image. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="394" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="394" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d4/d5a/dpctl__sycl__device__interface_8h_1a775e74dcd25c38e1d1575df3262b6f60" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API size_t</type>
+        <definition>DPCTL_API size_t DPCTLDevice_GetImage3dMaxWidth</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetImage3dMaxWidth</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::image3d_max_width&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the maximum width of a 3D image in pixels. The minimum value is 2048 if the SYCL device has aspect::image. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="381" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="381" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga6b9c79792534de95e407fc57c4f3a559" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint64_t</type>
+        <definition>DPCTL_API uint64_t DPCTLDevice_GetLocalMemSize</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetLocalMemSize</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::local_mem_size&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="200" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="200" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gac9635668177d01284e64d1d4373a391a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint32_t</type>
+        <definition>DPCTL_API uint32_t DPCTLDevice_GetMaxComputeUnits</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetMaxComputeUnits</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::max_compute_units&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="178" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="178" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga6c5a99a6da732f5cee47a09ff1559a30" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint32_t</type>
+        <definition>DPCTL_API uint32_t DPCTLDevice_GetMaxNumSubGroups</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetMaxNumSubGroups</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::max_num_sub_groups&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="244" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="244" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d4/d5a/dpctl__sycl__device__interface_8h_1a9810a239416c53427e3742bfb72ea0a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint32_t</type>
+        <definition>DPCTL_API uint32_t DPCTLDevice_GetMaxReadImageArgs</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetMaxReadImageArgs</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::max_read_image_args&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the maximum number of simultaneous image objects that can be read from by a kernel. The minimum value is 128 if the SYCL device has aspect::image. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="329" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="329" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gaffdc9aeff99885627cd26364df7479de" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API size_t</type>
+        <definition>DPCTL_API size_t DPCTLDevice_GetMaxWorkGroupSize</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetMaxWorkGroupSize</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper for get_info&lt;info::device::max_work_group_size&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="233" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="233" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga365748d856fa3af3fe3ed288bb19c55a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint32_t</type>
+        <definition>DPCTL_API uint32_t DPCTLDevice_GetMaxWorkItemDims</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetMaxWorkItemDims</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper for get_info&lt;info::device::max_work_item_dimensions&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="211" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="211" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gac5292cd7933df4ef7fb15a3d0d05d463" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_keep size_t *</type>
+        <definition>DPCTL_API __dpctl_keep size_t* DPCTLDevice_GetMaxWorkItemSizes</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetMaxWorkItemSizes</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper for get_info&lt;info::device::max_work_item_sizes&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the valid result if device exists else returns NULL. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="222" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="222" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d4/d5a/dpctl__sycl__device__interface_8h_1a34dbd5b5dbde22ba5f1d5205de298d81" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint32_t</type>
+        <definition>DPCTL_API uint32_t DPCTLDevice_GetMaxWriteImageArgs</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetMaxWriteImageArgs</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::max_write_image_args&gt;(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the maximum number of simultaneous image objects that can be written to by a kernel. The minimum value is 8 if the SYCL device has aspect::image. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="342" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="342" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga36ca01c406d1200b56e94a98595ffb0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API const __dpctl_give char *</type>
+        <definition>DPCTL_API const __dpctl_give char* DPCTLDevice_GetName</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetName</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a C string for the device name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A C string containing the OpenCL device name. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="267" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="267" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d4/d5a/dpctl__sycl__device__interface_8h_1acccdc3f034e6c5fd2a249907355169bc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_GetParentDevice</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetParentDevice</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::parent_device&gt; </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns an opaque pointer to the parent device for a sub-device, or nullptr otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="579" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="579" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga7a5b8354f2f4937eb0b6229ba8436ecc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclPlatformRef DPCTLDevice_GetPlatform</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetPlatform</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns the <computeroutput>sycl::platform</computeroutput> for the device as DPCTLSyclPlatformRef opaque pointer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An opaque pointer to the sycl::platform for the device. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="256" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="256" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga3e46c34f5ec44d1a40f3fcd80452a526" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint32_t</type>
+        <definition>DPCTL_API uint32_t DPCTLDevice_GetPreferredVectorWidthChar</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetPreferredVectorWidthChar</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::preferred_vector_width_char&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the preferred native vector width size for built-in scalar types that can be put into vectors. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="488" column="10" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="488" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gafa9c9d2c7e8c69f5ee48af4023cdef42" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint32_t</type>
+        <definition>DPCTL_API uint32_t DPCTLDevice_GetPreferredVectorWidthDouble</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetPreferredVectorWidthDouble</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::preferred_vector_width_double&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the preferred native vector width size for built-in scalar types that can be put into vectors. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="553" column="10" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="553" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga24e82d7e0ebb66ce127f303309acb599" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint32_t</type>
+        <definition>DPCTL_API uint32_t DPCTLDevice_GetPreferredVectorWidthFloat</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetPreferredVectorWidthFloat</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::preferred_vector_width_float&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the preferred native vector width size for built-in scalar type. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="540" column="10" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="540" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga6c7c492ae186724113bb5b3397cba77e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint32_t</type>
+        <definition>DPCTL_API uint32_t DPCTLDevice_GetPreferredVectorWidthHalf</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetPreferredVectorWidthHalf</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over <computeroutput>device.get_info&lt;info::device::preferred_vector_width_half&gt;</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the preferred native vector width size for built-in scalar types that can be put into vectors. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="566" column="10" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="566" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gaf43ca0045d4f4ebd0abd85a0c1b7dd47" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint32_t</type>
+        <definition>DPCTL_API uint32_t DPCTLDevice_GetPreferredVectorWidthInt</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetPreferredVectorWidthInt</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::preferred_vector_width_int&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the preferred native vector width size for built-in scalar types that can be put into vectors. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="514" column="10" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="514" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga76f48effcd21089c077673ccdfb615f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint32_t</type>
+        <definition>DPCTL_API uint32_t DPCTLDevice_GetPreferredVectorWidthLong</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetPreferredVectorWidthLong</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::preferred_vector_width_long&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the preferred native vector width size for built-in scalar types that can be put into vectors. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="527" column="10" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="527" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gab23c05c90e4b3a3417253e52b5d88290" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint32_t</type>
+        <definition>DPCTL_API uint32_t DPCTLDevice_GetPreferredVectorWidthShort</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetPreferredVectorWidthShort</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::preferred_vector_width_short&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns the preferred native vector width size for built-in scalar types that can be put into vectors. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="501" column="10" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="501" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gafd08f141480c1eb8eb243c88823e85b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_C_EXTERN_C_END DPCTL_API bool</type>
+        <definition>DPCTL_C_EXTERN_C_END DPCTL_API bool DPCTLDevice_GetSubGroupIndependentForwardProgress</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetSubGroupIndependentForwardProgress</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over device.get_info&lt;info::device::sub_group_independent_forward_progress&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns true if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="475" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="475" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gae1af63c0f0016c766dd2703abc657bec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API const __dpctl_give char *</type>
+        <definition>DPCTL_API const __dpctl_give char* DPCTLDevice_GetVendor</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_GetVendor</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a C string corresponding to the vendor name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A C string containing the OpenCL device vendor name. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="278" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="278" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gada8dabfcfaf6a76079dd64fdf07d19a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API bool</type>
+        <definition>DPCTL_API bool DPCTLDevice_HasAspect</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef, DPCTLSyclAspectType AT)</argsstring>
+        <name>DPCTLDevice_HasAspect</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <param>
+          <type><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389" kindref="member">DPCTLSyclAspectType</ref></type>
+          <declname>AT</declname>
+        </param>
+        <briefdescription>
+<para>Checks if device has aspect. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>AT</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DPCTLSyclAspectType of <computeroutput>device::aspect</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if sycl::device has device::aspect, else false. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="315" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="315" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="d4/d5a/dpctl__sycl__device__interface_8h_1a28538fa8029a6d4c7ff4d972ec690b97" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API size_t</type>
+        <definition>DPCTL_API size_t DPCTLDevice_Hash</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_Hash</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over std::hash&lt;sycl::device&gt;&apos;s operator() </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns hash value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="589" column="8" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="589" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga00b3410f618ec90c88a3d892b62e3409" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API bool</type>
+        <definition>DPCTL_API bool DPCTLDevice_IsAccelerator</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_IsAccelerator</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns true if this SYCL device is an OpenCL device and the device type is <computeroutput>sycl::info::device_type::accelerator</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the device type is an accelerator, else False. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="99" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="99" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gab5f205e2cc7e3112c6265c0ffdffaa57" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API bool</type>
+        <definition>DPCTL_API bool DPCTLDevice_IsCPU</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_IsCPU</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns true if this SYCL device is an OpenCL device and the device type is <computeroutput>sycl::info::device_type::cpu</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the device type is a cpu, else False. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="110" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="110" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gaf8f14aedc1fd3b836bd07c2e4be5d541" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API bool</type>
+        <definition>DPCTL_API bool DPCTLDevice_IsGPU</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_IsGPU</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns true if this SYCL device is an OpenCL device and the device type is <computeroutput>sycl::info::device_type::gpu</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the device type is a gpu, else False. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="121" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="121" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1gabad898eaf8374c3259598a140e7abd7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API bool</type>
+        <definition>DPCTL_API bool DPCTLDevice_IsHost</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_IsHost</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns true if this SYCL device is a host device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the device is a host device, else False. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="131" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="131" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="db/dd1/group___device_interface_1ga4ff6d7f04e60ee4afd68010348a5f65c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API bool</type>
+        <definition>DPCTL_API bool DPCTLDevice_IsHostUnifiedMemory</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDevice_IsHostUnifiedMemory</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns True if the device and the host share a unified memory subsystem, else returns False. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Boolean indicating if the device shares a unified memory subsystem with the host. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" line="290" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h" declline="290" declcolumn="6"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>This header declares a C interface to sycl::device. Not all of the device API is exposed, only the bits needed in other places like context and queue interfaces. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//===-----<sp/>dpctl_sycl_device_interface.h<sp/>-<sp/>C<sp/>API<sp/>for<sp/>sycl::device<sp/>-*-C++-*-<sp/>==//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Data<sp/>Parallel<sp/>Control<sp/>(dpctl)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Copyright<sp/>2020-2021<sp/>Intel<sp/>Corporation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Licensed<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the<sp/>&quot;License&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">//<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance<sp/>with<sp/>the<sp/>License.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">//<sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,<sp/>software</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>See<sp/>the<sp/>License<sp/>for<sp/>the<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//<sp/>limitations<sp/>under<sp/>the<sp/>License.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//===----------------------------------------------------------------------===//</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"></highlight><highlight class="comment">//===----------------------------------------------------------------------===//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;Support/DllExport.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;Support/ExternC.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;Support/MemOwnershipAttrs.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;dpctl_data_types.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="de/d2f/dpctl__sycl__device__manager_8h" kindref="compound">dpctl_sycl_device_manager.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="d3/d94/dpctl__sycl__enum__types_8h" kindref="compound">dpctl_sycl_enum_types.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="df/d57/dpctl__sycl__types_8h" kindref="compound">dpctl_sycl_types.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal">DPCTL_C_EXTERN_C_BEGIN</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="53"><highlight class="normal">__dpctl_give<sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1ga02c7b900248b1aac0fe096c874c71c2b" kindref="member">DPCTLDevice_Copy</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="65"><highlight class="normal">__dpctl_give<sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/><ref refid="db/dd1/group___device_interface_1gaa0f24449bcf7721e2a23cc6b2c1d291a" kindref="member">DPCTLDevice_Create</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="78"><highlight class="normal">__dpctl_give<sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/><ref refid="db/dd1/group___device_interface_1ga371463122c4ec271be68364d1e9a284d" kindref="member">DPCTLDevice_CreateFromSelector</ref>(</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/>__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83" kindref="member">DPCTLSyclDeviceSelectorRef</ref><sp/>DSRef);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="db/dd1/group___device_interface_1ga062853b5082debfcae7d7b840907b667" kindref="member">DPCTLDevice_Delete</ref>(__dpctl_take<sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="db/dd1/group___device_interface_1ga00b3410f618ec90c88a3d892b62e3409" kindref="member">DPCTLDevice_IsAccelerator</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="db/dd1/group___device_interface_1gab5f205e2cc7e3112c6265c0ffdffaa57" kindref="member">DPCTLDevice_IsCPU</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="db/dd1/group___device_interface_1gaf8f14aedc1fd3b836bd07c2e4be5d541" kindref="member">DPCTLDevice_IsGPU</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="db/dd1/group___device_interface_1gabad898eaf8374c3259598a140e7abd7c" kindref="member">DPCTLDevice_IsHost</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" kindref="member">DPCTLSyclBackendType</ref></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1gac031eb6d9209db0c88c545e221d37692" kindref="member">DPCTLDevice_GetBackend</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff" kindref="member">DPCTLSyclDeviceType</ref></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1ga312596705e48023c62735ca1fe7a380f" kindref="member">DPCTLDevice_GetDeviceType</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="166"><highlight class="normal">__dpctl_give<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1gacb59e0e106b1538a8e974db4fed7228c" kindref="member">DPCTLDevice_GetDriverVersion</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="177"><highlight class="normal">uint32_t</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1gac9635668177d01284e64d1d4373a391a" kindref="member">DPCTLDevice_GetMaxComputeUnits</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="188"><highlight class="normal">uint64_t</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1gaa0035ff7868faf6763f1543b14dc5dee" kindref="member">DPCTLDevice_GetGlobalMemSize</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="199"><highlight class="normal">uint64_t</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1ga6b9c79792534de95e407fc57c4f3a559" kindref="member">DPCTLDevice_GetLocalMemSize</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="209"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="210"><highlight class="normal">uint32_t</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1ga365748d856fa3af3fe3ed288bb19c55a" kindref="member">DPCTLDevice_GetMaxWorkItemDims</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight></codeline>
+<codeline lineno="220"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="221"><highlight class="normal">__dpctl_keep<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>*</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1gac5292cd7933df4ef7fb15a3d0d05d463" kindref="member">DPCTLDevice_GetMaxWorkItemSizes</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"></highlight></codeline>
+<codeline lineno="231"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1gaffdc9aeff99885627cd26364df7479de" kindref="member">DPCTLDevice_GetMaxWorkGroupSize</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"></highlight></codeline>
+<codeline lineno="242"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="243"><highlight class="normal">uint32_t</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1ga6c5a99a6da732f5cee47a09ff1559a30" kindref="member">DPCTLDevice_GetMaxNumSubGroups</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="255"><highlight class="normal">__dpctl_give<sp/><ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref></highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1ga7a5b8354f2f4937eb0b6229ba8436ecc" kindref="member">DPCTLDevice_GetPlatform</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"></highlight></codeline>
+<codeline lineno="265"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="266"><highlight class="normal">__dpctl_give<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1ga36ca01c406d1200b56e94a98595ffb0d" kindref="member">DPCTLDevice_GetName</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"></highlight></codeline>
+<codeline lineno="276"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="277"><highlight class="normal">__dpctl_give<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1gae1af63c0f0016c766dd2703abc657bec" kindref="member">DPCTLDevice_GetVendor</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="db/dd1/group___device_interface_1ga4ff6d7f04e60ee4afd68010348a5f65c" kindref="member">DPCTLDevice_IsHostUnifiedMemory</ref>(</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/>__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"></highlight></codeline>
+<codeline lineno="302"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="db/dd1/group___device_interface_1gaba5f155a106aa09f770639cc22ee0ddd" kindref="member">DPCTLDevice_AreEq</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef1,</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef2);</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"></highlight></codeline>
+<codeline lineno="314"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="db/dd1/group___device_interface_1gada8dabfcfaf6a76079dd64fdf07d19a2" kindref="member">DPCTLDevice_HasAspect</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef,</highlight></codeline>
+<codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389" kindref="member">DPCTLSyclAspectType</ref><sp/>AT);</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"></highlight></codeline>
+<codeline lineno="327"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="328"><highlight class="normal">uint32_t</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"><ref refid="d4/d5a/dpctl__sycl__device__interface_8h_1a9810a239416c53427e3742bfb72ea0a6" kindref="member">DPCTLDevice_GetMaxReadImageArgs</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="330"><highlight class="normal"></highlight></codeline>
+<codeline lineno="340"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="341"><highlight class="normal">uint32_t</highlight></codeline>
+<codeline lineno="342"><highlight class="normal"><ref refid="d4/d5a/dpctl__sycl__device__interface_8h_1a34dbd5b5dbde22ba5f1d5205de298d81" kindref="member">DPCTLDevice_GetMaxWriteImageArgs</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="343"><highlight class="normal"></highlight></codeline>
+<codeline lineno="353"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="354"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="355"><highlight class="normal"><ref refid="d4/d5a/dpctl__sycl__device__interface_8h_1ad1f6957fdc5fb51ed873fa444af17c13" kindref="member">DPCTLDevice_GetImage2dMaxWidth</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="356"><highlight class="normal"></highlight></codeline>
+<codeline lineno="366"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="367"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="368"><highlight class="normal"><ref refid="d4/d5a/dpctl__sycl__device__interface_8h_1a4ef25a38cbf63e618016302e8ebf480d" kindref="member">DPCTLDevice_GetImage2dMaxHeight</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="369"><highlight class="normal"></highlight></codeline>
+<codeline lineno="379"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="380"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="381"><highlight class="normal"><ref refid="d4/d5a/dpctl__sycl__device__interface_8h_1a775e74dcd25c38e1d1575df3262b6f60" kindref="member">DPCTLDevice_GetImage3dMaxWidth</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="382"><highlight class="normal"></highlight></codeline>
+<codeline lineno="392"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="393"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="394"><highlight class="normal"><ref refid="d4/d5a/dpctl__sycl__device__interface_8h_1ac041263954e4e4c2a5bf58eeb08c0b7e" kindref="member">DPCTLDevice_GetImage3dMaxHeight</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="395"><highlight class="normal"></highlight></codeline>
+<codeline lineno="405"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="406"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="407"><highlight class="normal"><ref refid="d4/d5a/dpctl__sycl__device__interface_8h_1ac64423a160a010d1841b36ae2ab48658" kindref="member">DPCTLDevice_GetImage3dMaxDepth</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="408"><highlight class="normal"></highlight></codeline>
+<codeline lineno="423"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="424"><highlight class="normal">__dpctl_give<sp/><ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref></highlight></codeline>
+<codeline lineno="425"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1ga75e3383f16c69d7ccb8377609e61964a" kindref="member">DPCTLDevice_CreateSubDevicesEqually</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef,</highlight></codeline>
+<codeline lineno="426"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>count);</highlight></codeline>
+<codeline lineno="427"><highlight class="normal"></highlight></codeline>
+<codeline lineno="441"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="442"><highlight class="normal">__dpctl_give<sp/><ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref></highlight></codeline>
+<codeline lineno="443"><highlight class="normal"><ref refid="db/dd1/group___device_interface_1ga794e3f46e0c4805e6eb56b55524fd3f9" kindref="member">DPCTLDevice_CreateSubDevicesByCounts</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef,</highlight></codeline>
+<codeline lineno="444"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__dpctl_keep<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>*counts,</highlight></codeline>
+<codeline lineno="445"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ncounts);</highlight></codeline>
+<codeline lineno="446"><highlight class="normal"></highlight></codeline>
+<codeline lineno="458"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="459"><highlight class="normal">__dpctl_give<sp/><ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref><sp/><ref refid="db/dd1/group___device_interface_1gae0b93c3e13a3882ba5599a7321a2253c" kindref="member">DPCTLDevice_CreateSubDevicesByAffinity</ref>(</highlight></codeline>
+<codeline lineno="460"><highlight class="normal"><sp/><sp/><sp/><sp/>__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef,</highlight></codeline>
+<codeline lineno="461"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670" kindref="member">DPCTLPartitionAffinityDomainType</ref><sp/>PartAffDomTy);</highlight></codeline>
+<codeline lineno="462"><highlight class="normal"></highlight></codeline>
+<codeline lineno="463"><highlight class="normal">DPCTL_C_EXTERN_C_END</highlight></codeline>
+<codeline lineno="464"><highlight class="normal"></highlight></codeline>
+<codeline lineno="474"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="475"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="db/dd1/group___device_interface_1gafd08f141480c1eb8eb243c88823e85b0" kindref="member">DPCTLDevice_GetSubGroupIndependentForwardProgress</ref>(</highlight></codeline>
+<codeline lineno="476"><highlight class="normal"><sp/><sp/><sp/><sp/>__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="477"><highlight class="normal"></highlight></codeline>
+<codeline lineno="487"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="488"><highlight class="normal">uint32_t<sp/><ref refid="db/dd1/group___device_interface_1ga3e46c34f5ec44d1a40f3fcd80452a526" kindref="member">DPCTLDevice_GetPreferredVectorWidthChar</ref>(</highlight></codeline>
+<codeline lineno="489"><highlight class="normal"><sp/><sp/><sp/><sp/>__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="490"><highlight class="normal"></highlight></codeline>
+<codeline lineno="500"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="501"><highlight class="normal">uint32_t<sp/><ref refid="db/dd1/group___device_interface_1gab23c05c90e4b3a3417253e52b5d88290" kindref="member">DPCTLDevice_GetPreferredVectorWidthShort</ref>(</highlight></codeline>
+<codeline lineno="502"><highlight class="normal"><sp/><sp/><sp/><sp/>__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="503"><highlight class="normal"></highlight></codeline>
+<codeline lineno="513"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="514"><highlight class="normal">uint32_t<sp/><ref refid="db/dd1/group___device_interface_1gaf43ca0045d4f4ebd0abd85a0c1b7dd47" kindref="member">DPCTLDevice_GetPreferredVectorWidthInt</ref>(</highlight></codeline>
+<codeline lineno="515"><highlight class="normal"><sp/><sp/><sp/><sp/>__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="516"><highlight class="normal"></highlight></codeline>
+<codeline lineno="526"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="527"><highlight class="normal">uint32_t<sp/><ref refid="db/dd1/group___device_interface_1ga76f48effcd21089c077673ccdfb615f9" kindref="member">DPCTLDevice_GetPreferredVectorWidthLong</ref>(</highlight></codeline>
+<codeline lineno="528"><highlight class="normal"><sp/><sp/><sp/><sp/>__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="529"><highlight class="normal"></highlight></codeline>
+<codeline lineno="539"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="540"><highlight class="normal">uint32_t<sp/><ref refid="db/dd1/group___device_interface_1ga24e82d7e0ebb66ce127f303309acb599" kindref="member">DPCTLDevice_GetPreferredVectorWidthFloat</ref>(</highlight></codeline>
+<codeline lineno="541"><highlight class="normal"><sp/><sp/><sp/><sp/>__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="542"><highlight class="normal"></highlight></codeline>
+<codeline lineno="552"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="553"><highlight class="normal">uint32_t<sp/><ref refid="db/dd1/group___device_interface_1gafa9c9d2c7e8c69f5ee48af4023cdef42" kindref="member">DPCTLDevice_GetPreferredVectorWidthDouble</ref>(</highlight></codeline>
+<codeline lineno="554"><highlight class="normal"><sp/><sp/><sp/><sp/>__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="555"><highlight class="normal"></highlight></codeline>
+<codeline lineno="565"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="566"><highlight class="normal">uint32_t<sp/><ref refid="db/dd1/group___device_interface_1ga6c7c492ae186724113bb5b3397cba77e" kindref="member">DPCTLDevice_GetPreferredVectorWidthHalf</ref>(</highlight></codeline>
+<codeline lineno="567"><highlight class="normal"><sp/><sp/><sp/><sp/>__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="568"><highlight class="normal"></highlight></codeline>
+<codeline lineno="577"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="578"><highlight class="normal">__dpctl_give<sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></highlight></codeline>
+<codeline lineno="579"><highlight class="normal"><ref refid="d4/d5a/dpctl__sycl__device__interface_8h_1acccdc3f034e6c5fd2a249907355169bc" kindref="member">DPCTLDevice_GetParentDevice</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+<codeline lineno="580"><highlight class="normal"></highlight></codeline>
+<codeline lineno="588"><highlight class="normal">DPCTL_API</highlight></codeline>
+<codeline lineno="589"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="d4/d5a/dpctl__sycl__device__interface_8h_1a28538fa8029a6d4c7ff4d972ec690b97" kindref="member">DPCTLDevice_Hash</ref>(__dpctl_keep<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref><sp/>DRef);</highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_interface.h"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,465 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dc/ddc/group___device_manager" kind="group">
+    <compoundname>DeviceManager</compoundname>
+    <title>Device class helper functions</title>
+      <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" prot="public" static="no">
+        <type>struct DPCTLDeviceVector *</type>
+        <definition>typedef struct DPCTLDeviceVector* DPCTLDeviceVectorRef</definition>
+        <argsstring></argsstring>
+        <name>DPCTLDeviceVectorRef</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" line="46" column="32" bodyfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="dc/ddc/group___device_manager_1gabb587f003e809eaef26d7dbd253ec88e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API <ref refid="df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08" kindref="member">DPCTLSyclContextRef</ref></type>
+        <definition>DPCTL_API DPCTLSyclContextRef DPCTLDeviceMgr_GetCachedContext</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDeviceMgr_GetCachedContext</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>If the DPCTLSyclDeviceRef argument is a root device, then this function returns a cached default SYCL context for that device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A pointer to a sycl::device that will be used to search an internal map containing a cached &quot;default&quot; sycl::context for the device. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A DPCTLSyclContextRef associated with the <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref> argument passed to the function. If the <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref> is not found in the cache, then returns a nullptr. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" line="130" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" declline="130" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="dc/ddc/group___device_manager_1ga9545c145c64cee5ec1591b5b78a0a72b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API const __dpctl_give char *</type>
+        <definition>DPCTL_API const __dpctl_give char* DPCTLDeviceMgr_GetDeviceInfoStr</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDeviceMgr_GetDeviceInfoStr</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a set of device info attributes as a string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::device</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A formatted C string capturing the following attributes:<itemizedlist>
+<listitem><para>device name</para>
+</listitem><listitem><para>driver version</para>
+</listitem><listitem><para>vendor</para>
+</listitem><listitem><para>profiler support</para>
+</listitem><listitem><para>oneapi filter string </para>
+</listitem></itemizedlist>
+</para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" line="93" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" declline="93" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="dc/ddc/group___device_manager_1gab7f1386fee08d194d4ad046221c02e18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLDeviceVectorRef DPCTLDeviceMgr_GetDevices</definition>
+        <argsstring>(int device_identifier)</argsstring>
+        <name>DPCTLDeviceMgr_GetDevices</name>
+        <param>
+          <type>int</type>
+          <declname>device_identifier</declname>
+        </param>
+        <briefdescription>
+<para>Returns a pointer to a std::vector&lt;sycl::DPCTLSyclDeviceRef&gt; containing the set of <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref> pointers matching the passed in device_identifier bit flag. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The device_identifier can be a combination of <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" kindref="member">DPCTLSyclBackendType</ref> and <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff" kindref="member">DPCTLSyclDeviceType</ref> bit flags. The function returns all devices that match the specified bit flags. For example,</para>
+<para><programlisting><codeline><highlight class="normal">//<sp/>Returns<sp/>all<sp/>opencl<sp/>devices</highlight></codeline>
+<codeline><highlight class="normal">DPCTLDeviceMgr_GetDevices(DPCTLSyclBackendType::DPCTL_OPENCL);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>Returns<sp/>all<sp/>opencl<sp/>gpu<sp/>devices</highlight></codeline>
+<codeline><highlight class="normal">DPCTLDeviceMgr_GetDevices(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DPCTLSyclBackendType::DPCTL_OPENCL|DPCTLSyclDeviceType::DPCTL_GPU);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>Returns<sp/>all<sp/>gpu<sp/>devices</highlight></codeline>
+<codeline><highlight class="normal">DPCTLDeviceMgr_GetDevices(DPCTLSyclDeviceType::DPCTL_GPU);</highlight></codeline>
+</programlisting></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device_identifier</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A bitflag that can be any combination of <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" kindref="member">DPCTLSyclBackendType</ref> and <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff" kindref="member">DPCTLSyclDeviceType</ref> enum values. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A <ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref> containing <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref> objects that match the device identifier bit flags. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" line="77" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" declline="77" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="dc/ddc/group___device_manager_1ga2578ffe4d41ef3adbb690ea99bb5f664" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API size_t</type>
+        <definition>DPCTL_API size_t DPCTLDeviceMgr_GetNumDevices</definition>
+        <argsstring>(int device_identifier)</argsstring>
+        <name>DPCTLDeviceMgr_GetNumDevices</name>
+        <param>
+          <type>int</type>
+          <declname>device_identifier</declname>
+        </param>
+        <briefdescription>
+<para>Get the number of available devices for given backend and device type combination. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device_identifier</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Identifies a device using a combination of <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" kindref="member">DPCTLSyclBackendType</ref> and <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff" kindref="member">DPCTLSyclDeviceType</ref> enum values. The argument can be either one of the enum values or a bitwise OR-ed combination. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number of available devices satisfying the condition specified by the device_identifier bit flag. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" line="145" column="8" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" declline="145" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="dc/ddc/group___device_manager_1ga1f86861af1da6e44aa917f1c20285325" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API int</type>
+        <definition>DPCTL_API int DPCTLDeviceMgr_GetPositionInDevices</definition>
+        <argsstring>(__dpctl_keep DPCTLSyclDeviceRef DRef, int device_identifier)</argsstring>
+        <name>DPCTLDeviceMgr_GetPositionInDevices</name>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>device_identifier</declname>
+        </param>
+        <briefdescription>
+<para>Returns an index on the given device in the vector returned by <ref refid="dc/ddc/group___device_manager_1gab7f1386fee08d194d4ad046221c02e18" kindref="member">DPCTLDeviceMgr_GetDevices</ref> if found, -1 otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The device_identifier can be a combination of <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" kindref="member">DPCTLSyclBackendType</ref> and <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff" kindref="member">DPCTLSyclDeviceType</ref> bit flags. The function returns all devices that match the specified bit flags.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref> opaque pointer. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>device_identifier</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A bitflag that can be any combination of <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" kindref="member">DPCTLSyclBackendType</ref> and <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff" kindref="member">DPCTLSyclDeviceType</ref> enum values. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>If found, returns the position of the given device in the vector that would be returned by <ref refid="dc/ddc/group___device_manager_1gab7f1386fee08d194d4ad046221c02e18" kindref="member">DPCTLDeviceMgr_GetDevices</ref> if called with the same device_identifier argument. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" line="113" column="5" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" declline="113" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="dc/ddc/group___device_manager_1ga38db5431168d0d9883a62681b139762a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API int64_t</type>
+        <definition>DPCTL_API int64_t DPCTLDeviceMgr_GetRelativeId</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDeviceMgr_GetRelativeId</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Gives the index of the given device with respective to all the other devices of the same type in the device&apos;s platform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The relative device id of a device (Device) is computed by looking up the position of Device in the <computeroutput>std::vector</computeroutput> returned by calling the <computeroutput>get_devices(Device.get_info&lt;sycl::info::device::device_type&gt;())</computeroutput> function for Device&apos;s platform. A relative device id of -1 indicates that the relative id could not be computed.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref> opaque pointer. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A relative id corresponding to the device, -1 indicates that a relative id value could not be computed. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" line="174" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" declline="174" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="dc/ddc/group___device_manager_1ga4d424acf4bfc1365804d43aad4238846" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLDeviceMgr_PrintDeviceInfo</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDeviceMgr_PrintDeviceInfo</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Prints out the info::deivice attributes for the device that are currently supported by dpctl. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref> opaque pointer. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" line="155" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" declline="155" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="dc/ddc/group___device_manager_1gad1a650d77c292d10e48f76b5d10ec37f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLDeviceVector_Clear</definition>
+        <argsstring>(__dpctl_keep DPCTLDeviceVectorRef VRef)</argsstring>
+        <name>DPCTLDeviceVector_Clear</name>
+        <param>
+          <type>__dpctl_keep <ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref></type>
+          <declname>VRef</declname>
+        </param>
+        <briefdescription>
+<para>Delete all the elements of the std::vector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>VRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a vector. <linebreak/>
+ </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" line="46" column="287" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" declline="46" declcolumn="287"/>
+      </memberdef>
+      <memberdef kind="function" id="dc/ddc/group___device_manager_1ga6be92e91b53eaff1bedf7f333bac3f88" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__dpctl_give <ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref></type>
+        <definition>__dpctl_give DPCTLDeviceVectorRef DPCTLDeviceVector_Create</definition>
+        <argsstring>(void)</argsstring>
+        <name>DPCTLDeviceVector_Create</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Create an opaque pointer to a std::vector of opaque pointers wrapping the SYCL data type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Returns a new opaque pointer to a vector. <linebreak/>
+ </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" line="46" column="97" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" declline="46" declcolumn="97"/>
+      </memberdef>
+      <memberdef kind="function" id="dc/ddc/group___device_manager_1ga5d498e683c8a82f38b74bccf89ab85df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLDeviceVectorRef DPCTLDeviceVector_CreateFromArray</definition>
+        <argsstring>(size_t len, __dpctl_keep DPCTLSyclDeviceRef *elems)</argsstring>
+        <name>DPCTLDeviceVector_CreateFromArray</name>
+        <param>
+          <type>size_t</type>
+          <declname>len</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref> *</type>
+          <declname>elems</declname>
+        </param>
+        <briefdescription>
+<para>Create an opaque pointer to a std::vector created from the input raw array. The elements of the input array are deep copied before inserting the copies into the vector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>len</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of elements in the input array.</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>elems</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A C array whose elements will be copied into the returned vector. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns a new opaque pointer to a vector. <linebreak/>
+ </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" line="46" column="173" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" declline="46" declcolumn="173"/>
+      </memberdef>
+      <memberdef kind="function" id="dc/ddc/group___device_manager_1gaf53c39c7f54bf3d212a2fd8343ab0138" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLDeviceVector_Delete</definition>
+        <argsstring>(__dpctl_take DPCTLDeviceVectorRef VRef)</argsstring>
+        <name>DPCTLDeviceVector_Delete</name>
+        <param>
+          <type>__dpctl_take <ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref></type>
+          <declname>VRef</declname>
+        </param>
+        <briefdescription>
+<para>Delete all elements in the vector and then delete the vector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>VRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a vector to be deleted. <linebreak/>
+ </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" line="46" column="238" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" declline="46" declcolumn="238"/>
+      </memberdef>
+      <memberdef kind="function" id="dc/ddc/group___device_manager_1gaecf00f881483a91a46060bb21a12c12b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclDeviceRef DPCTLDeviceVector_GetAt</definition>
+        <argsstring>(__dpctl_keep DPCTLDeviceVectorRef VRef, size_t index)</argsstring>
+        <name>DPCTLDeviceVector_GetAt</name>
+        <param>
+          <type>__dpctl_keep <ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref></type>
+          <declname>VRef</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Returns the element at the specified index. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>VRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a vector.</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index postion of the element to be returned. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The element at the specified postion, if the index position is out of bounds then a nullptr is returned. <linebreak/>
+ </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" line="46" column="411" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" declline="46" declcolumn="411"/>
+      </memberdef>
+      <memberdef kind="function" id="dc/ddc/group___device_manager_1ga792de109fa69610d378487cdaf23cf7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API size_t</type>
+        <definition>DPCTL_API size_t DPCTLDeviceVector_Size</definition>
+        <argsstring>(__dpctl_keep DPCTLDeviceVectorRef VRef)</argsstring>
+        <name>DPCTLDeviceVector_Size</name>
+        <param>
+          <type>__dpctl_keep <ref refid="dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e" kindref="member">DPCTLDeviceVectorRef</ref></type>
+          <declname>VRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns the number of elements in the vector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>VRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a vector. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The current size of the vector. <linebreak/>
+ </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" line="46" column="337" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_manager.h" declline="46" declcolumn="337"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Helper functions for sycl::device objects that do not directly map to any sycl::device member function. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

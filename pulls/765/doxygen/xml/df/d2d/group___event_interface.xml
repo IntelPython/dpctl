@@ -1,0 +1,327 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="df/d2d/group___event_interface" kind="group">
+    <compoundname>EventInterface</compoundname>
+    <title>Event class C wrapper</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="df/d2d/group___event_interface_1ga0e67256b553c86cc2c01b8ba2ed18378" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclEventRef DPCTLEvent_Copy</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclEventRef ERef)</argsstring>
+        <name>DPCTLEvent_Copy</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+          <declname>ERef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a copy of the DPCTLSyclEventRef object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ERef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DPCTLSyclEventRef object to be copied. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A new DPCTLSyclEventRef created by copying the passed in DPCTLSyclEventRef object. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" line="94" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" declline="94" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d2d/group___event_interface_1ga9e1f10306d442c2253fd549fec3a045f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclEventRef DPCTLEvent_Create</definition>
+        <argsstring>(void)</argsstring>
+        <name>DPCTLEvent_Create</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>A wrapper for <computeroutput>sycl::event</computeroutput> contructor to construct a new event. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>An opaque DPCTLSyclEventRef pointer wrapping a <computeroutput>sycl::event</computeroutput>. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" line="53" column="32" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" declline="53" declcolumn="32"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d2d/group___event_interface_1gae16fbf7465ec6d86a63e042100feba77" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLEvent_Delete</definition>
+        <argsstring>(__dpctl_take DPCTLSyclEventRef ERef)</argsstring>
+        <name>DPCTLEvent_Delete</name>
+        <param>
+          <type>__dpctl_take <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+          <declname>ERef</declname>
+        </param>
+        <briefdescription>
+<para>Deletes the DPCTLSyclEventRef after casting it to a <computeroutput>sycl::event</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ERef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque DPCTLSyclEventRef pointer that would be freed. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" line="82" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" declline="82" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d2d/group___event_interface_1ga30a3bc34163bac7dcb7d03b5666e157c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" kindref="member">DPCTLSyclBackendType</ref></type>
+        <definition>DPCTL_API DPCTLSyclBackendType DPCTLEvent_GetBackend</definition>
+        <argsstring>(__dpctl_keep DPCTLSyclEventRef ERef)</argsstring>
+        <name>DPCTLEvent_GetBackend</name>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+          <declname>ERef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a DPCTLSyclBackendType enum value identifying the SYCL backend associated with the event. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ERef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::event</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A DPCTLSyclBackendType enum value identifying the SYCL backend associated with the event. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" line="106" column="22" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" declline="106" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d2d/group___event_interface_1gaba5717c1481def3ceb1fc0ee6c3dabe9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1ac950d7ef3975b7c553971613f4a27021" kindref="member">DPCTLSyclEventStatusType</ref></type>
+        <definition>DPCTL_API DPCTLSyclEventStatusType DPCTLEvent_GetCommandExecutionStatus</definition>
+        <argsstring>(__dpctl_keep DPCTLSyclEventRef ERef)</argsstring>
+        <name>DPCTLEvent_GetCommandExecutionStatus</name>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+          <declname>ERef</declname>
+        </param>
+        <briefdescription>
+<para>Returns the DPCTLSyclEventStatusType enum value for the DPCTLSyclEventRef argument. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ERef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::event</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The DPCTLSyclDEventStatusType value corresponding to the event. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" line="118" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" declline="118" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d2d/group___event_interface_1ga87d98a9b0d6d7de64cf10b7782a746dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint64_t</type>
+        <definition>DPCTL_API uint64_t DPCTLEvent_GetProfilingInfoEnd</definition>
+        <argsstring>(__dpctl_keep DPCTLSyclEventRef ERef)</argsstring>
+        <name>DPCTLEvent_GetProfilingInfoEnd</name>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+          <declname>ERef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over <computeroutput>event.get_profiling_info&lt;info::event_profiling::command_end&gt;()</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ERef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::event</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns a value describing the time in nanoseconds when the action associated with the command group (e.g. kernel invocation) finished executing on the device. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" line="156" column="10" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" declline="156" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d2d/group___event_interface_1ga82b888e75071bab550a39257f32ef993" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint64_t</type>
+        <definition>DPCTL_API uint64_t DPCTLEvent_GetProfilingInfoStart</definition>
+        <argsstring>(__dpctl_keep DPCTLSyclEventRef ERef)</argsstring>
+        <name>DPCTLEvent_GetProfilingInfoStart</name>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+          <declname>ERef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over <computeroutput>event.get_profiling_info&lt;info::event_profiling::command_start&gt;()</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ERef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::event</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns a value describing the time in nanoseconds when the action associated with the command group (e.g. kernel invocation) started executing on the device. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" line="143" column="10" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" declline="143" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d2d/group___event_interface_1gaa1e8ec801992e1fdb0836463f73fcc85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API uint64_t</type>
+        <definition>DPCTL_API uint64_t DPCTLEvent_GetProfilingInfoSubmit</definition>
+        <argsstring>(__dpctl_keep DPCTLSyclEventRef ERef)</argsstring>
+        <name>DPCTLEvent_GetProfilingInfoSubmit</name>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+          <declname>ERef</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper over <computeroutput>event.get_profiling_info&lt;info::event_profiling::command_submit&gt;()</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ERef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::event</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns a value describing the time in nanoseconds when the associated command group was submitted to the queue. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" line="130" column="10" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" declline="130" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d2d/group___event_interface_1ga77eab99e200776384c7c345c0f2011c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02" kindref="member">DPCTLEventVectorRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLEventVectorRef DPCTLEvent_GetWaitList</definition>
+        <argsstring>(__dpctl_keep DPCTLSyclEventRef ERef)</argsstring>
+        <name>DPCTLEvent_GetWaitList</name>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+          <declname>ERef</declname>
+        </param>
+        <briefdescription>
+<para>C-API wrapper for <computeroutput>sycl::event::get_wait_list</computeroutput>. Returns a vector of events that this event still waits for. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ERef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::event</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A DPCTLEventVectorRef of DPCTLSyclEventRef objects. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" line="168" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" declline="168" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d2d/group___event_interface_1ga3befe2587ca487628646214b7cf3b96e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLEvent_Wait</definition>
+        <argsstring>(__dpctl_keep DPCTLSyclEventRef ERef)</argsstring>
+        <name>DPCTLEvent_Wait</name>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+          <declname>ERef</declname>
+        </param>
+        <briefdescription>
+<para>C-API wrapper for sycl::event.wait. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ERef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque DPCTLSyclEventRef pointer on which to wait. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" line="63" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" declline="63" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d2d/group___event_interface_1ga4b955b64cc76d942f20384e4fd566bbf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLEvent_WaitAndThrow</definition>
+        <argsstring>(__dpctl_keep DPCTLSyclEventRef ERef)</argsstring>
+        <name>DPCTLEvent_WaitAndThrow</name>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03" kindref="member">DPCTLSyclEventRef</ref></type>
+          <declname>ERef</declname>
+        </param>
+        <briefdescription>
+<para>C-API wrapper for &apos;sycl::event.wait_and_throw&apos;. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ERef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a <computeroutput>sycl::event</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" line="72" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_event_interface.h" declline="72" declcolumn="6"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="da/dbd/group___platform_interface" kind="group">
+    <compoundname>PlatformInterface</compoundname>
+    <title>Platform class C wrapper</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="da/dbd/group___platform_interface_1ga5bddf303912d4344608af42735dfd6f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_Copy</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclPlatformRef PRef)</argsstring>
+        <name>DPCTLPlatform_Copy</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref></type>
+          <declname>PRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a copy of the DPCTLSyclPlatformRef object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>PRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DPCTLSyclPlatformRef object to be copied. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A new DPCTLSyclPlatformRef created by copying the passed in DPCTLSyclPlatformRef object. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" line="52" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" declline="52" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="da/dbd/group___platform_interface_1ga6b3412dfc90659a68beb778747211115" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_Create</definition>
+        <argsstring>(void)</argsstring>
+        <name>DPCTLPlatform_Create</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Creates a new DPCTLSyclPlatformRef for a SYCL platform constructed using SYCL&apos;s default_selector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A new DPCTLSyclPlatformRef pointer wrapping a SYCL platform object. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" line="62" column="35" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" declline="62" declcolumn="35"/>
+      </memberdef>
+      <memberdef kind="function" id="da/dbd/group___platform_interface_1ga71cf26d634573b7cc86b013f65374015" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclDeviceSelectorRef DSRef)</argsstring>
+        <name>DPCTLPlatform_CreateFromSelector</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83" kindref="member">DPCTLSyclDeviceSelectorRef</ref></type>
+          <declname>DSRef</declname>
+        </param>
+        <briefdescription>
+<para>Creates a new DPCTLSyclPlatformRef for a SYCL platform constructed using the device_selector wrapped by DPCTLSyclDeviceSelectorRef. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DSRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to a SYCL device_selector object. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A new DPCTLSyclPlatformRef pointer wrapping a SYCL platform object. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" line="73" column="35" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" declline="73" declcolumn="35"/>
+      </memberdef>
+      <memberdef kind="function" id="da/dbd/group___platform_interface_1gaa29d07ce2e25dda5ab2e19cba0e18be9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLPlatform_Delete</definition>
+        <argsstring>(__dpctl_take DPCTLSyclPlatformRef PRef)</argsstring>
+        <name>DPCTLPlatform_Delete</name>
+        <param>
+          <type>__dpctl_take <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref></type>
+          <declname>PRef</declname>
+        </param>
+        <briefdescription>
+<para>Deletes the DPCTLSyclProgramRef pointer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>PRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque pointer to a sycl::platform. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" line="83" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" declline="83" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="da/dbd/group___platform_interface_1ga1e33f8b1f629151fb9a20cdf983b3370" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API <ref refid="d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933" kindref="member">DPCTLSyclBackendType</ref></type>
+        <definition>DPCTL_API DPCTLSyclBackendType DPCTLPlatform_GetBackend</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclPlatformRef PRef)</argsstring>
+        <name>DPCTLPlatform_GetBackend</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref></type>
+          <declname>PRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a DPCTLSyclBackendType enum value identifying the SYCL backend associated with the platform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>PRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::platform </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A DPCTLSyclBackendType enum value identifying the SYCL backend associated with the platform. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" line="96" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" declline="96" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="da/dbd/group___platform_interface_1ga41ed6567a6cd47bc50a099d7a18e93e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API const __dpctl_give char *</type>
+        <definition>DPCTL_API const __dpctl_give char* DPCTLPlatform_GetName</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclPlatformRef PRef)</argsstring>
+        <name>DPCTLPlatform_GetName</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref></type>
+          <declname>PRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a C string for the platform name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>PRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::platform </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A C string containing the name of the sycl::platform. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" line="107" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" declline="107" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="da/dbd/group___platform_interface_1gacdbf951bfb74e4578af431fa2a7063cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="d5/dcf/group___platform_manager_1ga18dc8588af45614eb2f4a9f7b25a6047" kindref="member">DPCTLPlatformVectorRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms</definition>
+        <argsstring>(void)</argsstring>
+        <name>DPCTLPlatform_GetPlatforms</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Returns an opaque pointer to a vector of SYCL platforms available on the system. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A <ref refid="d5/dcf/group___platform_manager_1ga18dc8588af45614eb2f4a9f7b25a6047" kindref="member">DPCTLPlatformVectorRef</ref> containing <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref> objects. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" line="143" column="37" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" declline="143" declcolumn="37"/>
+      </memberdef>
+      <memberdef kind="function" id="da/dbd/group___platform_interface_1ga06c2a3e1b352081fcc0cd7ae55b97766" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API const __dpctl_give char *</type>
+        <definition>DPCTL_API const __dpctl_give char* DPCTLPlatform_GetVendor</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclPlatformRef PRef)</argsstring>
+        <name>DPCTLPlatform_GetVendor</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref></type>
+          <declname>PRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns a C string corresponding to the vendor providing the platform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>PRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::platform </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A C string containing the name of the vendor provifing the platform. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" line="119" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" declline="119" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="da/dbd/group___platform_interface_1ga794fb8c5be5cf2a48f63c407cb05bc1f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API const __dpctl_give char *</type>
+        <definition>DPCTL_API const __dpctl_give char* DPCTLPlatform_GetVersion</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclPlatformRef PRef)</argsstring>
+        <name>DPCTLPlatform_GetVersion</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0" kindref="member">DPCTLSyclPlatformRef</ref></type>
+          <declname>PRef</declname>
+        </param>
+        <briefdescription>
+<para>Returns the software driver version of the sycl::platform as a C string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>PRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opaque pointer to a sycl::platform </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A C string containing the software driver version of the device associated with the platform. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" line="132" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_platform_interface.h" declline="132" declcolumn="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

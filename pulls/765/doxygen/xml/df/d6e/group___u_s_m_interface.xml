@@ -1,0 +1,465 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="df/d6e/group___u_s_m_interface" kind="group">
+    <compoundname>USMInterface</compoundname>
+    <title>USM Interface</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="df/d6e/group___u_s_m_interface_1ga40c3e68d157d775bbe6daa188b84b3e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclUSMRef DPCTLaligned_alloc_device</definition>
+        <argsstring>(size_t alignment, size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLaligned_alloc_device</name>
+        <param>
+          <type>size_t</type>
+          <declname>alignment</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Create USM device memory. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>alignment</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Allocation&apos;s byte alignment </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bytes to allocate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl queue reference to use in allocation</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The pointer to USM device memory with requested alignment. On failure, returns nullptr. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" line="126" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" declline="126" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d6e/group___u_s_m_interface_1ga327bba1e6a5a1f6922e74ab6914e58ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclUSMRef DPCTLaligned_alloc_host</definition>
+        <argsstring>(size_t alignment, size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLaligned_alloc_host</name>
+        <param>
+          <type>size_t</type>
+          <declname>alignment</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Create USM host memory. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>alignment</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Allocation&apos;s byte alignment </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bytes to allocate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl queue reference to use in allocation</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The pointer to USM host memory with the requested alignment. On failure, returns nullptr. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" line="96" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" declline="96" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d6e/group___u_s_m_interface_1ga7c3e58848a979723dc350d2a8016edd8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclUSMRef DPCTLaligned_alloc_shared</definition>
+        <argsstring>(size_t alignment, size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLaligned_alloc_shared</name>
+        <param>
+          <type>size_t</type>
+          <declname>alignment</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Create USM shared memory. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>alignment</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Allocation&apos;s byte alignment </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bytes to allocate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl queue reference to use in allocation</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The pointer to USM shared memory with the requested alignment. On failure, returns nullptr. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" line="66" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" declline="66" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d6e/group___u_s_m_interface_1gad1da9c1cb7fca0b3c1bc0edc9467c0a9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLfree_with_context</definition>
+        <argsstring>(__dpctl_take DPCTLSyclUSMRef MRef, __dpctl_keep const DPCTLSyclContextRef CRef)</argsstring>
+        <name>DPCTLfree_with_context</name>
+        <param>
+          <type>__dpctl_take <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
+          <declname>MRef</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08" kindref="member">DPCTLSyclContextRef</ref></type>
+          <declname>CRef</declname>
+        </param>
+        <briefdescription>
+<para>Free USM memory. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>MRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>USM pointer to free </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>CRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl context reference to use. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" line="151" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" declline="151" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d6e/group___u_s_m_interface_1ga0d8486b09ea0a677a3fb6cbe677f8633" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLfree_with_queue</definition>
+        <argsstring>(__dpctl_take DPCTLSyclUSMRef MRef, __dpctl_keep const DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLfree_with_queue</name>
+        <param>
+          <type>__dpctl_take <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
+          <declname>MRef</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Free USM memory. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>MRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>USM pointer to free </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl queue reference to use.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+USM pointer must have been allocated using the same context as the one used to construct the queue. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" line="141" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" declline="141" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d6e/group___u_s_m_interface_1gac1927ffcb3ca7ef43366a8b64e211ef2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclUSMRef DPCTLmalloc_device</definition>
+        <argsstring>(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLmalloc_device</name>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Create USM device memory. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bytes to allocate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl queue reference to use in allocation</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The pointer to USM device memory. On failure, returns nullptr. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" line="111" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" declline="111" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d6e/group___u_s_m_interface_1ga699b56970ac78f3b3ca87a2ad6ff4615" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclUSMRef DPCTLmalloc_host</definition>
+        <argsstring>(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLmalloc_host</name>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Create USM host memory. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bytes to allocate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl queue reference to use in allocation</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The pointer to USM host memory. On failure, returns nullptr. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" line="81" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" declline="81" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d6e/group___u_s_m_interface_1ga7c9316842db74f4730fab04a4e4f4eb5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclUSMRef DPCTLmalloc_shared</definition>
+        <argsstring>(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)</argsstring>
+        <name>DPCTLmalloc_shared</name>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a" kindref="member">DPCTLSyclQueueRef</ref></type>
+          <declname>QRef</declname>
+        </param>
+        <briefdescription>
+<para>Create USM shared memory. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bytes to allocate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>QRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl queue reference to use in allocation</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The pointer to USM shared memory. On failure, returns nullptr. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" line="51" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" declline="51" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d6e/group___u_s_m_interface_1ga7ebb5012408e40e3e78b4da551da8412" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+        <definition>DPCTL_API DPCTLSyclDeviceRef DPCTLUSM_GetPointerDevice</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclUSMRef MRef, __dpctl_keep const DPCTLSyclContextRef CRef)</argsstring>
+        <name>DPCTLUSM_GetPointerDevice</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
+          <declname>MRef</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08" kindref="member">DPCTLSyclContextRef</ref></type>
+          <declname>CRef</declname>
+        </param>
+        <briefdescription>
+<para>Get the device associated with USM pointer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>MRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>USM pointer </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>CRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl context reference associated with the pointer</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A DPCTLSyclDeviceRef pointer to the sycl device. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" line="179" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" declline="179" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="df/d6e/group___u_s_m_interface_1ga1e8658653d946578f1b4deb3333ec41c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const DPCTL_API char *</type>
+        <definition>const DPCTL_API char* DPCTLUSM_GetPointerType</definition>
+        <argsstring>(__dpctl_keep const DPCTLSyclUSMRef MRef, __dpctl_keep const DPCTLSyclContextRef CRef)</argsstring>
+        <name>DPCTLUSM_GetPointerType</name>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6" kindref="member">DPCTLSyclUSMRef</ref></type>
+          <declname>MRef</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep const <ref refid="df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08" kindref="member">DPCTLSyclContextRef</ref></type>
+          <declname>CRef</declname>
+        </param>
+        <briefdescription>
+<para>Get pointer type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>MRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>USM Memory </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>CRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sycl context reference associated with the pointer</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>&quot;host&quot;, &quot;device&quot;, &quot;shared&quot; or &quot;unknown&quot; </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" line="165" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_usm_interface.h" declline="165" declcolumn="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,213 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="d8/d27/group___device_selectors" kind="group">
+    <compoundname>DeviceSelectors</compoundname>
+    <title>Device selection</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="d8/d27/group___device_selectors_1gaa8a810bcbfd1c1f74d44b2da6a50ef3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83" kindref="member">DPCTLSyclDeviceSelectorRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLAcceleratorSelector_Create</definition>
+        <argsstring>(void)</argsstring>
+        <name>DPCTLAcceleratorSelector_Create</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Returns an opaque wrapper for sycl::accelerator_selector object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>An opaque pointer to a sycl::accelerator_selector object. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" line="47" column="41" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" declline="47" declcolumn="41"/>
+      </memberdef>
+      <memberdef kind="function" id="d8/d27/group___device_selectors_1ga977605ab08808729951c6c33ef22df52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83" kindref="member">DPCTLSyclDeviceSelectorRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create</definition>
+        <argsstring>(void)</argsstring>
+        <name>DPCTLCPUSelector_Create</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Returns an opaque wrapper for sycl::cpu_selector object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>An opaque pointer to a sycl::cpu_selector object. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" line="65" column="41" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" declline="65" declcolumn="41"/>
+      </memberdef>
+      <memberdef kind="function" id="d8/d27/group___device_selectors_1gadf9585e3b7e81b40abc15c843ba99aa8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83" kindref="member">DPCTLSyclDeviceSelectorRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLDefaultSelector_Create</definition>
+        <argsstring>(void)</argsstring>
+        <name>DPCTLDefaultSelector_Create</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Returns an opaque wrapper for sycl::default_selector object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>An opaque pointer to a sycl::default_selector object. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" line="56" column="41" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" declline="56" declcolumn="41"/>
+      </memberdef>
+      <memberdef kind="function" id="d8/d27/group___device_selectors_1ga30678acd2383c56d7eb78bf99b7bcf7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API void</type>
+        <definition>DPCTL_API void DPCTLDeviceSelector_Delete</definition>
+        <argsstring>(__dpctl_take DPCTLSyclDeviceSelectorRef DSRef)</argsstring>
+        <name>DPCTLDeviceSelector_Delete</name>
+        <param>
+          <type>__dpctl_take <ref refid="df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83" kindref="member">DPCTLSyclDeviceSelectorRef</ref></type>
+          <declname>DSRef</declname>
+        </param>
+        <briefdescription>
+<para>Deletes the DPCTLSyclDeviceSelectorRef after casting it to a sycl::device_selector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DSRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque DPCTLSyclDeviceSelectorRef pointer that would be freed. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" line="107" column="6" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" declline="107" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="d8/d27/group___device_selectors_1gab3f9bab0a2fcfeaf7858d264cca1253f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API int</type>
+        <definition>DPCTL_API int DPCTLDeviceSelector_Score</definition>
+        <argsstring>(__dpctl_keep DPCTLSyclDeviceSelectorRef DSRef, __dpctl_keep DPCTLSyclDeviceRef DRef)</argsstring>
+        <name>DPCTLDeviceSelector_Score</name>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83" kindref="member">DPCTLSyclDeviceSelectorRef</ref></type>
+          <declname>DSRef</declname>
+        </param>
+        <param>
+          <type>__dpctl_keep <ref refid="df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d" kindref="member">DPCTLSyclDeviceRef</ref></type>
+          <declname>DRef</declname>
+        </param>
+        <briefdescription>
+<para>Scores the device specified by DRef by device selector specified by DSRef. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DSRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque DPCTLSyclDeviceSelectorRef pointer. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>DRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An opaque DPCTLSyclDeviceRef pointer.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A integer score. The negative value indicates select rejected the device. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" line="121" column="5" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" declline="121" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="d8/d27/group___device_selectors_1ga1cfad5b95c7793766cf863378cdccf3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83" kindref="member">DPCTLSyclDeviceSelectorRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLFilterSelector_Create</definition>
+        <argsstring>(__dpctl_keep const char *filter_str)</argsstring>
+        <name>DPCTLFilterSelector_Create</name>
+        <param>
+          <type>__dpctl_keep const char *</type>
+          <declname>filter_str</declname>
+        </param>
+        <briefdescription>
+<para>Returns an opaque wrapper for sycl::ONEAPI::filter_selector object based on the passed in filter string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>filter_str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A C string providing a filter based on which to create a device_selector. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An opaque pointer to a sycl::ONEAPI::filter_selector object. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" line="78" column="1" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" declline="78" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="d8/d27/group___device_selectors_1ga1dabb6a4adf35a193d6d05240d8ed534" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83" kindref="member">DPCTLSyclDeviceSelectorRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create</definition>
+        <argsstring>(void)</argsstring>
+        <name>DPCTLGPUSelector_Create</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Returns an opaque wrapper for sycl::gpu_selector object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>An opaque pointer to a sycl::gpu_selector object. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" line="87" column="41" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" declline="87" declcolumn="41"/>
+      </memberdef>
+      <memberdef kind="function" id="d8/d27/group___device_selectors_1ga3034644611fde17dd85949705d61e25d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>DPCTL_API __dpctl_give <ref refid="df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83" kindref="member">DPCTLSyclDeviceSelectorRef</ref></type>
+        <definition>DPCTL_API __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create</definition>
+        <argsstring>(void)</argsstring>
+        <name>DPCTLHostSelector_Create</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Returns an opaque wrapper for sycl::host_selector object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>An opaque pointer to a sycl::host_selector object. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" line="96" column="41" declfile="/home/runner/work/dpctl/dpctl/libsyclinterface/include/dpctl_sycl_device_selector_interface.h" declline="96" declcolumn="41"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>
