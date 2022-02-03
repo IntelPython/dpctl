@@ -1,6 +1,3 @@
-cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
-project("Data-parallel Control (dpctl)")
-
 # Option to generate rst for C API and add to Sphinx documentation
 option(DPCTL_ENABLE_DOXYREST
     "Enable generation of rst files for C API"
@@ -55,7 +52,6 @@ function(_setup_doxygen)
     # Target to generate only Doxygen documentation
     add_custom_target(
         Doxygen
-        ALL
         DEPENDS ${DOXYGEN_INDEX_FILE}
     )
 endfunction()
@@ -95,7 +91,6 @@ function(_setup_doxyrest)
     # Target to generate rst from Doxygen XML using Doxyrest
     add_custom_target(
         Doxyrest
-        ALL
         DEPENDS Doxygen ${DOXYREST_OUTPUT}
     )
 endfunction()
@@ -147,7 +142,6 @@ function(_setup_sphinx)
     # important, we want the rst files to generate prior to sphinx build.
     add_custom_target(
         Sphinx
-        ALL
         DEPENDS
             ${DEPEND_ON_DOXYREST}
             ${DPCTL_PYAPI_RST_FILE}
@@ -196,12 +190,7 @@ if (DPCTL_ENABLE_DOXYREST)
 endif()
 
 # Set the location where the generated docs are saved
-if(DPCTL_DOCGEN_PREFIX)
-    message(STATUS "Generating dpctl documents in " ${DPCTL_DOCGEN_PREFIX})
-    set(DOC_OUTPUT_DIR ${DPCTL_DOCGEN_PREFIX})
-else()
-    set(DOC_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated_docs)
-endif()
+set(DOC_OUTPUT_DIR ${CMAKE_INSTALL_PREFIX}/docs)
 
 set(INDEX_NO_DOXYREST_IN ${CMAKE_CURRENT_SOURCE_DIR}/index_no_doxyrest.rst.in)
 set(INDEX_DOXYREST_IN ${CMAKE_CURRENT_SOURCE_DIR}/index_doxyrest.rst.in)

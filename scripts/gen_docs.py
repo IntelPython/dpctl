@@ -21,58 +21,86 @@ import sys
 
 def run(
     use_oneapi=True,
-    build_type="Release",
     c_compiler=None,
     cxx_compiler=None,
     level_zero=True,
     compiler_root=None,
-    cmake_executable=None,
-    use_glog=False,
+    bin_llvm=None,
+    doxyrest_dir=None,
 ):
-    build_system = None
+    IS_LIN = False
 
     if "linux" in sys.platform:
-        build_system = "Unix Makefiles"
+        IS_LIN = True
     elif sys.platform in ["win32", "cygwin"]:
-        build_system = "Ninja"
+        pass
     else:
         assert False, sys.platform + " not supported"
 
+    if not IS_LIN:
+        raise RuntimeError(
+            "This scripts only supports coverage collection on Linux"
+        )
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     cmake_args = [
         sys.executable,
         "setup.py",
         "develop",
-    ]
-    if cmake_executable:
-        cmake_args += [
-            "--cmake-executable=" + cmake_executable,
-        ]
-    cmake_args += [
         "--",
         "-G",
-        build_system,
-        "-DCMAKE_BUILD_TYPE=" + build_type,
+        "Unix Makefiles",
+        "-DCMAKE_BUILD_TYPE=Debug",
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
         "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=" + ("ON" if level_zero else "OFF"),
         "-DDPCTL_DPCPP_FROM_ONEAPI:BOOL=" + ("ON" if use_oneapi else "OFF"),
-        "-DDPCTL_ENABLE_GLOG:BOOL=" + ("ON" if use_glog else "OFF"),
+        "-DDPCTL_GENERATE_DOCS=ON",
     ]
+
+    if doxyrest_dir:
+        cmake_args.append("-DDPCTL_ENABLE_DOXYREST=ON")
+        cmake_args.append("-DDoxyrest_DIR=" + doxyrest_dir)
+
     if compiler_root:
         cmake_args += [
             "-DDPCTL_DPCPP_HOME_DIR:PATH=" + compiler_root,
         ]
-    subprocess.check_call(
-        cmake_args, shell=False, cwd=setup_dir, env=os.environ
+    env = None
+    if bin_llvm:
+        env = {
+            "PATH": ":".join((os.environ.get("PATH", ""), bin_llvm)),
+        }
+        env.update({k: v for k, v in os.environ.items() if k != "PATH"})
+    # Install dpctl package
+    subprocess.check_call(cmake_args, shell=False, cwd=setup_dir, env=env)
+    # Get the path for the build directory
+    build_dir = (
+        subprocess.check_output(
+            ["find", "_skbuild", "-name", "cmake-build"],
+            cwd=setup_dir,
+        )
+        .decode("utf-8")
+        .strip("\n")
     )
+    # Generate docs
+    subprocess.check_call(
+        ["cmake", "--build", ".", "--target", "Sphinx"], cwd=build_dir
+    )
+    generated_doc_dir = (
+        subprocess.check_output(
+            ["find", "_skbuild", "-name", "index.html"], cwd=setup_dir
+        )
+        .decode("utf-8")
+        .strip("\n")
+    )
+    print("Generated documentation placed under ", generated_doc_dir)
 
 
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Driver to build dpctl for in-place installation"
+        description="Driver to build dpctl and generate coverage"
     )
     driver = parser.add_argument_group(title="Coverage driver arguments")
     driver.add_argument("--c-compiler", help="Name of C compiler", default=None)
@@ -80,23 +108,13 @@ if __name__ == "__main__":
         "--cxx-compiler", help="Name of C++ compiler", default=None
     )
     driver.add_argument(
-        "--oneapi",
+        "--not-oneapi",
         help="Is one-API installation",
         dest="oneapi",
-        action="store_true",
-    )
-    driver.add_argument(
-        "--debug",
-        default="Release",
-        const="Debug",
-        action="store_const",
-        help="Set the compilation mode to debugging",
+        action="store_false",
     )
     driver.add_argument(
         "--compiler-root", type=str, help="Path to compiler home directory"
-    )
-    driver.add_argument(
-        "--cmake-executable", type=str, help="Path to cmake executable"
     )
     driver.add_argument(
         "--no-level-zero",
@@ -105,22 +123,31 @@ if __name__ == "__main__":
         action="store_false",
     )
     driver.add_argument(
-        "--glog",
-        help="DPCTLSyclInterface uses Google logger",
-        dest="glog",
-        action="store_true",
+        "--bin-llvm", help="Path to folder where llvm-cov can be found"
     )
+    driver.add_argument(
+        "--doxyrest-root",
+        help=(
+            "Path to Doxyrest installation to use to generate Sphinx docs"
+            + "for libsyclinterface"
+        ),
+    )
+
     args = parser.parse_args()
 
     if args.oneapi:
         args.c_compiler = "icx"
-        args.cxx_compiler = "icpx" if "linux" in sys.platform else "icx"
+        args.cxx_compiler = "icpx"
         args.compiler_root = None
+        icx_path = subprocess.check_output(["which", "icx"])
+        bin_dir = os.path.dirname(os.path.dirname(icx_path))
+        args.bin_llvm = os.path.join(bin_dir.decode("utf-8"), "bin-llvm")
     else:
         args_to_validate = [
             "c_compiler",
             "cxx_compiler",
             "compiler_root",
+            "bin_llvm",
         ]
         for p in args_to_validate:
             arg = getattr(args, p, None)
@@ -135,11 +162,10 @@ if __name__ == "__main__":
 
     run(
         use_oneapi=args.oneapi,
-        build_type=args.debug,
         c_compiler=args.c_compiler,
         cxx_compiler=args.cxx_compiler,
         level_zero=args.level_zero,
         compiler_root=args.compiler_root,
-        cmake_executable=args.cmake_executable,
-        use_glog=args.glog,
+        bin_llvm=args.bin_llvm,
+        doxyrest_dir=args.doxyrest_root,
     )
