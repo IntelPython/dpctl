@@ -15,7 +15,6 @@ add_subdirectory(libsyclinterface)
 file(GLOB _dpctl_capi_headers dpctl/apis/include/*.h*)
 install(FILES ${_dpctl_capi_headers}
     DESTINATION dpctl/include
-    COMPONENT DpctlCAPIHeaders
 )
 
 add_subdirectory(dpctl)
