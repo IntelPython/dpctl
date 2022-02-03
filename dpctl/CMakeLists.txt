@@ -2,7 +2,7 @@
 find_package(PythonExtensions REQUIRED)
 find_package(NumPy REQUIRED)
 
-set(CYTHON_FLAGS "-w ${CMAKE_SOURCE_DIR}")
+set(CYTHON_FLAGS "-t -w ${CMAKE_SOURCE_DIR}")
 find_package(Cython REQUIRED)
 
 if(WIN32)
