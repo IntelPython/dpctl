@@ -214,9 +214,13 @@ file(GLOB MAIN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 file(GLOB SUPPORT_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Support/*.h")
 file(GLOB CONFIG_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Config/*.h")
 
+set(ALL_HEADERS "${MAIN_HEADERS}")
+list(APPEND ALL_HEADERS "${SUPPORT_HEADERS}")
+list(APPEND ALL_HEADERS "${CONFIG_HEADERS}")
+
 set_target_properties(DPCTLSyclInterface
     PROPERTIES PUBLIC_HEADER
-    "${MAIN_HEADERS}"
+    "${ALL_HEADERS}"
 )
 
 if (SKBUILD)
@@ -241,12 +245,10 @@ install(TARGETS
 install(
     FILES ${SUPPORT_HEADERS}
     DESTINATION ${_include_destination}/Support
-    COMPONENT SupportHeaders
 )
 install(
     FILES ${CONFIG_HEADERS}
     DESTINATION ${_include_destination}/Config
-    COMPONENT ConfigHeaders
 )
 
 # Enable code coverage related settings

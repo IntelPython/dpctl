@@ -2,7 +2,7 @@
 find_package(PythonExtensions REQUIRED)
 find_package(NumPy REQUIRED)
 
-set(CYTHON_FLAGS "-w ${CMAKE_SOURCE_DIR}")
+set(CYTHON_FLAGS "-t -w ${CMAKE_SOURCE_DIR}")
 find_package(Cython REQUIRED)
 
 if(WIN32)
@@ -78,33 +78,56 @@ add_custom_target(_build_time_create_dpctl_include ALL
     DEPENDS DPCTLSyclInterface
 )
 
+set(_copied_header_files)
 file(GLOB _syclinterface_h ${CMAKE_SOURCE_DIR}/libsyclinterface/include/*.h)
 foreach(hf ${_syclinterface_h})
-   add_custom_command(TARGET _build_time_create_dpctl_include
-       COMMAND ${CMAKE_COMMAND} -E copy ${hf} ${DPCTL_INCLUDE_DIR}/syclinterface
-   )
+    get_filename_component(_header_name ${hf} NAME)
+    set(_target_header_file ${DPCTL_INCLUDE_DIR}/syclinterface/${_header_name})
+    list(APPEND _copied_header_files ${_target_header_file})
+    add_custom_command(OUTPUT ${_target_header_file}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${hf} ${_target_header_file}
+        DEPENDS ${hf} _build_time_create_dpctl_include
+	VERBATIM
+    )
 endforeach()
 
 file(GLOB _syclinterface_Support_h ${CMAKE_SOURCE_DIR}/libsyclinterface/include/Support/*.h)
 foreach(hf ${_syclinterface_Support_h})
-   add_custom_command(TARGET _build_time_create_dpctl_include
-       COMMAND ${CMAKE_COMMAND} -E copy ${hf} ${DPCTL_INCLUDE_DIR}/syclinterface/Support
-   )
+    get_filename_component(_header_name ${hf} NAME)
+    set(_target_header_file ${DPCTL_INCLUDE_DIR}/syclinterface/Support/${_header_name})
+    list(APPEND _copied_header_files ${_target_header_file})
+    add_custom_command(OUTPUT ${_target_header_file}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${hf} ${_target_header_file}
+        DEPENDS ${hf} _build_time_create_dpctl_include
+    )
 endforeach()
 
 file(GLOB _syclinterface_Config_h ${CMAKE_SOURCE_DIR}/libsyclinterface/include/Config/*.h)
 foreach(hf ${_syclinterface_Config_h})
-   add_custom_command(TARGET _build_time_create_dpctl_include
-       COMMAND ${CMAKE_COMMAND} -E copy ${hf} ${DPCTL_INCLUDE_DIR}/syclinterface/Config
-   )
+    get_filename_component(_header_name ${hf} NAME)
+    set(_target_header_file ${DPCTL_INCLUDE_DIR}/syclinterface/Config/${_header_name})
+    list(APPEND _copied_header_files ${_target_header_file})
+    add_custom_command(OUTPUT ${_target_header_file}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${hf} ${_target_header_file}
+        DEPENDS ${hf} _build_time_create_dpctl_include
+    )
 endforeach()
 
 file(GLOB _apis_h ${CMAKE_CURRENT_SOURCE_DIR}/apis/include/*)
 foreach(hf ${_apis_h})
-   add_custom_command(TARGET _build_time_create_dpctl_include
-       COMMAND ${CMAKE_COMMAND} -E copy ${hf} ${DPCTL_INCLUDE_DIR}
-   )
+    get_filename_component(_header_name ${hf} NAME)
+    set(_target_header_file ${DPCTL_INCLUDE_DIR}/${_header_name})
+    list(APPEND _copied_header_files ${_target_header_file})
+    add_custom_command(OUTPUT ${_target_header_file}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${hf} ${_target_header_file}
+        DEPENDS ${hf} _build_time_create_dpctl_include
+    )
 endforeach()
+
+add_custom_target(
+    _build_time_create_dpctl_include_copy ALL
+    DEPENDS ${_copied_header_files}
+)
 
 set(CMAKE_INSTALL_RPATH "$ORIGIN")
 
@@ -112,7 +135,7 @@ function(build_dpctl_ext _trgt _src _dest)
     add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
     add_library(${_trgt} MODULE ${_generated_src})
     target_include_directories(${_trgt} PRIVATE ${NumPy_INCLUDE_DIR} ${DPCTL_INCLUDE_DIR})
-    add_dependencies(${_trgt} _build_time_create_dpctl_include)
+    add_dependencies(${_trgt} _build_time_create_dpctl_include_copy)
     if (DPCTL_GENERATE_COVERAGE)
         target_compile_definitions(${_trgt} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
         target_compile_options(${_trgt} PRIVATE -fno-sycl-use-footer)

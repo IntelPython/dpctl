@@ -35,10 +35,10 @@ jobs:
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
           sudo apt-get install doxygen
-      - name: Install CMake
+      - name: Install CMake and Ninja
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
-          sudo apt-get install cmake
+          sudo apt-get install cmake ninja-build
       - name: Setup Python
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         uses: actions/setup-python@v2
@@ -64,7 +64,7 @@ jobs:
           wget https://github.com/vovkos/doxyrest/releases/download/doxyrest-2.1.2/doxyrest-2.1.2-linux-amd64.tar.xz
           tar xf doxyrest-2.1.2-linux-amd64.tar.xz
           python setup.py develop --                       \
-              -G "Unix Makefiles"                          \
+              -G "Ninja"                                   \
               -DCMAKE_BUILD_TYPE=Debug                     \
               -DCMAKE_C_COMPILER:PATH=icx                  \
               -DCMAKE_CXX_COMPILER:PATH=icpx               \

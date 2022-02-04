@@ -27,6 +27,7 @@ def run(
     compiler_root=None,
     run_pytest=False,
     bin_llvm=None,
+    gtest_config=None,
 ):
     IS_LIN = False
 
@@ -48,7 +49,7 @@ def run(
         "develop",
         "--",
         "-G",
-        "Unix Makefiles",
+        "Ninja",
         "-DCMAKE_BUILD_TYPE=Debug",
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
@@ -66,18 +67,22 @@ def run(
     if bin_llvm:
         env = {
             "PATH": ":".join((os.environ.get("PATH", ""), bin_llvm)),
+            "LLVM_TOOLS_HOME": bin_llvm,
         }
         env.update({k: v for k, v in os.environ.items() if k != "PATH"})
+    if gtest_config:
+        cmake_args += ["-DCMAKE_PREFIX_PATH=" + gtest_config]
     subprocess.check_call(cmake_args, shell=False, cwd=setup_dir, env=env)
-    test_dir = (
+    cmake_build_dir = (
         subprocess.check_output(
-            ["find", "_skbuild", "-name", "tests"], cwd=setup_dir
+            ["find", "_skbuild", "-name", "cmake-build"], cwd=setup_dir
         )
         .decode("utf-8")
         .strip("\n")
     )
     subprocess.check_call(
-        ["make", "-C", test_dir, "lcov-genhtml"], cwd=setup_dir
+        ["cmake", "--build", ".", "--target", "lcov-genhtml"],
+        cwd=cmake_build_dir,
     )
     subprocess.check_call(
         [
@@ -135,6 +140,11 @@ if __name__ == "__main__":
     driver.add_argument(
         "--bin-llvm", help="Path to folder where llvm-cov can be found"
     )
+    driver.add_argument(
+        "--gtest-config",
+        help="Path to the GTestConfig.cmake file to locate a "
+        + "custom GTest installation.",
+    )
     args = parser.parse_args()
 
     if args.oneapi:
@@ -170,4 +180,5 @@ if __name__ == "__main__":
         compiler_root=args.compiler_root,
         run_pytest=args.run_pytest,
         bin_llvm=args.bin_llvm,
+        gtest_config=args.gtest_config,
     )

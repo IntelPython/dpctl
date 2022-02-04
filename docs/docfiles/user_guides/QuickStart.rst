@@ -143,7 +143,7 @@ installed:
     - ``numpy``
     - ``cmake``
     - ``scikit-build``
-    - ``ninja`` (only on Windows)
+    - ``ninja``
     - ``gtest`` (optional to run C API tests)
     - ``gmock`` (optional to run C API tests)
     - ``pytest`` (optional to run Python API tests)
@@ -152,15 +152,15 @@ Once the prerequisites are installed, building using ``scikit-build`` involves t
 
 .. code-block:: bash
 
-    python setup.py install -- -G Unix\ Makefiles -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON
+    python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON
 
 , and to develop:
 
 .. code-block:: bash
 
-    python setup.py develop -G Unix\ Makefiles -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON
+    python setup.py develop -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON
 
-On Windows, use ``icx`` for both C and CXX compilers, and use :code:`-G Ninja` for cmake generator.
+On Windows, use ``icx`` for both C and CXX compilers.
 
 Developing on Linux can also be done using driver script:
 
@@ -180,7 +180,7 @@ Following steps in `Build and install with scikit-build`_ use command line optio
 
 .. code-block:: bash
 
-    python setup.py develop -- -G Unix\ Makefiles -DCMAKE_C_COMPILER:PATH=clang -DCMAKE_CXX_COMPILER:PATH=clang++ -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ONE -DDPCTL_DPCPP_HOME_DIR=${DPCPP_ROOT}/llvm/build -DDPCTL_DPCPP_FROM_ONEAPI=OFF
+    python setup.py develop -- -G Ninja -DCMAKE_C_COMPILER:PATH=clang -DCMAKE_CXX_COMPILER:PATH=clang++ -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ONE -DDPCTL_DPCPP_HOME_DIR=${DPCPP_ROOT}/llvm/build -DDPCTL_DPCPP_FROM_ONEAPI=OFF
 
 Alterantively, the driver script can be used
 
