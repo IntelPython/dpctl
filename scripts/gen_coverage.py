@@ -73,8 +73,16 @@ def run(
     if gtest_config:
         cmake_args += ["-DCMAKE_PREFIX_PATH=" + gtest_config]
     subprocess.check_call(cmake_args, shell=False, cwd=setup_dir, env=env)
+    cmake_build_dir = (
+        subprocess.check_output(
+            ["find", "_skbuild", "-name", "cmake-build"], cwd=setup_dir
+        )
+        .decode("utf-8")
+        .strip("\n")
+    )
     subprocess.check_call(
-        ["cmake", "--build", ".", "--target", "lcov-genhtml"], cwd=setup_dir
+        ["cmake", "--build", ".", "--target", "lcov-genhtml"],
+        cwd=cmake_build_dir,
     )
     subprocess.check_call(
         [

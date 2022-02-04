@@ -96,7 +96,7 @@ jobs:
           -DDPCTL_GENERATE_COVERAGE=ON                                         \
           -DDPCTL_BUILD_CAPI_TESTS=ON                                          \
           -DDPCTL_COVERAGE_REPORT_OUTPUT_DIR=$(pwd)
-          pushd $(find _skbuild -name tests)
+          pushd $(find _skbuild -name cmake-build)
           cmake --build . --target lcov-genhtml || exit 1
           popd
           export PATH=${_SAVED_PATH}
