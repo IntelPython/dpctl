@@ -32,9 +32,9 @@ jobs:
           sudo apt-get install intel-oneapi-compiler-dpcpp-cpp
           sudo apt-get install intel-oneapi-tbb
 
-      - name: Install CMake
+      - name: Install CMake and Ninja
         run: |
-          sudo apt-get install cmake
+          sudo apt-get install cmake ninja-build
 
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -87,8 +87,10 @@ jobs:
           source /opt/intel/oneapi/setvars.sh
           export _SAVED_PATH=${PATH}
           export PATH=$(dirname $(dirname $(which icx)))/bin-llvm:${PATH}
-          python setup.py develop -- -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON -DDPCTL_GENERATE_COVERAGE=ON -DDPCTL_BUILD_CAPI_TESTS=ON -DDPCTL_COVERAGE_REPORT_OUTPUT_DIR=$(pwd)
-          make -C $(find _skbuild -name tests) lcov-genhtml
+          python setup.py develop -- -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON -DDPCTL_GENERATE_COVERAGE=ON -DDPCTL_BUILD_CAPI_TESTS=ON -DDPCTL_COVERAGE_REPORT_OUTPUT_DIR=$(pwd)
+          pushd $(find _skbuild -name tests)
+          cmake --build . --target lcov-genhtml || exit 1
+          popd
           export PATH=${_SAVED_PATH}
           unset _SAVED_PATH
           python -c "import dpctl; print(dpctl.__version__); dpctl.lsplatform()" || exit 1

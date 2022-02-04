@@ -48,7 +48,7 @@ def run(
         "develop",
         "--",
         "-G",
-        "Unix Makefiles",
+        "Ninja",
         "-DCMAKE_BUILD_TYPE=Debug",
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
