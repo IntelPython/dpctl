@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data-parallel Control (dpctl) 0.12.0dev3+13.g00bc9598 documentation</title>
+  <title>Quick Start Guide &mdash; Data-parallel Control (dpctl) 0.12.0dev3+24.g9d16d710 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev3+13.g00bc9598
+                0.12.0dev3+24.g9d16d710
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -214,21 +214,21 @@ installed:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cmake</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">scikit-build</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ninja</span></code> (only on Windows)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ninja</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gtest</span></code> (optional to run C API tests)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gmock</span></code> (optional to run C API tests)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> (optional to run Python API tests)</p></li>
 </ul>
 </div></blockquote>
 <p>Once the prerequisites are installed, building using <code class="docutils literal notranslate"><span class="pre">scikit-build</span></code> involves the usual steps, to build and install:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py install -- -G Unix<span class="se">\ </span>Makefiles -DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx -DDPCTL_ENABLE_LO_PROGRAM_CREATION<span class="o">=</span>ON
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx -DDPCTL_ENABLE_LO_PROGRAM_CREATION<span class="o">=</span>ON
 </pre></div>
 </div>
 <p>, and to develop:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop -G Unix<span class="se">\ </span>Makefiles -DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx -DDPCTL_ENABLE_LO_PROGRAM_CREATION<span class="o">=</span>ON
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop -G Ninja -DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx -DDPCTL_ENABLE_LO_PROGRAM_CREATION<span class="o">=</span>ON
 </pre></div>
 </div>
-<p>On Windows, use <code class="docutils literal notranslate"><span class="pre">icx</span></code> for both C and CXX compilers, and use <code class="code docutils literal notranslate"><span class="pre">-G</span> <span class="pre">Ninja</span></code> for cmake generator.</p>
+<p>On Windows, use <code class="docutils literal notranslate"><span class="pre">icx</span></code> for both C and CXX compilers.</p>
 <p>Developing on Linux can also be done using driver script:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python scripts/build_locally.py --oneapi
 </pre></div>
@@ -241,7 +241,7 @@ installed:</p>
 instead of the DPC++ compiler that comes with oneAPI. One reason for doing this
 may be to enable support for CUDA devices.</p>
 <p>Following steps in <a class="reference internal" href="#build-and-install-with-scikit-build">Build and install with scikit-build</a> use command line option to set relevant cmake variables, for example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop -- -G Unix<span class="se">\ </span>Makefiles -DCMAKE_C_COMPILER:PATH<span class="o">=</span>clang -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>clang++ -DDPCTL_ENABLE_LO_PROGRAM_CREATION<span class="o">=</span>ONE -DDPCTL_DPCPP_HOME_DIR<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/llvm/build -DDPCTL_DPCPP_FROM_ONEAPI<span class="o">=</span>OFF
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop -- -G Ninja -DCMAKE_C_COMPILER:PATH<span class="o">=</span>clang -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>clang++ -DDPCTL_ENABLE_LO_PROGRAM_CREATION<span class="o">=</span>ONE -DDPCTL_DPCPP_HOME_DIR<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/llvm/build -DDPCTL_DPCPP_FROM_ONEAPI<span class="o">=</span>OFF
 </pre></div>
 </div>
 <p>Alterantively, the driver script can be used</p>
