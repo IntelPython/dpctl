@@ -32,7 +32,7 @@ def run(
     build_system = None
 
     if "linux" in sys.platform:
-        build_system = "Unix Makefiles"
+        build_system = "Ninja"
     elif sys.platform in ["win32", "cygwin"]:
         build_system = "Ninja"
     else:
