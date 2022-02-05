@@ -1174,3 +1174,9 @@ cdef api int UsmNDArray_GetFlags(usm_ndarray arr):
 cdef api c_dpctl.DPCTLSyclQueueRef UsmNDArray_GetQueueRef(usm_ndarray arr):
     """Get DPCTLSyclQueueRef for queue associated with the array"""
     return arr.get_queue_ref()
+
+
+cdef api Py_ssize_t UsmNDArray_GetOffset(usm_ndarray arr):
+    """Get offset of zero-index array element from the beginning of the USM
+    allocation."""
+    return arr.get_offset()
