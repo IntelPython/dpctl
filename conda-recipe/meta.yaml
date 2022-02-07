@@ -50,7 +50,6 @@ about:
         EULA: <a href="https://opensource.org/licenses/Apache-2.0" target="_blank">Apache-2.0</a>
         <br/><br/>
 
-
 extra:
     recipe-maintainers:
         - diptorup deb
