@@ -55,8 +55,12 @@ public:
             value = *q;
             return true;
         }
+        else if (source == Py_None) {
+            value = sycl::queue{};
+            return true;
+        }
         else {
-            throw std::runtime_error(
+            throw py::type_error(
                 "Input is of unexpected type, expected dpctl.SyclQueue");
         }
     }
@@ -87,8 +91,12 @@ public:
             value = *d;
             return true;
         }
+        else if (source == Py_None) {
+            value = sycl::device{};
+            return true;
+        }
         else {
-            throw std::runtime_error(
+            throw py::type_error(
                 "Input is of unexpected type, expected dpctl.SyclDevice");
         }
     }
@@ -120,7 +128,7 @@ public:
             return true;
         }
         else {
-            throw std::runtime_error(
+            throw py::type_error(
                 "Input is of unexpected type, expected dpctl.SyclContext");
         }
     }
@@ -153,7 +161,7 @@ public:
             return true;
         }
         else {
-            throw std::runtime_error(
+            throw py::type_error(
                 "Input is of unexpected type, expected dpctl.SyclEvent");
         }
     }
