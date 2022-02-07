@@ -75,7 +75,8 @@ def _has_memory_overlap(x1, x2):
             p1_end = p1_beg + m1.nbytes
             p2_beg = m2._pointer
             p2_end = p2_beg + m2.nbytes
-            return p1_beg > p2_end or p2_beg < p1_end
+            # may intersect if not ((p1_beg >= p2_end) or (p2_beg >= p2_end))
+            return (p1_beg < p2_end) and (p2_beg < p1_end)
         else:
             return False
     else:
