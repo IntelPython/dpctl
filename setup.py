@@ -97,7 +97,7 @@ skbuild.setup(
     install_requires=[
         "numpy",
     ],
-    extra_require={
+    extras_require={
         "docs": [
             "Cython",
             "sphinx",
