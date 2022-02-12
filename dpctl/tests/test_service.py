@@ -23,6 +23,7 @@ import glob
 import os
 import os.path
 import re
+import sys
 
 import pytest
 
@@ -129,3 +130,25 @@ def test_dev_utils():
     with pytest.raises(ValueError):
         with ctx_mngr(log_dir="/not_a_dir"):
             dpctl.SyclDevice().parent_device
+
+
+def test_syclinterface():
+    install_dir = os.path.dirname(os.path.abspath(dpctl.__file__))
+    paths = glob.glob(os.path.join(install_dir, "*DPCTLSyclInterface*"))
+    if "linux" in sys.platform:
+        assert len(paths) > 1 and any(
+            [os.path.islink(fn) for fn in paths]
+        ), "All library instances are hard links"
+    elif sys.platform in ["win32", "cygwin"]:
+        exts = []
+        for fn in paths:
+            _, file_ext = os.path.splitext(fn)
+            exts.append(file_ext.lower())
+        assert (
+            ".lib" in exts
+        ), "Installation does not have DPCTLSyclInterface.lib"
+        assert (
+            ".dll" in exts
+        ), "Installation does not have DPCTLSyclInterface.dll"
+    else:
+        raise RuntimeError("Unsupported system")
