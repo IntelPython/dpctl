@@ -147,7 +147,7 @@ public:
     }
 };
 
-template <typename CastFnT> class CopyFunctor
+template <typename CastFnT> class GenericCopyFunctor
 {
 private:
     char *src_ = nullptr;
@@ -156,7 +156,10 @@ private:
     int nd_ = 0;
 
 public:
-    CopyFunctor(char *src_cp, char *dst_cp, py::ssize_t *shape_strides, int nd)
+    GenericCopyFunctor(char *src_cp,
+                       char *dst_cp,
+                       py::ssize_t *shape_strides,
+                       int nd)
         : src_(src_cp), dst_(dst_cp), shape_strides_(shape_strides), nd_(nd)
     {
     }
@@ -208,7 +211,7 @@ sycl::event copy_and_cast_generic_impl(
         cgh.depends_on(depends);
         cgh.depends_on(additional_depends);
         cgh.parallel_for<copy_cast_generic_kernel<srcTy, dstTy>>(
-            sycl::range<1>(nelems), CopyFunctor<Caster<srcTy, dstTy>>(
+            sycl::range<1>(nelems), GenericCopyFunctor<Caster<srcTy, dstTy>>(
                                         src_p, dst_p, shape_and_strides, nd));
     });
 
@@ -373,6 +376,53 @@ int usm_ndarray_get_typenum_(py::object ar)
     return UsmNDArray_GetTypenum(raw_ar);
 }
 
+int usm_ndarray_get_flags_(py::object ar)
+{
+    PyObject *raw_o = ar.ptr();
+    PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
+
+    return UsmNDArray_GetFlags(raw_ar);
+}
+
+int usm_ndarray_get_elemsize_(py::object ar)
+{
+    PyObject *raw_o = ar.ptr();
+    PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
+
+    return UsmNDArray_GetElementSize(raw_ar);
+}
+
+std::vector<py::ssize_t> c_contiguous_strides(int nd, const py::ssize_t *shape)
+{
+    if (nd > 0) {
+        std::vector<py::ssize_t> c_strides(nd);
+        c_strides[nd - 1] = py::ssize_t(1);
+        for (int i = 1; i < nd; ++i) {
+            int ic = nd - i;
+            c_strides[ic - 1] = c_strides[ic] * shape[ic];
+        }
+        return c_strides;
+    }
+    else {
+        return std::vector<py::ssize_t>();
+    }
+}
+
+std::vector<py::ssize_t> f_contiguous_strides(int nd, const py::ssize_t *shape)
+{
+    if (nd > 0) {
+        std::vector<py::ssize_t> f_strides(nd);
+        f_strides[0] = py::ssize_t(1);
+        for (int i = 0; i < nd - 1; ++i) {
+            f_strides[i + 1] = f_strides[i] * shape[i];
+        }
+        return f_strides;
+    }
+    else {
+        return std::vector<py::ssize_t>();
+    }
+}
+
 char *usm_ndarray_get_data_(py::object ar)
 {
     PyObject *raw_o = ar.ptr();
@@ -438,18 +488,53 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
     int src_typenum = usm_ndarray_get_typenum_(src);
     int dst_typenum = usm_ndarray_get_typenum_(dst);
 
+    int src_type_id = typenum_to_lookup_id(src_typenum);
+    int dst_type_id = typenum_to_lookup_id(dst_typenum);
+    {
+        auto type_id_check = [](int id) -> bool {
+            return ((id >= 0) && (id < num_types));
+        };
+        if (!(type_id_check(src_type_id) && type_id_check(dst_type_id))) {
+            throw std::runtime_error("Type dispatching failed.");
+        }
+    }
+
     // TODO: check can cast
+    bool can_cast = true;
+    if (!can_cast) {
+        throw py::value_error("Can not cast destinary array elements to source "
+                              "array element type.");
+    }
+
+    int src_flags = usm_ndarray_get_flags_(src);
+    int dst_flags = usm_ndarray_get_flags_(dst);
+
+    // check for applicability of special cases:
+    //      (same type && (both C-contiguous || both F-contiguous)
+    if (src_type_id == dst_type_id && (((src_flags & USM_ARRAY_C_CONTIGUOUS) &&
+                                        (dst_flags & USM_ARRAY_C_CONTIGUOUS)) ||
+                                       ((src_flags & USM_ARRAY_F_CONTIGUOUS) &&
+                                        (dst_flags & USM_ARRAY_F_CONTIGUOUS))))
+    {
+        char *src_data = usm_ndarray_get_data_(src);
+        char *dst_data = usm_ndarray_get_data_(dst);
+        int src_elem_size = usm_ndarray_get_elemsize_(src);
+        sycl::event copy_ev = exec_q.memcpy(
+            dst_data, src_data, src_nelems * src_elem_size, depends);
+        return copy_ev;
+    }
 
     const py::ssize_t *src_strides = usm_ndarray_strides_(src);
     const py::ssize_t *dst_strides = usm_ndarray_strides_(dst);
-    // TODO: check for applicability of special cases:
-    //           (same type && (both C-contiguous || both F-contiguous)
 
     // TODO: use contract_iter2
 
     // TODO: optimization: use specialized kernels for dim <=3
 
     // Generic implementation:
+
+    copy_and_cast_fn_ptr_t copy_and_cast_fn =
+        copy_and_cast_generic_dispatch_table[dst_type_id][src_type_id];
 
     //   If shape/strides are accessed with accessors, buffer destructor
     //   will force syncronization.
@@ -459,21 +544,37 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
     sycl::event copy_shape_ev =
         exec_q.copy<py::ssize_t>(src_shape, shape_strides, src_nd);
 
-    sycl::event copy_src_strides_ev =
-        exec_q.copy<py::ssize_t>(src_strides, shape_strides + src_nd, src_nd);
+    sycl::event copy_src_strides_ev;
+    if (src_strides == nullptr) {
+        std::vector<py::ssize_t> src_strides_v =
+            (src_flags & USM_ARRAY_C_CONTIGUOUS)
+                ? c_contiguous_strides(src_nd, src_shape)
+                : f_contiguous_strides(src_nd, src_shape);
+        copy_src_strides_ev = exec_q.copy<py::ssize_t>(
+            src_strides_v.data(), shape_strides + src_nd, src_nd);
+    }
+    else {
+        copy_src_strides_ev = exec_q.copy<py::ssize_t>(
+            src_strides, shape_strides + src_nd, src_nd);
+    }
 
-    sycl::event copy_dst_strides_ev = exec_q.copy<py::ssize_t>(
-        dst_strides, shape_strides + 2 * src_nd, src_nd);
-
-    copy_and_cast_fn_ptr_t copy_and_cast_fn = nullptr;
-    {
-        int src_id = typenum_to_lookup_id(src_typenum);
-        int dst_id = typenum_to_lookup_id(dst_typenum);
-        copy_and_cast_fn = copy_and_cast_generic_dispatch_table[dst_id][src_id];
+    sycl::event copy_dst_strides_ev;
+    if (dst_strides == nullptr) {
+        std::vector<py::ssize_t> dst_strides_v =
+            (dst_flags & USM_ARRAY_C_CONTIGUOUS)
+                ? c_contiguous_strides(dst_nd, dst_shape)
+                : f_contiguous_strides(dst_nd, dst_shape);
+        copy_dst_strides_ev = exec_q.copy<py::ssize_t>(
+            dst_strides_v.data(), shape_strides + 2 * src_nd, src_nd);
+    }
+    else {
+        copy_dst_strides_ev = exec_q.copy<py::ssize_t>(
+            dst_strides, shape_strides + 2 * src_nd, src_nd);
     }
 
     char *src_data = usm_ndarray_get_data_(src);
     char *dst_data = usm_ndarray_get_data_(dst);
+
     sycl::event copy_ev = copy_and_cast_fn(
         exec_q, src_nelems, src_nd, shape_strides, src_data, dst_data, depends,
         {copy_shape_ev, copy_src_strides_ev, copy_dst_strides_ev});

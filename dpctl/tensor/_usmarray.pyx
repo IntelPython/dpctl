@@ -1166,6 +1166,11 @@ cdef api int UsmNDArray_GetTypenum(usm_ndarray arr):
     return arr.get_typenum()
 
 
+cdef api int UsmNDArray_GetElementSize(usm_ndarray arr):
+    """Get array element size in bytes"""
+    return arr.get_typenum()
+
+
 cdef api int UsmNDArray_GetFlags(usm_ndarray arr):
     """Get flags of array"""
     return arr.get_flags()
@@ -1178,5 +1183,5 @@ cdef api c_dpctl.DPCTLSyclQueueRef UsmNDArray_GetQueueRef(usm_ndarray arr):
 
 cdef api Py_ssize_t UsmNDArray_GetOffset(usm_ndarray arr):
     """Get offset of zero-index array element from the beginning of the USM
-    allocation."""
+    allocation"""
     return arr.get_offset()
