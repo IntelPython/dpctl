@@ -14,25 +14,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import glob
 import os.path
 import pathlib
 import shutil
+import sys
 
 import skbuild
 import skbuild.setuptools_wrap
 import skbuild.utils
 from setuptools import find_packages
+from skbuild.command.build_py import build_py as _skbuild_build_py
+from skbuild.command.install import install as _skbuild_install
 
 import versioneer
 
 # Get long description
 with open("README.md", "r", encoding="utf-8") as file:
     long_description = file.read()
-
-
-def _get_cmdclass():
-    cmdclass = versioneer.get_cmdclass()
-    return cmdclass
 
 
 def cleanup_destination(cmake_manifest):
@@ -52,7 +51,9 @@ def cleanup_destination(cmake_manifest):
     return cmake_manifest
 
 
-def _patched_copy_file(src_file, dest_file, hide_listing=True):
+def _patched_copy_file(
+    src_file, dest_file, hide_listing=True, preserve_mode=True
+):
     """Copy ``src_file`` to ``dest_file`` ensuring parent directory exists.
 
     By default, message like `creating directory /path/to/package` and
@@ -77,6 +78,40 @@ def _patched_copy_file(src_file, dest_file, hide_listing=True):
 
 
 skbuild.setuptools_wrap._copy_file = _patched_copy_file
+
+
+class BuildPyCmd(_skbuild_build_py):
+    def copy_file(self, src, dst, preserve_mode=True):
+        _patched_copy_file(src, dst, preserve_mode=preserve_mode)
+        return (dst, 1)
+
+
+class InstallCmd(_skbuild_install):
+    def run(self):
+        ret = super().run()
+        if "linux" in sys.platform:
+            this_dir = os.path.dirname(os.path.abspath(__file__))
+            dpctl_build_dir = os.path.join(this_dir, self.build_lib, "dpctl")
+            dpctl_install_dir = os.path.join(self.install_libbase, "dpctl")
+            for fn in glob.glob(
+                os.path.join(dpctl_install_dir, "*DPCTLSyclInterface.so*")
+            ):
+                os.remove(fn)
+                base_fn = os.path.basename(fn)
+                src_file = os.path.join(dpctl_build_dir, base_fn)
+                dst_file = os.path.join(dpctl_install_dir, base_fn)
+                _patched_copy_file(src_file, dst_file)
+        return ret
+
+
+def _get_cmdclass():
+    cmdclass = versioneer.get_cmdclass(
+        cmdclass={
+            "build_py": BuildPyCmd,
+            "install": InstallCmd,
+        }
+    )
+    return cmdclass
 
 
 skbuild.setup(
