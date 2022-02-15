@@ -29,16 +29,19 @@
  * computation methods take accessor/pointer arguments of type T for
  * shape and stride and modify displacement argument passed by reference.
  */
-class CIndexer_vector
+template <typename indT = std::ptrdiff_t> class CIndexer_vector
 {
+    static_assert(std::is_integral<indT>::value, "Integral type is required");
+    static_assert(std::is_signed<indT>::value,
+                  "Signed integral type is required");
     int nd;
 
 public:
     CIndexer_vector(int dim) : nd(dim) {}
 
-    template <class ShapeTy> std::ptrdiff_t size(const ShapeTy &shape) const
+    template <class ShapeTy> indT size(const ShapeTy &shape) const
     {
-        std::ptrdiff_t s = static_cast<std::ptrdiff_t>(1);
+        indT s = static_cast<indT>(1);
         for (int i = 0; i < nd; ++i) {
             s *= shape[i];
         }
@@ -49,19 +52,19 @@ public:
     void get_displacement(size_t i,
                           const ShapeTy &shape,
                           const StridesTy &stride,
-                          std::ptrdiff_t &disp) const
+                          indT &disp) const
     {
         if (nd == 1) {
             disp = i * stride[0];
             return;
         }
 
-        std::ptrdiff_t i_ = i;
-        std::ptrdiff_t d = 0;
+        indT i_ = i;
+        indT d = 0;
         for (int dim = nd; --dim > 0;) {
-            const std::ptrdiff_t si = shape[dim];
-            const std::ptrdiff_t q = i_ / si;
-            const std::ptrdiff_t r = (i_ - q * si);
+            const indT si = shape[dim];
+            const indT q = i_ / si;
+            const indT r = (i_ - q * si);
             d += r * stride[dim];
             i_ = q;
         }
@@ -73,8 +76,8 @@ public:
                           const ShapeTy &shape,
                           const StridesTy &stride1,
                           const StridesTy &stride2,
-                          std::ptrdiff_t &disp1,
-                          std::ptrdiff_t &disp2) const
+                          indT &disp1,
+                          indT &disp2) const
     {
         if (nd == 1) {
             disp1 = i * stride1[0];
@@ -82,12 +85,12 @@ public:
             return;
         }
 
-        std::ptrdiff_t i_ = i;
-        std::ptrdiff_t d1 = 0, d2 = 0;
+        indT i_ = i;
+        indT d1 = 0, d2 = 0;
         for (int dim = nd; --dim > 0;) {
-            const std::ptrdiff_t si = shape[dim];
-            const std::ptrdiff_t q = i_ / si;
-            const std::ptrdiff_t r = (i_ - q * si);
+            const indT si = shape[dim];
+            const indT q = i_ / si;
+            const indT r = (i_ - q * si);
             i_ = q;
             d1 += r * stride1[dim];
             d2 += r * stride2[dim];
@@ -103,9 +106,9 @@ public:
                           const StridesTy &stride1,
                           const StridesTy &stride2,
                           const StridesTy &stride3,
-                          std::ptrdiff_t &disp1,
-                          std::ptrdiff_t &disp2,
-                          std::ptrdiff_t &disp3) const
+                          indT &disp1,
+                          indT &disp2,
+                          indT &disp3) const
     {
         if (nd == 1) {
             disp1 = i * stride1[0];
@@ -114,12 +117,12 @@ public:
             return;
         }
 
-        std::ptrdiff_t i_ = i;
-        std::ptrdiff_t d1 = 0, d2 = 0, d3 = 0;
+        indT i_ = i;
+        indT d1 = 0, d2 = 0, d3 = 0;
         for (int dim = nd; --dim > 0;) {
-            const std::ptrdiff_t si = shape[dim];
-            const std::ptrdiff_t q = i_ / si;
-            const std::ptrdiff_t r = (i_ - q * si);
+            const indT si = shape[dim];
+            const indT q = i_ / si;
+            const indT r = (i_ - q * si);
             i_ = q;
             d1 += r * stride1[dim];
             d2 += r * stride2[dim];
@@ -138,10 +141,10 @@ public:
                           const StridesTy &stride2,
                           const StridesTy &stride3,
                           const StridesTy &stride4,
-                          std::ptrdiff_t &disp1,
-                          std::ptrdiff_t &disp2,
-                          std::ptrdiff_t &disp3,
-                          std::ptrdiff_t &disp4) const
+                          indT &disp1,
+                          indT &disp2,
+                          indT &disp3,
+                          indT &disp4) const
     {
         if (nd == 1) {
             disp1 = i * stride1[0];
@@ -151,12 +154,12 @@ public:
             return;
         }
 
-        std::ptrdiff_t i_ = i;
-        std::ptrdiff_t d1 = 0, d2 = 0, d3 = 0, d4 = 0;
+        indT i_ = i;
+        indT d1 = 0, d2 = 0, d3 = 0, d4 = 0;
         for (int dim = nd; --dim > 0;) {
-            const std::ptrdiff_t si = shape[dim];
-            const std::ptrdiff_t q = i_ / si;
-            const std::ptrdiff_t r = (i_ - q * si);
+            const indT si = shape[dim];
+            const indT q = i_ / si;
+            const indT r = (i_ - q * si);
             i_ = q;
             d1 += r * stride1[dim];
             d2 += r * stride2[dim];
@@ -171,10 +174,10 @@ public:
     }
 
     template <class ShapeTy, class StridesTy, int nstrides>
-    void get_displacement(size_t i,
+    void get_displacement(indT i,
                           const ShapeTy &shape,
                           const std::array<StridesTy, nstrides> &strides,
-                          std::array<std::ptrdiff_t, nstrides> &disps) const
+                          std::array<indT, nstrides> &disps) const
     {
         if (nd == 1) {
             for (int k = 0; k < nstrides; ++k) {
@@ -183,16 +186,16 @@ public:
             return;
         }
 
-        std::ptrdiff_t i_ = i;
-        std::array<std::ptrdiff_t, nstrides> ds;
+        indT i_ = i;
+        std::array<indT, nstrides> ds;
         for (int k = 0; k < nstrides; ++k) {
             ds[k] = 0;
         }
 
         for (int dim = nd; --dim > 0;) {
-            const std::ptrdiff_t si = shape[dim];
-            const std::ptrdiff_t q = i_ / si;
-            const std::ptrdiff_t r = (i_ - q * si);
+            const indT si = shape[dim];
+            const indT q = i_ / si;
+            const indT r = (i_ - q * si);
             for (int k = 0; k < nstrides; ++k) {
                 ds[k] += r * strides[k][dim];
             }
@@ -244,21 +247,28 @@ public:
  * can be accessed using `get()` to compute the displacement as needed.
  */
 
-template <int _ndim> class CIndexer_array
+template <int _ndim, typename indT = std::ptrdiff_t> class CIndexer_array
 {
     static const int ndim = _ndim;
 
-private:
-    typedef std::array<std::ptrdiff_t, ndim> index_t;
+    static_assert(std::is_integral<indT>::value, "Integral type is required");
+    static_assert(std::is_signed<indT>::value,
+                  "Signed integral type is required");
+    static_assert(ndim > 0, "Dimensionality must be positive");
 
-    std::ptrdiff_t elem_count;
+private:
+    typedef std::array<indT, ndim> index_t;
+
+    indT elem_count;
     index_t shape;
     index_t multi_index;
 
 public:
-    CIndexer_array(index_t &input_shape)
+    CIndexer_array() : elem_count(0), shape{}, multi_index{} {}
+
+    explicit CIndexer_array(index_t &input_shape)
     {
-        std::ptrdiff_t s = static_cast<std::ptrdiff_t>(1);
+        indT s = static_cast<std::ptrdiff_t>(1);
         for (int i = 0; i < ndim; ++i) {
             shape[i] = input_shape[i];
             s *= input_shape[i];
@@ -266,26 +276,26 @@ public:
         elem_count = s;
     }
 
-    std::ptrdiff_t size() const
+    indT size() const
     {
         return elem_count;
     }
-    std::ptrdiff_t rank() const
+    indT rank() const
     {
         return ndim;
     }
 
-    void set(std::ptrdiff_t i)
+    void set(indT i)
     {
         if (ndim == 1) {
             multi_index[0] = i;
             return;
         }
 
-        std::ptrdiff_t i_ = i;
+        indT i_ = i;
         for (int dim = ndim; --dim > 0;) {
-            std::ptrdiff_t si = shape[dim];
-            std::ptrdiff_t q = i_ / si;
+            indT si = shape[dim];
+            indT q = i_ / si;
             multi_index[dim] = i_ - q * si;
             i_ = q;
         }
