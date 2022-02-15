@@ -49,7 +49,7 @@ public:
     }
 
     template <class ShapeTy, class StridesTy>
-    void get_displacement(size_t i,
+    void get_displacement(indT i,
                           const ShapeTy &shape,
                           const StridesTy &stride,
                           indT &disp) const
@@ -72,7 +72,7 @@ public:
     }
 
     template <class ShapeTy, class StridesTy>
-    void get_displacement(size_t i,
+    void get_displacement(indT i,
                           const ShapeTy &shape,
                           const StridesTy &stride1,
                           const StridesTy &stride2,
@@ -101,7 +101,7 @@ public:
     }
 
     template <class ShapeTy, class StridesTy>
-    void get_displacement(size_t i,
+    void get_displacement(indT i,
                           const ShapeTy &shape,
                           const StridesTy &stride1,
                           const StridesTy &stride2,
@@ -135,7 +135,7 @@ public:
     }
 
     template <class ShapeTy, class StridesTy>
-    void get_displacement(size_t i,
+    void get_displacement(indT i,
                           const ShapeTy &shape,
                           const StridesTy &stride1,
                           const StridesTy &stride2,
@@ -206,36 +206,6 @@ public:
         }
         return;
     }
-
-    /*
-    template <class T>
-    void _displacement_va(size_t i, const T &shape,
-                         const T &strides...,
-                         std::ptrdiff_t& disps...) {
-        if (nd == 1) {
-            disp1 = i * stride1[0];
-            disp2 = i * stride2[0];
-            disp3 = i * stride3[0];
-            disp4 = i * stride4[0];
-            return;
-        }
-
-        std::ptrdiff_t i_ = i;
-        std::ptrdiff_t d1 = 0, d2 = 0, d3 = 0, d4 = 0;
-        for(int dim = nd; --dim > 0; ) {
-            std::ptrdiff_t si = shape[dim];
-            std::ptrdiff_t q = i_ / si;
-            const std::ptrdiff_t r = (i_ - q * si);
-            d1 += r * stride1[dim];
-            d2 += r * stride2[dim];
-            d3 += r * stride3[dim];
-            d4 += r * stride4[dim];
-            i_ = q;
-        }
-        disp1 = d1; disp2 = d2; disp3 = d3; disp4 = d4;
-        return;
-    }
-    */
 };
 
 /*
@@ -266,7 +236,8 @@ private:
 public:
     CIndexer_array() : elem_count(0), shape{}, multi_index{} {}
 
-    explicit CIndexer_array(index_t &input_shape)
+    explicit CIndexer_array(const index_t &input_shape)
+        : elem_count(0), shape{}, multi_index{}
     {
         indT s = static_cast<std::ptrdiff_t>(1);
         for (int i = 0; i < ndim; ++i) {
@@ -310,7 +281,7 @@ public:
 
 /*
     For purposes of iterating over elements of array with
-    `shape` and `strides` give as pointers
+    `shape` and `strides` given as pointers
     `simplify_iteration_strides(nd, shape_ptr, strides_ptr, disp)`
     may modify memory and returns new length of these arrays.
 
@@ -398,6 +369,107 @@ int simplify_iteration_stride(const int nd,
     }
     for (int i = 0; i < nd_; ++i) {
         strides[i] = strides_w[i];
+    }
+
+    return nd_;
+}
+
+/*
+    For purposes of iterating over pairs of elements of two arrays
+    with  `shape` and strides `strides1`, `strides2` given as pointers
+    `simplify_iteration_two_strides(nd, shape_ptr, strides1_ptr,
+    strides2_ptr, disp1, disp2)`
+    may modify memory and returns new length of these arrays.
+
+    The new shape and new strides, as well as the offset
+    `(new_shape, new_strides1, disp1, new_stride2, disp2)` are such that
+    iterating over  them will traverse the same pairs of elements, possibly in
+    different order.
+
+ */
+template <class ShapeTy, class StridesTy>
+int simplify_iteration_two_strides(const int nd,
+                                   ShapeTy *shape,
+                                   StridesTy *strides1,
+                                   StridesTy *strides2,
+                                   StridesTy &disp1,
+                                   StridesTy &disp2)
+{
+    disp1 = std::ptrdiff_t(0);
+    disp2 = std::ptrdiff_t(0);
+    if (nd < 2)
+        return nd;
+
+    std::vector<int> pos(nd);
+    std::iota(pos.begin(), pos.end(), 0);
+
+    std::stable_sort(
+        pos.begin(), pos.end(), [&strides1, &shape](int i1, int i2) {
+            auto abs_str1 = (strides1[i1] < 0) ? -strides1[i1] : strides1[i1];
+            auto abs_str2 = (strides1[i2] < 0) ? -strides1[i2] : strides1[i2];
+            return (abs_str1 > abs_str2) ||
+                   (abs_str1 == abs_str2 && shape[i1] > shape[i2]);
+        });
+
+    std::vector<ShapeTy> shape_w;
+    std::vector<StridesTy> strides1_w;
+    std::vector<StridesTy> strides2_w;
+
+    bool contractable = true;
+    for (int i = 0; i < nd; ++i) {
+        auto p = pos[i];
+        auto sh_p = shape[p];
+        auto str1_p = strides1[p];
+        auto str2_p = strides2[p];
+        shape_w.push_back(sh_p);
+        if (str1_p < 0 && str2_p < 0) {
+            disp1 += str1_p * (sh_p - 1);
+            str1_p = -str1_p;
+            disp2 += str2_p * (sh_p - 1);
+            str2_p = -str2_p;
+        }
+        if (str1_p < 0 || str2_p < 0) {
+            contractable = false;
+        }
+        strides1_w.push_back(str1_p);
+        strides2_w.push_back(str2_p);
+    }
+    int nd_ = nd;
+    while (contractable) {
+        bool changed = false;
+        for (int i = 0; i + 1 < nd_; ++i) {
+            StridesTy str1 = strides1_w[i + 1];
+            StridesTy str2 = strides2_w[i + 1];
+            StridesTy jump1 = strides1_w[i] - (shape_w[i + 1] - 1) * str1;
+            StridesTy jump2 = strides2_w[i] - (shape_w[i + 1] - 1) * str2;
+
+            if (jump1 == str1 and jump2 == str2) {
+                changed = true;
+                shape_w[i] *= shape_w[i + 1];
+                for (int j = i; j < nd_; ++j) {
+                    strides1_w[j] = strides1_w[j + 1];
+                }
+                for (int j = i; j < nd_; ++j) {
+                    strides2_w[j] = strides2_w[j + 1];
+                }
+                for (int j = i + 1; j + 1 < nd_; ++j) {
+                    shape_w[j] = shape_w[j + 1];
+                }
+                --nd_;
+                break;
+            }
+        }
+        if (!changed)
+            break;
+    }
+    for (int i = 0; i < nd_; ++i) {
+        shape[i] = shape_w[i];
+    }
+    for (int i = 0; i < nd_; ++i) {
+        strides1[i] = strides1_w[i];
+    }
+    for (int i = 0; i < nd_; ++i) {
+        strides2[i] = strides2_w[i];
     }
 
     return nd_;
