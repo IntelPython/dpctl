@@ -29,18 +29,13 @@ enum typenum_t : int
 };
 constexpr int num_types = 14; // number of elements in typenum_t
 
-template <typename T> struct same_size
-{
-    template <typename U> using as = std::bool_constant<sizeof(T) == sizeof(U)>;
-};
-
+// Lookup a type according to its size, and return a value corresponding to the
+// NumPy typenum.
 template <typename Concrete> constexpr int platform_lookup()
 {
     return -1;
 }
 
-// Lookup a type according to its size, and return a value corresponding to the
-// NumPy typenum.
 template <typename Concrete, typename T, typename... Ts, typename... Ints>
 constexpr int platform_lookup(int I, Ints... Is)
 {
@@ -166,9 +161,9 @@ public:
 
     void operator()(sycl::id<1> wiid) const
     {
-        std::ptrdiff_t src_offset = 0;
-        std::ptrdiff_t dst_offset = 0;
-        CIndexer_vector indxr(nd_);
+        py::ssize_t src_offset = 0;
+        py::ssize_t dst_offset = 0;
+        CIndexer_vector<py::ssize_t> indxr(nd_);
         indxr.get_displacement(
             wiid.get(0),
             static_cast<const py::ssize_t *>(shape_strides_), // common shape
@@ -184,26 +179,69 @@ public:
     }
 };
 
+template <int nd, typename CastFnT> class NDSpecializedCopyFunctor
+{
+private:
+    char *src_ = nullptr;
+    char *dst_ = nullptr;
+    CIndexer_array<nd, py::ssize_t> indxr;
+    const std::array<py::ssize_t, nd> src_strides_;
+    const std::array<py::ssize_t, nd> dst_strides_;
+    static const int nd_ = nd;
+
+public:
+    NDSpecializedCopyFunctor(char *src_cp, // USM pointer
+                             char *dst_cp, // USM pointer
+                             const std::array<py::ssize_t, nd> shape,
+                             const std::array<py::ssize_t, nd> src_strides,
+                             const std::array<py::ssize_t, nd> dst_strides)
+        : src_(src_cp), dst_(dst_cp), indxr(shape), src_strides_(src_strides),
+          dst_strides_(dst_strides)
+    {
+    }
+
+    void operator()(sycl::id<1> wiid) const
+    {
+        py::ssize_t src_offset = 0;
+        py::ssize_t dst_offset = 0;
+        CIndexer_array<nd, py::ssize_t> local_indxr(std::move(indxr));
+
+        local_indxr.set(wiid.get(0));
+        auto mi = local_indxr.get();
+        for (int i = 0; i < nd; ++i)
+            src_offset += mi[i] * src_strides_[i];
+        for (int i = 0; i < nd; ++i)
+            dst_offset += mi[i] * dst_strides_[i];
+
+        CastFnT fn{};
+        fn(src_, src_offset, dst_, dst_offset);
+    }
+};
+
 template <typename srcT, typename dstT> class copy_cast_generic_kernel;
 
-typedef sycl::event (*copy_and_cast_fn_ptr_t)(
+typedef sycl::event (*copy_and_cast_generic_fn_ptr_t)(
     sycl::queue,
     size_t,
     int,
     py::ssize_t *,
     char *,
+    py::ssize_t,
     char *,
+    py::ssize_t,
     const std::vector<sycl::event> &,
     const std::initializer_list<sycl::event> &);
 
-template <typename srcTy, typename dstTy>
+template <typename dstTy, typename srcTy>
 sycl::event copy_and_cast_generic_impl(
     sycl::queue q,
     size_t nelems,
     int nd,
     py::ssize_t *shape_and_strides,
     char *src_p,
+    py::ssize_t src_offset,
     char *dst_p,
+    py::ssize_t dst_offset,
     const std::vector<sycl::event> &depends,
     const std::initializer_list<sycl::event> &additional_depends)
 {
@@ -211,16 +249,18 @@ sycl::event copy_and_cast_generic_impl(
         cgh.depends_on(depends);
         cgh.depends_on(additional_depends);
         cgh.parallel_for<copy_cast_generic_kernel<srcTy, dstTy>>(
-            sycl::range<1>(nelems), GenericCopyFunctor<Caster<srcTy, dstTy>>(
-                                        src_p, dst_p, shape_and_strides, nd));
+            sycl::range<1>(nelems),
+            GenericCopyFunctor<Caster<srcTy, dstTy>>(
+                src_p + src_offset * sizeof(srcTy),
+                dst_p + dst_offset * sizeof(dstTy), shape_and_strides, nd));
     });
 
     return copy_and_cast_ev;
 }
 
 template <typename dstTy>
-static std::initializer_list<copy_and_cast_fn_ptr_t>
-    template_copy_and_cast_funcs_row_for_dstT = {
+static std::initializer_list<copy_and_cast_generic_fn_ptr_t>
+    template_copy_and_cast_generic_funcs_row_for_dstT = {
         copy_and_cast_generic_impl<dstTy, bool>,
         copy_and_cast_generic_impl<dstTy, int8_t>,
         copy_and_cast_generic_impl<dstTy, uint8_t>,
@@ -237,37 +277,194 @@ static std::initializer_list<copy_and_cast_fn_ptr_t>
         copy_and_cast_generic_impl<dstTy, std::complex<double>>,
 };
 
-static copy_and_cast_fn_ptr_t copy_and_cast_generic_dispatch_table[num_types]
-                                                                  [num_types];
+typedef sycl::event (*copy_and_cast_1d_fn_ptr_t)(
+    sycl::queue,
+    size_t,
+    const std::array<py::ssize_t, 1>,
+    const std::array<py::ssize_t, 1>,
+    const std::array<py::ssize_t, 1>,
+    char *,
+    py::ssize_t,
+    char *,
+    py::ssize_t,
+    const std::vector<sycl::event> &);
 
-void init_copy_and_cast_generic_dispatch_table(void)
+typedef sycl::event (*copy_and_cast_2d_fn_ptr_t)(
+    sycl::queue,
+    size_t,
+    const std::array<py::ssize_t, 2>,
+    const std::array<py::ssize_t, 2>,
+    const std::array<py::ssize_t, 2>,
+    char *,
+    py::ssize_t,
+    char *,
+    py::ssize_t,
+    const std::vector<sycl::event> &);
+
+template <typename srcT, typename dstT, int nd> class copy_cast_spec_kernel;
+
+template <typename dstTy, typename srcTy, int nd>
+sycl::event
+copy_and_cast_nd_specialized_impl(sycl::queue q,
+                                  size_t nelems,
+                                  const std::array<py::ssize_t, nd> shape,
+                                  const std::array<py::ssize_t, nd> src_strides,
+                                  const std::array<py::ssize_t, nd> dst_strides,
+                                  char *src_p,
+                                  py::ssize_t src_offset,
+                                  char *dst_p,
+                                  py::ssize_t dst_offset,
+                                  const std::vector<sycl::event> &depends)
 {
-    const auto copy_and_cast_map_by_dstT = {
-        template_copy_and_cast_funcs_row_for_dstT<bool>,
-        template_copy_and_cast_funcs_row_for_dstT<int8_t>,
-        template_copy_and_cast_funcs_row_for_dstT<uint8_t>,
-        template_copy_and_cast_funcs_row_for_dstT<int16_t>,
-        template_copy_and_cast_funcs_row_for_dstT<uint16_t>,
-        template_copy_and_cast_funcs_row_for_dstT<int32_t>,
-        template_copy_and_cast_funcs_row_for_dstT<uint32_t>,
-        template_copy_and_cast_funcs_row_for_dstT<int64_t>,
-        template_copy_and_cast_funcs_row_for_dstT<uint64_t>,
-        template_copy_and_cast_funcs_row_for_dstT<sycl::half>,
-        template_copy_and_cast_funcs_row_for_dstT<float>,
-        template_copy_and_cast_funcs_row_for_dstT<double>,
-        template_copy_and_cast_funcs_row_for_dstT<std::complex<float>>,
-        template_copy_and_cast_funcs_row_for_dstT<std::complex<double>>,
-    };
+    sycl::event copy_and_cast_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.parallel_for<copy_cast_spec_kernel<srcTy, dstTy, nd>>(
+            sycl::range<1>(nelems),
+            NDSpecializedCopyFunctor<nd, Caster<srcTy, dstTy>>(
+                src_p + src_offset * sizeof(srcTy),
+                dst_p + dst_offset * sizeof(dstTy), shape, src_strides,
+                dst_strides));
+    });
 
-    int dst_id = 0;
-    for (auto &row : copy_and_cast_map_by_dstT) {
-        int src_id = 0;
-        for (auto &fn_ptr : row) {
-            copy_and_cast_generic_dispatch_table[dst_id][src_id] = fn_ptr;
-            ++src_id;
+    return copy_and_cast_ev;
+}
+
+template <typename dstTy>
+static std::initializer_list<copy_and_cast_1d_fn_ptr_t>
+    template_copy_and_cast_1d_funcs_row_for_dstT = {
+        copy_and_cast_nd_specialized_impl<dstTy, bool, 1>,
+        copy_and_cast_nd_specialized_impl<dstTy, int8_t, 1>,
+        copy_and_cast_nd_specialized_impl<dstTy, uint8_t, 1>,
+        copy_and_cast_nd_specialized_impl<dstTy, int16_t, 1>,
+        copy_and_cast_nd_specialized_impl<dstTy, uint16_t, 1>,
+        copy_and_cast_nd_specialized_impl<dstTy, int32_t, 1>,
+        copy_and_cast_nd_specialized_impl<dstTy, uint32_t, 1>,
+        copy_and_cast_nd_specialized_impl<dstTy, int64_t, 1>,
+        copy_and_cast_nd_specialized_impl<dstTy, uint64_t, 1>,
+        copy_and_cast_nd_specialized_impl<dstTy, sycl::half, 1>,
+        copy_and_cast_nd_specialized_impl<dstTy, float, 1>,
+        copy_and_cast_nd_specialized_impl<dstTy, double, 1>,
+        copy_and_cast_nd_specialized_impl<dstTy, std::complex<float>, 1>,
+        copy_and_cast_nd_specialized_impl<dstTy, std::complex<double>, 1>,
+};
+
+template <typename dstTy>
+static std::initializer_list<copy_and_cast_2d_fn_ptr_t>
+    template_copy_and_cast_2d_funcs_row_for_dstT = {
+        copy_and_cast_nd_specialized_impl<dstTy, bool, 2>,
+        copy_and_cast_nd_specialized_impl<dstTy, int8_t, 2>,
+        copy_and_cast_nd_specialized_impl<dstTy, uint8_t, 2>,
+        copy_and_cast_nd_specialized_impl<dstTy, int16_t, 2>,
+        copy_and_cast_nd_specialized_impl<dstTy, uint16_t, 2>,
+        copy_and_cast_nd_specialized_impl<dstTy, int32_t, 2>,
+        copy_and_cast_nd_specialized_impl<dstTy, uint32_t, 2>,
+        copy_and_cast_nd_specialized_impl<dstTy, int64_t, 2>,
+        copy_and_cast_nd_specialized_impl<dstTy, uint64_t, 2>,
+        copy_and_cast_nd_specialized_impl<dstTy, sycl::half, 2>,
+        copy_and_cast_nd_specialized_impl<dstTy, float, 2>,
+        copy_and_cast_nd_specialized_impl<dstTy, double, 2>,
+        copy_and_cast_nd_specialized_impl<dstTy, std::complex<float>, 2>,
+        copy_and_cast_nd_specialized_impl<dstTy, std::complex<double>, 2>,
+};
+
+static copy_and_cast_generic_fn_ptr_t
+    copy_and_cast_generic_dispatch_table[num_types][num_types];
+static copy_and_cast_1d_fn_ptr_t copy_and_cast_1d_dispatch_table[num_types]
+                                                                [num_types];
+static copy_and_cast_2d_fn_ptr_t copy_and_cast_2d_dispatch_table[num_types]
+                                                                [num_types];
+
+void init_copy_and_cast_dispatch_tables(void)
+{
+    {
+        const auto copy_and_cast_generic_map_by_dstT = {
+            template_copy_and_cast_generic_funcs_row_for_dstT<bool>,
+            template_copy_and_cast_generic_funcs_row_for_dstT<int8_t>,
+            template_copy_and_cast_generic_funcs_row_for_dstT<uint8_t>,
+            template_copy_and_cast_generic_funcs_row_for_dstT<int16_t>,
+            template_copy_and_cast_generic_funcs_row_for_dstT<uint16_t>,
+            template_copy_and_cast_generic_funcs_row_for_dstT<int32_t>,
+            template_copy_and_cast_generic_funcs_row_for_dstT<uint32_t>,
+            template_copy_and_cast_generic_funcs_row_for_dstT<int64_t>,
+            template_copy_and_cast_generic_funcs_row_for_dstT<uint64_t>,
+            template_copy_and_cast_generic_funcs_row_for_dstT<sycl::half>,
+            template_copy_and_cast_generic_funcs_row_for_dstT<float>,
+            template_copy_and_cast_generic_funcs_row_for_dstT<double>,
+            template_copy_and_cast_generic_funcs_row_for_dstT<
+                std::complex<float>>,
+            template_copy_and_cast_generic_funcs_row_for_dstT<
+                std::complex<double>>,
+        };
+
+        int dst_id = 0;
+        for (auto &row : copy_and_cast_generic_map_by_dstT) {
+            int src_id = 0;
+            for (auto &fn_ptr : row) {
+                copy_and_cast_generic_dispatch_table[dst_id][src_id] = fn_ptr;
+                ++src_id;
+            }
+            ++dst_id;
         }
-        ++dst_id;
     }
+
+    {
+        const auto copy_and_cast_1d_map_by_dstT = {
+            template_copy_and_cast_1d_funcs_row_for_dstT<bool>,
+            template_copy_and_cast_1d_funcs_row_for_dstT<int8_t>,
+            template_copy_and_cast_1d_funcs_row_for_dstT<uint8_t>,
+            template_copy_and_cast_1d_funcs_row_for_dstT<int16_t>,
+            template_copy_and_cast_1d_funcs_row_for_dstT<uint16_t>,
+            template_copy_and_cast_1d_funcs_row_for_dstT<int32_t>,
+            template_copy_and_cast_1d_funcs_row_for_dstT<uint32_t>,
+            template_copy_and_cast_1d_funcs_row_for_dstT<int64_t>,
+            template_copy_and_cast_1d_funcs_row_for_dstT<uint64_t>,
+            template_copy_and_cast_1d_funcs_row_for_dstT<sycl::half>,
+            template_copy_and_cast_1d_funcs_row_for_dstT<float>,
+            template_copy_and_cast_1d_funcs_row_for_dstT<double>,
+            template_copy_and_cast_1d_funcs_row_for_dstT<std::complex<float>>,
+            template_copy_and_cast_1d_funcs_row_for_dstT<std::complex<double>>,
+        };
+
+        int dst_id = 0;
+        for (auto &row : copy_and_cast_1d_map_by_dstT) {
+            int src_id = 0;
+            for (auto &fn_ptr : row) {
+                copy_and_cast_1d_dispatch_table[dst_id][src_id] = fn_ptr;
+                ++src_id;
+            }
+            ++dst_id;
+        }
+    }
+
+    {
+        const auto copy_and_cast_2d_map_by_dstT = {
+            template_copy_and_cast_2d_funcs_row_for_dstT<bool>,
+            template_copy_and_cast_2d_funcs_row_for_dstT<int8_t>,
+            template_copy_and_cast_2d_funcs_row_for_dstT<uint8_t>,
+            template_copy_and_cast_2d_funcs_row_for_dstT<int16_t>,
+            template_copy_and_cast_2d_funcs_row_for_dstT<uint16_t>,
+            template_copy_and_cast_2d_funcs_row_for_dstT<int32_t>,
+            template_copy_and_cast_2d_funcs_row_for_dstT<uint32_t>,
+            template_copy_and_cast_2d_funcs_row_for_dstT<int64_t>,
+            template_copy_and_cast_2d_funcs_row_for_dstT<uint64_t>,
+            template_copy_and_cast_2d_funcs_row_for_dstT<sycl::half>,
+            template_copy_and_cast_2d_funcs_row_for_dstT<float>,
+            template_copy_and_cast_2d_funcs_row_for_dstT<double>,
+            template_copy_and_cast_2d_funcs_row_for_dstT<std::complex<float>>,
+            template_copy_and_cast_2d_funcs_row_for_dstT<std::complex<double>>,
+        };
+
+        int dst_id = 0;
+        for (auto &row : copy_and_cast_2d_map_by_dstT) {
+            int src_id = 0;
+            for (auto &fn_ptr : row) {
+                copy_and_cast_2d_dispatch_table[dst_id][src_id] = fn_ptr;
+                ++src_id;
+            }
+            ++dst_id;
+        }
+    }
+
     return;
 }
 
@@ -292,6 +489,28 @@ std::tuple<vecT, vecT, py::size_t> contract_iter(vecT shape, vecT strides)
     out_shape.resize(nd);
     out_strides.resize(nd);
     return std::make_tuple(out_shape, out_strides, disp);
+}
+
+std::tuple<vecT, vecT, py::size_t, vecT, py::ssize_t>
+contract_iter2(vecT shape, vecT strides1, vecT strides2)
+{
+    const size_t dim = shape.size();
+    if (dim != strides1.size() || dim != strides2.size()) {
+        throw py::value_error("Shape and strides must be of equal size.");
+    }
+    vecT out_shape = shape;
+    vecT out_strides1 = strides1;
+    vecT out_strides2 = strides2;
+    py::ssize_t disp1(0);
+    py::ssize_t disp2(0);
+
+    int nd = simplify_iteration_two_strides(dim, out_shape.data(),
+                                            out_strides1.data(),
+                                            out_strides2.data(), disp1, disp2);
+    out_shape.resize(nd);
+    out_strides1.resize(nd);
+    out_strides2.resize(nd);
+    return std::make_tuple(out_shape, out_strides1, disp1, out_strides2, disp2);
 }
 
 bool usm_ndarray_check_(py::object o)
@@ -467,12 +686,15 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
     }
 
     // destination must be ample enough to accomodate all elements
-    auto dst_offsets = usm_ndarray_minmax_offsets_(dst);
-    if (static_cast<size_t>(dst_offsets.second - dst_offsets.first) + 1 <
-        src_nelems)
     {
-        throw py::value_error("Destination array can not accomodate all the "
-                              "elements of source array.");
+        auto dst_offsets = usm_ndarray_minmax_offsets_(dst);
+        size_t range =
+            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
+        if (range + 1 < src_nelems) {
+            throw py::value_error(
+                "Destination array can not accomodate all the "
+                "elements of source array.");
+        }
     }
 
     // check same contexts
@@ -511,72 +733,185 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
 
     // check for applicability of special cases:
     //      (same type && (both C-contiguous || both F-contiguous)
-    if (src_type_id == dst_type_id && (((src_flags & USM_ARRAY_C_CONTIGUOUS) &&
-                                        (dst_flags & USM_ARRAY_C_CONTIGUOUS)) ||
-                                       ((src_flags & USM_ARRAY_F_CONTIGUOUS) &&
-                                        (dst_flags & USM_ARRAY_F_CONTIGUOUS))))
-    {
-        char *src_data = usm_ndarray_get_data_(src);
-        char *dst_data = usm_ndarray_get_data_(dst);
-        int src_elem_size = usm_ndarray_get_elemsize_(src);
-        sycl::event copy_ev = exec_q.memcpy(
-            dst_data, src_data, src_nelems * src_elem_size, depends);
-        return copy_ev;
+    bool both_c_contig = ((src_flags & USM_ARRAY_C_CONTIGUOUS) &&
+                          (dst_flags & USM_ARRAY_C_CONTIGUOUS));
+    bool both_f_contig = ((src_flags & USM_ARRAY_F_CONTIGUOUS) &&
+                          (dst_flags & USM_ARRAY_F_CONTIGUOUS));
+    if (both_c_contig || both_f_contig) {
+        if (src_type_id == dst_type_id) {
+            char *src_data = usm_ndarray_get_data_(src);
+            char *dst_data = usm_ndarray_get_data_(dst);
+            int src_elem_size = usm_ndarray_get_elemsize_(src);
+            sycl::event copy_ev = exec_q.memcpy(
+                dst_data, src_data, src_nelems * src_elem_size, depends);
+            return copy_ev;
+        }
+        // With contract_iter2 in place, there is no need to write
+        // dedicated kernels for casting between contiguous arrays
     }
 
     const py::ssize_t *src_strides = usm_ndarray_strides_(src);
     const py::ssize_t *dst_strides = usm_ndarray_strides_(dst);
 
     // TODO: use contract_iter2
+    std::vector<py::ssize_t> simplified_shape;
+    std::vector<py::ssize_t> simplified_src_strides;
+    std::vector<py::ssize_t> simplified_dst_strides;
+    py::ssize_t src_offset(0);
+    py::ssize_t dst_offset(0);
 
-    // TODO: optimization: use specialized kernels for dim <=3
+    int nd = src_nd;
+    const py::ssize_t *shape = src_shape;
+
+    if (src_nd > 1) {
+        simplified_shape.reserve(nd);
+        simplified_src_strides.reserve(nd);
+        simplified_dst_strides.reserve(nd);
+        for (int i = 0; i < nd; ++i) {
+            simplified_shape.push_back(shape[i]);
+        }
+        if (src_strides == nullptr) {
+            if (src_flags & USM_ARRAY_C_CONTIGUOUS) {
+                simplified_src_strides = c_contiguous_strides(nd, shape);
+            }
+            else if (src_flags & USM_ARRAY_F_CONTIGUOUS) {
+                simplified_src_strides = f_contiguous_strides(nd, shape);
+            }
+            else {
+                throw std::runtime_error(
+                    "Source array has null strides "
+                    "but has neither C- nor F- contiguous flag set");
+            }
+        }
+        else {
+            for (int i = 0; i < nd; ++i) {
+                simplified_src_strides.push_back(src_strides[i]);
+            }
+        }
+        if (dst_strides == nullptr) {
+            if (dst_flags & USM_ARRAY_C_CONTIGUOUS) {
+                simplified_dst_strides = c_contiguous_strides(nd, shape);
+            }
+            else if (dst_flags & USM_ARRAY_F_CONTIGUOUS) {
+                simplified_dst_strides = f_contiguous_strides(nd, shape);
+            }
+            else {
+                throw std::runtime_error(
+                    "Destination array has null strides "
+                    "but has neither C- nor F- contiguous flag set");
+            }
+        }
+        else {
+            for (int i = 0; i < nd; ++i) {
+                simplified_dst_strides.push_back(dst_strides[i]);
+            }
+        }
+
+        int contracted_nd = simplify_iteration_two_strides(
+            nd, simplified_shape.data(), simplified_src_strides.data(),
+            simplified_dst_strides.data(),
+            src_offset, // modified by reference
+            dst_offset  // modified by reference
+        );
+        simplified_shape.resize(contracted_nd);
+        simplified_src_strides.resize(contracted_nd);
+        simplified_dst_strides.resize(contracted_nd);
+
+        nd = contracted_nd;
+        shape = const_cast<const py::ssize_t *>(simplified_shape.data());
+        src_strides =
+            const_cast<const py::ssize_t *>(simplified_src_strides.data());
+        dst_strides =
+            const_cast<const py::ssize_t *>(simplified_dst_strides.data());
+    }
+
+    char *src_data = usm_ndarray_get_data_(src);
+    char *dst_data = usm_ndarray_get_data_(dst);
+
+    // TODO: optimization: use specialized kernels for dim < 3
+    if (nd < 3) {
+        if (nd == 1) {
+            std::array<py::ssize_t, 1> shape_arr = {shape[0]};
+            std::array<py::ssize_t, 1> src_strides_arr = {src_strides[0]};
+            std::array<py::ssize_t, 1> dst_strides_arr = {dst_strides[0]};
+
+            auto fn = copy_and_cast_1d_dispatch_table[dst_type_id][src_type_id];
+            sycl::event copy_and_cast_1d_event = fn(
+                exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
+                src_data, src_offset, dst_data, dst_offset, depends);
+            return copy_and_cast_1d_event;
+        }
+        else if (nd == 2) {
+            std::array<py::ssize_t, 2> shape_arr = {shape[0], shape[1]};
+            std::array<py::ssize_t, 2> src_strides_arr = {src_strides[0],
+                                                          src_strides[1]};
+            std::array<py::ssize_t, 2> dst_strides_arr = {dst_strides[0],
+                                                          dst_strides[1]};
+
+            auto fn = copy_and_cast_2d_dispatch_table[dst_type_id][src_type_id];
+            sycl::event copy_and_cast_2d_event = fn(
+                exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
+                src_data, src_offset, dst_data, dst_offset, depends);
+            return copy_and_cast_2d_event;
+        }
+        else if (nd == 0) { // case of a scalar
+            assert(src_nelems == 1);
+            std::array<py::ssize_t, 1> shape_arr = {1};
+            std::array<py::ssize_t, 1> src_strides_arr = {1};
+            std::array<py::ssize_t, 1> dst_strides_arr = {1};
+
+            auto fn = copy_and_cast_1d_dispatch_table[dst_type_id][src_type_id];
+            sycl::event copy_and_cast_1d_event = fn(
+                exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
+                src_data, src_offset, dst_data, dst_offset, depends);
+            return copy_and_cast_1d_event;
+        }
+    }
 
     // Generic implementation:
 
-    copy_and_cast_fn_ptr_t copy_and_cast_fn =
+    copy_and_cast_generic_fn_ptr_t copy_and_cast_fn =
         copy_and_cast_generic_dispatch_table[dst_type_id][src_type_id];
 
     //   If shape/strides are accessed with accessors, buffer destructor
     //   will force syncronization.
     py::ssize_t *shape_strides =
-        sycl::malloc_device<py::ssize_t>(3 * src_nd, exec_q);
+        sycl::malloc_device<py::ssize_t>(3 * nd, exec_q);
 
     sycl::event copy_shape_ev =
-        exec_q.copy<py::ssize_t>(src_shape, shape_strides, src_nd);
+        exec_q.copy<py::ssize_t>(shape, shape_strides, nd);
 
     sycl::event copy_src_strides_ev;
     if (src_strides == nullptr) {
         std::vector<py::ssize_t> src_strides_v =
             (src_flags & USM_ARRAY_C_CONTIGUOUS)
-                ? c_contiguous_strides(src_nd, src_shape)
-                : f_contiguous_strides(src_nd, src_shape);
-        copy_src_strides_ev = exec_q.copy<py::ssize_t>(
-            src_strides_v.data(), shape_strides + src_nd, src_nd);
+                ? c_contiguous_strides(nd, shape)
+                : f_contiguous_strides(nd, shape);
+        copy_src_strides_ev = exec_q.copy<py::ssize_t>(src_strides_v.data(),
+                                                       shape_strides + nd, nd);
     }
     else {
-        copy_src_strides_ev = exec_q.copy<py::ssize_t>(
-            src_strides, shape_strides + src_nd, src_nd);
+        copy_src_strides_ev =
+            exec_q.copy<py::ssize_t>(src_strides, shape_strides + nd, nd);
     }
 
     sycl::event copy_dst_strides_ev;
     if (dst_strides == nullptr) {
         std::vector<py::ssize_t> dst_strides_v =
             (dst_flags & USM_ARRAY_C_CONTIGUOUS)
-                ? c_contiguous_strides(dst_nd, dst_shape)
-                : f_contiguous_strides(dst_nd, dst_shape);
+                ? c_contiguous_strides(nd, shape)
+                : f_contiguous_strides(nd, shape);
         copy_dst_strides_ev = exec_q.copy<py::ssize_t>(
-            dst_strides_v.data(), shape_strides + 2 * src_nd, src_nd);
+            dst_strides_v.data(), shape_strides + 2 * nd, nd);
     }
     else {
-        copy_dst_strides_ev = exec_q.copy<py::ssize_t>(
-            dst_strides, shape_strides + 2 * src_nd, src_nd);
+        copy_dst_strides_ev =
+            exec_q.copy<py::ssize_t>(dst_strides, shape_strides + 2 * nd, nd);
     }
 
-    char *src_data = usm_ndarray_get_data_(src);
-    char *dst_data = usm_ndarray_get_data_(dst);
-
     sycl::event copy_ev = copy_and_cast_fn(
-        exec_q, src_nelems, src_nd, shape_strides, src_data, dst_data, depends,
+        exec_q, src_nelems, nd, shape_strides, src_data, src_offset, dst_data,
+        dst_offset, depends,
         {copy_shape_ev, copy_src_strides_ev, copy_dst_strides_ev});
 
     // async free of shape_strides temporary
@@ -595,7 +930,7 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
 PYBIND11_MODULE(_tensor_impl, m)
 {
 
-    init_copy_and_cast_generic_dispatch_table();
+    init_copy_and_cast_dispatch_tables();
 
     import_dpctl();
 
@@ -641,4 +976,13 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("src"), py::arg("dst"),
           py::arg("queue") = py::cast<py::none>(Py_None),
           py::arg("depends") = py::list());
+
+    m.def(
+        "_contract_iter2", &contract_iter2,
+        "Simplifies iteration over elements of pair of arrays of given shape "
+        "with strides stride1 and stride2. Returns "
+        "a 5-tuple: shape, stride and offset for the new iterator of possible "
+        "smaller dimension for each array, which traverses the same elements "
+        "as the original "
+        "iterator, possibly in a different order.");
 }
