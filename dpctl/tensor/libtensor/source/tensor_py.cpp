@@ -31,17 +31,17 @@ constexpr int num_types = 14; // number of elements in typenum_t
 
 // Lookup a type according to its size, and return a value corresponding to the
 // NumPy typenum.
-template <typename Concrete> constexpr int platform_lookup()
+template <typename Concrete> constexpr int platform_typeid_lookup()
 {
     return -1;
 }
 
 template <typename Concrete, typename T, typename... Ts, typename... Ints>
-constexpr int platform_lookup(int I, Ints... Is)
+constexpr int platform_typeid_lookup(int I, Ints... Is)
 {
     return sizeof(Concrete) == sizeof(T)
                ? I
-               : platform_lookup<Concrete, Ts...>(Is...);
+               : platform_typeid_lookup<Concrete, Ts...>(Is...);
 }
 
 // Platform-dependent normalization
@@ -721,7 +721,15 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
         }
     }
 
-    // TODO: check can cast
+    // TODO: check that arrays do not overlap, and concurrent copying is safe.
+    bool memory_overlap = false;
+    if (memory_overlap) {
+        // TODO: could use a temporary
+        throw py::value_error("Arrays index overlapping segments of memory");
+    }
+
+    // TODO: should we check can cast.
+    // Currently force-cast
     bool can_cast = true;
     if (!can_cast) {
         throw py::value_error("Can not cast destinary array elements to source "
@@ -753,7 +761,6 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
     const py::ssize_t *src_strides = usm_ndarray_strides_(src);
     const py::ssize_t *dst_strides = usm_ndarray_strides_(dst);
 
-    // TODO: use contract_iter2
     std::vector<py::ssize_t> simplified_shape;
     std::vector<py::ssize_t> simplified_src_strides;
     std::vector<py::ssize_t> simplified_dst_strides;
@@ -764,6 +771,8 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
     const py::ssize_t *shape = src_shape;
 
     if (src_nd > 1) {
+        // Simplify iteration space to reduce dimensionality
+        // and improve access pattern
         simplified_shape.reserve(nd);
         simplified_src_strides.reserve(nd);
         simplified_dst_strides.reserve(nd);
@@ -828,7 +837,6 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
     char *src_data = usm_ndarray_get_data_(src);
     char *dst_data = usm_ndarray_get_data_(dst);
 
-    // TODO: optimization: use specialized kernels for dim < 3
     if (nd < 3) {
         if (nd == 1) {
             std::array<py::ssize_t, 1> shape_arr = {shape[0]};
@@ -868,9 +876,8 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
         }
     }
 
-    // Generic implementation:
-
-    copy_and_cast_generic_fn_ptr_t copy_and_cast_fn =
+    // Generic implementation
+    auto copy_and_cast_fn =
         copy_and_cast_generic_dispatch_table[dst_type_id][src_type_id];
 
     //   If shape/strides are accessed with accessors, buffer destructor
@@ -938,30 +945,16 @@ PYBIND11_MODULE(_tensor_impl, m)
     UAR_UINT8 = UAR_UBYTE;
     UAR_INT16 = UAR_SHORT;
     UAR_UINT16 = UAR_USHORT;
-    UAR_INT32 = platform_lookup<std::int32_t, long, int, short>(
+    UAR_INT32 = platform_typeid_lookup<std::int32_t, long, int, short>(
         UAR_LONG, UAR_INT, UAR_SHORT);
     UAR_UINT32 =
-        platform_lookup<std::uint32_t, unsigned long, unsigned int,
-                        unsigned short>(UAR_ULONG, UAR_UINT, UAR_USHORT);
-    UAR_INT64 = platform_lookup<std::int64_t, long, long long, int>(
+        platform_typeid_lookup<std::uint32_t, unsigned long, unsigned int,
+                               unsigned short>(UAR_ULONG, UAR_UINT, UAR_USHORT);
+    UAR_INT64 = platform_typeid_lookup<std::int64_t, long, long long, int>(
         UAR_LONG, UAR_LONGLONG, UAR_INT);
-    UAR_UINT64 =
-        platform_lookup<std::uint64_t, unsigned long, unsigned long long,
-                        unsigned int>(UAR_ULONG, UAR_ULONGLONG, UAR_UINT);
-
-    m.def(
-        "fp64_default_device",
-        [](void) -> sycl::device {
-            sycl::device d;
-            try {
-                d = sycl::device(sycl::default_selector{});
-            } catch (const std::exception &e) {
-                throw std::runtime_error("");
-            }
-            return d;
-        },
-        "Return default selected device that supports double precision "
-        "computation");
+    UAR_UINT64 = platform_typeid_lookup<std::uint64_t, unsigned long,
+                                        unsigned long long, unsigned int>(
+        UAR_ULONG, UAR_ULONGLONG, UAR_UINT);
 
     m.def(
         "_contract_iter", &contract_iter,
