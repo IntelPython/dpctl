@@ -415,6 +415,19 @@ def test_pyx_capi_get_typenum():
     assert typenum == X.dtype.num
 
 
+def test_pyx_capi_get_elemsize():
+    X = dpt.usm_ndarray(17)[1::2]
+    get_elemsize_fn = _pyx_capi_fnptr_to_callable(
+        X,
+        "UsmNDArray_GetElementSize",
+        b"int (struct PyUSMArrayObject *)",
+        fn_restype=ctypes.c_int,
+    )
+    itemsize = get_elemsize_fn(X)
+    assert type(itemsize) is int
+    assert itemsize == X.itemsize
+
+
 def test_pyx_capi_get_flags():
     X = dpt.usm_ndarray(17)[1::2]
     get_flags_fn = _pyx_capi_fnptr_to_callable(

@@ -1168,7 +1168,7 @@ cdef api int UsmNDArray_GetTypenum(usm_ndarray arr):
 
 cdef api int UsmNDArray_GetElementSize(usm_ndarray arr):
     """Get array element size in bytes"""
-    return arr.get_typenum()
+    return arr.get_itemsize()
 
 
 cdef api int UsmNDArray_GetFlags(usm_ndarray arr):
