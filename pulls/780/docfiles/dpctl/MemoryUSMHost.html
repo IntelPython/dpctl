@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpctl.memory.MemoryUSMHost &mdash; Data-parallel Control (dpctl) 0.12.0dev3+33.gece48cc4 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/target-highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="dpctl.memory.MemoryUSMShared" href="MemoryUSMShared.html" />
+    <link rel="prev" title="dpctl.memory.MemoryUSMDevice" href="MemoryUSMDevice.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          </a>
+              <div class="version">
+                0.12.0dev3+33.gece48cc4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/UserManual.html">User Manual</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dpctl_pyapi.html">dpctl</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dpctl_pyapi.html#sub-modules">Sub-modules</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dpctl.memory_pyapi.html">dpctl.memory</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="dpctl.memory_pyapi.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.memory_pyapi.html#functions">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program_pyapi.html">dpctl.program</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.tensor_pyapi.html">dpctl.tensor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.utils_pyapi.html">dpctl.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#queue-management-functions">Queue Management Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#device-selection-functions">Device Selection Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#other-functions">Other Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#exceptions">Exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../libsyclinterface/index.html">libsyclinterface</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data-parallel Control (dpctl)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="dpctl_pyapi.html">dpctl</a> &raquo;</li>
+          <li><a href="dpctl.memory_pyapi.html">dpctl.memory</a> &raquo;</li>
+      <li>dpctl.memory.MemoryUSMHost</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/docfiles/dpctl/MemoryUSMHost.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dpctl-memory-memoryusmhost">
+<span id="memoryusmhost-api"></span><h1>dpctl.memory.MemoryUSMHost<a class="headerlink" href="#dpctl-memory-memoryusmhost" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.memory.</span></span><span class="sig-name descname"><span class="pre">MemoryUSMHost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alignment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost" title="Permalink to this definition"></a></dt>
+<dd><p>allocates nbytes of USM host memory.</p>
+<p>Non-positive alignments are not used (malloc_host is used instead).
+For the queue=None case the <code class="docutils literal notranslate"><span class="pre">dpctl.SyclQueue()</span></code> is used to allocate
+memory.</p>
+<p>MemoryUSMDevice(usm_obj) constructor create instance from <cite>usm_obj</cite>
+expected to implement <cite>__sycl_usm_array_interface__</cite> protocol and to expose
+a contiguous block of USM host allocation. Use <cite>copy=True</cite> to
+perform a copy if USM type of the allocation represented by the argument
+is other than ‘host’.</p>
+<p class="rubric">Attributes:</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.nbytes" title="dpctl.memory.MemoryUSMHost.nbytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nbytes</span></code></a></p></td>
+<td><p>Extent of this USM buffer in bytes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.reference_obj" title="dpctl.memory.MemoryUSMHost.reference_obj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reference_obj</span></code></a></p></td>
+<td><p>Reference to the Python object owning this USM buffer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.size" title="dpctl.memory.MemoryUSMHost.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a></p></td>
+<td><p>Extent of this USM buffer in bytes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.sycl_context" title="dpctl.memory.MemoryUSMHost.sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_context</span></code></a></p></td>
+<td><p><a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> the USM pointer is bound to.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.sycl_device" title="dpctl.memory.MemoryUSMHost.sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_device</span></code></a></p></td>
+<td><p><a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> the USM pointer is bound to.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.sycl_queue" title="dpctl.memory.MemoryUSMHost.sycl_queue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_queue</span></code></a></p></td>
+<td><p><a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> with <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> the USM allocation is bound to and <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> it was allocated on.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Public methods:</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.copy_from_device" title="dpctl.memory.MemoryUSMHost.copy_from_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_from_device</span></code></a></p></td>
+<td><p>Copy SYCL memory underlying the argument object into the memory of the instance</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.copy_from_host" title="dpctl.memory.MemoryUSMHost.copy_from_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_from_host</span></code></a></p></td>
+<td><p>Copy content of Python buffer provided by <cite>obj</cite> to instance memory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.copy_to_host" title="dpctl.memory.MemoryUSMHost.copy_to_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_to_host</span></code></a></p></td>
+<td><p>Copy content of instance's memory into memory of <code class="docutils literal notranslate"><span class="pre">obj</span></code>, or allocate NumPy array of <code class="docutils literal notranslate"><span class="pre">obj</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.get_usm_type" title="dpctl.memory.MemoryUSMHost.get_usm_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_usm_type</span></code></a>([syclobj])</p></td>
+<td><p>Returns the type of USM allocation using Sycl context carried by <cite>syclobj</cite> keyword argument.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMHost.tobytes" title="dpctl.memory.MemoryUSMHost.tobytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tobytes</span></code></a></p></td>
+<td><p>Constructs bytes object populated with copy of USM memory.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost._context">
+<span class="sig-prename descclassname"><span class="pre">MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">_context</span></span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost._context" title="Permalink to this definition"></a></dt>
+<dd><p><a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> the USM pointer is bound to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost._pointer">
+<span class="sig-prename descclassname"><span class="pre">MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">_pointer</span></span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost._pointer" title="Permalink to this definition"></a></dt>
+<dd><p>USM pointer at the start of this buffer
+represented in Python integer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost._queue">
+<span class="sig-prename descclassname"><span class="pre">MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">_queue</span></span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost._queue" title="Permalink to this definition"></a></dt>
+<dd><p><a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> with <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> the
+USM allocation is bound to and <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> it was
+allocated on.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.nbytes">
+<span class="sig-prename descclassname"><span class="pre">MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">nbytes</span></span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.nbytes" title="Permalink to this definition"></a></dt>
+<dd><p>Extent of this USM buffer in bytes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.reference_obj">
+<span class="sig-prename descclassname"><span class="pre">MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">reference_obj</span></span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.reference_obj" title="Permalink to this definition"></a></dt>
+<dd><p>Reference to the Python object owning this USM buffer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.size">
+<span class="sig-prename descclassname"><span class="pre">MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.size" title="Permalink to this definition"></a></dt>
+<dd><p>Extent of this USM buffer in bytes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.sycl_context">
+<span class="sig-prename descclassname"><span class="pre">MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">sycl_context</span></span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.sycl_context" title="Permalink to this definition"></a></dt>
+<dd><p><a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> the USM pointer is bound to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.sycl_device">
+<span class="sig-prename descclassname"><span class="pre">MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">sycl_device</span></span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.sycl_device" title="Permalink to this definition"></a></dt>
+<dd><p><a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> the USM pointer is bound to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.sycl_queue">
+<span class="sig-prename descclassname"><span class="pre">MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">sycl_queue</span></span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.sycl_queue" title="Permalink to this definition"></a></dt>
+<dd><p><a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> with <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> the
+USM allocation is bound to and <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> it was
+allocated on.</p>
+</dd></dl>
+
+</section>
+<section id="public-methods">
+<h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.copy_from_device">
+<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">copy_from_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.copy_from_device" title="Permalink to this definition"></a></dt>
+<dd><p>Copy SYCL memory underlying the argument object into
+the memory of the instance</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.copy_from_host">
+<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">copy_from_host</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.copy_from_host" title="Permalink to this definition"></a></dt>
+<dd><p>Copy content of Python buffer provided by <cite>obj</cite> to instance memory.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.copy_to_host">
+<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">copy_to_host</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.copy_to_host" title="Permalink to this definition"></a></dt>
+<dd><p>Copy content of instance’s memory into memory of <code class="docutils literal notranslate"><span class="pre">obj</span></code>, or allocate
+NumPy array of <code class="docutils literal notranslate"><span class="pre">obj</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.get_usm_type">
+<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">get_usm_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syclobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.get_usm_type" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the type of USM allocation using Sycl context carried by
+<cite>syclobj</cite> keyword argument. Value of None is understood to query
+against <cite>self.sycl_context</cite> - the context used to create the
+allocation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMHost.tobytes">
+<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMHost.</span></span><span class="sig-name descname"><span class="pre">tobytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMHost.tobytes" title="Permalink to this definition"></a></dt>
+<dd><p>Constructs bytes object populated with copy of USM memory.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="MemoryUSMDevice.html" class="btn btn-neutral float-left" title="dpctl.memory.MemoryUSMDevice" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="MemoryUSMShared.html" class="btn btn-neutral float-right" title="dpctl.memory.MemoryUSMShared" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

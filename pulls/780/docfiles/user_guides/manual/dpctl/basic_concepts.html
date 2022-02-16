@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Basic Concepts &mdash; Data-parallel Control (dpctl) 0.12.0dev3+33.gece48cc4 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/target-highlight.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Device Selection" href="device_selection.html" />
+    <link rel="prev" title="dpctl" href="intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          </a>
+              <div class="version">
+                0.12.0dev3+33.gece48cc4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../UserManual.html">User Manual</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="intro.html">dpctl</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="intro.html#table-of-contents">Table of contents</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Basic Concepts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="device_selection.html">Device Selection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="platforms.html">Platform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="devices.html">Device</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dpctl/dpctl_pyapi.html">dpctl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../libsyclinterface/index.html">libsyclinterface</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Data-parallel Control (dpctl)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../UserManual.html">User Manual</a> &raquo;</li>
+          <li><a href="intro.html">dpctl</a> &raquo;</li>
+      <li>Basic Concepts</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/docfiles/user_guides/manual/dpctl/basic_concepts.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="basic-concepts">
+<span id="id1"></span><h1>Basic Concepts<a class="headerlink" href="#basic-concepts" title="Permalink to this headline"></a></h1>
+<p>The section introduces the basic concepts for XPU management used by dpctl.
+As dpctl is based on SYCL the concepts should be familiar to users with prior
+experience with SYCL. However, users of dpctl need not have any prior experience
+with SYCL and the concepts presented here should be self-sufficient. We do not
+go into all the SYCL-level details here and if needed readers should refer to a
+more topical SYCL reference such as the <a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html">SYCL 2020 spec</a>.</p>
+<ul>
+<li><dl class="simple">
+<dt><strong>Heterogeneous computing</strong></dt><dd><p>Refers to using multiple devices in a program.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Host</strong></dt><dd><p>Every program starts by running on a host, and most of the lines of code in
+a program, in particular lines of code implementing the Python interpreter
+itself, are usually for the host. Hosts are customarily CPUs.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Device</strong></dt><dd><p>A device is an XPU connected to a host that is programmable with a specific
+device driver. Different types of devices can have different architectures
+(CPUs, GPUs, FPGA, ASICs, DSP), but are programmable using the same
+<a class="reference external" href="https://www.oneapi.io/">oneAPI</a> programming model.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Platform</strong></dt><dd><p>A device driver installed on the system is termed as a platform. As multiple
+devices of the same type can share the same device driver, a platform may
+contain multiple devices. Note that the same physical hardware (say, a GPU)
+may be reflected as two separate devices if they can be programmed by more
+than one platform, <em>e.g.</em>, the same GPU hardware can be listed as an
+OpenCL GPU device and a Level-Zero GPU device.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Context</strong></dt><dd><p>A context holds the run-time information needed to operate on a device or a
+group of devices from the same platform. Contexts are relatively expensive
+to create and should be reused as much as possible.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Queue</strong></dt><dd><p>A queue is needed to schedule execution of any computation, or data
+copying on the device. Queue construction requires specifying a device
+and a context targeting that device as well as additional properties,
+such as whether profiling information should be collected or whether submitted
+tasks are executed in the order in which they were submitted.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Event</strong></dt><dd><p>An event holds information related to computation/data movement operation
+scheduled for execution on a queue, such as its execution status as well
+as profiling information if the queue the task was submitted to allowed
+for collection of such information. Events can be used to specify task
+dependencies as well as to synchronize host and devices.</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt><strong>USM</strong></dt><dd><p>Unified Shared Memory (USM) refers to pointer based device memory management.
+USM allocations are bound to context. In other words, a pointer representing
+USM allocation can be unambiguously mapped to the data it represents only
+if the associated context is known. USM allocations are accessible by
+computational kernels that are executed on a device, provided that the
+allocation is bound to the same context that was used to construct the queue
+where the kernel was scheduled for execution.</p>
+<p>Depending on the capability of the device, USM allocations can be a “device”
+allocation, a “shared” allocation, or a “host” allocation. A “device”
+allocation is not accessible from host, while “shared” or “host” allocations
+are. “Host” allocation refers to an allocation in host memory that is
+accessible from a device.</p>
+<p>“Shared” allocations are accessible by both host and device. Runtime manages
+synchronization of host’s and device’s view into shared allocations. Initial
+placement of the shared allocations is not defined.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Backend</strong></dt><dd><p>Refers to an implementation of <a class="reference external" href="https://www.oneapi.io/">oneAPI</a> programming model exposed
+by the underlying runtime.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="intro.html" class="btn btn-neutral float-left" title="dpctl" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="device_selection.html" class="btn btn-neutral float-right" title="Device Selection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
