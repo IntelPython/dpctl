@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <type_traits>
 
 namespace py = pybind11;
 
@@ -110,10 +111,13 @@ template <class T> struct is_complex : std::false_type
 template <class T> struct is_complex<std::complex<T>> : std::true_type
 {
 };
-template <typename dstTy, typename srcTy>
-inline dstTy convert_impl(const srcTy &v)
+template <typename dstTy, typename srcTy> dstTy convert_impl(const srcTy &v)
 {
-    if constexpr (std::is_same_v<dstTy, bool> && is_complex<srcTy>::value) {
+    if constexpr (std::is_same<dstTy, srcTy>::value) {
+        return v;
+    }
+    else if constexpr (std::is_same_v<dstTy, bool> && is_complex<srcTy>::value)
+    {
         // bool(complex_v) == (complex_v.real() != 0) && (complex_v.imag() !=0)
         return (convert_impl<bool, typename srcTy::value_type>(v.real()) ||
                 convert_impl<bool, typename srcTy::value_type>(v.imag()));
@@ -121,6 +125,15 @@ inline dstTy convert_impl(const srcTy &v)
     else if constexpr (is_complex<srcTy>::value && !is_complex<dstTy>::value) {
         // real_t(complex_v) == real_t(complex_v.real())
         return convert_impl<dstTy, typename srcTy::value_type>(v.real());
+    }
+    else if constexpr (!std::is_integral<srcTy>::value &&
+                       !std::is_same<dstTy, bool>::value &&
+                       std::is_integral<dstTy>::value &&
+                       std::is_unsigned<dstTy>::value)
+    {
+        // first cast to signed variant, the cast to unsigned one
+        using signedT = typename std::make_signed<dstTy>::type;
+        return static_cast<dstTy>(convert_impl<signedT, srcTy>(v));
     }
     else {
         return static_cast<dstTy>(v);
@@ -712,6 +725,7 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
 
     int src_type_id = typenum_to_lookup_id(src_typenum);
     int dst_type_id = typenum_to_lookup_id(dst_typenum);
+
     {
         auto type_id_check = [](int id) -> bool {
             return ((id >= 0) && (id < num_types));
@@ -840,8 +854,11 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
     if (nd < 3) {
         if (nd == 1) {
             std::array<py::ssize_t, 1> shape_arr = {shape[0]};
-            std::array<py::ssize_t, 1> src_strides_arr = {src_strides[0]};
-            std::array<py::ssize_t, 1> dst_strides_arr = {dst_strides[0]};
+            // strides may be null
+            std::array<py::ssize_t, 1> src_strides_arr = {
+                (src_strides ? src_strides[0] : 1)};
+            std::array<py::ssize_t, 1> dst_strides_arr = {
+                (dst_strides ? dst_strides[0] : 1)};
 
             auto fn = copy_and_cast_1d_dispatch_table[dst_type_id][src_type_id];
             sycl::event copy_and_cast_1d_event = fn(
