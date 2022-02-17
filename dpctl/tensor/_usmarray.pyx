@@ -888,7 +888,25 @@ cdef class usm_ndarray:
         if isinstance(val, usm_ndarray):
             _copy_from_usm_ndarray_to_usm_ndarray(Xv, val)
         else:
-            _copy_from_numpy_into(Xv, np.asarray(val))
+            if hasattr(val, "__sycl_usm_array_interface__"):
+                from dpctl.tensor import asarray
+                try:
+                    val_ar = asarray(val)
+                    _copy_from_usm_ndarray_to_usm_ndarray(Xv, val_ar)
+                except Exception:
+                    raise ValueError(
+                        f"Input of type {type(val)} could not be "
+                        "converted to usm_ndarray"
+                    )
+            else:
+                try:
+                    val_np = np.asarray(val)
+                    _copy_from_numpy_into(Xv, val_np)
+                except Exception:
+                    raise ValueError(
+                        f"Input of type {type(val)} could not be "
+                        "converted to numpy.ndarray"
+                    )
 
     def __sub__(first, other):
         "See comment in __add__"
