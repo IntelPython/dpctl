@@ -30,6 +30,66 @@ enum typenum_t : int
 };
 constexpr int num_types = 14; // number of elements in typenum_t
 
+template <typename funcPtrT,
+          template <typename fnT, typename D, typename S>
+          typename factory,
+          int num_types>
+class DispatchTableBuilder
+{
+private:
+    template <typename dstTy>
+    const std::vector<funcPtrT> row_per_dst_type() const
+    {
+        std::vector<funcPtrT> per_dstTy = {
+            factory<funcPtrT, dstTy, bool>{}.get(),
+            factory<funcPtrT, dstTy, int8_t>{}.get(),
+            factory<funcPtrT, dstTy, uint8_t>{}.get(),
+            factory<funcPtrT, dstTy, int16_t>{}.get(),
+            factory<funcPtrT, dstTy, uint16_t>{}.get(),
+            factory<funcPtrT, dstTy, int32_t>{}.get(),
+            factory<funcPtrT, dstTy, uint32_t>{}.get(),
+            factory<funcPtrT, dstTy, int64_t>{}.get(),
+            factory<funcPtrT, dstTy, uint64_t>{}.get(),
+            factory<funcPtrT, dstTy, sycl::half>{}.get(),
+            factory<funcPtrT, dstTy, float>{}.get(),
+            factory<funcPtrT, dstTy, double>{}.get(),
+            factory<funcPtrT, dstTy, std::complex<float>>{}.get(),
+            factory<funcPtrT, dstTy, std::complex<double>>{}.get()};
+        return per_dstTy;
+    }
+
+public:
+    DispatchTableBuilder() = default;
+    ~DispatchTableBuilder() = default;
+
+    void populate_dispatch_table(funcPtrT table[][num_types]) const
+    {
+        const auto map_by_dst_type = {row_per_dst_type<bool>(),
+                                      row_per_dst_type<int8_t>(),
+                                      row_per_dst_type<uint8_t>(),
+                                      row_per_dst_type<int16_t>(),
+                                      row_per_dst_type<uint16_t>(),
+                                      row_per_dst_type<int32_t>(),
+                                      row_per_dst_type<uint32_t>(),
+                                      row_per_dst_type<int64_t>(),
+                                      row_per_dst_type<uint64_t>(),
+                                      row_per_dst_type<sycl::half>(),
+                                      row_per_dst_type<float>(),
+                                      row_per_dst_type<double>(),
+                                      row_per_dst_type<std::complex<float>>(),
+                                      row_per_dst_type<std::complex<double>>()};
+        int dst_id = 0;
+        for (auto &row : map_by_dst_type) {
+            int src_id = 0;
+            for (auto &fn_ptr : row) {
+                table[dst_id][src_id] = fn_ptr;
+                ++src_id;
+            }
+            ++dst_id;
+        }
+    }
+};
+
 // Lookup a type according to its size, and return a value corresponding to the
 // NumPy typenum.
 template <typename Concrete> constexpr int platform_typeid_lookup()
@@ -271,25 +331,6 @@ sycl::event copy_and_cast_generic_impl(
     return copy_and_cast_ev;
 }
 
-template <typename dstTy>
-static std::initializer_list<copy_and_cast_generic_fn_ptr_t>
-    template_copy_and_cast_generic_funcs_row_for_dstT = {
-        copy_and_cast_generic_impl<dstTy, bool>,
-        copy_and_cast_generic_impl<dstTy, int8_t>,
-        copy_and_cast_generic_impl<dstTy, uint8_t>,
-        copy_and_cast_generic_impl<dstTy, int16_t>,
-        copy_and_cast_generic_impl<dstTy, uint16_t>,
-        copy_and_cast_generic_impl<dstTy, int32_t>,
-        copy_and_cast_generic_impl<dstTy, uint32_t>,
-        copy_and_cast_generic_impl<dstTy, int64_t>,
-        copy_and_cast_generic_impl<dstTy, uint64_t>,
-        copy_and_cast_generic_impl<dstTy, sycl::half>,
-        copy_and_cast_generic_impl<dstTy, float>,
-        copy_and_cast_generic_impl<dstTy, double>,
-        copy_and_cast_generic_impl<dstTy, std::complex<float>>,
-        copy_and_cast_generic_impl<dstTy, std::complex<double>>,
-};
-
 typedef sycl::event (*copy_and_cast_1d_fn_ptr_t)(
     sycl::queue,
     size_t,
@@ -342,44 +383,6 @@ copy_and_cast_nd_specialized_impl(sycl::queue q,
     return copy_and_cast_ev;
 }
 
-template <typename dstTy>
-static std::initializer_list<copy_and_cast_1d_fn_ptr_t>
-    template_copy_and_cast_1d_funcs_row_for_dstT = {
-        copy_and_cast_nd_specialized_impl<dstTy, bool, 1>,
-        copy_and_cast_nd_specialized_impl<dstTy, int8_t, 1>,
-        copy_and_cast_nd_specialized_impl<dstTy, uint8_t, 1>,
-        copy_and_cast_nd_specialized_impl<dstTy, int16_t, 1>,
-        copy_and_cast_nd_specialized_impl<dstTy, uint16_t, 1>,
-        copy_and_cast_nd_specialized_impl<dstTy, int32_t, 1>,
-        copy_and_cast_nd_specialized_impl<dstTy, uint32_t, 1>,
-        copy_and_cast_nd_specialized_impl<dstTy, int64_t, 1>,
-        copy_and_cast_nd_specialized_impl<dstTy, uint64_t, 1>,
-        copy_and_cast_nd_specialized_impl<dstTy, sycl::half, 1>,
-        copy_and_cast_nd_specialized_impl<dstTy, float, 1>,
-        copy_and_cast_nd_specialized_impl<dstTy, double, 1>,
-        copy_and_cast_nd_specialized_impl<dstTy, std::complex<float>, 1>,
-        copy_and_cast_nd_specialized_impl<dstTy, std::complex<double>, 1>,
-};
-
-template <typename dstTy>
-static std::initializer_list<copy_and_cast_2d_fn_ptr_t>
-    template_copy_and_cast_2d_funcs_row_for_dstT = {
-        copy_and_cast_nd_specialized_impl<dstTy, bool, 2>,
-        copy_and_cast_nd_specialized_impl<dstTy, int8_t, 2>,
-        copy_and_cast_nd_specialized_impl<dstTy, uint8_t, 2>,
-        copy_and_cast_nd_specialized_impl<dstTy, int16_t, 2>,
-        copy_and_cast_nd_specialized_impl<dstTy, uint16_t, 2>,
-        copy_and_cast_nd_specialized_impl<dstTy, int32_t, 2>,
-        copy_and_cast_nd_specialized_impl<dstTy, uint32_t, 2>,
-        copy_and_cast_nd_specialized_impl<dstTy, int64_t, 2>,
-        copy_and_cast_nd_specialized_impl<dstTy, uint64_t, 2>,
-        copy_and_cast_nd_specialized_impl<dstTy, sycl::half, 2>,
-        copy_and_cast_nd_specialized_impl<dstTy, float, 2>,
-        copy_and_cast_nd_specialized_impl<dstTy, double, 2>,
-        copy_and_cast_nd_specialized_impl<dstTy, std::complex<float>, 2>,
-        copy_and_cast_nd_specialized_impl<dstTy, std::complex<double>, 2>,
-};
-
 static copy_and_cast_generic_fn_ptr_t
     copy_and_cast_generic_dispatch_table[num_types][num_types];
 static copy_and_cast_1d_fn_ptr_t copy_and_cast_1d_dispatch_table[num_types]
@@ -387,96 +390,49 @@ static copy_and_cast_1d_fn_ptr_t copy_and_cast_1d_dispatch_table[num_types]
 static copy_and_cast_2d_fn_ptr_t copy_and_cast_2d_dispatch_table[num_types]
                                                                 [num_types];
 
+template <typename fnT, typename D, typename S> struct CopyAndCastGenericFactory
+{
+    fnT get()
+    {
+        fnT f = copy_and_cast_generic_impl<D, S>;
+        return f;
+    }
+};
+
+template <typename fnT, typename D, typename S> struct CopyAndCast1DFactory
+{
+    fnT get()
+    {
+        fnT f = copy_and_cast_nd_specialized_impl<D, S, 1>;
+        return f;
+    }
+};
+
+template <typename fnT, typename D, typename S> struct CopyAndCast2DFactory
+{
+    fnT get()
+    {
+        fnT f = copy_and_cast_nd_specialized_impl<D, S, 2>;
+        return f;
+    }
+};
+
 void init_copy_and_cast_dispatch_tables(void)
 {
-    {
-        const auto copy_and_cast_generic_map_by_dstT = {
-            template_copy_and_cast_generic_funcs_row_for_dstT<bool>,
-            template_copy_and_cast_generic_funcs_row_for_dstT<int8_t>,
-            template_copy_and_cast_generic_funcs_row_for_dstT<uint8_t>,
-            template_copy_and_cast_generic_funcs_row_for_dstT<int16_t>,
-            template_copy_and_cast_generic_funcs_row_for_dstT<uint16_t>,
-            template_copy_and_cast_generic_funcs_row_for_dstT<int32_t>,
-            template_copy_and_cast_generic_funcs_row_for_dstT<uint32_t>,
-            template_copy_and_cast_generic_funcs_row_for_dstT<int64_t>,
-            template_copy_and_cast_generic_funcs_row_for_dstT<uint64_t>,
-            template_copy_and_cast_generic_funcs_row_for_dstT<sycl::half>,
-            template_copy_and_cast_generic_funcs_row_for_dstT<float>,
-            template_copy_and_cast_generic_funcs_row_for_dstT<double>,
-            template_copy_and_cast_generic_funcs_row_for_dstT<
-                std::complex<float>>,
-            template_copy_and_cast_generic_funcs_row_for_dstT<
-                std::complex<double>>,
-        };
+    DispatchTableBuilder<copy_and_cast_generic_fn_ptr_t,
+                         CopyAndCastGenericFactory, num_types>
+        dtb_generic;
+    dtb_generic.populate_dispatch_table(copy_and_cast_generic_dispatch_table);
 
-        int dst_id = 0;
-        for (auto &row : copy_and_cast_generic_map_by_dstT) {
-            int src_id = 0;
-            for (auto &fn_ptr : row) {
-                copy_and_cast_generic_dispatch_table[dst_id][src_id] = fn_ptr;
-                ++src_id;
-            }
-            ++dst_id;
-        }
-    }
+    DispatchTableBuilder<copy_and_cast_1d_fn_ptr_t, CopyAndCast1DFactory,
+                         num_types>
+        dtb_1d;
+    dtb_1d.populate_dispatch_table(copy_and_cast_1d_dispatch_table);
 
-    {
-        const auto copy_and_cast_1d_map_by_dstT = {
-            template_copy_and_cast_1d_funcs_row_for_dstT<bool>,
-            template_copy_and_cast_1d_funcs_row_for_dstT<int8_t>,
-            template_copy_and_cast_1d_funcs_row_for_dstT<uint8_t>,
-            template_copy_and_cast_1d_funcs_row_for_dstT<int16_t>,
-            template_copy_and_cast_1d_funcs_row_for_dstT<uint16_t>,
-            template_copy_and_cast_1d_funcs_row_for_dstT<int32_t>,
-            template_copy_and_cast_1d_funcs_row_for_dstT<uint32_t>,
-            template_copy_and_cast_1d_funcs_row_for_dstT<int64_t>,
-            template_copy_and_cast_1d_funcs_row_for_dstT<uint64_t>,
-            template_copy_and_cast_1d_funcs_row_for_dstT<sycl::half>,
-            template_copy_and_cast_1d_funcs_row_for_dstT<float>,
-            template_copy_and_cast_1d_funcs_row_for_dstT<double>,
-            template_copy_and_cast_1d_funcs_row_for_dstT<std::complex<float>>,
-            template_copy_and_cast_1d_funcs_row_for_dstT<std::complex<double>>,
-        };
-
-        int dst_id = 0;
-        for (auto &row : copy_and_cast_1d_map_by_dstT) {
-            int src_id = 0;
-            for (auto &fn_ptr : row) {
-                copy_and_cast_1d_dispatch_table[dst_id][src_id] = fn_ptr;
-                ++src_id;
-            }
-            ++dst_id;
-        }
-    }
-
-    {
-        const auto copy_and_cast_2d_map_by_dstT = {
-            template_copy_and_cast_2d_funcs_row_for_dstT<bool>,
-            template_copy_and_cast_2d_funcs_row_for_dstT<int8_t>,
-            template_copy_and_cast_2d_funcs_row_for_dstT<uint8_t>,
-            template_copy_and_cast_2d_funcs_row_for_dstT<int16_t>,
-            template_copy_and_cast_2d_funcs_row_for_dstT<uint16_t>,
-            template_copy_and_cast_2d_funcs_row_for_dstT<int32_t>,
-            template_copy_and_cast_2d_funcs_row_for_dstT<uint32_t>,
-            template_copy_and_cast_2d_funcs_row_for_dstT<int64_t>,
-            template_copy_and_cast_2d_funcs_row_for_dstT<uint64_t>,
-            template_copy_and_cast_2d_funcs_row_for_dstT<sycl::half>,
-            template_copy_and_cast_2d_funcs_row_for_dstT<float>,
-            template_copy_and_cast_2d_funcs_row_for_dstT<double>,
-            template_copy_and_cast_2d_funcs_row_for_dstT<std::complex<float>>,
-            template_copy_and_cast_2d_funcs_row_for_dstT<std::complex<double>>,
-        };
-
-        int dst_id = 0;
-        for (auto &row : copy_and_cast_2d_map_by_dstT) {
-            int src_id = 0;
-            for (auto &fn_ptr : row) {
-                copy_and_cast_2d_dispatch_table[dst_id][src_id] = fn_ptr;
-                ++src_id;
-            }
-            ++dst_id;
-        }
-    }
+    DispatchTableBuilder<copy_and_cast_2d_fn_ptr_t, CopyAndCast2DFactory,
+                         num_types>
+        dtb_2d;
+    dtb_2d.populate_dispatch_table(copy_and_cast_2d_dispatch_table);
 
     return;
 }
