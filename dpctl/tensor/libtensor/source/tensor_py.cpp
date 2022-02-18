@@ -619,6 +619,25 @@ char *usm_ndarray_get_data_(py::object ar)
     return UsmNDArray_GetData(raw_ar);
 }
 
+void async_dec_ref(sycl::queue q,
+                   std::vector<py::object> kept_live,
+                   const std::vector<sycl::event> &depends = {})
+{
+    q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.host_task([=]() {
+            if (Py_IsInitialized()) {
+                PyGILState_STATE gstate;
+                gstate = PyGILState_Ensure();
+                for (auto &m : kept_live) {
+                    m.dec_ref();
+                }
+                PyGILState_Release(gstate);
+            }
+        });
+    });
+}
+
 sycl::event
 copy_usm_ndarray_into_usm_ndarray(py::object src,
                                   py::object dst,
@@ -722,6 +741,10 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             int src_elem_size = usm_ndarray_get_elemsize_(src);
             sycl::event copy_ev = exec_q.memcpy(
                 dst_data, src_data, src_nelems * src_elem_size, depends);
+
+            src.inc_ref();
+            dst.inc_ref();
+            async_dec_ref(exec_q, {src, dst}, {copy_ev});
             return copy_ev;
         }
         // With contract_iter2 in place, there is no need to write
@@ -820,6 +843,9 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             sycl::event copy_and_cast_1d_event = fn(
                 exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
                 src_data, src_offset, dst_data, dst_offset, depends);
+            src.inc_ref();
+            dst.inc_ref();
+            async_dec_ref(exec_q, {src, dst}, {copy_and_cast_1d_event});
             return copy_and_cast_1d_event;
         }
         else if (nd == 2) {
@@ -833,6 +859,9 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             sycl::event copy_and_cast_2d_event = fn(
                 exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
                 src_data, src_offset, dst_data, dst_offset, depends);
+            src.inc_ref();
+            dst.inc_ref();
+            async_dec_ref(exec_q, {src, dst}, {copy_and_cast_2d_event});
             return copy_and_cast_2d_event;
         }
         else if (nd == 0) { // case of a scalar
@@ -845,6 +874,9 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             sycl::event copy_and_cast_1d_event = fn(
                 exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
                 src_data, src_offset, dst_data, dst_offset, depends);
+            src.inc_ref();
+            dst.inc_ref();
+            async_dec_ref(exec_q, {src, dst}, {copy_and_cast_1d_event});
             return copy_and_cast_1d_event;
         }
     }
@@ -889,7 +921,7 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             exec_q.copy<py::ssize_t>(dst_strides, shape_strides + 2 * nd, nd);
     }
 
-    sycl::event copy_ev = copy_and_cast_fn(
+    sycl::event copy_and_cast_generic_ev = copy_and_cast_fn(
         exec_q, src_nelems, nd, shape_strides, src_data, src_offset, dst_data,
         dst_offset, depends,
         {copy_shape_ev, copy_src_strides_ev, copy_dst_strides_ev});
@@ -897,12 +929,16 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
     // async free of shape_strides temporary
     auto ctx = exec_q.get_context();
     exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(copy_ev);
+        cgh.depends_on(copy_and_cast_generic_ev);
         cgh.host_task(
             [ctx, shape_strides]() { sycl::free(shape_strides, ctx); });
     });
 
-    return copy_ev;
+    src.inc_ref();
+    dst.inc_ref();
+    async_dec_ref(exec_q, {src, dst}, {copy_and_cast_generic_ev});
+
+    return copy_and_cast_generic_ev;
 }
 
 } // namespace
