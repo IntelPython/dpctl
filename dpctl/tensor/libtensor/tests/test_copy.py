@@ -67,7 +67,9 @@ def are_close(X1, X2):
     if np.issubdtype(X2.dtype, np.floating) or np.issubdtype(
         X2.dtype, np.complexfloating
     ):
-        return np.allclose(X1, X2, atol=np.finfo(X2.dtype).eps)
+        return np.allclose(
+            X1, X2, atol=np.finfo(X2.dtype).eps, rtol=np.finfo(X2.dtype).eps
+        )
     else:
         return np.allclose(X1, X2)
 
@@ -142,7 +144,11 @@ def test_copy1d_strided2(src_typestr, dst_typestr):
     q.wait()
 
 
-def test_copy2d(src_typestr, dst_typestr):
+@pytest.mark.parametrize("sgn1", [-1, 1])
+@pytest.mark.parametrize("sgn2", [-1, 1])
+@pytest.mark.parametrize("st1", [5, 3, 1])
+@pytest.mark.parametrize("st2", [1, 2])
+def test_copy2d(src_typestr, dst_typestr, st1, sgn1, st2, sgn2):
     try:
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
@@ -150,44 +156,41 @@ def test_copy2d(src_typestr, dst_typestr):
 
     src_dt = np.dtype(src_typestr)
     dst_dt = np.dtype(dst_typestr)
-    n1, n2 = 45, 78
-    strides1 = [5, 3, 1]
-    strides2 = [1, 2]
-    for sgn1 in [-1, 1]:
-        for sgn2 in [-1, 1]:
-            for st1 in strides1:
-                for st2 in strides2:
-                    Snp = _random_vector(st1 * st2 * n1 * n2, src_dt).reshape(
-                        (st1 * n1, st2 * n2)
-                    )
-                    Xnp = Snp[
-                        slice(None, None, st1 * sgn1),
-                        slice(None, None, st2 * sgn2),
-                    ]
-                    S = dpt.asarray(Snp, sycl_queue=q)
-                    X = S[
-                        slice(None, None, st1 * sgn1),
-                        slice(None, None, st2 * sgn2),
-                    ]
-                    Y = dpt.empty((n1, n2), dtype=dst_dt)
-                    ti._copy_usm_ndarray_into_usm_ndarray(
-                        src=X, dst=Y, queue=q
-                    ).wait()
-                    Ynp = _force_cast(Xnp, dst_dt)
-                    assert are_close(Ynp, dpt.asnumpy(Y))
-                    Yst = dpt.empty((2 * n1, n2), dtype=dst_dt)[::2, ::-1]
-                    ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                        src=X, dst=Yst, queue=q
-                    )
-                    Y = dpt.empty((n1, n2), dtype=dst_dt)
-                    ti._copy_usm_ndarray_into_usm_ndarray(
-                        src=Yst, dst=Y, queue=q, depends=[ev]
-                    ).wait()
-                    Ynp = _force_cast(Xnp, dst_dt)
-                    assert are_close(Ynp, dpt.asnumpy(Y))
+    n1, n2 = 15, 12
+    Snp = _random_vector(st1 * st2 * n1 * n2, src_dt).reshape(
+        (st1 * n1, st2 * n2)
+    )
+    Xnp = Snp[
+        slice(None, None, st1 * sgn1),
+        slice(None, None, st2 * sgn2),
+    ]
+    S = dpt.asarray(Snp, sycl_queue=q)
+    X = S[
+        slice(None, None, st1 * sgn1),
+        slice(None, None, st2 * sgn2),
+    ]
+    Y = dpt.empty((n1, n2), dtype=dst_dt)
+    ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, queue=q).wait()
+    Ynp = _force_cast(Xnp, dst_dt)
+    assert are_close(Ynp, dpt.asnumpy(Y))
+    Yst = dpt.empty((2 * n1, n2), dtype=dst_dt)[::2, ::-1]
+    ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Yst, queue=q)
+    Y = dpt.empty((n1, n2), dtype=dst_dt)
+    ti._copy_usm_ndarray_into_usm_ndarray(
+        src=Yst, dst=Y, queue=q, depends=[ev]
+    ).wait()
+    Ynp = _force_cast(Xnp, dst_dt)
+    assert are_close(Ynp, dpt.asnumpy(Y))
+    q.wait()
 
 
-def test_copy3d(src_typestr, dst_typestr):
+@pytest.mark.parametrize("sgn1", [-1, 1])
+@pytest.mark.parametrize("sgn2", [-1, 1])
+@pytest.mark.parametrize("sgn3", [-1, 1])
+@pytest.mark.parametrize("st1", [3, 1])
+@pytest.mark.parametrize("st2", [1, 2])
+@pytest.mark.parametrize("st3", [3, 2])
+def test_copy3d(src_typestr, dst_typestr, st1, sgn1, st2, sgn2, st3, sgn3):
     try:
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
@@ -195,45 +198,30 @@ def test_copy3d(src_typestr, dst_typestr):
 
     src_dt = np.dtype(src_typestr)
     dst_dt = np.dtype(dst_typestr)
-    n1, n2, n3 = 15, 14, 6
-    strides1 = [5, 3, 1]
-    strides2 = [1, 2]
-    strides3 = [1, 2, 3]
-    for sgn1 in [-1, 1]:
-        for sgn2 in [-1, 1]:
-            for sgn3 in [-1, 1]:
-                for st1 in strides1:
-                    for st2 in strides2:
-                        for st3 in strides3:
-                            Snp = _random_vector(
-                                st1 * st2 * st3 * n1 * n2 * n3, src_dt
-                            ).reshape((st1 * n1, st2 * n2, st3 * n3))
-                            Xnp = Snp[
-                                slice(None, None, st1 * sgn1),
-                                slice(None, None, st2 * sgn2),
-                                slice(None, None, st3 * sgn3),
-                            ]
-                            S = dpt.asarray(Snp, sycl_queue=q)
-                            X = S[
-                                slice(None, None, st1 * sgn1),
-                                slice(None, None, st2 * sgn2),
-                                slice(None, None, st3 * sgn3),
-                            ]
-                            Y = dpt.empty((n1, n2, n3), dtype=dst_dt)
-                            ti._copy_usm_ndarray_into_usm_ndarray(
-                                src=X, dst=Y, queue=q
-                            ).wait()
-                            Ynp = _force_cast(Xnp, dst_dt)
-                            assert are_close(Ynp, dpt.asnumpy(Y))
-                            Yst = dpt.empty((2 * n1, n2, n3), dtype=dst_dt)[
-                                ::2, ::-1
-                            ]
-                            ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                                src=X, dst=Yst, queue=q
-                            )
-                            Y = dpt.empty((n1, n2, n3), dtype=dst_dt)
-                            ti._copy_usm_ndarray_into_usm_ndarray(
-                                src=Yst, dst=Y, queue=q, depends=[ev]
-                            ).wait()
-                            Ynp = _force_cast(Xnp, dst_dt)
-                            assert are_close(Ynp, dpt.asnumpy(Y))
+    n1, n2, n3 = 5, 4, 6
+    Snp = _random_vector(st1 * st2 * st3 * n1 * n2 * n3, src_dt).reshape(
+        (st1 * n1, st2 * n2, st3 * n3)
+    )
+    Xnp = Snp[
+        slice(None, None, st1 * sgn1),
+        slice(None, None, st2 * sgn2),
+        slice(None, None, st3 * sgn3),
+    ]
+    S = dpt.asarray(Snp, sycl_queue=q)
+    X = S[
+        slice(None, None, st1 * sgn1),
+        slice(None, None, st2 * sgn2),
+        slice(None, None, st3 * sgn3),
+    ]
+    Y = dpt.empty((n1, n2, n3), dtype=dst_dt)
+    ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, queue=q).wait()
+    Ynp = _force_cast(Xnp, dst_dt)
+    assert are_close(Ynp, dpt.asnumpy(Y)), "1"
+    Yst = dpt.empty((2 * n1, n2, n3), dtype=dst_dt)[::2, ::-1]
+    ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Yst, queue=q)
+    Y2 = dpt.empty((n1, n2, n3), dtype=dst_dt)
+    ti._copy_usm_ndarray_into_usm_ndarray(
+        src=Yst, dst=Y2, queue=q, depends=[ev]
+    ).wait()
+    assert are_close(Ynp, dpt.asnumpy(Y2)), "2"
+    q.wait()
