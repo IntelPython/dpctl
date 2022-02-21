@@ -18,10 +18,10 @@ if(WIN32)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Ox ${WARNING_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ox ${WARNING_FLAGS}")
     set(CMAKE_C_FLAGS_DEBUG
-        "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG"
+        "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} -O0 -ggdb3 -DDEBUG"
     )
     set(CMAKE_CXX_FLAGS_DEBUG
-        "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG"
+        "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} -O0 -ggdb3 -DDEBUG"
     )
     set(DPCTL_LDFLAGS "/NXCompat /DynamicBase")
 elseif(UNIX)
@@ -57,10 +57,10 @@ elseif(UNIX)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 ${CFLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 ${CXXFLAGS}")
     set(CMAKE_C_FLAGS_DEBUG
-        "${CMAKE_C_FLAGS_DEBUG} ${CFLAGS} -ggdb3 -DDEBUG"
+        "${CMAKE_C_FLAGS_DEBUG} ${CFLAGS} -O0 -ggdb3 -DDEBUG"
     )
     set(CMAKE_CXX_FLAGS_DEBUG
-        "${CMAKE_CXX_FLAGS_DEBUG} ${CXXFLAGS} -ggdb3 -DDEBUG"
+        "${CMAKE_CXX_FLAGS_DEBUG} ${CXXFLAGS} -O0 -ggdb3 -DDEBUG"
     )
     set(DPCTL_LDFLAGS "-z,noexecstack,-z,relro,-z,now")
 else()

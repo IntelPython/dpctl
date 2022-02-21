@@ -234,18 +234,18 @@ public:
 
     void operator()(sycl::id<1> wiid) const
     {
-        py::ssize_t src_offset = 0;
-        py::ssize_t dst_offset = 0;
+        py::ssize_t src_offset(0);
+        py::ssize_t dst_offset(0);
         CIndexer_vector<py::ssize_t> indxr(nd_);
-        indxr.get_displacement(
-            wiid.get(0),
-            static_cast<const py::ssize_t *>(shape_strides_), // common shape
-            static_cast<const py::ssize_t *>(shape_strides_ +
-                                             nd_), // src strides
-            static_cast<const py::ssize_t *>(shape_strides_ +
-                                             2 * nd_), // dst strides
-            src_offset,                                // modified by reference
-            dst_offset                                 // modified by reference
+        indxr.get_displacement<const py::ssize_t *, const py::ssize_t *>(
+            static_cast<py::ssize_t>(wiid.get(0)),
+            const_cast<const py::ssize_t *>(shape_strides_), // common shape
+            const_cast<const py::ssize_t *>(shape_strides_ +
+                                            nd_), // src strides
+            const_cast<const py::ssize_t *>(shape_strides_ +
+                                            2 * nd_), // dst strides
+            src_offset,                               // modified by reference
+            dst_offset                                // modified by reference
         );
         CastFnT fn{};
         fn(src_, src_offset, dst_, dst_offset);
@@ -303,20 +303,20 @@ typedef sycl::event (*copy_and_cast_generic_fn_ptr_t)(
     char *,
     py::ssize_t,
     const std::vector<sycl::event> &,
-    const std::initializer_list<sycl::event> &);
+    const std::vector<sycl::event> &);
 
 template <typename dstTy, typename srcTy>
-sycl::event copy_and_cast_generic_impl(
-    sycl::queue q,
-    size_t nelems,
-    int nd,
-    py::ssize_t *shape_and_strides,
-    char *src_p,
-    py::ssize_t src_offset,
-    char *dst_p,
-    py::ssize_t dst_offset,
-    const std::vector<sycl::event> &depends,
-    const std::initializer_list<sycl::event> &additional_depends)
+sycl::event
+copy_and_cast_generic_impl(sycl::queue q,
+                           size_t nelems,
+                           int nd,
+                           py::ssize_t *shape_and_strides,
+                           char *src_p,
+                           py::ssize_t src_offset,
+                           char *dst_p,
+                           py::ssize_t dst_offset,
+                           const std::vector<sycl::event> &depends,
+                           const std::vector<sycl::event> &additional_depends)
 {
     sycl::event copy_and_cast_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -620,22 +620,32 @@ char *usm_ndarray_get_data_(py::object ar)
 }
 
 void async_dec_ref(sycl::queue q,
-                   std::vector<py::object> kept_live,
+                   py::object &o1,
+                   py::object &o2,
                    const std::vector<sycl::event> &depends = {})
 {
-    q.submit([&](sycl::handler &cgh) {
+    sycl::event host_task_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         cgh.host_task([=]() {
-            if (Py_IsInitialized()) {
+            if (!_Py_IsFinalizing()) {
                 PyGILState_STATE gstate;
                 gstate = PyGILState_Ensure();
-                for (auto &m : kept_live) {
-                    m.dec_ref();
-                }
+                std::cout << "Before: RefCount(o1) = " << (o1.ptr()->ob_refcnt)
+                          << ", ";
+                std::cout << "RefCount(o2) = " << (o2.ptr()->ob_refcnt)
+                          << std::endl;
+                o1.dec_ref();
+                o2.dec_ref();
+                std::cout << "After: RefCount(o1) = " << (o1.ptr()->ob_refcnt)
+                          << ", ";
+                std::cout << "RefCount(o2) = " << (o2.ptr()->ob_refcnt)
+                          << std::endl;
                 PyGILState_Release(gstate);
             }
         });
     });
+
+    return;
 }
 
 sycl::event
@@ -742,9 +752,9 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             sycl::event copy_ev = exec_q.memcpy(
                 dst_data, src_data, src_nelems * src_elem_size, depends);
 
-            src.inc_ref();
-            dst.inc_ref();
-            async_dec_ref(exec_q, {src, dst}, {copy_ev});
+            // src.inc_ref();
+            // dst.inc_ref();
+            // async_dec_ref(exec_q, src, dst, {copy_ev});
             return copy_ev;
         }
         // With contract_iter2 in place, there is no need to write
@@ -754,9 +764,10 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
     const py::ssize_t *src_strides = usm_ndarray_strides_(src);
     const py::ssize_t *dst_strides = usm_ndarray_strides_(dst);
 
-    std::vector<py::ssize_t> simplified_shape;
-    std::vector<py::ssize_t> simplified_src_strides;
-    std::vector<py::ssize_t> simplified_dst_strides;
+    using shT = std::vector<py::ssize_t>;
+    shT simplified_shape;
+    shT simplified_src_strides;
+    shT simplified_dst_strides;
     py::ssize_t src_offset(0);
     py::ssize_t dst_offset(0);
 
@@ -809,6 +820,9 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             }
         }
 
+        assert(simplified_shape.size() == nd);
+        assert(simplified_src_strides.size() == nd);
+        assert(simplified_dst_strides.size() == nd);
         int contracted_nd = simplify_iteration_two_strides(
             nd, simplified_shape.data(), simplified_src_strides.data(),
             simplified_dst_strides.data(),
@@ -843,9 +857,9 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             sycl::event copy_and_cast_1d_event = fn(
                 exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
                 src_data, src_offset, dst_data, dst_offset, depends);
-            src.inc_ref();
-            dst.inc_ref();
-            async_dec_ref(exec_q, {src, dst}, {copy_and_cast_1d_event});
+            // src.inc_ref();
+            // dst.inc_ref();
+            // async_dec_ref(exec_q, src, dst, {copy_and_cast_1d_event});
             return copy_and_cast_1d_event;
         }
         else if (nd == 2) {
@@ -859,9 +873,9 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             sycl::event copy_and_cast_2d_event = fn(
                 exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
                 src_data, src_offset, dst_data, dst_offset, depends);
-            src.inc_ref();
-            dst.inc_ref();
-            async_dec_ref(exec_q, {src, dst}, {copy_and_cast_2d_event});
+            // src.inc_ref();
+            // dst.inc_ref();
+            // async_dec_ref(exec_q, src, dst, {copy_and_cast_2d_event});
             return copy_and_cast_2d_event;
         }
         else if (nd == 0) { // case of a scalar
@@ -874,12 +888,18 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             sycl::event copy_and_cast_1d_event = fn(
                 exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
                 src_data, src_offset, dst_data, dst_offset, depends);
-            src.inc_ref();
-            dst.inc_ref();
-            async_dec_ref(exec_q, {src, dst}, {copy_and_cast_1d_event});
+            // src.inc_ref();
+            // dst.inc_ref();
+            // async_dec_ref(exec_q, src, dst, {copy_and_cast_1d_event});
             return copy_and_cast_1d_event;
         }
     }
+
+    std::shared_ptr<shT> shp_shape = std::make_shared<shT>(simplified_shape);
+    std::shared_ptr<shT> shp_src_strides =
+        std::make_shared<shT>(simplified_src_strides);
+    std::shared_ptr<shT> shp_dst_strides =
+        std::make_shared<shT>(simplified_dst_strides);
 
     // Generic implementation
     auto copy_and_cast_fn =
@@ -891,34 +911,70 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
         sycl::malloc_device<py::ssize_t>(3 * nd, exec_q);
 
     sycl::event copy_shape_ev =
-        exec_q.copy<py::ssize_t>(shape, shape_strides, nd);
+        exec_q.copy<py::ssize_t>(shp_shape->data(), shape_strides, nd);
+
+    exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(copy_shape_ev);
+        cgh.host_task([shp_shape]() {
+            // increment shared pointer ref-count to keep it alive
+            // till copy operation completes;
+        });
+    });
 
     sycl::event copy_src_strides_ev;
     if (src_strides == nullptr) {
-        std::vector<py::ssize_t> src_strides_v =
-            (src_flags & USM_ARRAY_C_CONTIGUOUS)
-                ? c_contiguous_strides(nd, shape)
-                : f_contiguous_strides(nd, shape);
-        copy_src_strides_ev = exec_q.copy<py::ssize_t>(src_strides_v.data(),
-                                                       shape_strides + nd, nd);
+        std::shared_ptr<shT> shp_contig_src_strides =
+            std::make_shared<shT>((src_flags & USM_ARRAY_C_CONTIGUOUS)
+                                      ? c_contiguous_strides(nd, shape)
+                                      : f_contiguous_strides(nd, shape));
+        copy_src_strides_ev = exec_q.copy<py::ssize_t>(
+            shp_contig_src_strides->data(), shape_strides + nd, nd);
+        exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(copy_src_strides_ev);
+            cgh.host_task([shp_contig_src_strides]() {
+                // increment shared pointer ref-count to keep it alive
+                // till copy operation completes;
+            });
+        });
     }
     else {
-        copy_src_strides_ev =
-            exec_q.copy<py::ssize_t>(src_strides, shape_strides + nd, nd);
+        copy_src_strides_ev = exec_q.copy<py::ssize_t>(shp_src_strides->data(),
+                                                       shape_strides + nd, nd);
+        exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(copy_src_strides_ev);
+            cgh.host_task([shp_src_strides]() {
+                // increment shared pointer ref-count to keep it alive
+                // till copy operation completes;
+            });
+        });
     }
 
     sycl::event copy_dst_strides_ev;
     if (dst_strides == nullptr) {
-        std::vector<py::ssize_t> dst_strides_v =
-            (dst_flags & USM_ARRAY_C_CONTIGUOUS)
-                ? c_contiguous_strides(nd, shape)
-                : f_contiguous_strides(nd, shape);
+        std::shared_ptr<shT> shp_contig_dst_strides =
+            std::make_shared<shT>((dst_flags & USM_ARRAY_C_CONTIGUOUS)
+                                      ? c_contiguous_strides(nd, shape)
+                                      : f_contiguous_strides(nd, shape));
         copy_dst_strides_ev = exec_q.copy<py::ssize_t>(
-            dst_strides_v.data(), shape_strides + 2 * nd, nd);
+            shp_contig_dst_strides->data(), shape_strides + 2 * nd, nd);
+        exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(copy_dst_strides_ev);
+            cgh.host_task([shp_contig_dst_strides]() {
+                // increment shared pointer ref-count to keep it alive
+                // till copy operation completes;
+            });
+        });
     }
     else {
-        copy_dst_strides_ev =
-            exec_q.copy<py::ssize_t>(dst_strides, shape_strides + 2 * nd, nd);
+        copy_dst_strides_ev = exec_q.copy<py::ssize_t>(
+            shp_dst_strides->data(), shape_strides + 2 * nd, nd);
+        exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(copy_dst_strides_ev);
+            cgh.host_task([shp_dst_strides]() {
+                // increment shared pointer ref-count to keep it alive
+                // till copy operation completes;
+            });
+        });
     }
 
     sycl::event copy_and_cast_generic_ev = copy_and_cast_fn(
@@ -934,9 +990,9 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             [ctx, shape_strides]() { sycl::free(shape_strides, ctx); });
     });
 
-    src.inc_ref();
-    dst.inc_ref();
-    async_dec_ref(exec_q, {src, dst}, {copy_and_cast_generic_ev});
+    // src.inc_ref();
+    // dst.inc_ref();
+    // async_dec_ref(exec_q, src, dst, {copy_and_cast_generic_ev});
 
     return copy_and_cast_generic_ev;
 }
