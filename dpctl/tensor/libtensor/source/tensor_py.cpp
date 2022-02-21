@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <thread>
 #include <type_traits>
 
 namespace py = pybind11;
@@ -619,27 +620,21 @@ char *usm_ndarray_get_data_(py::object ar)
     return UsmNDArray_GetData(raw_ar);
 }
 
-void async_dec_ref(sycl::queue q,
-                   py::object &o1,
-                   py::object &o2,
-                   const std::vector<sycl::event> &depends = {})
+void keep_args_alive(sycl::queue q,
+                     py::object o1,
+                     py::object o2,
+                     const std::vector<sycl::event> &depends = {})
 {
     sycl::event host_task_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
+        o1.inc_ref();
+        o2.inc_ref();
         cgh.host_task([=]() {
             if (!_Py_IsFinalizing()) {
                 PyGILState_STATE gstate;
                 gstate = PyGILState_Ensure();
-                std::cout << "Before: RefCount(o1) = " << (o1.ptr()->ob_refcnt)
-                          << ", ";
-                std::cout << "RefCount(o2) = " << (o2.ptr()->ob_refcnt)
-                          << std::endl;
                 o1.dec_ref();
                 o2.dec_ref();
-                std::cout << "After: RefCount(o1) = " << (o1.ptr()->ob_refcnt)
-                          << ", ";
-                std::cout << "RefCount(o2) = " << (o2.ptr()->ob_refcnt)
-                          << std::endl;
                 PyGILState_Release(gstate);
             }
         });
@@ -752,9 +747,8 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             sycl::event copy_ev = exec_q.memcpy(
                 dst_data, src_data, src_nelems * src_elem_size, depends);
 
-            // src.inc_ref();
-            // dst.inc_ref();
-            // async_dec_ref(exec_q, src, dst, {copy_ev});
+            // make sure src and dst are not GC-ed before copy_ev is complete
+            keep_args_alive(exec_q, src, dst, {copy_ev});
             return copy_ev;
         }
         // With contract_iter2 in place, there is no need to write
@@ -857,9 +851,8 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             sycl::event copy_and_cast_1d_event = fn(
                 exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
                 src_data, src_offset, dst_data, dst_offset, depends);
-            // src.inc_ref();
-            // dst.inc_ref();
-            // async_dec_ref(exec_q, src, dst, {copy_and_cast_1d_event});
+
+            keep_args_alive(exec_q, src, dst, {copy_and_cast_1d_event});
             return copy_and_cast_1d_event;
         }
         else if (nd == 2) {
@@ -873,9 +866,8 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             sycl::event copy_and_cast_2d_event = fn(
                 exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
                 src_data, src_offset, dst_data, dst_offset, depends);
-            // src.inc_ref();
-            // dst.inc_ref();
-            // async_dec_ref(exec_q, src, dst, {copy_and_cast_2d_event});
+
+            keep_args_alive(exec_q, src, dst, {copy_and_cast_2d_event});
             return copy_and_cast_2d_event;
         }
         else if (nd == 0) { // case of a scalar
@@ -888,9 +880,8 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             sycl::event copy_and_cast_1d_event = fn(
                 exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
                 src_data, src_offset, dst_data, dst_offset, depends);
-            // src.inc_ref();
-            // dst.inc_ref();
-            // async_dec_ref(exec_q, src, dst, {copy_and_cast_1d_event});
+
+            keep_args_alive(exec_q, src, dst, {copy_and_cast_1d_event});
             return copy_and_cast_1d_event;
         }
     }
@@ -990,9 +981,7 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             [ctx, shape_strides]() { sycl::free(shape_strides, ctx); });
     });
 
-    // src.inc_ref();
-    // dst.inc_ref();
-    // async_dec_ref(exec_q, src, dst, {copy_and_cast_generic_ev});
+    keep_args_alive(exec_q, src, dst, {copy_and_cast_generic_ev});
 
     return copy_and_cast_generic_ev;
 }
