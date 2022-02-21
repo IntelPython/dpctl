@@ -39,7 +39,7 @@ template <typename indT = std::ptrdiff_t> class CIndexer_vector
 public:
     CIndexer_vector(int dim) : nd(dim) {}
 
-    template <class ShapeTy> indT size(const ShapeTy &shape) const
+    template <class ShapeTy> indT size(ShapeTy shape) const
     {
         indT s = static_cast<indT>(1);
         for (int i = 0; i < nd; ++i) {
@@ -49,10 +49,8 @@ public:
     }
 
     template <class ShapeTy, class StridesTy>
-    void get_displacement(indT i,
-                          const ShapeTy &shape,
-                          const StridesTy &stride,
-                          indT &disp) const
+    void
+    get_displacement(indT i, ShapeTy shape, StridesTy stride, indT &disp) const
     {
         if (nd == 1) {
             disp = i * stride[0];
@@ -73,9 +71,9 @@ public:
 
     template <class ShapeTy, class StridesTy>
     void get_displacement(indT i,
-                          const ShapeTy &shape,
-                          const StridesTy &stride1,
-                          const StridesTy &stride2,
+                          ShapeTy shape,
+                          StridesTy stride1,
+                          StridesTy stride2,
                           indT &disp1,
                           indT &disp2) const
     {
@@ -102,10 +100,10 @@ public:
 
     template <class ShapeTy, class StridesTy>
     void get_displacement(indT i,
-                          const ShapeTy &shape,
-                          const StridesTy &stride1,
-                          const StridesTy &stride2,
-                          const StridesTy &stride3,
+                          ShapeTy shape,
+                          StridesTy stride1,
+                          StridesTy stride2,
+                          StridesTy stride3,
                           indT &disp1,
                           indT &disp2,
                           indT &disp3) const
@@ -136,11 +134,11 @@ public:
 
     template <class ShapeTy, class StridesTy>
     void get_displacement(indT i,
-                          const ShapeTy &shape,
-                          const StridesTy &stride1,
-                          const StridesTy &stride2,
-                          const StridesTy &stride3,
-                          const StridesTy &stride4,
+                          ShapeTy shape,
+                          StridesTy stride1,
+                          StridesTy stride2,
+                          StridesTy stride3,
+                          StridesTy stride4,
                           indT &disp1,
                           indT &disp2,
                           indT &disp3,
@@ -175,8 +173,8 @@ public:
 
     template <class ShapeTy, class StridesTy, int nstrides>
     void get_displacement(indT i,
-                          const ShapeTy &shape,
-                          const std::array<StridesTy, nstrides> &strides,
+                          ShapeTy shape,
+                          const std::array<StridesTy, nstrides> strides,
                           std::array<indT, nstrides> &disps) const
     {
         if (nd == 1) {
