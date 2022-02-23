@@ -18,7 +18,7 @@ import operator
 import numpy as np
 
 import dpctl.tensor as dpt
-from dpctl.tensor._copy_utils import copy_same_dtype
+from dpctl.tensor._copy_utils import _copy_from_usm_ndarray_to_usm_ndarray
 
 
 def _make_unit_indexes(shape):
@@ -118,7 +118,7 @@ def reshape(X, newshape, order="C"):
             order=order,
         )
         for i in range(X.size):
-            copy_same_dtype(
+            _copy_from_usm_ndarray_to_usm_ndarray(
                 flat_res[i], X[np.unravel_index(i, X.shape, order=order)]
             )
         return dpt.usm_ndarray(

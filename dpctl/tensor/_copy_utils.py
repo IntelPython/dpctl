@@ -19,6 +19,7 @@ import numpy as np
 
 import dpctl.memory as dpm
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as ti
 from dpctl.tensor._device import normalize_queue_device
 
 
@@ -189,114 +190,54 @@ class Dummy:
         self.__sycl_usm_array_interface__ = iface
 
 
-def copy_same_dtype(dst, src):
-    if type(dst) is not dpt.usm_ndarray or type(src) is not dpt.usm_ndarray:
-        raise TypeError
+def _copy_overlapping(dst, src):
+    """Assumes src and dst have the same shape."""
+    q = normalize_queue_device(sycl_queue=dst.sycl_queue)
+    tmp = dpt.usm_ndarray(
+        src.shape,
+        dtype=src.dtype,
+        buffer="device",
+        order="C",
+        buffer_ctor_kwargs={"queue": q},
+    )
+    hcp1, cp1 = ti._copy_usm_ndarray_into_usm_ndarray(src=src, dst=tmp, queue=q)
+    hcp2, cp2 = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=tmp, dst=dst, queue=q, depends=[cp1]
+    )
+    hcp2.wait()
+    hcp1.wait()
 
-    if dst.shape != src.shape:
-        raise ValueError
 
-    if dst.dtype != src.dtype:
-        raise ValueError
-
-    if dst.size == 0:
-        return
-
+def _copy_same_shape(dst, src):
+    """Assumes src and dst have the same shape."""
     # check that memory regions do not overlap
     if _has_memory_overlap(dst, src):
-        tmp = _copy_to_numpy(src)
-        _copy_from_numpy_into(dst, tmp)
+        _copy_overlapping(src=src, dst=dst)
         return
 
-    if (dst.flags & 1) and (src.flags & 1):
-        dst_mem = dpm.as_usm_memory(dst)
-        src_mem = dpm.as_usm_memory(src)
-        dst_mem.copy_from_device(src_mem)
-        return
-
-    # simplify strides
-    sh_i, dst_st, dst_disp, src_st, src_disp = contract_iter2(
-        dst.shape, dst.strides, src.strides
+    hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=src, dst=dst, queue=dst.sycl_queue
     )
-    # sh_i, dst_st, dst_disp, src_st, src_disp = (
-    #    dst.shape, dst.strides, 0, src.strides, 0
-    # )
-    src_iface = src.__sycl_usm_array_interface__
-    dst_iface = dst.__sycl_usm_array_interface__
-    src_iface["shape"] = tuple()
-    src_iface.pop("strides", None)
-    dst_iface["shape"] = tuple()
-    dst_iface.pop("strides", None)
-    dst_disp = dst_disp + dst_iface.get("offset", 0)
-    src_disp = src_disp + src_iface.get("offset", 0)
-    for i in range(dst.size):
-        mi = np.unravel_index(i, sh_i)
-        dst_offset = dst_disp
-        src_offset = src_disp
-        for j, dst_stj, src_stj in zip(mi, dst_st, src_st):
-            dst_offset = dst_offset + j * dst_stj
-            src_offset = src_offset + j * src_stj
-        dst_iface["offset"] = dst_offset
-        src_iface["offset"] = src_offset
-        msrc = dpm.as_usm_memory(Dummy(src_iface))
-        mdst = dpm.as_usm_memory(Dummy(dst_iface))
-        mdst.copy_from_device(msrc)
-
-
-def copy_same_shape(dst, src):
-    if src.dtype == dst.dtype:
-        copy_same_dtype(dst, src)
-        return
-
-    # check that memory regions do not overlap
-    if _has_memory_overlap(dst, src):
-        tmp = _copy_to_numpy(src)
-        tmp = tmp.astype(dst.dtype)
-        _copy_from_numpy_into(dst, tmp)
-        return
-
-    # simplify strides
-    sh_i, dst_st, dst_disp, src_st, src_disp = contract_iter2(
-        dst.shape, dst.strides, src.strides
-    )
-    src_iface = src.__sycl_usm_array_interface__
-    dst_iface = dst.__sycl_usm_array_interface__
-    src_iface["shape"] = tuple()
-    src_iface.pop("strides", None)
-    dst_iface["shape"] = tuple()
-    dst_iface.pop("strides", None)
-    dst_disp = dst_disp + dst_iface.get("offset", 0)
-    src_disp = src_disp + src_iface.get("offset", 0)
-    for i in range(dst.size):
-        mi = np.unravel_index(i, sh_i)
-        dst_offset = dst_disp
-        src_offset = src_disp
-        for j, dst_stj, src_stj in zip(mi, dst_st, src_st):
-            dst_offset = dst_offset + j * dst_stj
-            src_offset = src_offset + j * src_stj
-        dst_iface["offset"] = dst_offset
-        src_iface["offset"] = src_offset
-        msrc = dpm.as_usm_memory(Dummy(src_iface))
-        mdst = dpm.as_usm_memory(Dummy(dst_iface))
-        tmp = msrc.copy_to_host().view(src.dtype)
-        tmp = tmp.astype(dst.dtype)
-        mdst.copy_from_host(tmp.view("u1"))
+    hev.wait()
 
 
 def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
     if type(dst) is not dpt.usm_ndarray or type(src) is not dpt.usm_ndarray:
-        raise TypeError
+        raise TypeError(
+            "Both types are expected to be dpctl.tensor.usm_ndarray, "
+            f"got {type(dst)} and {type(src)}."
+        )
 
     if dst.ndim == src.ndim and dst.shape == src.shape:
-        copy_same_shape(dst, src)
+        _copy_same_shape(dst, src)
 
     try:
         common_shape = np.broadcast_shapes(dst.shape, src.shape)
     except ValueError:
-        raise ValueError
+        raise ValueError("Shapes of two arrays are not compatible")
 
     if dst.size < src.size:
-        raise ValueError
+        raise ValueError("Destination is smaller ")
 
     if len(common_shape) > dst.ndim:
         ones_count = len(common_shape) - dst.ndim
@@ -314,7 +255,7 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
         src_same_shape = src
         src_same_shape.shape = common_shape
 
-    copy_same_shape(dst, src_same_shape)
+    _copy_same_shape(dst, src_same_shape)
 
 
 def copy(usm_ary, order="K"):
@@ -377,7 +318,7 @@ def copy(usm_ary, order="K"):
             buffer=R.usm_data,
             strides=new_strides,
         )
-    copy_same_dtype(R, usm_ary)
+    _copy_same_shape(R, usm_ary)
     return R
 
 
