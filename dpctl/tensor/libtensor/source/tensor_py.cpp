@@ -645,17 +645,17 @@ char *usm_ndarray_get_data_(py::object ar)
     return UsmNDArray_GetData(raw_ar);
 }
 
-void keep_args_alive(sycl::queue q,
-                     py::object o1,
-                     py::object o2,
-                     const std::vector<sycl::event> &depends = {})
+sycl::event keep_args_alive(sycl::queue q,
+                            py::object o1,
+                            py::object o2,
+                            const std::vector<sycl::event> &depends = {})
 {
     sycl::event host_task_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         o1.inc_ref();
         o2.inc_ref();
         cgh.host_task([=]() {
-            if (!_Py_IsFinalizing()) {
+            if (Py_IsInitialized() && !_Py_IsFinalizing()) {
                 PyGILState_STATE gstate;
                 gstate = PyGILState_Ensure();
                 o1.dec_ref();
@@ -665,10 +665,10 @@ void keep_args_alive(sycl::queue q,
         });
     });
 
-    return;
+    return host_task_ev;
 }
 
-sycl::event
+std::pair<sycl::event, sycl::event>
 copy_usm_ndarray_into_usm_ndarray(py::object src,
                                   py::object dst,
                                   sycl::queue exec_q,
@@ -700,7 +700,7 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
 
     if (src_nelems == 0) {
         // nothing to do
-        return sycl::event();
+        return std::make_pair(sycl::event(), sycl::event());
     }
 
     // destination must be ample enough to accomodate all elements
@@ -773,8 +773,8 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
                 dst_data, src_data, src_nelems * src_elem_size, depends);
 
             // make sure src and dst are not GC-ed before copy_ev is complete
-            keep_args_alive(exec_q, src, dst, {copy_ev});
-            return copy_ev;
+            return std::make_pair(keep_args_alive(exec_q, src, dst, {copy_ev}),
+                                  copy_ev);
         }
         // With contract_iter2 in place, there is no need to write
         // dedicated kernels for casting between contiguous arrays
@@ -877,8 +877,9 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
                 exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
                 src_data, src_offset, dst_data, dst_offset, depends);
 
-            keep_args_alive(exec_q, src, dst, {copy_and_cast_1d_event});
-            return copy_and_cast_1d_event;
+            return std::make_pair(
+                keep_args_alive(exec_q, src, dst, {copy_and_cast_1d_event}),
+                copy_and_cast_1d_event);
         }
         else if (nd == 2) {
             std::array<py::ssize_t, 2> shape_arr = {shape[0], shape[1]};
@@ -892,8 +893,9 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
                 exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
                 src_data, src_offset, dst_data, dst_offset, depends);
 
-            keep_args_alive(exec_q, src, dst, {copy_and_cast_2d_event});
-            return copy_and_cast_2d_event;
+            return std::make_pair(
+                keep_args_alive(exec_q, src, dst, {copy_and_cast_2d_event}),
+                copy_and_cast_2d_event);
         }
         else if (nd == 0) { // case of a scalar
             assert(src_nelems == 1);
@@ -902,12 +904,13 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             std::array<py::ssize_t, 1> dst_strides_arr = {1};
 
             auto fn = copy_and_cast_1d_dispatch_table[dst_type_id][src_type_id];
-            sycl::event copy_and_cast_1d_event = fn(
+            sycl::event copy_and_cast_0d_event = fn(
                 exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
                 src_data, src_offset, dst_data, dst_offset, depends);
 
-            keep_args_alive(exec_q, src, dst, {copy_and_cast_1d_event});
-            return copy_and_cast_1d_event;
+            return std::make_pair(
+                keep_args_alive(exec_q, src, dst, {copy_and_cast_0d_event}),
+                copy_and_cast_0d_event);
         }
     }
 
@@ -1006,9 +1009,9 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             [ctx, shape_strides]() { sycl::free(shape_strides, ctx); });
     });
 
-    keep_args_alive(exec_q, src, dst, {copy_and_cast_generic_ev});
-
-    return copy_and_cast_generic_ev;
+    return std::make_pair(
+        keep_args_alive(exec_q, src, dst, {copy_and_cast_generic_ev}),
+        copy_and_cast_generic_ev);
 }
 
 } // namespace
