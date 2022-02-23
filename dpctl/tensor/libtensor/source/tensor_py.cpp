@@ -652,14 +652,17 @@ sycl::event keep_args_alive(sycl::queue q,
 {
     sycl::event host_task_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
-        o1.inc_ref();
-        o2.inc_ref();
+        std::shared_ptr<py::handle> shp_1 = std::make_shared<py::handle>(o1);
+        std::shared_ptr<py::handle> shp_2 = std::make_shared<py::handle>(o2);
+        shp_1->inc_ref();
+        shp_2->inc_ref();
         cgh.host_task([=]() {
-            if (Py_IsInitialized() && !_Py_IsFinalizing()) {
+            bool guard = (Py_IsInitialized() && !_Py_IsFinalizing());
+            if (guard) {
                 PyGILState_STATE gstate;
                 gstate = PyGILState_Ensure();
-                o1.dec_ref();
-                o2.dec_ref();
+                shp_1->dec_ref();
+                shp_2->dec_ref();
                 PyGILState_Release(gstate);
             }
         });
