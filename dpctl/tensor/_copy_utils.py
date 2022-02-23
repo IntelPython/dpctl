@@ -13,57 +13,12 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-import operator
-
 import numpy as np
 
 import dpctl.memory as dpm
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 from dpctl.tensor._device import normalize_queue_device
-
-
-def contract_iter2(shape, strides1, strides2):
-    p = np.argsort(np.abs(strides1))[::-1]
-    sh = [operator.index(shape[i]) for i in p]
-    disp1 = 0
-    disp2 = 0
-    st1 = []
-    st2 = []
-    contractable = True
-    for i in p:
-        this_stride1 = operator.index(strides1[i])
-        this_stride2 = operator.index(strides2[i])
-        if this_stride1 < 0 and this_stride2 < 0:
-            disp1 += this_stride1 * (shape[i] - 1)
-            this_stride1 = -this_stride1
-            disp2 += this_stride2 * (shape[i] - 1)
-            this_stride2 = -this_stride2
-        if this_stride1 < 0 or this_stride2 < 0:
-            contractable = False
-        st1.append(this_stride1)
-        st2.append(this_stride2)
-    while contractable:
-        changed = False
-        k = len(sh) - 1
-        for i in range(k):
-            step1 = st1[i + 1]
-            jump1 = st1[i] - (sh[i + 1] - 1) * step1
-            step2 = st2[i + 1]
-            jump2 = st2[i] - (sh[i + 1] - 1) * step2
-            if jump1 == step1 and jump2 == step2:
-                changed = True
-                st1[i:-1] = st1[i + 1 :]
-                st2[i:-1] = st2[i + 1 :]
-                sh[i] *= sh[i + 1]
-                sh[i + 1 : -1] = sh[i + 2 :]
-                sh = sh[:-1]
-                st1 = st1[:-1]
-                st2 = st2[:-1]
-                break
-        if not changed:
-            break
-    return (sh, st1, disp1, st2, disp2)
 
 
 def _has_memory_overlap(x1, x2):
@@ -221,6 +176,22 @@ def _copy_same_shape(dst, src):
     hev.wait()
 
 
+if hasattr(np, "broadcast_shapes"):
+
+    def _broadcast_shapes(sh1, sh2):
+        return np.broadcast_shapes(sh1, sh2)
+
+else:
+
+    def _broadcast_shapes(sh1, sh2):
+        # use arrays with zero strides, whose memory footprint
+        # is independent of the number of array elements
+        return np.broadcast(
+            np.empty(sh1, dtype=[]),
+            np.empty(sh2, dtype=[]),
+        ).shape
+
+
 def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
     if type(dst) is not dpt.usm_ndarray or type(src) is not dpt.usm_ndarray:
         raise TypeError(
@@ -232,7 +203,7 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
         _copy_same_shape(dst, src)
 
     try:
-        common_shape = np.broadcast_shapes(dst.shape, src.shape)
+        common_shape = _broadcast_shapes(dst.shape, src.shape)
     except ValueError:
         raise ValueError("Shapes of two arrays are not compatible")
 
