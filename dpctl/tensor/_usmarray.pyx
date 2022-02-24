@@ -857,7 +857,7 @@ cdef class usm_ndarray:
         return NotImplemented
 
     def __pos__(self):
-        return _dispatch_unary_elementwise(self, "positive")
+        return self  # _dispatch_unary_elementwise(self, "positive")
 
     def __pow__(first, other, mod):
         "See comment in __add__"
