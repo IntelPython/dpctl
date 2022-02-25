@@ -358,7 +358,7 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckGetBackend)
         EXPECT_TRUE(Backend == backend::host);
         break;
     case DPCTL_LEVEL_ZERO:
-        EXPECT_TRUE(Backend == backend::level_zero);
+        EXPECT_TRUE(Backend == backend::ext_oneapi_level_zero);
         break;
     case DPCTL_OPENCL:
         EXPECT_TRUE(Backend == backend::opencl);

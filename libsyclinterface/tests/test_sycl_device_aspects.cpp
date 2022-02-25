@@ -99,8 +99,8 @@ auto build_params()
                            cl::sycl::aspect::usm_shared_allocations),
             std::make_pair("usm_restricted_shared_allocations",
                            cl::sycl::aspect::usm_restricted_shared_allocations),
-            std::make_pair("usm_system_allocator",
-                           cl::sycl::aspect::usm_system_allocator));
+            std::make_pair("usm_system_allocations",
+                           cl::sycl::aspect::usm_system_allocations));
 
     auto pairs =
         build_param_pairs<const char *,
@@ -141,7 +141,7 @@ struct TestDPCTLSyclDeviceInterfaceAspects
         auto syclAspect = GetParam().second.second;
         try {
             hasAspect = D->has(syclAspect);
-        } catch (cl::sycl::runtime_error const &re) {
+        } catch (sycl::exception const &e) {
         }
     }
 

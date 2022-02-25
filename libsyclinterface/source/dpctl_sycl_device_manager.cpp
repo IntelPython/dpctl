@@ -24,11 +24,11 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_manager.h"
-#include "../helper/include/dpctl_error_handlers.h"
-#include "../helper/include/dpctl_string_utils.hpp"
-#include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_error_handlers.h"
+#include "dpctl_string_utils.hpp"
 #include "dpctl_sycl_enum_types.h"
+#include "dpctl_utils_helper.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <iomanip>
 #include <iostream>

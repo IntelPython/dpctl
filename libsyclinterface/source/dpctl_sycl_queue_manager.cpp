@@ -24,8 +24,8 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "dpctl_sycl_queue_manager.h"
-#include "../helper/include/dpctl_error_handlers.h"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_error_handlers.h"
 #include "dpctl_sycl_device_manager.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <vector>

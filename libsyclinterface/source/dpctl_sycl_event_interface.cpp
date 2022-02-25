@@ -25,9 +25,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_event_interface.h"
-#include "../helper/include/dpctl_error_handlers.h"
-#include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_error_handlers.h"
+#include "dpctl_utils_helper.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <vector>
 

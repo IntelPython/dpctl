@@ -241,12 +241,10 @@ install(TARGETS
 install(
     FILES ${SUPPORT_HEADERS}
     DESTINATION ${_include_destination}/Support
-    COMPONENT SupportHeaders
 )
 install(
     FILES ${CONFIG_HEADERS}
     DESTINATION ${_include_destination}/Config
-    COMPONENT ConfigHeaders
 )
 
 # Enable code coverage related settings

@@ -25,10 +25,10 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_platform_interface.h"
-#include "../helper/include/dpctl_error_handlers.h"
-#include "../helper/include/dpctl_string_utils.hpp"
-#include "../helper/include/dpctl_utils_helper.h"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_error_handlers.h"
+#include "dpctl_string_utils.hpp"
+#include "dpctl_utils_helper.h"
 #include <CL/sycl.hpp>
 #include <iomanip>
 #include <iostream>

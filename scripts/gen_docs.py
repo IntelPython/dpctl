@@ -25,9 +25,8 @@ def run(
     cxx_compiler=None,
     level_zero=True,
     compiler_root=None,
-    run_pytest=False,
     bin_llvm=None,
-    gtest_config=None,
+    doxyrest_dir=None,
 ):
     IS_LIN = False
 
@@ -54,11 +53,14 @@ def run(
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
         "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=" + ("ON" if level_zero else "OFF"),
-        "-DDPCTL_GENERATE_COVERAGE=ON",
-        "-DDPCTL_BUILD_CAPI_TESTS=ON",
-        "-DDPCTL_COVERAGE_REPORT_OUTPUT_DIR=" + setup_dir,
         "-DDPCTL_DPCPP_FROM_ONEAPI:BOOL=" + ("ON" if use_oneapi else "OFF"),
+        "-DDPCTL_GENERATE_DOCS=ON",
     ]
+
+    if doxyrest_dir:
+        cmake_args.append("-DDPCTL_ENABLE_DOXYREST=ON")
+        cmake_args.append("-DDoxyrest_DIR=" + doxyrest_dir)
+
     if compiler_root:
         cmake_args += [
             "-DDPCTL_DPCPP_HOME_DIR:PATH=" + compiler_root,
@@ -67,42 +69,31 @@ def run(
     if bin_llvm:
         env = {
             "PATH": ":".join((os.environ.get("PATH", ""), bin_llvm)),
-            "LLVM_TOOLS_HOME": bin_llvm,
         }
         env.update({k: v for k, v in os.environ.items() if k != "PATH"})
-    if gtest_config:
-        cmake_args += ["-DCMAKE_PREFIX_PATH=" + gtest_config]
+    # Install dpctl package
     subprocess.check_call(cmake_args, shell=False, cwd=setup_dir, env=env)
-    cmake_build_dir = (
+    # Get the path for the build directory
+    build_dir = (
         subprocess.check_output(
-            ["find", "_skbuild", "-name", "cmake-build"], cwd=setup_dir
+            ["find", "_skbuild", "-name", "cmake-build"],
+            cwd=setup_dir,
         )
         .decode("utf-8")
         .strip("\n")
     )
+    # Generate docs
     subprocess.check_call(
-        ["cmake", "--build", ".", "--target", "lcov-genhtml"],
-        cwd=cmake_build_dir,
+        ["cmake", "--build", ".", "--target", "Sphinx"], cwd=build_dir
     )
-    subprocess.check_call(
-        [
-            "pytest",
-            "-q",
-            "-ra",
-            "--disable-warnings",
-            "--cov-config",
-            "pyproject.toml",
-            "--cov",
-            "dpctl",
-            "--cov-report",
-            "term-missing",
-            "--pyargs",
-            "dpctl",
-            "-vv",
-        ],
-        cwd=setup_dir,
-        shell=False,
+    generated_doc_dir = (
+        subprocess.check_output(
+            ["find", "_skbuild", "-name", "index.html"], cwd=setup_dir
+        )
+        .decode("utf-8")
+        .strip("\n")
     )
+    print("Generated documentation placed under ", generated_doc_dir)
 
 
 if __name__ == "__main__":
@@ -132,19 +123,16 @@ if __name__ == "__main__":
         action="store_false",
     )
     driver.add_argument(
-        "--skip-pytest",
-        help="Run pytest and collect coverage",
-        dest="run_pytest",
-        action="store_false",
-    )
-    driver.add_argument(
         "--bin-llvm", help="Path to folder where llvm-cov can be found"
     )
     driver.add_argument(
-        "--gtest-config",
-        help="Path to the GTestConfig.cmake file to locate a "
-        + "custom GTest installation.",
+        "--doxyrest-root",
+        help=(
+            "Path to Doxyrest installation to use to generate Sphinx docs"
+            + "for libsyclinterface"
+        ),
     )
+
     args = parser.parse_args()
 
     if args.oneapi:
@@ -178,7 +166,6 @@ if __name__ == "__main__":
         cxx_compiler=args.cxx_compiler,
         level_zero=args.level_zero,
         compiler_root=args.compiler_root,
-        run_pytest=args.run_pytest,
         bin_llvm=args.bin_llvm,
-        gtest_config=args.gtest_config,
+        doxyrest_dir=args.doxyrest_root,
     )

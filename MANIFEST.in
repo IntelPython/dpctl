@@ -1,4 +1,3 @@
-include versioneer.py
 recursive-include dpctl/include *.h
 include dpctl/include/dpctl4pybind11.hpp
 recursive-include dpctl *.pxd

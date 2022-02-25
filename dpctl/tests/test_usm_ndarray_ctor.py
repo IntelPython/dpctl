@@ -427,6 +427,19 @@ def test_pyx_capi_get_flags():
     assert type(flags) is int and flags == X.flags
 
 
+def test_pyx_capi_get_offset():
+    X = dpt.usm_ndarray(17)[1::2]
+    get_offset_fn = _pyx_capi_fnptr_to_callable(
+        X,
+        "UsmNDArray_GetOffset",
+        b"Py_ssize_t (struct PyUSMArrayObject *)",
+        fn_restype=ctypes.c_longlong,
+    )
+    offset = get_offset_fn(X)
+    assert type(offset) is int
+    assert offset == X.__sycl_usm_array_interface__["offset"]
+
+
 def test_pyx_capi_get_queue_ref():
     X = dpt.usm_ndarray(17)[1::2]
     get_queue_ref_fn = _pyx_capi_fnptr_to_callable(

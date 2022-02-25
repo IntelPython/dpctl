@@ -6,7 +6,7 @@
 export LDFLAGS="$LDFLAGS -Wl,-rpath,$PREFIX/lib"
 
 ${PYTHON} setup.py clean --all
-export CMAKE_GENERATOR="Unix Makefiles"
+export CMAKE_GENERATOR="Ninja"
 SKBUILD_ARGS="-- -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON -DDPCTL_DPCPP_HOME_DIR=${BUILD_PREFIX}"
 echo "${PYTHON} setup.py install ${SKBUILD_ARGS}"
 

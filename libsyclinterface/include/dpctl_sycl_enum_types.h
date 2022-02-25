@@ -119,7 +119,7 @@ typedef enum
     usm_host_allocations,
     usm_shared_allocations,
     usm_restricted_shared_allocations,
-    usm_system_allocator
+    usm_system_allocations
 } DPCTLSyclAspectType;
 
 /*!

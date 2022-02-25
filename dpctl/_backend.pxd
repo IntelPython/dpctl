@@ -93,7 +93,7 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _usm_host_allocations               'usm_host_allocations',
         _usm_shared_allocations             'usm_shared_allocations',
         _usm_restricted_shared_allocations  'usm_restricted_shared_allocations',
-        _usm_system_allocator               'usm_system_allocator'
+        _usm_system_allocations             'usm_system_allocations'
 
     ctypedef enum _partition_affinity_domain_type 'DPCTLPartitionAffinityDomainType':
         _not_applicable                     'not_applicable',

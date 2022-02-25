@@ -61,7 +61,6 @@ if(DPCTL_GENERATE_COVERAGE)
         ${CMAKE_DL_LIBS}
     )
     add_custom_target(llvm-cov
-        COMMAND ${CMAKE_MAKE_PROGRAM} dpctl_c_api_tests
         COMMAND ${CMAKE_COMMAND} -E env DPCTL_VERBOSITY=warning ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests
         COMMAND ${LLVMProfdata_EXE}
             merge
@@ -75,10 +74,10 @@ if(DPCTL_GENERATE_COVERAGE)
             ${dpctl_sources}
             ${helper_sources}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	DEPENDS dpctl_c_api_tests
     )
 
     add_custom_target(lcov-genhtml
-        COMMAND ${CMAKE_MAKE_PROGRAM} llvm-cov
         COMMAND ${LLVMCov_EXE}
             export
             -format=lcov
@@ -91,6 +90,7 @@ if(DPCTL_GENERATE_COVERAGE)
             --output-directory
             ${COVERAGE_OUTPUT_DIR}/dpctl-c-api-coverage
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	DEPENDS llvm-cov
     )
 else()
     file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)

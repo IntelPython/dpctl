@@ -25,8 +25,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_context_interface.h"
-#include "../helper/include/dpctl_error_handlers.h"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_error_handlers.h"
 #include <CL/sycl.hpp>
 #include <vector>
 
@@ -194,7 +194,7 @@ DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef)
         return DPCTL_HOST;
     case backend::opencl:
         return DPCTL_OPENCL;
-    case backend::level_zero:
+    case backend::ext_oneapi_level_zero:
         return DPCTL_LEVEL_ZERO;
     case backend::cuda:
         return DPCTL_CUDA;

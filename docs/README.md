@@ -32,58 +32,13 @@ sudo apt-get install liblua5.2-dev
 Generating the docs
 ===================
 
-The documentation should be generated using the provided `Cmake` build script.
-There are a few configurable options that can be used to select the type of
-documentation to generate.
+The helper script ``scripts/gen_docs.py`` is the preferred way to generate the
+documentation. The generated documentation html pages will be installed to the
+``CMAKE_INSTALL_PREFIX/docs`` directory.
 
-Build only Doxygen for C API
 ----------------------------
 ```bash
-cd dpctl/docs
-mkdir -p build
-cd build
-cmake ..
-make Doxygen
+python scripts/gen_docs.py --doxyrest-root=<PATH to Doxyrest installation>
 ```
-The above steps will generate the `Doxygen` files at
-`dpctl/docs/generated_docs/doxygen/html`. The documentation can also be
-generated at a custom location by providing the optional flag
-
-```bash
-cd dpctl/docs
-mkdir -p build
-cd build
-cmake .. -DDPCTL_DOCGEN_PREFIX=<WHERE_YOU_WANT_DOCS_TO_BE_GENERATED>
-make Doxygen
-```
-
-Build only Sphinx for Python API
---------------------------------
-```bash
-cd dpctl/docs
-mkdir -p build
-cd build
-cmake .. -DDPCTL_DOCGEN_PREFIX=<WHERE_YOU_WANT_DOCS_TO_BE_GENERATED>
-make Sphinx
-```
-
-The `make Sphinx` command will generate only the Python API docs for dpctl.
-
-Build consolidated docs
------------------------
-It is possible to generate a single site with both Python and C API docs. As
-mentioned before, `Doxyrest` and `Lua` are required to generate the consolidated
-site.
-
-```bash
-cd dpctl/docs
-mkdir -p build
-cd build
-cmake ..                                                     \
-  -DDPCTL_ENABLE_DOXYREST=ON                                 \
-  -DDoxyrest_DIR=<PATH_TO_DOXYREST_INSTALL_DIR>              \
-  -DDPCTL_DOCGEN_PREFIX=<WHERE_YOU_WANT_DOCS_TO_BE_GENERATED>
-make Sphinx
-```
-The `Doxyrest_DIR` flag is optional, but is needed when Doxyrest is installed in
-a non-system location.
+To skip generating the documentation for ``libsyclinterface``, the
+``--doxyrest-root`` option should be omitted.

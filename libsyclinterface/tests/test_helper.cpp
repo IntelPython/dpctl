@@ -86,7 +86,7 @@ TEST_F(TestHelperFns, ChkStrToDeviceType)
 
 TEST_F(TestHelperFns, ChkDPCTLBackendTypeToSyclBackend)
 {
-    sycl::backend res = sycl::backend::level_zero;
+    sycl::backend res = sycl::backend::ext_oneapi_level_zero;
 
     EXPECT_NO_FATAL_FAILURE(res = DPCTL_DPCTLBackendTypeToSyclBackend(
                                 DPCTLSyclBackendType::DPCTL_CUDA));
@@ -102,7 +102,7 @@ TEST_F(TestHelperFns, ChkDPCTLBackendTypeToSyclBackend)
 
     EXPECT_NO_FATAL_FAILURE(res = DPCTL_DPCTLBackendTypeToSyclBackend(
                                 DPCTLSyclBackendType::DPCTL_LEVEL_ZERO));
-    ASSERT_TRUE(res == sycl::backend::level_zero);
+    ASSERT_TRUE(res == sycl::backend::ext_oneapi_level_zero);
 
     EXPECT_THROW(DPCTL_DPCTLBackendTypeToSyclBackend(
                      DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND),
@@ -113,8 +113,8 @@ TEST_F(TestHelperFns, ChkSyclBackendToDPCTLBackendType)
 {
     DPCTLSyclBackendType DTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
 
-    EXPECT_NO_FATAL_FAILURE(
-        DTy = DPCTL_SyclBackendToDPCTLBackendType(sycl::backend::level_zero));
+    EXPECT_NO_FATAL_FAILURE(DTy = DPCTL_SyclBackendToDPCTLBackendType(
+                                sycl::backend::ext_oneapi_level_zero));
     ASSERT_TRUE(DTy == DPCTLSyclBackendType::DPCTL_LEVEL_ZERO);
 
     EXPECT_NO_FATAL_FAILURE(

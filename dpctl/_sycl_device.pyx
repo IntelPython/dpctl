@@ -441,8 +441,8 @@ cdef class SyclDevice(_SyclDevice):
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
-    def has_aspect_usm_system_allocator(self):
-        cdef _aspect_type AT = _aspect_type._usm_system_allocator
+    def has_aspect_usm_system_allocations(self):
+        cdef _aspect_type AT = _aspect_type._usm_system_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
