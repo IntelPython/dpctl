@@ -100,6 +100,7 @@ def test___version__():
     dpctl_ver = getattr(dpctl, "__version__", None)
     assert type(dpctl_ver) is str
     assert "unknown" not in dpctl_ver
+    assert "untagged" not in dpctl_ver
     # Reg expr from PEP-440, relaxed to allow for semantic variant
     # 0.9.0dev0 allowed, vs. PEP-440 compliant 0.9.0.dev0
     reg_expr = (
