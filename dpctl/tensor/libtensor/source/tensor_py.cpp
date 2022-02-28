@@ -35,9 +35,24 @@
 
 namespace py = pybind11;
 
+#ifdef _WIN32
+#ifdef _tensor_impl_EXPORTS
+#define DPCTL_EXPORT __declspec(dllexport)
+#else
+#define DPCTL_EXPORT __declspec(dllimport)
+#endif
+#else
+#define DPCTL_EXPORT
+#endif
+
+template <typename srcT, typename dstT>
+class DPCTL_EXPORT copy_cast_generic_kernel;
+template <typename srcT, typename dstT, int nd>
+class DPCTL_EXPORT copy_cast_spec_kernel;
+
 namespace
 {
-enum typenum_t : int
+enum class typenum_t : int
 {
     BOOL = 0,
     INT8, // 1
@@ -141,49 +156,49 @@ int UAR_UINT32 = -1;
 int UAR_INT64 = -1;
 int UAR_UINT64 = -1;
 
-typenum_t typenum_to_lookup_id(int typenum)
+int typenum_to_lookup_id(int typenum)
 {
     if (typenum == UAR_DOUBLE) {
-        return typenum_t::DOUBLE;
+        return static_cast<int>(typenum_t::DOUBLE);
     }
     else if (typenum == UAR_INT64) {
-        return typenum_t::INT64;
+        return static_cast<int>(typenum_t::INT64);
     }
     else if (typenum == UAR_INT32) {
-        return typenum_t::INT32;
+        return static_cast<int>(typenum_t::INT32);
     }
     else if (typenum == UAR_BOOL) {
-        return typenum_t::BOOL;
+        return static_cast<int>(typenum_t::BOOL);
     }
     else if (typenum == UAR_CDOUBLE) {
-        return typenum_t::CDOUBLE;
+        return static_cast<int>(typenum_t::CDOUBLE);
     }
     else if (typenum == UAR_FLOAT) {
-        return typenum_t::FLOAT;
+        return static_cast<int>(typenum_t::FLOAT);
     }
     else if (typenum == UAR_INT16) {
-        return typenum_t::INT16;
+        return static_cast<int>(typenum_t::INT16);
     }
     else if (typenum == UAR_INT8) {
-        return typenum_t::INT8;
+        return static_cast<int>(typenum_t::INT8);
     }
     else if (typenum == UAR_UINT64) {
-        return typenum_t::UINT64;
+        return static_cast<int>(typenum_t::UINT64);
     }
     else if (typenum == UAR_UINT32) {
-        return typenum_t::UINT32;
+        return static_cast<int>(typenum_t::UINT32);
     }
     else if (typenum == UAR_UINT16) {
-        return typenum_t::UINT16;
+        return static_cast<int>(typenum_t::UINT16);
     }
     else if (typenum == UAR_UINT8) {
-        return typenum_t::UINT8;
+        return static_cast<int>(typenum_t::UINT8);
     }
     else if (typenum == UAR_CFLOAT) {
-        return typenum_t::CFLOAT;
+        return static_cast<int>(typenum_t::CFLOAT);
     }
     else if (typenum == UAR_HALF) {
-        return typenum_t::HALF;
+        return static_cast<int>(typenum_t::HALF);
     }
     else {
         throw std::runtime_error("Unrecogized typenum " +
@@ -317,8 +332,6 @@ public:
     }
 };
 
-template <typename srcT, typename dstT> class copy_cast_generic_kernel;
-
 typedef sycl::event (*copy_and_cast_generic_fn_ptr_t)(
     sycl::queue,
     size_t,
@@ -380,8 +393,6 @@ typedef sycl::event (*copy_and_cast_2d_fn_ptr_t)(
     char *,
     py::ssize_t,
     const std::vector<sycl::event> &);
-
-template <typename srcT, typename dstT, int nd> class copy_cast_spec_kernel;
 
 template <typename dstTy, typename srcTy, int nd>
 sycl::event
@@ -462,11 +473,6 @@ void init_copy_and_cast_dispatch_tables(void)
 
     return;
 }
-
-} // namespace
-
-namespace
-{
 
 using vecT = std::vector<py::ssize_t>;
 std::tuple<vecT, vecT, py::size_t> contract_iter(vecT shape, vecT strides)
