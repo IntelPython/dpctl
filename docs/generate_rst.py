@@ -45,6 +45,7 @@ function_groups = {
     "dpctl.tensor._copy_utils": "Array Construction",
     "dpctl.tensor._dlpack": "Array Construction",
     "dpctl.tensor._reshape": "Array Manipulation",
+    "dpctl.tensor._manipulation_functions": "Array Manipulation",
     "dpctl.memory._memory": "Functions",
     "dpctl.program._program": "Functions",
     "dpctl.utils._compute_follows_data": "Functions",
