@@ -23,7 +23,7 @@ if(WIN32)
     set(CMAKE_CXX_FLAGS_DEBUG
         "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} -O0 -ggdb3 -DDEBUG"
     )
-    set(DPCTL_LDFLAGS "/NXCompat /DynamicBase")
+    set(DPCTL_LDFLAGS "/link /NXCompat /DynamicBase")
 elseif(UNIX)
     string(CONCAT WARNING_FLAGS
         "-Wall "
