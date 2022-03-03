@@ -35,20 +35,8 @@
 
 namespace py = pybind11;
 
-#ifdef _WIN32
-#ifdef _tensor_impl_EXPORTS
-#define DPCTL_EXPORT __declspec(dllexport)
-#else
-#define DPCTL_EXPORT __declspec(dllimport)
-#endif
-#else
-#define DPCTL_EXPORT
-#endif
-
-template <typename srcT, typename dstT>
-class DPCTL_EXPORT copy_cast_generic_kernel;
-template <typename srcT, typename dstT, int nd>
-class DPCTL_EXPORT copy_cast_spec_kernel;
+template <typename srcT, typename dstT> class copy_cast_generic_kernel;
+template <typename srcT, typename dstT, int nd> class copy_cast_spec_kernel;
 
 namespace
 {
