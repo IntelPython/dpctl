@@ -63,7 +63,7 @@ Array Manipulation
     :widths: 25,50
 
     * - :func:`permute_dims()`
-      - -> usm_ndarray Permutes the axes(dimensions) of the given usm_ndarray. Returns a view containing the axes permutation.
+      - -> usm_ndarray Permute the axes (dimensions) of an array; returns the permuted array as a view.
     * - :func:`reshape()`
       - -> usm_ndarray Reshapes given usm_ndarray into new shape. Returns a view, if possible, a copy otherwise. Memory layout of the copy is controlled by order keyword.
 
