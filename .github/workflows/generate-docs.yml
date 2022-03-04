@@ -112,7 +112,7 @@ jobs:
           git config --global user.email 'github-actions[doc-deploy-bot]@users.noreply.github.com'
           git commit -m "Docs for pull request ${PR_NUM}"
           git push tokened_docs gh-pages
-      - name: Unpublished pull-request docs
+      - name: Unpublish pull-request docs
         if: ${{ github.event.pull_request && github.event.action == 'closed' }}
         env:
           PR_NUM: ${{ github.event.number }}
@@ -122,6 +122,8 @@ jobs:
           git fetch tokened_docs
           git checkout --track tokened_docs/gh-pages
           echo `pwd`
+          ls
+          [ -d pulls ] && ls pulls && echo "This is pull/${PR_NUM}"
           [ -d pulls/${PR_NUM} ] && git rm -rf pulls/${PR_NUM}
           git config --global user.name 'github-actions[doc-deploy-bot]'
           git config --global user.email 'github-actions[doc-deploy-bot]@users.noreply.github.com'
