@@ -25,6 +25,7 @@
 
 #include "dpctl4pybind11.hpp"
 #include "utils/strided_iters.hpp"
+#include "utils/type_dispatch.hpp"
 #include <CL/sycl.hpp>
 #include <complex>
 #include <cstdint>
@@ -40,84 +41,6 @@ template <typename srcT, typename dstT, int nd> class copy_cast_spec_kernel;
 
 namespace
 {
-enum class typenum_t : int
-{
-    BOOL = 0,
-    INT8, // 1
-    UINT8,
-    INT16,
-    UINT16,
-    INT32, // 5
-    UINT32,
-    INT64,
-    UINT64,
-    HALF,
-    FLOAT, // 10
-    DOUBLE,
-    CFLOAT,
-    CDOUBLE, // 13
-};
-constexpr int num_types = 14; // number of elements in typenum_t
-
-template <typename funcPtrT,
-          template <typename fnT, typename D, typename S>
-          typename factory,
-          int num_types>
-class DispatchTableBuilder
-{
-private:
-    template <typename dstTy>
-    const std::vector<funcPtrT> row_per_dst_type() const
-    {
-        std::vector<funcPtrT> per_dstTy = {
-            factory<funcPtrT, dstTy, bool>{}.get(),
-            factory<funcPtrT, dstTy, int8_t>{}.get(),
-            factory<funcPtrT, dstTy, uint8_t>{}.get(),
-            factory<funcPtrT, dstTy, int16_t>{}.get(),
-            factory<funcPtrT, dstTy, uint16_t>{}.get(),
-            factory<funcPtrT, dstTy, int32_t>{}.get(),
-            factory<funcPtrT, dstTy, uint32_t>{}.get(),
-            factory<funcPtrT, dstTy, int64_t>{}.get(),
-            factory<funcPtrT, dstTy, uint64_t>{}.get(),
-            factory<funcPtrT, dstTy, sycl::half>{}.get(),
-            factory<funcPtrT, dstTy, float>{}.get(),
-            factory<funcPtrT, dstTy, double>{}.get(),
-            factory<funcPtrT, dstTy, std::complex<float>>{}.get(),
-            factory<funcPtrT, dstTy, std::complex<double>>{}.get()};
-        return per_dstTy;
-    }
-
-public:
-    DispatchTableBuilder() = default;
-    ~DispatchTableBuilder() = default;
-
-    void populate_dispatch_table(funcPtrT table[][num_types]) const
-    {
-        const auto map_by_dst_type = {row_per_dst_type<bool>(),
-                                      row_per_dst_type<int8_t>(),
-                                      row_per_dst_type<uint8_t>(),
-                                      row_per_dst_type<int16_t>(),
-                                      row_per_dst_type<uint16_t>(),
-                                      row_per_dst_type<int32_t>(),
-                                      row_per_dst_type<uint32_t>(),
-                                      row_per_dst_type<int64_t>(),
-                                      row_per_dst_type<uint64_t>(),
-                                      row_per_dst_type<sycl::half>(),
-                                      row_per_dst_type<float>(),
-                                      row_per_dst_type<double>(),
-                                      row_per_dst_type<std::complex<float>>(),
-                                      row_per_dst_type<std::complex<double>>()};
-        int dst_id = 0;
-        for (auto &row : map_by_dst_type) {
-            int src_id = 0;
-            for (auto &fn_ptr : row) {
-                table[dst_id][src_id] = fn_ptr;
-                ++src_id;
-            }
-            ++dst_id;
-        }
-    }
-};
 
 // Lookup a type according to its size, and return a value corresponding to the
 // NumPy typenum.
@@ -146,6 +69,8 @@ int UAR_UINT64 = -1;
 
 int typenum_to_lookup_id(int typenum)
 {
+    using typenum_t = dpctl::tensor::detail::typenum_t;
+
     if (typenum == UAR_DOUBLE) {
         return static_cast<int>(typenum_t::DOUBLE);
     }
@@ -416,12 +341,14 @@ copy_and_cast_nd_specialized_impl(sycl::queue q,
     return copy_and_cast_ev;
 }
 
+namespace _ns = dpctl::tensor::detail;
+
 static copy_and_cast_generic_fn_ptr_t
-    copy_and_cast_generic_dispatch_table[num_types][num_types];
-static copy_and_cast_1d_fn_ptr_t copy_and_cast_1d_dispatch_table[num_types]
-                                                                [num_types];
-static copy_and_cast_2d_fn_ptr_t copy_and_cast_2d_dispatch_table[num_types]
-                                                                [num_types];
+    copy_and_cast_generic_dispatch_table[_ns::num_types][_ns::num_types];
+static copy_and_cast_1d_fn_ptr_t
+    copy_and_cast_1d_dispatch_table[_ns::num_types][_ns::num_types];
+static copy_and_cast_2d_fn_ptr_t
+    copy_and_cast_2d_dispatch_table[_ns::num_types][_ns::num_types];
 
 template <typename fnT, typename D, typename S> struct CopyAndCastGenericFactory
 {
@@ -452,6 +379,8 @@ template <typename fnT, typename D, typename S> struct CopyAndCast2DFactory
 
 void init_copy_and_cast_dispatch_tables(void)
 {
+    using namespace dpctl::tensor::detail;
+
     DispatchTableBuilder<copy_and_cast_generic_fn_ptr_t,
                          CopyAndCastGenericFactory, num_types>
         dtb_generic;
@@ -738,7 +667,7 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
 
     {
         auto type_id_check = [](int id) -> bool {
-            return ((id >= 0) && (id < num_types));
+            return ((id >= 0) && (id < _ns::num_types));
         };
         if (!(type_id_check(src_type_id) && type_id_check(dst_type_id))) {
             throw std::runtime_error("Type dispatching failed.");
