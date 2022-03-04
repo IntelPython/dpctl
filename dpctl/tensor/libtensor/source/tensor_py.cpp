@@ -251,13 +251,18 @@ private:
     char *dst_ = nullptr;
     py::ssize_t *shape_strides_ = nullptr;
     int nd_ = 0;
+    py::ssize_t src_offset0 = 0;
+    py::ssize_t dst_offset0 = 0;
 
 public:
     GenericCopyFunctor(char *src_cp,
                        char *dst_cp,
                        py::ssize_t *shape_strides,
-                       int nd)
-        : src_(src_cp), dst_(dst_cp), shape_strides_(shape_strides), nd_(nd)
+                       int nd,
+                       py::ssize_t src_offset,
+                       py::ssize_t dst_offset)
+        : src_(src_cp), dst_(dst_cp), shape_strides_(shape_strides), nd_(nd),
+          src_offset0(src_offset), dst_offset0(dst_offset)
     {
     }
 
@@ -277,7 +282,7 @@ public:
             dst_offset                                // modified by reference
         );
         CastFnT fn{};
-        fn(src_, src_offset, dst_, dst_offset);
+        fn(src_, src_offset0 + src_offset, dst_, dst_offset0 + dst_offset);
     }
 };
 
@@ -290,15 +295,20 @@ private:
     const std::array<py::ssize_t, nd> src_strides_;
     const std::array<py::ssize_t, nd> dst_strides_;
     static const int nd_ = nd;
+    py::ssize_t src_offset0 = 0;
+    py::ssize_t dst_offset0 = 0;
 
 public:
     NDSpecializedCopyFunctor(char *src_cp, // USM pointer
                              char *dst_cp, // USM pointer
                              const std::array<py::ssize_t, nd> shape,
                              const std::array<py::ssize_t, nd> src_strides,
-                             const std::array<py::ssize_t, nd> dst_strides)
+                             const std::array<py::ssize_t, nd> dst_strides,
+                             py::ssize_t src_offset,
+                             py::ssize_t dst_offset)
         : src_(src_cp), dst_(dst_cp), indxr(shape), src_strides_(src_strides),
-          dst_strides_(dst_strides)
+          dst_strides_(dst_strides), src_offset0(src_offset),
+          dst_offset0(dst_offset)
     {
     }
 
@@ -316,7 +326,7 @@ public:
             dst_offset += mi[i] * dst_strides_[i];
 
         CastFnT fn{};
-        fn(src_, src_offset, dst_, dst_offset);
+        fn(src_, src_offset0 + src_offset, dst_, dst_offset0 + dst_offset);
     }
 };
 
@@ -351,8 +361,7 @@ copy_and_cast_generic_impl(sycl::queue q,
         cgh.parallel_for<copy_cast_generic_kernel<srcTy, dstTy>>(
             sycl::range<1>(nelems),
             GenericCopyFunctor<Caster<srcTy, dstTy>>(
-                src_p + src_offset * sizeof(srcTy),
-                dst_p + dst_offset * sizeof(dstTy), shape_and_strides, nd));
+                src_p, dst_p, shape_and_strides, nd, src_offset, dst_offset));
     });
 
     return copy_and_cast_ev;
@@ -400,9 +409,8 @@ copy_and_cast_nd_specialized_impl(sycl::queue q,
         cgh.parallel_for<copy_cast_spec_kernel<srcTy, dstTy, nd>>(
             sycl::range<1>(nelems),
             NDSpecializedCopyFunctor<nd, Caster<srcTy, dstTy>>(
-                src_p + src_offset * sizeof(srcTy),
-                dst_p + dst_offset * sizeof(dstTy), shape, src_strides,
-                dst_strides));
+                src_p, dst_p, shape, src_strides, dst_strides, src_offset,
+                dst_offset));
     });
 
     return copy_and_cast_ev;
