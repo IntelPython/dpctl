@@ -52,12 +52,12 @@ def permute_dims(X, axes):
             "The values of the axes must be in the range "
             f"from 0 to {X.ndim} and have no duplicates."
         )
-    newstrides = [X.strides[i] for i in axes]
-    newshape = [X.shape[i] for i in axes]
+    newstrides = tuple(X.strides[i] for i in axes)
+    newshape = tuple(X.shape[i] for i in axes)
     return dpt.usm_ndarray(
-        shape=tuple(newshape),
+        shape=newshape,
         dtype=X.dtype,
         buffer=X,
-        strides=tuple(newstrides),
+        strides=newstrides,
         offset=X.__sycl_usm_array_interface__.get("offset", 0),
     )
