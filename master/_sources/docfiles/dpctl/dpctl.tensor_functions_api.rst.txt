@@ -23,4 +23,5 @@ Array Construction
 Array Manipulation
 ------------------
 
+.. autofunction:: permute_dims
 .. autofunction:: reshape
