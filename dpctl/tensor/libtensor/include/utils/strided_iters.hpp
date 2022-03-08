@@ -498,3 +498,43 @@ int simplify_iteration_two_strides(const int nd,
 
     return nd_;
 }
+
+using vecT = std::vector<py::ssize_t>;
+std::tuple<vecT, vecT, py::size_t> contract_iter(vecT shape, vecT strides)
+{
+    const size_t dim = shape.size();
+    if (dim != strides.size()) {
+        throw py::value_error("Shape and strides must be of equal size.");
+    }
+    vecT out_shape = shape;
+    vecT out_strides = strides;
+    py::ssize_t disp(0);
+
+    int nd = simplify_iteration_stride(dim, out_shape.data(),
+                                       out_strides.data(), disp);
+    out_shape.resize(nd);
+    out_strides.resize(nd);
+    return std::make_tuple(out_shape, out_strides, disp);
+}
+
+std::tuple<vecT, vecT, py::size_t, vecT, py::ssize_t>
+contract_iter2(vecT shape, vecT strides1, vecT strides2)
+{
+    const size_t dim = shape.size();
+    if (dim != strides1.size() || dim != strides2.size()) {
+        throw py::value_error("Shape and strides must be of equal size.");
+    }
+    vecT out_shape = shape;
+    vecT out_strides1 = strides1;
+    vecT out_strides2 = strides2;
+    py::ssize_t disp1(0);
+    py::ssize_t disp2(0);
+
+    int nd = simplify_iteration_two_strides(dim, out_shape.data(),
+                                            out_strides1.data(),
+                                            out_strides2.data(), disp1, disp2);
+    out_shape.resize(nd);
+    out_strides1.resize(nd);
+    out_strides2.resize(nd);
+    return std::make_tuple(out_shape, out_strides1, disp1, out_strides2, disp2);
+}
