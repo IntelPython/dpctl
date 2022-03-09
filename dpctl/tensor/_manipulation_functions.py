@@ -81,6 +81,6 @@ def expand_dims(X, axes):
     axes = normalize_axis_tuple(axes, out_ndim)
 
     shape_it = iter(X.shape)
-    shape = [1 if ax in axes else next(shape_it) for ax in range(out_ndim)]
+    shape = tuple(1 if ax in axes else next(shape_it) for ax in range(out_ndim))
 
     return dpt.reshape(X, shape)
