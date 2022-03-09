@@ -62,6 +62,8 @@ Array Manipulation
 .. list-table::
     :widths: 25,50
 
+    * - :func:`expand_dims()`
+      - -> usm_ndarray Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axes; returns a view, if possible, a copy otherwise with the number of dimensions increased.
     * - :func:`permute_dims()`
       - -> usm_ndarray Permute the axes (dimensions) of an array; returns the permuted array as a view.
     * - :func:`reshape()`
