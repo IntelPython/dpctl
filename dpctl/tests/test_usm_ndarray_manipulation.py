@@ -90,3 +90,79 @@ def test_permute_dims_2d_3d(shapes):
         Y = dpt.permute_dims(X, (2, 0, 1))
         Ynp = np.transpose(Xnp, (2, 0, 1))
     assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_expand_dims_incorrect_type():
+    X_list = list([1, 2, 3, 4, 5])
+    X_tuple = tuple(X_list)
+    Xnp = np.array(X_list)
+
+    pytest.raises(TypeError, dpt.permute_dims, X_list, 1)
+    pytest.raises(TypeError, dpt.permute_dims, X_tuple, 1)
+    pytest.raises(TypeError, dpt.permute_dims, Xnp, 1)
+
+
+def test_expand_dims_0d():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp = np.array(1, dtype="int64")
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    Y = dpt.expand_dims(X, 0)
+    Ynp = np.expand_dims(Xnp, 0)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+    Y = dpt.expand_dims(X, -1)
+    Ynp = np.expand_dims(Xnp, -1)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+    pytest.raises(np.AxisError, dpt.expand_dims, X, 1)
+    pytest.raises(np.AxisError, dpt.expand_dims, X, -2)
+
+
+@pytest.mark.parametrize("shapes", [(3,), (3, 3), (3, 3, 3)])
+def test_expand_dims_1d_3d(shapes):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp_size = np.prod(shapes)
+
+    Xnp = np.random.randint(0, 2, size=Xnp_size, dtype="int64").reshape(shapes)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    shape_len = len(shapes)
+    for axis in range(-shape_len - 1, shape_len):
+        Y = dpt.expand_dims(X, axis)
+        Ynp = np.expand_dims(Xnp, axis)
+        assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+    pytest.raises(np.AxisError, dpt.expand_dims, X, shape_len + 1)
+    pytest.raises(np.AxisError, dpt.expand_dims, X, -shape_len - 2)
+
+
+@pytest.mark.parametrize(
+    "axes", [(0, 1, 2), (0, -1, -2), (0, 3, 5), (0, -3, -5)]
+)
+def test_expand_dims_tuple(axes):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp = np.empty((3, 3, 3))
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    Y = dpt.expand_dims(X, axes)
+    Ynp = np.expand_dims(Xnp, axes)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_expand_dims_incorrect_tuple():
+
+    X = dpt.empty((3, 3, 3), dtype="i4")
+    pytest.raises(np.AxisError, dpt.expand_dims, X, (0, -6))
+    pytest.raises(np.AxisError, dpt.expand_dims, X, (0, 5))
+
+    pytest.raises(ValueError, dpt.expand_dims, X, (1, 1))
