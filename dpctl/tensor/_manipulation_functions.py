@@ -16,6 +16,7 @@
 
 
 import numpy as np
+from numpy.core.numeric import normalize_axis_tuple
 
 import dpctl.tensor as dpt
 
@@ -61,3 +62,25 @@ def permute_dims(X, axes):
         strides=newstrides,
         offset=X.__sycl_usm_array_interface__.get("offset", 0),
     )
+
+
+def expand_dims(X, axes):
+    """
+    expand_dims(X: usm_ndarray, axes: int or tuple or list) -> usm_ndarray
+
+    Expands the shape of an array by inserting a new axis (dimension)
+    of size one at the position specified by axes; returns a view, if possible,
+    a copy otherwise with the number of dimensions increased.
+    """
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+    if not isinstance(axes, (tuple, list)):
+        axes = (axes,)
+
+    out_ndim = len(axes) + X.ndim
+    axes = normalize_axis_tuple(axes, out_ndim)
+
+    shape_it = iter(X.shape)
+    shape = tuple(1 if ax in axes else next(shape_it) for ax in range(out_ndim))
+
+    return dpt.reshape(X, shape)

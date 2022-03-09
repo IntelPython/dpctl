@@ -25,7 +25,7 @@ from dpctl.tensor._copy_utils import asnumpy, astype, copy, from_numpy, to_numpy
 from dpctl.tensor._ctors import asarray, empty
 from dpctl.tensor._device import Device
 from dpctl.tensor._dlpack import from_dlpack
-from dpctl.tensor._manipulation_functions import permute_dims
+from dpctl.tensor._manipulation_functions import expand_dims, permute_dims
 from dpctl.tensor._reshape import reshape
 from dpctl.tensor._usmarray import usm_ndarray
 
@@ -38,6 +38,7 @@ __all__ = [
     "empty",
     "reshape",
     "permute_dims",
+    "expand_dims",
     "from_numpy",
     "to_numpy",
     "asnumpy",
