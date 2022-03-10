@@ -63,7 +63,7 @@ def test_permute_dims_0d_1d():
     assert_array_equal(dpt.asnumpy(Y_1d), dpt.asnumpy(X_1d))
 
     pytest.raises(ValueError, dpt.permute_dims, X_1d, ())
-    pytest.raises(IndexError, dpt.permute_dims, X_1d, (1))
+    pytest.raises(np.AxisError, dpt.permute_dims, X_1d, (1))
     pytest.raises(ValueError, dpt.permute_dims, X_1d, (1, 0))
     pytest.raises(
         ValueError, dpt.permute_dims, dpt.reshape(X_1d, (2, 3)), (1, 1)

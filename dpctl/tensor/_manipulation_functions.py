@@ -15,21 +15,9 @@
 #  limitations under the License.
 
 
-import numpy as np
 from numpy.core.numeric import normalize_axis_tuple
 
 import dpctl.tensor as dpt
-
-
-def _check_value_of_axes(axes):
-    axes_len = len(axes)
-    check_array = np.zeros(axes_len)
-    for i in axes:
-        ii = i.__index__()
-        if ii < 0 or ii > axes_len or check_array[ii] != 0:
-            return False
-        check_array[ii] = 1
-    return True
 
 
 def permute_dims(X, axes):
@@ -48,11 +36,7 @@ def permute_dims(X, axes):
             "The length of the passed axes does not match "
             "to the number of usm_ndarray dimensions."
         )
-    if not _check_value_of_axes(axes):
-        raise ValueError(
-            "The values of the axes must be in the range "
-            f"from 0 to {X.ndim} and have no duplicates."
-        )
+    axes = normalize_axis_tuple(axes, X.ndim, "axes")
     newstrides = tuple(X.strides[i] for i in axes)
     newshape = tuple(X.shape[i] for i in axes)
     return dpt.usm_ndarray(
