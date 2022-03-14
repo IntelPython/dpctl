@@ -7,12 +7,12 @@ endforeach()
 
 add_custom_target(_dpctl4pybind11_deps
     DEPENDS
-    _usmarray
-    _memory
-    _sycl_device
-    _sycl_queue
-    _sycl_context
-    _sycl_event
+    _usmarray_copy_capi_include
+    _memory_copy_capi_include
+    _sycl_device_copy_capi_include
+    _sycl_queue_copy_capi_include
+    _sycl_context_copy_capi_include
+    _sycl_event_copy_capi_include
 )
 
 set(python_module_name _tensor_impl)
