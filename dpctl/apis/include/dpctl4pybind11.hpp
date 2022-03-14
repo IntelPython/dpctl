@@ -56,10 +56,6 @@ public:
             value = *q;
             return true;
         }
-        else if (source == Py_None) {
-            value = sycl::queue{};
-            return true;
-        }
         else {
             throw py::type_error(
                 "Input is of unexpected type, expected dpctl.SyclQueue");
