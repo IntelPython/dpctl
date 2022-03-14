@@ -398,104 +398,6 @@ void init_copy_and_cast_dispatch_tables(void)
     return;
 }
 
-bool usm_ndarray_check_(py::object o)
-{
-    PyObject *raw_o = o.ptr();
-    return ((raw_o != nullptr) &&
-            static_cast<bool>(PyObject_TypeCheck(raw_o, &PyUSMArrayType)));
-}
-
-int usm_ndarray_ndim_(py::object ar)
-{
-    PyObject *raw_o = ar.ptr();
-    PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
-
-    return UsmNDArray_GetNDim(raw_ar);
-}
-
-const py::ssize_t *usm_ndarray_shape_(py::object ar)
-{
-    PyObject *raw_o = ar.ptr();
-    PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
-
-    return UsmNDArray_GetShape(raw_ar);
-}
-
-const py::ssize_t *usm_ndarray_strides_(py::object ar)
-{
-    PyObject *raw_o = ar.ptr();
-    PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
-
-    return UsmNDArray_GetStrides(raw_ar);
-}
-
-std::pair<py::ssize_t, py::ssize_t> usm_ndarray_minmax_offsets_(py::object ar)
-{
-    PyObject *raw_o = ar.ptr();
-    PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
-
-    int nd = UsmNDArray_GetNDim(raw_ar);
-    const py::ssize_t *shape = UsmNDArray_GetShape(raw_ar);
-    const py::ssize_t *strides = UsmNDArray_GetStrides(raw_ar);
-
-    py::ssize_t offset_min = 0;
-    py::ssize_t offset_max = 0;
-    if (strides == nullptr) {
-        py::ssize_t stride(1);
-        for (int i = 0; i < nd; ++i) {
-            offset_max += stride * (shape[i] - 1);
-            stride *= shape[i];
-        }
-    }
-    else {
-        offset_min = UsmNDArray_GetOffset(raw_ar);
-        offset_max = offset_min;
-        for (int i = 0; i < nd; ++i) {
-            py::ssize_t delta = strides[i] * (shape[i] - 1);
-            if (strides[i] > 0) {
-                offset_max += delta;
-            }
-            else {
-                offset_min += delta;
-            }
-        }
-    }
-    return std::make_pair(offset_min, offset_max);
-}
-
-sycl::queue usm_ndarray_get_queue_(py::object ar)
-{
-    PyObject *raw_o = ar.ptr();
-    PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
-
-    DPCTLSyclQueueRef QRef = UsmNDArray_GetQueueRef(raw_ar);
-    return *(reinterpret_cast<sycl::queue *>(QRef));
-}
-
-int usm_ndarray_get_typenum_(py::object ar)
-{
-    PyObject *raw_o = ar.ptr();
-    PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
-
-    return UsmNDArray_GetTypenum(raw_ar);
-}
-
-int usm_ndarray_get_flags_(py::object ar)
-{
-    PyObject *raw_o = ar.ptr();
-    PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
-
-    return UsmNDArray_GetFlags(raw_ar);
-}
-
-int usm_ndarray_get_elemsize_(py::object ar)
-{
-    PyObject *raw_o = ar.ptr();
-    PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
-
-    return UsmNDArray_GetElementSize(raw_ar);
-}
-
 std::vector<py::ssize_t> c_contiguous_strides(int nd, const py::ssize_t *shape)
 {
     if (nd > 0) {
@@ -527,14 +429,6 @@ std::vector<py::ssize_t> f_contiguous_strides(int nd, const py::ssize_t *shape)
     }
 }
 
-char *usm_ndarray_get_data_(py::object ar)
-{
-    PyObject *raw_o = ar.ptr();
-    PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
-
-    return UsmNDArray_GetData(raw_ar);
-}
-
 sycl::event keep_args_alive(sycl::queue q,
                             py::object o1,
                             py::object o2,
@@ -562,25 +456,22 @@ sycl::event keep_args_alive(sycl::queue q,
 }
 
 std::pair<sycl::event, sycl::event>
-copy_usm_ndarray_into_usm_ndarray(py::object src,
-                                  py::object dst,
+copy_usm_ndarray_into_usm_ndarray(usm_ndarray src,
+                                  usm_ndarray dst,
                                   sycl::queue exec_q,
                                   const std::vector<sycl::event> &depends = {})
 {
-    if (!usm_ndarray_check_(src) || !usm_ndarray_check_(dst)) {
-        throw py::type_error("Arguments of type usm_ndarray expected");
-    }
 
     // array dimensions must be the same
-    int src_nd = usm_ndarray_ndim_(src);
-    int dst_nd = usm_ndarray_ndim_(dst);
+    int src_nd = src.get_ndim();
+    int dst_nd = dst.get_ndim();
     if (src_nd != dst_nd) {
         throw py::value_error("Array dimensions are not the same.");
     }
 
     // shapes must be the same
-    const py::ssize_t *src_shape = usm_ndarray_shape_(src);
-    const py::ssize_t *dst_shape = usm_ndarray_shape_(dst);
+    const py::ssize_t *src_shape = src.get_shape_raw();
+    const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool shapes_equal(true);
     size_t src_nelems(1);
     for (int i = 0; i < src_nd; ++i) {
@@ -598,7 +489,7 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
 
     // destination must be ample enough to accomodate all elements
     {
-        auto dst_offsets = usm_ndarray_minmax_offsets_(dst);
+        auto dst_offsets = dst.get_minmax_offsets();
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if (range + 1 < src_nelems) {
@@ -609,8 +500,8 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
     }
 
     // check same contexts
-    sycl::queue src_q = usm_ndarray_get_queue_(src);
-    sycl::queue dst_q = usm_ndarray_get_queue_(dst);
+    sycl::queue src_q = src.get_queue();
+    sycl::queue dst_q = dst.get_queue();
 
     sycl::context exec_ctx = exec_q.get_context();
     if (src_q.get_context() != exec_ctx || dst_q.get_context() != exec_ctx) {
@@ -618,8 +509,8 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             "Execution queue context is not the same as allocation contexts");
     }
 
-    int src_typenum = usm_ndarray_get_typenum_(src);
-    int dst_typenum = usm_ndarray_get_typenum_(dst);
+    int src_typenum = src.get_typenum();
+    int dst_typenum = dst.get_typenum();
 
     int src_type_id = typenum_to_lookup_id(src_typenum);
     int dst_type_id = typenum_to_lookup_id(dst_typenum);
@@ -648,8 +539,8 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
                               "array element type.");
     }
 
-    int src_flags = usm_ndarray_get_flags_(src);
-    int dst_flags = usm_ndarray_get_flags_(dst);
+    int src_flags = src.get_flags();
+    int dst_flags = dst.get_flags();
 
     // check for applicability of special cases:
     //      (same type && (both C-contiguous || both F-contiguous)
@@ -659,9 +550,9 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
                           (dst_flags & USM_ARRAY_F_CONTIGUOUS));
     if (both_c_contig || both_f_contig) {
         if (src_type_id == dst_type_id) {
-            char *src_data = usm_ndarray_get_data_(src);
-            char *dst_data = usm_ndarray_get_data_(dst);
-            int src_elem_size = usm_ndarray_get_elemsize_(src);
+            char *src_data = src.get_data();
+            char *dst_data = dst.get_data();
+            int src_elem_size = src.get_elemsize();
             sycl::event copy_ev = exec_q.memcpy(
                 dst_data, src_data, src_nelems * src_elem_size, depends);
 
@@ -673,8 +564,8 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
         // dedicated kernels for casting between contiguous arrays
     }
 
-    const py::ssize_t *src_strides = usm_ndarray_strides_(src);
-    const py::ssize_t *dst_strides = usm_ndarray_strides_(dst);
+    const py::ssize_t *src_strides = src.get_strides_raw();
+    const py::ssize_t *dst_strides = dst.get_strides_raw();
 
     using shT = std::vector<py::ssize_t>;
     shT simplified_shape;
@@ -753,8 +644,8 @@ copy_usm_ndarray_into_usm_ndarray(py::object src,
             const_cast<const py::ssize_t *>(simplified_dst_strides.data());
     }
 
-    char *src_data = usm_ndarray_get_data_(src);
-    char *dst_data = usm_ndarray_get_data_(dst);
+    char *src_data = src.get_data();
+    char *dst_data = dst.get_data();
 
     if (nd < 3) {
         if (nd == 1) {
