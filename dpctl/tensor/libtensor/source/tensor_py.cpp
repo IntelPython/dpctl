@@ -22,9 +22,6 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
-#include "dpctl4pybind11.hpp"
-#include "utils/strided_iters.hpp"
-#include "utils/type_dispatch.hpp"
 #include <CL/sycl.hpp>
 #include <complex>
 #include <cstdint>
@@ -33,90 +30,19 @@
 #include <thread>
 #include <type_traits>
 
+#include "dpctl4pybind11.hpp"
+#include "utils/strided_iters.hpp"
+#include "utils/type_dispatch.hpp"
+
 namespace py = pybind11;
 
 template <typename srcT, typename dstT> class copy_cast_generic_kernel;
 template <typename srcT, typename dstT, int nd> class copy_cast_spec_kernel;
 
+static dpctl::tensor::detail::usm_ndarray_types array_types;
+
 namespace
 {
-
-// Lookup a type according to its size, and return a value corresponding to the
-// NumPy typenum.
-template <typename Concrete> constexpr int platform_typeid_lookup()
-{
-    return -1;
-}
-
-template <typename Concrete, typename T, typename... Ts, typename... Ints>
-constexpr int platform_typeid_lookup(int I, Ints... Is)
-{
-    return sizeof(Concrete) == sizeof(T)
-               ? I
-               : platform_typeid_lookup<Concrete, Ts...>(Is...);
-}
-
-// Platform-dependent normalization
-int UAR_INT8 = -1;
-int UAR_UINT8 = -1;
-int UAR_INT16 = -1;
-int UAR_UINT16 = -1;
-int UAR_INT32 = -1;
-int UAR_UINT32 = -1;
-int UAR_INT64 = -1;
-int UAR_UINT64 = -1;
-
-int typenum_to_lookup_id(int typenum)
-{
-    using typenum_t = dpctl::tensor::detail::typenum_t;
-
-    if (typenum == UAR_DOUBLE) {
-        return static_cast<int>(typenum_t::DOUBLE);
-    }
-    else if (typenum == UAR_INT64) {
-        return static_cast<int>(typenum_t::INT64);
-    }
-    else if (typenum == UAR_INT32) {
-        return static_cast<int>(typenum_t::INT32);
-    }
-    else if (typenum == UAR_BOOL) {
-        return static_cast<int>(typenum_t::BOOL);
-    }
-    else if (typenum == UAR_CDOUBLE) {
-        return static_cast<int>(typenum_t::CDOUBLE);
-    }
-    else if (typenum == UAR_FLOAT) {
-        return static_cast<int>(typenum_t::FLOAT);
-    }
-    else if (typenum == UAR_INT16) {
-        return static_cast<int>(typenum_t::INT16);
-    }
-    else if (typenum == UAR_INT8) {
-        return static_cast<int>(typenum_t::INT8);
-    }
-    else if (typenum == UAR_UINT64) {
-        return static_cast<int>(typenum_t::UINT64);
-    }
-    else if (typenum == UAR_UINT32) {
-        return static_cast<int>(typenum_t::UINT32);
-    }
-    else if (typenum == UAR_UINT16) {
-        return static_cast<int>(typenum_t::UINT16);
-    }
-    else if (typenum == UAR_UINT8) {
-        return static_cast<int>(typenum_t::UINT8);
-    }
-    else if (typenum == UAR_CFLOAT) {
-        return static_cast<int>(typenum_t::CFLOAT);
-    }
-    else if (typenum == UAR_HALF) {
-        return static_cast<int>(typenum_t::HALF);
-    }
-    else {
-        throw std::runtime_error("Unrecogized typenum " +
-                                 std::to_string(typenum) + " encountered.");
-    }
-}
 
 template <class T> struct is_complex : std::false_type
 {
@@ -512,8 +438,8 @@ copy_usm_ndarray_into_usm_ndarray(usm_ndarray src,
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
 
-    int src_type_id = typenum_to_lookup_id(src_typenum);
-    int dst_type_id = typenum_to_lookup_id(dst_typenum);
+    int src_type_id = array_types.typenum_to_lookup_id(src_typenum);
+    int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
 
     {
         auto type_id_check = [](int id) -> bool {
@@ -804,23 +730,10 @@ PYBIND11_MODULE(_tensor_impl, m)
 {
 
     init_copy_and_cast_dispatch_tables();
-
     import_dpctl();
 
-    UAR_INT8 = UAR_BYTE;
-    UAR_UINT8 = UAR_UBYTE;
-    UAR_INT16 = UAR_SHORT;
-    UAR_UINT16 = UAR_USHORT;
-    UAR_INT32 = platform_typeid_lookup<std::int32_t, long, int, short>(
-        UAR_LONG, UAR_INT, UAR_SHORT);
-    UAR_UINT32 =
-        platform_typeid_lookup<std::uint32_t, unsigned long, unsigned int,
-                               unsigned short>(UAR_ULONG, UAR_UINT, UAR_USHORT);
-    UAR_INT64 = platform_typeid_lookup<std::int64_t, long, long long, int>(
-        UAR_LONG, UAR_LONGLONG, UAR_INT);
-    UAR_UINT64 = platform_typeid_lookup<std::uint64_t, unsigned long,
-                                        unsigned long long, unsigned int>(
-        UAR_ULONG, UAR_ULONGLONG, UAR_UINT);
+    // populate types constants for type dispatching functions
+    array_types = dpctl::tensor::detail::usm_ndarray_types::get();
 
     m.def(
         "_contract_iter", &contract_iter,

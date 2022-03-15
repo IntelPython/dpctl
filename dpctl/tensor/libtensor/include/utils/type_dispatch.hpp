@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include "dpctl4pybind11.hpp"
 #include <CL/sycl.hpp>
 #include <complex>
 
@@ -113,6 +114,135 @@ public:
             }
             ++dst_id;
         }
+    }
+};
+
+// Lookup a type according to its size, and return a value corresponding to the
+// NumPy typenum.
+template <typename Concrete> constexpr int platform_typeid_lookup()
+{
+    return -1;
+}
+
+template <typename Concrete, typename T, typename... Ts, typename... Ints>
+constexpr int platform_typeid_lookup(int I, Ints... Is)
+{
+    return sizeof(Concrete) == sizeof(T)
+               ? I
+               : platform_typeid_lookup<Concrete, Ts...>(Is...);
+}
+
+struct usm_ndarray_types
+{
+    static usm_ndarray_types &get()
+    {
+        static usm_ndarray_types singleton = populate_fields();
+        return singleton;
+    }
+
+    int typenum_to_lookup_id(int typenum)
+    {
+        using typenum_t = dpctl::tensor::detail::typenum_t;
+
+        if (typenum == UAR_DOUBLE_) {
+            return static_cast<int>(typenum_t::DOUBLE);
+        }
+        else if (typenum == UAR_INT64_) {
+            return static_cast<int>(typenum_t::INT64);
+        }
+        else if (typenum == UAR_INT32_) {
+            return static_cast<int>(typenum_t::INT32);
+        }
+        else if (typenum == UAR_BOOL_) {
+            return static_cast<int>(typenum_t::BOOL);
+        }
+        else if (typenum == UAR_CDOUBLE_) {
+            return static_cast<int>(typenum_t::CDOUBLE);
+        }
+        else if (typenum == UAR_FLOAT_) {
+            return static_cast<int>(typenum_t::FLOAT);
+        }
+        else if (typenum == UAR_INT16_) {
+            return static_cast<int>(typenum_t::INT16);
+        }
+        else if (typenum == UAR_INT8_) {
+            return static_cast<int>(typenum_t::INT8);
+        }
+        else if (typenum == UAR_UINT64_) {
+            return static_cast<int>(typenum_t::UINT64);
+        }
+        else if (typenum == UAR_UINT32_) {
+            return static_cast<int>(typenum_t::UINT32);
+        }
+        else if (typenum == UAR_UINT16_) {
+            return static_cast<int>(typenum_t::UINT16);
+        }
+        else if (typenum == UAR_UINT8_) {
+            return static_cast<int>(typenum_t::UINT8);
+        }
+        else if (typenum == UAR_CFLOAT_) {
+            return static_cast<int>(typenum_t::CFLOAT);
+        }
+        else if (typenum == UAR_HALF_) {
+            return static_cast<int>(typenum_t::HALF);
+        }
+        else {
+            throw std::runtime_error("Unrecogized typenum " +
+                                     std::to_string(typenum) + " encountered.");
+        }
+    }
+
+private:
+    int UAR_BOOL_ = -1;
+    // Platform-dependent normalization
+    int UAR_INT8_ = -1;
+    int UAR_UINT8_ = -1;
+    int UAR_INT16_ = -1;
+    int UAR_UINT16_ = -1;
+    int UAR_INT32_ = -1;
+    int UAR_UINT32_ = -1;
+    int UAR_INT64_ = -1;
+    int UAR_UINT64_ = -1;
+    int UAR_HALF_ = -1;
+    int UAR_FLOAT_ = -1;
+    int UAR_DOUBLE_ = -1;
+    int UAR_CFLOAT_ = -1;
+    int UAR_CDOUBLE_ = -1;
+    int UAR_TYPE_SENTINEL_ = -1;
+
+    void init_constants()
+    {
+        UAR_BOOL_ = UAR_BOOL;
+        UAR_INT8_ = UAR_BYTE;
+        UAR_UINT8_ = UAR_UBYTE;
+        UAR_INT16_ = UAR_SHORT;
+        UAR_UINT16_ = UAR_USHORT;
+        UAR_INT32_ = platform_typeid_lookup<std::int32_t, long, int, short>(
+            UAR_LONG, UAR_INT, UAR_SHORT);
+        UAR_UINT32_ = platform_typeid_lookup<std::uint32_t, unsigned long,
+                                             unsigned int, unsigned short>(
+            UAR_ULONG, UAR_UINT, UAR_USHORT);
+        UAR_INT64_ = platform_typeid_lookup<std::int64_t, long, long long, int>(
+            UAR_LONG, UAR_LONGLONG, UAR_INT);
+        UAR_UINT64_ = platform_typeid_lookup<std::uint64_t, unsigned long,
+                                             unsigned long long, unsigned int>(
+            UAR_ULONG, UAR_ULONGLONG, UAR_UINT);
+        UAR_HALF_ = UAR_HALF;
+        UAR_FLOAT_ = UAR_FLOAT;
+        UAR_DOUBLE_ = UAR_DOUBLE;
+        UAR_CFLOAT_ = UAR_CFLOAT;
+        UAR_CDOUBLE_ = UAR_CDOUBLE;
+        UAR_TYPE_SENTINEL_ = UAR_TYPE_SENTINEL;
+    }
+
+    static usm_ndarray_types populate_fields()
+    {
+        import_dpctl();
+
+        usm_ndarray_types types;
+        types.init_constants();
+
+        return types;
     }
 };
 
