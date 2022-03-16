@@ -26,3 +26,4 @@ Array Manipulation
 .. autofunction:: expand_dims
 .. autofunction:: permute_dims
 .. autofunction:: reshape
+.. autofunction:: squeeze
