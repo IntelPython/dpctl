@@ -68,3 +68,37 @@ def expand_dims(X, axes):
     shape = tuple(1 if ax in axes else next(shape_it) for ax in range(out_ndim))
 
     return dpt.reshape(X, shape)
+
+
+def squeeze(X, axes=None):
+    """
+    squeeze(X: usm_ndarray, axes: int or tuple or list) -> usm_ndarray
+
+    Removes singleton dimensions (axes) from X; returns a view, if possible,
+    a copy otherwise, but with all or a subset of the dimensions
+    of length 1 removed.
+    """
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+    X_shape = X.shape
+    if axes is not None:
+        if not isinstance(axes, (tuple, list)):
+            axes = (axes,)
+        axes = normalize_axis_tuple(axes, X.ndim if X.ndim != 0 else X.ndim + 1)
+        new_shape = []
+        for i, x in enumerate(X_shape):
+            if i not in axes:
+                new_shape.append(x)
+            else:
+                if x != 1:
+                    raise ValueError(
+                        "Cannot select an axis to squeeze out "
+                        "which has size not equal to one."
+                    )
+        new_shape = tuple(new_shape)
+    else:
+        new_shape = tuple(axis for axis in X_shape if axis != 1)
+    if new_shape == X.shape:
+        return X
+    else:
+        return dpt.reshape(X, new_shape)

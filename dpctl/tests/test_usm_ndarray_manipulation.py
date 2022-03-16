@@ -166,3 +166,102 @@ def test_expand_dims_incorrect_tuple():
     pytest.raises(np.AxisError, dpt.expand_dims, X, (0, 5))
 
     pytest.raises(ValueError, dpt.expand_dims, X, (1, 1))
+
+
+def test_squeeze_incorrect_type():
+    X_list = list([1, 2, 3, 4, 5])
+    X_tuple = tuple(X_list)
+    Xnp = np.array(X_list)
+
+    pytest.raises(TypeError, dpt.permute_dims, X_list, 1)
+    pytest.raises(TypeError, dpt.permute_dims, X_tuple, 1)
+    pytest.raises(TypeError, dpt.permute_dims, Xnp, 1)
+
+
+def test_squeeze_0d():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp = np.array(1)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    Y = dpt.squeeze(X)
+    Ynp = Xnp.squeeze()
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+    Y = dpt.squeeze(X, 0)
+    Ynp = Xnp.squeeze(0)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+    Y = dpt.squeeze(X, (0))
+    Ynp = Xnp.squeeze((0))
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+    Y = dpt.squeeze(X, -1)
+    Ynp = Xnp.squeeze(-1)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+    pytest.raises(np.AxisError, dpt.squeeze, X, 1)
+    pytest.raises(np.AxisError, dpt.squeeze, X, -2)
+    pytest.raises(np.AxisError, dpt.squeeze, X, (1))
+    pytest.raises(np.AxisError, dpt.squeeze, X, (-2))
+    pytest.raises(ValueError, dpt.squeeze, X, (0, 0))
+
+
+@pytest.mark.parametrize(
+    "shapes",
+    [
+        (0),
+        (1),
+        (1, 2),
+        (2, 1),
+        (1, 1),
+        (2, 2),
+        (1, 0),
+        (0, 1),
+        (1, 2, 1),
+        (2, 1, 2),
+        (2, 2, 2),
+        (1, 1, 1),
+        (1, 0, 1),
+        (0, 1, 0),
+    ],
+)
+def test_squeeze_without_axes(shapes):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp = np.empty(shapes)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    Y = dpt.squeeze(X)
+    Ynp = Xnp.squeeze()
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize("axes", [0, 2, (0), (2), (0, 2)])
+def test_squeeze_axes_arg(axes):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp = np.array([[[1], [2], [3]]])
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    Y = dpt.squeeze(X, axes)
+    Ynp = Xnp.squeeze(axes)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize("axes", [1, -2, (1), (-2), (0, 0), (1, 1)])
+def test_squeeze_axes_arg_error(axes):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp = np.array([[[1], [2], [3]]])
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    pytest.raises(ValueError, dpt.squeeze, X, axes)
