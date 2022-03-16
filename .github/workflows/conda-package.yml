@@ -317,7 +317,7 @@ jobs:
     runs-on:  ${{ matrix.runner }}
     strategy:
       matrix:
-        python: [3.8]
+        python: [3.9]
         experimental: [false]
         runner: [ubuntu-latest]
     continue-on-error: ${{ matrix.experimental }}
@@ -363,39 +363,58 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+      - name: Install example requirements
+        shell: bash -l {0}
+        run: |
+          CHANNELS="${{ env.CHANNELS }}"
+          source $CONDA/etc/profile.d/conda.sh
+          conda create -n examples -y pytest python=${{ matrix.python }} $CHANNELS
+          conda install -n examples -y cmake">=3.22" $CHANNELS || exit 1
+          conda install -n examples -y ninja $CHANNELS || exit 1
+          conda install -n examples -y pybind11 cython scikit-build $CHANNELS || exit 1
+          conda install -n examples -y mkl-dpcpp mkl-devel-dpcpp dpcpp_cpp_rt $CHANNELS || exit 1
+          conda create -y -n build_env -c intel dpcpp_linux-64
       - name: Install dpctl
         shell: bash -l {0}
         run: |
           source $CONDA/etc/profile.d/conda.sh
           conda activate
-          CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
-          conda install -y $PACKAGE_NAME pytest python=${{ matrix.python }} $CHANNELS
-          # Test installed packages
-          conda list
-      - name: Install example requirements
-        shell: bash -l {0}
-        run: |
-          source $CONDA/etc/profile.d/conda.sh
-          conda install -y pybind11 cython
-          conda install -y -c intel mkl-dpcpp mkl-devel-dpcpp numba-dppy
-          conda create -y -n build_env -c intel dpcpp_linux-64
+          CHANNELS="-c $GITHUB_WORKSPACE/channel -c dppy/label/dev -c intel --override-channels"
+          conda install -n examples -y $CHANNELS numba-dppy numpy dpctl || exit 1
       - name: Build and run examples with native extensions
         shell: bash -l {0}
         run: |
           source $CONDA/etc/profile.d/conda.sh
           export OCL_ICD_FILENAMES=libintelocl.so
           export SYCL_ENABLE_HOST_DEVICE=1
-          conda activate
+          conda activate examples
+          conda list
           cd examples/pybind11
-          export CC=dpcpp
-          export CXX=dpcpp
           for d in $(ls)
           do
             pushd $d
+            export MKLROOT=${CONDA_PREFIX}
+            export TBBROOT=${CONDA_PREFIX}
             conda activate --stack build_env
-            python setup.py build_ext --inplace || exit 1
+            if [ -e CMakeLists.txt ]
+            then
+               python setup.py build_ext --inplace -- -G Ninja \
+                    -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx \
+                    -DTBB_LIBRARY_DIR=${TBBROOT}/lib \
+                    -DMKL_LIBRARY_DIR=${MKLROOT}/lib \
+                    -DMKL_INCLUDE_DIR=${MKLROOT}/include \
+                    -DTBB_INCLUDE_DIR=${TBBROOT}/include || exit 1
+            else
+               CC=dpcpp CXX=dpcpp LD_SHARED="dpcpp -shared" \
+                    python setup.py build_ext --inplace || exit 1
+            fi
             conda deactivate
-            python example.py
+            if [ -e tests ]
+            then
+               LD_LIBRARY_PATH=${CONDA_PREFIX}/lib python -m pytest tests || exit 1
+            else
+               LD_LIBRARY_PATH=${CONDA_PREFIX}/lib python example.py || exit 1
+            fi
             popd
           done
           cd ../cython
@@ -403,17 +422,20 @@ jobs:
           do
             pushd $d
             conda activate --stack build_env
-            python setup.py build_ext --inplace || exit 1
+            CC=dpcpp CXX=dpcpp LD_SHARED="dpcpp -shared" \
+                   python setup.py build_ext --inplace || exit 1
             conda deactivate
-            python run.py
+            LD_LIBRARY_PATH=${CONDA_PREFIX}/lib python run.py || exit 1
             popd
           done
       - name: Run Python examples
         shell: bash -l {0}
         run: |
           cd examples/python
+          source $CONDA/etc/profile.d/conda.sh
           export OCL_ICD_FILENAMES=libintelocl.so
           export SYCL_ENABLE_HOST_DEVICE=1
+          conda activate examples
           for script in $(find . \( -not -name "_*" -and -name "*.py" \))
           do
             echo "Executing ${script}"
