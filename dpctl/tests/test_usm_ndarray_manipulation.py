@@ -265,3 +265,64 @@ def test_squeeze_axes_arg_error(axes):
     Xnp = np.array([[[1], [2], [3]]])
     X = dpt.asarray(Xnp, sycl_queue=q)
     pytest.raises(ValueError, dpt.squeeze, X, axes)
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        [np.array(0), (0,)],
+        [np.array(0), (1,)],
+        [np.array(0), (3,)],
+        [np.ones(1), (1,)],
+        [np.ones(1), (2,)],
+        [np.ones(1), (1, 2, 3)],
+        [np.arange(3), (3,)],
+        [np.arange(3), (1, 3)],
+        [np.arange(3), (2, 3)],
+        [np.ones(0), 0],
+        [np.ones(1), 1],
+        [np.ones(1), 2],
+        [np.ones(1), (0,)],
+        [np.ones((1, 2)), (0, 2)],
+        [np.ones((2, 1)), (2, 0)],
+    ],
+)
+def test_broadcast_to_succeeds(data):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp, target_shape = data
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    Y = dpt.broadcast_to(X, target_shape)
+    Ynp = np.broadcast_to(Xnp, target_shape)
+    assert_array_equal(dpt.asnumpy(Y), Ynp)
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        [(0,), ()],
+        [(1,), ()],
+        [(3,), ()],
+        [(3,), (1,)],
+        [(3,), (2,)],
+        [(3,), (4,)],
+        [(1, 2), (2, 1)],
+        [(1, 1), (1,)],
+        [(1,), -1],
+        [(1,), (-1,)],
+        [(1, 2), (-1, 2)],
+    ],
+)
+def test_broadcast_to_raises(data):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    orig_shape, target_shape = data
+    Xnp = np.zeros(orig_shape)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    pytest.raises(ValueError, dpt.broadcast_to, X, target_shape)
