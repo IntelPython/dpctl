@@ -382,8 +382,8 @@ sycl::event keep_args_alive(sycl::queue q,
 }
 
 std::pair<sycl::event, sycl::event>
-copy_usm_ndarray_into_usm_ndarray(usm_ndarray src,
-                                  usm_ndarray dst,
+copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
+                                  dpctl::tensor::usm_ndarray dst,
                                   sycl::queue exec_q,
                                   const std::vector<sycl::event> &depends = {})
 {

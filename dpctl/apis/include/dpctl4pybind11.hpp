@@ -172,6 +172,11 @@ public:
 } // namespace detail
 } // namespace pybind11
 
+namespace dpctl
+{
+namespace memory
+{
+
 class usm_memory : public py::object
 {
 public:
@@ -287,6 +292,13 @@ protected:
     }
 };
 
+} // end namespace memory
+} // end namespace dpctl
+
+namespace dpctl
+{
+namespace tensor
+{
 class usm_ndarray : public py::object
 {
 public:
@@ -466,3 +478,6 @@ private:
         return res.ptr();
     }
 };
+
+} // end namespace tensor
+} // end namespace dpctl
