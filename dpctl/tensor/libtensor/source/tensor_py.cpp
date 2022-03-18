@@ -457,14 +457,6 @@ copy_usm_ndarray_into_usm_ndarray(usm_ndarray src,
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    // TODO: should we check can cast.
-    // Currently force-cast
-    bool can_cast = true;
-    if (!can_cast) {
-        throw py::value_error("Can not cast destinary array elements to source "
-                              "array element type.");
-    }
-
     int src_flags = src.get_flags();
     int dst_flags = dst.get_flags();
 
