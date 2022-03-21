@@ -415,6 +415,19 @@ def test_pyx_capi_get_typenum():
     assert typenum == X.dtype.num
 
 
+def test_pyx_capi_get_elemsize():
+    X = dpt.usm_ndarray(17)[1::2]
+    get_elemsize_fn = _pyx_capi_fnptr_to_callable(
+        X,
+        "UsmNDArray_GetElementSize",
+        b"int (struct PyUSMArrayObject *)",
+        fn_restype=ctypes.c_int,
+    )
+    itemsize = get_elemsize_fn(X)
+    assert type(itemsize) is int
+    assert itemsize == X.itemsize
+
+
 def test_pyx_capi_get_flags():
     X = dpt.usm_ndarray(17)[1::2]
     get_flags_fn = _pyx_capi_fnptr_to_callable(
@@ -774,6 +787,20 @@ def test_to_device():
         if dev.default_selector_score > 0:
             Y = X.to_device(dev)
             assert Y.sycl_device == dev
+
+
+def test_to_device_migration():
+    try:
+        dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default queue could not be created")
+    q1 = dpctl.SyclQueue()  # two distinct copies of default-constructed queue
+    q2 = dpctl.SyclQueue()
+    X1 = dpt.empty((5,), "i8", sycl_queue=q1)  # X1 is associated with q1
+    X2 = X1.to_device(q2)  # X2 is reassociated with q2
+    assert X1.sycl_queue == q1
+    assert X2.sycl_queue == q2
+    assert X1.usm_data._pointer == X2.usm_data._pointer
 
 
 def test_astype():

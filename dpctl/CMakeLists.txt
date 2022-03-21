@@ -18,12 +18,12 @@ if(WIN32)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Ox ${WARNING_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ox ${WARNING_FLAGS}")
     set(CMAKE_C_FLAGS_DEBUG
-        "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG"
+        "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} -O0 -ggdb3 -DDEBUG"
     )
     set(CMAKE_CXX_FLAGS_DEBUG
-        "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} -ggdb3 -DDEBUG"
+        "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} -O0 -ggdb3 -DDEBUG"
     )
-    set(DPCTL_LDFLAGS "/NXCompat /DynamicBase")
+    set(DPCTL_LDFLAGS "/link /NXCompat /DynamicBase")
 elseif(UNIX)
     string(CONCAT WARNING_FLAGS
         "-Wall "
@@ -33,7 +33,6 @@ elseif(UNIX)
         "-Wuninitialized "
         "-Wmissing-declarations "
         "-fdiagnostics-color=auto "
-        "-Wno-deprecated-declarations "
     )
     string(CONCAT SDL_FLAGS
         "-fstack-protector "
@@ -58,10 +57,10 @@ elseif(UNIX)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 ${CFLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 ${CXXFLAGS}")
     set(CMAKE_C_FLAGS_DEBUG
-        "${CMAKE_C_FLAGS_DEBUG} ${CFLAGS} -ggdb3 -DDEBUG"
+        "${CMAKE_C_FLAGS_DEBUG} ${CFLAGS} -O0 -ggdb3 -DDEBUG"
     )
     set(CMAKE_CXX_FLAGS_DEBUG
-        "${CMAKE_CXX_FLAGS_DEBUG} ${CXXFLAGS} -ggdb3 -DDEBUG"
+        "${CMAKE_CXX_FLAGS_DEBUG} ${CXXFLAGS} -O0 -ggdb3 -DDEBUG"
     )
     set(DPCTL_LDFLAGS "-z,noexecstack,-z,relro,-z,now")
 else()

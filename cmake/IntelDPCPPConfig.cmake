@@ -218,16 +218,19 @@ endif()
 
 
 set(SYCL_FLAGS "")
+set(SYCL_LINK_FLAGS "")
 
 # Based on Compiler ID, add support for SYCL
 if( "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xClang" OR
     "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xIntelLLVM")
   set(SYCL_FLAGS "-fsycl ")
+  set(SYCL_LINK_FLAGS "-fsycl ")
 endif()
 
 # Based on Compiler ID, add support for DPCPP
 if( "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xIntelLLVM")
   set(SYCL_FLAGS "--dpcpp ${SYCL_FLAGS}")
+  set(SYCL_LINK_FLAGS "--dpcpp ${SYCL_LINK_FLAGS}")
 endif()
 
 # TODO verify if this is needed
@@ -237,6 +240,7 @@ if(WIN32)
 endif()
 
 set(SYCL_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SYCL_FLAGS}")
+set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} ${SYCL_LINK_FLAGS}")
 
 # And now test the assumptions.
 

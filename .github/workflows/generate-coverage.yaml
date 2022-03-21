@@ -113,7 +113,7 @@ jobs:
       - name: Upload coverage data to coveralls.io
         shell: bash -l {0}
         run: |
-          coveralls-lcov -v -n $(find _skbuild -name tests)/dpctl.lcov > dpctl-c-api-coverage.json
+          coveralls-lcov -v -n $(find _skbuild -name dpctl.lcov) > dpctl-c-api-coverage.json
           coveralls --service=github --merge=dpctl-c-api-coverage.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

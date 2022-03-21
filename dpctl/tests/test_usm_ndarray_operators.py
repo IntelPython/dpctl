@@ -77,6 +77,9 @@ def test_fp_ops(namespace):
     X.__itruediv__(1.0)
     X.__ifloordiv__(1.0)
 
+
+@pytest.mark.parametrize("namespace", [None, Dummy()])
+def test_int_ops(namespace):
     X = dpt.usm_ndarray(1, "i4")
     X._set_namespace(namespace)
     assert X.__array_namespace__() is namespace
@@ -103,9 +106,12 @@ def test_fp_ops(namespace):
     X.__rpow__(2)
     X.__ipow__(2)
 
+
+@pytest.mark.parametrize("namespace", [None, Dummy()])
+def test_mat_ops(namespace):
     M = dpt.from_numpy(np.eye(3, 3, dtype="d"))
-    X._set_namespace(namespace)
-    assert X.__array_namespace__() is namespace
+    M._set_namespace(namespace)
+    assert M.__array_namespace__() is namespace
     M.__matmul__(M)
     M.__imatmul__(M)
     M.__rmatmul__(M)

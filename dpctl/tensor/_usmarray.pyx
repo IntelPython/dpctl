@@ -620,14 +620,22 @@ cdef class usm_ndarray:
         """
         Transfer array to target device
         """
+        cdef c_dpctl.DPCTLSyclQueueRef QRef = NULL
+        cdef c_dpmem._Memory arr_buf
         d = Device.create_device(target_device)
-        if (d.sycl_device == self.sycl_device):
-            return self
-        elif (d.sycl_context == self.sycl_context):
+        if (d.sycl_context == self.sycl_context):
+            arr_buf = <c_dpmem._Memory> self.usm_data
+            QRef = (<c_dpctl.SyclQueue> d.sycl_queue).get_queue_ref()
+            view_buffer = c_dpmem._Memory.create_from_usm_pointer_size_qref(
+                arr_buf.memory_ptr,
+                arr_buf.nbytes,
+                QRef,
+                memory_owner = arr_buf
+            )
             res = usm_ndarray(
                 self.shape,
                 self.dtype,
-                buffer=self.usm_data,
+                buffer=view_buffer,
                 strides=self.strides,
                 offset=self.get_offset()
             )
@@ -635,14 +643,14 @@ cdef class usm_ndarray:
             return res
         else:
             nbytes = self.usm_data.nbytes
-            new_buffer = type(self.usm_data)(
+            copy_buffer = type(self.usm_data)(
                 nbytes, queue=d.sycl_queue
             )
-            new_buffer.copy_from_device(self.usm_data)
+            copy_buffer.copy_from_device(self.usm_data)
             res = usm_ndarray(
                 self.shape,
                 self.dtype,
-                buffer=new_buffer,
+                buffer=copy_buffer,
                 strides=self.strides,
                 offset=self.get_offset()
             )
@@ -888,7 +896,25 @@ cdef class usm_ndarray:
         if isinstance(val, usm_ndarray):
             _copy_from_usm_ndarray_to_usm_ndarray(Xv, val)
         else:
-            _copy_from_numpy_into(Xv, np.asarray(val))
+            if hasattr(val, "__sycl_usm_array_interface__"):
+                from dpctl.tensor import asarray
+                try:
+                    val_ar = asarray(val)
+                    _copy_from_usm_ndarray_to_usm_ndarray(Xv, val_ar)
+                except Exception:
+                    raise ValueError(
+                        f"Input of type {type(val)} could not be "
+                        "converted to usm_ndarray"
+                    )
+            else:
+                try:
+                    val_np = np.asarray(val)
+                    _copy_from_numpy_into(Xv, val_np)
+                except Exception:
+                    raise ValueError(
+                        f"Input of type {type(val)} could not be "
+                        "converted to numpy.ndarray"
+                    )
 
     def __sub__(first, other):
         "See comment in __add__"
@@ -1166,6 +1192,11 @@ cdef api int UsmNDArray_GetTypenum(usm_ndarray arr):
     return arr.get_typenum()
 
 
+cdef api int UsmNDArray_GetElementSize(usm_ndarray arr):
+    """Get array element size in bytes"""
+    return arr.get_itemsize()
+
+
 cdef api int UsmNDArray_GetFlags(usm_ndarray arr):
     """Get flags of array"""
     return arr.get_flags()
@@ -1178,5 +1209,5 @@ cdef api c_dpctl.DPCTLSyclQueueRef UsmNDArray_GetQueueRef(usm_ndarray arr):
 
 cdef api Py_ssize_t UsmNDArray_GetOffset(usm_ndarray arr):
     """Get offset of zero-index array element from the beginning of the USM
-    allocation."""
+    allocation"""
     return arr.get_offset()
