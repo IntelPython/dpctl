@@ -201,6 +201,7 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
 
     if dst.ndim == src.ndim and dst.shape == src.shape:
         _copy_same_shape(dst, src)
+        return
 
     try:
         common_shape = _broadcast_shapes(dst.shape, src.shape)
