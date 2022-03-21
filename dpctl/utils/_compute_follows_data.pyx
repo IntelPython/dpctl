@@ -28,27 +28,19 @@ import dpctl
 
 from .._sycl_queue cimport SyclQueue
 
-__all__ = ["get_execution_queue", ]
+__all__ = ["get_execution_queue", "get_coerced_usm_type"]
 
 
 cdef bint queue_equiv(SyclQueue q1, SyclQueue q2):
-    """ Queues are equivalent if contexts are the same,
-    devices are the same, and properties are the same."""
-    return (
-        (q1 is q2) or
-        (
-            (q1.sycl_context == q2.sycl_context) and
-            (q1.sycl_device == q2.sycl_device) and
-            (q1.is_in_order == q2.is_in_order) and
-            (q1.has_enable_profiling == q2.has_enable_profiling)
-        )
-    )
+    """ Queues are equivalent if q1 == q2, that is they are copies
+    of the same underlying SYCL object and hence are the same."""
+    return q1.__eq__(q2)
 
 
 def get_execution_queue(qs):
     """ Given a list of :class:`dpctl.SyclQueue` objects
     returns the execution queue under compute follows data paradigm,
-    or returns `None` if queues are not equivalent.
+    or returns `None` if queues are not equal.
     """
     if not isinstance(qs, (list, tuple)):
         raise TypeError(
@@ -58,7 +50,7 @@ def get_execution_queue(qs):
         return None
     elif len(qs) == 1:
         return qs[0] if isinstance(qs[0], dpctl.SyclQueue) else None
-    for q1, q2 in zip(qs, qs[1:]):
+    for q1, q2 in zip(qs[:-1], qs[1:]):
         if not isinstance(q1, dpctl.SyclQueue):
             return None
         elif not isinstance(q2, dpctl.SyclQueue):
@@ -66,3 +58,26 @@ def get_execution_queue(qs):
         elif not queue_equiv(<SyclQueue> q1, <SyclQueue> q2):
              return None
     return qs[0]
+
+
+def get_coerced_usm_type(usm_types):
+    """ Given a list of strings denoting the types of USM allocations
+    for input arrays returns the type of USM allocation for the output
+    array(s) per compute follows data paradigm.
+    Returns `None` if the type can not be deduced."""
+    if not isinstance(usm_types, (list, tuple)):
+        raise TypeError(
+            "Expected a list or a tuple, got {}".format(type(usm_types))
+        )
+    if len(usm_types) == 0:
+        return None
+    _k = ["device", "shared", "host"]
+    _m = {k:i for i, k in enumerate(_k)}
+    res = len(_k)
+    for t in usm_types:
+        if not isinstance(t, str):
+            return None
+        if t not in _m:
+            return None
+        res = min(res, _m[t])
+    return _k[res]

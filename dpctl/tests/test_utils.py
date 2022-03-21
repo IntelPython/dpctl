@@ -54,7 +54,17 @@ def test_get_execution_queue():
             q,
         )
     )
-    assert exec_q is q
+    assert exec_q is None
+    q_c = dpctl.SyclQueue(q._get_capsule())
+    assert q == q_c
+    exec_q = dpctl.utils.get_execution_queue(
+        (
+            q,
+            q_c,
+            q,
+        )
+    )
+    assert exec_q == q
 
 
 def test_get_execution_queue_nonequiv():
@@ -69,3 +79,18 @@ def test_get_execution_queue_nonequiv():
 
     exec_q = dpctl.utils.get_execution_queue((q, q1, q2))
     assert exec_q is None
+
+
+def test_get_coerced_usm_type():
+    _t = ["device", "shared", "host"]
+
+    for i1 in range(len(_t)):
+        for i2 in range(len(_t)):
+            assert (
+                dpctl.utils.get_coerced_usm_type([_t[i1], _t[i2]])
+                == _t[min(i1, i2)]
+            )
+
+    assert dpctl.utils.get_coerced_usm_type([]) is None
+    with pytest.raises(TypeError):
+        dpctl.utils.get_coerced_usm_type(dict())
