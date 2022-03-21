@@ -789,6 +789,20 @@ def test_to_device():
             assert Y.sycl_device == dev
 
 
+def test_to_device_migration():
+    try:
+        dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default queue could not be created")
+    q1 = dpctl.SyclQueue()  # two distinct copies of default-constructed queue
+    q2 = dpctl.SyclQueue()
+    X1 = dpt.empty((5,), "i8", sycl_queue=q1)  # X1 is associated with q1
+    X2 = X1.to_device(q2)  # X2 is reassociated with q2
+    assert X1.sycl_queue == q1
+    assert X2.sycl_queue == q2
+    assert X1.usm_data._pointer == X2.usm_data._pointer
+
+
 def test_astype():
     X = dpt.empty((5, 5), dtype="i4")
     X[:] = np.full((5, 5), 7, dtype="i4")

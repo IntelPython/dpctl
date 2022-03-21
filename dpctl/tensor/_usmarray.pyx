@@ -620,14 +620,22 @@ cdef class usm_ndarray:
         """
         Transfer array to target device
         """
+        cdef c_dpctl.DPCTLSyclQueueRef QRef = NULL
+        cdef c_dpmem._Memory arr_buf
         d = Device.create_device(target_device)
-        if (d.sycl_device == self.sycl_device):
-            return self
-        elif (d.sycl_context == self.sycl_context):
+        if (d.sycl_context == self.sycl_context):
+            arr_buf = <c_dpmem._Memory> self.usm_data
+            QRef = (<c_dpctl.SyclQueue> d.sycl_queue).get_queue_ref()
+            view_buffer = c_dpmem._Memory.create_from_usm_pointer_size_qref(
+                arr_buf.memory_ptr,
+                arr_buf.nbytes,
+                QRef,
+                memory_owner = arr_buf
+            )
             res = usm_ndarray(
                 self.shape,
                 self.dtype,
-                buffer=self.usm_data,
+                buffer=view_buffer,
                 strides=self.strides,
                 offset=self.get_offset()
             )
@@ -635,14 +643,14 @@ cdef class usm_ndarray:
             return res
         else:
             nbytes = self.usm_data.nbytes
-            new_buffer = type(self.usm_data)(
+            copy_buffer = type(self.usm_data)(
                 nbytes, queue=d.sycl_queue
             )
-            new_buffer.copy_from_device(self.usm_data)
+            copy_buffer.copy_from_device(self.usm_data)
             res = usm_ndarray(
                 self.shape,
                 self.dtype,
-                buffer=new_buffer,
+                buffer=copy_buffer,
                 strides=self.strides,
                 offset=self.get_offset()
             )
