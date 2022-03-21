@@ -1,0 +1,97 @@
+.. index:: pair: group; Service functions
+.. _doxid-d8/d1a/group___service:
+
+Service functions
+=================
+
+.. toctree::
+	:hidden:
+
+Overview
+~~~~~~~~
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	
+	// global functions
+
+	DPCTL_API const __dpctl_give char*
+	:ref:`DPCTLService_GetDPCPPVersion<doxid-d8/d1a/group___service_1ga644b14f0bee03243f0ce30679e3c8d41>`(void);
+
+	DPCTL_API void
+	:ref:`DPCTLService_InitLogger<doxid-d8/d1a/group___service_1gabbfc206297f96578e9cdef4eea7c1505>`(
+		const char* app_name,
+		const char* log_dir
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLService_ShutdownLogger<doxid-d8/d1a/group___service_1ga9699c638b54314fc1398af7d48df0353>`(void);
+
+.. _details-d8/d1a/group___service:
+
+Detailed Documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+Global Functions
+----------------
+
+.. index:: pair: function; DPCTLService_GetDPCPPVersion
+.. _doxid-d8/d1a/group___service_1ga644b14f0bee03243f0ce30679e3c8d41:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API const __dpctl_give char*
+	DPCTLService_GetDPCPPVersion(void)
+
+Get version of DPC++ toolchain the library was compiled with.
+
+
+
+.. rubric:: Returns:
+
+A C string containing the version of DPC++ toolchain.
+
+.. index:: pair: function; DPCTLService_InitLogger
+.. _doxid-d8/d1a/group___service_1gabbfc206297f96578e9cdef4eea7c1505:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLService_InitLogger(
+		const char* app_name,
+		const char* log_dir
+		)
+
+Initialize logger if compiled to use logger, no-op otherwise.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- app_name
+
+		- C-string for application name reflected in the log. @paral log_dir C-string for directory where log files are placed.
+
+.. index:: pair: function; DPCTLService_ShutdownLogger
+.. _doxid-d8/d1a/group___service_1ga9699c638b54314fc1398af7d48df0353:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLService_ShutdownLogger(void)
+
+Finilize logger if enabled, no-op otherwise.
+
