@@ -320,9 +320,11 @@ def test_datapi_device():
         dev_t()
     dev_t.create_device(X.device)
     dev_t.create_device(X.sycl_queue)
-    dev_t.create_device(X.sycl_device)
-    dev_t.create_device(X.sycl_device.filter_string)
-    dev_t.create_device(None)
+    d1 = dev_t.create_device(X.sycl_device)
+    d2 = dev_t.create_device(X.sycl_device.filter_string)
+    d3 = dev_t.create_device(None)
+    assert d1.sycl_queue == d2.sycl_queue
+    assert d1.sycl_queue == d3.sycl_queue
     X.device.sycl_context
     X.device.sycl_queue
     X.device.sycl_device
