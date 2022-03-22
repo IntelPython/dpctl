@@ -18,8 +18,10 @@ Functions
 .. list-table::
     :widths: 25,50
 
+    * - :func:`get_coerced_usm_type()`
+      - Given a list of strings denoting the types of USM allocations for input arrays returns the type of USM allocation for the output array(s) per compute follows data paradigm.
     * - :func:`get_execution_queue()`
-      - Given a list of :class:`dpctl.SyclQueue` objects returns the execution queue under compute follows data paradigm, or returns `None` if queues are not equivalent.
+      - Given a list of :class:`dpctl.SyclQueue` objects returns the execution queue under compute follows data paradigm, or returns `None` if queues are not equal.
 
 
 

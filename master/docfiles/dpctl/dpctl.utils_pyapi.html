@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.utils &mdash; Data-parallel Control (dpctl) 0.13.0dev0+1.gc2748402 documentation</title>
+  <title>dpctl.utils &mdash; Data-parallel Control (dpctl) 0.13.0dev0+5.ge96cce3a documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+1.gc2748402
+                0.13.0dev0+5.ge96cce3a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -107,8 +107,11 @@
 <col style="width: 67%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.get_execution_queue" title="dpctl.utils.get_execution_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_execution_queue()</span></code></a></p></td>
-<td><p>Given a list of <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> objects returns the execution queue under compute follows data paradigm, or returns <cite>None</cite> if queues are not equivalent.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.get_coerced_usm_type" title="dpctl.utils.get_coerced_usm_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_coerced_usm_type()</span></code></a></p></td>
+<td><p>Given a list of strings denoting the types of USM allocations for input arrays returns the type of USM allocation for the output array(s) per compute follows data paradigm.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.get_execution_queue" title="dpctl.utils.get_execution_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_execution_queue()</span></code></a></p></td>
+<td><p>Given a list of <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> objects returns the execution queue under compute follows data paradigm, or returns <cite>None</cite> if queues are not equal.</p></td>
 </tr>
 </tbody>
 </table>

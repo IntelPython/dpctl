@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._device &mdash; Data-parallel Control (dpctl) 0.13.0dev0+1.gc2748402 documentation</title>
+  <title>dpctl.tensor._device &mdash; Data-parallel Control (dpctl) 0.13.0dev0+5.ge96cce3a documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+1.gc2748402
+                0.13.0dev0+5.ge96cce3a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -107,6 +107,8 @@
 <span class="sd">    or ``sycl_device``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">__device_queue_map__</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;No public constructor&quot;</span><span class="p">)</span>
 
@@ -133,7 +135,9 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">):</span>
             <span class="n">par</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">parent_device</span>
             <span class="k">if</span> <span class="n">par</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">sycl_queue_</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dev</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__device_queue_map__</span><span class="p">:</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">__device_queue_map__</span><span class="p">[</span><span class="n">dev</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">sycl_queue_</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__device_queue_map__</span><span class="p">[</span><span class="n">dev</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;Using non-root device </span><span class="si">{}</span><span class="s2"> to specify offloading &quot;</span>
@@ -142,9 +146,12 @@
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">dev</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">sycl_queue_</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">()</span>
+                <span class="n">_dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">sycl_queue_</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+                <span class="n">_dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_dev</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__device_queue_map__</span><span class="p">:</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">__device_queue_map__</span><span class="p">[</span><span class="n">_dev</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="n">_dev</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">sycl_queue_</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__device_queue_map__</span><span class="p">[</span><span class="n">_dev</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">obj</span>
 
     <span class="nd">@property</span>
