@@ -29,6 +29,8 @@ class Device:
     or ``sycl_device``.
     """
 
+    __device_queue_map__ = dict()
+
     def __new__(cls, *args, **kwargs):
         raise TypeError("No public constructor")
 
@@ -55,7 +57,9 @@ class Device:
         elif isinstance(dev, dpctl.SyclDevice):
             par = dev.parent_device
             if par is None:
-                obj.sycl_queue_ = dpctl.SyclQueue(dev)
+                if dev not in cls.__device_queue_map__:
+                    cls.__device_queue_map__[dev] = dpctl.SyclQueue(dev)
+                obj.sycl_queue_ = cls.__device_queue_map__[dev]
             else:
                 raise ValueError(
                     "Using non-root device {} to specify offloading "
@@ -64,9 +68,12 @@ class Device:
                 )
         else:
             if dev is None:
-                obj.sycl_queue_ = dpctl.SyclQueue()
+                _dev = dpctl.SyclDevice()
             else:
-                obj.sycl_queue_ = dpctl.SyclQueue(dev)
+                _dev = dpctl.SyclDevice(dev)
+            if _dev not in cls.__device_queue_map__:
+                cls.__device_queue_map__[_dev] = dpctl.SyclQueue(_dev)
+            obj.sycl_queue_ = cls.__device_queue_map__[_dev]
         return obj
 
     @property
