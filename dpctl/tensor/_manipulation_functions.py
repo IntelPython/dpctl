@@ -38,6 +38,43 @@ def _broadcast_strides(X_shape, X_strides, res_ndim):
     return tuple(out_strides)
 
 
+def _broadcast_shapes(*args):
+    """
+    Broadcast the input shapes into a single shape;
+    returns tuple broadcasted shape.
+    """
+    shapes = [array.shape for array in args]
+    if len(set(shapes)) == 1:
+        return shapes[0]
+    shapes = [list(shape) for shape in shapes]
+    nds = [len(s) for s in shapes]
+    biggest = max(nds)
+    for i in range(len(args)):
+        diff = biggest - nds[i]
+        if diff > 0:
+            shapes[i] = [1] * diff + shapes[i]
+    common_shape = []
+    for axis in range(biggest):
+        lengths = [s[axis] for s in shapes]
+        unique = set(lengths + [1])
+        if len(unique) > 2:
+            raise ValueError(
+                "Shape mismatch: two or more arrays have "
+                f"incompatible dimensions on axis ({axis},)"
+            )
+        elif len(unique) == 2:
+            unique.remove(1)
+            new_length = unique.pop()
+            common_shape.append(new_length)
+            for i in range(len(args)):
+                if shapes[i][axis] == 1:
+                    shapes[i][axis] = new_length
+        else:
+            common_shape.append(1)
+
+    return tuple(common_shape)
+
+
 def permute_dims(X, axes):
     """
     permute_dims(X: usm_ndarray, axes: tuple or list) -> usm_ndarray
@@ -158,15 +195,9 @@ def broadcast_arrays(*args):
         if not isinstance(X, dpt.usm_ndarray):
             raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
 
-    np_arrays = [np.empty(X.shape, dtype="u1") for X in args]
+    shape = _broadcast_shapes(*args)
 
-    # Use numpy.broadcast_arrays to check the validity of the input
-    # usm_ndarrays. Raise ValueError if usm_ndarray shapes are not
-    # compatible and cannot be broadcast according to NumPy's
-    # broadcasting rules.
-    new_arrays = np.broadcast_arrays(*np_arrays)
-
-    if all(X.shape == Xnp.shape for X, Xnp in zip(args, new_arrays)):
+    if all(X.shape == shape for X in args):
         return args
 
-    return [broadcast_to(X, Xnp.shape) for X, Xnp in zip(args, new_arrays)]
+    return [broadcast_to(X, shape) for X in args]
