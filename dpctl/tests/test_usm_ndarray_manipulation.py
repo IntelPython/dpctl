@@ -338,7 +338,9 @@ def assert_broadcast_correct(input_shapes):
     usm_arrays = [dpt.asarray(Xnp, sycl_queue=q) for Xnp in np_arrays]
     out_usm_arrays = dpt.broadcast_arrays(*usm_arrays)
     for Xnp, X in zip(out_np_arrays, out_usm_arrays):
-        assert_array_equal(Xnp, dpt.asnumpy(X))
+        assert_array_equal(
+            Xnp, dpt.asnumpy(X), err_msg=f"Failed for {input_shapes})"
+        )
 
 
 def assert_broadcast_arrays_raise(input_shapes):
@@ -462,7 +464,6 @@ def test_broadcast_arrays_different_len_shapes(shapes):
     # to the correct shape.
 
     for input_shapes in shapes:
-        print(input_shapes)
         assert_broadcast_correct(input_shapes)
         assert_broadcast_correct(input_shapes[::-1])
 
@@ -478,6 +479,5 @@ def test_broadcast_arrays_different_len_shapes(shapes):
 )
 def test_incompatible_shapes_raise_valueerror(shapes):
     for input_shapes in shapes:
-        print(input_shapes)
         assert_broadcast_arrays_raise(input_shapes)
         assert_broadcast_arrays_raise(input_shapes[::-1])
