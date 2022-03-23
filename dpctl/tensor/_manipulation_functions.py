@@ -15,6 +15,8 @@
 #  limitations under the License.
 
 
+from itertools import chain, repeat
+
 import numpy as np
 from numpy.core.numeric import normalize_axis_tuple
 
@@ -46,13 +48,14 @@ def _broadcast_shapes(*args):
     shapes = [array.shape for array in args]
     if len(set(shapes)) == 1:
         return shapes[0]
-    shapes = [list(shape) for shape in shapes]
+    mutable_shapes = False
     nds = [len(s) for s in shapes]
     biggest = max(nds)
     for i in range(len(args)):
         diff = biggest - nds[i]
         if diff > 0:
-            shapes[i] = [1] * diff + shapes[i]
+            ty = type(shapes[i])
+            shapes[i] = ty(chain(repeat(1, diff), shapes[i]))
     common_shape = []
     for axis in range(biggest):
         lengths = [s[axis] for s in shapes]
@@ -68,6 +71,9 @@ def _broadcast_shapes(*args):
             common_shape.append(new_length)
             for i in range(len(args)):
                 if shapes[i][axis] == 1:
+                    if not mutable_shapes:
+                        shapes = [list(s) for s in shapes]
+                        mutable_shapes = True
                     shapes[i][axis] = new_length
         else:
             common_shape.append(1)
