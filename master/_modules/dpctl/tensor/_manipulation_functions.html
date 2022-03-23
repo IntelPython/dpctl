@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.13.0dev0+5.ge96cce3a documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.13.0dev0+11.gf469af29 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+5.ge96cce3a
+                0.13.0dev0+11.gf469af29
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -93,6 +93,8 @@
 <span class="c1">#  limitations under the License.</span>
 
 
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">repeat</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
 
@@ -114,6 +116,47 @@
         <span class="n">str_dim</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">out_strides</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_broadcast_shapes</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Broadcast the input shapes into a single shape;</span>
+<span class="sd">    returns tuple broadcasted shape.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shapes</span> <span class="o">=</span> <span class="p">[</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span> <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">shapes</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">shapes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">mutable_shapes</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">nds</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">shapes</span><span class="p">]</span>
+    <span class="n">biggest</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">nds</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">biggest</span> <span class="o">-</span> <span class="n">nds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">diff</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ty</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ty</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">diff</span><span class="p">),</span> <span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="n">common_shape</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">biggest</span><span class="p">):</span>
+        <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">shapes</span><span class="p">]</span>
+        <span class="n">unique</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">lengths</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Shape mismatch: two or more arrays have &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;incompatible dimensions on axis (</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2">,)&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">unique</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">new_length</span> <span class="o">=</span> <span class="n">unique</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">common_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_length</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">axis</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">mutable_shapes</span><span class="p">:</span>
+                        <span class="n">shapes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">shapes</span><span class="p">]</span>
+                        <span class="n">mutable_shapes</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_length</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">common_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">common_shape</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="permute_dims"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.permute_dims">[docs]</a><span class="k">def</span> <span class="nf">permute_dims</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
@@ -224,6 +267,24 @@
         <span class="n">strides</span><span class="o">=</span><span class="n">new_sts</span><span class="p">,</span>
         <span class="n">offset</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">__sycl_usm_array_interface__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;offset&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
     <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="broadcast_arrays"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.broadcast_arrays">[docs]</a><span class="k">def</span> <span class="nf">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    broadcast_arrays(*args: usm_ndarrays) -&gt; list of usm_ndarrays</span>
+
+<span class="sd">    Broadcasts one or more usm_ndarrays against one another.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected usm_ndarray type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">_broadcast_shapes</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">shape</span> <span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">args</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">args</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span> <span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span></div>
 </pre></div>
 
            </div>

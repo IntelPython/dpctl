@@ -62,6 +62,8 @@ Array Manipulation
 .. list-table::
     :widths: 25,50
 
+    * - :func:`broadcast_arrays()`
+      - -> list of usm_ndarrays Broadcasts one or more usm_ndarrays against one another.
     * - :func:`broadcast_to()`
       - -> usm_ndarray Broadcast an array to a new shape; returns the broadcasted array as a view.
     * - :func:`expand_dims()`
