@@ -326,3 +326,158 @@ def test_broadcast_to_raises(data):
     Xnp = np.zeros(orig_shape)
     X = dpt.asarray(Xnp, sycl_queue=q)
     pytest.raises(ValueError, dpt.broadcast_to, X, target_shape)
+
+
+def assert_broadcast_correct(input_shapes):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+    np_arrays = [np.zeros(s) for s in input_shapes]
+    out_np_arrays = np.broadcast_arrays(*np_arrays)
+    usm_arrays = [dpt.asarray(Xnp, sycl_queue=q) for Xnp in np_arrays]
+    out_usm_arrays = dpt.broadcast_arrays(*usm_arrays)
+    for Xnp, X in zip(out_np_arrays, out_usm_arrays):
+        assert_array_equal(Xnp, dpt.asnumpy(X))
+
+
+def assert_broadcast_arrays_raise(input_shapes):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+    usm_arrays = [dpt.asarray(np.zeros(s), sycl_queue=q) for s in input_shapes]
+    pytest.raises(ValueError, dpt.broadcast_arrays, *usm_arrays)
+
+
+def test_broadcast_arrays_same():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+    Xnp = np.arange(10)
+    Ynp = np.arange(10)
+    res_Xnp, res_Ynp = np.broadcast_arrays(Xnp, Ynp)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    Y = dpt.asarray(Ynp, sycl_queue=q)
+    res_X, res_Y = dpt.broadcast_arrays(X, Y)
+    assert_array_equal(res_Xnp, dpt.asnumpy(res_X))
+    assert_array_equal(res_Ynp, dpt.asnumpy(res_Y))
+
+
+def test_broadcast_arrays_one_off():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+    Xnp = np.array([[1, 2, 3]])
+    Ynp = np.array([[1], [2], [3]])
+    res_Xnp, res_Ynp = np.broadcast_arrays(Xnp, Ynp)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    Y = dpt.asarray(Ynp, sycl_queue=q)
+    res_X, res_Y = dpt.broadcast_arrays(X, Y)
+    assert_array_equal(res_Xnp, dpt.asnumpy(res_X))
+    assert_array_equal(res_Ynp, dpt.asnumpy(res_Y))
+
+
+@pytest.mark.parametrize(
+    "shapes",
+    [
+        (),
+        (1,),
+        (3,),
+        (0, 1),
+        (0, 3),
+        (1, 0),
+        (3, 0),
+        (1, 3),
+        (3, 1),
+        (3, 3),
+    ],
+)
+def test_broadcast_arrays_same_shapes(shapes):
+    for shape in shapes:
+        single_input_shapes = [shape]
+        assert_broadcast_correct(single_input_shapes)
+        double_input_shapes = [shape, shape]
+        assert_broadcast_correct(double_input_shapes)
+        triple_input_shapes = [shape, shape, shape]
+        assert_broadcast_correct(triple_input_shapes)
+
+
+@pytest.mark.parametrize(
+    "shapes",
+    [
+        [[(1,), (3,)]],
+        [[(1, 3), (3, 3)]],
+        [[(3, 1), (3, 3)]],
+        [[(1, 3), (3, 1)]],
+        [[(1, 1), (3, 3)]],
+        [[(1, 1), (1, 3)]],
+        [[(1, 1), (3, 1)]],
+        [[(1, 0), (0, 0)]],
+        [[(0, 1), (0, 0)]],
+        [[(1, 0), (0, 1)]],
+        [[(1, 1), (0, 0)]],
+        [[(1, 1), (1, 0)]],
+        [[(1, 1), (0, 1)]],
+    ],
+)
+def test_broadcast_arrays_same_len_shapes(shapes):
+    # Check that two different input shapes of the same length, but some have
+    # ones, broadcast to the correct shape.
+
+    for input_shapes in shapes:
+        assert_broadcast_correct(input_shapes)
+        assert_broadcast_correct(input_shapes[::-1])
+
+
+@pytest.mark.parametrize(
+    "shapes",
+    [
+        [[(), (3,)]],
+        [[(3,), (3, 3)]],
+        [[(3,), (3, 1)]],
+        [[(1,), (3, 3)]],
+        [[(), (3, 3)]],
+        [[(1, 1), (3,)]],
+        [[(1,), (3, 1)]],
+        [[(1,), (1, 3)]],
+        [[(), (1, 3)]],
+        [[(), (3, 1)]],
+        [[(), (0,)]],
+        [[(0,), (0, 0)]],
+        [[(0,), (0, 1)]],
+        [[(1,), (0, 0)]],
+        [[(), (0, 0)]],
+        [[(1, 1), (0,)]],
+        [[(1,), (0, 1)]],
+        [[(1,), (1, 0)]],
+        [[(), (1, 0)]],
+        [[(), (0, 1)]],
+    ],
+)
+def test_broadcast_arrays_different_len_shapes(shapes):
+    # Check that two different input shapes (of different lengths) broadcast
+    # to the correct shape.
+
+    for input_shapes in shapes:
+        print(input_shapes)
+        assert_broadcast_correct(input_shapes)
+        assert_broadcast_correct(input_shapes[::-1])
+
+
+@pytest.mark.parametrize(
+    "shapes",
+    [
+        [[(3,), (4,)]],
+        [[(2, 3), (2,)]],
+        [[(3,), (3,), (4,)]],
+        [[(1, 3, 4), (2, 3, 3)]],
+    ],
+)
+def test_incompatible_shapes_raise_valueerror(shapes):
+    for input_shapes in shapes:
+        print(input_shapes)
+        assert_broadcast_arrays_raise(input_shapes)
+        assert_broadcast_arrays_raise(input_shapes[::-1])
