@@ -146,3 +146,27 @@ def broadcast_to(X, shape):
         strides=new_sts,
         offset=X.__sycl_usm_array_interface__.get("offset", 0),
     )
+
+
+def broadcast_arrays(*args):
+    """
+    broadcast_arrays(*args: usm_ndarrays) -> list of usm_ndarrays
+
+    Broadcasts one or more usm_ndarrays against one another.
+    """
+    for X in args:
+        if not isinstance(X, dpt.usm_ndarray):
+            raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+
+    np_arrays = [np.empty(X.shape, dtype="u1") for X in args]
+
+    # Use numpy.broadcast_arrays to check the validity of the input
+    # usm_ndarrays. Raise ValueError if usm_ndarray shapes are not
+    # compatible and cannot be broadcast according to NumPy's
+    # broadcasting rules.
+    new_arrays = np.broadcast_arrays(*np_arrays)
+
+    if all(X.shape == Xnp.shape for X, Xnp in zip(args, new_arrays)):
+        return args
+
+    return [broadcast_to(X, Xnp.shape) for X, Xnp in zip(args, new_arrays)]
