@@ -26,6 +26,7 @@ from dpctl.tensor._ctors import asarray, empty
 from dpctl.tensor._device import Device
 from dpctl.tensor._dlpack import from_dlpack
 from dpctl.tensor._manipulation_functions import (
+    broadcast_arrays,
     broadcast_to,
     expand_dims,
     permute_dims,
@@ -42,6 +43,7 @@ __all__ = [
     "copy",
     "empty",
     "reshape",
+    "broadcast_arrays",
     "broadcast_to",
     "expand_dims",
     "permute_dims",

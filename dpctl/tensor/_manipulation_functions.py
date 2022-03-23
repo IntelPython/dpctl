@@ -15,6 +15,8 @@
 #  limitations under the License.
 
 
+from itertools import chain, repeat
+
 import numpy as np
 from numpy.core.numeric import normalize_axis_tuple
 
@@ -36,6 +38,47 @@ def _broadcast_strides(X_shape, X_strides, res_ndim):
         str_dim += 1
 
     return tuple(out_strides)
+
+
+def _broadcast_shapes(*args):
+    """
+    Broadcast the input shapes into a single shape;
+    returns tuple broadcasted shape.
+    """
+    shapes = [array.shape for array in args]
+    if len(set(shapes)) == 1:
+        return shapes[0]
+    mutable_shapes = False
+    nds = [len(s) for s in shapes]
+    biggest = max(nds)
+    for i in range(len(args)):
+        diff = biggest - nds[i]
+        if diff > 0:
+            ty = type(shapes[i])
+            shapes[i] = ty(chain(repeat(1, diff), shapes[i]))
+    common_shape = []
+    for axis in range(biggest):
+        lengths = [s[axis] for s in shapes]
+        unique = set(lengths + [1])
+        if len(unique) > 2:
+            raise ValueError(
+                "Shape mismatch: two or more arrays have "
+                f"incompatible dimensions on axis ({axis},)"
+            )
+        elif len(unique) == 2:
+            unique.remove(1)
+            new_length = unique.pop()
+            common_shape.append(new_length)
+            for i in range(len(args)):
+                if shapes[i][axis] == 1:
+                    if not mutable_shapes:
+                        shapes = [list(s) for s in shapes]
+                        mutable_shapes = True
+                    shapes[i][axis] = new_length
+        else:
+            common_shape.append(1)
+
+    return tuple(common_shape)
 
 
 def permute_dims(X, axes):
@@ -146,3 +189,21 @@ def broadcast_to(X, shape):
         strides=new_sts,
         offset=X.__sycl_usm_array_interface__.get("offset", 0),
     )
+
+
+def broadcast_arrays(*args):
+    """
+    broadcast_arrays(*args: usm_ndarrays) -> list of usm_ndarrays
+
+    Broadcasts one or more usm_ndarrays against one another.
+    """
+    for X in args:
+        if not isinstance(X, dpt.usm_ndarray):
+            raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+
+    shape = _broadcast_shapes(*args)
+
+    if all(X.shape == shape for X in args):
+        return args
+
+    return [broadcast_to(X, shape) for X in args]
