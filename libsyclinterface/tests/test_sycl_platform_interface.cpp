@@ -295,6 +295,14 @@ TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetInfo3)
     EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(info_str));
 }
 
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetInfoNull)
+{
+    const char *info_str = nullptr;
+    DPCTLSyclPlatformRef NullPRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(info_str = DPCTLPlatformMgr_GetInfo(NullPRef, 0));
+    ASSERT_TRUE(info_str == nullptr);
+}
+
 TEST_F(TestDPCTLSyclDefaultPlatform, ChkPrintInfo0)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(PRef, 0));
