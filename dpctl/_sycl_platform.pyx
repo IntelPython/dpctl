@@ -34,6 +34,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLPlatform_GetPlatforms,
     DPCTLPlatform_GetVendor,
     DPCTLPlatform_GetVersion,
+    DPCTLPlatformMgr_GetInfo,
     DPCTLPlatformMgr_PrintInfo,
     DPCTLPlatformVector_Delete,
     DPCTLPlatformVector_GetAt,
@@ -323,6 +324,7 @@ def lsplatform(verbosity=0):
     cdef DPCTLPlatformVectorRef PVRef = NULL
     cdef size_t v = 0
     cdef size_t size = 0
+    cdef const char * info_str = NULL
     cdef DPCTLSyclPlatformRef PRef = NULL
 
     if not isinstance(verbosity, int):
@@ -347,8 +349,11 @@ def lsplatform(verbosity=0):
             if v != 0:
                 print("Platform ", i, "::")
             PRef = DPCTLPlatformVector_GetAt(PVRef, i)
-            DPCTLPlatformMgr_PrintInfo(PRef, v)
+            info_str = DPCTLPlatformMgr_GetInfo(PRef,v)
+            py_info = <bytes> info_str
+            DPCTLCString_Delete(info_str)
             DPCTLPlatform_Delete(PRef)
+            print(py_info.decode("utf-8"),end='')
     DPCTLPlatformVector_Delete(PVRef)
 
 
