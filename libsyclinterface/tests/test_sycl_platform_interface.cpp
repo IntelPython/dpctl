@@ -224,6 +224,14 @@ TEST_P(TestDPCTLSyclPlatformInterface, ChkCopyNullArg)
     EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_Delete(Copied_PRef));
 }
 
+TEST_P(TestDPCTLSyclPlatformInterface, ChkGetInfo)
+{
+    const char *info_str = nullptr;
+    EXPECT_NO_FATAL_FAILURE(info_str = DPCTLPlatformMgr_GetInfo(PRef, 0));
+    ASSERT_TRUE(info_str != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(info_str));
+}
+
 TEST_P(TestDPCTLSyclPlatformInterface, ChkPrintInfo)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(PRef, 0));
@@ -253,6 +261,46 @@ TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetVersion)
 TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetBackend)
 {
     check_platform_backend(PRef);
+}
+
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetInfo0)
+{
+    const char *info_str = nullptr;
+    EXPECT_NO_FATAL_FAILURE(info_str = DPCTLPlatformMgr_GetInfo(PRef, 0));
+    ASSERT_TRUE(info_str != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(info_str));
+}
+
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetInfo1)
+{
+    const char *info_str = nullptr;
+    EXPECT_NO_FATAL_FAILURE(info_str = DPCTLPlatformMgr_GetInfo(PRef, 1));
+    ASSERT_TRUE(info_str != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(info_str));
+}
+
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetInfo2)
+{
+    const char *info_str = nullptr;
+    EXPECT_NO_FATAL_FAILURE(info_str = DPCTLPlatformMgr_GetInfo(PRef, 2));
+    ASSERT_TRUE(info_str != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(info_str));
+}
+
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetInfo3)
+{
+    const char *info_str = nullptr;
+    EXPECT_NO_FATAL_FAILURE(info_str = DPCTLPlatformMgr_GetInfo(PRef, 3));
+    ASSERT_TRUE(info_str != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(info_str));
+}
+
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetInfoNull)
+{
+    const char *info_str = nullptr;
+    DPCTLSyclPlatformRef NullPRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(info_str = DPCTLPlatformMgr_GetInfo(NullPRef, 0));
+    ASSERT_TRUE(info_str == nullptr);
 }
 
 TEST_F(TestDPCTLSyclDefaultPlatform, ChkPrintInfo0)
