@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Platform class helper functions &mdash; Data-parallel Control (dpctl) 0.13.0dev0+12.ga20344b7 documentation</title>
+  <title>Platform class helper functions &mdash; Data-parallel Control (dpctl) 0.13.0dev0+17.ga94e63b3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+12.ga20344b7
+                0.13.0dev0+17.ga94e63b3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -115,6 +115,12 @@
 
 <span class="c1">// global functions</span>
 
+<span class="n">DPCTL_API</span> <span class="k">const</span> <span class="n">__dpctl_give</span> <span class="kt">char</span><span class="o">*</span>
+<a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga90ff5c2df9bd5a56d4f539e073f091f2"><span class="std std-ref">DPCTLPlatformMgr_GetInfo</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">verbosity</span>
+    <span class="p">);</span>
+
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
 <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga8e44adac75e0ecf8705b089404a8fb86"><span class="std std-ref">DPCTLPlatformMgr_PrintInfo</span></a><span></span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
@@ -150,7 +156,32 @@
 <p>Helper functions for <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> objects that do not directly map to any <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> member function.</p>
 <section id="global-functions">
 <h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this headline"></a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga8e44adac75e0ecf8705b089404a8fb86"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga90ff5c2df9bd5a56d4f539e073f091f2"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="k">const</span> <span class="n">__dpctl_give</span> <span class="kt">char</span><span class="o">*</span>
+<span class="n">DPCTLPlatformMgr_GetInfo</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">verbosity</span>
+    <span class="p">)</span></pre>
+<p>Returns a set of platform info attributes as a string.</p>
+<p>The helper function is used to get metadata about a given platform. The amount of information received is controlled by the verbosity level.</p>
+<p>Verbosity level 0: Returns only the name of the platform. Verbosity level 1: Returns the name, version, vendor, backend, number of devices in the platform. Verbosity level 2: Returns everything in level 1 and also returns the name, version, and filter string for each device in the platform.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>PRef</p></td>
+<td><p>A <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a> opaque pointer.</p></td>
+</tr>
+<tr class="row-even"><td><p>verbosity</p></td>
+<td><p>Verbosilty level to control how much information is printed out.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>A formatted C string capturing the information about the sycl::platform argument.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga8e44adac75e0ecf8705b089404a8fb86"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLPlatformMgr_PrintInfo</span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">verbosity</span>
@@ -173,7 +204,7 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga89b9b23802931f2354d8acb91f72ba6c"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga89b9b23802931f2354d8acb91f72ba6c"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLPlatformVector_Clear</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
 <p>Delete all the elements of the std::vector.</p>
 <p class="rubric">Parameters:</p>
@@ -188,12 +219,12 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga9d5773827c527bc445bf60ffbf6a6e60"><span id="index-3"></span><span></span><span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga9d5773827c527bc445bf60ffbf6a6e60"><span id="index-4"></span><span></span><span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
 <span class="n">DPCTLPlatformVector_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
 <p>Create an opaque pointer to a std::vector of opaque pointers wrapping the SYCL data type.</p>
 <p class="rubric">Returns:</p>
 <p>Returns a new opaque pointer to a vector.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1gac4e4722d083773b839113fb32cca632c"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1gac4e4722d083773b839113fb32cca632c"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span>
 <span class="n">DPCTLPlatformVector_CreateFromArray</span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span><span class="o">*</span> <span class="n">elems</span>
@@ -216,7 +247,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns a new opaque pointer to a vector.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1gaef25f3448c038f7a8ac3dd99a3d69249"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1gaef25f3448c038f7a8ac3dd99a3d69249"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLPlatformVector_Delete</span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
 <p>Delete all elements in the vector and then delete the vector.</p>
 <p class="rubric">Parameters:</p>
@@ -231,7 +262,7 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga131427438ea4f1cbca1fe4c93e11e21a"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga131427438ea4f1cbca1fe4c93e11e21a"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span>
 <span class="n">DPCTLPlatformVector_GetAt</span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">index</span>
@@ -254,7 +285,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>The element at the specified postion, if the index position is out of bounds then a nullptr is returned.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga713c99c0d385de070ae32d4d7657401e"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga713c99c0d385de070ae32d4d7657401e"><span id="index-8"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLPlatformVector_Size</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
 <p>Returns the number of elements in the vector.</p>
 <p class="rubric">Parameters:</p>

@@ -422,6 +422,12 @@ Overview
 	DPCTL_API const __dpctl_give char*
 	:ref:`DPCTLPlatform_GetVersion<doxid-da/dbd/group___platform_interface_1ga794fb8c5be5cf2a48f63c407cb05bc1f>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
 
+	DPCTL_API const __dpctl_give char*
+	:ref:`DPCTLPlatformMgr_GetInfo<doxid-d5/dcf/group___platform_manager_1ga90ff5c2df9bd5a56d4f539e073f091f2>`(
+		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
+		size_t verbosity
+		);
+
 	DPCTL_API void
 	:ref:`DPCTLPlatformMgr_PrintInfo<doxid-d5/dcf/group___platform_manager_1ga8e44adac75e0ecf8705b089404a8fb86>`(
 		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
