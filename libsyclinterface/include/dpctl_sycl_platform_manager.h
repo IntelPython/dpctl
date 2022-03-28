@@ -64,6 +64,30 @@ DPCTL_API
 void DPCTLPlatformMgr_PrintInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef,
                                 size_t verbosity);
 
+/*!
+ * @brief Returns a set of platform info attributes as a string.
+ *
+ * The helper function is used to get metadata about a given platform. The
+ * amount of information received is controlled by the verbosity level.
+ *
+ * Verbosity level 0: Returns only the name of the platform.
+ * Verbosity level 1: Returns the name, version, vendor, backend, number of
+ *                    devices in the platform.
+ * Verbosity level 2: Returns everything in level 1 and also returns the name,
+ *                    version, and filter string for each device in the
+ *                    platform.
+ *
+ * @param    PRef           A #DPCTLSyclPlatformRef opaque pointer.
+ * @param    verbosity      Verbosilty level to control how much information is
+ *                          printed out.
+ * @return   A formatted C string capturing the information about the
+ *           sycl::platform argument.
+ */
+DPCTL_API
+__dpctl_give const char *
+DPCTLPlatformMgr_GetInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef,
+                         size_t verbosity);
+
 /*! @} */
 
 DPCTL_C_EXTERN_C_END

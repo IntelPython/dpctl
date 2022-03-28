@@ -263,6 +263,7 @@ cdef extern from "syclinterface/dpctl_sycl_platform_manager.h":
         DPCTLPlatformVectorRef,
         size_t index)
     cdef void DPCTLPlatformMgr_PrintInfo(const DPCTLSyclPlatformRef, size_t)
+    cdef const char *DPCTLPlatformMgr_GetInfo(const DPCTLSyclPlatformRef, size_t)
 
 
 cdef extern from "syclinterface/dpctl_sycl_platform_interface.h":

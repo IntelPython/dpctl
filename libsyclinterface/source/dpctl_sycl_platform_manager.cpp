@@ -27,6 +27,7 @@
 #include "dpctl_sycl_platform_manager.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_error_handlers.h"
+#include "dpctl_string_utils.hpp"
 #include "dpctl_sycl_platform_interface.h"
 #include "dpctl_utils_helper.h"
 #include <CL/sycl.hpp>
@@ -41,7 +42,7 @@ namespace
 {
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef);
 
-void platform_print_info_impl(const platform &p, size_t verbosity)
+std::string platform_print_info_impl(const platform &p, size_t verbosity)
 {
     std::stringstream ss;
 
@@ -96,7 +97,7 @@ void platform_print_info_impl(const platform &p, size_t verbosity)
             }
     }
 
-    std::cout << ss.str();
+    return ss.str();
 }
 
 } // namespace
@@ -111,10 +112,27 @@ void DPCTLPlatformMgr_PrintInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef,
 {
     auto p = unwrap(PRef);
     if (p) {
-        platform_print_info_impl(*p, verbosity);
+        std::cout << platform_print_info_impl(*p, verbosity);
     }
     else {
         error_handler("Platform reference is NULL.", __FILE__, __func__,
                       __LINE__);
     }
+}
+
+__dpctl_give const char *
+DPCTLPlatformMgr_GetInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef,
+                         size_t verbosity)
+{
+    const char *cstr_info = nullptr;
+    auto p = unwrap(PRef);
+    if (p) {
+        auto infostr = platform_print_info_impl(*p, verbosity);
+        cstr_info = dpctl::helper::cstring_from_string(infostr);
+    }
+    else {
+        error_handler("Platform reference is NULL.", __FILE__, __func__,
+                      __LINE__);
+    }
+    return cstr_info;
 }
