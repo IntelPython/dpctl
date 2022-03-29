@@ -198,6 +198,20 @@ def test_basic_slice(ind):
     assert S.dtype == X.dtype
 
 
+def test_empty_slice():
+    # see gh801
+    X = dpt.empty((1, 0, 1), dtype="u1")
+    Y = X[:, ::-1, :]
+    assert Y.shape == X.shape
+    Z = X[:, ::2, :]
+    assert Z.shape == X.shape
+    X = dpt.empty(0)
+    Y = X[::-1]
+    assert Y.shape == X.shape
+    Z = X[::2]
+    assert Z.shape == X.shape
+
+
 def test_slice_constructor_1d():
     Xh = np.arange(37, dtype="i4")
     default_device = dpctl.select_default_device()
