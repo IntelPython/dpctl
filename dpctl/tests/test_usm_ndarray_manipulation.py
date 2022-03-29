@@ -481,3 +481,163 @@ def test_incompatible_shapes_raise_valueerror(shapes):
     for input_shapes in shapes:
         assert_broadcast_arrays_raise(input_shapes)
         assert_broadcast_arrays_raise(input_shapes[::-1])
+
+
+def test_flip_axes_incorrect():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    X_np = np.ones((4, 4))
+    X = dpt.asarray(X_np, sycl_queue=q)
+
+    pytest.raises(np.AxisError, dpt.flip, dpt.asarray(np.ones(4)), axes=1)
+    pytest.raises(np.AxisError, dpt.flip, X, axes=2)
+    pytest.raises(np.AxisError, dpt.flip, X, axes=-3)
+    pytest.raises(np.AxisError, dpt.flip, X, axes=(0, 3))
+
+
+def test_flip_0d():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp = np.array(1, dtype="int64")
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    Ynp = np.flip(Xnp)
+    Y = dpt.flip(X)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+    pytest.raises(np.AxisError, dpt.flip, X, 0)
+    pytest.raises(np.AxisError, dpt.flip, X, 1)
+    pytest.raises(np.AxisError, dpt.flip, X, -1)
+
+
+def test_flip_1d():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp = np.arange(6)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+
+    for ax in range(-X.ndim, X.ndim):
+        Ynp = np.flip(Xnp, ax)
+        Y = dpt.flip(X, ax)
+        assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+    Ynp = np.flip(Xnp, 0)
+    Y = dpt.flip(X, 0)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize(
+    "shapes",
+    [
+        (3, 2),
+        (2, 3),
+        (2, 2),
+        (3, 3),
+        (3, 2, 3),
+        (2, 3, 2),
+        (2, 2, 2),
+        (3, 3, 3),
+    ],
+)
+def test_flip_2d_3d(shapes):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp_size = np.prod(shapes)
+    Xnp = np.arange(Xnp_size).reshape(shapes)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    for ax in range(-X.ndim, X.ndim):
+        Y = dpt.flip(X, ax)
+        Ynp = np.flip(Xnp, ax)
+        assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize(
+    "shapes",
+    [
+        (1,),
+        (3,),
+        (2, 3),
+        (3, 2),
+        (2, 2),
+        (1, 2, 3),
+        (2, 1, 3),
+        (2, 3, 1),
+        (3, 2, 1),
+        (3, 3, 3),
+    ],
+)
+def test_flip_default_axes(shapes):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp_size = np.prod(shapes)
+    Xnp = np.arange(Xnp_size).reshape(shapes)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    Y = dpt.flip(X)
+    Ynp = np.flip(Xnp)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize(
+    "shapes",
+    [
+        (0),
+        (1),
+        (1, 1),
+        (1, 0),
+        (0, 1),
+        (1, 1, 1),
+        (1, 0, 1),
+        (0, 1, 0),
+    ],
+)
+def test_flip_empty_0_size_dim(shapes):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    X = dpt.empty(shapes, sycl_queue=q)
+    dpt.flip(X)
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        [(2, 3), (0, 1)],
+        [(2, 3), (1, 0)],
+        [(2, 3), ()],
+        [(2, 1, 3), (0, 2)],
+        [(3, 1, 2), (2, 0)],
+        [(3, 3, 3), (2,)],
+        [(1, 2, 3), [0, -2]],
+        [(3, 1, 2), [-1, 0]],
+        [(3, 3, 3), [-2, -1]],
+    ],
+)
+def test_flip_multiple_axes(data):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    shape, axes = data
+    Xnp_size = np.prod(shape)
+    Xnp = np.arange(Xnp_size).reshape(shape)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    Y = dpt.flip(X, axes)
+    Ynp = np.flip(Xnp, axes)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
