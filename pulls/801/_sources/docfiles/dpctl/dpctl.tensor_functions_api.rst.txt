@@ -1,0 +1,32 @@
+.. _dpctl.tensor_functions_api:
+
+######################
+dpctl.tensor Functions
+######################
+
+
+.. currentmodule:: dpctl.tensor
+
+
+Array Construction
+------------------
+
+.. autofunction:: asarray
+.. autofunction:: asnumpy
+.. autofunction:: astype
+.. autofunction:: copy
+.. autofunction:: empty
+.. autofunction:: from_dlpack
+.. autofunction:: from_numpy
+.. autofunction:: to_numpy
+
+Array Manipulation
+------------------
+
+.. autofunction:: broadcast_arrays
+.. autofunction:: broadcast_to
+.. autofunction:: expand_dims
+.. autofunction:: flip
+.. autofunction:: permute_dims
+.. autofunction:: reshape
+.. autofunction:: squeeze
