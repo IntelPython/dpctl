@@ -56,10 +56,11 @@ cdef object _basic_slice_meta(object ind, tuple shape,
         sh0 = _slice_len(sl_start, sl_stop, sl_step)
         str0 = sl_step * strides[0]
         new_strides = strides if (sl_step == 1 or sh0 == 0) else (str0,) + strides[1:]
+        new_offset = offset if sh0 == 0 else offset + sl_start * strides[0]
         return (
             (sh0, ) + shape[1:],
             new_strides,
-            offset + sl_start * strides[0]
+            new_offset
         )
     elif is_integral(ind):
         ind = ind.__index__()
@@ -126,7 +127,8 @@ cdef object _basic_slice_meta(object ind, tuple shape,
                 str_i = (1 if sh_i == 0 else sl_step) * strides[k]
                 new_shape.append(sh_i)
                 new_strides.append(str_i)
-                new_offset = new_offset + sl_start * strides[k]
+                if sh_i > 0:
+                    new_offset = new_offset + sl_start * strides[k]
                 k = k_new
             elif is_integral(ind_i):
                 ind_i = ind_i.__index__()
