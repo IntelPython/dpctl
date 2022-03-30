@@ -238,7 +238,7 @@ cdef object _make_reversed_int_tuple(int nd, Py_ssize_t *ary):
 
 cdef object _c_contig_strides(int nd, Py_ssize_t *shape):
     """
-    Makes Python tuple for C-contiguous array
+    Makes Python tuple for strides of C-contiguous array
     """
     cdef tuple cc_strides = PyTuple_New(nd)
     cdef object si = 1
@@ -253,7 +253,7 @@ cdef object _c_contig_strides(int nd, Py_ssize_t *shape):
 
 cdef object _f_contig_strides(int nd, Py_ssize_t *shape):
     """
-    Makes Python t
+    Makes Python tuple for strides of F-contiguous array
     """
     cdef tuple fc_strides = PyTuple_New(nd)
     cdef object si = 1
@@ -262,3 +262,28 @@ cdef object _f_contig_strides(int nd, Py_ssize_t *shape):
         PyTuple_SetItem(fc_strides, i, si)
         si = si * shape[i]
     return fc_strides
+
+cdef object _swap_last_two(tuple t):
+    """
+    Swap last two elements of a tuple
+    """
+    cdef int nd = len(t)
+    cdef tuple res
+    cdef int i
+    cdef object tmp
+    if (nd < 2):
+        return t
+    res = PyTuple_New(nd)
+    # copy all elements except the last two
+    for i in range(0, nd-2):
+        tmp = t[i]
+        Py_INCREF(tmp)  # SetItem steals the reference
+        PyTuple_SetItem(res, i, tmp)
+    # swap the last two elements
+    tmp = t[nd-1]
+    Py_INCREF(tmp)  # SetItem steals
+    PyTuple_SetItem(res, nd - 2, tmp)
+    tmp = t[nd-2]
+    Py_INCREF(tmp)  # SetItem steals
+    PyTuple_SetItem(res, nd - 1, tmp)
+    return res
