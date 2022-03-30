@@ -163,7 +163,7 @@ jobs:
           export OCL_ICD_FILENAMES=libintelocl.so
           export SYCL_ENABLE_HOST_DEVICE=1
           # clinfo -l
-          python -m pytest --pyargs $MODULE_NAME
+          python -m pytest -p no:faulthandler --pyargs $MODULE_NAME
 
   test_windows:
     needs: build_windows
@@ -259,7 +259,7 @@ jobs:
         run: |
           set SYCL_ENABLE_HOST_DEVICE=1
           & { [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Miniconda\Library\bin\", [EnvironmentVariableTarget]::Machine) }
-          python -m pytest --pyargs ${{ env.MODULE_NAME }}
+          python -m pytest -p no:faulthandler --pyargs ${{ env.MODULE_NAME }}
 
   upload_linux:
     needs: test_linux
