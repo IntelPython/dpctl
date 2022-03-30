@@ -74,7 +74,7 @@ def reshaped_strides(old_sh, old_sts, new_sh, order="C"):
     return new_sts if valid else None
 
 
-def reshape(X, newshape, order="C"):
+def reshape(X, newshape, order="C", copy=None):
     """
     reshape(X: usm_ndarray, newshape: tuple, order="C") -> usm_ndarray
 
@@ -88,6 +88,11 @@ def reshape(X, newshape, order="C"):
     if order not in ["C", "F"]:
         raise ValueError(
             f"Keyword 'order' not recognized. Expecting 'C' or 'F', got {order}"
+        )
+    if copy not in (True, False, None):
+        raise ValueError(
+            f"Keyword 'copy' not recognized. Expecting True, False, "
+            f"or None, got {copy}"
         )
     newshape = [operator.index(d) for d in newshape]
     negative_ones_count = 0
@@ -108,7 +113,13 @@ def reshape(X, newshape, order="C"):
         newsts = reshaped_strides(X.shape, X.strides, newshape, order=order)
     else:
         newsts = (1,) * len(newshape)
-    if newsts is None:
+    copy_required = newsts is None
+    if copy_required and (copy is False):
+        raise ValueError(
+            "Reshaping the array requires a copy, but no copying was "
+            "requested by using copy=False"
+        )
+    if copy_required or (copy is True):
         # must perform a copy
         flat_res = dpt.usm_ndarray(
             (X.size,),
