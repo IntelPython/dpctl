@@ -26,6 +26,7 @@ Array Manipulation
 .. autofunction:: broadcast_arrays
 .. autofunction:: broadcast_to
 .. autofunction:: expand_dims
+.. autofunction:: flip
 .. autofunction:: permute_dims
 .. autofunction:: reshape
 .. autofunction:: squeeze
