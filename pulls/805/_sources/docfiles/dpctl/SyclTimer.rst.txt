@@ -1,0 +1,21 @@
+.. _SyclTimer_api:
+
+###############
+dpctl.SyclTimer
+###############
+
+.. currentmodule:: dpctl
+
+.. autoclass:: dpctl.SyclTimer
+
+    .. rubric:: Attributes:
+
+    .. autoautosummary:: dpctl.SyclTimer
+        :attributes:
+
+
+Attributes
+----------
+
+.. autoattribute:: dpctl.SyclTimer.dt
+
