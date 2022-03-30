@@ -114,7 +114,7 @@ def test_properties(dt):
     assert isinstance(X.sycl_context, dpctl.SyclContext)
     assert isinstance(X.dtype, np.dtype)
     assert isinstance(X.__sycl_usm_array_interface__, dict)
-    assert isinstance(X.T, dpt.usm_ndarray)
+    assert isinstance(X.mT, dpt.usm_ndarray)
     assert isinstance(X.imag, dpt.usm_ndarray)
     assert isinstance(X.real, dpt.usm_ndarray)
     assert isinstance(X.shape, tuple)
@@ -125,6 +125,15 @@ def test_properties(dt):
     assert isinstance(X.ndim, numbers.Integral)
     assert isinstance(X._pointer, numbers.Integral)
     assert isinstance(X.device, Device)
+    with pytest.raises(ValueError):
+        # array-API mandates exception for .ndim != 2
+        X.T
+    Y = dpt.usm_ndarray((2, 3), dtype=dt)
+    assert isinstance(Y.mT, dpt.usm_ndarray)
+    V = dpt.usm_ndarray((3,), dtype=dt)
+    with pytest.raises(ValueError):
+        # array-API mandates exception for .ndim != 2
+        V.mT
 
 
 @pytest.mark.parametrize("func", [bool, float, int, complex])
