@@ -29,6 +29,7 @@ from dpctl.tensor._manipulation_functions import (
     broadcast_arrays,
     broadcast_to,
     expand_dims,
+    flip,
     permute_dims,
     squeeze,
 )
@@ -42,6 +43,7 @@ __all__ = [
     "astype",
     "copy",
     "empty",
+    "flip",
     "reshape",
     "broadcast_arrays",
     "broadcast_to",

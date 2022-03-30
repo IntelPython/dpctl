@@ -207,3 +207,24 @@ def broadcast_arrays(*args):
         return args
 
     return [broadcast_to(X, shape) for X in args]
+
+
+def flip(X, axes=None):
+    """
+    flip(X: usm_ndarray, axes: int or tuple or list) -> usm_ndarray
+
+    Reverses the order of elements in an array along the given axis.
+    The shape of the array is preserved, but the elements are reordered;
+    returns a view of X with the entries of axis reversed.
+    """
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+    X_ndim = X.ndim
+    if axes is None:
+        indexer = (np.s_[::-1],) * X_ndim
+    else:
+        axes = normalize_axis_tuple(axes, X_ndim)
+        indexer = tuple(
+            np.s_[::-1] if i in axes else np.s_[:] for i in range(X.ndim)
+        )
+    return X[indexer]
