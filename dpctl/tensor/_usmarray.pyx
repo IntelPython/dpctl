@@ -577,10 +577,22 @@ cdef class usm_ndarray:
 
     @property
     def T(self):
-        if self.nd_ < 2:
-            return self
-        else:
+        if self.nd_ == 2:
             return _transpose(self)
+        else:
+            raise ValueError(
+                "array.T requires array to have 2 dimensions. "
+                "Use array.mT to transpose stacks of matrices and "
+                "dpctl.tensor.permute_dims() to permute dimensions."
+            )
+
+    @property
+    def mT(self):
+        if self.nd_ < 2:
+            raise ValueError(
+                "array.mT requires array to have at least 2-dimensons."
+            )
+        return _m_transpose(self)
 
     @property
     def real(self):
@@ -1145,6 +1157,23 @@ cdef usm_ndarray _transpose(usm_ndarray ary):
         strides=(
             _make_reversed_int_tuple(ary.nd_, ary.strides_)
             if (ary.strides_) else None),
+        buffer=ary.base_,
+        order=('F' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'C'),
+        offset=ary.get_offset()
+    )
+    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITEABLE)
+    return r
+
+
+cdef usm_ndarray _m_transpose(usm_ndarray ary):
+    """
+    Construct matrix transposed array
+    """
+    cdef usm_ndarray r = usm_ndarray.__new__(
+        usm_ndarray,
+        _swap_last_two(_make_int_tuple(ary.nd_, ary.shape_)),
+        dtype=_make_typestr(ary.typenum_),
+        strides=_swap_last_two(ary.strides),
         buffer=ary.base_,
         order=('F' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'C'),
         offset=ary.get_offset()
