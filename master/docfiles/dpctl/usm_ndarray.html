@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor.usm_ndarray &mdash; Data-parallel Control (dpctl) 0.13.0dev0+25.gd48c893 documentation</title>
+  <title>dpctl.tensor.usm_ndarray &mdash; Data-parallel Control (dpctl) 0.13.0dev0+28.g373596b2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+25.gd48c893
+                0.13.0dev0+28.g373596b2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -139,37 +139,40 @@ MemoryUSM* buffer is used for buffer.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.itemsize" title="dpctl.tensor.usm_ndarray.itemsize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">itemsize</span></code></a></p></td>
 <td><p>Size of array element in bytes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.nbytes" title="dpctl.tensor.usm_ndarray.nbytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nbytes</span></code></a></p></td>
-<td><p>Total bytes consumed by the elements of the array.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.ndim" title="dpctl.tensor.usm_ndarray.ndim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndim</span></code></a></p></td>
-<td><p>Gives the number of indices needed to address elements of this array.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.real" title="dpctl.tensor.usm_ndarray.real"><code class="xref py py-obj docutils literal notranslate"><span class="pre">real</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.mT" title="dpctl.tensor.usm_ndarray.mT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mT</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.shape" title="dpctl.tensor.usm_ndarray.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.nbytes" title="dpctl.tensor.usm_ndarray.nbytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nbytes</span></code></a></p></td>
+<td><p>Total bytes consumed by the elements of the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.ndim" title="dpctl.tensor.usm_ndarray.ndim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndim</span></code></a></p></td>
+<td><p>Gives the number of indices needed to address elements of this array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.real" title="dpctl.tensor.usm_ndarray.real"><code class="xref py py-obj docutils literal notranslate"><span class="pre">real</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.shape" title="dpctl.tensor.usm_ndarray.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a></p></td>
 <td><p>Elements of the shape tuple give the lengths of the respective array dimensions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.size" title="dpctl.tensor.usm_ndarray.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.size" title="dpctl.tensor.usm_ndarray.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a></p></td>
 <td><p>Number of elements in the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.strides" title="dpctl.tensor.usm_ndarray.strides"><code class="xref py py-obj docutils literal notranslate"><span class="pre">strides</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.strides" title="dpctl.tensor.usm_ndarray.strides"><code class="xref py py-obj docutils literal notranslate"><span class="pre">strides</span></code></a></p></td>
 <td><p>Returns memory displacement in array elements, upon unit change of respective index.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.sycl_context" title="dpctl.tensor.usm_ndarray.sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_context</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.sycl_context" title="dpctl.tensor.usm_ndarray.sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_context</span></code></a></p></td>
 <td><p>Returns <cite>dpctl.SyclContext</cite> object to which USM data is bound.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.sycl_device" title="dpctl.tensor.usm_ndarray.sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_device</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.sycl_device" title="dpctl.tensor.usm_ndarray.sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_device</span></code></a></p></td>
 <td><p>Returns <cite>dpctl.SyclDevice</cite> object on which USM data was allocated.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.sycl_queue" title="dpctl.tensor.usm_ndarray.sycl_queue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_queue</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.sycl_queue" title="dpctl.tensor.usm_ndarray.sycl_queue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_queue</span></code></a></p></td>
 <td><p>Returns <cite>dpctl.SyclQueue</cite> object associated with USM data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.usm_data" title="dpctl.tensor.usm_ndarray.usm_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">usm_data</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.usm_data" title="dpctl.tensor.usm_ndarray.usm_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">usm_data</span></code></a></p></td>
 <td><p>Gives USM memory object underlying usm_array instance.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.usm_type" title="dpctl.tensor.usm_ndarray.usm_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">usm_type</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.usm_type" title="dpctl.tensor.usm_ndarray.usm_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">usm_type</span></code></a></p></td>
 <td><p>USM type of underlying memory.</p></td>
 </tr>
 </tbody>
@@ -240,6 +243,11 @@ MemoryUSM* buffer is used for buffer.</p>
 <span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">itemsize</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.itemsize" title="Permalink to this definition"></a></dt>
 <dd><p>Size of array element in bytes.</p>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.mT">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">mT</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.mT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.nbytes">

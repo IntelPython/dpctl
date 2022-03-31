@@ -34,6 +34,7 @@ Attributes
 .. autoattribute:: dpctl.tensor.usm_ndarray.flags
 .. autoattribute:: dpctl.tensor.usm_ndarray.imag
 .. autoattribute:: dpctl.tensor.usm_ndarray.itemsize
+.. autoattribute:: dpctl.tensor.usm_ndarray.mT
 .. autoattribute:: dpctl.tensor.usm_ndarray.nbytes
 .. autoattribute:: dpctl.tensor.usm_ndarray.ndim
 .. autoattribute:: dpctl.tensor.usm_ndarray.real
