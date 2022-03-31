@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.13.0dev0+28.gc8cd1a2 documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.13.0dev0+32.g3c2ee3f4 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+28.gc8cd1a2
+                0.13.0dev0+32.g3c2ee3f4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -98,6 +98,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
 
+<span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 
@@ -311,11 +312,7 @@
 
 <div class="viewcode-block" id="roll"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.roll">[docs]</a><span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    roll(</span>
-<span class="sd">        X: usm_ndarray,</span>
-<span class="sd">        shift: int or tuple or list,</span>
-<span class="sd">        axes: int or tuple or list</span>
-<span class="sd">    ) -&gt; usm_ndarray</span>
+<span class="sd">    roll(X: usm_ndarray, shift: int or tuple or list, axes: int or tuple or list) -&gt; usm_ndarray</span>
 
 <span class="sd">    Rolls array elements along a specified axis.</span>
 <span class="sd">    Array elements that roll beyond the last position are re-introduced</span>
@@ -335,26 +332,26 @@
     <span class="n">shifts</span> <span class="o">=</span> <span class="p">{</span><span class="n">ax</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">)}</span>
     <span class="k">for</span> <span class="n">sh</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">broadcasted</span><span class="p">:</span>
         <span class="n">shifts</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="o">+=</span> <span class="n">sh</span>
-    <span class="n">rolls</span> <span class="o">=</span> <span class="p">[((</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)),)]</span> <span class="o">*</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">rolls</span> <span class="o">=</span> <span class="p">[((</span><span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[:],</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[:]),)]</span> <span class="o">*</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span>
     <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">offset</span> <span class="ow">in</span> <span class="n">shifts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">offset</span> <span class="o">%=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="ow">or</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">offset</span><span class="p">:</span>
             <span class="c1"># (original, result), (original, result)</span>
             <span class="n">rolls</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="n">offset</span><span class="p">),</span> <span class="nb">slice</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="kc">None</span><span class="p">)),</span>
-                <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="o">-</span><span class="n">offset</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="p">)),</span>
+                <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[:</span><span class="o">-</span><span class="n">offset</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="n">offset</span><span class="p">:]),</span>
+                <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="o">-</span><span class="n">offset</span><span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[:</span><span class="n">offset</span><span class="p">]),</span>
             <span class="p">)</span>
 
     <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="n">hev_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">indices</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">rolls</span><span class="p">):</span>
         <span class="n">arr_index</span><span class="p">,</span> <span class="n">res_index</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">indices</span><span class="p">)</span>
-        <span class="n">hev</span><span class="p">,</span> <span class="n">ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+        <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
             <span class="n">src</span><span class="o">=</span><span class="n">X</span><span class="p">[</span><span class="n">arr_index</span><span class="p">],</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">[</span><span class="n">res_index</span><span class="p">],</span> <span class="n">queue</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">sycl_queue</span>
         <span class="p">)</span>
-        <span class="n">ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-        <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">hev_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hev</span><span class="p">)</span>
 
-    <span class="n">X</span><span class="o">.</span><span class="n">sycl_queue</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">hev_list</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res</span></div>
 </pre></div>
 
