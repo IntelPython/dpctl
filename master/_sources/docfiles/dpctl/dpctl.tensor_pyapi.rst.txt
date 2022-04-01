@@ -74,6 +74,8 @@ Array Manipulation
       - -> usm_ndarray Permute the axes (dimensions) of an array; returns the permuted array as a view.
     * - :func:`reshape()`
       - -> usm_ndarray Reshapes given usm_ndarray into new shape. Returns a view, if possible, a copy otherwise. Memory layout of the copy is controlled by order keyword.
+    * - :func:`roll()`
+      - -> usm_ndarray Rolls array elements along a specified axis.
     * - :func:`squeeze()`
       - -> usm_ndarray Removes singleton dimensions (axes) from X; returns a view, if possible, a copy otherwise, but with all or a subset of the dimensions of length 1 removed.
 

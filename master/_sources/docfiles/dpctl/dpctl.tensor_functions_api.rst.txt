@@ -29,4 +29,5 @@ Array Manipulation
 .. autofunction:: flip
 .. autofunction:: permute_dims
 .. autofunction:: reshape
+.. autofunction:: roll
 .. autofunction:: squeeze
