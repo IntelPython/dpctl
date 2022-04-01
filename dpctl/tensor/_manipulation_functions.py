@@ -15,12 +15,14 @@
 #  limitations under the License.
 
 
-from itertools import chain, repeat
+from itertools import chain, product, repeat
 
 import numpy as np
 from numpy.core.numeric import normalize_axis_tuple
 
+import dpctl
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as ti
 
 
 def _broadcast_strides(X_shape, X_strides, res_ndim):
@@ -228,3 +230,51 @@ def flip(X, axes=None):
             np.s_[::-1] if i in axes else np.s_[:] for i in range(X.ndim)
         )
     return X[indexer]
+
+
+def roll(X, shift, axes=None):
+    """
+    roll(X: usm_ndarray, shift: int or tuple or list,\
+         axes: int or tuple or list) -> usm_ndarray
+
+    Rolls array elements along a specified axis.
+    Array elements that roll beyond the last position are re-introduced
+    at the first position. Array elements that roll beyond the first position
+    are re-introduced at the last position.
+    returns an output array having the same data type as X and whose elements,
+    relative to X, are shifted.
+    """
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+    if axes is None:
+        return dpt.reshape(roll(dpt.reshape(X, X.size), shift, 0), X.shape)
+    axes = normalize_axis_tuple(axes, X.ndim, allow_duplicate=True)
+    broadcasted = np.broadcast(shift, axes)
+    if broadcasted.ndim > 1:
+        raise ValueError("'shift' and 'axis' should be scalars or 1D sequences")
+    shifts = {ax: 0 for ax in range(X.ndim)}
+    for sh, ax in broadcasted:
+        shifts[ax] += sh
+    rolls = [((np.s_[:], np.s_[:]),)] * X.ndim
+    for ax, offset in shifts.items():
+        offset %= X.shape[ax] or 1
+        if offset:
+            # (original, result), (original, result)
+            rolls[ax] = (
+                (np.s_[:-offset], np.s_[offset:]),
+                (np.s_[-offset:], np.s_[:offset]),
+            )
+
+    res = dpt.empty(
+        X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=X.sycl_queue
+    )
+    hev_list = []
+    for indices in product(*rolls):
+        arr_index, res_index = zip(*indices)
+        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=X[arr_index], dst=res[res_index], queue=X.sycl_queue
+        )
+        hev_list.append(hev)
+
+    dpctl.SyclEvent.wait_for(hev_list)
+    return res

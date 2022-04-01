@@ -641,3 +641,87 @@ def test_flip_multiple_axes(data):
     Y = dpt.flip(X, axes)
     Ynp = np.flip(Xnp, axes)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_roll_empty():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp = np.empty([])
+    X = dpt.asarray(Xnp, sycl_queue=q)
+
+    Y = dpt.roll(X, 1)
+    Ynp = np.roll(Xnp, 1)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+    pytest.raises(np.AxisError, dpt.roll, X, 1, 0)
+    pytest.raises(np.AxisError, dpt.roll, X, 1, 1)
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        [2, None],
+        [-2, None],
+        [2, 0],
+        [-2, 0],
+        [2, ()],
+        [11, 0],
+    ],
+)
+def test_roll_1d(data):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp = np.arange(10)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    sh, ax = data
+
+    Y = dpt.roll(X, sh, ax)
+    Ynp = np.roll(Xnp, sh, ax)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+    Y = dpt.roll(X, sh, ax)
+    Ynp = np.roll(Xnp, sh, ax)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        [1, None],
+        [1, 0],
+        [1, 1],
+        [1, ()],
+        # Roll multiple axes at once
+        [1, (0, 1)],
+        [(1, 0), (0, 1)],
+        [(-1, 0), (1, 0)],
+        [(0, 1), (0, 1)],
+        [(0, -1), (0, 1)],
+        [(1, 1), (0, 1)],
+        [(-1, -1), (0, 1)],
+        # Roll the same axis multiple times.
+        [1, (0, 0)],
+        [1, (1, 1)],
+        # Roll more than one turn in either direction.
+        [6, 1],
+        [-4, 1],
+    ],
+)
+def test_roll_2d(data):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xnp = np.arange(10).reshape(2, 5)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+    sh, ax = data
+
+    Y = dpt.roll(X, sh, ax)
+    Ynp = np.roll(Xnp, sh, ax)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))

@@ -31,6 +31,7 @@ from dpctl.tensor._manipulation_functions import (
     expand_dims,
     flip,
     permute_dims,
+    roll,
     squeeze,
 )
 from dpctl.tensor._reshape import reshape
@@ -45,6 +46,7 @@ __all__ = [
     "empty",
     "flip",
     "reshape",
+    "roll",
     "broadcast_arrays",
     "broadcast_to",
     "expand_dims",
