@@ -901,28 +901,40 @@ def test_reshape():
     A = dpt.usm_ndarray((0,), "i4")
     A1 = dpt.reshape(A, (0,))
     assert A1.shape == (0,)
-    A2 = dpt.reshape(
-        A,
-        (
-            2,
-            0,
-        ),
-    )
-    assert A2.shape == (
+    requested_shape = (
         2,
         0,
     )
-    A3 = dpt.reshape(A, (0, 2))
-    assert A3.shape == (
+    A2 = dpt.reshape(A, requested_shape)
+    assert A2.shape == requested_shape
+    requested_shape = (
         0,
         2,
     )
-    A4 = dpt.reshape(A, (1, 0, 2))
-    assert A4.shape == (
+    A3 = dpt.reshape(A, requested_shape)
+    assert A3.shape == requested_shape
+    requested_shape = (
         1,
         0,
         2,
     )
+    A4 = dpt.reshape(A, requested_shape)
+    assert A4.shape == requested_shape
+
+
+def test_reshape_copy_kwrd():
+    X = dpt.usm_ndarray((2, 3), "i4")
+    new_shape = (6,)
+    Z = dpt.reshape(X, new_shape, copy=True)
+    assert Z.shape == new_shape
+    assert Z.usm_data is not X.usm_data
+    X = dpt.usm_ndarray((3, 3), "i4")[::2, ::2]
+    new_shape = (4,)
+    with pytest.raises(ValueError):
+        Z = dpt.reshape(X, new_shape, copy=False)
+    with pytest.raises(ValueError):
+        invalid = Ellipsis
+        Z = dpt.reshape(X, new_shape, copy=invalid)
 
 
 def test_transpose():
