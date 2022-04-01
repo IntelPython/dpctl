@@ -247,7 +247,14 @@ def roll(X, shift, axes=None):
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
     if axes is None:
-        return dpt.reshape(roll(dpt.reshape(X, X.size), shift, 0), X.shape)
+        R = dpt.empty(
+            X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=X.sycl_queue
+        )
+        hev, _ = ti._copy_usm_ndarray_for_reshape(
+            src=X, dst=R, shift=shift, sycl_queue=X.sycl_queue
+        )
+        hev.wait()
+        return R
     axes = normalize_axis_tuple(axes, X.ndim, allow_duplicate=True)
     broadcasted = np.broadcast(shift, axes)
     if broadcasted.ndim > 1:
@@ -272,7 +279,7 @@ def roll(X, shift, axes=None):
     for indices in product(*rolls):
         arr_index, res_index = zip(*indices)
         hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=X[arr_index], dst=res[res_index], queue=X.sycl_queue
+            src=X[arr_index], dst=res[res_index], sycl_queue=X.sycl_queue
         )
         hev_list.append(hev)
 

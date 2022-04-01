@@ -396,6 +396,23 @@ public:
         return UsmNDArray_GetStrides(raw_ar);
     }
 
+    py::ssize_t get_size()
+    {
+        PyObject *raw_o = this->ptr();
+        PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
+
+        int ndim = UsmNDArray_GetNDim(raw_ar);
+        const py::ssize_t *shape = UsmNDArray_GetShape(raw_ar);
+
+        py::ssize_t nelems = 1;
+        for (int i = 0; i < ndim; ++i) {
+            nelems *= shape[i];
+        }
+
+        assert(nelems >= 0);
+        return nelems;
+    }
+
     std::pair<py::ssize_t, py::ssize_t> get_minmax_offsets()
     {
         PyObject *raw_o = this->ptr();

@@ -155,9 +155,11 @@ def _copy_overlapping(dst, src):
         order="C",
         buffer_ctor_kwargs={"queue": q},
     )
-    hcp1, cp1 = ti._copy_usm_ndarray_into_usm_ndarray(src=src, dst=tmp, queue=q)
+    hcp1, cp1 = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=src, dst=tmp, sycl_queue=q
+    )
     hcp2, cp2 = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=tmp, dst=dst, queue=q, depends=[cp1]
+        src=tmp, dst=dst, sycl_queue=q, depends=[cp1]
     )
     hcp2.wait()
     hcp1.wait()
@@ -171,7 +173,7 @@ def _copy_same_shape(dst, src):
         return
 
     hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=src, dst=dst, queue=dst.sycl_queue
+        src=src, dst=dst, sycl_queue=dst.sycl_queue
     )
     hev.wait()
 
