@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.13.0dev0+32.g3c2ee3f4 documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.13.0dev0+33.gcf470b6 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+32.g3c2ee3f4
+                0.13.0dev0+33.gcf470b6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -342,7 +342,7 @@
                 <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="o">-</span><span class="n">offset</span><span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[:</span><span class="n">offset</span><span class="p">]),</span>
             <span class="p">)</span>
 
-    <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
     <span class="n">hev_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">indices</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">rolls</span><span class="p">):</span>
         <span class="n">arr_index</span><span class="p">,</span> <span class="n">res_index</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">indices</span><span class="p">)</span>
