@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._reshape &mdash; Data-parallel Control (dpctl) 0.13.0dev0+28.g373596b2 documentation</title>
+  <title>dpctl.tensor._reshape &mdash; Data-parallel Control (dpctl) 0.13.0dev0+31.gac109a84 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+28.g373596b2
+                0.13.0dev0+31.gac109a84
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -152,7 +152,7 @@
     <span class="k">return</span> <span class="n">new_sts</span> <span class="k">if</span> <span class="n">valid</span> <span class="k">else</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="reshape"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.reshape">[docs]</a><span class="k">def</span> <span class="nf">reshape</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="reshape"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.reshape">[docs]</a><span class="k">def</span> <span class="nf">reshape</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    reshape(X: usm_ndarray, newshape: tuple, order=&quot;C&quot;) -&gt; usm_ndarray</span>
 
@@ -166,6 +166,11 @@
     <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Keyword &#39;order&#39; not recognized. Expecting &#39;C&#39; or &#39;F&#39;, got </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">copy</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Keyword &#39;copy&#39; not recognized. Expecting True, False, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;or None, got </span><span class="si">{</span><span class="n">copy</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
     <span class="n">newshape</span> <span class="o">=</span> <span class="p">[</span><span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">newshape</span><span class="p">]</span>
     <span class="n">negative_ones_count</span> <span class="o">=</span> <span class="mi">0</span>
@@ -186,7 +191,13 @@
         <span class="n">newsts</span> <span class="o">=</span> <span class="n">reshaped_strides</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">strides</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">newsts</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">newshape</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">newsts</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">copy_required</span> <span class="o">=</span> <span class="n">newsts</span> <span class="ow">is</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">copy_required</span> <span class="ow">and</span> <span class="p">(</span><span class="n">copy</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Reshaping the array requires a copy, but no copying was &quot;</span>
+            <span class="s2">&quot;requested by using copy=False&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">copy_required</span> <span class="ow">or</span> <span class="p">(</span><span class="n">copy</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">):</span>
         <span class="c1"># must perform a copy</span>
         <span class="n">flat_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
             <span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">size</span><span class="p">,),</span>
