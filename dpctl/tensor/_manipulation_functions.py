@@ -265,7 +265,9 @@ def roll(X, shift, axes=None):
                 (np.s_[-offset:], np.s_[:offset]),
             )
 
-    res = dpt.empty(X.shape, dtype=X.dtype, sycl_queue=X.sycl_queue)
+    res = dpt.empty(
+        X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=X.sycl_queue
+    )
     hev_list = []
     for indices in product(*rolls):
         arr_index, res_index = zip(*indices)
