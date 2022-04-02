@@ -11,9 +11,9 @@ jobs:
 
     env:
       DOWNLOAD_URL_PREFIX: https://github.com/intel/llvm/releases/download
-      DRIVER_PATH: 2021-WW50
-      OCLCPUEXP_FN: oclcpuexp-2021.13.11.0.23_rel.tar.gz
-      FPGAEMU_FN: fpgaemu-2021.13.11.0.23_rel.tar.gz
+      DRIVER_PATH: 2022-WW13
+      OCLCPUEXP_FN: oclcpuexp-2022.13.3.0.16_rel.tar.gz
+      FPGAEMU_FN: fpgaemu-2022.13.3.0.16_rel.tar.gz
       TBB_URL: https://github.com/oneapi-src/oneTBB/releases/download/v2021.5.0
       TBB_FN: oneapi-tbb-2021.5.0-lin.tgz
 
