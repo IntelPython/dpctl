@@ -1029,9 +1029,16 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     char *src_data = src.get_data();
     char *dst_data = dst.get_data();
 
+    std::vector<sycl::event> all_deps(depends.size() + 4);
+    all_deps.push_back(src_shape_copy_ev);
+    all_deps.push_back(dst_shape_copy_ev);
+    all_deps.push_back(src_strides_copy_ev);
+    all_deps.push_back(dst_strides_copy_ev);
+    all_deps.insert(std::end(all_deps), std::begin(depends), std::end(depends));
+
     sycl::event copy_for_reshape_event =
         fn(exec_q, shift, src_nelems, src_nd, dst_nd, packed_shapes_strides,
-           src_data, dst_data, depends);
+           src_data, dst_data, all_deps);
 
     exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_for_reshape_event);
