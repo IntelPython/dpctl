@@ -196,15 +196,15 @@ def test_sycl_timer():
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue creation of default device failed")
     timer = dpctl.SyclTimer()
-    m1 = dpctl_mem.MemoryUSMDevice(256 * 1024, queue=q)
-    m2 = dpctl_mem.MemoryUSMDevice(256 * 1024, queue=q)
+    m1 = dpctl_mem.MemoryUSMDevice(1024 * 1024, queue=q)
+    m2 = dpctl_mem.MemoryUSMDevice(1024 * 1024, queue=q)
     with timer(q):
         # device task
         m1.copy_from_device(m2)
-        # host task
-        [x**2 for x in range(1024)]
+        # host operation
+        [x**2 for x in range(128 * 1024)]
     host_dt, device_dt = timer.dt
-    assert host_dt > device_dt
+    assert host_dt > device_dt or (host_dt > 0 and device_dt >= 0)
     q_no_profiling = dpctl.SyclQueue()
     assert q_no_profiling.has_enable_profiling is False
     with pytest.raises(ValueError):
