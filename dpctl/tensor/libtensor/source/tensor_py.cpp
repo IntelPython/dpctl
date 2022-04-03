@@ -641,7 +641,9 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     py::ssize_t *shape_strides =
         sycl::malloc_device<py::ssize_t>(3 * nd, exec_q);
 
-    // TODO: handle failed allocation
+    if (shape_strides == nullptr) {
+        throw std::runtime_error("Unabled to allocate device memory");
+    }
 
     sycl::event copy_shape_ev =
         exec_q.copy<py::ssize_t>(shp_shape->data(), shape_strides, nd);
@@ -793,7 +795,7 @@ public:
     }
 };
 
-// TODO: define function type
+// define function type
 typedef sycl::event (*copy_for_reshape_fn_ptr_t)(
     sycl::queue,
     py::ssize_t, // shift
@@ -829,7 +831,7 @@ copy_for_reshape_generic_impl(sycl::queue q,
     return copy_for_reshape_ev;
 }
 
-// TODO: define static vector
+// define static vector
 static copy_for_reshape_fn_ptr_t
     copy_for_reshape_generic_dispatch_vector[_ns::num_types];
 
@@ -842,7 +844,7 @@ template <typename fnT, typename Ty> struct CopyForReshapeGenericFactory
     }
 };
 
-// TODO: define function to populate the vector
+// define function to populate the vector
 void init_copy_for_reshape_dispatch_vector(void)
 {
     using namespace dpctl::tensor::detail;
@@ -917,6 +919,17 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
             "Execution queue context is not the same as allocation contexts");
     }
 
+    if (src_nelems == 1) {
+        // handle special case of 1-element array
+        int src_elemsize = src.get_elemsize();
+        char *src_data = src.get_data();
+        char *dst_data = dst.get_data();
+        sycl::event copy_ev =
+            exec_q.copy<char>(src_data, dst_data, src_elemsize);
+        return std::make_pair(keep_args_alive(exec_q, {src, dst}, {copy_ev}),
+                              copy_ev);
+    }
+
     // dimensions may be different
     int src_nd = src.get_ndim();
     int dst_nd = dst.get_ndim();
@@ -930,6 +943,10 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
 
     py::ssize_t *packed_shapes_strides =
         sycl::malloc_device<py::ssize_t>(2 * (src_nd + dst_nd), exec_q);
+
+    if (packed_shapes_strides == nullptr) {
+        throw std::runtime_error("Unabled to allocate device memory");
+    }
 
     sycl::event src_shape_copy_ev =
         exec_q.copy<py::ssize_t>(src_shape, packed_shapes_strides, src_nd);
