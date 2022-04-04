@@ -417,24 +417,23 @@ TEST(TestDPCTLSyclQueueInterface, CheckFillNullQRef)
     uint64_t val128[2] = {0, 0};
     DPCTLSyclEventRef ERef = nullptr;
 
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Fill8(QRef, p, val, sizeof(val)));
+    ASSERT_FALSE(bool(ERef));
+
     ASSERT_NO_FATAL_FAILURE(ERef =
-                                DPCTLQueue_Fill8(QRef, p, val8, sizeof(val8)));
+                                DPCTLQueue_Fill16(QRef, p, val, sizeof(val)));
     ASSERT_FALSE(bool(ERef));
 
-    ASSERT_NO_FATAL_FAILURE(
-        ERef = DPCTLQueue_Fill16(QRef, p, val16, sizeof(val16)));
+    ASSERT_NO_FATAL_FAILURE(ERef =
+                                DPCTLQueue_Fill32(QRef, p, val, sizeof(val)));
     ASSERT_FALSE(bool(ERef));
 
-    ASSERT_NO_FATAL_FAILURE(
-        ERef = DPCTLQueue_Fill32(QRef, p, val32, sizeof(val32)));
+    ASSERT_NO_FATAL_FAILURE(ERef =
+                                DPCTLQueue_Fill64(QRef, p, val, sizeof(val)));
     ASSERT_FALSE(bool(ERef));
 
-    ASSERT_NO_FATAL_FAILURE(
-        ERef = DPCTLQueue_Fill64(QRef, p, val64, sizeof(val64)));
-    ASSERT_FALSE(bool(ERef));
-
-    ASSERT_NO_FATAL_FAILURE(
-        ERef = DPCTLQueue_Fill128(QRef, p, val128, sizeof(val128)));
+    ASSERT_NO_FATAL_FAILURE(ERef =
+                                DPCTLQueue_Fill128(QRef, p, val, sizeof(val)));
     ASSERT_FALSE(bool(ERef));
 }
 
