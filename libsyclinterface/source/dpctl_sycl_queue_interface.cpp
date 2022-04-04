@@ -399,7 +399,7 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
     return wrap(new event(e));
 }
 
-DPCTLSyclEventRef
+__dpctl_give DPCTLSyclEventRef
 DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                          __dpctl_keep const DPCTLSyclQueueRef QRef,
                          __dpctl_keep void **Args,
@@ -469,10 +469,11 @@ void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
     }
 }
 
-DPCTLSyclEventRef DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
-                                    void *Dest,
-                                    const void *Src,
-                                    size_t Count)
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                  void *Dest,
+                  const void *Src,
+                  size_t Count)
 {
     auto Q = unwrap(QRef);
     if (Q) {
@@ -492,9 +493,10 @@ DPCTLSyclEventRef DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
     }
 }
 
-DPCTLSyclEventRef DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
-                                      const void *Ptr,
-                                      size_t Count)
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
+                    const void *Ptr,
+                    size_t Count)
 {
     auto Q = unwrap(QRef);
     if (Q) {
@@ -521,10 +523,11 @@ DPCTLSyclEventRef DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
     }
 }
 
-DPCTLSyclEventRef DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
-                                       const void *Ptr,
-                                       size_t Count,
-                                       int Advice)
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
+                     const void *Ptr,
+                     size_t Count,
+                     int Advice)
 {
     auto Q = unwrap(QRef);
     if (Q) {
@@ -613,10 +616,11 @@ DPCTLQueue_SubmitBarrier(__dpctl_keep const DPCTLSyclQueueRef QRef)
     return DPCTLQueue_SubmitBarrierForEvents(QRef, nullptr, 0);
 }
 
-DPCTLSyclEventRef DPCTLQueue_Memset(__dpctl_keep const DPCTLSyclQueueRef QRef,
-                                    void *USMRef,
-                                    uint8_t Value,
-                                    size_t Count)
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Memset(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                  void *USMRef,
+                  uint8_t Value,
+                  size_t Count)
 {
     auto Q = unwrap(QRef);
     if (Q && USMRef) {
@@ -631,6 +635,138 @@ DPCTLSyclEventRef DPCTLQueue_Memset(__dpctl_keep const DPCTLSyclQueueRef QRef,
     }
     else {
         error_handler("QRef or USMRef passed to fill8 were NULL.", __FILE__,
+                      __func__, __LINE__);
+        return nullptr;
+    }
+};
+
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill8(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                 void *USMRef,
+                 uint8_t Value,
+                 size_t Count)
+{
+    auto Q = unwrap(QRef);
+    if (Q && USMRef) {
+        sycl::event ev;
+        try {
+            ev = Q->fill<uint8_t>(USMRef, Value, Count);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+        return wrap(new event(ev));
+    }
+    else {
+        error_handler("QRef or USMRef passed to fill8 were NULL.", __FILE__,
+                      __func__, __LINE__);
+        return nullptr;
+    }
+}
+
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill16(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                  void *USMRef,
+                  uint16_t Value,
+                  size_t Count)
+{
+    auto Q = unwrap(QRef);
+    if (Q && USMRef) {
+        sycl::event ev;
+        try {
+            ev = Q->fill<uint16_t>(USMRef, Value, Count);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+        return wrap(new event(ev));
+    }
+    else {
+        error_handler("QRef or USMRef passed to fill16 were NULL.", __FILE__,
+                      __func__, __LINE__);
+        return nullptr;
+    }
+}
+
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill32(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                  void *USMRef,
+                  uint32_t Value,
+                  size_t Count)
+{
+    auto Q = unwrap(QRef);
+    if (Q && USMRef) {
+        sycl::event ev;
+        try {
+            ev = Q->fill<uint32_t>(USMRef, Value, Count);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+        return wrap(new event(ev));
+    }
+    else {
+        error_handler("QRef or USMRef passed to fill32 were NULL.", __FILE__,
+                      __func__, __LINE__);
+        return nullptr;
+    }
+}
+
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill64(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                  void *USMRef,
+                  uint64_t Value,
+                  size_t Count)
+{
+    auto Q = unwrap(QRef);
+    if (Q && USMRef) {
+        sycl::event ev;
+        try {
+            ev = Q->fill<uint64_t>(USMRef, Value, Count);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+        return wrap(new event(ev));
+    }
+    else {
+        error_handler("QRef or USMRef passed to fill64 were NULL.", __FILE__,
+                      __func__, __LINE__);
+        return nullptr;
+    }
+}
+
+namespace
+{
+typedef struct complex
+{
+    uint64_t real;
+    uint64_t imag;
+} coplexNumber;
+} // namespace
+
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                   void *USMRef,
+                   uint64_t *Value,
+                   size_t Count)
+{
+    auto Q = unwrap(QRef);
+    if (Q && USMRef) {
+        sycl::event ev;
+        try {
+            coplexNumber Val;
+            Val.real = Value[0];
+            Val.imag = Value[1];
+            ev = Q->fill(USMRef, Val, Count);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+        return wrap(new event(ev));
+    }
+    else {
+        error_handler("QRef or USMRef passed to fill128 were NULL.", __FILE__,
                       __func__, __LINE__);
         return nullptr;
     }

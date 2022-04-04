@@ -452,6 +452,228 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckMemset)
     delete[] host_arr;
 }
 
+TEST(TestDPCTLSyclQueueInterface, CheckFillNullQRef)
+{
+    DPCTLSyclQueueRef QRef = nullptr;
+    void *p = nullptr;
+    uint8_t val8 = 0;
+    uint16_t val16 = 0;
+    uint32_t val32 = 0;
+    uint64_t val64 = 0;
+    uint64_t val128[2] = {0, 0};
+    DPCTLSyclEventRef ERef = nullptr;
+
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Fill8(QRef, p, val8, 1));
+    ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Fill16(QRef, p, val16, 1));
+    ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Fill32(QRef, p, val32, 1));
+    ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Fill64(QRef, p, val64, 1));
+    ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Fill128(QRef, p, val128, 1));
+    ASSERT_FALSE(bool(ERef));
+}
+
+TEST_P(TestDPCTLQueueMemberFunctions, CheckFill8)
+{
+    using T = uint8_t;
+    DPCTLSyclUSMRef p = nullptr;
+    DPCTLSyclEventRef ERef = nullptr;
+    T val = static_cast<T>(0xB);
+    size_t nelems = 256;
+    T *host_arr = new T[nelems];
+    size_t nbytes = nelems * sizeof(T);
+
+    ASSERT_FALSE(host_arr == nullptr);
+
+    ASSERT_NO_FATAL_FAILURE(p = DPCTLmalloc_device(nbytes, QRef));
+    ASSERT_FALSE(p == nullptr);
+
+    ASSERT_NO_FATAL_FAILURE(ERef =
+                                DPCTLQueue_Fill8(QRef, (void *)p, val, nelems));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+
+    ERef = nullptr;
+
+    ASSERT_NO_FATAL_FAILURE(ERef =
+                                DPCTLQueue_Memcpy(QRef, host_arr, p, nbytes));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(DPCTLfree_with_queue(p, QRef));
+
+    for (size_t i = 0; i < nelems; ++i) {
+        ASSERT_TRUE(host_arr[i] == val);
+    }
+    delete[] host_arr;
+}
+
+TEST_P(TestDPCTLQueueMemberFunctions, CheckFill16)
+{
+    using T = uint16_t;
+
+    DPCTLSyclUSMRef p = nullptr;
+    DPCTLSyclEventRef ERef = nullptr;
+    T val = static_cast<T>(0xAB);
+    size_t nelems = 256;
+    T *host_arr = new T[nelems];
+    size_t nbytes = nelems * sizeof(T);
+
+    ASSERT_FALSE(host_arr == nullptr);
+
+    ASSERT_NO_FATAL_FAILURE(p = DPCTLmalloc_device(nbytes, QRef));
+    ASSERT_FALSE(p == nullptr);
+
+    ASSERT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_Fill16(QRef, (void *)p, val, nelems));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+
+    ERef = nullptr;
+
+    ASSERT_NO_FATAL_FAILURE(ERef =
+                                DPCTLQueue_Memcpy(QRef, host_arr, p, nbytes));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(DPCTLfree_with_queue(p, QRef));
+
+    for (size_t i = 0; i < nelems; ++i) {
+        ASSERT_TRUE(host_arr[i] == val);
+    }
+    delete[] host_arr;
+}
+
+TEST_P(TestDPCTLQueueMemberFunctions, CheckFill32)
+{
+    using T = uint32_t;
+
+    DPCTLSyclUSMRef p = nullptr;
+    DPCTLSyclEventRef ERef = nullptr;
+    T val = static_cast<T>(0xABCD);
+    size_t nelems = 256;
+    T *host_arr = new T[nelems];
+    size_t nbytes = nelems * sizeof(T);
+
+    ASSERT_FALSE(host_arr == nullptr);
+
+    ASSERT_NO_FATAL_FAILURE(p = DPCTLmalloc_device(nbytes, QRef));
+    ASSERT_FALSE(p == nullptr);
+
+    ASSERT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_Fill32(QRef, (void *)p, val, nelems));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+
+    ERef = nullptr;
+
+    ASSERT_NO_FATAL_FAILURE(ERef =
+                                DPCTLQueue_Memcpy(QRef, host_arr, p, nbytes));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(DPCTLfree_with_queue(p, QRef));
+
+    for (size_t i = 0; i < nelems; ++i) {
+        ASSERT_TRUE(host_arr[i] == val);
+    }
+    delete[] host_arr;
+}
+
+TEST_P(TestDPCTLQueueMemberFunctions, CheckFill64)
+{
+    using T = uint64_t;
+
+    DPCTLSyclUSMRef p = nullptr;
+    DPCTLSyclEventRef ERef = nullptr;
+    T val = static_cast<T>(0xABCDEF73);
+    size_t nelems = 256;
+    T *host_arr = new T[nelems];
+    size_t nbytes = nelems * sizeof(T);
+
+    ASSERT_FALSE(host_arr == nullptr);
+
+    ASSERT_NO_FATAL_FAILURE(p = DPCTLmalloc_device(nbytes, QRef));
+    ASSERT_FALSE(p == nullptr);
+
+    ASSERT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_Fill64(QRef, (void *)p, val, nelems));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+
+    ERef = nullptr;
+
+    ASSERT_NO_FATAL_FAILURE(ERef =
+                                DPCTLQueue_Memcpy(QRef, host_arr, p, nbytes));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(DPCTLfree_with_queue(p, QRef));
+
+    for (size_t i = 0; i < nelems; ++i) {
+        ASSERT_TRUE(host_arr[i] == val);
+    }
+    delete[] host_arr;
+}
+
+namespace
+{
+struct value128_t
+{
+    uint64_t first;
+    uint64_t second;
+
+    value128_t() : first(0), second(0) {}
+    value128_t(uint64_t v0, uint64_t v1) : first(v0), second(v1) {}
+};
+
+static_assert(sizeof(value128_t) == 2 * sizeof(uint64_t));
+} // namespace
+
+TEST_P(TestDPCTLQueueMemberFunctions, CheckFill128)
+{
+    using T = value128_t;
+
+    DPCTLSyclUSMRef p = nullptr;
+    DPCTLSyclEventRef ERef = nullptr;
+    T val{static_cast<uint64_t>(0xABCDEF73), static_cast<uint64_t>(0x3746AF05)};
+    size_t nelems = 256;
+    T *host_arr = new T[nelems];
+    size_t nbytes = nelems * sizeof(T);
+
+    ASSERT_FALSE(host_arr == nullptr);
+
+    ASSERT_NO_FATAL_FAILURE(p = DPCTLmalloc_device(nbytes, QRef));
+    ASSERT_FALSE(p == nullptr);
+
+    ASSERT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_Fill128(QRef, (void *)p,
+                                  reinterpret_cast<uint64_t *>(&val), nelems));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+
+    ERef = nullptr;
+
+    ASSERT_NO_FATAL_FAILURE(ERef =
+                                DPCTLQueue_Memcpy(QRef, host_arr, p, nbytes));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(DPCTLfree_with_queue(p, QRef));
+
+    for (size_t i = 0; i < nelems; ++i) {
+        ASSERT_TRUE(host_arr[i].first == val.first);
+        ASSERT_TRUE(host_arr[i].second == val.second);
+    }
+    delete[] host_arr;
+}
+
 INSTANTIATE_TEST_SUITE_P(
     DPCTLQueueMemberFuncTests,
     TestDPCTLQueueMemberFunctions,
