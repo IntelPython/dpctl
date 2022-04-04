@@ -385,4 +385,89 @@ DPCTLSyclEventRef DPCTLQueue_SubmitBarrierForEvents(
     __dpctl_keep const DPCTLSyclEventRef *DepEvents,
     size_t NDepEvents);
 
+/*!
+ * @brief C-API wrapper for ``sycl::queue::fill``.
+ *
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
+ * @param    USMRef         An USM pointer to the memory to fill.
+ * @param    Value          A value to fill.
+ * @param    Count          A number of uint8_t elements to fill.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::fill`` function.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+DPCTLSyclEventRef DPCTLQueue_Fill8(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                                   void *USMRef,
+                                   uint8_t Value,
+                                   size_t Count);
+
+/*!
+ * @brief C-API wrapper for ``sycl::queue::fill``.
+ *
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
+ * @param    USMRef         An USM pointer to the memory to fill.
+ * @param    Value          A value to fill.
+ * @param    Count          A number of uint16_t elements to fill.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::fill`` function.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+DPCTLSyclEventRef DPCTLQueue_Fill16(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                                    void *USMRef,
+                                    uint16_t Value,
+                                    size_t Count);
+
+/*!
+ * @brief C-API wrapper for ``sycl::queue::fill``.
+ *
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
+ * @param    USMRef         An USM pointer to the memory to fill.
+ * @param    Value          A value to fill.
+ * @param    Count          A number of uint32_t elements to fill.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::fill`` function.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+DPCTLSyclEventRef DPCTLQueue_Fill32(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                                    void *USMRef,
+                                    uint32_t Value,
+                                    size_t Count);
+
+/*!
+ * @brief C-API wrapper for ``sycl::queue::fill``.
+ *
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
+ * @param    USMRef         An USM pointer to the memory to fill.
+ * @param    Value          A value to fill.
+ * @param    Count          A number of uint64_t elements to fill.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::fill`` function.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+DPCTLSyclEventRef DPCTLQueue_Fill64(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                                    void *USMRef,
+                                    uint64_t Value,
+                                    size_t Count);
+
+/*!
+ * @brief C-API wrapper for ``sycl::queue::fill``.
+ *
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
+ * @param    USMRef         An USM pointer to the memory to fill.
+ * @param    Value          A value to fill.
+ * @param    Count          A number of 128-bit elements to fill.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::fill`` function.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+DPCTLSyclEventRef DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                                     void *USMRef,
+                                     uint64_t *Value,
+                                     size_t Count);
+
 DPCTL_C_EXTERN_C_END
