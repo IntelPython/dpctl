@@ -407,6 +407,37 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckMemOpsNullPtr)
     }
 }
 
+TEST(TestDPCTLSyclQueueInterface, CheckFillNullQRef)
+{
+    DPCTLSyclQueueRef QRef = nullptr;
+    void *p = nullptr;
+    uint8_t val8 = 0;
+    uint16_t val16 = 0;
+    uint32_t val32 = 0;
+    uint64_t val128[2] = {0, 0};
+    DPCTLSyclEventRef ERef = nullptr;
+
+    ASSERT_NO_FATAL_FAILURE(ERef =
+                                DPCTLQueue_Fill8(QRef, p, val8, sizeof(val8)));
+    ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_Fill16(QRef, p, val16, sizeof(val16)));
+    ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_Fill32(QRef, p, val32, sizeof(val32)));
+    ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_Fill64(QRef, p, val64, sizeof(val64)));
+    ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_Fill128(QRef, p, val128, sizeof(val128)));
+    ASSERT_FALSE(bool(ERef));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     DPCTLQueueMemberFuncTests,
     TestDPCTLQueueMemberFunctions,
