@@ -614,7 +614,7 @@ DPCTLQueue_SubmitBarrier(__dpctl_keep const DPCTLSyclQueueRef QRef)
 }
 
 DPCTLSyclEventRef DPCTLQueue_Fill8(__dpctl_keep const DPCTLSyclQueueRef QRef,
-                                   DPCTLSyclUSMRef *USMRef,
+                                   void *USMRef,
                                    uint8_t Value,
                                    size_t Count)
 {
@@ -659,6 +659,7 @@ DPCTLSyclEventRef DPCTLQueue_Fill16(__dpctl_keep const DPCTLSyclQueueRef QRef,
     }
 }
 
+#if 0
 DPCTLSyclEventRef DPCTLQueue_Fill32(__dpctl_keep const DPCTLSyclQueueRef QRef,
                                     void *USMRef,
                                     uint32_t Value,
@@ -739,3 +740,4 @@ DPCTLSyclEventRef DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
         return nullptr;
     }
 }
+#endif
