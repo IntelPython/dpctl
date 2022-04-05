@@ -464,10 +464,11 @@ DPCTLSyclEventRef DPCTLQueue_Fill64(__dpctl_keep const DPCTLSyclQueueRef QRef,
  *           ``sycl::queue::fill`` function.
  * @ingroup QueueInterface
  */
+/*
 DPCTL_API
 DPCTLSyclEventRef DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
                                      void *USMRef,
                                      uint64_t *Value,
                                      size_t Count);
-
+*/
 DPCTL_C_EXTERN_C_END

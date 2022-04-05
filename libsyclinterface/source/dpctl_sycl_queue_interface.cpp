@@ -622,7 +622,7 @@ DPCTLSyclEventRef DPCTLQueue_Fill8(__dpctl_keep const DPCTLSyclQueueRef QRef,
     if (Q && USMRef) {
         sycl::event ev;
         try {
-            ev = Q->memset(USMRef, Value, Count);
+            ev = Q->memset(USMRef, static_cast<int>(Value), Count);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
@@ -705,11 +705,16 @@ DPCTLSyclEventRef DPCTLQueue_Fill64(__dpctl_keep const DPCTLSyclQueueRef QRef,
     }
 }
 
-typedef struct complex
+namespace
 {
-    uint64_t real;
-    uint64_t imag;
-} coplexNumber;
+struct value128_t
+{
+    uint64_t first;
+    uint64_t second;
+    value128_t(uint64_t v0, uint64_t v1) : first(v0), second(v1) {}
+};
+static_assert(sizeof(value128_t) == 2 * sizeof(uint64_t));
+} // namespace
 
 DPCTLSyclEventRef DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
                                      void *USMRef,
@@ -720,10 +725,8 @@ DPCTLSyclEventRef DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
     if (Q && USMRef) {
         sycl::event ev;
         try {
-            coplexNumber Val;
-            Val.real = Value[0];
-            Val.imag = Value[1];
-            ev = Q->fill(USMRef, Val, Count);
+            value128_t Val{Value[0], Value[1]};
+            ev = Q->fill<value128_t>(USMRef, Val, Count);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
