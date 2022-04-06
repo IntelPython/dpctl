@@ -1,0 +1,35 @@
+.. index:: pair: enum; DPCTLSyclAspectType
+.. _doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389:
+
+enum DPCTLSyclAspectType
+========================
+
+DPCTL device has an associated set of aspects which identify characteristics of the device.
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_sycl_enum_types.h>
+
+	enum DPCTLSyclAspectType
+	{
+	    :target:`host<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389ae877e773e9c04524711efca1ab2fffe9>`,
+	    :target:`cpu<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389ad37d39177a2822a622de94a7945206ee>`,
+	    :target:`gpu<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389add046367f1581025a76fc12565d01355>`,
+	    :target:`accelerator<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389aef163cd0eb7a65d13b27526dd1aaff38>`,
+	    :target:`custom<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389a696330762bb8080a67d7ef4bd19db845>`,
+	    :target:`fp16<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389a746708b029a8546deacdb4ac3c29f06f>`,
+	    :target:`fp64<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389ac8f21d8b3ffa5b16dcadf5af61dc9749>`,
+	    :target:`int64_base_atomics<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389aa0a00939c34369f1311a4072eb83d605>`,
+	    :target:`int64_extended_atomics<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389a0fac70e422ff97844fedf5478d555f08>`,
+	    :target:`image<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389a8a5db7fcf7037d194c940c851e01ffa0>`,
+	    :target:`online_compiler<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389aa130cfdb8a62808080b61c4ddd795e1e>`,
+	    :target:`online_linker<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389af9ea6d316f030b5003729c1be981035c>`,
+	    :target:`queue_profiling<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389a5c9ca7a4d0c864950f773ee86d19105c>`,
+	    :target:`usm_device_allocations<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389a9ed63929b12128a61a6d4066b4de8364>`,
+	    :target:`usm_host_allocations<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389aa29fa8e1b2b9250b22c14ba4423e0da9>`,
+	    :target:`usm_shared_allocations<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389ac9129a99e643d379ab61dc2bfaf5d632>`,
+	    :target:`usm_restricted_shared_allocations<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389abe3d4dc3ff8ce2f0a3c42119fe073bfd>`,
+	    :target:`usm_system_allocations<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389a4f236ece53a3c1a3081bc3f5eaaabda0>`,
+	};
+
