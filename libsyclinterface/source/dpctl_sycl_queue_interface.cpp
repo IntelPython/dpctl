@@ -613,10 +613,10 @@ DPCTLQueue_SubmitBarrier(__dpctl_keep const DPCTLSyclQueueRef QRef)
     return DPCTLQueue_SubmitBarrierForEvents(QRef, nullptr, 0);
 }
 
-DPCTLSyclEventRef DPCTLQueue_Fill8(__dpctl_keep const DPCTLSyclQueueRef QRef,
-                                   void *USMRef,
-                                   uint8_t Value,
-                                   size_t Count)
+DPCTLSyclEventRef DPCTLQueue_Memset(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                                    void *USMRef,
+                                    uint8_t Value,
+                                    size_t Count)
 {
     auto Q = unwrap(QRef);
     if (Q && USMRef) {
@@ -635,109 +635,3 @@ DPCTLSyclEventRef DPCTLQueue_Fill8(__dpctl_keep const DPCTLSyclQueueRef QRef,
         return nullptr;
     }
 }
-
-DPCTLSyclEventRef DPCTLQueue_Fill16(__dpctl_keep const DPCTLSyclQueueRef QRef,
-                                    void *USMRef,
-                                    uint16_t Value,
-                                    size_t Count)
-{
-    auto Q = unwrap(QRef);
-    if (Q && USMRef) {
-        sycl::event ev;
-        try {
-            ev = Q->fill<uint16_t>(USMRef, Value, Count);
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-            return nullptr;
-        }
-        return wrap(new event(ev));
-    }
-    else {
-        error_handler("QRef or USMRef passed to fill16 were NULL.", __FILE__,
-                      __func__, __LINE__);
-        return nullptr;
-    }
-}
-
-#if 0
-DPCTLSyclEventRef DPCTLQueue_Fill32(__dpctl_keep const DPCTLSyclQueueRef QRef,
-                                    void *USMRef,
-                                    uint32_t Value,
-                                    size_t Count)
-{
-    auto Q = unwrap(QRef);
-    if (Q && USMRef) {
-        sycl::event ev;
-        try {
-            ev = Q->fill<uint32_t>(USMRef, Value, Count);
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-            return nullptr;
-        }
-        return wrap(new event(ev));
-    }
-    else {
-        error_handler("QRef or USMRef passed to fill32 were NULL.", __FILE__,
-                      __func__, __LINE__);
-        return nullptr;
-    }
-}
-
-DPCTLSyclEventRef DPCTLQueue_Fill64(__dpctl_keep const DPCTLSyclQueueRef QRef,
-                                    void *USMRef,
-                                    uint64_t Value,
-                                    size_t Count)
-{
-    auto Q = unwrap(QRef);
-    if (Q && USMRef) {
-        sycl::event ev;
-        try {
-            ev = Q->fill<uint64_t>(USMRef, Value, Count);
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-            return nullptr;
-        }
-        return wrap(new event(ev));
-    }
-    else {
-        error_handler("QRef or USMRef passed to fill64 were NULL.", __FILE__,
-                      __func__, __LINE__);
-        return nullptr;
-    }
-}
-
-namespace
-{
-struct value128_t
-{
-    uint64_t first;
-    uint64_t second;
-    value128_t(uint64_t v0, uint64_t v1) : first(v0), second(v1) {}
-};
-static_assert(sizeof(value128_t) == 2 * sizeof(uint64_t));
-} // namespace
-
-DPCTLSyclEventRef DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
-                                     void *USMRef,
-                                     uint64_t *Value,
-                                     size_t Count)
-{
-    auto Q = unwrap(QRef);
-    if (Q && USMRef) {
-        sycl::event ev;
-        try {
-            value128_t Val{Value[0], Value[1]};
-            ev = Q->fill<value128_t>(USMRef, Val, Count);
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-            return nullptr;
-        }
-        return wrap(new event(ev));
-    }
-    else {
-        error_handler("QRef or USMRef passed to fill128 were NULL.", __FILE__,
-                      __func__, __LINE__);
-        return nullptr;
-    }
-}
-#endif

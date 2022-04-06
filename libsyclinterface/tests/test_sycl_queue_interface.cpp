@@ -32,6 +32,7 @@
 #include "dpctl_sycl_event_interface.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
+#include "dpctl_sycl_usm_interface.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 
@@ -407,36 +408,49 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckMemOpsNullPtr)
     }
 }
 
-TEST(TestDPCTLSyclQueueInterface, CheckFillNullQRef)
+TEST(TestDPCTLSyclQueueInterface, CheckMemsetNullQRef)
 {
     DPCTLSyclQueueRef QRef = nullptr;
     void *p = nullptr;
     uint8_t val8 = 0;
-    uint16_t val16 = 0;
-    /*
-    uint32_t val32 = 0;
-    uint64_t val64 = 0;
-    uint64_t val128[2] = {0, 0};
-    */
     DPCTLSyclEventRef ERef = nullptr;
 
-    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Fill8(QRef, p, val8, 1));
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Memset(QRef, p, val8, 1));
     ASSERT_FALSE(bool(ERef));
+}
 
-    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Fill16(QRef, p, val16, 1));
-    ASSERT_FALSE(bool(ERef));
+TEST_P(TestDPCTLQueueMemberFunctions, CheckMemset)
+{
+    DPCTLSyclUSMRef p = nullptr;
+    DPCTLSyclEventRef ERef = nullptr;
+    uint8_t val = 73;
+    size_t nbytes = 256;
+    uint8_t *host_arr = new uint8_t[nbytes];
 
-    /*
-    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Fill32(QRef, p, val32, 1));
-    ASSERT_FALSE(bool(ERef));
+    ASSERT_FALSE(host_arr == nullptr);
 
-    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Fill64(QRef, p, val64, 1));
-    ASSERT_FALSE(bool(ERef));
+    ASSERT_NO_FATAL_FAILURE(p = DPCTLmalloc_device(nbytes, QRef));
+    ASSERT_FALSE(p == nullptr);
+
+    ASSERT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_Memset(QRef, (void *)p, val, nbytes));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+
+    ERef = nullptr;
 
     ASSERT_NO_FATAL_FAILURE(ERef =
-                                DPCTLQueue_Fill128(QRef, p, val128, 1));
-    ASSERT_FALSE(bool(ERef));
-    */
+                                DPCTLQueue_Memcpy(QRef, host_arr, p, nbytes));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(DPCTLfree_with_queue(p, QRef));
+
+    bool equal = true;
+    for (size_t i = 0; i < nbytes; ++i) {
+        ASSERT_TRUE(host_arr[i] == val);
+    }
+    delete[] host_arr;
 }
 
 INSTANTIATE_TEST_SUITE_P(
