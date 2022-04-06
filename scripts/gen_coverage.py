@@ -99,6 +99,7 @@ def run(
             "--pyargs",
             "dpctl",
             "-vv",
+            "--ignore=dpctl/tensor/libtensor/tests",
         ],
         cwd=setup_dir,
         shell=False,
