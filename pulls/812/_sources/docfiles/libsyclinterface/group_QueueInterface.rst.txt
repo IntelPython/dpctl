@@ -46,46 +46,6 @@ Overview
 	DPCTL_API void
 	:ref:`DPCTLQueue_Delete<doxid-d2/d22/group___queue_interface_1ga44557847663338a67f423a06ecf9192a>`(__dpctl_take :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
-	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	:ref:`DPCTLQueue_Fill128<doxid-d2/d22/group___queue_interface_1ga28dd96253176123c52ddc0e689c55925>`(
-		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
-		void* USMRef,
-		uint64_t* Value,
-		size_t Count
-		);
-
-	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	:ref:`DPCTLQueue_Fill16<doxid-d2/d22/group___queue_interface_1ga38ba499f347578a4d0d80fdc916f1cc3>`(
-		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
-		void* USMRef,
-		uint16_t Value,
-		size_t Count
-		);
-
-	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	:ref:`DPCTLQueue_Fill32<doxid-d2/d22/group___queue_interface_1ga9769cfe04a7aaea063da895085f15347>`(
-		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
-		void* USMRef,
-		uint32_t Value,
-		size_t Count
-		);
-
-	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	:ref:`DPCTLQueue_Fill64<doxid-d2/d22/group___queue_interface_1ga7a0a171af434c638daccdf7618dbb5cb>`(
-		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
-		void* USMRef,
-		uint64_t Value,
-		size_t Count
-		);
-
-	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	:ref:`DPCTLQueue_Fill8<doxid-d2/d22/group___queue_interface_1gaea57f21593935fa92703f1e2fd033d72>`(
-		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
-		void* USMRef,
-		uint8_t Value,
-		size_t Count
-		);
-
 	DPCTL_API :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`
 	:ref:`DPCTLQueue_GetBackend<doxid-d2/d22/group___queue_interface_1ga8c3629a8627e9748cdec34688f6ce908>`(__dpctl_keep :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
@@ -117,6 +77,14 @@ Overview
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
 		void* Dest,
 		const void* Src,
+		size_t Count
+		);
+
+	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	:ref:`DPCTLQueue_Memset<doxid-d2/d22/group___queue_interface_1gadf4c164773d3dcd680e378b9e7eb0a6e>`(
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		void* USMRef,
+		uint8_t Value,
 		size_t Count
 		);
 
@@ -359,251 +327,6 @@ Delete the pointer after casting it to sycl::queue.
 		- QRef
 
 		- A DPCTLSyclQueueRef pointer that gets deleted.
-
-.. index:: pair: function; DPCTLQueue_Fill128
-.. _doxid-d2/d22/group___queue_interface_1ga28dd96253176123c52ddc0e689c55925:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	DPCTLQueue_Fill128(
-		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
-		void* USMRef,
-		uint64_t* Value,
-		size_t Count
-		)
-
-C-API wrapper for ``sycl::queue::fill``.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- QRef
-
-		- An opaque pointer to the ``sycl::queue``.
-
-	*
-		- USMRef
-
-		- An USM pointer to the memory to fill.
-
-	*
-		- Value
-
-		- A value to fill.
-
-	*
-		- Count
-
-		- A number of 128-bit elements to fill.
-
-
-
-.. rubric:: Returns:
-
-An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::fill`` function.
-
-.. index:: pair: function; DPCTLQueue_Fill16
-.. _doxid-d2/d22/group___queue_interface_1ga38ba499f347578a4d0d80fdc916f1cc3:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	DPCTLQueue_Fill16(
-		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
-		void* USMRef,
-		uint16_t Value,
-		size_t Count
-		)
-
-C-API wrapper for ``sycl::queue::fill``.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- QRef
-
-		- An opaque pointer to the ``sycl::queue``.
-
-	*
-		- USMRef
-
-		- An USM pointer to the memory to fill.
-
-	*
-		- Value
-
-		- A value to fill.
-
-	*
-		- Count
-
-		- A number of uint16_t elements to fill.
-
-
-
-.. rubric:: Returns:
-
-An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::fill`` function.
-
-.. index:: pair: function; DPCTLQueue_Fill32
-.. _doxid-d2/d22/group___queue_interface_1ga9769cfe04a7aaea063da895085f15347:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	DPCTLQueue_Fill32(
-		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
-		void* USMRef,
-		uint32_t Value,
-		size_t Count
-		)
-
-C-API wrapper for ``sycl::queue::fill``.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- QRef
-
-		- An opaque pointer to the ``sycl::queue``.
-
-	*
-		- USMRef
-
-		- An USM pointer to the memory to fill.
-
-	*
-		- Value
-
-		- A value to fill.
-
-	*
-		- Count
-
-		- A number of uint32_t elements to fill.
-
-
-
-.. rubric:: Returns:
-
-An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::fill`` function.
-
-.. index:: pair: function; DPCTLQueue_Fill64
-.. _doxid-d2/d22/group___queue_interface_1ga7a0a171af434c638daccdf7618dbb5cb:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	DPCTLQueue_Fill64(
-		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
-		void* USMRef,
-		uint64_t Value,
-		size_t Count
-		)
-
-C-API wrapper for ``sycl::queue::fill``.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- QRef
-
-		- An opaque pointer to the ``sycl::queue``.
-
-	*
-		- USMRef
-
-		- An USM pointer to the memory to fill.
-
-	*
-		- Value
-
-		- A value to fill.
-
-	*
-		- Count
-
-		- A number of uint64_t elements to fill.
-
-
-
-.. rubric:: Returns:
-
-An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::fill`` function.
-
-.. index:: pair: function; DPCTLQueue_Fill8
-.. _doxid-d2/d22/group___queue_interface_1gaea57f21593935fa92703f1e2fd033d72:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
-	DPCTLQueue_Fill8(
-		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
-		void* USMRef,
-		uint8_t Value,
-		size_t Count
-		)
-
-C-API wrapper for ``sycl::queue::fill``.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- QRef
-
-		- An opaque pointer to the ``sycl::queue``.
-
-	*
-		- USMRef
-
-		- An USM pointer to the memory to fill.
-
-	*
-		- Value
-
-		- A value to fill.
-
-	*
-		- Count
-
-		- A number of uint8_t elements to fill.
-
-
-
-.. rubric:: Returns:
-
-An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::fill`` function.
 
 .. index:: pair: function; DPCTLQueue_GetBackend
 .. _doxid-d2/d22/group___queue_interface_1ga8c3629a8627e9748cdec34688f6ce908:
@@ -864,6 +587,55 @@ C-API wrapper for ``sycl::queue::memcpy``.
 .. rubric:: Returns:
 
 An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::memcpy`` function.
+
+.. index:: pair: function; DPCTLQueue_Memset
+.. _doxid-d2/d22/group___queue_interface_1gadf4c164773d3dcd680e378b9e7eb0a6e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	DPCTLQueue_Memset(
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		void* USMRef,
+		uint8_t Value,
+		size_t Count
+		)
+
+C-API wrapper for ``sycl::queue::memset``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to the ``sycl::queue``.
+
+	*
+		- USMRef
+
+		- An USM pointer to the memory to fill.
+
+	*
+		- Value
+
+		- A value to fill.
+
+	*
+		- Count
+
+		- A number of uint8_t elements to fill.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::fill`` function.
 
 .. index:: pair: function; DPCTLQueue_Prefetch
 .. _doxid-d2/d22/group___queue_interface_1gac30d3b463b68c5d0f2abdeb608c54aa3:
