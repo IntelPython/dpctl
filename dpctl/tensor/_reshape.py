@@ -19,6 +19,7 @@ import numpy as np
 
 import dpctl.tensor as dpt
 from dpctl.tensor._copy_utils import _copy_from_usm_ndarray_to_usm_ndarray
+from dpctl.tensor._tensor_impl import _copy_usm_ndarray_for_reshape
 
 
 def _make_unit_indexes(shape):
@@ -126,12 +127,17 @@ def reshape(X, newshape, order="C", copy=None):
             dtype=X.dtype,
             buffer=X.usm_type,
             buffer_ctor_kwargs={"queue": X.sycl_queue},
-            order=order,
         )
-        for i in range(X.size):
-            _copy_from_usm_ndarray_to_usm_ndarray(
-                flat_res[i], X[np.unravel_index(i, X.shape, order=order)]
+        if order == "C":
+            hev, _ = _copy_usm_ndarray_for_reshape(
+                src=X, dst=flat_res, shift=0, sycl_queue=X.sycl_queue
             )
+            hev.wait()
+        else:
+            for i in range(X.size):
+                _copy_from_usm_ndarray_to_usm_ndarray(
+                    flat_res[i], X[np.unravel_index(i, X.shape, order=order)]
+                )
         return dpt.usm_ndarray(
             tuple(newshape), dtype=X.dtype, buffer=flat_res, order=order
         )

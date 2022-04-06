@@ -85,7 +85,7 @@ def test_copy1d_c_contig(src_typestr, dst_typestr):
 
     X = dpt.asarray(Xnp, sycl_queue=q)
     Y = dpt.empty(Xnp.shape, dtype=dst_typestr, sycl_queue=q)
-    hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, queue=q)
+    hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, sycl_queue=q)
     hev.wait()
     Ynp = _force_cast(Xnp, dst_dt)
     assert are_close(Ynp, dpt.asnumpy(Y))
@@ -107,7 +107,9 @@ def test_copy1d_strided(src_typestr, dst_typestr):
     ):
         X = dpt.asarray(Xnp, sycl_queue=q)[s]
         Y = dpt.empty(X.shape, dtype=dst_typestr, sycl_queue=q)
-        hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, queue=q)
+        hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=X, dst=Y, sycl_queue=q
+        )
         hev.wait()
         Ynp = _force_cast(Xnp[s], dst_dt)
         assert are_close(Ynp, dpt.asnumpy(Y))
@@ -116,7 +118,7 @@ def test_copy1d_strided(src_typestr, dst_typestr):
     X = dpt.usm_ndarray((4096,), dtype=src_typestr, strides=(0,))
     X[0] = Xnp[0]
     Y = dpt.empty(X.shape, dtype=dst_typestr, sycl_queue=q)
-    hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, queue=q)
+    hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, sycl_queue=q)
     Ynp = _force_cast(np.broadcast_to(Xnp[0], X.shape), dst_dt)
     hev.wait()
     assert are_close(Ynp, dpt.asnumpy(Y))
@@ -137,7 +139,9 @@ def test_copy1d_strided2(src_typestr, dst_typestr):
     ):
         X = dpt.asarray(Xnp, sycl_queue=q)[s]
         Y = dpt.empty(X.shape, dtype=dst_typestr, sycl_queue=q)[::-1]
-        hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, queue=q)
+        hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=X, dst=Y, sycl_queue=q
+        )
         Ynp = _force_cast(Xnp[s], dst_dt)
         hev.wait()
         assert are_close(Ynp, dpt.asnumpy(Y))
@@ -169,15 +173,17 @@ def test_copy2d(src_typestr, dst_typestr, st1, sgn1, st2, sgn2):
         slice(None, None, st2 * sgn2),
     ]
     Y = dpt.empty((n1, n2), dtype=dst_dt)
-    hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, queue=q)
+    hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, sycl_queue=q)
     Ynp = _force_cast(Xnp, dst_dt)
     hev.wait()
     assert are_close(Ynp, dpt.asnumpy(Y))
     Yst = dpt.empty((2 * n1, n2), dtype=dst_dt)[::2, ::-1]
-    hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Yst, queue=q)
+    hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=X, dst=Yst, sycl_queue=q
+    )
     Y = dpt.empty((n1, n2), dtype=dst_dt)
     hev2, ev2 = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=Yst, dst=Y, queue=q, depends=[ev]
+        src=Yst, dst=Y, sycl_queue=q, depends=[ev]
     )
     Ynp = _force_cast(Xnp, dst_dt)
     hev2.wait()
@@ -216,15 +222,17 @@ def test_copy3d(src_typestr, dst_typestr, st1, sgn1, st2, sgn2, st3, sgn3):
         slice(None, None, st3 * sgn3),
     ]
     Y = dpt.empty((n1, n2, n3), dtype=dst_dt)
-    hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, queue=q)
+    hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, sycl_queue=q)
     Ynp = _force_cast(Xnp, dst_dt)
     hev.wait()
     assert are_close(Ynp, dpt.asnumpy(Y)), "1"
     Yst = dpt.empty((2 * n1, n2, n3), dtype=dst_dt)[::2, ::-1]
-    hev2, ev2 = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Yst, queue=q)
+    hev2, ev2 = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=X, dst=Yst, sycl_queue=q
+    )
     Y2 = dpt.empty((n1, n2, n3), dtype=dst_dt)
     hev3, ev3 = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=Yst, dst=Y2, queue=q, depends=[ev2]
+        src=Yst, dst=Y2, sycl_queue=q, depends=[ev2]
     )
     hev3.wait()
     hev2.wait()

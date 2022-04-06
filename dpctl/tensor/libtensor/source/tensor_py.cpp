@@ -38,6 +38,7 @@ namespace py = pybind11;
 
 template <typename srcT, typename dstT> class copy_cast_generic_kernel;
 template <typename srcT, typename dstT, int nd> class copy_cast_spec_kernel;
+template <typename Ty> class copy_for_reshape_generic_kernel;
 
 static dpctl::tensor::detail::usm_ndarray_types array_types;
 
@@ -327,11 +328,10 @@ void init_copy_and_cast_dispatch_tables(void)
 std::vector<py::ssize_t> c_contiguous_strides(int nd, const py::ssize_t *shape)
 {
     if (nd > 0) {
-        std::vector<py::ssize_t> c_strides(nd);
-        c_strides[nd - 1] = py::ssize_t(1);
-        for (int i = 1; i < nd; ++i) {
-            int ic = nd - i;
-            c_strides[ic - 1] = c_strides[ic] * shape[ic];
+        std::vector<py::ssize_t> c_strides(nd, 1);
+        for (int ic = nd - 1; ic > 0;) {
+            py::ssize_t next_v = c_strides[ic] * shape[ic];
+            c_strides[--ic] = next_v;
         }
         return c_strides;
     }
@@ -343,10 +343,10 @@ std::vector<py::ssize_t> c_contiguous_strides(int nd, const py::ssize_t *shape)
 std::vector<py::ssize_t> f_contiguous_strides(int nd, const py::ssize_t *shape)
 {
     if (nd > 0) {
-        std::vector<py::ssize_t> f_strides(nd);
-        f_strides[0] = py::ssize_t(1);
-        for (int i = 0; i < nd - 1; ++i) {
-            f_strides[i + 1] = f_strides[i] * shape[i];
+        std::vector<py::ssize_t> f_strides(nd, 1);
+        for (int i = 0; i < nd - 1;) {
+            py::ssize_t next_v = f_strides[i] * shape[i];
+            f_strides[++i] = next_v;
         }
         return f_strides;
     }
@@ -355,24 +355,26 @@ std::vector<py::ssize_t> f_contiguous_strides(int nd, const py::ssize_t *shape)
     }
 }
 
+template <std::size_t num>
 sycl::event keep_args_alive(sycl::queue q,
-                            py::object o1,
-                            py::object o2,
+                            const py::object (&py_objs)[num],
                             const std::vector<sycl::event> &depends = {})
 {
     sycl::event host_task_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
-        std::shared_ptr<py::handle> shp_1 = std::make_shared<py::handle>(o1);
-        std::shared_ptr<py::handle> shp_2 = std::make_shared<py::handle>(o2);
-        shp_1->inc_ref();
-        shp_2->inc_ref();
+        std::array<std::shared_ptr<py::handle>, num> shp_arr;
+        for (std::size_t i = 0; i < num; ++i) {
+            shp_arr[i] = std::make_shared<py::handle>(py_objs[i]);
+            shp_arr[i]->inc_ref();
+        }
         cgh.host_task([=]() {
             bool guard = (Py_IsInitialized() && !_Py_IsFinalizing());
             if (guard) {
                 PyGILState_STATE gstate;
                 gstate = PyGILState_Ensure();
-                shp_1->dec_ref();
-                shp_2->dec_ref();
+                for (std::size_t i = 0; i < num; ++i) {
+                    shp_arr[i]->dec_ref();
+                }
                 PyGILState_Release(gstate);
             }
         });
@@ -398,8 +400,10 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     // shapes must be the same
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
+
     bool shapes_equal(true);
     size_t src_nelems(1);
+
     for (int i = 0; i < src_nd; ++i) {
         src_nelems *= static_cast<size_t>(src_shape[i]);
         shapes_equal = shapes_equal && (src_shape[i] == dst_shape[i]);
@@ -413,9 +417,9 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
         return std::make_pair(sycl::event(), sycl::event());
     }
 
+    auto dst_offsets = dst.get_minmax_offsets();
     // destination must be ample enough to accomodate all elements
     {
-        auto dst_offsets = dst.get_minmax_offsets();
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if (range + 1 < src_nelems) {
@@ -450,10 +454,21 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
         }
     }
 
-    // TODO: check that arrays do not overlap, and concurrent copying is safe.
-    bool memory_overlap = false;
+    char *src_data = src.get_data();
+    char *dst_data = dst.get_data();
+
+    // check that arrays do not overlap, and concurrent copying is safe.
+    auto src_offsets = src.get_minmax_offsets();
+    int src_elem_size = src.get_elemsize();
+    int dst_elem_size = dst.get_elemsize();
+
+    bool memory_overlap =
+        ((dst_data - src_data > src_offsets.second * src_elem_size -
+                                    dst_offsets.first * dst_elem_size) &&
+         (src_data - dst_data > dst_offsets.second * dst_elem_size -
+                                    src_offsets.first * src_elem_size));
     if (memory_overlap) {
-        // TODO: could use a temporary
+        // TODO: could use a temporary, but this is done by the caller
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
@@ -468,15 +483,13 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
                           (dst_flags & USM_ARRAY_F_CONTIGUOUS));
     if (both_c_contig || both_f_contig) {
         if (src_type_id == dst_type_id) {
-            char *src_data = src.get_data();
-            char *dst_data = dst.get_data();
-            int src_elem_size = src.get_elemsize();
+
             sycl::event copy_ev = exec_q.memcpy(
                 dst_data, src_data, src_nelems * src_elem_size, depends);
 
             // make sure src and dst are not GC-ed before copy_ev is complete
-            return std::make_pair(keep_args_alive(exec_q, src, dst, {copy_ev}),
-                                  copy_ev);
+            return std::make_pair(
+                keep_args_alive(exec_q, {src, dst}, {copy_ev}), copy_ev);
         }
         // With contract_iter2 in place, there is no need to write
         // dedicated kernels for casting between contiguous arrays
@@ -562,9 +575,6 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
             const_cast<const py::ssize_t *>(simplified_dst_strides.data());
     }
 
-    char *src_data = src.get_data();
-    char *dst_data = dst.get_data();
-
     if (nd < 3) {
         if (nd == 1) {
             std::array<py::ssize_t, 1> shape_arr = {shape[0]};
@@ -580,7 +590,7 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
                 src_data, src_offset, dst_data, dst_offset, depends);
 
             return std::make_pair(
-                keep_args_alive(exec_q, src, dst, {copy_and_cast_1d_event}),
+                keep_args_alive(exec_q, {src, dst}, {copy_and_cast_1d_event}),
                 copy_and_cast_1d_event);
         }
         else if (nd == 2) {
@@ -596,7 +606,7 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
                 src_data, src_offset, dst_data, dst_offset, depends);
 
             return std::make_pair(
-                keep_args_alive(exec_q, src, dst, {copy_and_cast_2d_event}),
+                keep_args_alive(exec_q, {src, dst}, {copy_and_cast_2d_event}),
                 copy_and_cast_2d_event);
         }
         else if (nd == 0) { // case of a scalar
@@ -611,7 +621,7 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
                 src_data, src_offset, dst_data, dst_offset, depends);
 
             return std::make_pair(
-                keep_args_alive(exec_q, src, dst, {copy_and_cast_0d_event}),
+                keep_args_alive(exec_q, {src, dst}, {copy_and_cast_0d_event}),
                 copy_and_cast_0d_event);
         }
     }
@@ -630,6 +640,10 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     //   will force syncronization.
     py::ssize_t *shape_strides =
         sycl::malloc_device<py::ssize_t>(3 * nd, exec_q);
+
+    if (shape_strides == nullptr) {
+        throw std::runtime_error("Unabled to allocate device memory");
+    }
 
     sycl::event copy_shape_ev =
         exec_q.copy<py::ssize_t>(shp_shape->data(), shape_strides, nd);
@@ -712,8 +726,331 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     });
 
     return std::make_pair(
-        keep_args_alive(exec_q, src, dst, {copy_and_cast_generic_ev}),
+        keep_args_alive(exec_q, {src, dst}, {copy_and_cast_generic_ev}),
         copy_and_cast_generic_ev);
+}
+
+/* =========================== Copy for reshape ==============================
+ */
+
+template <typename Ty> class GenericCopyForReshapeFunctor
+{
+private:
+    py::ssize_t offset = 0;
+    py::ssize_t size = 1;
+    int src_nd = -1;
+    int dst_nd = -1;
+    // USM array of size 2*(src_nd + dst_nd)
+    //   [ src_shape; src_strides; dst_shape; dst_strides ]
+    const py::ssize_t *src_dst_shapes_and_strides = nullptr;
+    Ty *src_p = nullptr;
+    Ty *dst_p = nullptr;
+
+public:
+    GenericCopyForReshapeFunctor(py::ssize_t shift,
+                                 py::ssize_t nelems,
+                                 int src_ndim,
+                                 int dst_ndim,
+                                 const py::ssize_t *packed_shapes_and_strides,
+                                 char *src_ptr,
+                                 char *dst_ptr)
+        : offset(shift), size(nelems), src_nd(src_ndim), dst_nd(dst_ndim),
+          src_dst_shapes_and_strides(packed_shapes_and_strides),
+          src_p(reinterpret_cast<Ty *>(src_ptr)),
+          dst_p(reinterpret_cast<Ty *>(dst_ptr))
+    {
+    }
+
+    void operator()(sycl::id<1> wiid) const
+    {
+        py::ssize_t this_src_offset(0);
+        CIndexer_vector<py::ssize_t> src_indxr(src_nd);
+
+        src_indxr.get_displacement<const py::ssize_t *, const py::ssize_t *>(
+            static_cast<py::ssize_t>(wiid.get(0)),
+            const_cast<const py::ssize_t *>(
+                src_dst_shapes_and_strides), // src shape
+            const_cast<const py::ssize_t *>(src_dst_shapes_and_strides +
+                                            src_nd), // src strides
+            this_src_offset                          // modified by reference
+        );
+        const Ty *in = src_p + this_src_offset;
+
+        py::ssize_t this_dst_offset(0);
+        CIndexer_vector<py::ssize_t> dst_indxr(dst_nd);
+        py::ssize_t shifted_wiid =
+            (static_cast<py::ssize_t>(wiid.get(0)) + offset) % size;
+        shifted_wiid = (shifted_wiid >= 0) ? shifted_wiid : shifted_wiid + size;
+        dst_indxr.get_displacement<const py::ssize_t *, const py::ssize_t *>(
+            shifted_wiid,
+            const_cast<const py::ssize_t *>(src_dst_shapes_and_strides +
+                                            2 * src_nd), // dst shape
+            const_cast<const py::ssize_t *>(src_dst_shapes_and_strides +
+                                            2 * src_nd + dst_nd), // dst strides
+            this_dst_offset // modified by reference
+        );
+
+        Ty *out = dst_p + this_dst_offset;
+        *out = *in;
+    }
+};
+
+// define function type
+typedef sycl::event (*copy_for_reshape_fn_ptr_t)(
+    sycl::queue,
+    py::ssize_t, // shift
+    size_t,      // num_elements
+    int,
+    int,           // src_nd, dst_nd
+    py::ssize_t *, // packed shapes and strides
+    char *,        // src_data_ptr
+    char *,        // dst_data_ptr
+    const std::vector<sycl::event> &);
+
+template <typename Ty>
+sycl::event
+copy_for_reshape_generic_impl(sycl::queue q,
+                              py::ssize_t shift,
+                              size_t nelems,
+                              int src_nd,
+                              int dst_nd,
+                              py::ssize_t *packed_shapes_and_strides,
+                              char *src_p,
+                              char *dst_p,
+                              const std::vector<sycl::event> &depends)
+{
+    sycl::event copy_for_reshape_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.parallel_for<copy_for_reshape_generic_kernel<Ty>>(
+            sycl::range<1>(nelems),
+            GenericCopyForReshapeFunctor<Ty>(shift, nelems, src_nd, dst_nd,
+                                             packed_shapes_and_strides, src_p,
+                                             dst_p));
+    });
+
+    return copy_for_reshape_ev;
+}
+
+// define static vector
+static copy_for_reshape_fn_ptr_t
+    copy_for_reshape_generic_dispatch_vector[_ns::num_types];
+
+template <typename fnT, typename Ty> struct CopyForReshapeGenericFactory
+{
+    fnT get()
+    {
+        fnT f = copy_for_reshape_generic_impl<Ty>;
+        return f;
+    }
+};
+
+// define function to populate the vector
+void init_copy_for_reshape_dispatch_vector(void)
+{
+    using namespace dpctl::tensor::detail;
+
+    DispatchVectorBuilder<copy_for_reshape_fn_ptr_t,
+                          CopyForReshapeGenericFactory, num_types>
+        dvb;
+    dvb.populate_dispatch_vector(copy_for_reshape_generic_dispatch_vector);
+
+    return;
+}
+
+/*
+ * Copies src into dst (same data type) of different shapes by using flat
+ * iterations.
+ *
+ * Equivalent to the following loop:
+ *
+ * for i for range(src.size):
+ *     dst[np.multi_index(i, dst.shape)] = src[np.multi_index(i, src.shape)]
+ */
+std::pair<sycl::event, sycl::event>
+copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
+                             dpctl::tensor::usm_ndarray dst,
+                             py::ssize_t shift,
+                             sycl::queue exec_q,
+                             const std::vector<sycl::event> &depends = {})
+{
+    py::ssize_t src_nelems = src.get_size();
+    py::ssize_t dst_nelems = dst.get_size();
+
+    // Must have the same number of elements
+    if (src_nelems != dst_nelems) {
+        throw py::value_error(
+            "copy_usm_ndarray_for_reshape requires src and dst to "
+            "have the same number of elements.");
+    }
+
+    int src_typenum = src.get_typenum();
+    int dst_typenum = dst.get_typenum();
+
+    // typenames must be the same
+    if (src_typenum != dst_typenum) {
+        throw py::value_error(
+            "copy_usm_ndarray_for_reshape requires src and dst to "
+            "have the same type.");
+    }
+
+    if (src_nelems == 0) {
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
+    // destination must be ample enough to accomodate all elements
+    {
+        auto dst_offsets = dst.get_minmax_offsets();
+        py::ssize_t range =
+            static_cast<py::ssize_t>(dst_offsets.second - dst_offsets.first);
+        if (range + 1 < src_nelems) {
+            throw py::value_error(
+                "Destination array can not accomodate all the "
+                "elements of source array.");
+        }
+    }
+
+    // check same contexts
+    sycl::queue src_q = src.get_queue();
+    sycl::queue dst_q = dst.get_queue();
+
+    sycl::context exec_ctx = exec_q.get_context();
+    if (src_q.get_context() != exec_ctx || dst_q.get_context() != exec_ctx) {
+        throw py::value_error(
+            "Execution queue context is not the same as allocation contexts");
+    }
+
+    if (src_nelems == 1) {
+        // handle special case of 1-element array
+        int src_elemsize = src.get_elemsize();
+        char *src_data = src.get_data();
+        char *dst_data = dst.get_data();
+        sycl::event copy_ev =
+            exec_q.copy<char>(src_data, dst_data, src_elemsize);
+        return std::make_pair(keep_args_alive(exec_q, {src, dst}, {copy_ev}),
+                              copy_ev);
+    }
+
+    // dimensions may be different
+    int src_nd = src.get_ndim();
+    int dst_nd = dst.get_ndim();
+
+    const py::ssize_t *src_shape = src.get_shape_raw();
+    const py::ssize_t *dst_shape = dst.get_shape_raw();
+
+    int type_id = array_types.typenum_to_lookup_id(src_typenum);
+
+    auto fn = copy_for_reshape_generic_dispatch_vector[type_id];
+
+    py::ssize_t *packed_shapes_strides =
+        sycl::malloc_device<py::ssize_t>(2 * (src_nd + dst_nd), exec_q);
+
+    if (packed_shapes_strides == nullptr) {
+        throw std::runtime_error("Unabled to allocate device memory");
+    }
+
+    sycl::event src_shape_copy_ev =
+        exec_q.copy<py::ssize_t>(src_shape, packed_shapes_strides, src_nd);
+    sycl::event dst_shape_copy_ev = exec_q.copy<py::ssize_t>(
+        dst_shape, packed_shapes_strides + 2 * src_nd, dst_nd);
+
+    const py::ssize_t *src_strides = src.get_strides_raw();
+    sycl::event src_strides_copy_ev;
+    if (src_strides == nullptr) {
+        using shT = std::vector<py::ssize_t>;
+        int src_flags = src.get_flags();
+        std::shared_ptr<shT> contig_src_strides_shp;
+        if (src_flags & USM_ARRAY_C_CONTIGUOUS) {
+            contig_src_strides_shp =
+                std::make_shared<shT>(c_contiguous_strides(src_nd, src_shape));
+        }
+        else if (src_flags & USM_ARRAY_F_CONTIGUOUS) {
+            contig_src_strides_shp =
+                std::make_shared<shT>(f_contiguous_strides(src_nd, src_shape));
+        }
+        else {
+            sycl::event::wait({src_shape_copy_ev, dst_shape_copy_ev});
+            sycl::free(packed_shapes_strides, exec_q);
+            throw std::runtime_error(
+                "Invalid src array encountered: in copy_for_reshape function");
+        }
+        src_strides_copy_ev =
+            exec_q.copy<py::ssize_t>(contig_src_strides_shp->data(),
+                                     packed_shapes_strides + src_nd, src_nd);
+        exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(src_strides_copy_ev);
+            cgh.host_task([contig_src_strides_shp]() {
+                // Capturing shared pointer ensure it is freed after its data
+                // are copied into packed USM vector
+            });
+        });
+    }
+    else {
+        src_strides_copy_ev = exec_q.copy<py::ssize_t>(
+            src_strides, packed_shapes_strides + src_nd, src_nd);
+    }
+
+    const py::ssize_t *dst_strides = dst.get_strides_raw();
+    sycl::event dst_strides_copy_ev;
+    if (dst_strides == nullptr) {
+        using shT = std::vector<py::ssize_t>;
+        int dst_flags = dst.get_flags();
+        std::shared_ptr<shT> contig_dst_strides_shp;
+        if (dst_flags & USM_ARRAY_C_CONTIGUOUS) {
+            contig_dst_strides_shp =
+                std::make_shared<shT>(c_contiguous_strides(dst_nd, dst_shape));
+        }
+        else if (dst_flags & USM_ARRAY_F_CONTIGUOUS) {
+            contig_dst_strides_shp =
+                std::make_shared<shT>(f_contiguous_strides(dst_nd, dst_shape));
+        }
+        else {
+            sycl::event::wait(
+                {src_shape_copy_ev, dst_shape_copy_ev, src_strides_copy_ev});
+            sycl::free(packed_shapes_strides, exec_q);
+            throw std::runtime_error(
+                "Invalid dst array encountered: in copy_for_reshape function");
+        }
+        dst_strides_copy_ev = exec_q.copy<py::ssize_t>(
+            contig_dst_strides_shp->data(),
+            packed_shapes_strides + 2 * src_nd + dst_nd, dst_nd);
+        exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(dst_strides_copy_ev);
+            cgh.host_task([contig_dst_strides_shp]() {
+                // Capturing shared pointer ensure it is freed after its data
+                // are copied into packed USM vector
+            });
+        });
+    }
+    else {
+        dst_strides_copy_ev = exec_q.copy<py::ssize_t>(
+            dst_strides, packed_shapes_strides + 2 * src_nd + dst_nd, dst_nd);
+    }
+
+    char *src_data = src.get_data();
+    char *dst_data = dst.get_data();
+
+    std::vector<sycl::event> all_deps(depends.size() + 4);
+    all_deps.push_back(src_shape_copy_ev);
+    all_deps.push_back(dst_shape_copy_ev);
+    all_deps.push_back(src_strides_copy_ev);
+    all_deps.push_back(dst_strides_copy_ev);
+    all_deps.insert(std::end(all_deps), std::begin(depends), std::end(depends));
+
+    sycl::event copy_for_reshape_event =
+        fn(exec_q, shift, src_nelems, src_nd, dst_nd, packed_shapes_strides,
+           src_data, dst_data, all_deps);
+
+    exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(copy_for_reshape_event);
+        auto ctx = exec_q.get_context();
+        cgh.host_task([packed_shapes_strides, ctx]() {
+            sycl::free(packed_shapes_strides, ctx);
+        });
+    });
+
+    return std::make_pair(
+        keep_args_alive(exec_q, {src, dst}, {copy_for_reshape_event}),
+        copy_for_reshape_event);
 }
 
 } // namespace
@@ -722,6 +1059,7 @@ PYBIND11_MODULE(_tensor_impl, m)
 {
 
     init_copy_and_cast_dispatch_tables();
+    init_copy_for_reshape_dispatch_vector();
     import_dpctl();
 
     // populate types constants for type dispatching functions
@@ -736,9 +1074,10 @@ PYBIND11_MODULE(_tensor_impl, m)
 
     m.def("_copy_usm_ndarray_into_usm_ndarray",
           &copy_usm_ndarray_into_usm_ndarray,
-          "Copies into usm_ndarray `src` from usm_ndarray `dst`.",
-          py::arg("src"), py::arg("dst"),
-          py::arg("queue") = py::cast<py::none>(Py_None),
+          "Copies from usm_ndarray `src` into usm_ndarray `dst` of the same "
+          "shape. "
+          "Returns a tuple of events: (host_task_event, compute_task_event)",
+          py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
     m.def(
@@ -749,4 +1088,12 @@ PYBIND11_MODULE(_tensor_impl, m)
         "smaller dimension for each array, which traverses the same elements "
         "as the original "
         "iterator, possibly in a different order.");
+
+    m.def("_copy_usm_ndarray_for_reshape", &copy_usm_ndarray_for_reshape,
+          "Copies from usm_ndarray `src` into usm_ndarray `dst` with the same "
+          "number of elements using underlying 'C'-contiguous order for flat "
+          "traversal with shift. "
+          "Returns a tuple of events: (ht_event, comp_event)",
+          py::arg("src"), py::arg("dst"), py::arg("shift"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 }
