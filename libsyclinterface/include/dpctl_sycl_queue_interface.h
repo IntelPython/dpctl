@@ -385,4 +385,21 @@ DPCTLSyclEventRef DPCTLQueue_SubmitBarrierForEvents(
     __dpctl_keep const DPCTLSyclEventRef *DepEvents,
     size_t NDepEvents);
 
+/*!
+ * @brief C-API wrapper for ``sycl::queue::memset``.
+ *
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
+ * @param    USMRef         An USM pointer to the memory to fill.
+ * @param    Value          A value to fill.
+ * @param    Count          A number of uint8_t elements to fill.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::fill`` function.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+DPCTLSyclEventRef DPCTLQueue_Memset(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                                    void *USMRef,
+                                    uint8_t Value,
+                                    size_t Count);
+
 DPCTL_C_EXTERN_C_END

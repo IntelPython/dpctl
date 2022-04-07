@@ -612,3 +612,26 @@ DPCTLQueue_SubmitBarrier(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     return DPCTLQueue_SubmitBarrierForEvents(QRef, nullptr, 0);
 }
+
+DPCTLSyclEventRef DPCTLQueue_Memset(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                                    void *USMRef,
+                                    uint8_t Value,
+                                    size_t Count)
+{
+    auto Q = unwrap(QRef);
+    if (Q && USMRef) {
+        sycl::event ev;
+        try {
+            ev = Q->memset(USMRef, static_cast<int>(Value), Count);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+        return wrap(new event(ev));
+    }
+    else {
+        error_handler("QRef or USMRef passed to fill8 were NULL.", __FILE__,
+                      __func__, __LINE__);
+        return nullptr;
+    }
+}
