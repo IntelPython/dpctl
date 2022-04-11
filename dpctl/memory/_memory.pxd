@@ -47,6 +47,7 @@ cdef public api class _Memory [object Py_MemoryObject, type Py_MemoryType]:
     cpdef copy_to_host(self, object obj=*)
     cpdef copy_from_host(self, object obj)
     cpdef copy_from_device(self, object obj)
+    cpdef memset(self, unsigned short val=*)
 
     cpdef bytes tobytes(self)
 

@@ -47,6 +47,7 @@ from dpctl._backend cimport (  # noqa: E211
     DPCTLQueue_Delete,
     DPCTLQueue_GetContext,
     DPCTLQueue_Memcpy,
+    DPCTLQueue_Memset,
     DPCTLSyclContextRef,
     DPCTLSyclDeviceRef,
     DPCTLSyclEventRef,
@@ -477,6 +478,27 @@ cdef class _Memory:
                 )
         else:
             raise TypeError
+
+    cpdef memset(self, unsigned short val = 0):
+        """
+        Populates this USM allocation with given value.
+        """
+        cdef DPCTLSyclEventRef ERef = NULL
+
+        ERef = DPCTLQueue_Memset(
+            self.queue.get_queue_ref(),
+            <void *>self.memory_ptr,  # destination
+            <int> val,
+            self.nbytes)
+
+        if ERef is not NULL:
+            DPCTLEvent_Wait(ERef)
+            DPCTLEvent_Delete(ERef)
+            return
+        else:
+            raise RuntimeError(
+                "Call to memset resulted in an error"
+            )
 
     cpdef bytes tobytes(self):
         """
