@@ -610,3 +610,28 @@ def test_memory_copy_between_contexts():
     copy_buf = bytearray(256)
     m1.copy_to_host(copy_buf)
     assert host_buf == copy_buf
+
+
+def test_memset():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default queue could not be created")
+
+    n = 4086
+    m_de = MemoryUSMDevice(n, queue=q)
+    m_sh = MemoryUSMShared(n, queue=q)
+    m_ho = MemoryUSMHost(n, queue=q)
+
+    host_buf = bytearray(n)
+    m_de.memset()
+    m_de.copy_to_host(host_buf)
+    assert host_buf == b"\x00" * n
+
+    m_sh.memset(ord("j"))
+    m_sh.copy_to_host(host_buf)
+    assert host_buf == b"j" * n
+
+    m_ho.memset(ord("7"))
+    m_ho.copy_to_host(host_buf)
+    assert host_buf == b"7" * n
