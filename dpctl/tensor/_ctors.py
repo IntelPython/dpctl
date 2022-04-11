@@ -19,6 +19,7 @@ import numpy as np
 import dpctl
 import dpctl.memory as dpm
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as ti
 import dpctl.utils
 from dpctl.tensor._device import normalize_queue_device
 
@@ -43,6 +44,11 @@ def _array_info_dispatch(obj):
         return _empty_tuple, complex, _host_set
     elif isinstance(obj, (list, tuple, range)):
         return _array_info_sequence(obj)
+    elif any(
+        isinstance(obj, s)
+        for s in [np.integer, np.floating, np.complexfloating, np.bool_]
+    ):
+        return _empty_tuple, obj.dtype, _host_set
     else:
         raise ValueError(type(obj))
 
@@ -256,13 +262,13 @@ def asarray(
             is created. `device` can be `None`, a oneAPI filter selector string,
             an instance of :class:`dpctl.SyclDevice` corresponding to a
             non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
             `dpctl.tensor.usm_array.device`. Default: `None`.
         usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
             allocation for the output array. For `usm_type=None` the allocation
             type is inferred from the input if `obj` has USM allocation, or
             `"device"` is used instead. Default: `None`.
-        sycl_queue: (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
+        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
@@ -290,17 +296,7 @@ def asarray(
     else:
         order = order[0].upper()
     # 4. Check that usm_type is None, or a valid value
-    if usm_type is not None:
-        if isinstance(usm_type, str):
-            if usm_type not in ["device", "shared", "host"]:
-                raise ValueError(
-                    f"Unrecognized value of usm_type={usm_type}, "
-                    "expected 'device', 'shared', 'host', or None."
-                )
-        else:
-            raise TypeError(
-                f"Expected usm_type to be a str or None, got {type(usm_type)}"
-            )
+    dpctl.utils.validate_usm_type(usm_type, allow_none=True)
     # 5. Normalize device/sycl_queue [keep it None if was None]
     if device is not None or sycl_queue is not None:
         sycl_queue = normalize_queue_device(
@@ -410,7 +406,7 @@ def empty(
             `dpctl.tensor.usm_array.device`. Default: `None`.
         usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
             allocation for the output array. Default: `"device"`.
-        sycl_queue: (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
+        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
@@ -425,16 +421,7 @@ def empty(
         )
     else:
         order = order[0].upper()
-    if isinstance(usm_type, str):
-        if usm_type not in ["device", "shared", "host"]:
-            raise ValueError(
-                f"Unrecognized value of usm_type={usm_type}, "
-                "expected 'device', 'shared', or 'host'."
-            )
-    else:
-        raise TypeError(
-            f"Expected usm_type to be of type str, got {type(usm_type)}"
-        )
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     res = dpt.usm_ndarray(
         sh,
@@ -443,4 +430,85 @@ def empty(
         order=order,
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
+    return res
+
+
+def _coerce_and_infer_dt(*args, dt):
+    nd, seq_dt, d = _array_info_sequence(args)
+    if d != _host_set or nd != (len(args),):
+        raise ValueError("start, stop and step must be Python scalars")
+    if dt is None:
+        dt = seq_dt
+    dt = np.dtype(dt)
+    if np.issubdtype(dt, np.integer):
+        return tuple(int(v) for v in args), dt
+    elif np.issubdtype(dt, np.floating):
+        return tuple(float(v) for v in args), dt
+    elif np.issubdtype(dt, np.complexfloating):
+        return tuple(complex(v) for v in args), dt
+    else:
+        raise ValueError(f"Data type {dt} is not supported")
+
+
+def arange(
+    start,
+    /,
+    stop=None,
+    step=1,
+    *,
+    dtype=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
+    """ arange(start, /, stop=None, step=1, *, dtype=None, \
+               device=None, usm_type="device", sycl_queue=None) -> usm_ndarray
+
+    Args:
+        start:
+        device (optional): array API concept of device where the output array
+            is created. `device` can be `None`, a oneAPI filter selector string,
+            an instance of :class:`dpctl.SyclDevice` corresponding to a
+            non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
+            `dpctl.tensor.usm_array.device`. Default: `None`.
+        usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+            allocation for the output array. Default: `'device'`.
+        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
+            for output array allocation and copying. `sycl_queue` and `device`
+            are exclusive keywords, i.e. use one or another. If both are
+            specified, a `TypeError` is raised unless both imply the same
+            underlying SYCL queue to be used. If both a `None`, the
+            `dpctl.SyclQueue()` is used for allocation and copying.
+            Default: `None`.
+    """
+    if stop is None:
+        stop = start
+        start = 0
+    (
+        start,
+        stop,
+        step,
+    ), dt = _coerce_and_infer_dt(start, stop, step, dt=dtype)
+    try:
+        tmp = 1 + (stop - start - 1) / step
+        if type(tmp) is complex and tmp.imag == 0.0:
+            tmp = tmp.real
+        sh = int(tmp)
+        if sh < 0:
+            sh = 0
+    except TypeError:
+        sh = 0
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    res = dpt.usm_ndarray(
+        (sh,),
+        dtype=dt,
+        buffer=usm_type,
+        order="C",
+        buffer_ctor_kwargs={"queue": sycl_queue},
+    )
+    _step = (start + step) - start
+    hev, _ = ti._linspace_step(start, _step, res, sycl_queue)
+    hev.wait()
     return res

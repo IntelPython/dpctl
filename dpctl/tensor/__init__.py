@@ -22,7 +22,7 @@
 """
 
 from dpctl.tensor._copy_utils import asnumpy, astype, copy, from_numpy, to_numpy
-from dpctl.tensor._ctors import asarray, empty
+from dpctl.tensor._ctors import arange, asarray, empty
 from dpctl.tensor._device import Device
 from dpctl.tensor._dlpack import from_dlpack
 from dpctl.tensor._manipulation_functions import (
@@ -40,6 +40,7 @@ from dpctl.tensor._usmarray import usm_ndarray
 __all__ = [
     "Device",
     "usm_ndarray",
+    "arange",
     "asarray",
     "astype",
     "copy",

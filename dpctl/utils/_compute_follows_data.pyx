@@ -81,3 +81,39 @@ def get_coerced_usm_type(usm_types):
             return None
         res = min(res, _m[t])
     return _k[res]
+
+
+def _validate_usm_type_allow_none(usm_type):
+    "Validates usm_type argument"
+    if usm_type is not None:
+        if isinstance(usm_type, str):
+            if usm_type not in ["device", "shared", "host"]:
+                raise ValueError(
+                    f"Unrecognized value of usm_type={usm_type}, "
+                    "expected 'device', 'shared', 'host', or None."
+                )
+        else:
+            raise TypeError(
+                f"Expected usm_type to be a str or None, got {type(usm_type)}"
+            )
+
+def _validate_usm_type_disallow_none(usm_type):
+    "Validates usm_type argument"
+    if isinstance(usm_type, str):
+        if usm_type not in ["device", "shared", "host"]:
+            raise ValueError(
+                f"Unrecognized value of usm_type={usm_type}, "
+                "expected 'device', 'shared', or 'host'."
+            )
+    else:
+        raise TypeError(
+            f"Expected usm_type to be a str, got {type(usm_type)}"
+        )
+
+
+def validate_usm_type(usm_type, allow_none=True):
+    "Validates usm_type argument"
+    if allow_none:
+        _validate_usm_type_allow_none(usm_type)
+    else:
+        _validate_usm_type_disallow_none(usm_type)

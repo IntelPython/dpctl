@@ -18,9 +18,14 @@
 A collection of utility functions.
 """
 
-from ._compute_follows_data import get_coerced_usm_type, get_execution_queue
+from ._compute_follows_data import (
+    get_coerced_usm_type,
+    get_execution_queue,
+    validate_usm_type,
+)
 
 __all__ = [
     "get_execution_queue",
     "get_coerced_usm_type",
+    "validate_usm_type",
 ]
