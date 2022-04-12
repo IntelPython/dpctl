@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>enum DPCTLSyclEventStatusType &mdash; Data-parallel Control (dpctl) 0.13.0dev0+53.g5478a329 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/target-highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="enum DPCTLSyclDeviceType" href="enum_DPCTLSyclDeviceType.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          </a>
+              <div class="version">
+                0.13.0dev0+53.g5478a329
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/UserManual.html">User Manual</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../dpctl/dpctl_pyapi.html">dpctl</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">libsyclinterface</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="group_ContextInterface.html">Context class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceInterface.html">Device class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceManager.html">Device class helper functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceSelectors.html">Device selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_EventInterface.html">Event class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_KernelInterface.html">Kernel class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_PlatformInterface.html">Platform class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_PlatformManager.html">Platform class helper functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_ProgramInterface.html">Program class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_QueueInterface.html">Queue class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_QueueManager.html">Queue class helper functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_Service.html">Service functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_USMInterface.html">USM Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="page_todo.html">Todo List</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="global.html">Global Namespace</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="enum_DPCTLKernelArgType.html">enum DPCTLKernelArgType</a></li>
+<li class="toctree-l3"><a class="reference internal" href="enum_DPCTLPartitionAffinityDomainType.html">enum DPCTLPartitionAffinityDomainType</a></li>
+<li class="toctree-l3"><a class="reference internal" href="enum_DPCTLQueuePropertyType.html">enum DPCTLQueuePropertyType</a></li>
+<li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclAspectType.html">enum DPCTLSyclAspectType</a></li>
+<li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclBackendType.html">enum DPCTLSyclBackendType</a></li>
+<li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclDeviceType.html">enum DPCTLSyclDeviceType</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">enum DPCTLSyclEventStatusType</a></li>
+<li class="toctree-l3"><a class="reference internal" href="global.html#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="global.html#detailed-documentation">Detailed Documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data-parallel Control (dpctl)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">libsyclinterface</a> &raquo;</li>
+          <li><a href="global.html">Global Namespace</a> &raquo;</li>
+      <li>enum DPCTLSyclEventStatusType</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/docfiles/libsyclinterface/enum_DPCTLSyclEventStatusType.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="enum-dpctlsycleventstatustype">
+<span id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021"></span><span id="index-0"></span><h1>enum DPCTLSyclEventStatusType<a class="headerlink" href="#enum-dpctlsycleventstatustype" title="Permalink to this headline"></a></h1>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;dpctl_sycl_enum_types.h&gt;</span><span class="cp"></span>
+
+<span class="k">enum</span> <span class="n">DPCTLSyclEventStatusType</span>
+<span class="p">{</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021a174675630eef09c2c94f4f3e2dec52af"><span></span><span class="n">DPCTL_UNKNOWN_STATUS</span></span><span></span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021abb000965a91d3761986706b52ee2d244"><span></span><span class="n">DPCTL_SUBMITTED</span></span><span></span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021aa4b3fb9838e7eadebe271de818335146"><span></span><span class="n">DPCTL_RUNNING</span></span><span></span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021a2e96163b1f35bc641b376233c54616e9"><span></span><span class="n">DPCTL_COMPLETE</span></span><span></span><span class="p">,</span>
+<span class="p">};</span></pre>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="enum_DPCTLSyclDeviceType.html" class="btn btn-neutral float-left" title="enum DPCTLSyclDeviceType" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
