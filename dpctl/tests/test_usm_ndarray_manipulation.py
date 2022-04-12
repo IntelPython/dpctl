@@ -759,3 +759,6 @@ def test_arange(dt):
         assert float(X[47]) == 47.0
     elif np.issubdtype(dt, np.complexfloating):
         assert complex(X[47]) == 47.0 + 0.0j
+
+    X1 = dpt.arange(4, dtype=dt, sycl_queue=q)
+    assert X1.shape == (4,)
