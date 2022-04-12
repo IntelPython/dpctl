@@ -37,6 +37,8 @@ Array Construction
 .. list-table::
     :widths: 25,50
 
+    * - :func:`arange()`
+      - -> usm_ndarray Args: start: device (optional): array API concept of device where the output array is created. `device` can be `None`, a oneAPI filter selector string, an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by `dpctl.tensor.usm_array.device`. Default: `None`.
     * - :func:`asarray()`
       - Converts `obj` to :class:`dpctl.tensor.usm_ndarray`.
     * - :func:`asnumpy()`

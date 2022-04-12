@@ -11,6 +11,7 @@ dpctl.tensor Functions
 Array Construction
 ------------------
 
+.. autofunction:: arange
 .. autofunction:: asarray
 .. autofunction:: asnumpy
 .. autofunction:: astype
