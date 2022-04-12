@@ -94,3 +94,20 @@ def test_get_coerced_usm_type():
     assert dpctl.utils.get_coerced_usm_type([]) is None
     with pytest.raises(TypeError):
         dpctl.utils.get_coerced_usm_type(dict())
+
+
+def validate_usm_type_arg():
+    _t = ["device", "shared", "host"]
+
+    for i in range(len(_t)):
+        dpctl.utils.validate_usm_type(_t[i])
+        dpctl.utils.validate_usm_type(_t[i], allow_none=False)
+    dpctl.utils.validate_usm_type(None, allow_none=True)
+    with pytest.raises(TypeError):
+        dpctl.utils.validate_usm_type(dict(), allow_none=True)
+    with pytest.raises(TypeError):
+        dpctl.utils.validate_usm_type(dict(), allow_none=False)
+    with pytest.raises(ValueError):
+        dpctl.utils.validate_usm_type("inv", allow_none=True)
+    with pytest.raises(ValueError):
+        dpctl.utils.validate_usm_type("inv", allow_none=False)
