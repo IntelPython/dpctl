@@ -22,7 +22,7 @@
 """
 
 from dpctl.tensor._copy_utils import asnumpy, astype, copy, from_numpy, to_numpy
-from dpctl.tensor._ctors import arange, asarray, empty
+from dpctl.tensor._ctors import arange, asarray, empty, zeros
 from dpctl.tensor._device import Device
 from dpctl.tensor._dlpack import from_dlpack
 from dpctl.tensor._manipulation_functions import (
@@ -45,6 +45,7 @@ __all__ = [
     "astype",
     "copy",
     "empty",
+    "zeros",
     "flip",
     "reshape",
     "roll",
