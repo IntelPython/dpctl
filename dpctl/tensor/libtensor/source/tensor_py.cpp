@@ -25,6 +25,7 @@
 #include <CL/sycl.hpp>
 #include <complex>
 #include <cstdint>
+#include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <thread>
@@ -39,6 +40,8 @@ namespace py = pybind11;
 template <typename srcT, typename dstT> class copy_cast_generic_kernel;
 template <typename srcT, typename dstT, int nd> class copy_cast_spec_kernel;
 template <typename Ty> class copy_for_reshape_generic_kernel;
+template <typename Ty> class linear_sequence_step_kernel;
+template <typename Ty> class linear_sequence_affine_kernel;
 
 static dpctl::tensor::detail::usm_ndarray_types array_types;
 
@@ -844,19 +847,6 @@ template <typename fnT, typename Ty> struct CopyForReshapeGenericFactory
     }
 };
 
-// define function to populate the vector
-void init_copy_for_reshape_dispatch_vector(void)
-{
-    using namespace dpctl::tensor::detail;
-
-    DispatchVectorBuilder<copy_for_reshape_fn_ptr_t,
-                          CopyForReshapeGenericFactory, num_types>
-        dvb;
-    dvb.populate_dispatch_vector(copy_for_reshape_generic_dispatch_vector);
-
-    return;
-}
-
 /*
  * Copies src into dst (same data type) of different shapes by using flat
  * iterations.
@@ -1053,6 +1043,299 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
         copy_for_reshape_event);
 }
 
+/* =========== Unboxing Python scalar =============== */
+
+template <typename T> T unbox_py_scalar(py::object o)
+{
+    return py::cast<T>(o);
+}
+
+template <> sycl::half unbox_py_scalar<sycl::half>(py::object o)
+{
+    float tmp = py::cast<float>(o);
+    return static_cast<sycl::half>(tmp);
+}
+
+/* ============= linear-sequence ==================== */
+
+typedef sycl::event (*lin_space_step_fn_ptr_t)(
+    sycl::queue,
+    size_t, // num_elements
+    py::object start,
+    py::object step,
+    char *, // dst_data_ptr
+    const std::vector<sycl::event> &);
+
+static lin_space_step_fn_ptr_t lin_space_step_dispatch_vector[_ns::num_types];
+
+template <typename Ty> class LinearSequenceStepFunctor
+{
+private:
+    Ty *p = nullptr;
+    Ty start_v;
+    Ty step_v;
+
+public:
+    LinearSequenceStepFunctor(char *dst_p, Ty v0, Ty dv)
+        : p(reinterpret_cast<Ty *>(dst_p)), start_v(v0), step_v(dv)
+    {
+    }
+
+    void operator()(sycl::id<1> wiid) const
+    {
+        auto i = wiid.get(0);
+        if constexpr (is_complex<Ty>::value) {
+            p[i] = Ty{start_v.real() + i * step_v.real(),
+                      start_v.imag() + i * step_v.imag()};
+        }
+        else {
+            p[i] = start_v + i * step_v;
+        }
+    }
+};
+
+template <typename Ty>
+sycl::event lin_space_step_impl(sycl::queue exec_q,
+                                size_t nelems,
+                                py::object start,
+                                py::object step,
+                                char *array_data,
+                                const std::vector<sycl::event> &depends)
+{
+    Ty start_v;
+    Ty step_v;
+    try {
+        start_v = unbox_py_scalar<Ty>(start);
+        step_v = unbox_py_scalar<Ty>(step);
+    } catch (const py::error_already_set &e) {
+        throw;
+    }
+
+    sycl::event lin_space_step_event = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.parallel_for<linear_sequence_step_kernel<Ty>>(
+            sycl::range<1>{nelems},
+            LinearSequenceStepFunctor<Ty>(array_data, start_v, step_v));
+    });
+
+    return lin_space_step_event;
+}
+
+template <typename fnT, typename Ty> struct LinSpaceStepFactory
+{
+    fnT get()
+    {
+        fnT f = lin_space_step_impl<Ty>;
+        return f;
+    }
+};
+
+typedef sycl::event (*lin_space_affine_fn_ptr_t)(
+    sycl::queue,
+    size_t, // num_elements
+    py::object start,
+    py::object end,
+    bool include_endpoint,
+    char *, // dst_data_ptr
+    const std::vector<sycl::event> &);
+
+static lin_space_affine_fn_ptr_t
+    lin_space_affine_dispatch_vector[_ns::num_types];
+
+template <typename Ty> class LinearSequenceAffineFunctor
+{
+private:
+    Ty *p = nullptr;
+    Ty start_v;
+    Ty end_v;
+    size_t n;
+
+public:
+    LinearSequenceAffineFunctor(char *dst_p, Ty v0, Ty v1, size_t den)
+        : p(reinterpret_cast<Ty *>(dst_p)), start_v(v0), end_v(v1),
+          n((den == 0) ? 1 : den)
+    {
+    }
+
+    void operator()(sycl::id<1> wiid) const
+    {
+        auto i = wiid.get(0);
+        double wc = double(i) / n;
+        double w = double(n - i) / n;
+        if constexpr (is_complex<Ty>::value) {
+            auto _w = static_cast<typename Ty::value_type>(w);
+            auto _wc = static_cast<typename Ty::value_type>(wc);
+            auto re_comb = start_v.real() * _w + end_v.real() * _wc;
+            auto im_comb = start_v.imag() * _w + end_v.imag() * _wc;
+            Ty affine_comb = Ty{re_comb, im_comb};
+            p[i] = affine_comb;
+        }
+        else {
+            auto affine_comb = start_v * w + end_v * wc;
+            p[i] = convert_impl<Ty, decltype(affine_comb)>(affine_comb);
+        }
+    }
+};
+
+template <typename Ty>
+sycl::event lin_space_affine_impl(sycl::queue exec_q,
+                                  size_t nelems,
+                                  py::object start,
+                                  py::object end,
+                                  bool include_endpoint,
+                                  char *array_data,
+                                  const std::vector<sycl::event> &depends)
+{
+    Ty start_v, end_v;
+    try {
+        start_v = unbox_py_scalar<Ty>(start);
+        end_v = unbox_py_scalar<Ty>(end);
+    } catch (const py::error_already_set &e) {
+        throw;
+    }
+
+    sycl::event lin_space_affine_event = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.parallel_for<linear_sequence_affine_kernel<Ty>>(
+            sycl::range<1>{nelems},
+            LinearSequenceAffineFunctor<Ty>(array_data, start_v, end_v,
+                                            (include_endpoint) ? nelems - 1
+                                                               : nelems));
+    });
+
+    return lin_space_affine_event;
+}
+
+template <typename fnT, typename Ty> struct LinSpaceAffineFactory
+{
+    fnT get()
+    {
+        fnT f = lin_space_affine_impl<Ty>;
+        return f;
+    }
+};
+
+std::pair<sycl::event, sycl::event>
+usm_ndarray_linear_sequence_step(py::object start,
+                                 py::object dt,
+                                 dpctl::tensor::usm_ndarray dst,
+                                 sycl::queue exec_q,
+                                 const std::vector<sycl::event> &depends = {})
+{
+    // dst must be 1D and C-contiguous
+    // start, end should be coercible into data type of dst
+
+    if (dst.get_ndim() != 1) {
+        throw py::value_error(
+            "usm_ndarray_linspace: Expecting 1D array to populate");
+    }
+
+    int flags = dst.get_flags();
+    if (!(flags & USM_ARRAY_C_CONTIGUOUS)) {
+        throw py::value_error(
+            "usm_ndarray_linspace: Non-contiguous arrays are not supported");
+    }
+
+    sycl::queue dst_q = dst.get_queue();
+    if (dst_q != exec_q && dst_q.get_context() != exec_q.get_context()) {
+        throw py::value_error(
+            "Execution queue context is not the same as allocation context");
+    }
+
+    int dst_typenum = dst.get_typenum();
+    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
+
+    py::ssize_t len = dst.get_shape(0);
+    if (len == 0) {
+        // nothing to do
+        return std::make_pair(sycl::event{}, sycl::event{});
+    }
+
+    char *dst_data = dst.get_data();
+    sycl::event linspace_step_event;
+
+    auto fn = lin_space_step_dispatch_vector[dst_typeid];
+
+    linspace_step_event =
+        fn(exec_q, static_cast<size_t>(len), start, dt, dst_data, depends);
+
+    return std::make_pair(keep_args_alive(exec_q, {dst}, {linspace_step_event}),
+                          linspace_step_event);
+}
+
+std::pair<sycl::event, sycl::event>
+usm_ndarray_linear_sequence_affine(py::object start,
+                                   py::object end,
+                                   dpctl::tensor::usm_ndarray dst,
+                                   bool include_endpoint,
+                                   sycl::queue exec_q,
+                                   const std::vector<sycl::event> &depends = {})
+{
+    // dst must be 1D and C-contiguous
+    // start, end should be coercible into data type of dst
+
+    if (dst.get_ndim() != 1) {
+        throw py::value_error(
+            "usm_ndarray_linspace: Expecting 1D array to populate");
+    }
+
+    int flags = dst.get_flags();
+    if (!(flags & USM_ARRAY_C_CONTIGUOUS)) {
+        throw py::value_error(
+            "usm_ndarray_linspace: Non-contiguous arrays are not supported");
+    }
+
+    sycl::queue dst_q = dst.get_queue();
+    if (dst_q != exec_q && dst_q.get_context() != exec_q.get_context()) {
+        throw py::value_error(
+            "Execution queue context is not the same as allocation context");
+    }
+
+    int dst_typenum = dst.get_typenum();
+    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
+
+    py::ssize_t len = dst.get_shape(0);
+    if (len == 0) {
+        // nothing to do
+        return std::make_pair(sycl::event{}, sycl::event{});
+    }
+
+    char *dst_data = dst.get_data();
+    sycl::event linspace_affine_event;
+
+    auto fn = lin_space_affine_dispatch_vector[dst_typeid];
+
+    linspace_affine_event = fn(exec_q, static_cast<size_t>(len), start, end,
+                               include_endpoint, dst_data, depends);
+
+    return std::make_pair(
+        keep_args_alive(exec_q, {dst}, {linspace_affine_event}),
+        linspace_affine_event);
+}
+
+// define function to populate the vector
+void init_copy_for_reshape_dispatch_vector(void)
+{
+    using namespace dpctl::tensor::detail;
+
+    DispatchVectorBuilder<copy_for_reshape_fn_ptr_t,
+                          CopyForReshapeGenericFactory, num_types>
+        dvb;
+    dvb.populate_dispatch_vector(copy_for_reshape_generic_dispatch_vector);
+
+    DispatchVectorBuilder<lin_space_step_fn_ptr_t, LinSpaceStepFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(lin_space_step_dispatch_vector);
+
+    DispatchVectorBuilder<lin_space_affine_fn_ptr_t, LinSpaceAffineFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(lin_space_affine_dispatch_vector);
+
+    return;
+}
+
 } // namespace
 
 PYBIND11_MODULE(_tensor_impl, m)
@@ -1096,4 +1379,21 @@ PYBIND11_MODULE(_tensor_impl, m)
           "Returns a tuple of events: (ht_event, comp_event)",
           py::arg("src"), py::arg("dst"), py::arg("shift"),
           py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+    m.def("_linspace_step", &usm_ndarray_linear_sequence_step,
+          "Fills input 1D contiguous usm_ndarray `dst` with linear sequence "
+          "specified by "
+          "starting point `start` and step `dt`. "
+          "Returns a tuple of events: (ht_event, comp_event)",
+          py::arg("start"), py::arg("dt"), py::arg("dst"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+    m.def("_linspace_affine", &usm_ndarray_linear_sequence_affine,
+          "Fills input 1D contiguous usm_ndarray `dst` with linear sequence "
+          "specified by "
+          "starting point `start` and end point `end`. "
+          "Returns a tuple of events: (ht_event, comp_event)",
+          py::arg("start"), py::arg("end"), py::arg("dst"),
+          py::arg("include_endpoint"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 }

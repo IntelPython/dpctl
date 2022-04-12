@@ -725,3 +725,40 @@ def test_roll_2d(data):
     Y = dpt.roll(X, sh, ax)
     Ynp = np.roll(Xnp, sh, ax)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize(
+    "dt",
+    [
+        "u1",
+        "i1",
+        "u2",
+        "i2",
+        "u4",
+        "i4",
+        "u8",
+        "i8",
+        "f2",
+        "f4",
+        "f8",
+        "c8",
+        "c16",
+    ],
+)
+def test_arange(dt):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    X = dpt.arange(0, 123, dtype=dt, sycl_queue=q)
+    dt = np.dtype(dt)
+    if np.issubdtype(dt, np.integer):
+        assert int(X[47]) == 47
+    elif np.issubdtype(dt, np.floating):
+        assert float(X[47]) == 47.0
+    elif np.issubdtype(dt, np.complexfloating):
+        assert complex(X[47]) == 47.0 + 0.0j
+
+    X1 = dpt.arange(4, dtype=dt, sycl_queue=q)
+    assert X1.shape == (4,)
