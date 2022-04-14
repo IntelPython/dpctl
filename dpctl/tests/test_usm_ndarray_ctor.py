@@ -957,3 +957,27 @@ def test_real_imag_views():
     assert np.array_equal(dpt.to_numpy(X.imag), Xnp.imag)
     assert np.array_equal(dpt.to_numpy(X[1:].real), Xnp[1:].real)
     assert np.array_equal(dpt.to_numpy(X[1:].imag), Xnp[1:].imag)
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    [
+        "b1",
+        "i1",
+        "u1",
+        "i2",
+        "u2",
+        "i4",
+        "u4",
+        "i8",
+        "u8",
+        "f2",
+        "f4",
+        "f8",
+        "c8",
+        "c16",
+    ],
+)
+def test_zeros(dtype):
+    X = dpt.zeros(10, dtype=dtype)
+    assert np.array_equal(dpt.asnumpy(X), np.zeros(10, dtype=dtype))

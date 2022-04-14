@@ -512,3 +512,51 @@ def arange(
     hev, _ = ti._linspace_step(start, _step, res, sycl_queue)
     hev.wait()
     return res
+
+
+def zeros(
+    sh, dtype="f8", order="C", device=None, usm_type="device", sycl_queue=None
+):
+    """
+    Creates `usm_ndarray` with zero elements.
+
+    Args:
+        shape (tuple): Dimensions of the array to be created.
+        dtype (optional): data type of the array. Can be typestring,
+            a `numpy.dtype` object, `numpy` char string, or a numpy
+            scalar type. Default: "f8"
+        order ("C", or F"): memory layout for the array. Default: "C"
+        device (optional): array API concept of device where the output array
+            is created. `device` can be `None`, a oneAPI filter selector string,
+            an instance of :class:`dpctl.SyclDevice` corresponding to a
+            non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
+            `dpctl.tensor.usm_array.device`. Default: `None`.
+        usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+            allocation for the output array. Default: `"device"`.
+        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
+            for output array allocation and copying. `sycl_queue` and `device`
+            are exclusive keywords, i.e. use one or another. If both are
+            specified, a `TypeError` is raised unless both imply the same
+            underlying SYCL queue to be used. If both a `None`, the
+            `dpctl.SyclQueue()` is used for allocation and copying.
+            Default: `None`.
+    """
+    dtype = np.dtype(dtype)
+    if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
+        raise ValueError(
+            "Unrecognized order keyword value, expecting 'F' or 'C'."
+        )
+    else:
+        order = order[0].upper()
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    res = dpt.usm_ndarray(
+        sh,
+        dtype=dtype,
+        buffer=usm_type,
+        order=order,
+        buffer_ctor_kwargs={"queue": sycl_queue},
+    )
+    res.usm_data.memset()
+    return res
