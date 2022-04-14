@@ -55,6 +55,8 @@ Array Construction
       - Creates :class:`dpctl.tensor.usm_ndarray` from instance of `numpy.ndarray`.
     * - :func:`to_numpy()`
       - Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary` into `numpy.ndarray` instance of the same shape and same data type.
+    * - :func:`zeros()`
+      - Creates `usm_ndarray` with zero elements.
 
 .. _dpctl.tensor_array_manipulation:
 
