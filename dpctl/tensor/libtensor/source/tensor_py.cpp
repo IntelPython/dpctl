@@ -26,6 +26,7 @@
 #include <complex>
 #include <cstdint>
 #include <pybind11/complex.h>
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <thread>
@@ -38,6 +39,7 @@
 namespace py = pybind11;
 
 template <typename srcT, typename dstT> class copy_cast_generic_kernel;
+template <typename srcT, typename dstT> class copy_cast_from_host_kernel;
 template <typename srcT, typename dstT, int nd> class copy_cast_spec_kernel;
 template <typename Ty> class copy_for_reshape_generic_kernel;
 template <typename Ty> class linear_sequence_step_kernel;
@@ -306,32 +308,12 @@ template <typename fnT, typename D, typename S> struct CopyAndCast2DFactory
     }
 };
 
-void init_copy_and_cast_dispatch_tables(void)
-{
-    using namespace dpctl::tensor::detail;
-
-    DispatchTableBuilder<copy_and_cast_generic_fn_ptr_t,
-                         CopyAndCastGenericFactory, num_types>
-        dtb_generic;
-    dtb_generic.populate_dispatch_table(copy_and_cast_generic_dispatch_table);
-
-    DispatchTableBuilder<copy_and_cast_1d_fn_ptr_t, CopyAndCast1DFactory,
-                         num_types>
-        dtb_1d;
-    dtb_1d.populate_dispatch_table(copy_and_cast_1d_dispatch_table);
-
-    DispatchTableBuilder<copy_and_cast_2d_fn_ptr_t, CopyAndCast2DFactory,
-                         num_types>
-        dtb_2d;
-    dtb_2d.populate_dispatch_table(copy_and_cast_2d_dispatch_table);
-
-    return;
-}
-
-std::vector<py::ssize_t> c_contiguous_strides(int nd, const py::ssize_t *shape)
+std::vector<py::ssize_t> c_contiguous_strides(int nd,
+                                              const py::ssize_t *shape,
+                                              py::ssize_t element_size = 1)
 {
     if (nd > 0) {
-        std::vector<py::ssize_t> c_strides(nd, 1);
+        std::vector<py::ssize_t> c_strides(nd, element_size);
         for (int ic = nd - 1; ic > 0;) {
             py::ssize_t next_v = c_strides[ic] * shape[ic];
             c_strides[--ic] = next_v;
@@ -343,10 +325,12 @@ std::vector<py::ssize_t> c_contiguous_strides(int nd, const py::ssize_t *shape)
     }
 }
 
-std::vector<py::ssize_t> f_contiguous_strides(int nd, const py::ssize_t *shape)
+std::vector<py::ssize_t> f_contiguous_strides(int nd,
+                                              const py::ssize_t *shape,
+                                              py::ssize_t element_size = 1)
 {
     if (nd > 0) {
-        std::vector<py::ssize_t> f_strides(nd, 1);
+        std::vector<py::ssize_t> f_strides(nd, element_size);
         for (int i = 0; i < nd - 1;) {
             py::ssize_t next_v = f_strides[i] * shape[i];
             f_strides[++i] = next_v;
@@ -384,6 +368,140 @@ sycl::event keep_args_alive(sycl::queue q,
     });
 
     return host_task_ev;
+}
+
+void simplify_iteration_space(int &nd,
+                              const py::ssize_t *&shape,
+                              const py::ssize_t *&src_strides,
+                              py::ssize_t src_itemsize,
+                              bool is_src_c_contig,
+                              bool is_src_f_contig,
+                              const py::ssize_t *&dst_strides,
+                              py::ssize_t dst_itemsize,
+                              bool is_dst_c_contig,
+                              bool is_dst_f_contig,
+                              std::vector<py::ssize_t> &simplified_shape,
+                              std::vector<py::ssize_t> &simplified_src_strides,
+                              std::vector<py::ssize_t> &simplified_dst_strides,
+                              py::ssize_t &src_offset,
+                              py::ssize_t &dst_offset)
+{
+    if (nd > 1) {
+        // Simplify iteration space to reduce dimensionality
+        // and improve access pattern
+        simplified_shape.reserve(nd);
+        for (int i = 0; i < nd; ++i) {
+            simplified_shape.push_back(shape[i]);
+        }
+
+        simplified_src_strides.reserve(nd);
+        simplified_dst_strides.reserve(nd);
+        if (src_strides == nullptr) {
+            if (is_src_c_contig) {
+                simplified_src_strides =
+                    c_contiguous_strides(nd, shape, src_itemsize);
+            }
+            else if (is_src_f_contig) {
+                simplified_src_strides =
+                    f_contiguous_strides(nd, shape, src_itemsize);
+            }
+            else {
+                throw std::runtime_error(
+                    "Source array has null strides "
+                    "but has neither C- nor F- contiguous flag set");
+            }
+        }
+        else {
+            for (int i = 0; i < nd; ++i) {
+                simplified_src_strides.push_back(src_strides[i]);
+            }
+        }
+        if (dst_strides == nullptr) {
+            if (is_dst_c_contig) {
+                simplified_dst_strides =
+                    c_contiguous_strides(nd, shape, dst_itemsize);
+            }
+            else if (is_dst_f_contig) {
+                simplified_dst_strides =
+                    f_contiguous_strides(nd, shape, dst_itemsize);
+            }
+            else {
+                throw std::runtime_error(
+                    "Destination array has null strides "
+                    "but has neither C- nor F- contiguous flag set");
+            }
+        }
+        else {
+            for (int i = 0; i < nd; ++i) {
+                simplified_dst_strides.push_back(dst_strides[i]);
+            }
+        }
+
+        assert(simplified_shape.size() == nd);
+        assert(simplified_src_strides.size() == nd);
+        assert(simplified_dst_strides.size() == nd);
+        int contracted_nd = simplify_iteration_two_strides(
+            nd, simplified_shape.data(), simplified_src_strides.data(),
+            simplified_dst_strides.data(),
+            src_offset, // modified by reference
+            dst_offset  // modified by reference
+        );
+        simplified_shape.resize(contracted_nd);
+        simplified_src_strides.resize(contracted_nd);
+        simplified_dst_strides.resize(contracted_nd);
+
+        nd = contracted_nd;
+        shape = const_cast<const py::ssize_t *>(simplified_shape.data());
+        src_strides =
+            const_cast<const py::ssize_t *>(simplified_src_strides.data());
+        dst_strides =
+            const_cast<const py::ssize_t *>(simplified_dst_strides.data());
+    }
+    else if (nd == 1) {
+        // Populate vectors
+        simplified_shape.reserve(nd);
+        simplified_shape.push_back(shape[0]);
+
+        simplified_src_strides.reserve(nd);
+        simplified_dst_strides.reserve(nd);
+
+        if (src_strides == nullptr) {
+            if (is_src_c_contig) {
+                simplified_src_strides.push_back(src_itemsize);
+            }
+            else if (is_src_f_contig) {
+                simplified_src_strides.push_back(src_itemsize);
+            }
+            else {
+                throw std::runtime_error(
+                    "Source array has null strides "
+                    "but has neither C- nor F- contiguous flag set");
+            }
+        }
+        else {
+            simplified_src_strides.push_back(src_strides[0]);
+        }
+        if (dst_strides == nullptr) {
+            if (is_dst_c_contig) {
+                simplified_dst_strides.push_back(dst_itemsize);
+            }
+            else if (is_dst_f_contig) {
+                simplified_dst_strides.push_back(dst_itemsize);
+            }
+            else {
+                throw std::runtime_error(
+                    "Destination array has null strides "
+                    "but has neither C- nor F- contiguous flag set");
+            }
+        }
+        else {
+            simplified_dst_strides.push_back(dst_strides[0]);
+        }
+
+        assert(simplified_shape.size() == nd);
+        assert(simplified_src_strides.size() == nd);
+        assert(simplified_dst_strides.size() == nd);
+    }
 }
 
 std::pair<sycl::event, sycl::event>
@@ -448,15 +566,6 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     int src_type_id = array_types.typenum_to_lookup_id(src_typenum);
     int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
 
-    {
-        auto type_id_check = [](int id) -> bool {
-            return ((id >= 0) && (id < _ns::num_types));
-        };
-        if (!(type_id_check(src_type_id) && type_id_check(dst_type_id))) {
-            throw std::runtime_error("Type dispatching failed.");
-        }
-    }
-
     char *src_data = src.get_data();
     char *dst_data = dst.get_data();
 
@@ -511,72 +620,22 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     int nd = src_nd;
     const py::ssize_t *shape = src_shape;
 
-    if (src_nd > 1) {
-        // Simplify iteration space to reduce dimensionality
-        // and improve access pattern
-        simplified_shape.reserve(nd);
-        simplified_src_strides.reserve(nd);
-        simplified_dst_strides.reserve(nd);
-        for (int i = 0; i < nd; ++i) {
-            simplified_shape.push_back(shape[i]);
-        }
-        if (src_strides == nullptr) {
-            if (src_flags & USM_ARRAY_C_CONTIGUOUS) {
-                simplified_src_strides = c_contiguous_strides(nd, shape);
-            }
-            else if (src_flags & USM_ARRAY_F_CONTIGUOUS) {
-                simplified_src_strides = f_contiguous_strides(nd, shape);
-            }
-            else {
-                throw std::runtime_error(
-                    "Source array has null strides "
-                    "but has neither C- nor F- contiguous flag set");
-            }
-        }
-        else {
-            for (int i = 0; i < nd; ++i) {
-                simplified_src_strides.push_back(src_strides[i]);
-            }
-        }
-        if (dst_strides == nullptr) {
-            if (dst_flags & USM_ARRAY_C_CONTIGUOUS) {
-                simplified_dst_strides = c_contiguous_strides(nd, shape);
-            }
-            else if (dst_flags & USM_ARRAY_F_CONTIGUOUS) {
-                simplified_dst_strides = f_contiguous_strides(nd, shape);
-            }
-            else {
-                throw std::runtime_error(
-                    "Destination array has null strides "
-                    "but has neither C- nor F- contiguous flag set");
-            }
-        }
-        else {
-            for (int i = 0; i < nd; ++i) {
-                simplified_dst_strides.push_back(dst_strides[i]);
-            }
-        }
+    bool is_src_c_contig = ((src_flags & USM_ARRAY_C_CONTIGUOUS) != 0);
+    bool is_src_f_contig = ((src_flags & USM_ARRAY_F_CONTIGUOUS) != 0);
 
-        assert(simplified_shape.size() == nd);
-        assert(simplified_src_strides.size() == nd);
-        assert(simplified_dst_strides.size() == nd);
-        int contracted_nd = simplify_iteration_two_strides(
-            nd, simplified_shape.data(), simplified_src_strides.data(),
-            simplified_dst_strides.data(),
-            src_offset, // modified by reference
-            dst_offset  // modified by reference
-        );
-        simplified_shape.resize(contracted_nd);
-        simplified_src_strides.resize(contracted_nd);
-        simplified_dst_strides.resize(contracted_nd);
+    bool is_dst_c_contig = ((dst_flags & USM_ARRAY_C_CONTIGUOUS) != 0);
+    bool is_dst_f_contig = ((dst_flags & USM_ARRAY_F_CONTIGUOUS) != 0);
 
-        nd = contracted_nd;
-        shape = const_cast<const py::ssize_t *>(simplified_shape.data());
-        src_strides =
-            const_cast<const py::ssize_t *>(simplified_src_strides.data());
-        dst_strides =
-            const_cast<const py::ssize_t *>(simplified_dst_strides.data());
-    }
+    constexpr py::ssize_t src_itemsize = 1; // in elements
+    constexpr py::ssize_t dst_itemsize = 1; // in elements
+
+    // all args except itemsizes and is_?_contig bools can be modified by
+    // reference
+    simplify_iteration_space(nd, shape, src_strides, src_itemsize,
+                             is_src_c_contig, is_src_f_contig, dst_strides,
+                             dst_itemsize, is_dst_c_contig, is_dst_f_contig,
+                             simplified_shape, simplified_src_strides,
+                             simplified_dst_strides, src_offset, dst_offset);
 
     if (nd < 3) {
         if (nd == 1) {
@@ -1043,6 +1102,357 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
         copy_for_reshape_event);
 }
 
+/* ============= Copy from numpy.ndarray to usm_ndarray ==================== */
+
+template <typename srcT, typename dstT, typename AccessorT>
+class CasterForAccessor
+{
+public:
+    CasterForAccessor() = default;
+    void operator()(AccessorT src,
+                    std::ptrdiff_t src_offset,
+                    char *dst,
+                    std::ptrdiff_t dst_offset) const
+    {
+        dstT *dst_ = reinterpret_cast<dstT *>(dst) + dst_offset;
+        *dst_ = convert_impl<dstT, srcT>(src[src_offset]);
+    }
+};
+
+template <typename CastFnT, typename AccessorT> class GenericCopyFromHostFunctor
+{
+private:
+    AccessorT src_acc_;
+    char *dst_ = nullptr;
+    py::ssize_t *shape_strides_ = nullptr;
+    int nd_ = 0;
+    py::ssize_t src_offset0 = 0;
+    py::ssize_t dst_offset0 = 0;
+
+public:
+    GenericCopyFromHostFunctor(AccessorT src_acc,
+                               char *dst_cp,
+                               py::ssize_t *shape_strides,
+                               int nd,
+                               py::ssize_t src_offset,
+                               py::ssize_t dst_offset)
+        : src_acc_(src_acc), dst_(dst_cp), shape_strides_(shape_strides),
+          nd_(nd), src_offset0(src_offset), dst_offset0(dst_offset)
+    {
+    }
+
+    void operator()(sycl::id<1> wiid) const
+    {
+        py::ssize_t src_offset(0);
+        py::ssize_t dst_offset(0);
+        CIndexer_vector<py::ssize_t> indxr(nd_);
+        indxr.get_displacement<const py::ssize_t *, const py::ssize_t *>(
+            static_cast<py::ssize_t>(wiid.get(0)),
+            const_cast<const py::ssize_t *>(shape_strides_), // common shape
+            const_cast<const py::ssize_t *>(shape_strides_ +
+                                            nd_), // src strides
+            const_cast<const py::ssize_t *>(shape_strides_ +
+                                            2 * nd_), // dst strides
+            src_offset,                               // modified by reference
+            dst_offset                                // modified by reference
+        );
+        CastFnT fn{};
+        fn(src_acc_, src_offset0 + src_offset, dst_, dst_offset0 + dst_offset);
+    }
+};
+
+typedef void (*copy_and_cast_from_host_blocking_fn_ptr_t)(
+    sycl::queue,
+    size_t,
+    int,
+    py::ssize_t *,
+    const char *,
+    py::ssize_t,
+    py::ssize_t,
+    py::ssize_t,
+    char *,
+    py::ssize_t,
+    const std::vector<sycl::event> &,
+    const std::vector<sycl::event> &);
+
+template <typename dstTy, typename srcTy>
+void copy_and_cast_from_host_impl(
+    sycl::queue q,
+    size_t nelems,
+    int nd,
+    py::ssize_t *shape_and_strides,
+    const char *host_src_p,
+    py::ssize_t src_offset,
+    py::ssize_t src_min_nelem_offset,
+    py::ssize_t src_max_nelem_offset,
+    char *dst_p,
+    py::ssize_t dst_offset,
+    const std::vector<sycl::event> &depends,
+    const std::vector<sycl::event> &additional_depends)
+{
+    py::ssize_t nelems_range = src_max_nelem_offset - src_min_nelem_offset + 1;
+    sycl::buffer<srcTy, 1> npy_buf(
+        reinterpret_cast<const srcTy *>(host_src_p) + src_min_nelem_offset,
+        sycl::range<1>(nelems_range), {sycl::property::buffer::use_host_ptr{}});
+
+    sycl::event copy_and_cast_from_host_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.depends_on(additional_depends);
+
+        sycl::accessor npy_acc(npy_buf, cgh, sycl::read_only);
+
+        cgh.parallel_for<copy_cast_from_host_kernel<srcTy, dstTy>>(
+            sycl::range<1>(nelems),
+            GenericCopyFromHostFunctor<
+                CasterForAccessor<srcTy, dstTy, decltype(npy_acc)>,
+                decltype(npy_acc)>(npy_acc, dst_p, shape_and_strides, nd,
+                                   src_offset - src_min_nelem_offset,
+                                   dst_offset));
+    });
+
+    copy_and_cast_from_host_ev.wait_and_throw();
+
+    return;
+}
+
+static copy_and_cast_from_host_blocking_fn_ptr_t
+    copy_and_cast_from_host_blocking_dispatch_table[_ns::num_types]
+                                                   [_ns::num_types];
+
+template <typename fnT, typename D, typename S>
+struct CopyAndCastFromHostFactory
+{
+    fnT get()
+    {
+        fnT f = copy_and_cast_from_host_impl<D, S>;
+        return f;
+    }
+};
+
+void copy_numpy_ndarray_into_usm_ndarray(
+    py::array npy_src,
+    dpctl::tensor::usm_ndarray dst,
+    sycl::queue exec_q,
+    const std::vector<sycl::event> &depends = {})
+{
+    int src_ndim = npy_src.ndim();
+    int dst_ndim = dst.get_ndim();
+
+    if (src_ndim != dst_ndim) {
+        throw py::value_error("Source ndarray and destination usm_ndarray have "
+                              "different array ranks, "
+                              "i.e. different number of indices needed to "
+                              "address array elements.");
+    }
+
+    const py::ssize_t *src_shape = npy_src.shape();
+    const py::ssize_t *dst_shape = dst.get_shape_raw();
+    bool shapes_equal(true);
+    size_t src_nelems(1);
+    for (int i = 0; i < src_ndim; ++i) {
+        shapes_equal = shapes_equal && (src_shape[i] == dst_shape[i]);
+        src_nelems *= static_cast<size_t>(src_shape[i]);
+    }
+
+    if (!shapes_equal) {
+        throw py::value_error("Source ndarray and destination usm_ndarray have "
+                              "difference shapes.");
+    }
+
+    if (src_nelems == 0) {
+        // nothing to do
+        return;
+    }
+
+    auto dst_offsets = dst.get_minmax_offsets();
+    // destination must be ample enough to accomodate all elements of source
+    // array
+    {
+        size_t range =
+            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
+        if (range + 1 < src_nelems) {
+            throw py::value_error(
+                "Destination array can not accomodate all the "
+                "elements of source array.");
+        }
+    }
+
+    sycl::queue dst_q = dst.get_queue();
+
+    sycl::context exec_ctx = exec_q.get_context();
+    if (dst_q.get_context() != exec_ctx) {
+        throw py::value_error("Execution queue context is not the same as the "
+                              "allocation context");
+    }
+
+    // here we assume that NumPy's type numbers agree with ours for types
+    // supported in both
+    int src_typenum =
+        py::detail::array_descriptor_proxy(npy_src.dtype().ptr())->type_num;
+    int dst_typenum = dst.get_typenum();
+
+    int src_type_id = array_types.typenum_to_lookup_id(src_typenum);
+    int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
+
+    py::buffer_info src_pybuf = npy_src.request();
+    const char *const src_data = static_cast<const char *const>(src_pybuf.ptr);
+    char *dst_data = dst.get_data();
+
+    int src_flags = npy_src.flags();
+    int dst_flags = dst.get_flags();
+
+    // check for applicability of special cases:
+    //      (same type && (both C-contiguous || both F-contiguous)
+    bool both_c_contig = ((src_flags & py::array::c_style) &&
+                          (dst_flags & USM_ARRAY_C_CONTIGUOUS));
+    bool both_f_contig = ((src_flags & py::array::f_style) &&
+                          (dst_flags & USM_ARRAY_F_CONTIGUOUS));
+    if (both_c_contig || both_f_contig) {
+        if (src_type_id == dst_type_id) {
+            int src_elem_size = npy_src.itemsize();
+
+            sycl::event copy_ev = exec_q.memcpy(
+                dst_data, src_data, src_nelems * src_elem_size, depends);
+
+            // wait for copy_ev to complete
+            copy_ev.wait_and_throw();
+
+            return;
+        }
+        // With contract_iter2 in place, there is no need to write
+        // dedicated kernels for casting between contiguous arrays
+    }
+
+    const py::ssize_t *src_strides =
+        npy_src.strides(); // N.B.: strides in bytes
+    const py::ssize_t *dst_strides =
+        dst.get_strides_raw(); // N.B.: strides in elements
+
+    using shT = std::vector<py::ssize_t>;
+    shT simplified_shape;
+    shT simplified_src_strides;
+    shT simplified_dst_strides;
+    py::ssize_t src_offset(0);
+    py::ssize_t dst_offset(0);
+
+    py::ssize_t src_itemsize = npy_src.itemsize(); // item size in bytes
+    constexpr py::ssize_t dst_itemsize = 1;        // item size in elements
+
+    int nd = src_ndim;
+    const py::ssize_t *shape = src_shape;
+
+    bool is_src_c_contig = ((src_flags & py::array::c_style) != 0);
+    bool is_src_f_contig = ((src_flags & py::array::f_style) != 0);
+
+    bool is_dst_c_contig = ((dst_flags & USM_ARRAY_C_CONTIGUOUS) != 0);
+    bool is_dst_f_contig = ((dst_flags & USM_ARRAY_F_CONTIGUOUS) != 0);
+
+    // all args except itemsizes and is_?_contig bools can be modified by
+    // reference
+    simplify_iteration_space(nd, shape, src_strides, src_itemsize,
+                             is_src_c_contig, is_src_f_contig, dst_strides,
+                             dst_itemsize, is_dst_c_contig, is_dst_f_contig,
+                             simplified_shape, simplified_src_strides,
+                             simplified_dst_strides, src_offset, dst_offset);
+
+    assert(simplified_shape.size() == nd);
+    assert(simplified_src_strides.size() == nd);
+    assert(simplified_dst_strides.size() == nd);
+
+    // handle nd == 0
+    if (nd == 0) {
+        nd = 1;
+        simplified_shape.reserve(nd);
+        simplified_shape.push_back(1);
+
+        simplified_src_strides.reserve(nd);
+        simplified_src_strides.push_back(src_itemsize);
+
+        simplified_dst_strides.reserve(nd);
+        simplified_dst_strides.push_back(dst_itemsize);
+    }
+
+    // Minumum and maximum element offsets for source np.ndarray
+    py::ssize_t npy_src_min_nelem_offset(0);
+    py::ssize_t npy_src_max_nelem_offset(0);
+    for (int i = 0; i < nd; ++i) {
+        // convert source strides from bytes to elements
+        simplified_src_strides[i] = simplified_src_strides[i] / src_itemsize;
+        if (simplified_src_strides[i] < 0) {
+            npy_src_min_nelem_offset +=
+                simplified_src_strides[i] * (simplified_shape[i] - 1);
+        }
+        else {
+            npy_src_max_nelem_offset +=
+                simplified_src_strides[i] * (simplified_shape[i] - 1);
+        }
+    }
+
+    // Create shared pointers with shape and src/dst strides, copy into device
+    // memory
+    using shT = std::vector<py::ssize_t>;
+    std::shared_ptr<shT> shp_shape = std::make_shared<shT>(simplified_shape);
+    std::shared_ptr<shT> shp_src_strides =
+        std::make_shared<shT>(simplified_src_strides);
+    std::shared_ptr<shT> shp_dst_strides =
+        std::make_shared<shT>(simplified_dst_strides);
+
+    // Get implementation function pointer
+    auto copy_and_cast_from_host_blocking_fn =
+        copy_and_cast_from_host_blocking_dispatch_table[dst_type_id]
+                                                       [src_type_id];
+
+    //   If shape/strides are accessed with accessors, buffer destructor
+    //   will force syncronization.
+    py::ssize_t *shape_strides =
+        sycl::malloc_device<py::ssize_t>(3 * nd, exec_q);
+
+    if (shape_strides == nullptr) {
+        throw std::runtime_error("Unabled to allocate device memory");
+    }
+
+    sycl::event copy_shape_ev =
+        exec_q.copy<py::ssize_t>(shp_shape->data(), shape_strides, nd);
+
+    exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(copy_shape_ev);
+        cgh.host_task([shp_shape]() {
+            // increment shared pointer ref-count to keep it alive
+            // till copy operation completes;
+        });
+    });
+
+    sycl::event copy_src_strides_ev = exec_q.copy<py::ssize_t>(
+        shp_src_strides->data(), shape_strides + nd, nd);
+    exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(copy_src_strides_ev);
+        cgh.host_task([shp_src_strides]() {
+            // increment shared pointer ref-count to keep it alive
+            // till copy operation completes;
+        });
+    });
+
+    sycl::event copy_dst_strides_ev = exec_q.copy<py::ssize_t>(
+        shp_dst_strides->data(), shape_strides + 2 * nd, nd);
+    exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(copy_dst_strides_ev);
+        cgh.host_task([shp_dst_strides]() {
+            // increment shared pointer ref-count to keep it alive
+            // till copy operation completes;
+        });
+    });
+
+    copy_and_cast_from_host_blocking_fn(
+        exec_q, src_nelems, nd, shape_strides, src_data, src_offset,
+        npy_src_min_nelem_offset, npy_src_max_nelem_offset, dst_data,
+        dst_offset, depends,
+        {copy_shape_ev, copy_src_strides_ev, copy_dst_strides_ev});
+
+    sycl::free(shape_strides, exec_q);
+
+    return;
+}
+
 /* =========== Unboxing Python scalar =============== */
 
 template <typename T> T unbox_py_scalar(py::object o)
@@ -1313,7 +1723,37 @@ usm_ndarray_linear_sequence_affine(py::object start,
         linspace_affine_event);
 }
 
-// define function to populate the vector
+// populate dispatch tables
+void init_copy_and_cast_dispatch_tables(void)
+{
+    using namespace dpctl::tensor::detail;
+
+    DispatchTableBuilder<copy_and_cast_generic_fn_ptr_t,
+                         CopyAndCastGenericFactory, num_types>
+        dtb_generic;
+    dtb_generic.populate_dispatch_table(copy_and_cast_generic_dispatch_table);
+
+    DispatchTableBuilder<copy_and_cast_1d_fn_ptr_t, CopyAndCast1DFactory,
+                         num_types>
+        dtb_1d;
+    dtb_1d.populate_dispatch_table(copy_and_cast_1d_dispatch_table);
+
+    DispatchTableBuilder<copy_and_cast_2d_fn_ptr_t, CopyAndCast2DFactory,
+                         num_types>
+        dtb_2d;
+    dtb_2d.populate_dispatch_table(copy_and_cast_2d_dispatch_table);
+
+    DispatchTableBuilder<copy_and_cast_from_host_blocking_fn_ptr_t,
+                         CopyAndCastFromHostFactory, num_types>
+        dtb_copy_from_numpy;
+
+    dtb_copy_from_numpy.populate_dispatch_table(
+        copy_and_cast_from_host_blocking_dispatch_table);
+
+    return;
+}
+
+// populate dispatch vectors
 void init_copy_for_reshape_dispatch_vector(void)
 {
     using namespace dpctl::tensor::detail;
@@ -1395,5 +1835,11 @@ PYBIND11_MODULE(_tensor_impl, m)
           "Returns a tuple of events: (ht_event, comp_event)",
           py::arg("start"), py::arg("end"), py::arg("dst"),
           py::arg("include_endpoint"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
+
+    m.def("_copy_numpy_ndarray_into_usm_ndarray",
+          &copy_numpy_ndarray_into_usm_ndarray,
+          "Copy fom numpy array `src` into usm_ndarray `dst` synchronously.",
+          py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 }
