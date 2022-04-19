@@ -83,7 +83,7 @@ else()
         ${CMAKE_THREAD_LIBS_INIT}
         GTest::GTest
         DPCTLSyclInterface
-        ${LEVEL_ZERO_LIBRARY}
+        ${IntelSycl_OPENCL_LIBRARY}
     )
 endif()
 
