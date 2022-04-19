@@ -156,11 +156,41 @@ file(GLOB_RECURSE helper_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/source/*.cpp
 )
 
+# Enable code coverage related settings
+if(DPCTL_GENERATE_COVERAGE)
+    # check if lcov is available
+    find_package(Lcov REQUIRED)
+    # check if llvm-cov version 11 is available
+    find_package(LLVMCov 11 REQUIRED)
+    # check if llvm-profdata is available
+    find_package(LLVMProfdata REQUIRED)
+    # Turn on DPCTL_BUILD_CAPI_TESTS as building tests is needed to generate
+    # coverage reports.
+    set(DPCTL_BUILD_CAPI_TESTS "ON")
+    if(DPCTL_COVERAGE_REPORT_OUTPUT_DIR)
+        set(COVERAGE_OUTPUT_DIR ${DPCTL_COVERAGE_REPORT_OUTPUT_DIR})
+    else()
+        set(COVERAGE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+    endif()
+    message(STATUS "Coverage reports to be saved at ${COVERAGE_OUTPUT_DIR}")
+
+    # Add profiling flags
+    set(CMAKE_CXX_FLAGS
+        "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping -fno-sycl-use-footer -DDPCTL_COVERAGE"
+    )
+endif()
+
 add_library(DPCTLSyclInterface
     SHARED
     ${sources}
     ${helper_sources}
 )
+
+if(DPCTL_GENERATE_COVERAGE)
+    target_link_options(DPCTLSyclInterface
+        PRIVATE -fprofile-instr-generate -fcoverage-mapping
+    )
+endif()
 
 target_include_directories(DPCTLSyclInterface
     PUBLIC
@@ -246,25 +276,6 @@ install(
     FILES ${CONFIG_HEADERS}
     DESTINATION ${_include_destination}/Config
 )
-
-# Enable code coverage related settings
-if(DPCTL_GENERATE_COVERAGE)
-    # check if lcov is available
-    find_package(Lcov REQUIRED)
-    # check if llvm-cov version 11 is available
-    find_package(LLVMCov 11 REQUIRED)
-    # check if llvm-profdata is available
-    find_package(LLVMProfdata REQUIRED)
-    # Turn on DPCTL_BUILD_CAPI_TESTS as building tests is needed to generate
-    # coverage reports.
-    set(DPCTL_BUILD_CAPI_TESTS "ON")
-    if(DPCTL_COVERAGE_REPORT_OUTPUT_DIR)
-        set(COVERAGE_OUTPUT_DIR ${DPCTL_COVERAGE_REPORT_OUTPUT_DIR})
-    else()
-        set(COVERAGE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
-    endif()
-    message(STATUS "Coverage reports to be saved at ${COVERAGE_OUTPUT_DIR}")
-endif()
 
 # Add sub-directory to build the dpctl C API test cases
 if(DPCTL_BUILD_CAPI_TESTS)
