@@ -53,7 +53,6 @@ if(DPCTL_GENERATE_COVERAGE)
             dpctl.profdata
         COMMAND ${LLVMCov_EXE}
             report
-            ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests
             -instr-profile=dpctl.profdata
             "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -62,19 +61,25 @@ if(DPCTL_GENERATE_COVERAGE)
     )
 
     add_custom_target(lcov-genhtml
+        COMMAND ${CMAKE_COMMAND} -E env DPCTL_VERBOSITY=warning ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests
+        COMMAND ${LLVMProfdata_EXE}
+            merge
+            -sparse default.profraw
+            -o
+            dpctl.profdata
         COMMAND ${LLVMCov_EXE}
             export
             -format=lcov
-            ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests
             -instr-profile=dpctl.profdata
-            ${dpctl_sources}
-            ${helper_sources} > dpctl.lcov
+            "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
+            > dpctl.lcov
         COMMAND ${GENHTML_EXE}
             ${CMAKE_CURRENT_BINARY_DIR}/dpctl.lcov
             --output-directory
             ${COVERAGE_OUTPUT_DIR}/dpctl-c-api-coverage
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        DEPENDS llvm-cov
+        COMMAND_EXPAND_LISTS
+        DEPENDS dpctl_c_api_tests
     )
 else()
     file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)

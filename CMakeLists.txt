@@ -8,6 +8,12 @@ project(dpctl
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# Option to generate code coverage report using llvm-cov and lcov.
+option(DPCTL_GENERATE_COVERAGE
+    "Build dpctl with coverage instrumentation"
+    OFF
+)
+
 find_package(IntelDPCPP REQUIRED PATHS ${CMAKE_SOURCE_DIR}/cmake NO_DEFAULT_PATH)
 
 add_subdirectory(libsyclinterface)

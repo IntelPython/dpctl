@@ -25,7 +25,7 @@ option(DPCTL_ENABLE_L0_PROGRAM_CREATION
 )
 # Option to generate code coverage report using llvm-cov and lcov.
 option(DPCTL_GENERATE_COVERAGE
-    "Build dpctl C API with coverage instrumentation instrumentation"
+    "Build dpctl C API with coverage instrumentation"
     OFF
 )
 # Option to output html coverage report at a specific location.
@@ -158,12 +158,9 @@ file(GLOB_RECURSE helper_sources
 
 # Enable code coverage related settings
 if(DPCTL_GENERATE_COVERAGE)
-    # check if lcov is available
-    find_package(Lcov REQUIRED)
-    # check if llvm-cov version 11 is available
-    find_package(LLVMCov 11 REQUIRED)
-    # check if llvm-profdata is available
-    find_package(LLVMProfdata REQUIRED)
+    include(SetupCoverage)
+    setup_coverage_generation()
+
     # Turn on DPCTL_BUILD_CAPI_TESTS as building tests is needed to generate
     # coverage reports.
     set(DPCTL_BUILD_CAPI_TESTS "ON")
@@ -173,11 +170,6 @@ if(DPCTL_GENERATE_COVERAGE)
         set(COVERAGE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
     endif()
     message(STATUS "Coverage reports to be saved at ${COVERAGE_OUTPUT_DIR}")
-
-    # Add profiling flags
-    set(CMAKE_CXX_FLAGS
-        "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping -fno-sycl-use-footer -DDPCTL_COVERAGE"
-    )
 endif()
 
 add_library(DPCTLSyclInterface
