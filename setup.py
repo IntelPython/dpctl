@@ -85,6 +85,16 @@ class BuildPyCmd(_skbuild_build_py):
         _patched_copy_file(src, dst, preserve_mode=preserve_mode)
         return (dst, 1)
 
+    def build_package_data(self):
+        """Copy data files into build directory"""
+        for package, src_dir, build_dir, filenames in self.data_files:
+            for filename in filenames:
+                target = os.path.join(build_dir, filename)
+                self.mkpath(os.path.dirname(target))
+                srcfile = os.path.join(src_dir, filename)
+                outf, copied = self.copy_file(srcfile, target)
+                srcfile = os.path.abspath(srcfile)
+
 
 class InstallCmd(_skbuild_install):
     def run(self):
@@ -93,13 +103,19 @@ class InstallCmd(_skbuild_install):
             this_dir = os.path.dirname(os.path.abspath(__file__))
             dpctl_build_dir = os.path.join(this_dir, self.build_lib, "dpctl")
             dpctl_install_dir = os.path.join(self.install_libbase, "dpctl")
-            for fn in glob.glob(
-                os.path.join(dpctl_install_dir, "*DPCTLSyclInterface.so*")
-            ):
-                os.remove(fn)
+            sofiles = glob.glob(
+                os.path.join(dpctl_build_dir, "*DPCTLSyclInterface.so*")
+            )
+            # insert actual file at the beginning of the list
+            pos = [i for i, fn in enumerate(sofiles) if not os.path.islink(fn)]
+            if pos:
+                hard_file = sofiles.pop(pos[0])
+                sofiles.insert(0, hard_file)
+            for fn in sofiles:
                 base_fn = os.path.basename(fn)
                 src_file = os.path.join(dpctl_build_dir, base_fn)
                 dst_file = os.path.join(dpctl_install_dir, base_fn)
+                os.remove(dst_file)
                 _patched_copy_file(src_file, dst_file)
         return ret
 
