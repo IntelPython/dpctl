@@ -102,9 +102,13 @@ jobs:
           export PATH=${_SAVED_PATH}
           unset _SAVED_PATH
           python -c "import dpctl; print(dpctl.__version__); dpctl.lsplatform()" || exit 1
+          export LLVM_PROFILE_FILE="dpctl_pytest.profraw"
           pytest -q -ra --disable-warnings --cov-config pyproject.toml --cov dpctl \
               --cov-report term-missing --pyargs dpctl -vv                         \
-              --ignore=dpctl/tensor/libtensor/tests
+              --ignore=dpctl/tensor/libtensor/tests || exit 1
+          $(dirname $(dirname $(which icx)))/bin-llvm/llvm-profdata merge \
+              -sparse ${LLVM_PROFILE_FILE} -o dpctl_pytest.profdata || exit 1
+
 
       - name: Install coverall dependencies
         shell: bash -l {0}
@@ -115,7 +119,9 @@ jobs:
       - name: Upload coverage data to coveralls.io
         shell: bash -l {0}
         run: |
-          coveralls-lcov -v -n $(find _skbuild -name dpctl.lcov) > dpctl-c-api-coverage.json
+          coveralls-lcov -v -n \
+              $(find _skbuild -name dpctl.lcov) \
+              $(find . -name dpctl_pytest.lcov) > dpctl-c-api-coverage.json
           coveralls --service=github --merge=dpctl-c-api-coverage.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

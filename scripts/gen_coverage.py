@@ -84,6 +84,7 @@ def run(
         ["cmake", "--build", ".", "--target", "lcov-genhtml"],
         cwd=cmake_build_dir,
     )
+    env["LLVM_PROFILE_FILE"] = "dpctl_pytest.profraw"
     subprocess.check_call(
         [
             "pytest",
@@ -103,7 +104,48 @@ def run(
         ],
         cwd=setup_dir,
         shell=False,
+        env=env,
     )
+
+    def find_objects():
+        import os
+
+        objects = []
+        for root, _, files in os.walk("_skbuild"):
+            for file in files:
+                if not file.endswith(".o"):
+                    continue
+                if os.path.join("libsyclinterface", "tests") in root:
+                    continue
+                if any(match in root for match in ["libsyclinterface"]):
+                    objects.extend(["-object", os.path.join(root, file)])
+        return objects
+
+    objects = find_objects()
+    instr_profile_fn = "dpctl_pytest.profdata"
+    # generate instrumentation profile data
+    subprocess.check_call(
+        [
+            os.path.join(bin_llvm, "llvm-profdata"),
+            "merge",
+            "-sparse",
+            env["LLVM_PROFILE_FILE"],
+            "-o",
+            instr_profile_fn,
+        ]
+    )
+    # export lcov
+    with open("dpctl_pytest.lcov", "w") as fh:
+        subprocess.check_call(
+            [
+                os.path.join(bin_llvm, "llvm-cov"),
+                "export",
+                "-format=lcov",
+                "-instr-profile=" + instr_profile_fn,
+            ]
+            + objects,
+            stdout=fh,
+        )
 
 
 if __name__ == "__main__":
