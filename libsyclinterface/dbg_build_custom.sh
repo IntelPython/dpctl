@@ -17,7 +17,7 @@ cmake                                                       \
     -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX}                   \
     -DDPCTL_CUSTOM_DPCPP_INSTALL_DIR=${DPCPP_HOME}          \
     -DCMAKE_LINKER:PATH=${DPCPP_HOME}/bin/lld               \
-    -DDPCTL_ENABLE_LO_PROGRAM_CREATION=${USE_LO_HEADERS}    \
+    -DDPCTL_ENABLE_L0_PROGRAM_CREATION=${USE_LO_HEADERS}    \
     -DDPCTL_BUILD_CAPI_TESTS=ON                             \
     -DDPCTL_GENERATE_COVERAGE=ON                            \
     ..

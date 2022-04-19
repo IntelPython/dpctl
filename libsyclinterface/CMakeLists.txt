@@ -19,7 +19,7 @@ option(DPCTL_DPCPP_FROM_ONEAPI
 )
 # Option to turn on support for creating Level Zero interoperability programs
 # from a SPIR-V binary file.
-option(DPCTL_ENABLE_LO_PROGRAM_CREATION
+option(DPCTL_ENABLE_L0_PROGRAM_CREATION
     "Enable Level Zero Program creation from SPIR-V"
     OFF
 )
@@ -51,8 +51,8 @@ else()
     find_package(IntelSycl REQUIRED)
 endif()
 
-if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
-    set(DPCTL_ENABLE_LO_PROGRAM_CREATION 1)
+if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
+    set(DPCTL_ENABLE_L0_PROGRAM_CREATION 1)
     include(GetLevelZeroHeaders)
     get_level_zero_headers()
     if (UNIX)
@@ -231,7 +231,7 @@ set_target_properties(DPCTLSyclInterface
         SOVERSION ${VERSION_MAJOR}
 )
 
-if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
+if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
     target_include_directories(DPCTLSyclInterface
         PRIVATE
         ${LEVEL_ZERO_INCLUDE_DIR}

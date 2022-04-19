@@ -152,13 +152,13 @@ Once the prerequisites are installed, building using ``scikit-build`` involves t
 
 .. code-block:: bash
 
-    python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON
+    python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DDPCTL_ENABLE_L0_PROGRAM_CREATION=ON
 
 , and to develop:
 
 .. code-block:: bash
 
-    python setup.py develop -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON
+    python setup.py develop -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DDPCTL_ENABLE_L0_PROGRAM_CREATION=ON
 
 On Windows, use ``icx`` for both C and CXX compilers.
 
@@ -180,7 +180,7 @@ Following steps in `Build and install with scikit-build`_ use command line optio
 
 .. code-block:: bash
 
-    python setup.py develop -- -G Ninja -DCMAKE_C_COMPILER:PATH=clang -DCMAKE_CXX_COMPILER:PATH=clang++ -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ONE -DDPCTL_DPCPP_HOME_DIR=${DPCPP_ROOT}/llvm/build -DDPCTL_DPCPP_FROM_ONEAPI=OFF
+    python setup.py develop -- -G Ninja -DCMAKE_C_COMPILER:PATH=clang -DCMAKE_CXX_COMPILER:PATH=clang++ -DDPCTL_ENABLE_L0_PROGRAM_CREATION=ON -DDPCTL_DPCPP_HOME_DIR=${DPCPP_ROOT}/llvm/build -DDPCTL_DPCPP_FROM_ONEAPI=OFF
 
 Alterantively, the driver script can be used
 
@@ -264,7 +264,7 @@ library.
         -DDPCPP_INSTALL_DIR=${DPCPP_ROOT}                       \
         -DCMAKE_C_COMPILER:PATH=${DPCPP_ROOT}/bin/icx           \
         -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/bin/dpcpp       \
-        -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON                   \
+        -DDPCTL_ENABLE_L0_PROGRAM_CREATION=ON                   \
         -DDPCTL_BUILD_CAPI_TESTS=ON                             \
         ..
 

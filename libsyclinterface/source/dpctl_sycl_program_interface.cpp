@@ -38,7 +38,7 @@
 #include <CL/sycl/backend/opencl.hpp>
 #include <sstream>
 
-#ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
+#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
 #include "dpctl_dynamic_lib_helper.h"
 // Note: include ze_api.h before level_zero.hpp. Make sure clang-format does
 // not reorder the includes.
@@ -52,7 +52,7 @@ using namespace cl::sycl;
 
 namespace
 {
-#ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
+#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
 
 #ifdef __linux__
 static const char *zeLoaderName = DPCTL_LIBZE_LOADER_FILENAME;
@@ -72,7 +72,7 @@ typedef ze_result_t (*zeModuleCreateFT)(ze_context_handle_t,
 
 const char *zeModuleCreateFuncName = "zeModuleCreate";
 
-#endif // #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
+#endif // #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
 
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(program, DPCTLSyclProgramRef)
@@ -125,7 +125,7 @@ createOpenCLInterOpProgram(const context &SyclCtx,
     }
 }
 
-#ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
+#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
 
 zeModuleCreateFT getZeModuleCreateFn()
 {
@@ -200,7 +200,7 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
         return nullptr;
     }
 }
-#endif /* #ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION */
+#endif /* #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION */
 
 } /* end of anonymous namespace */
 
@@ -226,7 +226,7 @@ DPCTLProgram_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
         Pref = createOpenCLInterOpProgram(*SyclCtx, IL, length, CompileOpts);
         break;
     case backend::ext_oneapi_level_zero:
-#ifdef DPCTL_ENABLE_LO_PROGRAM_CREATION
+#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
         Pref = createLevelZeroInterOpProgram(*SyclCtx, IL, length, CompileOpts);
 #endif
         break;

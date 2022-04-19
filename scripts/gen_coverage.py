@@ -53,7 +53,7 @@ def run(
         "-DCMAKE_BUILD_TYPE=Debug",
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
-        "-DDPCTL_ENABLE_LO_PROGRAM_CREATION=" + ("ON" if level_zero else "OFF"),
+        "-DDPCTL_ENABLE_L0_PROGRAM_CREATION=" + ("ON" if level_zero else "OFF"),
         "-DDPCTL_GENERATE_COVERAGE=ON",
         "-DDPCTL_BUILD_CAPI_TESTS=ON",
         "-DDPCTL_COVERAGE_REPORT_OUTPUT_DIR=" + setup_dir,

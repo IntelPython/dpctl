@@ -26,7 +26,7 @@
 #pragma once
 
 /* Defined when dpctl was built with level zero program creation enabled. */
-#cmakedefine DPCTL_ENABLE_LO_PROGRAM_CREATION @DPCTL_ENABLE_LO_PROGRAM_CREATION@
+#cmakedefine DPCTL_ENABLE_L0_PROGRAM_CREATION @DPCTL_ENABLE_L0_PROGRAM_CREATION@
 
 /* The DPCPP version used to build dpctl */
 #define DPCTL_DPCPP_VERSION "@IntelSycl_VERSION@"
