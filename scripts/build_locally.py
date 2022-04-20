@@ -93,10 +93,16 @@ if __name__ == "__main__":
         help="Set the compilation mode to debugging",
     )
     driver.add_argument(
-        "--compiler-root", type=str, help="Path to compiler home directory"
+        "--compiler-root",
+        type=str,
+        help="Path to compiler home directory",
+        default=None,
     )
     driver.add_argument(
-        "--cmake-executable", type=str, help="Path to cmake executable"
+        "--cmake-executable",
+        type=str,
+        help="Path to cmake executable",
+        default=None,
     )
     driver.add_argument(
         "--no-level-zero",
@@ -112,26 +118,47 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    if args.oneapi:
+    args_to_validate = [
+        "c_compiler",
+        "cxx_compiler",
+        "compiler_root",
+    ]
+
+    if args.oneapi or (
+        args.c_compiler is None
+        and args.cxx_compiler is None
+        and args.compiler_root is None
+    ):
         args.c_compiler = "icx"
         args.cxx_compiler = "icpx" if "linux" in sys.platform else "icx"
         args.compiler_root = None
     else:
+        cr = args.compiler_root
+        if isinstance(cr, str) and os.path.exists(cr):
+            if args.c_compiler is None:
+                args.c_compiler = "icx"
+            if args.cxx_compiler is None:
+                args.cxx_compiler = "icpx" if "linux" in sys.platform else "icx"
+        else:
+            raise RuntimeError(
+                "Option 'compiler-root' must be provided when "
+                "using non-default DPC++ layout."
+            )
         args_to_validate = [
             "c_compiler",
             "cxx_compiler",
-            "compiler_root",
         ]
         for p in args_to_validate:
-            arg = getattr(args, p, None)
-            if not isinstance(arg, str):
-                opt_name = p.replace("_", "-")
-                raise RuntimeError(
-                    f"Option {opt_name} must be provided is "
-                    "using non-default DPC++ layout"
-                )
+            arg = getattr(args, p)
+            assert isinstance(arg, str)
             if not os.path.exists(arg):
-                raise RuntimeError(f"Path {arg} must exist")
+                arg2 = os.path.join(cr, arg)
+                if os.path.exists(arg2):
+                    arg = arg2
+                    setattr(args, p, arg)
+            if not os.path.exists(arg):
+                opt_name = p.replace("_", "-")
+                raise RuntimeError(f"Option {opt_name} value {arg} must exist.")
 
     run(
         use_oneapi=args.oneapi,
