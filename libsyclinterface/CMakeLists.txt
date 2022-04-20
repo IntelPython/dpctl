@@ -7,25 +7,22 @@ project(
 
 # Load our CMake modules to search for DPCPP and Level Zero
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
+
 find_package(Git REQUIRED)
 
-option(DPCTL_DPCPP_HOME_DIR
-    "The installation home for the DPC++ toolchain compiler."
-    OFF
-)
-option(DPCTL_DPCPP_FROM_ONEAPI
-    "Indicates whether DPCTL_DPCPP_HOME_DIR points to a oneAPI installation."
-    ON
-)
+if(NOT DEFINED IntelDPCPP_FOUND OR NOT IntelDPCPP_FOUND)
+   find_package(IntelDPCPP REQUIRED)
+endif()
+
 # Option to turn on support for creating Level Zero interoperability programs
 # from a SPIR-V binary file.
-option(DPCTL_ENABLE_LO_PROGRAM_CREATION
+option(DPCTL_ENABLE_L0_PROGRAM_CREATION
     "Enable Level Zero Program creation from SPIR-V"
-    OFF
+    ON
 )
 # Option to generate code coverage report using llvm-cov and lcov.
 option(DPCTL_GENERATE_COVERAGE
-    "Build dpctl C API with coverage instrumentation instrumentation"
+    "Build dpctl C API with coverage instrumentation"
     OFF
 )
 # Option to output html coverage report at a specific location.
@@ -45,14 +42,15 @@ option(DPCTL_ENABLE_GLOG
 )
 
 # Minimum version requirement only when oneAPI dpcpp is used.
+find_package(IntelDPCPP REQUIRED)
 if(DPCTL_DPCPP_FROM_ONEAPI)
     find_package(IntelSycl 2021.3.0 REQUIRED)
 else()
     find_package(IntelSycl REQUIRED)
 endif()
 
-if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
-    set(DPCTL_ENABLE_LO_PROGRAM_CREATION 1)
+if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
+    set(DPCTL_ENABLE_L0_PROGRAM_CREATION 1)
     include(GetLevelZeroHeaders)
     get_level_zero_headers()
     if (UNIX)
@@ -156,11 +154,33 @@ file(GLOB_RECURSE helper_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/source/*.cpp
 )
 
+# Enable code coverage related settings
+if(DPCTL_GENERATE_COVERAGE)
+    include(SetupCoverage)
+    setup_coverage_generation()
+
+    # Turn on DPCTL_BUILD_CAPI_TESTS as building tests is needed to generate
+    # coverage reports.
+    set(DPCTL_BUILD_CAPI_TESTS "ON")
+    if(DPCTL_COVERAGE_REPORT_OUTPUT_DIR)
+        set(COVERAGE_OUTPUT_DIR ${DPCTL_COVERAGE_REPORT_OUTPUT_DIR})
+    else()
+        set(COVERAGE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+    endif()
+    message(STATUS "Coverage reports to be saved at ${COVERAGE_OUTPUT_DIR}")
+endif()
+
 add_library(DPCTLSyclInterface
     SHARED
     ${sources}
     ${helper_sources}
 )
+
+if(DPCTL_GENERATE_COVERAGE)
+    target_link_options(DPCTLSyclInterface
+        PRIVATE -fprofile-instr-generate -fcoverage-mapping
+    )
+endif()
 
 target_include_directories(DPCTLSyclInterface
     PUBLIC
@@ -169,7 +189,7 @@ target_include_directories(DPCTLSyclInterface
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Config
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/include/
-    ${IntelSycl_SYCL_INCLUDE_DIR}
+    ${SYCL_INCLUDE_DIR}
 )
 target_link_libraries(DPCTLSyclInterface
   PRIVATE ${IntelSycl_SYCL_LIBRARY}
@@ -201,7 +221,7 @@ set_target_properties(DPCTLSyclInterface
         SOVERSION ${VERSION_MAJOR}
 )
 
-if(DPCTL_ENABLE_LO_PROGRAM_CREATION)
+if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
     target_include_directories(DPCTLSyclInterface
         PRIVATE
         ${LEVEL_ZERO_INCLUDE_DIR}
@@ -246,25 +266,6 @@ install(
     FILES ${CONFIG_HEADERS}
     DESTINATION ${_include_destination}/Config
 )
-
-# Enable code coverage related settings
-if(DPCTL_GENERATE_COVERAGE)
-    # check if lcov is available
-    find_package(Lcov REQUIRED)
-    # check if llvm-cov version 11 is available
-    find_package(LLVMCov 11 REQUIRED)
-    # check if llvm-profdata is available
-    find_package(LLVMProfdata REQUIRED)
-    # Turn on DPCTL_BUILD_CAPI_TESTS as building tests is needed to generate
-    # coverage reports.
-    set(DPCTL_BUILD_CAPI_TESTS "ON")
-    if(DPCTL_COVERAGE_REPORT_OUTPUT_DIR)
-        set(COVERAGE_OUTPUT_DIR ${DPCTL_COVERAGE_REPORT_OUTPUT_DIR})
-    else()
-        set(COVERAGE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
-    endif()
-    message(STATUS "Coverage reports to be saved at ${COVERAGE_OUTPUT_DIR}")
-endif()
 
 # Add sub-directory to build the dpctl C API test cases
 if(DPCTL_BUILD_CAPI_TESTS)

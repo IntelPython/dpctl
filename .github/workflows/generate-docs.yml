@@ -68,7 +68,6 @@ jobs:
               -DCMAKE_BUILD_TYPE=Debug                     \
               -DCMAKE_C_COMPILER:PATH=icx                  \
               -DCMAKE_CXX_COMPILER:PATH=icpx               \
-              -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON        \
               -DDPCTL_GENERATE_DOCS=ON                     \
               -DDPCTL_ENABLE_DOXYREST=ON                   \
               -DDoxyrest_DIR=`pwd`/doxyrest-2.1.2-linux-amd64

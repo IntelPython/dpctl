@@ -4,7 +4,7 @@ set "LIB=%BUILD_PREFIX%\Library\lib;%BUILD_PREFIX%\compiler\lib;%LIB%"
 set "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
 
 "%PYTHON%" setup.py clean --all
-set "SKBUILD_ARGS=-- -G Ninja -DDPCTL_DPCPP_HOME_DIR=%BUILD_PREFIX%\Library -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON"
+set "SKBUILD_ARGS=-- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx"
 set "SYCL_INCLUDE_DIR_HINT=%BUILD_PREFIX%\Library\lib\clang\14.0.0"
 
 set "PLATFORM_DIR=%PREFIX%\Library\share\cmake-3.22\Modules\Platform"

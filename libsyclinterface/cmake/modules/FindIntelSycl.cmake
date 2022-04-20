@@ -33,34 +33,7 @@
 # IntelSycl_OPENCL_LIBRARY
 
 include(FindPackageHandleStandardArgs)
-
-# Check if a specific DPC++ installation directory was provided then set
-# IntelSycl_ROOT to that path.
-if(DPCTL_DPCPP_HOME_DIR)
-    set(IntelSycl_ROOT ${DPCTL_DPCPP_HOME_DIR})
-    if(NOT DPCTL_DPCPP_FROM_ONEAPI)
-        message(STATUS
-        "Not using standard oneAPI installation, but IntelSycl at "
-        ${IntelSycl_ROOT}
-        )
-    endif()
-# If DPC++ installation was not specified, check for ONEAPI_ROOT
-elseif(DEFINED ENV{ONEAPI_ROOT})
-    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        set(IntelSycl_ROOT $ENV{ONEAPI_ROOT}/compiler/latest/windows)
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-        set(IntelSycl_ROOT $ENV{ONEAPI_ROOT}/compiler/latest/linux)
-    else()
-        message(FATAL_ERROR "Unsupported system.")
-    endif()
-else()
-    message(FATAL_ERROR
-        "Could not locate a DPC++ installation. Either pass the path to a "
-        "custom location using DPCTL_DPCPP_HOME_DIR or set the "
-        " ONEAPI_ROOT environment variable."
-    )
-    return()
-endif()
+find_package(IntelDPCPP REQUIRED)
 
 # We will extract the version information from the compiler
 set(clangxx_cmd "${CMAKE_CXX_COMPILER}")
@@ -96,13 +69,13 @@ if(${clangxx_result} MATCHES "0")
     list(GET IntelSycl_VERSION_LIST1 0 IntelSycl_VERSION_MAJOR)
     list(GET IntelSycl_VERSION_LIST1 1 IntelSycl_VERSION_MINOR)
     list(GET IntelSycl_VERSION_LIST1 2 IntelSycl_VERSION_PATCH)
-    set(IntelSycl_INCLUDE_DIR ${IntelSycl_ROOT}/include)
-    set(IntelSycl_SYCL_INCLUDE_DIR ${IntelSycl_ROOT}/include/sycl)
-    set(IntelSycl_LIBRARY_DIR ${IntelSycl_ROOT}/lib)
-    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(IntelSycl_INCLUDE_DIR ${SYCL_INCLUDE_DIR})
+    set(IntelSycl_SYCL_INCLUDE_DIR ${SYCL_INCLUDE_DIR}/sycl)
+    set(IntelSycl_LIBRARY_DIR ${SYCL_LIBRARY_DIR})
+    if("x${CMAKE_SYSTEM_NAME}" STREQUAL "xWindows")
         set(IntelSycl_SYCL_LIBRARY ${IntelSycl_LIBRARY_DIR}/sycl.lib)
         set(IntelSycl_OPENCL_LIBRARY ${IntelSycl_LIBRARY_DIR}/OpenCL.lib)
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    elseif("x${CMAKE_SYSTEM_NAME}" STREQUAL "xLinux")
         set(IntelSycl_SYCL_LIBRARY ${IntelSycl_LIBRARY_DIR}/libsycl.so)
         set(IntelSycl_OPENCL_LIBRARY ${IntelSycl_LIBRARY_DIR}/libOpenCL.so)
     endif()
@@ -125,7 +98,6 @@ else()
 endif()
 
 find_package_handle_standard_args(IntelSycl DEFAULT_MSG
-    IntelSycl_ROOT
     IntelSycl_FOUND
     IntelSycl_VERSION
     IntelSycl_INCLUDE_DIR

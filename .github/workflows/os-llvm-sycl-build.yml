@@ -97,6 +97,6 @@ jobs:
           export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
           clang++ --version
           sycl-ls
-          python setup.py develop -- -G Ninja -DCMAKE_C_COMPILER:PATH=clang -DCMAKE_CXX_COMPILER:PATH=clang++ -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON -DDPCTL_DPCPP_HOME_DIR=$(dirname $(dirname $(which clang))) -DDPCTL_DPCPP_FROM_ONEAPI=OFF
+          python setup.py develop -- -G Ninja -DCMAKE_C_COMPILER:PATH=clang -DCMAKE_CXX_COMPILER:PATH=clang++
           python -c "import dpctl; dpctl.lsplatform()" || exit 1
           SYCL_ENABLE_HOST_DEVICE=1 python -m pytest -v dpctl/tests
