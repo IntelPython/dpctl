@@ -56,13 +56,8 @@ def run(
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
         "-DDPCTL_ENABLE_L0_PROGRAM_CREATION=" + ("ON" if level_zero else "OFF"),
-        "-DDPCTL_DPCPP_FROM_ONEAPI:BOOL=" + ("ON" if use_oneapi else "OFF"),
         "-DDPCTL_ENABLE_GLOG:BOOL=" + ("ON" if use_glog else "OFF"),
     ]
-    if compiler_root:
-        cmake_args += [
-            "-DDPCTL_DPCPP_HOME_DIR:PATH=" + compiler_root,
-        ]
     subprocess.check_call(
         cmake_args, shell=False, cwd=setup_dir, env=os.environ
     )

@@ -7,16 +7,13 @@ project(
 
 # Load our CMake modules to search for DPCPP and Level Zero
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
+
 find_package(Git REQUIRED)
 
-option(DPCTL_DPCPP_HOME_DIR
-    "The installation home for the DPC++ toolchain compiler."
-    OFF
-)
-option(DPCTL_DPCPP_FROM_ONEAPI
-    "Indicates whether DPCTL_DPCPP_HOME_DIR points to a oneAPI installation."
-    ON
-)
+if(NOT DEFINED IntelDPCPP_FOUND OR NOT IntelDPCPP_FOUND)
+   find_package(IntelDPCPP REQUIRED)
+endif()
+
 # Option to turn on support for creating Level Zero interoperability programs
 # from a SPIR-V binary file.
 option(DPCTL_ENABLE_L0_PROGRAM_CREATION
@@ -45,6 +42,7 @@ option(DPCTL_ENABLE_GLOG
 )
 
 # Minimum version requirement only when oneAPI dpcpp is used.
+find_package(IntelDPCPP REQUIRED)
 if(DPCTL_DPCPP_FROM_ONEAPI)
     find_package(IntelSycl 2021.3.0 REQUIRED)
 else()
@@ -191,7 +189,7 @@ target_include_directories(DPCTLSyclInterface
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Config
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/include/
-    ${IntelSycl_SYCL_INCLUDE_DIR}
+    ${SYCL_INCLUDE_DIR}
 )
 target_link_libraries(DPCTLSyclInterface
   PRIVATE ${IntelSycl_SYCL_LIBRARY}

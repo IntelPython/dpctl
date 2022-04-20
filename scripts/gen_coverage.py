@@ -57,12 +57,7 @@ def run(
         "-DDPCTL_GENERATE_COVERAGE=ON",
         "-DDPCTL_BUILD_CAPI_TESTS=ON",
         "-DDPCTL_COVERAGE_REPORT_OUTPUT_DIR=" + setup_dir,
-        "-DDPCTL_DPCPP_FROM_ONEAPI:BOOL=" + ("ON" if use_oneapi else "OFF"),
     ]
-    if compiler_root:
-        cmake_args += [
-            "-DDPCTL_DPCPP_HOME_DIR:PATH=" + compiler_root,
-        ]
     env = None
     if bin_llvm:
         env = {
