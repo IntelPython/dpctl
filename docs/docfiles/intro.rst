@@ -12,5 +12,5 @@ deallocators. Dpctl's Python API provides classes that implement
 using SYCL USM memory; making it possible to create Python objects that are
 backed by SYCL USM memory.
 
-Dpctl also supports the DPCPP ``oneapi::filter_selector`` extension and has
+Dpctl also supports the DPCPP :oneapi_filter_selection:`oneapi::filter_selector <>` extension and has
 experimental support for SYCL's ``kernel`` and ``program`` classes.

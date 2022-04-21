@@ -68,7 +68,7 @@ is called.
     :caption: Constructing SyclQueue from filter selector
     :linenos:
 
-A possible output for the example :ref:`fig-constructing-queue-filter-selector:` may be:
+A possible output for the example :ref:`fig-constructing-queue-filter-selector` may be:
 
 .. program-output:: python ../examples/python/sycl_queue.py -r create_queue_from_filter_selector
 
