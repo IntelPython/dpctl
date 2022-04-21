@@ -11,4 +11,6 @@ dpctl.utils Functions
 Functions
 ---------
 
+.. autofunction:: get_coerced_usm_type
 .. autofunction:: get_execution_queue
+.. autofunction:: validate_usm_type

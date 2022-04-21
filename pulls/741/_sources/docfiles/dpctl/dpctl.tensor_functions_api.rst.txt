@@ -11,6 +11,7 @@ dpctl.tensor Functions
 Array Construction
 ------------------
 
+.. autofunction:: arange
 .. autofunction:: asarray
 .. autofunction:: asnumpy
 .. autofunction:: astype
@@ -19,8 +20,16 @@ Array Construction
 .. autofunction:: from_dlpack
 .. autofunction:: from_numpy
 .. autofunction:: to_numpy
+.. autofunction:: zeros
 
 Array Manipulation
 ------------------
 
+.. autofunction:: broadcast_arrays
+.. autofunction:: broadcast_to
+.. autofunction:: expand_dims
+.. autofunction:: flip
+.. autofunction:: permute_dims
 .. autofunction:: reshape
+.. autofunction:: roll
+.. autofunction:: squeeze

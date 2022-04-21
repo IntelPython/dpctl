@@ -50,7 +50,7 @@ Dpctl can also be istalled from Pypi.
 
 .. code-block:: bash
 
-    python -m pip install --index-url https://pypi.anaconda.org/intel/simple --extra-index-url https://pypi.org/simple dpctl
+    python -m pip install --index-url https://pypi.anaconda.org/intel/simple dpctl
 
 .. note::
 
@@ -133,33 +133,41 @@ After building the conda package you may install it by executing:
     3.18 instead.
 
 
-Build and install with setuptools
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Build and install with scikit-build
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To build using Python ``setuptools``, the following packages should be
+To build using Python ``setuptools`` and ``scikit-build``, the following Python packages should be
 installed:
 
     - ``cython``
     - ``numpy``
     - ``cmake``
-    - ``ninja`` (only on Windows)
+    - ``scikit-build``
+    - ``ninja``
     - ``gtest`` (optional to run C API tests)
+    - ``gmock`` (optional to run C API tests)
     - ``pytest`` (optional to run Python API tests)
 
-Once the prerequisites are installed, building using ``setuptools`` involves The
-usual steps
-
-to build and install
+Once the prerequisites are installed, building using ``scikit-build`` involves the usual steps, to build and install:
 
 .. code-block:: bash
 
-    python setup.py install
+    python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
 
-, and to develop.
+, and to develop:
 
 .. code-block:: bash
 
-    python setup.py develop
+    python setup.py develop -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
+
+On Windows, use ``icx`` for both C and CXX compilers.
+
+Developing on Linux can also be done using driver script:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py
+
 
 Building using custom dpcpp
 ---------------------------
@@ -168,12 +176,17 @@ It is possible to build dpctl from source using .. _DPC++ toolchain: https://git
 instead of the DPC++ compiler that comes with oneAPI. One reason for doing this
 may be to enable support for CUDA devices.
 
-Following steps in `Build and install with setuptools`_ use command line
-option :code:`--sycl-compiler-prefix`, for example:
+Following steps in `Build and install with scikit-build`_ use command line option to set relevant cmake variables, for example:
 
 .. code-block:: bash
 
-    python setup.py develop --sycl-compiler-prefix=${DPCPP_ROOT}/llvm/build
+    python setup.py develop -- -G Ninja -DCMAKE_C_COMPILER:PATH=$(which clang) -DCMAKE_CXX_COMPILER:PATH=$(which clang++)
+
+Alterantively, the driver script can be used
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --c-compiler=$(which clang) --cxx-compiler=$(which clang++)
 
 Available options and their descriptions can be retrieved using option
 :code:`--help`.
@@ -251,7 +264,6 @@ library.
         -DDPCPP_INSTALL_DIR=${DPCPP_ROOT}                       \
         -DCMAKE_C_COMPILER:PATH=${DPCPP_ROOT}/bin/icx           \
         -DCMAKE_CXX_COMPILER:PATH=${DPCPP_ROOT}/bin/dpcpp       \
-        -DDPCTL_ENABLE_LO_PROGRAM_CREATION=ON                   \
         -DDPCTL_BUILD_CAPI_TESTS=ON                             \
         ..
 

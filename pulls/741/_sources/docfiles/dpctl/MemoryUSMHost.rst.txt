@@ -39,5 +39,6 @@ Public methods
 .. autofunction:: dpctl.memory.MemoryUSMHost.copy_from_host
 .. autofunction:: dpctl.memory.MemoryUSMHost.copy_to_host
 .. autofunction:: dpctl.memory.MemoryUSMHost.get_usm_type
+.. autofunction:: dpctl.memory.MemoryUSMHost.memset
 .. autofunction:: dpctl.memory.MemoryUSMHost.tobytes
 

@@ -23,6 +23,12 @@ Helper functions for ``sycl::platform`` objects that do not directly map to any 
 
 	// global functions
 
+	DPCTL_API const __dpctl_give char*
+	:ref:`DPCTLPlatformMgr_GetInfo<doxid-d5/dcf/group___platform_manager_1ga90ff5c2df9bd5a56d4f539e073f091f2>`(
+		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
+		size_t verbosity
+		);
+
 	DPCTL_API void
 	:ref:`DPCTLPlatformMgr_PrintInfo<doxid-d5/dcf/group___platform_manager_1ga8e44adac75e0ecf8705b089404a8fb86>`(
 		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
@@ -62,6 +68,47 @@ Helper functions for ``sycl::platform`` objects that do not directly map to any 
 
 Global Functions
 ----------------
+
+.. index:: pair: function; DPCTLPlatformMgr_GetInfo
+.. _doxid-d5/dcf/group___platform_manager_1ga90ff5c2df9bd5a56d4f539e073f091f2:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API const __dpctl_give char*
+	DPCTLPlatformMgr_GetInfo(
+		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
+		size_t verbosity
+		)
+
+Returns a set of platform info attributes as a string.
+
+The helper function is used to get metadata about a given platform. The amount of information received is controlled by the verbosity level.
+
+Verbosity level 0: Returns only the name of the platform. Verbosity level 1: Returns the name, version, vendor, backend, number of devices in the platform. Verbosity level 2: Returns everything in level 1 and also returns the name, version, and filter string for each device in the platform.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- PRef
+
+		- A :ref:`DPCTLSyclPlatformRef <doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` opaque pointer.
+
+	*
+		- verbosity
+
+		- Verbosilty level to control how much information is printed out.
+
+
+
+.. rubric:: Returns:
+
+A formatted C string capturing the information about the sycl::platform argument.
 
 .. index:: pair: function; DPCTLPlatformMgr_PrintInfo
 .. _doxid-d5/dcf/group___platform_manager_1ga8e44adac75e0ecf8705b089404a8fb86:

@@ -45,7 +45,7 @@ Attributes
 .. autoattribute:: dpctl.SyclDevice.has_aspect_usm_host_allocations
 .. autoattribute:: dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations
 .. autoattribute:: dpctl.SyclDevice.has_aspect_usm_shared_allocations
-.. autoattribute:: dpctl.SyclDevice.has_aspect_usm_system_allocator
+.. autoattribute:: dpctl.SyclDevice.has_aspect_usm_system_allocations
 .. autoattribute:: dpctl.SyclDevice.image_2d_max_height
 .. autoattribute:: dpctl.SyclDevice.image_2d_max_width
 .. autoattribute:: dpctl.SyclDevice.image_3d_max_depth

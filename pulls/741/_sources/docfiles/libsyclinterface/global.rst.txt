@@ -56,6 +56,15 @@ Overview
 	DPCTL_API const __dpctl_give char*
 	:ref:`DPCTLService_GetDPCPPVersion<doxid-d8/d1a/group___service_1ga644b14f0bee03243f0ce30679e3c8d41>`(void);
 
+	DPCTL_API void
+	:ref:`DPCTLService_InitLogger<doxid-d8/d1a/group___service_1gabbfc206297f96578e9cdef4eea7c1505>`(
+		const char* app_name,
+		const char* log_dir
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLService_ShutdownLogger<doxid-d8/d1a/group___service_1ga9699c638b54314fc1398af7d48df0353>`(void);
+
 	DPCTL_API bool
 	:ref:`DPCTLContext_AreEq<doxid-d6/dad/group___context_interface_1gaa6938cd391c1cea91998fae97ba05141>`(
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef1,
@@ -413,6 +422,12 @@ Overview
 	DPCTL_API const __dpctl_give char*
 	:ref:`DPCTLPlatform_GetVersion<doxid-da/dbd/group___platform_interface_1ga794fb8c5be5cf2a48f63c407cb05bc1f>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
 
+	DPCTL_API const __dpctl_give char*
+	:ref:`DPCTLPlatformMgr_GetInfo<doxid-d5/dcf/group___platform_manager_1ga90ff5c2df9bd5a56d4f539e073f091f2>`(
+		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
+		size_t verbosity
+		);
+
 	DPCTL_API void
 	:ref:`DPCTLPlatformMgr_PrintInfo<doxid-d5/dcf/group___platform_manager_1ga8e44adac75e0ecf8705b089404a8fb86>`(
 		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
@@ -531,6 +546,14 @@ Overview
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
 		void* Dest,
 		const void* Src,
+		size_t Count
+		);
+
+	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	:ref:`DPCTLQueue_Memset<doxid-d2/d22/group___queue_interface_1gadf4c164773d3dcd680e378b9e7eb0a6e>`(
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		void* USMRef,
+		uint8_t Value,
 		size_t Count
 		);
 

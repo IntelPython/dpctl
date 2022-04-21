@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Data-parallel Control (dpctl) 0.12.0dev1+130.g3360b1d7 documentation</title>
+  <title>Index &mdash; Data-parallel Control (dpctl) 0.13.0dev0+71.g0845c77f1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+130.g3360b1d7
+                0.13.0dev0+71.g0845c77f1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -99,6 +99,7 @@
  | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
+ | <a href="#Z"><strong>Z</strong></a>
  
 </div>
 <h2 id="_">_</h2>
@@ -164,6 +165,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.arange">arange() (in module dpctl.tensor)</a>
+</li>
       <li><a href="docfiles/dpctl/dpctl.memory_functions_api.html#dpctl.memory.as_usm_memory">as_usm_memory() (in module dpctl.memory)</a>
 </li>
       <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.asarray">asarray() (in module dpctl.tensor)</a>
@@ -191,6 +194,10 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/dpctl_enum_api.html#dpctl.backend_type">backend_type (class in dpctl)</a>
+</li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.broadcast_arrays">broadcast_arrays() (in module dpctl.tensor)</a>
+</li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.broadcast_to">broadcast_to() (in module dpctl.tensor)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -879,8 +886,6 @@
         <li><a href="docfiles/libsyclinterface/group_EventInterface.html#index-5">function</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     DPCTLEvent_GetProfilingInfoEnd
 
@@ -895,6 +900,8 @@
         <li><a href="docfiles/libsyclinterface/group_EventInterface.html#index-7">function</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     DPCTLEvent_GetProfilingInfoSubmit
 
@@ -1120,52 +1127,59 @@
 </li>
       </ul></li>
       <li>
-    DPCTLPlatformMgr_PrintInfo
+    DPCTLPlatformMgr_GetInfo
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-1">function</a>
 </li>
       </ul></li>
       <li>
-    DPCTLPlatformVector_Clear
+    DPCTLPlatformMgr_PrintInfo
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-2">function</a>
 </li>
       </ul></li>
       <li>
-    DPCTLPlatformVector_Create
+    DPCTLPlatformVector_Clear
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-3">function</a>
 </li>
       </ul></li>
       <li>
-    DPCTLPlatformVector_CreateFromArray
+    DPCTLPlatformVector_Create
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-4">function</a>
 </li>
       </ul></li>
       <li>
-    DPCTLPlatformVector_Delete
+    DPCTLPlatformVector_CreateFromArray
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-5">function</a>
 </li>
       </ul></li>
       <li>
-    DPCTLPlatformVector_GetAt
+    DPCTLPlatformVector_Delete
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-6">function</a>
 </li>
       </ul></li>
       <li>
-    DPCTLPlatformVector_Size
+    DPCTLPlatformVector_GetAt
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-7">function</a>
+</li>
+      </ul></li>
+      <li>
+    DPCTLPlatformVector_Size
+
+      <ul>
+        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-8">function</a>
 </li>
       </ul></li>
       <li>
@@ -1295,10 +1309,17 @@
 </li>
       </ul></li>
       <li>
-    DPCTLQueue_Prefetch
+    DPCTLQueue_Memset
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-14">function</a>
+</li>
+      </ul></li>
+      <li>
+    DPCTLQueue_Prefetch
+
+      <ul>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-15">function</a>
 </li>
       </ul></li>
       <li>
@@ -1319,21 +1340,21 @@
     DPCTLQueue_SubmitNDRange
 
       <ul>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-15">function</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-16">function</a>
 </li>
       </ul></li>
       <li>
     DPCTLQueue_SubmitRange
 
       <ul>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-16">function</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-17">function</a>
 </li>
       </ul></li>
       <li>
     DPCTLQueue_Wait
 
       <ul>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-17">function</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-18">function</a>
 </li>
       </ul></li>
       <li>
@@ -1397,6 +1418,20 @@
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_Service.html#index-1">function</a>
+</li>
+      </ul></li>
+      <li>
+    DPCTLService_InitLogger
+
+      <ul>
+        <li><a href="docfiles/libsyclinterface/group_Service.html#index-2">function</a>
+</li>
+      </ul></li>
+      <li>
+    DPCTLService_ShutdownLogger
+
+      <ul>
+        <li><a href="docfiles/libsyclinterface/group_Service.html#index-3">function</a>
 </li>
       </ul></li>
       <li>
@@ -1561,6 +1596,8 @@
 </li>
       <li><a href="docfiles/dpctl/SyclEvent.html#dpctl.SyclEvent.execution_status">execution_status (dpctl.SyclEvent attribute)</a>
 </li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.expand_dims">expand_dims() (in module dpctl.tensor)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1570,6 +1607,8 @@
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.filter_string">filter_string (dpctl.SyclDevice attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.flags">flags (dpctl.tensor.usm_ndarray attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.flip">flip() (in module dpctl.tensor)</a>
 </li>
       <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.from_dlpack">from_dlpack() (in module dpctl.tensor)</a>
 </li>
@@ -1803,19 +1842,21 @@
 </li>
         <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-9">DPCTLPlatform_GetVersion</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-1">DPCTLPlatformMgr_PrintInfo</a>
+        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-1">DPCTLPlatformMgr_GetInfo</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-2">DPCTLPlatformVector_Clear</a>
+        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-2">DPCTLPlatformMgr_PrintInfo</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-3">DPCTLPlatformVector_Create</a>
+        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-3">DPCTLPlatformVector_Clear</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-4">DPCTLPlatformVector_CreateFromArray</a>
+        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-4">DPCTLPlatformVector_Create</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-5">DPCTLPlatformVector_Delete</a>
+        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-5">DPCTLPlatformVector_CreateFromArray</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-6">DPCTLPlatformVector_GetAt</a>
+        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-6">DPCTLPlatformVector_Delete</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-7">DPCTLPlatformVector_Size</a>
+        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-7">DPCTLPlatformVector_GetAt</a>
+</li>
+        <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-8">DPCTLPlatformVector_Size</a>
 </li>
         <li><a href="docfiles/libsyclinterface/group_ProgramInterface.html#index-1">DPCTLProgram_CreateFromOCLSource</a>
 </li>
@@ -1853,17 +1894,19 @@
 </li>
         <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-13">DPCTLQueue_Memcpy</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-14">DPCTLQueue_Prefetch</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-14">DPCTLQueue_Memset</a>
+</li>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-15">DPCTLQueue_Prefetch</a>
 </li>
         <li><a href="docfiles/libsyclinterface/global.html#index-26">DPCTLQueue_SubmitBarrier</a>
 </li>
         <li><a href="docfiles/libsyclinterface/global.html#index-27">DPCTLQueue_SubmitBarrierForEvents</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-15">DPCTLQueue_SubmitNDRange</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-16">DPCTLQueue_SubmitNDRange</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-16">DPCTLQueue_SubmitRange</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-17">DPCTLQueue_SubmitRange</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-17">DPCTLQueue_Wait</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-18">DPCTLQueue_Wait</a>
 </li>
         <li><a href="docfiles/libsyclinterface/group_QueueManager.html#index-1">DPCTLQueueMgr_GetCurrentQueue</a>
 </li>
@@ -1881,6 +1924,10 @@
 </li>
         <li><a href="docfiles/libsyclinterface/group_Service.html#index-1">DPCTLService_GetDPCPPVersion</a>
 </li>
+        <li><a href="docfiles/libsyclinterface/group_Service.html#index-2">DPCTLService_InitLogger</a>
+</li>
+        <li><a href="docfiles/libsyclinterface/group_Service.html#index-3">DPCTLService_ShutdownLogger</a>
+</li>
         <li><a href="docfiles/libsyclinterface/group_USMInterface.html#index-9">DPCTLUSM_GetPointerDevice</a>
 </li>
         <li><a href="docfiles/libsyclinterface/group_USMInterface.html#index-10">DPCTLUSM_GetPointerType</a>
@@ -1892,6 +1939,8 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/dpctl.utils_functions_api.html#dpctl.utils.get_coerced_usm_type">get_coerced_usm_type() (in module dpctl.utils)</a>
+</li>
       <li><a href="docfiles/dpctl/dpctl_functions_api.html#dpctl.get_current_backend">get_current_backend() (in module dpctl)</a>
 </li>
       <li><a href="docfiles/dpctl/dpctl_functions_api.html#dpctl.get_current_device_type">get_current_device_type() (in module dpctl)</a>
@@ -2022,7 +2071,7 @@
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.has_aspect_usm_shared_allocations">has_aspect_usm_shared_allocations (dpctl.SyclDevice attribute)</a>
 </li>
-      <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.has_aspect_usm_system_allocator">has_aspect_usm_system_allocator (dpctl.SyclDevice attribute)</a>
+      <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.has_aspect_usm_system_allocations">has_aspect_usm_system_allocations (dpctl.SyclDevice attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/dpctl_functions_api.html#dpctl.has_cpu_devices">has_cpu_devices() (in module dpctl)</a>
 </li>
@@ -2117,14 +2166,22 @@
 </li>
       <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.memcpy">memcpy() (in module dpctl.SyclQueue)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice">MemoryUSMDevice (class in dpctl.memory)</a>
 </li>
       <li><a href="docfiles/dpctl/MemoryUSMHost.html#dpctl.memory.MemoryUSMHost">MemoryUSMHost (class in dpctl.memory)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/MemoryUSMShared.html#dpctl.memory.MemoryUSMShared">MemoryUSMShared (class in dpctl.memory)</a>
 </li>
+      <li><a href="docfiles/dpctl/MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice.memset">memset() (in module dpctl.memory.MemoryUSMDevice)</a>
+
+      <ul>
+        <li><a href="docfiles/dpctl/MemoryUSMHost.html#dpctl.memory.MemoryUSMHost.memset">(in module dpctl.memory.MemoryUSMHost)</a>
+</li>
+        <li><a href="docfiles/dpctl/MemoryUSMShared.html#dpctl.memory.MemoryUSMShared.memset">(in module dpctl.memory.MemoryUSMShared)</a>
+</li>
+      </ul></li>
       <li>
     module
 
@@ -2140,6 +2197,8 @@
         <li><a href="docfiles/dpctl/dpctl.utils_pyapi.html#module-dpctl.utils">dpctl.utils</a>
 </li>
       </ul></li>
+      <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.mT">mT (dpctl.tensor.usm_ndarray attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -2189,6 +2248,8 @@
 </li>
       </ul></li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.parent_device">parent_device (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.permute_dims">permute_dims() (in module dpctl.tensor)</a>
 </li>
       <li>
     Platform class C wrapper
@@ -2285,6 +2346,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.reshape">reshape() (in module dpctl.tensor)</a>
 </li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.roll">roll() (in module dpctl.tensor)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -2324,6 +2387,8 @@
         <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.size">(dpctl.tensor.usm_ndarray attribute)</a>
 </li>
       </ul></li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.squeeze">squeeze() (in module dpctl.tensor)</a>
+</li>
       <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.strides">strides (dpctl.tensor.usm_ndarray attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.sub_group_independent_forward_progress">sub_group_independent_forward_progress (dpctl.SyclDevice attribute)</a>
@@ -2477,6 +2542,8 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/dpctl.utils_functions_api.html#dpctl.utils.validate_usm_type">validate_usm_type() (in module dpctl.utils)</a>
+</li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.vendor">vendor (dpctl.SyclDevice attribute)</a>
 
       <ul>
@@ -2506,6 +2573,14 @@
   </ul></td>
 </tr></table>
 
+<h2 id="Z">Z</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.zeros">zeros() (in module dpctl.tensor)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 
 
            </div>
@@ -2528,40 +2603,7 @@
       </div>
     </section>
   </div>
-  
-
-  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+130.g3360b1d7
-      <span class="fa fa-caret-down"></span>
-    </span>
-    <div class="rst-other-versions">
-      
-      <dl>
-        <dt>Versions</dt>
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/0.8.0/index.html">0.8.0</a></dd>
-          
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>
-          
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/0.6.1/index.html">0.6.1</a></dd>
-          
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/latest/index.html">latest</a></dd>
-          
-        
-      </dl>
-      
-    </div>
-  </div>
-<script>
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });

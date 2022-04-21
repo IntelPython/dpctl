@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data-parallel Control (dpctl) 0.12.0dev1+130.g3360b1d7 documentation</title>
+  <title>Quick Start Guide &mdash; Data-parallel Control (dpctl) 0.13.0dev0+71.g0845c77f1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+130.g3360b1d7
+                0.13.0dev0+71.g0845c77f1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -51,7 +51,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#building-using-oneapi-dpcpp">Building using oneAPI dpcpp</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#activate-oneapi-as-follows">Activate oneAPI as follows</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#build-and-install-using-conda-build">Build and install using conda-build</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#build-and-install-with-setuptools">Build and install with setuptools</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#build-and-install-with-scikit-build">Build and install with scikit-build</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#building-using-custom-dpcpp">Building using custom dpcpp</a></li>
@@ -138,7 +138,7 @@ installed. You can install GPU drivers by following the
 <section id="install-wheel-package-from-pypi">
 <h2>Install Wheel package from Pypi<a class="headerlink" href="#install-wheel-package-from-pypi" title="Permalink to this headline"></a></h2>
 <p>Dpctl can also be istalled from Pypi.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install --index-url https://pypi.anaconda.org/intel/simple --extra-index-url https://pypi.org/simple dpctl
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install --index-url https://pypi.anaconda.org/intel/simple dpctl
 </pre></div>
 </div>
 <div class="admonition note">
@@ -204,28 +204,33 @@ conda build --croot=C:/tmp conda-recipe -c <span class="s2">&quot;</span><span c
 3.18 instead.</p>
 </div>
 </section>
-<section id="build-and-install-with-setuptools">
-<h4>Build and install with setuptools<a class="headerlink" href="#build-and-install-with-setuptools" title="Permalink to this headline"></a></h4>
-<p>To build using Python <code class="docutils literal notranslate"><span class="pre">setuptools</span></code>, the following packages should be
+<section id="build-and-install-with-scikit-build">
+<h4>Build and install with scikit-build<a class="headerlink" href="#build-and-install-with-scikit-build" title="Permalink to this headline"></a></h4>
+<p>To build using Python <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> and <code class="docutils literal notranslate"><span class="pre">scikit-build</span></code>, the following Python packages should be
 installed:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">cython</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cmake</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ninja</span></code> (only on Windows)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scikit-build</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ninja</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gtest</span></code> (optional to run C API tests)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gmock</span></code> (optional to run C API tests)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> (optional to run Python API tests)</p></li>
 </ul>
 </div></blockquote>
-<p>Once the prerequisites are installed, building using <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> involves The
-usual steps</p>
-<p>to build and install</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py install
+<p>Once the prerequisites are installed, building using <code class="docutils literal notranslate"><span class="pre">scikit-build</span></code> involves the usual steps, to build and install:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx
 </pre></div>
 </div>
-<p>, and to develop.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop
+<p>, and to develop:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop -G Ninja -DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx
+</pre></div>
+</div>
+<p>On Windows, use <code class="docutils literal notranslate"><span class="pre">icx</span></code> for both C and CXX compilers.</p>
+<p>Developing on Linux can also be done using driver script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python scripts/build_locally.py
 </pre></div>
 </div>
 </section>
@@ -235,9 +240,12 @@ usual steps</p>
 <p>It is possible to build dpctl from source using .. _DPC++ toolchain: <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md">https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md</a>
 instead of the DPC++ compiler that comes with oneAPI. One reason for doing this
 may be to enable support for CUDA devices.</p>
-<p>Following steps in <a class="reference internal" href="#build-and-install-with-setuptools">Build and install with setuptools</a> use command line
-option <code class="code docutils literal notranslate"><span class="pre">--sycl-compiler-prefix</span></code>, for example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop --sycl-compiler-prefix<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/llvm/build
+<p>Following steps in <a class="reference internal" href="#build-and-install-with-scikit-build">Build and install with scikit-build</a> use command line option to set relevant cmake variables, for example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop -- -G Ninja -DCMAKE_C_COMPILER:PATH<span class="o">=</span><span class="k">$(</span>which clang<span class="k">)</span> -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span><span class="k">$(</span>which clang++<span class="k">)</span>
+</pre></div>
+</div>
+<p>Alterantively, the driver script can be used</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python scripts/build_locally.py --c-compiler<span class="o">=</span><span class="k">$(</span>which clang<span class="k">)</span> --cxx-compiler<span class="o">=</span><span class="k">$(</span>which clang++<span class="k">)</span>
 </pre></div>
 </div>
 <p>Available options and their descriptions can be retrieved using option
@@ -305,7 +313,6 @@ cmake                                                       <span class="se">\</
     -DDPCPP_INSTALL_DIR<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>                       <span class="se">\</span>
     -DCMAKE_C_COMPILER:PATH<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/bin/icx           <span class="se">\</span>
     -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/bin/dpcpp       <span class="se">\</span>
-    -DDPCTL_ENABLE_LO_PROGRAM_CREATION<span class="o">=</span>ON                   <span class="se">\</span>
     -DDPCTL_BUILD_CAPI_TESTS<span class="o">=</span>ON                             <span class="se">\</span>
     ..
 
@@ -339,40 +346,7 @@ make <span class="nv">V</span><span class="o">=</span><span class="m">1</span> -
       </div>
     </section>
   </div>
-  
-
-  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+130.g3360b1d7
-      <span class="fa fa-caret-down"></span>
-    </span>
-    <div class="rst-other-versions">
-      
-      <dl>
-        <dt>Versions</dt>
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/0.8.0/index.html">0.8.0</a></dd>
-          
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>
-          
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/0.6.1/index.html">0.6.1</a></dd>
-          
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/latest/index.html">latest</a></dd>
-          
-        
-      </dl>
-      
-    </div>
-  </div>
-<script>
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });

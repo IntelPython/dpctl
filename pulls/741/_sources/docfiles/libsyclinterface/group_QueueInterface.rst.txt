@@ -81,6 +81,14 @@ Overview
 		);
 
 	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	:ref:`DPCTLQueue_Memset<doxid-d2/d22/group___queue_interface_1gadf4c164773d3dcd680e378b9e7eb0a6e>`(
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		void* USMRef,
+		uint8_t Value,
+		size_t Count
+		);
+
+	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
 	:ref:`DPCTLQueue_Prefetch<doxid-d2/d22/group___queue_interface_1gac30d3b463b68c5d0f2abdeb608c54aa3>`(
 		__dpctl_keep :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
 		const void* Ptr,
@@ -579,6 +587,55 @@ C-API wrapper for ``sycl::queue::memcpy``.
 .. rubric:: Returns:
 
 An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::memcpy`` function.
+
+.. index:: pair: function; DPCTLQueue_Memset
+.. _doxid-d2/d22/group___queue_interface_1gadf4c164773d3dcd680e378b9e7eb0a6e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	DPCTLQueue_Memset(
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		void* USMRef,
+		uint8_t Value,
+		size_t Count
+		)
+
+C-API wrapper for ``sycl::queue::memset``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to the ``sycl::queue``.
+
+	*
+		- USMRef
+
+		- An USM pointer to the memory to fill.
+
+	*
+		- Value
+
+		- A value to fill.
+
+	*
+		- Count
+
+		- A number of uint8_t elements to fill.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::fill`` function.
 
 .. index:: pair: function; DPCTLQueue_Prefetch
 .. _doxid-d2/d22/group___queue_interface_1gac30d3b463b68c5d0f2abdeb608c54aa3:

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.12.0dev1+130.g3360b1d7 documentation</title>
+  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.13.0dev0+71.g0845c77f1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+130.g3360b1d7
+                0.13.0dev0+71.g0845c77f1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -146,6 +146,15 @@
 
 <span class="n">DPCTL_API</span> <span class="k">const</span> <span class="n">__dpctl_give</span> <span class="kt">char</span><span class="o">*</span>
 <a class="reference internal" href="group_Service.html#doxid-d8-d1a-group-service-1ga644b14f0bee03243f0ce30679e3c8d41"><span class="std std-ref">DPCTLService_GetDPCPPVersion</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">void</span>
+<a class="reference internal" href="group_Service.html#doxid-d8-d1a-group-service-1gabbfc206297f96578e9cdef4eea7c1505"><span class="std std-ref">DPCTLService_InitLogger</span></a><span></span><span class="p">(</span>
+    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">app_name</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">log_dir</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">void</span>
+<a class="reference internal" href="group_Service.html#doxid-d8-d1a-group-service-1ga9699c638b54314fc1398af7d48df0353"><span class="std std-ref">DPCTLService_ShutdownLogger</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">bool</span>
 <a class="reference internal" href="group_ContextInterface.html#doxid-d6-dad-group-context-interface-1gaa6938cd391c1cea91998fae97ba05141"><span class="std std-ref">DPCTLContext_AreEq</span></a><span></span><span class="p">(</span>
@@ -504,6 +513,12 @@
 <span class="n">DPCTL_API</span> <span class="k">const</span> <span class="n">__dpctl_give</span> <span class="kt">char</span><span class="o">*</span>
 <a class="reference internal" href="group_PlatformInterface.html#doxid-da-dbd-group-platform-interface-1ga794fb8c5be5cf2a48f63c407cb05bc1f"><span class="std std-ref">DPCTLPlatform_GetVersion</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">);</span>
 
+<span class="n">DPCTL_API</span> <span class="k">const</span> <span class="n">__dpctl_give</span> <span class="kt">char</span><span class="o">*</span>
+<a class="reference internal" href="group_PlatformManager.html#doxid-d5-dcf-group-platform-manager-1ga90ff5c2df9bd5a56d4f539e073f091f2"><span class="std std-ref">DPCTLPlatformMgr_GetInfo</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">verbosity</span>
+    <span class="p">);</span>
+
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
 <a class="reference internal" href="group_PlatformManager.html#doxid-d5-dcf-group-platform-manager-1ga8e44adac75e0ecf8705b089404a8fb86"><span class="std std-ref">DPCTLPlatformMgr_PrintInfo</span></a><span></span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
@@ -622,6 +637,14 @@
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">*</span> <span class="n">Dest</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">Src</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<a class="reference internal" href="group_QueueInterface.html#doxid-d2-d22-group-queue-interface-1gadf4c164773d3dcd680e378b9e7eb0a6e"><span class="std std-ref">DPCTLQueue_Memset</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">USMRef</span><span class="p">,</span>
+    <span class="kt">uint8_t</span> <span class="n">Value</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">Count</span>
     <span class="p">);</span>
 
@@ -1118,40 +1141,7 @@
       </div>
     </section>
   </div>
-  
-
-  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+130.g3360b1d7
-      <span class="fa fa-caret-down"></span>
-    </span>
-    <div class="rst-other-versions">
-      
-      <dl>
-        <dt>Versions</dt>
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/0.8.0/index.html">0.8.0</a></dd>
-          
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>
-          
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/0.6.1/index.html">0.6.1</a></dd>
-          
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/latest/index.html">latest</a></dd>
-          
-        
-      </dl>
-      
-    </div>
-  </div>
-<script>
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Queue &mdash; Data-parallel Control (dpctl) 0.12.0dev1+130.g3360b1d7 documentation</title>
+  <title>Queue &mdash; Data-parallel Control (dpctl) 0.13.0dev0+71.g0845c77f1 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.12.0dev1+130.g3360b1d7
+                0.13.0dev0+71.g0845c77f1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -94,15 +94,109 @@
              
   <section id="queue">
 <span id="queues"></span><h1>Queue<a class="headerlink" href="#queue" title="Permalink to this headline"></a></h1>
-<p>A queue is used to specify a device and a specific set of features of that
-device on which a task is scheduled. The <a class="reference internal" href="../../../dpctl/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> class
-represents a queue and abstracts the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">sycl::queue</a> SYCL runtime
-class.</p>
+<p>A queue is needed to schedule execution of any computation, or data
+copying on the device. Queue construction requires specifying a device
+and a context targeting that device as well as additional properties,
+such as whether profiling information should be collected or whether
+submitted tasks are executed in the order in which they were submitted.</p>
+<p>The <a class="reference internal" href="../../../dpctl/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> class represents a queue and abstracts
+the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">sycl::queue</a> SYCL runtime class.</p>
 <section id="types-of-queues">
 <h2>Types of Queues<a class="headerlink" href="#types-of-queues" title="Permalink to this headline"></a></h2>
+<p>In SYCL tasks are submitted for execution by the SYCL runtime. The order
+in which runtime executes them on the target device is specified by
+a sequence of events which must be complete before execution is allowed.
+Submission of a task returns an event which can be used to further grow
+the graph of computational tasks. SYCL queue stores data needed to manage
+this scheduling operations.</p>
+<p>Unless specified otherwise during constriction of a queue, SYCL runtime
+executes tasks whose dependencies were met in an unspecified order,
+with possibility for some of the tasks be execute concurrently. Such
+queues are said to be ‘out-of-order’.</p>
+<p>SYCL queues can be specified to indicate that runtime must execute tasks
+in the linear order in which they were submitted. In this case tasks submitted
+to such a queue, called ‘in-order’ queues, are never executed concurrently.</p>
 </section>
 <section id="creating-a-new-queue">
 <h2>Creating a New Queue<a class="headerlink" href="#creating-a-new-queue" title="Permalink to this headline"></a></h2>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue(ctx,</span> <span class="pre">dev,</span> <span class="pre">property=None)</span></code> creates a new instance for
+the given compatible context and device. Keyword parameter <cite>property</cite>
+can be set to <cite>“in_order”</cite> to create an ‘in-order’ queue, to <cite>“enable_profiling”</cite>
+to dynamically collect task execution statistics in the returned event once
+the associated task completes.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<span id="fig-constructing-queue-context-device-property"></span><div class="code-block-caption"><span class="caption-text">Constructing SyclQueue from context and device</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="k">def</span> <span class="nf">create_queue_from_subdevice_multidevice_context</span><span class="p">():</span>
+<span class="linenos"> 5</span>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 6</span><span class="sd">    Create a queue from a sub-device.</span>
+<span class="linenos"> 7</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 8</span>    <span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;opencl:cpu:0&quot;</span><span class="p">)</span>
+<span class="linenos"> 9</span>    <span class="n">sub_devs</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="linenos">10</span>    <span class="n">ctx</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclContext</span><span class="p">(</span><span class="n">sub_devs</span><span class="p">)</span>
+<span class="linenos">11</span>    <span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">sub_devs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">partition</span><span class="o">=</span><span class="s2">&quot;enable_profiling&quot;</span><span class="p">)</span>
+<span class="linenos">12</span>    <span class="nb">print</span><span class="p">(</span>
+<span class="linenos">13</span>        <span class="s2">&quot;Number of devices in SyclContext &quot;</span> <span class="s2">&quot;associated with the queue: &quot;</span><span class="p">,</span>
+<span class="linenos">14</span>        <span class="n">q</span><span class="o">.</span><span class="n">sycl_context</span><span class="o">.</span><span class="n">device_count</span><span class="p">,</span>
+<span class="linenos">15</span>    <span class="p">)</span>
+<span class="linenos">16</span>
+</pre></div>
+</div>
+</div>
+<p>A possible output for the example <span class="xref std std-ref">fig-constructing-queue-context-device-property:</span> may be:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_subdevice_multidevice_context
+Traceback (most recent call last):
+  File &quot;../examples/python/sycl_queue.py&quot;, line 84, in &lt;module&gt;
+    runner.run_examples(&quot;Queue creation examples for dpctl.&quot;, globals())
+  File &quot;/home/runner/work/dpctl/dpctl/examples/python/_runner.py&quot;, line 84, in run_examples
+    clbl()
+  File &quot;../examples/python/sycl_queue.py&quot;, line 72, in create_queue_from_subdevice_multidevice_context
+    sub_devs = cpu_d.create_sub_devices(partition=4)
+  File &quot;dpctl/_sycl_device.pyx&quot;, line 875, in dpctl._sycl_device.SyclDevice.create_sub_devices
+  File &quot;dpctl/_sycl_device.pyx&quot;, line 748, in dpctl._sycl_device.SyclDevice.create_sub_devices_equally
+dpctl._sycl_device.SubDeviceCreationError: Sub-devices were not created.
+</pre></div>
+</div>
+<p>When context is not specified the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">sycl::queue</a> constructor
+from a device instance is called. Instead of an instance of
+<a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> the argument <cite>dev</cite> can be a valid filter
+selector string. In this case the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">sycl::queue</a> constructor
+with the corresponding <a href="#id1"><span class="problematic" id="id2">:filter_selector:`sycl::ext::oneapi::filter_selector`</span></a>
+is called.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<span id="fig-constructing-queue-filter-selector"></span><div class="code-block-caption"><span class="caption-text">Constructing SyclQueue from filter selector</span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="k">def</span> <span class="nf">create_queue_from_filter_selector</span><span class="p">():</span>
+<span class="linenos"> 5</span>    <span class="sd">&quot;&quot;&quot;Create queue for a GPU device or,</span>
+<span class="linenos"> 6</span><span class="sd">    if it is not available, for a CPU device.</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="sd">    Create in-order queue with profilign enabled.</span>
+<span class="linenos"> 9</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">10</span>    <span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="s2">&quot;gpu,cpu&quot;</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;in_order&quot;</span><span class="p">,</span> <span class="s2">&quot;enable_profiling&quot;</span><span class="p">))</span>
+<span class="linenos">11</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Queue </span><span class="si">{}</span><span class="s2"> is in order: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">is_in_order</span><span class="p">))</span>
+<span class="linenos">12</span>    <span class="c1"># display the device used</span>
+<span class="linenos">13</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Device targeted by the queue:&quot;</span><span class="p">)</span>
+<span class="linenos">14</span>    <span class="n">q</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">print_device_info</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>A possible output for the example <span class="xref std std-ref">fig-constructing-queue-filter-selector:</span> may be:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_filter_selector
+Queue &lt;dpctl.SyclQueue at 0x7ff94aa63300, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
+Device targeted by the queue:
+    Name            Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
+    Driver version  2021.13.11.0.23_160000
+    Vendor          Intel(R) Corporation
+    Profile         FULL_PROFILE
+    Filter string   opencl:cpu:0
+
+INFO: ===========================
+</pre></div>
+</div>
 </section>
 <section id="profiling-a-task-submitted-to-a-queue">
 <h2>Profiling a Task Submitted to a Queue<a class="headerlink" href="#profiling-a-task-submitted-to-a-queue" title="Permalink to this headline"></a></h2>
@@ -133,40 +227,7 @@ class.</p>
       </div>
     </section>
   </div>
-  
-
-  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      <span class="fa fa-book"> Other versions</span>
-      v: 0.12.0dev1+130.g3360b1d7
-      <span class="fa fa-caret-down"></span>
-    </span>
-    <div class="rst-other-versions">
-      
-      <dl>
-        <dt>Versions</dt>
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/0.8.0/index.html">0.8.0</a></dd>
-          
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/0.7.0/index.html">0.7.0</a></dd>
-          
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/0.6.1/index.html">0.6.1</a></dd>
-          
-        
-          
-          <dd><a href="https://intelpython.github.io/dpctl/latest/index.html">latest</a></dd>
-          
-        
-      </dl>
-      
-    </div>
-  </div>
-<script>
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
