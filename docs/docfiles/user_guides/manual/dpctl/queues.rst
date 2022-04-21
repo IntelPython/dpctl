@@ -4,16 +4,74 @@
 Queue
 #####
 
-A queue is used to specify a device and a specific set of features of that
-device on which a task is scheduled. The :class:`dpctl.SyclQueue` class
-represents a queue and abstracts the :sycl_queue:`sycl::queue <>` SYCL runtime
-class.
+A queue is needed to schedule execution of any computation, or data
+copying on the device. Queue construction requires specifying a device
+and a context targeting that device as well as additional properties,
+such as whether profiling information should be collected or whether
+submitted tasks are executed in the order in which they were submitted.
+
+The :class:`dpctl.SyclQueue` class represents a queue and abstracts
+the :sycl_queue:`sycl::queue <>` SYCL runtime class.
 
 Types of Queues
 ---------------
 
+In SYCL tasks are submitted for execution by the SYCL runtime. The order
+in which runtime executes them on the target device is specified by
+a sequence of events which must be complete before execution is allowed.
+Submission of a task returns an event which can be used to further grow
+the graph of computational tasks. SYCL queue stores data needed to manage
+this scheduling operations.
+
+Unless specified otherwise during constriction of a queue, SYCL runtime
+executes tasks whose dependencies were met in an unspecified order,
+with possibility for some of the tasks be execute concurrently. Such
+queues are said to be 'out-of-order'.
+
+SYCL queues can be specified to indicate that runtime must execute tasks
+in the linear order in which they were submitted. In this case tasks submitted
+to such a queue, called 'in-order' queues, are never executed concurrently.
+
 Creating a New Queue
 --------------------
+
+:class:`dpctl.SyclQueue(ctx, dev, property=None)` creates a new instance for
+the given compatible context and device. Keyword parameter `property`
+can be set to `"in_order"` to create an 'in-order' queue, to `"enable_profiling"`
+to dynamically collect task execution statistics in the returned event once
+the associated task completes.
+
+.. _fig-constructing-queue-context-device-property:
+
+.. literalinclude:: ../../../../../examples/python/sycl_queue.py
+    :language: python
+    :lines: 17-19, 67-79
+    :caption: Constructing SyclQueue from context and device
+    :linenos:
+
+A possible output for the example :ref:`fig-constructing-queue-context-device-property:` may be:
+
+.. program-output:: python ../examples/python/sycl_queue.py -r create_queue_from_subdevice_multidevice_context
+
+When context is not specified the :sycl_queue:`sycl::queue <>` constructor
+from a device instance is called. Instead of an instance of
+:class:`dpctl.SyclDevice` the argument `dev` can be a valid filter
+selector string. In this case the :sycl_queue:`sycl::queue <>` constructor
+with the corresponding :filter_selector:`sycl::ext::oneapi::filter_selector`
+is called.
+
+.. _fig-constructing-queue-filter-selector:
+
+.. literalinclude:: ../../../../../examples/python/sycl_queue.py
+    :language: python
+    :lines: 17-19, 27-37
+    :caption: Constructing SyclQueue from filter selector
+    :linenos:
+
+A possible output for the example :ref:`fig-constructing-queue-filter-selector:` may be:
+
+.. program-output:: python ../examples/python/sycl_queue.py -r create_queue_from_filter_selector
+
 
 Profiling a Task Submitted to a Queue
 -------------------------------------
