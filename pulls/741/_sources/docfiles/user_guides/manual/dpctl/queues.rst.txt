@@ -57,7 +57,7 @@ When context is not specified the :sycl_queue:`sycl::queue <>` constructor
 from a device instance is called. Instead of an instance of
 :class:`dpctl.SyclDevice` the argument `dev` can be a valid filter
 selector string. In this case the :sycl_queue:`sycl::queue <>` constructor
-with the corresponding :filter_selector:`sycl::ext::oneapi::filter_selector`
+with the corresponding :oneapi_filter_selection:`sycl::ext::oneapi::filter_selector <>`
 is called.
 
 .. _fig-constructing-queue-filter-selector:

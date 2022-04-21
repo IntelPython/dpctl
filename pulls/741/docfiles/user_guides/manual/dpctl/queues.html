@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Queue &mdash; Data-parallel Control (dpctl) 0.13.0dev0+72.g8e5263be0 documentation</title>
+  <title>Queue &mdash; Data-parallel Control (dpctl) 0.13.0dev0+73.ga710d094c documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+72.g8e5263be0
+                0.13.0dev0+73.ga710d094c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -124,8 +124,8 @@ the given compatible context and device. Keyword parameter <cite>property</cite>
 can be set to <cite>“in_order”</cite> to create an ‘in-order’ queue, to <cite>“enable_profiling”</cite>
 to dynamically collect task execution statistics in the returned event once
 the associated task completes.</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<span id="fig-constructing-queue-context-device-property"></span><div class="code-block-caption"><span class="caption-text">Constructing SyclQueue from context and device</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id1">
+<span id="fig-constructing-queue-context-device-property"></span><div class="code-block-caption"><span class="caption-text">Constructing SyclQueue from context and device</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span>
@@ -163,10 +163,10 @@ dpctl._sycl_device.SubDeviceCreationError: Sub-devices were not created.
 from a device instance is called. Instead of an instance of
 <a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> the argument <cite>dev</cite> can be a valid filter
 selector string. In this case the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">sycl::queue</a> constructor
-with the corresponding <a href="#id1"><span class="problematic" id="id2">:filter_selector:`sycl::ext::oneapi::filter_selector`</span></a>
+with the corresponding <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_filter_selector.asciidoc">sycl::ext::oneapi::filter_selector</a>
 is called.</p>
-<div class="literal-block-wrapper docutils container" id="id4">
-<span id="fig-constructing-queue-filter-selector"></span><div class="code-block-caption"><span class="caption-text">Constructing SyclQueue from filter selector</span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<span id="fig-constructing-queue-filter-selector"></span><div class="code-block-caption"><span class="caption-text">Constructing SyclQueue from filter selector</span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span>
@@ -186,7 +186,7 @@ is called.</p>
 </div>
 <p>A possible output for the example <span class="xref std std-ref">fig-constructing-queue-filter-selector:</span> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_filter_selector
-Queue &lt;dpctl.SyclQueue at 0x7ffac7166f40, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
+Queue &lt;dpctl.SyclQueue at 0x7fba15bb2ec0, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
 Device targeted by the queue:
     Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
     Driver version  2021.13.11.0.23_160000
