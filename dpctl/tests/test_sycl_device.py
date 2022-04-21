@@ -20,7 +20,7 @@
 import pytest
 
 import dpctl
-from dpctl._sycl_device import SubDeviceCreationError
+from dpctl import SyclDeviceCreationError, SyclSubDeviceCreationError
 
 list_of_standard_selectors = [
     dpctl.select_accelerator_device,
@@ -363,7 +363,7 @@ def check_create_sub_devices_equally(device):
     try:
         n = int(device.max_compute_units / 2)
         device.create_sub_devices(partition=n)
-    except SubDeviceCreationError:
+    except SyclSubDeviceCreationError:
         pytest.skip(
             "create_sub_devices can't create sub-devices on this device"
         )
@@ -382,7 +382,7 @@ def check_create_sub_devices_by_counts(device):
     try:
         n = device.max_compute_units / 2
         device.create_sub_devices(partition=(n, n))
-    except SubDeviceCreationError:
+    except SyclSubDeviceCreationError:
         pytest.skip(
             "create_sub_devices can't create sub-devices on this device"
         )
@@ -400,7 +400,7 @@ def check_create_sub_devices_by_counts_zeros(device):
 def check_create_sub_devices_by_affinity_not_applicable(device):
     try:
         device.create_sub_devices(partition="not_applicable")
-    except SubDeviceCreationError:
+    except SyclSubDeviceCreationError:
         pytest.skip(
             "create_sub_devices can't create sub-devices on this device"
         )
@@ -411,7 +411,7 @@ def check_create_sub_devices_by_affinity_not_applicable(device):
 def check_create_sub_devices_by_affinity_numa(device):
     try:
         device.create_sub_devices(partition="numa")
-    except SubDeviceCreationError:
+    except SyclSubDeviceCreationError:
         pytest.skip(
             "create_sub_devices can't create sub-devices on this device"
         )
@@ -422,7 +422,7 @@ def check_create_sub_devices_by_affinity_numa(device):
 def check_create_sub_devices_by_affinity_L4_cache(device):
     try:
         device.create_sub_devices(partition="L4_cache")
-    except SubDeviceCreationError:
+    except SyclSubDeviceCreationError:
         pytest.skip(
             "create_sub_devices can't create sub-devices on this device"
         )
@@ -433,7 +433,7 @@ def check_create_sub_devices_by_affinity_L4_cache(device):
 def check_create_sub_devices_by_affinity_L3_cache(device):
     try:
         device.create_sub_devices(partition="L3_cache")
-    except SubDeviceCreationError:
+    except SyclSubDeviceCreationError:
         pytest.skip(
             "create_sub_devices can't create sub-devices on this device"
         )
@@ -444,7 +444,7 @@ def check_create_sub_devices_by_affinity_L3_cache(device):
 def check_create_sub_devices_by_affinity_L2_cache(device):
     try:
         device.create_sub_devices(partition="L2_cache")
-    except SubDeviceCreationError:
+    except SyclSubDeviceCreationError:
         pytest.skip(
             "create_sub_devices can't create sub-devices on this device"
         )
@@ -455,7 +455,7 @@ def check_create_sub_devices_by_affinity_L2_cache(device):
 def check_create_sub_devices_by_affinity_L1_cache(device):
     try:
         device.create_sub_devices(partition="L1_cache")
-    except SubDeviceCreationError:
+    except SyclSubDeviceCreationError:
         pytest.skip(
             "create_sub_devices can't create sub-devices on this device"
         )
@@ -466,7 +466,7 @@ def check_create_sub_devices_by_affinity_L1_cache(device):
 def check_create_sub_devices_by_affinity_next_partitionable(device):
     try:
         device.create_sub_devices(partition="next_partitionable")
-    except SubDeviceCreationError:
+    except SyclSubDeviceCreationError:
         pytest.skip(
             "create_sub_devices can't create sub-devices on this device"
         )
@@ -613,7 +613,12 @@ def test_invalid_filter_selectors(invalid_filter):
     """
     An invalid filter string should always be caught and a ValueError raised.
     """
-    with pytest.raises(ValueError):
+    exc = (
+        SyclDeviceCreationError
+        if isinstance(invalid_filter, str)
+        else ValueError
+    )
+    with pytest.raises(exc):
         dpctl.SyclDevice(invalid_filter)
 
 

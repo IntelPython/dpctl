@@ -33,7 +33,11 @@
 __author__ = "Intel Corp."
 
 from dpctl._sycl_context import SyclContext
-from dpctl._sycl_device import SyclDevice
+from dpctl._sycl_device import (
+    SyclDevice,
+    SyclDeviceCreationError,
+    SyclSubDeviceCreationError,
+)
 from dpctl._sycl_device_factory import (
     get_devices,
     get_num_devices,
@@ -76,6 +80,8 @@ __all__ = [
 ]
 __all__ += [
     "SyclDevice",
+    "SyclDeviceCreationError",
+    "SyclSubDeviceCreationError",
 ]
 __all__ += [
     "get_devices",

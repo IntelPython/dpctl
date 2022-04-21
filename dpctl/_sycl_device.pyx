@@ -95,11 +95,20 @@ import collections
 import warnings
 
 __all__ = [
-    "SyclDevice",
+    "SyclDevice", "SyclDeviceCreationError", "SyclSubDeviceCreationError",
 ]
 
 
-cdef class SubDeviceCreationError(Exception):
+cdef class SyclDeviceCreationError(Exception):
+    """
+    A DeviceCreationError exception is raised when
+    device could not created.
+
+    """
+    pass
+
+
+cdef class SyclSubDeviceCreationError(Exception):
     """
     A SubDeviceCreationError exception is raised when
     sub-devices were not created.
@@ -164,6 +173,7 @@ cdef str _device_type_to_filter_string_part(_device_type DTy):
         return "host"
     else:
         return "unknown"
+
 
 cdef void _init_helper(_SyclDevice device, DPCTLSyclDeviceRef DRef):
     "Populate attributes of device from opaque device reference DRef"
@@ -262,20 +272,20 @@ cdef class SyclDevice(_SyclDevice):
             DSRef = DPCTLFilterSelector_Create(filter_c_str)
             ret = self._init_from_selector(DSRef)
             if ret == -1:
-                raise ValueError(
+                raise SyclDeviceCreationError(
                     "Could not create a SyclDevice with the selector string"
                 )
         elif isinstance(arg, _SyclDevice):
             ret = self._init_from__SyclDevice(arg)
             if ret == -1:
-                raise ValueError(
+                raise SyclDeviceCreationError(
                     "Could not create a SyclDevice from _SyclDevice instance"
                 )
         elif arg is None:
             DSRef = DPCTLDefaultSelector_Create()
             ret = self._init_from_selector(DSRef)
             if ret == -1:
-                raise ValueError(
+                raise SyclDeviceCreationError(
                     "Could not create a SyclDevice from default selector"
                 )
         else:
@@ -746,7 +756,7 @@ cdef class SyclDevice(_SyclDevice):
         if count > 0:
             DVRef = DPCTLDevice_CreateSubDevicesEqually(self._device_ref, count)
         if DVRef is NULL:
-            raise SubDeviceCreationError(
+            raise SyclSubDeviceCreationError(
                 "Sub-devices were not created." if (count > 0) else
                 "Sub-devices were not created, "
                 "requested compute units count was zero."
@@ -785,7 +795,7 @@ cdef class SyclDevice(_SyclDevice):
             )
         free(counts_buff)
         if DVRef is NULL:
-            raise SubDeviceCreationError(
+            raise SyclSubDeviceCreationError(
                 "Sub-devices were not created." if (min_count > 0) else
                 "Sub-devices were not created, "
                 "sub-device execution units counts must be positive."
@@ -801,7 +811,7 @@ cdef class SyclDevice(_SyclDevice):
         cdef DPCTLDeviceVectorRef DVRef = NULL
         DVRef = DPCTLDevice_CreateSubDevicesByAffinity(self._device_ref, domain)
         if DVRef is NULL:
-            raise SubDeviceCreationError("Sub-devices were not created.")
+            raise SyclSubDeviceCreationError("Sub-devices were not created.")
         return _get_devices(DVRef)
 
     def create_sub_devices(self, **kwargs):
