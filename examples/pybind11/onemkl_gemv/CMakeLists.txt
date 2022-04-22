@@ -17,19 +17,19 @@ include(GNUInstallDirs)
 include(FetchContent)
 FetchContent_Declare(
   pybind11
-  URL https://github.com/pybind/pybind11/archive/refs/tags/v2.9.0.tar.gz
-  URL_HASH SHA256=057fb68dafd972bc13afb855f3b0d8cf0fa1a78ef053e815d9af79be7ff567cb
+  URL https://github.com/pybind/pybind11/archive/refs/tags/v2.9.2.tar.gz
+  URL_HASH SHA256=6bd528c4dbe2276635dc787b6b1f2e5316cf6b49ee3e150264e455a0d68d19c1
 )
 FetchContent_MakeAvailable(pybind11)
 
 find_package(PythonExtensions REQUIRED)
 find_package(Dpctl REQUIRED)
 
-find_library(mkl_core NAMES mkl_core PATH ${MKL_LIBRARY_DIR})
-find_library(mkl_sycl NAMES mkl_sycl PATH ${MKL_LIBRARY_DIR})
-find_library(mkl_intel_ilp64 NAMES mkl_intel_ilp64 PATH ${MKL_LIBRARY_DIR})
-find_library(mkl_tbb_thread NAMES mkl_tbb_thread PATH ${MKL_LIBRARY_DIR})
-find_library(tbb NAMES tbb PATH ${TBB_LIBRARY_DIR})
+find_library(mkl_core NAMES mkl_core PATHS ${MKL_LIBRARY_DIR} REQUIRED)
+find_library(mkl_sycl NAMES mkl_sycl PATHS ${MKL_LIBRARY_DIR} REQUIRED)
+find_library(mkl_intel_ilp64 NAMES mkl_intel_ilp64 PATHS ${MKL_LIBRARY_DIR} REQUIRED)
+find_library(mkl_tbb_thread NAMES mkl_tbb_thread PATHS ${MKL_LIBRARY_DIR} REQUIRED)
+find_library(tbb NAMES tbb PATHS ${TBB_LIBRARY_DIR} REQUIRED)
 
 set(py_module_name _onemkl)
 
@@ -41,12 +41,11 @@ target_include_directories(${py_module_name}
     PUBLIC ${MKL_INCLUDE_DIR} ${TBB_INCLUDE_DIR}
 )
 target_link_libraries(${py_module_name}
-    PUBLIC mkl_sycl mkl_intel_ilp64 mkl_tbb_thread mkl_core tbb
+    PRIVATE ${mkl_sycl} ${mkl_intel_ilp64} ${mkl_tbb_thread} ${mkl_core} ${tbb}
 )
 
 install(TARGETS ${py_module_name} DESTINATION sycl_gemm)
 target_include_directories(${py_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
-target_link_directories(${py_module_name} PUBLIC ${MKL_LIBRARY_DIR} ${TBB_LIBRARY_DIR})
 
 get_target_property(_sycl_gemm_sources ${py_module_name} SOURCES)
 set_source_files_properties(${_sycl_gemm_sources}

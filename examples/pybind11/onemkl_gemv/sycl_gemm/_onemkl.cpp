@@ -1,8 +1,10 @@
-#include "dpctl4pybind11.hpp"
+// clang-format off
 #include <CL/sycl.hpp>
 #include <oneapi/mkl.hpp>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include "dpctl4pybind11.hpp"
+// clang-format on
 
 namespace py = pybind11;
 
