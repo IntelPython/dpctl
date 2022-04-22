@@ -342,33 +342,7 @@ std::vector<py::ssize_t> f_contiguous_strides(int nd,
     }
 }
 
-template <std::size_t num>
-sycl::event keep_args_alive(sycl::queue q,
-                            const py::object (&py_objs)[num],
-                            const std::vector<sycl::event> &depends = {})
-{
-    sycl::event host_task_ev = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        std::array<std::shared_ptr<py::handle>, num> shp_arr;
-        for (std::size_t i = 0; i < num; ++i) {
-            shp_arr[i] = std::make_shared<py::handle>(py_objs[i]);
-            shp_arr[i]->inc_ref();
-        }
-        cgh.host_task([=]() {
-            bool guard = (Py_IsInitialized() && !_Py_IsFinalizing());
-            if (guard) {
-                PyGILState_STATE gstate;
-                gstate = PyGILState_Ensure();
-                for (std::size_t i = 0; i < num; ++i) {
-                    shp_arr[i]->dec_ref();
-                }
-                PyGILState_Release(gstate);
-            }
-        });
-    });
-
-    return host_task_ev;
-}
+using dpctl::utils::keep_args_alive;
 
 void simplify_iteration_space(int &nd,
                               const py::ssize_t *&shape,

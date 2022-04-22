@@ -8,34 +8,7 @@
 
 namespace py = pybind11;
 
-sycl::event keep_args_alive(sycl::queue q,
-                            py::object o1,
-                            py::object o2,
-                            py::object o3,
-                            const std::vector<sycl::event> &depends = {})
-{
-    sycl::event ht_event = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        std::shared_ptr<py::handle> shp1 = std::make_shared<py::handle>(o1);
-        std::shared_ptr<py::handle> shp2 = std::make_shared<py::handle>(o2);
-        std::shared_ptr<py::handle> shp3 = std::make_shared<py::handle>(o3);
-        shp1->inc_ref();
-        shp2->inc_ref();
-        shp3->inc_ref();
-        cgh.host_task([=]() {
-            bool guard = (Py_IsInitialized() && !_Py_IsFinalizing());
-            if (guard) {
-                PyGILState_STATE gstate;
-                gstate = PyGILState_Ensure();
-                shp1->dec_ref();
-                shp2->dec_ref();
-                shp3->dec_ref();
-                PyGILState_Release(gstate);
-            }
-        });
-    });
-    return ht_event;
-}
+using dpctl::utils::keep_args_alive;
 
 std::pair<sycl::event, sycl::event>
 gemv(sycl::queue q,
@@ -131,7 +104,8 @@ gemv(sycl::queue q,
         throw std::runtime_error("Type dispatch ran into trouble.");
     }
 
-    sycl::event ht_event = keep_args_alive(q, matrix, vector, result, {res_ev});
+    sycl::event ht_event =
+        keep_args_alive(q, {matrix, vector, result}, {res_ev});
 
     return std::make_pair(ht_event, res_ev);
 }
