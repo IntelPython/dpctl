@@ -84,7 +84,7 @@ offloaded_array_mod(sycl::queue &q,
     return res;
 }
 
-PYBIND11_MODULE(use_queue_device_ext, m)
+PYBIND11_MODULE(_use_queue_device, m)
 {
     // Import the dpctl extensions
     import_dpctl();

@@ -10,6 +10,7 @@ to dpctl.memory entities using `__sycl_usm_array_interface__`.
 ```
 source /opt/intel/oneapi/compiler/latest/env/vars.sh
 CXX=dpcpp CC=dpcpp python setup.py build_ext --inplace
+python -m pytest tests
 python example.py
 ```
 
@@ -17,7 +18,7 @@ python example.py
 
 ```
 (idp) [12:43:20 ansatnuc04 external_usm_allocation]$ python example.py
-<external_usm_alloc.DMatrix object at 0x7f2b98b4cef0>
+<external_usm_allocation._external_usm_alloc.DMatrix object at 0x7f2b98b4cef0>
 {'data': [94846745444352, True], 'shape': (5, 5), 'strides': None, 'version': 1, 'typestr': '|f8', 'syclobj': <capsule object "SyclQueueRef" at 0x7f2b9b941d80>}
 shared
 

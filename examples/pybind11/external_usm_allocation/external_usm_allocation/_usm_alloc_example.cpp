@@ -132,7 +132,7 @@ py::list tolist(DMatrix &m)
     return rows;
 }
 
-PYBIND11_MODULE(external_usm_alloc, m)
+PYBIND11_MODULE(_external_usm_alloc, m)
 {
     // Import the dpctl extensions
     import_dpctl();

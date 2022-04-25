@@ -9,7 +9,8 @@ extensions.
 
 ```
 source /opt/intel/oneapi/compiler/latest/env/vars.sh
-CXX=dpcpp CC=dpcpp python setup.py build_ext --inplace
+CXX=icpx python setup.py build_ext --inplace
+python -m pytest tests
 python example.py
 ```
 

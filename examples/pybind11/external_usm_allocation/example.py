@@ -16,7 +16,7 @@
 
 # coding: utf-8
 
-import external_usm_alloc as eua
+import external_usm_allocation as eua
 import numpy as np
 
 import dpctl

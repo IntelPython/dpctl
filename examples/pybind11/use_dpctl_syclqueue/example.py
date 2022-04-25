@@ -17,7 +17,7 @@
 # coding: utf-8
 
 import numpy as np
-import use_queue_device_ext as eg
+import use_queue_device as eg
 
 import dpctl
 
