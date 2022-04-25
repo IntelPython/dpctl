@@ -558,27 +558,30 @@ def test_pyx_capi_check_constants():
     assert cdouble_typenum == np.dtype(np.cdouble).num
 
 
+_all_dtypes = [
+    "b1",
+    "i1",
+    "u1",
+    "i2",
+    "u2",
+    "i4",
+    "u4",
+    "i8",
+    "u8",
+    "f2",
+    "f4",
+    "f8",
+    "c8",
+    "c16",
+]
+
+
 @pytest.mark.parametrize(
     "shape", [tuple(), (1,), (5,), (2, 3), (2, 3, 4), (2, 2, 2, 2, 2)]
 )
 @pytest.mark.parametrize(
     "dtype",
-    [
-        "b1",
-        "i1",
-        "u1",
-        "i2",
-        "u2",
-        "i4",
-        "u4",
-        "i8",
-        "u8",
-        "f2",
-        "f4",
-        "f8",
-        "c8",
-        "c16",
-    ],
+    _all_dtypes,
 )
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
 def test_tofrom_numpy(shape, dtype, usm_type):
@@ -593,22 +596,7 @@ def test_tofrom_numpy(shape, dtype, usm_type):
 
 @pytest.mark.parametrize(
     "dtype",
-    [
-        "b1",
-        "i1",
-        "u1",
-        "i2",
-        "u2",
-        "i4",
-        "u4",
-        "i8",
-        "u8",
-        "f2",
-        "f4",
-        "f8",
-        "c8",
-        "c16",
-    ],
+    _all_dtypes,
 )
 @pytest.mark.parametrize("src_usm_type", ["device", "shared", "host"])
 @pytest.mark.parametrize("dst_usm_type", ["device", "shared", "host"])
@@ -657,22 +645,7 @@ def test_setitem_same_dtype(dtype, src_usm_type, dst_usm_type):
 
 @pytest.mark.parametrize(
     "dtype",
-    [
-        "b1",
-        "i1",
-        "u1",
-        "i2",
-        "u2",
-        "i4",
-        "u4",
-        "i8",
-        "u8",
-        "f2",
-        "f4",
-        "f8",
-        "c8",
-        "c16",
-    ],
+    _all_dtypes,
 )
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
 def test_setitem_scalar(dtype, usm_type):
@@ -961,23 +934,33 @@ def test_real_imag_views():
 
 @pytest.mark.parametrize(
     "dtype",
-    [
-        "b1",
-        "i1",
-        "u1",
-        "i2",
-        "u2",
-        "i4",
-        "u4",
-        "i8",
-        "u8",
-        "f2",
-        "f4",
-        "f8",
-        "c8",
-        "c16",
-    ],
+    _all_dtypes,
 )
 def test_zeros(dtype):
     X = dpt.zeros(10, dtype=dtype)
     assert np.array_equal(dpt.asnumpy(X), np.zeros(10, dtype=dtype))
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    _all_dtypes,
+)
+def test_ones(dtype):
+    X = dpt.ones(10, dtype=dtype)
+    assert np.array_equal(dpt.asnumpy(X), np.ones(10, dtype=dtype))
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    _all_dtypes,
+)
+def test_full(dtype):
+    X = dpt.full(10, 4, dtype=dtype)
+    assert np.array_equal(dpt.asnumpy(X), np.full(10, 4, dtype=dtype))
+
+
+def test_full_dtype_inference():
+    assert np.issubdtype(dpt.full(10, 4).dtype, np.integer)
+    assert dpt.full(10, True).dtype is np.dtype(np.bool_)
+    assert np.issubdtype(dpt.full(10, 12.3).dtype, np.floating)
+    assert np.issubdtype(dpt.full(10, 0.3 - 2j).dtype, np.complexfloating)

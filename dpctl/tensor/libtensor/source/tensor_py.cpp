@@ -1697,6 +1697,96 @@ usm_ndarray_linear_sequence_affine(py::object start,
         linspace_affine_event);
 }
 
+/* ================ Full ================== */
+
+typedef sycl::event (*full_contig_fn_ptr_t)(sycl::queue,
+                                            size_t,
+                                            py::object,
+                                            char *,
+                                            const std::vector<sycl::event> &);
+
+static full_contig_fn_ptr_t full_contig_dispatch_vector[_ns::num_types];
+
+template <typename dstTy>
+sycl::event full_contig_impl(sycl::queue q,
+                             size_t nelems,
+                             py::object py_value,
+                             char *dst_p,
+                             const std::vector<sycl::event> &depends)
+{
+    dstTy fill_v;
+    try {
+        fill_v = unbox_py_scalar<dstTy>(py_value);
+    } catch (const py::error_already_set &e) {
+        throw;
+    }
+
+    sycl::event fill_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        dstTy *p = reinterpret_cast<dstTy *>(dst_p);
+        cgh.fill<dstTy>(p, fill_v, nelems);
+    });
+
+    return fill_ev;
+}
+
+template <typename fnT, typename Ty> struct FullContigFactory
+{
+    fnT get()
+    {
+        fnT f = full_contig_impl<Ty>;
+        return f;
+    }
+};
+
+std::pair<sycl::event, sycl::event>
+usm_ndarray_full(py::object py_value,
+                 dpctl::tensor::usm_ndarray dst,
+                 sycl::queue exec_q,
+                 const std::vector<sycl::event> &depends = {})
+{
+    // start, end should be coercible into data type of dst
+
+    py::ssize_t dst_nelems = dst.get_size();
+
+    if (dst_nelems == 0) {
+        // nothing to do
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
+    int dst_flags = dst.get_flags();
+
+    sycl::queue dst_q = dst.get_queue();
+    if (dst_q != exec_q && dst_q.get_context() != exec_q.get_context()) {
+        throw py::value_error(
+            "Execution queue context is not the same as allocation context");
+    }
+
+    int dst_typenum = dst.get_typenum();
+    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
+
+    char *dst_data = dst.get_data();
+    sycl::event full_event;
+
+    if (dst_nelems == 1 || (dst_flags & USM_ARRAY_C_CONTIGUOUS) ||
+        (dst_flags & USM_ARRAY_F_CONTIGUOUS))
+    {
+        auto fn = full_contig_dispatch_vector[dst_typeid];
+
+        sycl::event full_contig_event =
+            fn(exec_q, static_cast<size_t>(dst_nelems), py_value, dst_data,
+               depends);
+
+        return std::make_pair(
+            keep_args_alive(exec_q, {dst}, {full_contig_event}),
+            full_contig_event);
+    }
+    else {
+        throw std::runtime_error(
+            "Only population of contiguous usm_ndarray objects is supported.");
+    }
+}
+
 // populate dispatch tables
 void init_copy_and_cast_dispatch_tables(void)
 {
@@ -1747,7 +1837,41 @@ void init_copy_for_reshape_dispatch_vector(void)
         dvb2;
     dvb2.populate_dispatch_vector(lin_space_affine_dispatch_vector);
 
+    DispatchVectorBuilder<full_contig_fn_ptr_t, FullContigFactory, num_types>
+        dvb3;
+    dvb3.populate_dispatch_vector(full_contig_dispatch_vector);
+
     return;
+}
+
+std::string get_default_device_fp_type(sycl::device d)
+{
+    if (d.has(sycl::aspect::fp64)) {
+        return "f8";
+    }
+    else {
+        return "f4";
+    }
+}
+
+std::string get_default_device_int_type(sycl::device)
+{
+    return "i8";
+}
+
+std::string get_default_device_complex_type(sycl::device d)
+{
+    if (d.has(sycl::aspect::fp64)) {
+        return "c16";
+    }
+    else {
+        return "c8";
+    }
+}
+
+std::string get_default_device_bool_type(sycl::device)
+{
+    return "b1";
 }
 
 } // namespace
@@ -1816,4 +1940,34 @@ PYBIND11_MODULE(_tensor_impl, m)
           "Copy fom numpy array `src` into usm_ndarray `dst` synchronously.",
           py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
+
+    m.def("_full_usm_ndarray", &usm_ndarray_full,
+          "Populate usm_ndarray `dst` with given fill_value.",
+          py::arg("fill_value"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
+
+    m.def("default_device_fp_type", [](sycl::queue q) {
+        return get_default_device_fp_type(q.get_device());
+    });
+    m.def("default_device_fp_type",
+          [](sycl::device dev) { return get_default_device_fp_type(dev); });
+
+    m.def("default_device_int_type", [](sycl::queue q) {
+        return get_default_device_int_type(q.get_device());
+    });
+    m.def("default_device_int_type",
+          [](sycl::device dev) { return get_default_device_int_type(dev); });
+
+    m.def("default_device_bool_type", [](sycl::queue q) {
+        return get_default_device_bool_type(q.get_device());
+    });
+    m.def("default_device_bool_type",
+          [](sycl::device dev) { return get_default_device_bool_type(dev); });
+
+    m.def("default_device_complex_type", [](sycl::queue q) {
+        return get_default_device_complex_type(q.get_device());
+    });
+    m.def("default_device_complex_type", [](sycl::device dev) {
+        return get_default_device_complex_type(dev);
+    });
 }
