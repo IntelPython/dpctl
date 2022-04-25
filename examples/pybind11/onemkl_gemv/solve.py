@@ -35,21 +35,21 @@ def chebyshev(A, b, x0, nIters, lMax, lMin, depends=[]):
         if i == 0:
             p[:] = z
             alpha = 1 / d
-            he_axbpy, e_axbpy = dpctl.SyclEvent(), dpctl.SyclEvent()
+            he_axpby, e_axpby = dpctl.SyclEvent(), dpctl.SyclEvent()
         elif i == 1:
             beta = 0.5 * (c * alpha) ** 2
             alpha = 1 / (d - beta / alpha)
-            he_axbpy, e_axbpy = sycl_gemm.axbpy_inplace(
+            he_axpby, e_axpby = sycl_gemm.axpby_inplace(
                 exec_queue, 1, z, beta, p, depends=[z_ev]
             )  # p = z + beta * p
         else:
             beta = (c / 2 * alpha) ** 2
             alpha = 1 / (d - beta / alpha)
-            he_axbpy, e_axbpy = sycl_gemm.axbpy_inplace(
+            he_axpby, e_axpby = sycl_gemm.axpby_inplace(
                 exec_queue, 1, z, beta, p, depends=[z_ev]
             )  # p = z + beta * p
-        h_x, e_x = sycl_gemm.axbpy_inplace(
-            exec_queue, alpha, p, 1, x, depends=[e_axbpy, e_x]
+        h_x, e_x = sycl_gemm.axpby_inplace(
+            exec_queue, alpha, p, 1, x, depends=[e_axpby, e_x]
         )  # x = x + alpha * p
         he_dot, e_dot = sycl_gemm.gemv(
             exec_queue, A, x, Ax, depends=[e_x]
@@ -137,33 +137,33 @@ def cg_solve(A, b):
         alpha = rsold / sycl_gemm.dot_blocking(  # alpha = rsold / dot(p, Ap)
             exec_queue, p, Ap, depends=[e_dot]
         )
-        he1_axbpy, e1_axbpy = sycl_gemm.axbpy_inplace(
+        he1_axpby, e1_axpby = sycl_gemm.axpby_inplace(
             exec_queue, alpha, p, 1, x, depends=[e_p, e_x]
         )  # x = x + alpha * p
-        all_host_tasks.append(he1_axbpy)
-        e_x = e1_axbpy
+        all_host_tasks.append(he1_axpby)
+        e_x = e1_axpby
 
-        he2_axbpy, e2_axbpy = sycl_gemm.axbpy_inplace(
+        he2_axpby, e2_axpby = sycl_gemm.axpby_inplace(
             exec_queue, -alpha, Ap, 1, r, depends=[e_p]
         )  # r = r - alpha * Ap
-        all_host_tasks.append(he2_axbpy)
+        all_host_tasks.append(he2_axpby)
 
         rsnew = sycl_gemm.norm_squared_blocking(
-            exec_queue, r, depends=[e2_axbpy]
+            exec_queue, r, depends=[e2_axpby]
         )
         if rsnew < 1e-20:
-            e1_axbpy.wait()
+            e1_axpby.wait()
             converged = i
             break
         beta = rsnew / rsold
 
-        he3_axbpy, e3_axbpy = sycl_gemm.axbpy_inplace(
-            exec_queue, 1, r, beta, p, depends=[e1_axbpy, e2_axbpy]
+        he3_axpby, e3_axpby = sycl_gemm.axpby_inplace(
+            exec_queue, 1, r, beta, p, depends=[e1_axpby, e2_axpby]
         )  # p = r + beta * p
 
         rsold = rsnew
-        all_host_tasks.append(he3_axbpy)
-        e_p = e3_axbpy
+        all_host_tasks.append(he3_axpby)
+        e_p = e3_axpby
 
     dpctl.SyclEvent.wait_for(all_host_tasks)
     return x, converged

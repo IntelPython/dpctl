@@ -1,5 +1,5 @@
 from ._onemkl import (
-    axbpy_inplace,
+    axpby_inplace,
     dot_blocking,
     gemv,
     norm_squared_blocking,
@@ -9,7 +9,7 @@ from ._onemkl import (
 __all__ = [
     "gemv",
     "sub",
-    "axbpy_inplace",
+    "axpby_inplace",
     "norm_squared_blocking",
     "dot_blocking",
 ]

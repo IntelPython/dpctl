@@ -212,10 +212,10 @@ sub(sycl::queue q,
     return std::make_pair(ht_event, res_ev);
 }
 
-template <typename T> class axbpy_inplace_kern;
+template <typename T> class axpby_inplace_kern;
 
 template <typename T>
-sycl::event axbpy_inplace_impl(sycl::queue q,
+sycl::event axpby_inplace_impl(sycl::queue q,
                                size_t nelems,
                                py::object pyobj_a,
                                const char *x_typeless,
@@ -231,7 +231,7 @@ sycl::event axbpy_inplace_impl(sycl::queue q,
 
     sycl::event res_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
-        cgh.parallel_for<axbpy_inplace_kern<T>>(sycl::range<1>{nelems},
+        cgh.parallel_for<axpby_inplace_kern<T>>(sycl::range<1>{nelems},
                                                 [=](sycl::id<1> id) {
                                                     auto i = id.get(0);
                                                     y[i] = a * x[i] + b * y[i];
@@ -243,7 +243,7 @@ sycl::event axbpy_inplace_impl(sycl::queue q,
 
 // y = a * x + b * y
 std::pair<sycl::event, sycl::event>
-axbpy_inplace(sycl::queue q,
+axpby_inplace(sycl::queue q,
               py::object a,
               dpctl::tensor::usm_ndarray x,
               py::object b,
@@ -287,22 +287,22 @@ axbpy_inplace(sycl::queue q,
     sycl::event res_ev;
     if (x_typenum == UAR_DOUBLE) {
         using T = double;
-        res_ev = axbpy_inplace_impl<T>(q, n, a, x_typeless_ptr, b,
+        res_ev = axpby_inplace_impl<T>(q, n, a, x_typeless_ptr, b,
                                        y_typeless_ptr, depends);
     }
     else if (x_typenum == UAR_FLOAT) {
         using T = float;
-        res_ev = axbpy_inplace_impl<T>(q, n, a, x_typeless_ptr, b,
+        res_ev = axpby_inplace_impl<T>(q, n, a, x_typeless_ptr, b,
                                        y_typeless_ptr, depends);
     }
     else if (x_typenum == UAR_CDOUBLE) {
         using T = std::complex<double>;
-        res_ev = axbpy_inplace_impl<T>(q, n, a, x_typeless_ptr, b,
+        res_ev = axpby_inplace_impl<T>(q, n, a, x_typeless_ptr, b,
                                        y_typeless_ptr, depends);
     }
     else if (x_typenum == UAR_CFLOAT) {
         using T = std::complex<float>;
-        res_ev = axbpy_inplace_impl<T>(q, n, a, x_typeless_ptr, b,
+        res_ev = axpby_inplace_impl<T>(q, n, a, x_typeless_ptr, b,
                                        y_typeless_ptr, depends);
     }
     else {
@@ -528,7 +528,7 @@ PYBIND11_MODULE(_onemkl, m)
     m.def("sub", &sub, "Subtraction: out = v1 - v2", py::arg("exec_queue"),
           py::arg("in1"), py::arg("in2"), py::arg("out"),
           py::arg("depends") = py::list());
-    m.def("axbpy_inplace", &axbpy_inplace, "y = a * x + b * y",
+    m.def("axpby_inplace", &axpby_inplace, "y = a * x + b * y",
           py::arg("exec_queue"), py::arg("a"), py::arg("x"), py::arg("b"),
           py::arg("y"), py::arg("depends") = py::list());
     m.def("norm_squared_blocking", &norm_squared_blocking, "norm(r)**2",
