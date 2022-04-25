@@ -343,6 +343,38 @@ T norm_squared_blocking_impl(sycl::queue q,
     return ha[0];
 }
 
+template <typename T> class complex_norm_squared_blocking_kern;
+
+template <typename T>
+T complex_norm_squared_blocking_impl(
+    sycl::queue q,
+    size_t nelems,
+    const char *r_typeless,
+    const std::vector<sycl::event> &depends = {})
+{
+    const std::complex<T> *r =
+        reinterpret_cast<const std::complex<T> *>(r_typeless);
+
+    sycl::buffer<T, 1> sum_sq_buf(sycl::range<1>{1});
+
+    q.submit([&](sycl::handler &cgh) {
+         cgh.depends_on(depends);
+         auto sum_sq_reduction = sycl::reduction(
+             sum_sq_buf, cgh, sycl::plus<T>(),
+             {sycl::property::reduction::initialize_to_identity{}});
+         cgh.parallel_for<complex_norm_squared_blocking_kern<T>>(
+             sycl::range<1>{nelems}, sum_sq_reduction,
+             [=](sycl::id<1> id, auto &sum_sq) {
+                 auto i = id.get(0);
+                 sum_sq +=
+                     r[i].real() * r[i].real() + r[i].imag() * r[i].imag();
+             });
+     }).wait_and_throw();
+
+    sycl::host_accessor ha(sum_sq_buf);
+    return ha[0];
+}
+
 py::object norm_squared_blocking(sycl::queue q,
                                  dpctl::tensor::usm_ndarray r,
                                  const std::vector<sycl::event> depends = {})
@@ -380,22 +412,105 @@ py::object norm_squared_blocking(sycl::queue q,
         T n_sq = norm_squared_blocking_impl<T>(q, n, r_typeless_ptr, depends);
         res = py::float_(n_sq);
     }
-#if 0
     else if (r_typenum == UAR_CDOUBLE) {
         using T = std::complex<double>;
-        double n_sq = norm_squared_blocking_impl<T>(
-	    q, n, r_typeless_ptr,
-	    depends);
-	res = py::float_(n_sq);
+        double n_sq = complex_norm_squared_blocking_impl<double>(
+            q, n, r_typeless_ptr, depends);
+        res = py::float_(n_sq);
     }
     else if (r_typenum == UAR_CFLOAT) {
         using T = std::complex<float>;
-        float n_sq = norm_squared_blocking_impl<T>(
-	    q, n, r_typeless_ptr,
-	    depends);
-	res = py::float_(n_sq);
+        float n_sq = complex_norm_squared_blocking_impl<float>(
+            q, n, r_typeless_ptr, depends);
+        res = py::float_(n_sq);
     }
-#endif
+    else {
+        throw std::runtime_error("Type dispatch ran into trouble.");
+    }
+
+    return res;
+}
+
+py::object dot_blocking(sycl::queue q,
+                        dpctl::tensor::usm_ndarray v1,
+                        dpctl::tensor::usm_ndarray v2,
+                        const std::vector<sycl::event> &depends = {})
+{
+    if (v1.get_ndim() != 1 || v2.get_ndim() != 1) {
+        throw std::runtime_error("Expecting two vectors");
+    }
+
+    py::ssize_t n = v1.get_shape(0); // get length of the vector
+
+    if (n != v2.get_shape(0)) {
+        throw std::runtime_error("Length of vectors are not the same");
+    }
+
+    int v1_flags = v1.get_flags();
+    int v2_flags = v2.get_flags();
+
+    if (!(v1_flags & (USM_ARRAY_C_CONTIGUOUS | USM_ARRAY_F_CONTIGUOUS)) ||
+        !(v2_flags & (USM_ARRAY_C_CONTIGUOUS | USM_ARRAY_F_CONTIGUOUS)))
+    {
+        throw std::runtime_error("Vectors must be contiguous.");
+    }
+
+    int v1_typenum = v1.get_typenum();
+    int v2_typenum = v2.get_typenum();
+
+    if ((v1_typenum != v2_typenum) ||
+        ((v1_typenum != UAR_DOUBLE) && (v1_typenum != UAR_FLOAT) &&
+         (v1_typenum != UAR_CDOUBLE) && (v1_typenum != UAR_CFLOAT)))
+    {
+        throw py::value_error(
+            "Data types of vectors must be the same. "
+            "Only real and complex floating types are supported.");
+    }
+
+    const char *v1_typeless_ptr = v1.get_data();
+    const char *v2_typeless_ptr = v2.get_data();
+    py::object res;
+
+    if (v1_typenum == UAR_DOUBLE) {
+        using T = double;
+        T *res_usm = sycl::malloc_device<T>(1, q);
+        sycl::event dot_ev = oneapi::mkl::blas::row_major::dot(
+            q, n, reinterpret_cast<const T *>(v1_typeless_ptr), 1,
+            reinterpret_cast<const T *>(v2_typeless_ptr), 1, res_usm, depends);
+        T res_v{};
+        q.copy<T>(res_usm, &res_v, 1, {dot_ev}).wait_and_throw();
+        res = py::float_(res_v);
+    }
+    else if (v1_typenum == UAR_FLOAT) {
+        using T = float;
+        T *res_usm = sycl::malloc_device<T>(1, q);
+        sycl::event dot_ev = oneapi::mkl::blas::row_major::dot(
+            q, n, reinterpret_cast<const T *>(v1_typeless_ptr), 1,
+            reinterpret_cast<const T *>(v2_typeless_ptr), 1, res_usm, depends);
+        T res_v(0);
+        q.copy<T>(res_usm, &res_v, 1, {dot_ev}).wait_and_throw();
+        res = py::float_(res_v);
+    }
+    else if (v1_typenum == UAR_CDOUBLE) {
+        using T = std::complex<double>;
+        T *res_usm = sycl::malloc_device<T>(1, q);
+        sycl::event dotc_ev = oneapi::mkl::blas::row_major::dotc(
+            q, n, reinterpret_cast<const T *>(v1_typeless_ptr), 1,
+            reinterpret_cast<const T *>(v2_typeless_ptr), 1, res_usm, depends);
+        T res_v{};
+        q.copy<T>(res_usm, &res_v, 1, {dotc_ev}).wait_and_throw();
+        res = py::cast(res_v);
+    }
+    else if (v1_typenum == UAR_CFLOAT) {
+        using T = std::complex<float>;
+        T *res_usm = sycl::malloc_device<T>(1, q);
+        sycl::event dotc_ev = oneapi::mkl::blas::row_major::dotc(
+            q, n, reinterpret_cast<const T *>(v1_typeless_ptr), 1,
+            reinterpret_cast<const T *>(v2_typeless_ptr), 1, res_usm, depends);
+        T res_v{};
+        q.copy<T>(res_usm, &res_v, 1, {dotc_ev}).wait_and_throw();
+        res = py::cast(res_v);
+    }
     else {
         throw std::runtime_error("Type dispatch ran into trouble.");
     }
@@ -418,4 +533,6 @@ PYBIND11_MODULE(_onemkl, m)
           py::arg("y"), py::arg("depends") = py::list());
     m.def("norm_squared_blocking", &norm_squared_blocking, "norm(r)**2",
           py::arg("exec_queue"), py::arg("r"), py::arg("depends") = py::list());
+    m.def("dot_blocking", &dot_blocking, "<v1, v2>", py::arg("exec_queue"),
+          py::arg("v1"), py::arg("v2"), py::arg("depends") = py::list());
 }
