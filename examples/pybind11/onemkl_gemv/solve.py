@@ -1,3 +1,19 @@
+#                      Data Parallel Control (dpctl)
+#
+# Copyright 2020-2021 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import numpy as np
 import sycl_gemm
 
@@ -197,15 +213,16 @@ def cg_solve_numpy(A, b):
 
 if __name__ == "__main__":
     n = 32
-    lambda_max = 4
-    lambda_min = 4 * np.square(np.sin(np.pi / (2 * (n + 2))))
-    # eigenvalues of cartan matrix are
     Anp = (
         2 * np.eye(n, n, k=0, dtype="d")
         + np.eye(n, n, k=1, dtype="d")
         + np.eye(n, n, k=-1, dtype="d")
     )
     bnp = np.geomspace(0.5, 2, n, dtype="d")
+    # bounds on eigenvalues of cartan matrix are, needed only
+    # for the Chebyshev solver
+    lambda_max = 4
+    lambda_min = 4 * np.square(np.sin(np.pi / (2 * (n + 2))))
 
     q = dpctl.SyclQueue(property="enable_profiling")
     A = dpt.asarray(Anp, dtype="d", usm_type="device", sycl_queue=q)
@@ -215,15 +232,21 @@ if __name__ == "__main__":
     t = dpctl.SyclTimer()
     with t(dev.sycl_queue):
         x, conv = cg_solve(A, b)
-    print((conv, t.dt))
+    print("SYCL solver, 1st run: ", (conv, t.dt))
     with t(dev.sycl_queue):
         x, conv = cg_solve(A, b)
-    print(dpt.asnumpy(x))
-    print((conv, t.dt))
-    with t(dev.sycl_queue):
-        print(check_with_numpy(Anp, bnp))
-    print(t.dt)
+    print("SYCL solver, 2nd run: ", (conv, t.dt))
+
+    x_ref = check_with_numpy(Anp, bnp)  # solve usign LU solver
+
     with t(dev.sycl_queue):
         x_np, conv = cg_solve_numpy(dpt.asnumpy(A), dpt.asnumpy(b))
-    print(x_np, conv)
-    print(t.dt)
+    print("NumPy's powered CG solver: ", (conv, t.dt))
+    print(
+        "SYCL cg-solver solution close to reference: ",
+        np.allclose(dpt.asnumpy(x), x_ref),
+    )
+    print(
+        "NumPy's cg-solver solution close to reference: ",
+        np.allclose(x_np, x_ref),
+    )
