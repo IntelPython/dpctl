@@ -240,6 +240,7 @@ sub(sycl::queue q,
     return std::make_pair(ht_event, res_ev);
 }
 
+template <typename T> class axpy_inplace_kern;
 template <typename T> class axpby_inplace_kern;
 
 template <typename T>
@@ -259,11 +260,20 @@ sycl::event axpby_inplace_impl(sycl::queue q,
 
     sycl::event res_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
-        cgh.parallel_for<axpby_inplace_kern<T>>(sycl::range<1>{nelems},
-                                                [=](sycl::id<1> id) {
-                                                    auto i = id.get(0);
-                                                    y[i] = a * x[i] + b * y[i];
-                                                });
+        if (b == T(1)) {
+            cgh.parallel_for<axpy_inplace_kern<T>>(sycl::range<1>{nelems},
+                                                   [=](sycl::id<1> id) {
+                                                       auto i = id.get(0);
+                                                       y[i] += a * x[i];
+                                                   });
+        }
+        else {
+            cgh.parallel_for<axpby_inplace_kern<T>>(
+                sycl::range<1>{nelems}, [=](sycl::id<1> id) {
+                    auto i = id.get(0);
+                    y[i] = b * y[i] + a * x[i];
+                });
+        }
     });
 
     return res_ev;
