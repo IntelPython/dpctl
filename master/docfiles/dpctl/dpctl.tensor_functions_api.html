@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.13.0dev0+69.g77e6a6021 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.13.0dev0+74.g22d231c30 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+69.g77e6a6021
+                0.13.0dev0+74.g22d231c30
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -192,7 +192,7 @@ otherwise C-contiguous</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.empty">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'f8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.empty" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.empty" title="Permalink to this definition"></a></dt>
 <dd><p>Creates <cite>usm_ndarray</cite> from uninitialized USM allocation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -200,7 +200,40 @@ otherwise C-contiguous</p></li>
 <li><p><strong>shape</strong> (<em>tuple</em>) – Dimensions of the array to be created.</p></li>
 <li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
 a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
-scalar type. Default: “f8”</p></li>
+scalar type. Default: None</p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: “C”</p></li>
+<li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
+is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector string,
+an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a
+non-partitioned SYCL device, an instance of
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returnedby
+<cite>dpctl.tensor.usm_array.device</cite>. Default: <cite>None</cite>.</p></li>
+<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>|</em><em>&quot;shared&quot;</em><em>|</em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL USM
+allocation for the output array. Default: <cite>“device”</cite>.</p></li>
+<li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
+for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
+are exclusive keywords, i.e. use one or another. If both are
+specified, a <cite>TypeError</cite> is raised unless both imply the same
+underlying SYCL queue to be used. If both a <cite>None</cite>, the
+<cite>dpctl.SyclQueue()</cite> is used for allocation and copying.
+Default: <cite>None</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.empty_like">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">empty_like</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#empty_like"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.empty_like" title="Permalink to this definition"></a></dt>
+<dd><p>Creates <cite>usm_ndarray</cite> from uninitialized USM allocation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array from which to derive the output array
+shape.</p></li>
+<li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
+a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
+scalar type. Default: None</p></li>
 <li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: “C”</p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
 is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector string,
@@ -264,6 +297,138 @@ array is created</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.full">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#full"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.full" title="Permalink to this definition"></a></dt>
+<dd><p>Creates <cite>usm_ndarray</cite> with elements of one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> (<em>tuple</em>) – Dimensions of the array to be created.</p></li>
+<li><p><strong>fill_value</strong> (<em>int</em><em>,</em><em>float</em><em>,</em><em>complex</em>) – fill value</p></li>
+<li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
+a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
+scalar type. Default: None</p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: “C”</p></li>
+<li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
+is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector string,
+an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a
+non-partitioned SYCL device, an instance of
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returnedby
+<cite>dpctl.tensor.usm_array.device</cite>. Default: <cite>None</cite>.</p></li>
+<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>|</em><em>&quot;shared&quot;</em><em>|</em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL USM
+allocation for the output array. Default: <cite>“device”</cite>.</p></li>
+<li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
+for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
+are exclusive keywords, i.e. use one or another. If both are
+specified, a <cite>TypeError</cite> is raised unless both imply the same
+underlying SYCL queue to be used. If both a <cite>None</cite>, the
+<cite>dpctl.SyclQueue()</cite> is used for allocation and copying.
+Default: <cite>None</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.full_like">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">full_like</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#full_like"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.full_like" title="Permalink to this definition"></a></dt>
+<dd><p>Creates <cite>usm_ndarray</cite> from USM allocation initialized with zeros.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array from which to derive the output array
+shape.</p></li>
+<li><p><strong>fill_value</strong> – the value to fill array with</p></li>
+<li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
+a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
+scalar type. Default: None</p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: “C”</p></li>
+<li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
+is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector string,
+an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a
+non-partitioned SYCL device, an instance of
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returnedby
+<cite>dpctl.tensor.usm_array.device</cite>. Default: <cite>None</cite>.</p></li>
+<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>|</em><em>&quot;shared&quot;</em><em>|</em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL USM
+allocation for the output array. Default: <cite>“device”</cite>.</p></li>
+<li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
+for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
+are exclusive keywords, i.e. use one or another. If both are
+specified, a <cite>TypeError</cite> is raised unless both imply the same
+underlying SYCL queue to be used. If both a <cite>None</cite>, the
+<cite>dpctl.SyclQueue()</cite> is used for allocation and copying.
+Default: <cite>None</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.ones">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">ones</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#ones"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.ones" title="Permalink to this definition"></a></dt>
+<dd><p>Creates <cite>usm_ndarray</cite> with elements of one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> (<em>tuple</em>) – Dimensions of the array to be created.</p></li>
+<li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
+a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
+scalar type. Default: None</p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: “C”</p></li>
+<li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
+is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector string,
+an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a
+non-partitioned SYCL device, an instance of
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returnedby
+<cite>dpctl.tensor.usm_array.device</cite>. Default: <cite>None</cite>.</p></li>
+<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>|</em><em>&quot;shared&quot;</em><em>|</em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL USM
+allocation for the output array. Default: <cite>“device”</cite>.</p></li>
+<li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
+for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
+are exclusive keywords, i.e. use one or another. If both are
+specified, a <cite>TypeError</cite> is raised unless both imply the same
+underlying SYCL queue to be used. If both a <cite>None</cite>, the
+<cite>dpctl.SyclQueue()</cite> is used for allocation and copying.
+Default: <cite>None</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.ones_like">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">ones_like</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#ones_like"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.ones_like" title="Permalink to this definition"></a></dt>
+<dd><p>Creates <cite>usm_ndarray</cite> from USM allocation initialized with zeros.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array from which to derive the output array
+shape.</p></li>
+<li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
+a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
+scalar type. Default: None</p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: “C”</p></li>
+<li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
+is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector string,
+an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a
+non-partitioned SYCL device, an instance of
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returnedby
+<cite>dpctl.tensor.usm_array.device</cite>. Default: <cite>None</cite>.</p></li>
+<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>|</em><em>&quot;shared&quot;</em><em>|</em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL USM
+allocation for the output array. Default: <cite>“device”</cite>.</p></li>
+<li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
+for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
+are exclusive keywords, i.e. use one or another. If both are
+specified, a <cite>TypeError</cite> is raised unless both imply the same
+underlying SYCL queue to be used. If both a <cite>None</cite>, the
+<cite>dpctl.SyclQueue()</cite> is used for allocation and copying.
+Default: <cite>None</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.to_numpy">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">to_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usm_ary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_copy_utils.html#to_numpy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.to_numpy" title="Permalink to this definition"></a></dt>
 <dd><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <cite>usm_ary</cite>
@@ -280,7 +445,7 @@ into <cite>numpy.ndarray</cite> instance of the same shape and same data type.</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.zeros">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'f8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#zeros"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.zeros" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#zeros"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.zeros" title="Permalink to this definition"></a></dt>
 <dd><p>Creates <cite>usm_ndarray</cite> with zero elements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -288,7 +453,40 @@ into <cite>numpy.ndarray</cite> instance of the same shape and same data type.</
 <li><p><strong>shape</strong> (<em>tuple</em>) – Dimensions of the array to be created.</p></li>
 <li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
 a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
-scalar type. Default: “f8”</p></li>
+scalar type. Default: None</p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: “C”</p></li>
+<li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
+is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector string,
+an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a
+non-partitioned SYCL device, an instance of
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returnedby
+<cite>dpctl.tensor.usm_array.device</cite>. Default: <cite>None</cite>.</p></li>
+<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>|</em><em>&quot;shared&quot;</em><em>|</em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL USM
+allocation for the output array. Default: <cite>“device”</cite>.</p></li>
+<li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
+for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
+are exclusive keywords, i.e. use one or another. If both are
+specified, a <cite>TypeError</cite> is raised unless both imply the same
+underlying SYCL queue to be used. If both a <cite>None</cite>, the
+<cite>dpctl.SyclQueue()</cite> is used for allocation and copying.
+Default: <cite>None</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.zeros_like">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">zeros_like</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#zeros_like"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.zeros_like" title="Permalink to this definition"></a></dt>
+<dd><p>Creates <cite>usm_ndarray</cite> from USM allocation initialized with zeros.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array from which to derive the output array
+shape.</p></li>
+<li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
+a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
+scalar type. Default: None</p></li>
 <li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: “C”</p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
 is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector string,
