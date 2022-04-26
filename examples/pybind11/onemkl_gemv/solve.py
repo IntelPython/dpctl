@@ -146,24 +146,27 @@ def cg_solve(A, b):
     e_p = dpctl.SyclEvent()
     e_x = dpctl.SyclEvent()
     for i in range(max_iters):
-        he_dot, e_dot = sycl_gemm.gemv(
-            exec_queue, A, p, Ap, depends=[e_p]
-        )  # Ap = A @ p
+        # Ap = A @ p
+        he_dot, e_dot = sycl_gemm.gemv(exec_queue, A, p, Ap, depends=[e_p])
         all_host_tasks.append(he_dot)
-        alpha = rsold / sycl_gemm.dot_blocking(  # alpha = rsold / dot(p, Ap)
+        # alpha = rsold / dot(p, Ap)
+        alpha = rsold / sycl_gemm.dot_blocking(
             exec_queue, p, Ap, depends=[e_dot]
         )
+        # x = x + alpha * p
         he1_axpby, e1_axpby = sycl_gemm.axpby_inplace(
             exec_queue, alpha, p, 1, x, depends=[e_p, e_x]
-        )  # x = x + alpha * p
+        )
         all_host_tasks.append(he1_axpby)
         e_x = e1_axpby
 
+        # r = r - alpha * Ap
         he2_axpby, e2_axpby = sycl_gemm.axpby_inplace(
             exec_queue, -alpha, Ap, 1, r, depends=[e_p]
-        )  # r = r - alpha * Ap
+        )
         all_host_tasks.append(he2_axpby)
 
+        # rsnew = dot(r, r)
         rsnew = sycl_gemm.norm_squared_blocking(
             exec_queue, r, depends=[e2_axpby]
         )
@@ -173,9 +176,10 @@ def cg_solve(A, b):
             break
         beta = rsnew / rsold
 
+        # p = r + beta * p
         he3_axpby, e3_axpby = sycl_gemm.axpby_inplace(
             exec_queue, 1, r, beta, p, depends=[e1_axpby, e2_axpby]
-        )  # p = r + beta * p
+        )
 
         rsold = rsnew
         all_host_tasks.append(he3_axpby)
