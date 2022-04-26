@@ -560,6 +560,7 @@ PYBIND11_MODULE(_onemkl, m)
 {
     // Import the dpctl extensions
     import_dpctl();
+
     m.def("gemv", &gemv, "Uses oneMKL to compute dot(matrix, vector)",
           py::arg("exec_queue"), py::arg("Amatrix"), py::arg("xvec"),
           py::arg("resvec"), py::arg("depends") = py::list());
