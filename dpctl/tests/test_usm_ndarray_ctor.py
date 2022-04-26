@@ -1129,3 +1129,35 @@ def test_full_like(dt, usm_kind):
     assert X.usm_type == Y.usm_type
     assert X.sycl_queue == Y.sycl_queue
     assert np.array_equal(dpt.asnumpy(Y), np.ones(X.shape, dtype=X.dtype))
+
+
+def test_common_arg_validation():
+    order = "I"
+    # invalid order must raise ValueError
+    with pytest.raises(ValueError):
+        dpt.empty(10, order=order)
+    with pytest.raises(ValueError):
+        dpt.zeros(10, order=order)
+    with pytest.raises(ValueError):
+        dpt.ones(10, order=order)
+    with pytest.raises(ValueError):
+        dpt.full(10, 1, order=order)
+    X = dpt.empty(10)
+    with pytest.raises(ValueError):
+        dpt.empty_like(X, order=order)
+    with pytest.raises(ValueError):
+        dpt.zeros_like(X, order=order)
+    with pytest.raises(ValueError):
+        dpt.ones_like(X, order=order)
+    with pytest.raises(ValueError):
+        dpt.full_like(X, 1, order=order)
+    X = dict()
+    # test for type validation
+    with pytest.raises(TypeError):
+        dpt.empty_like(X)
+    with pytest.raises(TypeError):
+        dpt.zeros_like(X)
+    with pytest.raises(TypeError):
+        dpt.ones_like(X)
+    with pytest.raises(TypeError):
+        dpt.full_like(X, 1)
