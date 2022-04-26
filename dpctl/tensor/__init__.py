@@ -22,7 +22,18 @@
 """
 
 from dpctl.tensor._copy_utils import asnumpy, astype, copy, from_numpy, to_numpy
-from dpctl.tensor._ctors import arange, asarray, empty, zeros
+from dpctl.tensor._ctors import (
+    arange,
+    asarray,
+    empty,
+    empty_like,
+    full,
+    full_like,
+    ones,
+    ones_like,
+    zeros,
+    zeros_like,
+)
 from dpctl.tensor._device import Device
 from dpctl.tensor._dlpack import from_dlpack
 from dpctl.tensor._manipulation_functions import (
@@ -46,6 +57,12 @@ __all__ = [
     "copy",
     "empty",
     "zeros",
+    "ones",
+    "full",
+    "empty_like",
+    "zeros_like",
+    "ones_like",
+    "full_like",
     "flip",
     "reshape",
     "roll",

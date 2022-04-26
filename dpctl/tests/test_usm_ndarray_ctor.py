@@ -558,27 +558,30 @@ def test_pyx_capi_check_constants():
     assert cdouble_typenum == np.dtype(np.cdouble).num
 
 
+_all_dtypes = [
+    "b1",
+    "i1",
+    "u1",
+    "i2",
+    "u2",
+    "i4",
+    "u4",
+    "i8",
+    "u8",
+    "f2",
+    "f4",
+    "f8",
+    "c8",
+    "c16",
+]
+
+
 @pytest.mark.parametrize(
     "shape", [tuple(), (1,), (5,), (2, 3), (2, 3, 4), (2, 2, 2, 2, 2)]
 )
 @pytest.mark.parametrize(
     "dtype",
-    [
-        "b1",
-        "i1",
-        "u1",
-        "i2",
-        "u2",
-        "i4",
-        "u4",
-        "i8",
-        "u8",
-        "f2",
-        "f4",
-        "f8",
-        "c8",
-        "c16",
-    ],
+    _all_dtypes,
 )
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
 def test_tofrom_numpy(shape, dtype, usm_type):
@@ -593,22 +596,7 @@ def test_tofrom_numpy(shape, dtype, usm_type):
 
 @pytest.mark.parametrize(
     "dtype",
-    [
-        "b1",
-        "i1",
-        "u1",
-        "i2",
-        "u2",
-        "i4",
-        "u4",
-        "i8",
-        "u8",
-        "f2",
-        "f4",
-        "f8",
-        "c8",
-        "c16",
-    ],
+    _all_dtypes,
 )
 @pytest.mark.parametrize("src_usm_type", ["device", "shared", "host"])
 @pytest.mark.parametrize("dst_usm_type", ["device", "shared", "host"])
@@ -657,22 +645,7 @@ def test_setitem_same_dtype(dtype, src_usm_type, dst_usm_type):
 
 @pytest.mark.parametrize(
     "dtype",
-    [
-        "b1",
-        "i1",
-        "u1",
-        "i2",
-        "u2",
-        "i4",
-        "u4",
-        "i8",
-        "u8",
-        "f2",
-        "f4",
-        "f8",
-        "c8",
-        "c16",
-    ],
+    _all_dtypes,
 )
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
 def test_setitem_scalar(dtype, usm_type):
@@ -961,23 +934,230 @@ def test_real_imag_views():
 
 @pytest.mark.parametrize(
     "dtype",
-    [
-        "b1",
-        "i1",
-        "u1",
-        "i2",
-        "u2",
-        "i4",
-        "u4",
-        "i8",
-        "u8",
-        "f2",
-        "f4",
-        "f8",
-        "c8",
-        "c16",
-    ],
+    _all_dtypes,
 )
 def test_zeros(dtype):
     X = dpt.zeros(10, dtype=dtype)
     assert np.array_equal(dpt.asnumpy(X), np.zeros(10, dtype=dtype))
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    _all_dtypes,
+)
+def test_ones(dtype):
+    X = dpt.ones(10, dtype=dtype)
+    assert np.array_equal(dpt.asnumpy(X), np.ones(10, dtype=dtype))
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    _all_dtypes,
+)
+def test_full(dtype):
+    X = dpt.full(10, 4, dtype=dtype)
+    assert np.array_equal(dpt.asnumpy(X), np.full(10, 4, dtype=dtype))
+
+
+def test_full_dtype_inference():
+    assert np.issubdtype(dpt.full(10, 4).dtype, np.integer)
+    assert dpt.full(10, True).dtype is np.dtype(np.bool_)
+    assert np.issubdtype(dpt.full(10, 12.3).dtype, np.floating)
+    assert np.issubdtype(dpt.full(10, 0.3 - 2j).dtype, np.complexfloating)
+
+
+@pytest.mark.parametrize(
+    "dt",
+    _all_dtypes[1:],
+)
+def test_arange(dt):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    X = dpt.arange(0, 123, dtype=dt, sycl_queue=q)
+    dt = np.dtype(dt)
+    if np.issubdtype(dt, np.integer):
+        assert int(X[47]) == 47
+    elif np.issubdtype(dt, np.floating):
+        assert float(X[47]) == 47.0
+    elif np.issubdtype(dt, np.complexfloating):
+        assert complex(X[47]) == 47.0 + 0.0j
+
+    X1 = dpt.arange(4, dtype=dt, sycl_queue=q)
+    assert X1.shape == (4,)
+
+    X2 = dpt.arange(4, 0, -1, dtype=dt, sycl_queue=q)
+    assert X2.shape == (4,)
+
+
+@pytest.mark.parametrize(
+    "dt",
+    _all_dtypes,
+)
+@pytest.mark.parametrize(
+    "usm_kind",
+    [
+        "shared",
+        "device",
+        "host",
+    ],
+)
+def test_empty_like(dt, usm_kind):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    Y = dpt.empty_like(X)
+    assert X.shape == Y.shape
+    assert X.dtype == Y.dtype
+    assert X.usm_type == Y.usm_type
+    assert X.sycl_queue == Y.sycl_queue
+
+    X = dpt.empty(tuple(), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    Y = dpt.empty_like(X)
+    assert X.shape == Y.shape
+    assert X.dtype == Y.dtype
+    assert X.usm_type == Y.usm_type
+    assert X.sycl_queue == Y.sycl_queue
+
+
+@pytest.mark.parametrize(
+    "dt",
+    _all_dtypes,
+)
+@pytest.mark.parametrize(
+    "usm_kind",
+    [
+        "shared",
+        "device",
+        "host",
+    ],
+)
+def test_zeros_like(dt, usm_kind):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    Y = dpt.zeros_like(X)
+    assert X.shape == Y.shape
+    assert X.dtype == Y.dtype
+    assert X.usm_type == Y.usm_type
+    assert X.sycl_queue == Y.sycl_queue
+    assert np.allclose(dpt.asnumpy(Y), np.zeros(X.shape, dtype=X.dtype))
+
+    X = dpt.empty(tuple(), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    Y = dpt.zeros_like(X)
+    assert X.shape == Y.shape
+    assert X.dtype == Y.dtype
+    assert X.usm_type == Y.usm_type
+    assert X.sycl_queue == Y.sycl_queue
+    assert np.array_equal(dpt.asnumpy(Y), np.zeros(X.shape, dtype=X.dtype))
+
+
+@pytest.mark.parametrize(
+    "dt",
+    _all_dtypes,
+)
+@pytest.mark.parametrize(
+    "usm_kind",
+    [
+        "shared",
+        "device",
+        "host",
+    ],
+)
+def test_ones_like(dt, usm_kind):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    Y = dpt.ones_like(X)
+    assert X.shape == Y.shape
+    assert X.dtype == Y.dtype
+    assert X.usm_type == Y.usm_type
+    assert X.sycl_queue == Y.sycl_queue
+    assert np.allclose(dpt.asnumpy(Y), np.ones(X.shape, dtype=X.dtype))
+
+    X = dpt.empty(tuple(), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    Y = dpt.ones_like(X)
+    assert X.shape == Y.shape
+    assert X.dtype == Y.dtype
+    assert X.usm_type == Y.usm_type
+    assert X.sycl_queue == Y.sycl_queue
+    assert np.array_equal(dpt.asnumpy(Y), np.ones(X.shape, dtype=X.dtype))
+
+
+@pytest.mark.parametrize(
+    "dt",
+    _all_dtypes,
+)
+@pytest.mark.parametrize(
+    "usm_kind",
+    [
+        "shared",
+        "device",
+        "host",
+    ],
+)
+def test_full_like(dt, usm_kind):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    fill_v = np.dtype(dt).type(1)
+    X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    Y = dpt.full_like(X, fill_v)
+    assert X.shape == Y.shape
+    assert X.dtype == Y.dtype
+    assert X.usm_type == Y.usm_type
+    assert X.sycl_queue == Y.sycl_queue
+    assert np.allclose(dpt.asnumpy(Y), np.ones(X.shape, dtype=X.dtype))
+
+    X = dpt.empty(tuple(), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    Y = dpt.full_like(X, fill_v)
+    assert X.shape == Y.shape
+    assert X.dtype == Y.dtype
+    assert X.usm_type == Y.usm_type
+    assert X.sycl_queue == Y.sycl_queue
+    assert np.array_equal(dpt.asnumpy(Y), np.ones(X.shape, dtype=X.dtype))
+
+
+def test_common_arg_validation():
+    order = "I"
+    # invalid order must raise ValueError
+    with pytest.raises(ValueError):
+        dpt.empty(10, order=order)
+    with pytest.raises(ValueError):
+        dpt.zeros(10, order=order)
+    with pytest.raises(ValueError):
+        dpt.ones(10, order=order)
+    with pytest.raises(ValueError):
+        dpt.full(10, 1, order=order)
+    X = dpt.empty(10)
+    with pytest.raises(ValueError):
+        dpt.empty_like(X, order=order)
+    with pytest.raises(ValueError):
+        dpt.zeros_like(X, order=order)
+    with pytest.raises(ValueError):
+        dpt.ones_like(X, order=order)
+    with pytest.raises(ValueError):
+        dpt.full_like(X, 1, order=order)
+    X = dict()
+    # test for type validation
+    with pytest.raises(TypeError):
+        dpt.empty_like(X)
+    with pytest.raises(TypeError):
+        dpt.zeros_like(X)
+    with pytest.raises(TypeError):
+        dpt.ones_like(X)
+    with pytest.raises(TypeError):
+        dpt.full_like(X, 1)
