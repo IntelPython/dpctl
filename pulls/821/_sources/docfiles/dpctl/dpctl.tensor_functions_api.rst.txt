@@ -17,10 +17,16 @@ Array Construction
 .. autofunction:: astype
 .. autofunction:: copy
 .. autofunction:: empty
+.. autofunction:: empty_like
 .. autofunction:: from_dlpack
 .. autofunction:: from_numpy
+.. autofunction:: full
+.. autofunction:: full_like
+.. autofunction:: ones
+.. autofunction:: ones_like
 .. autofunction:: to_numpy
 .. autofunction:: zeros
+.. autofunction:: zeros_like
 
 Array Manipulation
 ------------------

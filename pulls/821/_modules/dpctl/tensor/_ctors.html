@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.13.0dev0+79.g3672b13b1 documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.13.0dev0+86.gd75e5c3d8 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+79.g3672b13b1
+                0.13.0dev0+86.gd75e5c3d8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -103,6 +103,26 @@
 
 <span class="n">_empty_tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
 <span class="n">_host_set</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="kc">None</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">_get_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_obj</span><span class="p">,</span> <span class="n">ref_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ref_type</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">ref_type</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_fp_type</span><span class="p">(</span><span class="n">sycl_obj</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ref_type</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">]:</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_bool_type</span><span class="p">(</span><span class="n">sycl_obj</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ref_type</span> <span class="ow">is</span> <span class="nb">int</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">ref_type</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_int_type</span><span class="p">(</span><span class="n">sycl_obj</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ref_type</span> <span class="ow">is</span> <span class="nb">complex</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">ref_type</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_complex_type</span><span class="p">(</span><span class="n">sycl_obj</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reference type </span><span class="si">{</span><span class="n">ref_type</span><span class="si">}</span><span class="s2"> not recognized.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_array_info_dispatch</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
@@ -465,7 +485,7 @@
 
 
 <div class="viewcode-block" id="empty"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.empty">[docs]</a><span class="k">def</span> <span class="nf">empty</span><span class="p">(</span>
-    <span class="n">sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;f8&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates `usm_ndarray` from uninitialized USM allocation.</span>
@@ -474,7 +494,7 @@
 <span class="sd">        shape (tuple): Dimensions of the array to be created.</span>
 <span class="sd">        dtype (optional): data type of the array. Can be typestring,</span>
 <span class="sd">            a `numpy.dtype` object, `numpy` char string, or a numpy</span>
-<span class="sd">            scalar type. Default: &quot;f8&quot;</span>
+<span class="sd">            scalar type. Default: None</span>
 <span class="sd">        order (&quot;C&quot;, or F&quot;): memory layout for the array. Default: &quot;C&quot;</span>
 <span class="sd">        device (optional): array API concept of device where the output array</span>
 <span class="sd">            is created. `device` can be `None`, a oneAPI filter selector string,</span>
@@ -492,7 +512,6 @@
 <span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;CcFf&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;Unrecognized order keyword value, expecting &#39;F&#39; or &#39;C&#39;.&quot;</span>
@@ -501,6 +520,7 @@
         <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
     <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
         <span class="n">sh</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
@@ -512,6 +532,7 @@
 
 
 <span class="k">def</span> <span class="nf">_coerce_and_infer_dt</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+    <span class="s2">&quot;Deduce arange type from sequence spec&quot;</span>
     <span class="n">nd</span><span class="p">,</span> <span class="n">seq_dt</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">_array_info_sequence</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">d</span> <span class="o">!=</span> <span class="n">_host_set</span> <span class="ow">or</span> <span class="n">nd</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">),):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;start, stop and step must be Python scalars&quot;</span><span class="p">)</span>
@@ -526,6 +547,24 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">complex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">args</span><span class="p">),</span> <span class="n">dt</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data type </span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_arange_length</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+    <span class="s2">&quot;Compute length of arange sequence&quot;</span>
+    <span class="n">span</span> <span class="o">=</span> <span class="n">stop</span> <span class="o">-</span> <span class="n">start</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">span</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">span</span> <span class="o">+</span> <span class="n">offset</span><span class="p">)</span> <span class="o">/</span> <span class="n">step</span>
+        <span class="k">return</span> <span class="n">tmp</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">span</span> <span class="o">/</span> <span class="n">step</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">complex</span> <span class="ow">and</span> <span class="n">tmp</span><span class="o">.</span><span class="n">imag</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tmp</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">float</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tmp</span><span class="p">:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">tmp</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">tmp</span>
 
 
 <div class="viewcode-block" id="arange"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.arange">[docs]</a><span class="k">def</span> <span class="nf">arange</span><span class="p">(</span>
@@ -569,9 +608,7 @@
         <span class="n">step</span><span class="p">,</span>
     <span class="p">),</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">_coerce_and_infer_dt</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">step</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">complex</span> <span class="ow">and</span> <span class="n">tmp</span><span class="o">.</span><span class="n">imag</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
-            <span class="n">tmp</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">real</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">_get_arange_length</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
         <span class="n">sh</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">sh</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">sh</span> <span class="o">=</span> <span class="mi">0</span>
@@ -587,13 +624,14 @@
         <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">},</span>
     <span class="p">)</span>
     <span class="n">_step</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">step</span><span class="p">)</span> <span class="o">-</span> <span class="n">start</span>
+    <span class="n">_step</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">_step</span><span class="p">)</span>
     <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_linspace_step</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">_step</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
     <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">res</span></div>
 
 
 <div class="viewcode-block" id="zeros"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.zeros">[docs]</a><span class="k">def</span> <span class="nf">zeros</span><span class="p">(</span>
-    <span class="n">sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;f8&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates `usm_ndarray` with zero elements.</span>
@@ -602,7 +640,7 @@
 <span class="sd">        shape (tuple): Dimensions of the array to be created.</span>
 <span class="sd">        dtype (optional): data type of the array. Can be typestring,</span>
 <span class="sd">            a `numpy.dtype` object, `numpy` char string, or a numpy</span>
-<span class="sd">            scalar type. Default: &quot;f8&quot;</span>
+<span class="sd">            scalar type. Default: None</span>
 <span class="sd">        order (&quot;C&quot;, or F&quot;): memory layout for the array. Default: &quot;C&quot;</span>
 <span class="sd">        device (optional): array API concept of device where the output array</span>
 <span class="sd">            is created. `device` can be `None`, a oneAPI filter selector string,</span>
@@ -620,7 +658,6 @@
 <span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;CcFf&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;Unrecognized order keyword value, expecting &#39;F&#39; or &#39;C&#39;.&quot;</span>
@@ -629,6 +666,7 @@
         <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
     <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
         <span class="n">sh</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
@@ -638,6 +676,347 @@
     <span class="p">)</span>
     <span class="n">res</span><span class="o">.</span><span class="n">usm_data</span><span class="o">.</span><span class="n">memset</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="ones"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.ones">[docs]</a><span class="k">def</span> <span class="nf">ones</span><span class="p">(</span>
+    <span class="n">sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates `usm_ndarray` with elements of one.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        shape (tuple): Dimensions of the array to be created.</span>
+<span class="sd">        dtype (optional): data type of the array. Can be typestring,</span>
+<span class="sd">            a `numpy.dtype` object, `numpy` char string, or a numpy</span>
+<span class="sd">            scalar type. Default: None</span>
+<span class="sd">        order (&quot;C&quot;, or F&quot;): memory layout for the array. Default: &quot;C&quot;</span>
+<span class="sd">        device (optional): array API concept of device where the output array</span>
+<span class="sd">            is created. `device` can be `None`, a oneAPI filter selector string,</span>
+<span class="sd">            an instance of :class:`dpctl.SyclDevice` corresponding to a</span>
+<span class="sd">            non-partitioned SYCL device, an instance of</span>
+<span class="sd">            :class:`dpctl.SyclQueue`, or a `Device` object returnedby</span>
+<span class="sd">            `dpctl.tensor.usm_array.device`. Default: `None`.</span>
+<span class="sd">        usm_type (&quot;device&quot;|&quot;shared&quot;|&quot;host&quot;, optional): The type of SYCL USM</span>
+<span class="sd">            allocation for the output array. Default: `&quot;device&quot;`.</span>
+<span class="sd">        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use</span>
+<span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
+<span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
+<span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
+<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;CcFf&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Unrecognized order keyword value, expecting &#39;F&#39; or &#39;C&#39;.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
+        <span class="n">sh</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">buffer</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_full_usm_ndarray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="full"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.full">[docs]</a><span class="k">def</span> <span class="nf">full</span><span class="p">(</span>
+    <span class="n">sh</span><span class="p">,</span>
+    <span class="n">fill_value</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span>
+    <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates `usm_ndarray` with elements of one.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        shape (tuple): Dimensions of the array to be created.</span>
+<span class="sd">        fill_value (int,float,complex): fill value</span>
+<span class="sd">        dtype (optional): data type of the array. Can be typestring,</span>
+<span class="sd">            a `numpy.dtype` object, `numpy` char string, or a numpy</span>
+<span class="sd">            scalar type. Default: None</span>
+<span class="sd">        order (&quot;C&quot;, or F&quot;): memory layout for the array. Default: &quot;C&quot;</span>
+<span class="sd">        device (optional): array API concept of device where the output array</span>
+<span class="sd">            is created. `device` can be `None`, a oneAPI filter selector string,</span>
+<span class="sd">            an instance of :class:`dpctl.SyclDevice` corresponding to a</span>
+<span class="sd">            non-partitioned SYCL device, an instance of</span>
+<span class="sd">            :class:`dpctl.SyclQueue`, or a `Device` object returnedby</span>
+<span class="sd">            `dpctl.tensor.usm_array.device`. Default: `None`.</span>
+<span class="sd">        usm_type (&quot;device&quot;|&quot;shared&quot;|&quot;host&quot;, optional): The type of SYCL USM</span>
+<span class="sd">            allocation for the output array. Default: `&quot;device&quot;`.</span>
+<span class="sd">        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use</span>
+<span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
+<span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
+<span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
+<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;CcFf&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Unrecognized order keyword value, expecting &#39;F&#39; or &#39;C&#39;.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">ref_type</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">fill_value</span><span class="p">))</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
+        <span class="n">sh</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">buffer</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_full_usm_ndarray</span><span class="p">(</span><span class="n">fill_value</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="empty_like"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.empty_like">[docs]</a><span class="k">def</span> <span class="nf">empty_like</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates `usm_ndarray` from uninitialized USM allocation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray): Input array from which to derive the output array</span>
+<span class="sd">            shape.</span>
+<span class="sd">        dtype (optional): data type of the array. Can be typestring,</span>
+<span class="sd">            a `numpy.dtype` object, `numpy` char string, or a numpy</span>
+<span class="sd">            scalar type. Default: None</span>
+<span class="sd">        order (&quot;C&quot;, or F&quot;): memory layout for the array. Default: &quot;C&quot;</span>
+<span class="sd">        device (optional): array API concept of device where the output array</span>
+<span class="sd">            is created. `device` can be `None`, a oneAPI filter selector string,</span>
+<span class="sd">            an instance of :class:`dpctl.SyclDevice` corresponding to a</span>
+<span class="sd">            non-partitioned SYCL device, an instance of</span>
+<span class="sd">            :class:`dpctl.SyclQueue`, or a `Device` object returnedby</span>
+<span class="sd">            `dpctl.tensor.usm_array.device`. Default: `None`.</span>
+<span class="sd">        usm_type (&quot;device&quot;|&quot;shared&quot;|&quot;host&quot;, optional): The type of SYCL USM</span>
+<span class="sd">            allocation for the output array. Default: `&quot;device&quot;`.</span>
+<span class="sd">        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use</span>
+<span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
+<span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
+<span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
+<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected instance of dpt.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;CcFf&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Unrecognized order keyword value, expecting &#39;F&#39; or &#39;C&#39;.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sycl_queue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">device</span>
+    <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">sh</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
+        <span class="n">sh</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">buffer</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="zeros_like"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.zeros_like">[docs]</a><span class="k">def</span> <span class="nf">zeros_like</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates `usm_ndarray` from USM allocation initialized with zeros.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray): Input array from which to derive the output array</span>
+<span class="sd">            shape.</span>
+<span class="sd">        dtype (optional): data type of the array. Can be typestring,</span>
+<span class="sd">            a `numpy.dtype` object, `numpy` char string, or a numpy</span>
+<span class="sd">            scalar type. Default: None</span>
+<span class="sd">        order (&quot;C&quot;, or F&quot;): memory layout for the array. Default: &quot;C&quot;</span>
+<span class="sd">        device (optional): array API concept of device where the output array</span>
+<span class="sd">            is created. `device` can be `None`, a oneAPI filter selector string,</span>
+<span class="sd">            an instance of :class:`dpctl.SyclDevice` corresponding to a</span>
+<span class="sd">            non-partitioned SYCL device, an instance of</span>
+<span class="sd">            :class:`dpctl.SyclQueue`, or a `Device` object returnedby</span>
+<span class="sd">            `dpctl.tensor.usm_array.device`. Default: `None`.</span>
+<span class="sd">        usm_type (&quot;device&quot;|&quot;shared&quot;|&quot;host&quot;, optional): The type of SYCL USM</span>
+<span class="sd">            allocation for the output array. Default: `&quot;device&quot;`.</span>
+<span class="sd">        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use</span>
+<span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
+<span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
+<span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
+<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected instance of dpt.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;CcFf&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Unrecognized order keyword value, expecting &#39;F&#39; or &#39;C&#39;.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sycl_queue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">device</span>
+    <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">sh</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span>
+        <span class="n">sh</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ones_like"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.ones_like">[docs]</a><span class="k">def</span> <span class="nf">ones_like</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates `usm_ndarray` from USM allocation initialized with zeros.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray): Input array from which to derive the output array</span>
+<span class="sd">            shape.</span>
+<span class="sd">        dtype (optional): data type of the array. Can be typestring,</span>
+<span class="sd">            a `numpy.dtype` object, `numpy` char string, or a numpy</span>
+<span class="sd">            scalar type. Default: None</span>
+<span class="sd">        order (&quot;C&quot;, or F&quot;): memory layout for the array. Default: &quot;C&quot;</span>
+<span class="sd">        device (optional): array API concept of device where the output array</span>
+<span class="sd">            is created. `device` can be `None`, a oneAPI filter selector string,</span>
+<span class="sd">            an instance of :class:`dpctl.SyclDevice` corresponding to a</span>
+<span class="sd">            non-partitioned SYCL device, an instance of</span>
+<span class="sd">            :class:`dpctl.SyclQueue`, or a `Device` object returnedby</span>
+<span class="sd">            `dpctl.tensor.usm_array.device`. Default: `None`.</span>
+<span class="sd">        usm_type (&quot;device&quot;|&quot;shared&quot;|&quot;host&quot;, optional): The type of SYCL USM</span>
+<span class="sd">            allocation for the output array. Default: `&quot;device&quot;`.</span>
+<span class="sd">        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use</span>
+<span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
+<span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
+<span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
+<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected instance of dpt.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;CcFf&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Unrecognized order keyword value, expecting &#39;F&#39; or &#39;C&#39;.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sycl_queue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">device</span>
+    <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">sh</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ones</span><span class="p">(</span>
+        <span class="n">sh</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="full_like"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.full_like">[docs]</a><span class="k">def</span> <span class="nf">full_like</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="n">fill_value</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates `usm_ndarray` from USM allocation initialized with zeros.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray): Input array from which to derive the output array</span>
+<span class="sd">            shape.</span>
+<span class="sd">        fill_value: the value to fill array with</span>
+<span class="sd">        dtype (optional): data type of the array. Can be typestring,</span>
+<span class="sd">            a `numpy.dtype` object, `numpy` char string, or a numpy</span>
+<span class="sd">            scalar type. Default: None</span>
+<span class="sd">        order (&quot;C&quot;, or F&quot;): memory layout for the array. Default: &quot;C&quot;</span>
+<span class="sd">        device (optional): array API concept of device where the output array</span>
+<span class="sd">            is created. `device` can be `None`, a oneAPI filter selector string,</span>
+<span class="sd">            an instance of :class:`dpctl.SyclDevice` corresponding to a</span>
+<span class="sd">            non-partitioned SYCL device, an instance of</span>
+<span class="sd">            :class:`dpctl.SyclQueue`, or a `Device` object returnedby</span>
+<span class="sd">            `dpctl.tensor.usm_array.device`. Default: `None`.</span>
+<span class="sd">        usm_type (&quot;device&quot;|&quot;shared&quot;|&quot;host&quot;, optional): The type of SYCL USM</span>
+<span class="sd">            allocation for the output array. Default: `&quot;device&quot;`.</span>
+<span class="sd">        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use</span>
+<span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
+<span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
+<span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
+<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected instance of dpt.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;CcFf&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Unrecognized order keyword value, expecting &#39;F&#39; or &#39;C&#39;.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sycl_queue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">device</span>
+    <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">sh</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">full</span><span class="p">(</span>
+        <span class="n">sh</span><span class="p">,</span>
+        <span class="n">fill_value</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span></div>
 </pre></div>
 
            </div>

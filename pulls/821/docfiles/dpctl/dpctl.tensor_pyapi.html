@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.13.0dev0+79.g3672b13b1 documentation</title>
+  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.13.0dev0+86.gd75e5c3d8 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+79.g3672b13b1
+                0.13.0dev0+86.gd75e5c3d8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -148,17 +148,35 @@ implementations that implement Python data API
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.empty" title="dpctl.tensor.empty"><code class="xref py py-func docutils literal notranslate"><span class="pre">empty()</span></code></a></p></td>
 <td><p>Creates <cite>usm_ndarray</cite> from uninitialized USM allocation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.from_dlpack" title="dpctl.tensor.from_dlpack"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_dlpack()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.empty_like" title="dpctl.tensor.empty_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">empty_like()</span></code></a></p></td>
+<td><p>Creates <cite>usm_ndarray</cite> from uninitialized USM allocation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.from_dlpack" title="dpctl.tensor.from_dlpack"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_dlpack()</span></code></a></p></td>
 <td><p>dpctl.tensor.from_dlpack(obj) Constructs <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance from a Python object <cite>obj</cite> that implements <cite>__dlpack__</cite> protocol. The output array is always a zero-copy view of the input.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.from_numpy" title="dpctl.tensor.from_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_numpy()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.from_numpy" title="dpctl.tensor.from_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_numpy()</span></code></a></p></td>
 <td><p>Creates <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> from instance of <cite>numpy.ndarray</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.to_numpy" title="dpctl.tensor.to_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_numpy()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.full" title="dpctl.tensor.full"><code class="xref py py-func docutils literal notranslate"><span class="pre">full()</span></code></a></p></td>
+<td><p>Creates <cite>usm_ndarray</cite> with elements of one.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.full_like" title="dpctl.tensor.full_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">full_like()</span></code></a></p></td>
+<td><p>Creates <cite>usm_ndarray</cite> from USM allocation initialized with zeros.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.ones" title="dpctl.tensor.ones"><code class="xref py py-func docutils literal notranslate"><span class="pre">ones()</span></code></a></p></td>
+<td><p>Creates <cite>usm_ndarray</cite> with elements of one.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.ones_like" title="dpctl.tensor.ones_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">ones_like()</span></code></a></p></td>
+<td><p>Creates <cite>usm_ndarray</cite> from USM allocation initialized with zeros.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.to_numpy" title="dpctl.tensor.to_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_numpy()</span></code></a></p></td>
 <td><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <cite>usm_ary</cite> into <cite>numpy.ndarray</cite> instance of the same shape and same data type.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.zeros" title="dpctl.tensor.zeros"><code class="xref py py-func docutils literal notranslate"><span class="pre">zeros()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.zeros" title="dpctl.tensor.zeros"><code class="xref py py-func docutils literal notranslate"><span class="pre">zeros()</span></code></a></p></td>
 <td><p>Creates <cite>usm_ndarray</cite> with zero elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.zeros_like" title="dpctl.tensor.zeros_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">zeros_like()</span></code></a></p></td>
+<td><p>Creates <cite>usm_ndarray</cite> from USM allocation initialized with zeros.</p></td>
 </tr>
 </tbody>
 </table>
