@@ -29,6 +29,7 @@
 // clang-format off
 #include <CL/sycl.hpp>
 #include <oneapi/mkl.hpp>
+#include "cg_solver.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/complex.h>
@@ -40,11 +41,11 @@ namespace py = pybind11;
 using dpctl::utils::keep_args_alive;
 
 std::pair<sycl::event, sycl::event>
-gemv(sycl::queue q,
-     dpctl::tensor::usm_ndarray matrix,
-     dpctl::tensor::usm_ndarray vector,
-     dpctl::tensor::usm_ndarray result,
-     const std::vector<sycl::event> &depends = {})
+py_gemv(sycl::queue q,
+        dpctl::tensor::usm_ndarray matrix,
+        dpctl::tensor::usm_ndarray vector,
+        dpctl::tensor::usm_ndarray result,
+        const std::vector<sycl::event> &depends = {})
 {
     if (matrix.get_ndim() != 2 || vector.get_ndim() != 1 ||
         result.get_ndim() != 1) {
@@ -139,8 +140,6 @@ gemv(sycl::queue q,
     return std::make_pair(ht_event, res_ev);
 }
 
-template <typename T> class sub_kern;
-
 template <typename T>
 sycl::event sub_impl(sycl::queue q,
                      size_t n,
@@ -153,24 +152,18 @@ sycl::event sub_impl(sycl::queue q,
     const T *v2 = reinterpret_cast<const T *>(v2_i);
     T *r = reinterpret_cast<T *>(r_i);
 
-    sycl::event r_ev = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        cgh.parallel_for<sub_kern<T>>(sycl::range<1>{n}, [=](sycl::id<1> id) {
-            auto i = id.get(0);
-            r[i] = v1[i] - v2[i];
-        });
-    });
+    sycl::event r_ev = cg_solver::detail::sub(q, n, v1, v2, r, depends);
 
     return r_ev;
 }
 
 // out_r = in_v1 - in_v2
 std::pair<sycl::event, sycl::event>
-sub(sycl::queue q,
-    dpctl::tensor::usm_ndarray in_v1,
-    dpctl::tensor::usm_ndarray in_v2,
-    dpctl::tensor::usm_ndarray out_r,
-    const std::vector<sycl::event> &depends = {})
+py_sub(sycl::queue q,
+       dpctl::tensor::usm_ndarray in_v1,
+       dpctl::tensor::usm_ndarray in_v2,
+       dpctl::tensor::usm_ndarray out_r,
+       const std::vector<sycl::event> &depends = {})
 {
     if (in_v1.get_ndim() != 1 || in_v2.get_ndim() != 1 || out_r.get_ndim() != 1)
     {
@@ -258,35 +251,20 @@ sycl::event axpby_inplace_impl(sycl::queue q,
     const T *x = reinterpret_cast<const T *>(x_typeless);
     T *y = reinterpret_cast<T *>(y_typeless);
 
-    sycl::event res_ev = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        if (b == T(1)) {
-            cgh.parallel_for<axpy_inplace_kern<T>>(sycl::range<1>{nelems},
-                                                   [=](sycl::id<1> id) {
-                                                       auto i = id.get(0);
-                                                       y[i] += a * x[i];
-                                                   });
-        }
-        else {
-            cgh.parallel_for<axpby_inplace_kern<T>>(
-                sycl::range<1>{nelems}, [=](sycl::id<1> id) {
-                    auto i = id.get(0);
-                    y[i] = b * y[i] + a * x[i];
-                });
-        }
-    });
+    sycl::event res_ev =
+        cg_solver::detail::axpby_inplace(q, nelems, a, x, b, y, depends);
 
     return res_ev;
 }
 
 // y = a * x + b * y
 std::pair<sycl::event, sycl::event>
-axpby_inplace(sycl::queue q,
-              py::object a,
-              dpctl::tensor::usm_ndarray x,
-              py::object b,
-              dpctl::tensor::usm_ndarray y,
-              const std::vector<sycl::event> &depends = {})
+py_axpby_inplace(sycl::queue q,
+                 py::object a,
+                 dpctl::tensor::usm_ndarray x,
+                 py::object b,
+                 dpctl::tensor::usm_ndarray y,
+                 const std::vector<sycl::event> &depends = {})
 {
 
     if (x.get_ndim() != 1 || y.get_ndim() != 1) {
@@ -352,8 +330,6 @@ axpby_inplace(sycl::queue q,
     return std::make_pair(ht_event, res_ev);
 }
 
-template <typename T> class norm_squared_blocking_kern;
-
 template <typename T>
 T norm_squared_blocking_impl(sycl::queue q,
                              size_t nelems,
@@ -362,23 +338,7 @@ T norm_squared_blocking_impl(sycl::queue q,
 {
     const T *r = reinterpret_cast<const T *>(r_typeless);
 
-    sycl::buffer<T, 1> sum_sq_buf(sycl::range<1>{1});
-
-    q.submit([&](sycl::handler &cgh) {
-         cgh.depends_on(depends);
-         auto sum_sq_reduction = sycl::reduction(
-             sum_sq_buf, cgh, sycl::plus<T>(),
-             {sycl::property::reduction::initialize_to_identity{}});
-         cgh.parallel_for<norm_squared_blocking_kern<T>>(
-             sycl::range<1>{nelems}, sum_sq_reduction,
-             [=](sycl::id<1> id, auto &sum_sq) {
-                 auto i = id.get(0);
-                 sum_sq += r[i] * r[i];
-             });
-     }).wait_and_throw();
-
-    sycl::host_accessor ha(sum_sq_buf);
-    return ha[0];
+    return cg_solver::detail::norm_squared_blocking(q, nelems, r, depends);
 }
 
 template <typename T> class complex_norm_squared_blocking_kern;
@@ -393,29 +353,13 @@ T complex_norm_squared_blocking_impl(
     const std::complex<T> *r =
         reinterpret_cast<const std::complex<T> *>(r_typeless);
 
-    sycl::buffer<T, 1> sum_sq_buf(sycl::range<1>{1});
-
-    q.submit([&](sycl::handler &cgh) {
-         cgh.depends_on(depends);
-         auto sum_sq_reduction = sycl::reduction(
-             sum_sq_buf, cgh, sycl::plus<T>(),
-             {sycl::property::reduction::initialize_to_identity{}});
-         cgh.parallel_for<complex_norm_squared_blocking_kern<T>>(
-             sycl::range<1>{nelems}, sum_sq_reduction,
-             [=](sycl::id<1> id, auto &sum_sq) {
-                 auto i = id.get(0);
-                 sum_sq +=
-                     r[i].real() * r[i].real() + r[i].imag() * r[i].imag();
-             });
-     }).wait_and_throw();
-
-    sycl::host_accessor ha(sum_sq_buf);
-    return ha[0];
+    return cg_solver::detail::complex_norm_squared_blocking(q, nelems, r,
+                                                            depends);
 }
 
-py::object norm_squared_blocking(sycl::queue q,
-                                 dpctl::tensor::usm_ndarray r,
-                                 const std::vector<sycl::event> depends = {})
+py::object py_norm_squared_blocking(sycl::queue q,
+                                    dpctl::tensor::usm_ndarray r,
+                                    const std::vector<sycl::event> depends = {})
 {
     if (r.get_ndim() != 1) {
         throw std::runtime_error("Expecting a vector");
@@ -469,10 +413,10 @@ py::object norm_squared_blocking(sycl::queue q,
     return res;
 }
 
-py::object dot_blocking(sycl::queue q,
-                        dpctl::tensor::usm_ndarray v1,
-                        dpctl::tensor::usm_ndarray v2,
-                        const std::vector<sycl::event> &depends = {})
+py::object py_dot_blocking(sycl::queue q,
+                           dpctl::tensor::usm_ndarray v1,
+                           dpctl::tensor::usm_ndarray v2,
+                           const std::vector<sycl::event> &depends = {})
 {
     if (v1.get_ndim() != 1 || v2.get_ndim() != 1) {
         throw std::runtime_error("Expecting two vectors");
@@ -561,17 +505,17 @@ PYBIND11_MODULE(_onemkl, m)
     // Import the dpctl extensions
     import_dpctl();
 
-    m.def("gemv", &gemv, "Uses oneMKL to compute dot(matrix, vector)",
+    m.def("gemv", &py_gemv, "Uses oneMKL to compute dot(matrix, vector)",
           py::arg("exec_queue"), py::arg("Amatrix"), py::arg("xvec"),
           py::arg("resvec"), py::arg("depends") = py::list());
-    m.def("sub", &sub, "Subtraction: out = v1 - v2", py::arg("exec_queue"),
+    m.def("sub", &py_sub, "Subtraction: out = v1 - v2", py::arg("exec_queue"),
           py::arg("in1"), py::arg("in2"), py::arg("out"),
           py::arg("depends") = py::list());
-    m.def("axpby_inplace", &axpby_inplace, "y = a * x + b * y",
+    m.def("axpby_inplace", &py_axpby_inplace, "y = a * x + b * y",
           py::arg("exec_queue"), py::arg("a"), py::arg("x"), py::arg("b"),
           py::arg("y"), py::arg("depends") = py::list());
-    m.def("norm_squared_blocking", &norm_squared_blocking, "norm(r)**2",
+    m.def("norm_squared_blocking", &py_norm_squared_blocking, "norm(r)**2",
           py::arg("exec_queue"), py::arg("r"), py::arg("depends") = py::list());
-    m.def("dot_blocking", &dot_blocking, "<v1, v2>", py::arg("exec_queue"),
+    m.def("dot_blocking", &py_dot_blocking, "<v1, v2>", py::arg("exec_queue"),
           py::arg("v1"), py::arg("v2"), py::arg("depends") = py::list());
 }

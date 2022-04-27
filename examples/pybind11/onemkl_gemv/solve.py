@@ -154,36 +154,37 @@ def cg_solve(A, b):
             exec_queue, p, Ap, depends=[e_dot]
         )
         # x = x + alpha * p
-        he1_axpby, e1_axpby = sycl_gemm.axpby_inplace(
+        he1_x_update, e1_x_update = sycl_gemm.axpby_inplace(
             exec_queue, alpha, p, 1, x, depends=[e_p, e_x]
         )
-        all_host_tasks.append(he1_axpby)
-        e_x = e1_axpby
+        all_host_tasks.append(he1_x_update)
+        e_x = e1_x_update
 
         # r = r - alpha * Ap
-        he2_axpby, e2_axpby = sycl_gemm.axpby_inplace(
+        he2_r_update, e2_r_update = sycl_gemm.axpby_inplace(
             exec_queue, -alpha, Ap, 1, r, depends=[e_p]
         )
-        all_host_tasks.append(he2_axpby)
+        all_host_tasks.append(he2_r_update)
 
         # rsnew = dot(r, r)
         rsnew = sycl_gemm.norm_squared_blocking(
-            exec_queue, r, depends=[e2_axpby]
+            exec_queue, r, depends=[e2_r_update]
         )
         if rsnew < 1e-20:
-            e1_axpby.wait()
+            e1_x_update.wait()
             converged = i
             break
         beta = rsnew / rsold
 
         # p = r + beta * p
-        he3_axpby, e3_axpby = sycl_gemm.axpby_inplace(
-            exec_queue, 1, r, beta, p, depends=[e1_axpby, e2_axpby]
+        he3_p_update, e3_p_update = sycl_gemm.axpby_inplace(
+            exec_queue, 1, r, beta, p, depends=[e2_r_update]
         )
 
         rsold = rsnew
-        all_host_tasks.append(he3_axpby)
-        e_p = e3_axpby
+        all_host_tasks.append(he3_p_update)
+        e_p = e3_p_update
+        e_x = e1_x_update
 
     dpctl.SyclEvent.wait_for(all_host_tasks)
     return x, converged
@@ -229,6 +230,7 @@ if __name__ == "__main__":
     lambda_min = 4 * np.square(np.sin(np.pi / (2 * (n + 2))))
 
     q = dpctl.SyclQueue(property="enable_profiling")
+    q.print_device_info()
     A = dpt.asarray(Anp, dtype="d", usm_type="device", sycl_queue=q)
     dev = A.device
     b = dpt.asarray(bnp, dtype="d", usm_type="device", device=dev)
