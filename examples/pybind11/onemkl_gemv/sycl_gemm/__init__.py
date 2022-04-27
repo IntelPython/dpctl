@@ -16,6 +16,7 @@
 
 from ._onemkl import (
     axpby_inplace,
+    cpp_cg_solve,
     dot_blocking,
     gemv,
     norm_squared_blocking,
@@ -28,4 +29,5 @@ __all__ = [
     "axpby_inplace",
     "norm_squared_blocking",
     "dot_blocking",
+    "cpp_cg_solve",
 ]

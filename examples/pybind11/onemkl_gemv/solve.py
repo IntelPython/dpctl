@@ -38,12 +38,10 @@ def chebyshev(A, b, x0, nIters, lMax, lMin, depends=[]):
     p = empty_like(Ax)
 
     e_x = dpctl.SyclEvent()
-    he_dot, e_dot = sycl_gemm.gemv(
-        exec_queue, A, x, Ax, depends=depends
-    )  # Ax = A @ x
-    he_sub, e_sub = sycl_gemm.sub(
-        exec_queue, b, Ax, r, depends=[e_dot]
-    )  # r = b - Ax
+    # Ax = A @ x
+    _, e_dot = sycl_gemm.gemv(exec_queue, A, x, Ax, depends=depends)
+    # r = b - Ax
+    _, e_sub = sycl_gemm.sub(exec_queue, b, Ax, r, depends=[e_dot])
     r_ev = e_sub
     for i in range(nIters):
         z = r
@@ -51,31 +49,33 @@ def chebyshev(A, b, x0, nIters, lMax, lMin, depends=[]):
         if i == 0:
             p[:] = z
             alpha = 1 / d
-            he_axpby, e_axpby = dpctl.SyclEvent(), dpctl.SyclEvent()
+            _, e_axpby = dpctl.SyclEvent(), dpctl.SyclEvent()
         elif i == 1:
             beta = 0.5 * (c * alpha) ** 2
             alpha = 1 / (d - beta / alpha)
-            he_axpby, e_axpby = sycl_gemm.axpby_inplace(
+            # p = z + beta * p
+            _, e_axpby = sycl_gemm.axpby_inplace(
                 exec_queue, 1, z, beta, p, depends=[z_ev]
-            )  # p = z + beta * p
+            )
         else:
             beta = (c / 2 * alpha) ** 2
             alpha = 1 / (d - beta / alpha)
-            he_axpby, e_axpby = sycl_gemm.axpby_inplace(
+            # p = z + beta * p
+            _, e_axpby = sycl_gemm.axpby_inplace(
                 exec_queue, 1, z, beta, p, depends=[z_ev]
-            )  # p = z + beta * p
-        h_x, e_x = sycl_gemm.axpby_inplace(
+            )
+        # x = x + alpha * p
+        _, e_x = sycl_gemm.axpby_inplace(
             exec_queue, alpha, p, 1, x, depends=[e_axpby, e_x]
-        )  # x = x + alpha * p
-        he_dot, e_dot = sycl_gemm.gemv(
-            exec_queue, A, x, Ax, depends=[e_x]
-        )  # Ax = A @ x
-        he_sub, e_sub = sycl_gemm.sub(
-            exec_queue, b, Ax, r, depends=[e_dot]
-        )  # r = b - Ax
+        )
+        # Ax = A @ x
+        _, e_dot = sycl_gemm.gemv(exec_queue, A, x, Ax, depends=[e_x])
+        # r = b - Ax
+        _, e_sub = sycl_gemm.sub(exec_queue, b, Ax, r, depends=[e_dot])
+        # residual = dot(r, r)
         residual = sycl_gemm.norm_squared_blocking(
             exec_queue, r, depends=[e_sub]
-        )  # residual = dot(r, r)
+        )
         if residual <= 1e-29:
             print(f"chebyshev: converged in {i} iters")
             break

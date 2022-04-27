@@ -74,3 +74,19 @@ hev2, ev2 = sycl_gemm.sub(q, r, b, delta, [ev])
 rs = sycl_gemm.norm_squared_blocking(q, delta)
 dpctl.SyclEvent.wait_for([hev, hev2])
 print(f"Python solution residual norm squared: {rs}")
+
+x_cpp = dpt.empty_like(b)
+iters = []
+for i in range(6):
+    with timer(api_dev.sycl_queue):
+        conv_in = sycl_gemm.cpp_cg_solve(q, A, b, x_cpp)
+
+    print(i, "(host_dt, device_dt)=", timer.dt)
+    iters.append(conv_in)
+
+print("Converged in: ", iters)
+hev, ev = sycl_gemm.gemv(q, A, x_cpp, r)
+hev2, ev2 = sycl_gemm.sub(q, r, b, delta, [ev])
+rs = sycl_gemm.norm_squared_blocking(q, delta)
+dpctl.SyclEvent.wait_for([hev, hev2])
+print(f"cpp_cg_solve solution residual norm squared: {rs}")

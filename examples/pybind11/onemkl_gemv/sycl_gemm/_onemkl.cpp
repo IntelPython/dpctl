@@ -62,6 +62,15 @@ py_gemv(sycl::queue q,
         throw std::runtime_error("Inconsistent shapes.");
     }
 
+    auto q_ctx = q.get_context();
+    if (q_ctx != matrix.get_queue().get_context() ||
+        q_ctx != vector.get_queue().get_context() ||
+        q_ctx != result.get_queue().get_context())
+    {
+        throw std::runtime_error(
+            "USM allocation is not bound to the context in execution queue.");
+    }
+
     int mat_flags = matrix.get_flags();
     int v_flags = vector.get_flags();
     int r_flags = result.get_flags();
@@ -176,6 +185,14 @@ py_sub(sycl::queue q,
         throw std::runtime_error("Vectors must have the same length");
     }
 
+    if (q.get_context() != in_v1.get_queue().get_context() ||
+        q.get_context() != in_v2.get_queue().get_context() ||
+        q.get_context() != out_r.get_queue().get_context())
+    {
+        throw std::runtime_error(
+            "USM allocation is not bound to the context in execution queue");
+    }
+
     int in_v1_flags = in_v1.get_flags();
     int in_v2_flags = in_v2.get_flags();
     int out_r_flags = out_r.get_flags();
@@ -277,6 +294,13 @@ py_axpby_inplace(sycl::queue q,
         throw std::runtime_error("Vectors must have the same length");
     }
 
+    if (q.get_context() != x.get_queue().get_context() ||
+        q.get_context() != y.get_queue().get_context())
+    {
+        throw std::runtime_error(
+            "USM allocation is not bound to the context in execution queue");
+    }
+
     int x_flags = x.get_flags();
     int y_flags = y.get_flags();
 
@@ -373,6 +397,11 @@ py::object py_norm_squared_blocking(sycl::queue q,
         throw std::runtime_error("Vector must be contiguous.");
     }
 
+    if (q.get_context() != r.get_queue().get_context()) {
+        throw std::runtime_error(
+            "USM allocation is not bound to the context in execution queue");
+    }
+
     int r_typenum = r.get_typenum();
     if ((r_typenum != UAR_DOUBLE) && (r_typenum != UAR_FLOAT) &&
         (r_typenum != UAR_CDOUBLE) && (r_typenum != UAR_CFLOAT))
@@ -435,6 +464,13 @@ py::object py_dot_blocking(sycl::queue q,
         !(v2_flags & (USM_ARRAY_C_CONTIGUOUS | USM_ARRAY_F_CONTIGUOUS)))
     {
         throw std::runtime_error("Vectors must be contiguous.");
+    }
+
+    if (q.get_context() != v1.get_queue().get_context() ||
+        q.get_context() != v2.get_queue().get_context())
+    {
+        throw std::runtime_error(
+            "USM allocation is not bound to the context in execution queue");
     }
 
     int v1_typenum = v1.get_typenum();
@@ -500,6 +536,80 @@ py::object py_dot_blocking(sycl::queue q,
     return res;
 }
 
+int py_cg_solve(sycl::queue exec_q,
+                dpctl::tensor::usm_ndarray Amat,
+                dpctl::tensor::usm_ndarray bvec,
+                dpctl::tensor::usm_ndarray xvec,
+                double rs_tol,
+                const std::vector<sycl::event> &depends = {})
+{
+    if (Amat.get_ndim() != 2 || bvec.get_ndim() != 1 || xvec.get_ndim() != 1) {
+        throw py::value_error("Expecting a matrix and two vectors");
+    }
+
+    py::ssize_t n0 = Amat.get_shape(0);
+    py::ssize_t n1 = Amat.get_shape(1);
+
+    if (n0 != n1) {
+        throw py::value_error("Matrix must be square.");
+    }
+
+    if (n0 != bvec.get_shape(0) || n0 != xvec.get_shape(0)) {
+        throw py::value_error(
+            "Dimensions of the matrix and vectors are not consistent.");
+    }
+
+    bool all_contig = (Amat.get_flags() & USM_ARRAY_C_CONTIGUOUS) &&
+                      (bvec.get_flags() & USM_ARRAY_C_CONTIGUOUS) &&
+                      (xvec.get_flags() & USM_ARRAY_C_CONTIGUOUS);
+    if (!all_contig) {
+        throw py::value_error("All inputs must be C-contiguous");
+    }
+
+    int A_typenum = Amat.get_typenum();
+    int b_typenum = bvec.get_typenum();
+    int x_typenum = xvec.get_typenum();
+
+    if (A_typenum != b_typenum || A_typenum != x_typenum) {
+        throw py::value_error("All arrays must have the same type");
+    }
+
+    if (exec_q.get_context() != Amat.get_queue().get_context() ||
+        exec_q.get_context() != bvec.get_queue().get_context() ||
+        exec_q.get_context() != xvec.get_queue().get_context())
+    {
+        throw std::runtime_error(
+            "USM allocations are not bound to context in execution queue");
+    }
+
+    const char *A_ch = Amat.get_data();
+    const char *b_ch = bvec.get_data();
+    char *x_ch = xvec.get_data();
+
+    if (A_typenum == UAR_DOUBLE) {
+        using T = double;
+        int iters = cg_solver::cg_solve<T>(
+            exec_q, n0, reinterpret_cast<const T *>(A_ch),
+            reinterpret_cast<const T *>(b_ch), reinterpret_cast<T *>(x_ch),
+            depends, static_cast<T>(rs_tol));
+
+        return iters;
+    }
+    else if (A_typenum == UAR_FLOAT) {
+        using T = float;
+        int iters = cg_solver::cg_solve<T>(
+            exec_q, n0, reinterpret_cast<const T *>(A_ch),
+            reinterpret_cast<const T *>(b_ch), reinterpret_cast<T *>(x_ch),
+            depends, static_cast<T>(rs_tol));
+
+        return iters;
+    }
+    else {
+        throw std::runtime_error(
+            "Unsupported data type. Use single or double precision.");
+    }
+}
+
 PYBIND11_MODULE(_onemkl, m)
 {
     // Import the dpctl extensions
@@ -518,4 +628,10 @@ PYBIND11_MODULE(_onemkl, m)
           py::arg("exec_queue"), py::arg("r"), py::arg("depends") = py::list());
     m.def("dot_blocking", &py_dot_blocking, "<v1, v2>", py::arg("exec_queue"),
           py::arg("v1"), py::arg("v2"), py::arg("depends") = py::list());
+
+    m.def("cpp_cg_solve", &py_cg_solve,
+          "Dispatch to call C++ implementation of cg_solve",
+          py::arg("exec_queue"), py::arg("Amat"), py::arg("bvec"),
+          py::arg("xvec"), py::arg("rs_squared_tolerance") = py::float_(1e-20),
+          py::arg("depends") = py::list());
 }
