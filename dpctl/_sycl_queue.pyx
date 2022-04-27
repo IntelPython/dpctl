@@ -845,7 +845,7 @@ cdef class SyclQueue(_SyclQueue):
         # free memory
         free(arg_objects)
 
-        return SyclEvent._create(Eref, [])
+        return SyclEvent._create(Eref)
 
     cpdef void wait(self):
         with nogil: DPCTLQueue_Wait(self._queue_ref)
@@ -996,7 +996,7 @@ cdef class SyclQueue(_SyclQueue):
                 "Barrier submission to Sycl queue failed."
             )
 
-        return SyclEvent._create(ERef, [])
+        return SyclEvent._create(ERef)
 
     @property
     def name(self):

@@ -30,7 +30,6 @@ cdef public api class _SyclEvent [
     """ Data owner for SyclEvent
     """
     cdef DPCTLSyclEventRef _event_ref
-    cdef object args
 
 
 cdef public api class SyclEvent(_SyclEvent) [
@@ -40,7 +39,7 @@ cdef public api class SyclEvent(_SyclEvent) [
     """ Python wrapper class for a ``cl::sycl::event``
     """
     @staticmethod
-    cdef SyclEvent _create (DPCTLSyclEventRef event, object args=*)
+    cdef SyclEvent _create (DPCTLSyclEventRef event)
     cdef int _init_event_default(self)
     cdef int _init_event_from__SyclEvent(self, _SyclEvent other)
     cdef int _init_event_from_capsule(self, object caps)

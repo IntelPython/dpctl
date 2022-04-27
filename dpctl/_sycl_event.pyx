@@ -100,7 +100,6 @@ cdef class _SyclEvent:
         if (self._event_ref):
             DPCTLEvent_Delete(self._event_ref)
         self._event_ref = NULL
-        self.args = None
 
 
 cdef class SyclEvent(_SyclEvent):
@@ -140,7 +139,7 @@ cdef class SyclEvent(_SyclEvent):
     """
 
     @staticmethod
-    cdef SyclEvent _create(DPCTLSyclEventRef eref, object args=None):
+    cdef SyclEvent _create(DPCTLSyclEventRef eref):
         """"
         This function calls DPCTLEvent_Delete(eref).
 
@@ -149,21 +148,18 @@ cdef class SyclEvent(_SyclEvent):
         """
         cdef _SyclEvent ret = _SyclEvent.__new__(_SyclEvent)
         _init_helper(ret, eref)
-        ret.args=args
         return SyclEvent(ret)
 
     cdef int _init_event_default(self):
         self._event_ref = DPCTLEvent_Create()
         if (self._event_ref is NULL):
             return -1
-        self.args=None
         return 0
 
     cdef int _init_event_from__SyclEvent(self, _SyclEvent other):
         self._event_ref = DPCTLEvent_Copy(other._event_ref)
         if (self._event_ref is NULL):
             return -1
-        self.args = other.args
         return 0
 
     cdef int _init_event_from_capsule(self, object cap):
@@ -183,7 +179,6 @@ cdef class SyclEvent(_SyclEvent):
             if (ERef_copy is NULL):
                 return -3
             self._event_ref = ERef_copy
-            self.args = None
             return 0
         else:
             return -128
@@ -331,7 +326,7 @@ cdef class SyclEvent(_SyclEvent):
         events = []
         for i in range(num_events):
             ERef = DPCTLEventVector_GetAt(EVRef, i)
-            events.append(SyclEvent._create(ERef, args=None))
+            events.append(SyclEvent._create(ERef))
         DPCTLEventVector_Delete(EVRef)
         return events
 
