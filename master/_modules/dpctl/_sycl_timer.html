@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl._sycl_timer &mdash; Data-parallel Control (dpctl) 0.13.0dev0+87.g2abb03cb3 documentation</title>
+  <title>dpctl._sycl_timer &mdash; Data-parallel Control (dpctl) 0.13.0dev0+88.g8ad3e1ce7 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+87.g2abb03cb3
+                0.13.0dev0+88.g8ad3e1ce7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -124,14 +124,19 @@
 <span class="sd">            sycl_dt, wall_dt = timer.dt</span>
 
 <span class="sd">    Remark:</span>
-<span class="sd">       The timer synchronizes the queue at the entrance and the</span>
-<span class="sd">       exit of the context.</span>
+<span class="sd">        The timer submits barriers to the queue at the entrance and the</span>
+<span class="sd">        exit of the context and uses profiling information from events</span>
+<span class="sd">        associated with these submissions to perform the timing. Thus</span>
+<span class="sd">        :class:`dpctl.SyclTimer` requires the queue with &quot;enable_profiling&quot;</span>
+<span class="sd">        property. In order to be able to collect the profiling information</span>
+<span class="sd">        the property `dt` ensures that both submitted barriers complete</span>
+<span class="sd">        their execution and thus effectively synchronizing the queue.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">       host_timer (callable): A callable such that host_timer() returns current</span>
-<span class="sd">       host time in seconds.</span>
-<span class="sd">       time_scale (int, float): Ratio of the unit of time of interest and</span>
-<span class="sd">       one second.</span>
+<span class="sd">        host_timer (callable): A callable such that host_timer() returns current</span>
+<span class="sd">            host time in seconds.</span>
+<span class="sd">        time_scale (int, float): Ratio of the unit of time of interest and</span>
+<span class="sd">            one second.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_timer</span><span class="o">=</span><span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">,</span> <span class="n">time_scale</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
