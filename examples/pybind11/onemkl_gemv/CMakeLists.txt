@@ -38,7 +38,7 @@ pybind11_add_module(${py_module_name}
     sycl_gemm/_onemkl.cpp
 )
 target_include_directories(${py_module_name}
-    PUBLIC ${MKL_INCLUDE_DIR} ${TBB_INCLUDE_DIR}
+    PUBLIC ${MKL_INCLUDE_DIR} ${TBB_INCLUDE_DIR} sycl_gemm
 )
 target_link_libraries(${py_module_name}
     PRIVATE ${mkl_sycl} ${mkl_intel_ilp64} ${mkl_tbb_thread} ${mkl_core} ${tbb}
@@ -51,6 +51,20 @@ get_target_property(_sycl_gemm_sources ${py_module_name} SOURCES)
 set_source_files_properties(${_sycl_gemm_sources}
   PROPERTIES
   COMPILE_OPTIONS "-O3;-Wno-deprecated-declarations"
+)
+
+add_executable(standalone_cpp
+  EXCLUDE_FROM_ALL
+  cpp/main.cpp
+)
+target_compile_options(standalone_cpp
+  PRIVATE -O3 -Wno-deprecated-declarations
+)
+target_include_directories(standalone_cpp
+  PUBLIC ${MKL_INCLUDE_DIR} ${TBB_INCLUDE_DIR} sycl_gemm
+  )
+target_link_libraries(standalone_cpp
+    PRIVATE ${mkl_sycl} ${mkl_intel_ilp64} ${mkl_tbb_thread} ${mkl_core} ${tbb}
 )
 
 set(ignoreMe "${SKBUILD}")

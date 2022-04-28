@@ -14,21 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pybind11.setup_helpers import Pybind11Extension
-from setuptools import setup
+from skbuild import setup
 
-import dpctl
-
-ext_modules = [
-    Pybind11Extension(
-        "external_usm_alloc",
-        ["./_usm_alloc_example.cpp"],
-        include_dirs=[dpctl.get_include()],
-        extra_compile_args=["-fPIC"],
-        extra_link_args=["-fPIC"],
-        libraries=["sycl"],
-        language="c++",
-    )
-]
-
-setup(name="external_usm_alloc", ext_modules=ext_modules)
+setup(
+    name="external_usm_allocation",
+    version="0.0.1",
+    description="an example of SYCL-powered Python package (with pybind11)",
+    author="Intel Scripting",
+    license="Apache 2.0",
+    packages=["external_usm_allocation"],
+)

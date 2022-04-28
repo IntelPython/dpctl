@@ -14,13 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from skbuild import setup
+# coding: utf-8
 
-setup(
-    name="sycl_gemm",
-    version="0.0.1",
-    description="an example of SYCL-powered Python package (with pybind11)",
-    author="Intel Scripting",
-    license="Apache 2.0",
-    packages=["sycl_gemm"],
-)
+from ._external_usm_alloc import DMatrix
+
+__all__ = ["DMatrix"]
+
+__doc__ = """
+   Example of implementing C++ class with its own USM memory allocation logic
+and interfacing that allocation with `dpctl` by implementing
+`__sycl_usm_array_interface__`.
+"""

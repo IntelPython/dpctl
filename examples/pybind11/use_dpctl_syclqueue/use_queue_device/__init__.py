@@ -16,37 +16,27 @@
 
 # coding: utf-8
 
-import external_usm_allocation as eua
-import numpy as np
-
-import dpctl
-import dpctl.memory as dpm
-
-q = dpctl.SyclQueue()
-matr = eua.DMatrix(q, 5, 5)
-
-print(matr)
-print(matr.__sycl_usm_array_interface__)
-
-blob = dpm.as_usm_memory(matr)
-
-print(blob.get_usm_type())
-
-Xh = np.array(
-    [
-        [1, 1, 1, 2, 2],
-        [1, 0, 1, 2, 2],
-        [1, 1, 0, 2, 2],
-        [0, 0, 0, 3, -1],
-        [0, 0, 0, -1, 5],
-    ],
-    dtype="d",
+from ._use_queue_device import (
+    get_device_global_mem_size,
+    get_device_local_mem_size,
+    get_max_compute_units,
+    offloaded_array_mod,
 )
-host_bytes_view = Xh.reshape((-1)).view(np.ubyte)
 
-blob.copy_from_host(host_bytes_view)
+__all__ = [
+    "get_max_compute_units",
+    "get_device_global_mem_size",
+    "get_device_local_mem_size",
+    "offloaded_array_mod",
+]
 
-print("")
-list_of_lists = matr.tolist()
-for row in list_of_lists:
-    print(row)
+__doc__ = """
+Example pybind11 extension demonstrating binding of dpctl entities to
+SYCL entities.
+
+dpctl provides type casters that bind ``sycl::queue`` to `dpctl.SyclQueue`,
+``sycl::device`` to `dpctl.SyclDevice`, etc.
+
+Use of these type casters simplifies writing of Python extensions and compile
+then using SYCL C++ compilers, such as Intel(R) oneAPI DPC++ compiler.
+"""

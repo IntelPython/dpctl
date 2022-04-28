@@ -22,31 +22,27 @@ import numpy as np
 import dpctl
 import dpctl.memory as dpm
 
-q = dpctl.SyclQueue()
-matr = eua.DMatrix(q, 5, 5)
 
-print(matr)
-print(matr.__sycl_usm_array_interface__)
+def test_dmatrix():
+    q = dpctl.SyclQueue()
+    matr = eua.DMatrix(q, 5, 5)
+    assert hasattr(matr, "__sycl_usm_array_interface__")
 
-blob = dpm.as_usm_memory(matr)
+    blob = dpm.as_usm_memory(matr)
+    assert blob.get_usm_type() == "shared"
 
-print(blob.get_usm_type())
+    Xh = np.array(
+        [
+            [1, 1, 1, 2, 2],
+            [1, 0, 1, 2, 2],
+            [1, 1, 0, 2, 2],
+            [0, 0, 0, 3, -1],
+            [0, 0, 0, -1, 5],
+        ],
+        dtype="d",
+    )
+    host_bytes_view = Xh.reshape((-1)).view(np.ubyte)
+    blob.copy_from_host(host_bytes_view)
 
-Xh = np.array(
-    [
-        [1, 1, 1, 2, 2],
-        [1, 0, 1, 2, 2],
-        [1, 1, 0, 2, 2],
-        [0, 0, 0, 3, -1],
-        [0, 0, 0, -1, 5],
-    ],
-    dtype="d",
-)
-host_bytes_view = Xh.reshape((-1)).view(np.ubyte)
-
-blob.copy_from_host(host_bytes_view)
-
-print("")
-list_of_lists = matr.tolist()
-for row in list_of_lists:
-    print(row)
+    list_of_lists = matr.tolist()
+    assert list_of_lists == Xh.tolist()

@@ -14,20 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pybind11.setup_helpers import Pybind11Extension
-from setuptools import setup
+from skbuild import setup
 
-import dpctl
-
-exts = [
-    Pybind11Extension(
-        "use_queue_device_ext",
-        ["./_example.cpp"],
-        include_dirs=[dpctl.get_include()],
-        extra_compile_args=["-fPIC"],
-        extra_link_args=["-fPIC"],
-        language="c++",
-    ),
-]
-
-setup(name="pybind11_example", ext_modules=exts)
+setup(
+    name="use_queue_device",
+    version="0.0.1",
+    description="an example of SYCL-powered Python package (with pybind11)",
+    author="Intel Scripting",
+    license="Apache 2.0",
+    packages=["use_queue_device"],
+)
