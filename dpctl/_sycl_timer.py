@@ -46,14 +46,14 @@ class SyclTimer:
             sycl_dt, wall_dt = timer.dt
 
     Remark:
-       The timer synchronizes the queue at the entrance and the
-       exit of the context.
+        The timer synchronizes the queue at the entrance and the
+        exit of the context.
 
     Args:
-       host_timer (callable): A callable such that host_timer() returns current
-       host time in seconds.
-       time_scale (int, float): Ratio of the unit of time of interest and
-       one second.
+        host_timer (callable): A callable such that host_timer() returns current
+            host time in seconds.
+        time_scale (int, float): Ratio of the unit of time of interest and
+            one second.
     """
 
     def __init__(self, host_timer=timeit.default_timer, time_scale=1):
