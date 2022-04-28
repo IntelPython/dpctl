@@ -190,6 +190,7 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
         const DPCTLSyclDeviceRef DRef,
         _partition_affinity_domain_type PartitionAffinityDomainTy)
     cdef DPCTLSyclDeviceRef DPCTLDevice_GetParentDevice(const DPCTLSyclDeviceRef DRef)
+    cdef size_t DPCTLDevice_GetProfilingTimerResolution(const DPCTLSyclDeviceRef DRef)
 
 
 cdef extern from "syclinterface/dpctl_sycl_device_manager.h":

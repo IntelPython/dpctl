@@ -485,6 +485,17 @@ def check_repr(device):
     assert type(repr(device)) is str
 
 
+def check_profiling_timer_resolution(device):
+    try:
+        resol = device.profiling_timer_resolution
+    except Exception:
+        pytest.fail(
+            "Encountered an exception inside "
+            "profiling_timer_resolution property."
+        )
+    assert isinstance(resol, int) and resol > 0
+
+
 list_of_checks = [
     check_get_max_compute_units,
     check_get_max_work_item_dims,
