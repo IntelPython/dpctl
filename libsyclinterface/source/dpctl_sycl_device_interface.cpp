@@ -648,3 +648,16 @@ size_t DPCTLDevice_Hash(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         return 0;
     }
 }
+
+size_t DPCTLDevice_GetProfilingTimerResolution(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    if (DRef) {
+        auto D = unwrap(DRef);
+        return D->get_info<info::device::profiling_timer_resolution>();
+    }
+    else {
+        error_handler("Argument DRef is null", __FILE__, __func__, __LINE__);
+        return 0;
+    }
+}
