@@ -224,6 +224,9 @@ Overview
 	DPCTL_API uint32_t
 	:ref:`DPCTLDevice_GetPreferredVectorWidthShort<doxid-db/dd1/group___device_interface_1gab23c05c90e4b3a3417253e52b5d88290>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
+	DPCTL_API size_t
+	:ref:`DPCTLDevice_GetProfilingTimerResolution<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a5fe67bf4915e62ce08d80d810f0e8632>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
 	DPCTL_C_EXTERN_C_END DPCTL_API bool
 	:ref:`DPCTLDevice_GetSubGroupIndependentForwardProgress<doxid-db/dd1/group___device_interface_1gafd08f141480c1eb8eb243c88823e85b0>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
@@ -1044,6 +1047,35 @@ Wrapper over device.get_info<info::device::parent_device>
 .. rubric:: Returns:
 
 Returns an opaque pointer to the parent device for a sub-device, or nullptr otherwise.
+
+.. index:: pair: function; DPCTLDevice_GetProfilingTimerResolution
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a5fe67bf4915e62ce08d80d810f0e8632:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLDevice_GetProfilingTimerResolution(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::profiling_timer_resolution>
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the resolution of device timer in nanoseconds.
 
 .. index:: pair: function; DPCTLDevice_Hash
 .. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a28538fa8029a6d4c7ff4d972ec690b97:
