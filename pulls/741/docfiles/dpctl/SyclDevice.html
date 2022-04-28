@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.13.0dev0+75.gb62bde851 documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.13.0dev0+99.g28c580537 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+75.gb62bde851
+                0.13.0dev0+99.g28c580537
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -303,10 +303,13 @@ constructor. The filter string needs to conform to the
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_short" title="dpctl.SyclDevice.preferred_vector_width_short"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_short</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="dpctl.SyclDevice.sub_group_independent_forward_progress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_independent_forward_progress</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.profiling_timer_resolution" title="dpctl.SyclDevice.profiling_timer_resolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">profiling_timer_resolution</span></code></a></p></td>
+<td><p>Profiling timer resolution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="dpctl.SyclDevice.sub_group_independent_forward_progress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_independent_forward_progress</span></code></a></p></td>
 <td><p>Returns true if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.vendor" title="dpctl.SyclDevice.vendor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vendor</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.vendor" title="dpctl.SyclDevice.vendor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vendor</span></code></a></p></td>
 <td><p>Returns the device vendor name as a string.</p></td>
 </tr>
 </tbody>
@@ -754,6 +757,20 @@ types that can be put into vectors.</p>
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_short</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_short" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the preferred native vector width size for built-in scalar
 types that can be put into vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.profiling_timer_resolution">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">profiling_timer_resolution</span></span><a class="headerlink" href="#dpctl.SyclDevice.profiling_timer_resolution" title="Permalink to this definition"></a></dt>
+<dd><p>Profiling timer resolution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The resolution of device timer in nanoseconds.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">

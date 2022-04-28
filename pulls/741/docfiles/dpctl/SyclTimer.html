@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclTimer &mdash; Data-parallel Control (dpctl) 0.13.0dev0+75.gb62bde851 documentation</title>
+  <title>dpctl.SyclTimer &mdash; Data-parallel Control (dpctl) 0.13.0dev0+99.g28c580537 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+75.gb62bde851
+                0.13.0dev0+99.g28c580537
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -127,17 +127,22 @@
 </dd>
 </dl>
 <dl class="simple">
-<dt>Remark:</dt><dd><p>The timer synchronizes the queue at the entrance and the
-exit of the context.</p>
+<dt>Remark:</dt><dd><p>The timer submits barriers to the queue at the entrance and the
+exit of the context and uses profiling information from events
+associated with these submissions to perform the timing. Thus
+<a class="reference internal" href="#dpctl.SyclTimer" title="dpctl.SyclTimer"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclTimer</span></code></a> requires the queue with “enable_profiling”
+property. In order to be able to collect the profiling information
+the property <cite>dt</cite> ensures that both submitted barriers complete
+their execution and thus effectively synchronizing the queue.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>host_timer</strong> (<em>callable</em>) – A callable such that host_timer() returns current</p></li>
-<li><p><strong>seconds.</strong> (<em>host time in</em>) – </p></li>
-<li><p><strong>time_scale</strong> (<em>int</em><em>, </em><em>float</em>) – Ratio of the unit of time of interest and</p></li>
-<li><p><strong>second.</strong> (<em>one</em>) – </p></li>
+<li><p><strong>host_timer</strong> (<em>callable</em>) – A callable such that host_timer() returns current
+host time in seconds.</p></li>
+<li><p><strong>time_scale</strong> (<em>int</em><em>, </em><em>float</em>) – Ratio of the unit of time of interest and
+one second.</p></li>
 </ul>
 </dd>
 </dl>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Queue &mdash; Data-parallel Control (dpctl) 0.13.0dev0+75.gb62bde851 documentation</title>
+  <title>Queue &mdash; Data-parallel Control (dpctl) 0.13.0dev0+99.g28c580537 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+75.gb62bde851
+                0.13.0dev0+99.g28c580537
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -155,8 +155,8 @@ the associated task completes.</p>
 Traceback (most recent call last):
   File &quot;../examples/python/sycl_queue.py&quot;, line 78, in create_queue_from_subdevice_multidevice_context
     sub_devs = cpu_d.create_sub_devices(partition=2)
-  File &quot;dpctl/_sycl_device.pyx&quot;, line 875, in dpctl._sycl_device.SyclDevice.create_sub_devices
-  File &quot;dpctl/_sycl_device.pyx&quot;, line 748, in dpctl._sycl_device.SyclDevice.create_sub_devices_equally
+  File &quot;dpctl/_sycl_device.pyx&quot;, line 876, in dpctl._sycl_device.SyclDevice.create_sub_devices
+  File &quot;dpctl/_sycl_device.pyx&quot;, line 749, in dpctl._sycl_device.SyclDevice.create_sub_devices_equally
 dpctl._sycl_device.SubDeviceCreationError: Sub-devices were not created.
 
 During handling of the above exception, another exception occurred:
@@ -198,9 +198,9 @@ is called.</p>
 </div>
 <p>A possible output for the example <a class="reference internal" href="#fig-constructing-queue-filter-selector"><span class="std std-ref">Constructing SyclQueue from filter selector</span></a> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_filter_selector
-Queue &lt;dpctl.SyclQueue at 0x7f415b663140, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
+Queue &lt;dpctl.SyclQueue at 0x7fd4ef053200, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
 Device targeted by the queue:
-    Name            Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz
+    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
     Driver version  2021.13.11.0.23_160000
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE

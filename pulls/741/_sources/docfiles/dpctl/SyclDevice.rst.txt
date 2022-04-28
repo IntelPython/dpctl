@@ -72,6 +72,7 @@ Attributes
 .. autoattribute:: dpctl.SyclDevice.preferred_vector_width_int
 .. autoattribute:: dpctl.SyclDevice.preferred_vector_width_long
 .. autoattribute:: dpctl.SyclDevice.preferred_vector_width_short
+.. autoattribute:: dpctl.SyclDevice.profiling_timer_resolution
 .. autoattribute:: dpctl.SyclDevice.sub_group_independent_forward_progress
 .. autoattribute:: dpctl.SyclDevice.vendor
 
