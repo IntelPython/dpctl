@@ -587,3 +587,14 @@ DPCTLDevice_GetParentDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  */
 DPCTL_API
 size_t DPCTLDevice_Hash(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::profiling_timer_resolution>
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the resolution of device timer in nanoseconds.
+ */
+DPCTL_API
+size_t DPCTLDevice_GetProfilingTimerResolution(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);

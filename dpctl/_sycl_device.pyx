@@ -57,6 +57,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetPreferredVectorWidthInt,
     DPCTLDevice_GetPreferredVectorWidthLong,
     DPCTLDevice_GetPreferredVectorWidthShort,
+    DPCTLDevice_GetProfilingTimerResolution,
     DPCTLDevice_GetSubGroupIndependentForwardProgress,
     DPCTLDevice_GetVendor,
     DPCTLDevice_HasAspect,
@@ -923,6 +924,19 @@ cdef class SyclDevice(_SyclDevice):
         if (pDRef is NULL):
             return None
         return SyclDevice._create(pDRef)
+
+    @property
+    def profiling_timer_resolution(self):
+        """ Profiling timer resolution.
+
+        Returns:
+            int: The resolution of device timer in nanoseconds.
+        """
+        cdef size_t timer_res = 0
+        timer_res = DPCTLDevice_GetProfilingTimerResolution(self._device_ref)
+        if (timer_res == 0):
+            raise RuntimeError("Failed to get device timer resolution.")
+        return timer_res
 
     cdef cpp_bool equals(self, SyclDevice other):
         """ Returns ``True`` if the :class:`dpctl.SyclDevice` argument has the

@@ -375,6 +375,14 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetParentDevice)
     EXPECT_TRUE(pDRef == nullptr);
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetProfilingTimerResolution)
+{
+    size_t res = 0;
+    EXPECT_NO_FATAL_FAILURE(res =
+                                DPCTLDevice_GetProfilingTimerResolution(DRef));
+    EXPECT_TRUE(res != 0);
+}
+
 INSTANTIATE_TEST_SUITE_P(DPCTLDeviceFns,
                          TestDPCTLSyclDeviceInterface,
                          ::testing::Values("opencl",
@@ -672,4 +680,12 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkHash)
     size_t hash = 0;
     EXPECT_NO_FATAL_FAILURE(hash = DPCTLDevice_Hash(Null_DRef));
     ASSERT_TRUE(hash == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetProfilingTimerResolution)
+{
+    size_t res = 1;
+    EXPECT_NO_FATAL_FAILURE(
+        res = DPCTLDevice_GetProfilingTimerResolution(Null_DRef));
+    ASSERT_TRUE(res == 0);
 }
