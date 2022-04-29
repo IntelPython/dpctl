@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Queue &mdash; Data-parallel Control (dpctl) 0.13.0dev0+100.g2c000edce documentation</title>
+  <title>Queue &mdash; Data-parallel Control (dpctl) 0.13.0dev0+100.g20b1a47df documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+100.g2c000edce
+                0.13.0dev0+100.g20b1a47df
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -198,9 +198,9 @@ is called.</p>
 </div>
 <p>A possible output for the example <a class="reference internal" href="#fig-constructing-queue-filter-selector"><span class="std std-ref">Constructing SyclQueue from filter selector</span></a> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_filter_selector
-Queue &lt;dpctl.SyclQueue at 0x7fd9ed4a30c0, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
+Queue &lt;dpctl.SyclQueue at 0x7fe1f7414340, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
 Device targeted by the queue:
-    Name            Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
+    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
     Driver version  2021.13.11.0.23_160000
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
@@ -220,6 +220,20 @@ execution. The profiling information is only populated if the queue used was cre
 <p>The class <a class="reference internal" href="../../../dpctl/SyclTimer.html#dpctl.SyclTimer" title="dpctl.SyclTimer"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclTimer</span></code></a> implements a context manager that can be used to collect cumulative
 profiling information for all the tasks submitted to the queue of interest by functions executed
 within the context:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Example of timing execution</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+
+<span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="nb">property</span><span class="o">=</span><span class="s2">&quot;enable_profiling&quot;</span><span class="p">)</span>
+<span class="n">timer_ctx</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclTimer</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">timer_ctx</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
+
+<span class="n">host_dt</span><span class="p">,</span> <span class="n">device_dt</span> <span class="o">=</span> <span class="n">timer_ctx</span><span class="o">.</span><span class="n">dt</span>
+</pre></div>
+</div>
+</div>
 <p>The timer leverages <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_enqueue_barrier.asciidoc">oneAPI enqueue_barrier SYCL extension</a> and submits
 a barrier at context entrance and a barrier at context exit and records associated events. The elapsed
 device time is computed as <cite>e_exit.profiling_info_start - e_enter.profiling_info_end</cite>.</p>

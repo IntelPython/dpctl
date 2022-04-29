@@ -86,7 +86,7 @@ The class :class:`dpctl.SyclTimer` implements a context manager that can be used
 profiling information for all the tasks submitted to the queue of interest by functions executed
 within the context:
 
-.. code-block: python
+.. code-block:: python
    :caption: Example of timing execution
 
    import dpctl
