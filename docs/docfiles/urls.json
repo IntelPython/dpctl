@@ -4,6 +4,7 @@
     "oneapi": "https://www.oneapi.io/",
     "oneapi_filter_selection": "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_filter_selector.asciidoc",
     "oneapi_default_context": "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_default_context.asciidoc",
+    "oneapi_enqueue_barrier": "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_enqueue_barrier.asciidoc",
     "sycl_aspects": "https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#table.device.aspect",
     "sycl_context": "https://sycl.readthedocs.io/en/latest/iface/context.html",
     "sycl_device": "https://sycl.readthedocs.io/en/latest/iface/device.html",

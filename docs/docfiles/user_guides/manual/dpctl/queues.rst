@@ -75,3 +75,30 @@ A possible output for the example :ref:`fig-constructing-queue-filter-selector` 
 
 Profiling a Task Submitted to a Queue
 -------------------------------------
+
+The result of scheduling execution of a task on queue is an event which can queried for the status
+of the task execution, can be used to order execution of the future tasks after this one is complete,
+can be used to wait for the completion of the task, and can carry profiling information of the task
+execution. The profiling information is only populated if the queue used was created with
+"enable_profiling" property and only becomes available after the task execution is complete.
+
+The class :class:`dpctl.SyclTimer` implements a context manager that can be used to collect cumulative
+profiling information for all the tasks submitted to the queue of interest by functions executed
+within the context:
+
+.. code-block:: python
+   :caption: Example of timing execution
+
+   import dpctl
+   import dpctl.tensor as dpt
+
+   q = dpctl.SyclQueue(property="enable_profiling")
+   timer_ctx = dpctl.SyclTimer()
+   with timer_ctx(q):
+       X = dpt.arange(10**6, dtype=float, sycl_queue=q)
+
+   host_dt, device_dt = timer_ctx.dt
+
+The timer leverages :oneapi_enqueue_barrier:`oneAPI enqueue_barrier SYCL extension <>` and submits
+a barrier at context entrance and a barrier at context exit and records associated events. The elapsed
+device time is computed as ``e_exit.profiling_info_start - e_enter.profiling_info_end``.
