@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl Exceptions &mdash; Data-parallel Control (dpctl) 0.13.0dev0+93.g2590a924 documentation</title>
+  <title>dpctl Exceptions &mdash; Data-parallel Control (dpctl) 0.13.0dev0+94.gafb5ad589 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+93.g2590a924
+                0.13.0dev0+94.gafb5ad589
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -78,10 +78,17 @@
   <section id="dpctl-exceptions">
 <span id="dpctl-exception-api"></span><h1>dpctl Exceptions<a class="headerlink" href="#dpctl-exceptions" title="Permalink to this headline"></a></h1>
 <dl class="py exception">
+<dt class="sig sig-object py" id="dpctl.SyclContextCreationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclContextCreationError</span></span><a class="headerlink" href="#dpctl.SyclContextCreationError" title="Permalink to this definition"></a></dt>
+<dd><p>A SyclContextCreationError exception is raised when
+SyclContext could not created.</p>
+</dd></dl>
+
+<dl class="py exception">
 <dt class="sig sig-object py" id="dpctl.SyclDeviceCreationError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclDeviceCreationError</span></span><a class="headerlink" href="#dpctl.SyclDeviceCreationError" title="Permalink to this definition"></a></dt>
-<dd><p>A DeviceCreationError exception is raised when
-device could not created.</p>
+<dd><p>A SyclDeviceCreationError exception is raised when
+SyclDevice instance could not created.</p>
 </dd></dl>
 
 <dl class="py exception">
@@ -109,7 +116,7 @@ string is invalid, or the backend or device type values are not supported.</p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="dpctl.SyclSubDeviceCreationError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclSubDeviceCreationError</span></span><a class="headerlink" href="#dpctl.SyclSubDeviceCreationError" title="Permalink to this definition"></a></dt>
-<dd><p>A SubDeviceCreationError exception is raised when
+<dd><p>A SyclSubDeviceCreationError exception is raised when
 sub-devices were not created.</p>
 </dd></dl>
 
