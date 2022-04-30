@@ -129,7 +129,7 @@ def test_context_can_be_used_in_queue(valid_filter):
 def test_context_can_be_used_in_queue2(valid_filter):
     try:
         d = dpctl.SyclDevice(valid_filter)
-    except dpctl.SyclContextCreationError:
+    except dpctl.SyclDeviceCreationError:
         pytest.skip()
     if d.default_selector_score < 0:
         # skip test for devices rejected by default selector
@@ -141,7 +141,7 @@ def test_context_can_be_used_in_queue2(valid_filter):
 def test_context_multi_device():
     try:
         d = dpctl.SyclDevice("cpu")
-    except dpctl.SyclContextCreationError:
+    except dpctl.SyclDeviceCreationError:
         pytest.skip()
     if d.default_selector_score < 0:
         pytest.skip()

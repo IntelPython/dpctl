@@ -582,7 +582,7 @@ def test_standard_selectors(device_selector, check):
     try:
         device = device_selector()
         check(device)
-    except ValueError:
+    except dpctl.SyclDeviceCreationError:
         pytest.skip()
 
 
@@ -604,7 +604,7 @@ def test_valid_filter_selectors(valid_filter, check):
     device = None
     try:
         device = dpctl.SyclDevice(valid_filter)
-    except ValueError:
+    except SyclDeviceCreationError:
         pytest.skip("Failed to create device with supported filter")
     check(device)
 
@@ -629,7 +629,7 @@ def test_filter_string(valid_filter):
     device = None
     try:
         device = dpctl.SyclDevice(valid_filter)
-    except ValueError:
+    except SyclDeviceCreationError:
         pytest.skip("Failed to create device with supported filter")
     dev_id = device.filter_string
     assert (
@@ -722,7 +722,7 @@ def unsupported_aspect(request):
 def test_supported_aspect(supported_aspect):
     try:
         dpctl.select_device_with_aspects(supported_aspect)
-    except ValueError:
+    except dpctl.SyclDeviceCreationError:
         # ValueError may be raised if no device with
         # requested aspect charateristics is available
         pass
@@ -741,9 +741,9 @@ def test_unsupported_aspect(unsupported_aspect):
 
 
 def test_handle_no_device():
-    with pytest.raises(ValueError):
+    with pytest.raises(dpctl.SyclDeviceCreationError):
         dpctl.select_device_with_aspects(["gpu", "cpu"])
-    with pytest.raises(ValueError):
+    with pytest.raises(dpctl.SyclDeviceCreationError):
         dpctl.select_device_with_aspects("cpu", excluded_aspects="cpu")
 
 

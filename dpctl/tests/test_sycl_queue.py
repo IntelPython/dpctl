@@ -307,7 +307,7 @@ def test_standard_selectors(device_selector, check):
             pytest.skip()
         q = dpctl.SyclQueue(device)
         check(q.get_sycl_device())
-    except ValueError:
+    except dpctl.SyclDeviceCreationError:
         pytest.skip()
 
 
