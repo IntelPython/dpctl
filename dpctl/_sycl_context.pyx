@@ -174,7 +174,8 @@ cdef class SyclContext(_SyclContext):
     Raises:
         MemoryError: If the constructor could not allocate necessary
                      temporary memory.
-        ValueError: If the :class:`dpctl.SyclContext` object creation failed.
+        SyclContextCreationError: If the :class:`dpctl.SyclContext` object
+                                  creation failed.
         TypeError: If the list of :class:`dpctl.SyclDevice` objects was empty,
                    or the input capsule contained a null pointer or could not
                    be renamed.

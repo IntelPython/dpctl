@@ -1,7 +1,8 @@
 import collections.abc
 from itertools import chain
 
-from . import SyclDevice, get_devices
+from ._sycl_device import SyclDevice, SyclDeviceCreationError
+from ._sycl_device_factory import get_devices
 
 
 def select_device_with_aspects(required_aspects, excluded_aspects=[]):
@@ -66,7 +67,7 @@ def select_device_with_aspects(required_aspects, excluded_aspects=[]):
             selected_dev = dev
 
     if selected_dev is None:
-        raise ValueError(
+        raise SyclDeviceCreationError(
             f"Requested device is unavailable: "
             f"required_aspects={required_aspects}, "
             f"excluded_aspects={excluded_aspects}"

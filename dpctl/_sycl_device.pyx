@@ -223,6 +223,20 @@ cdef class SyclDevice(_SyclDevice):
                 gpu = dpctl.select_gpu_device():
                 gpu.print_device_info()
 
+    Args:
+        arg (optional): The argument can be a selector string or None.
+                        Defaults to ``None``.
+
+    Raises:
+        MemoryError: If the constructor could not allocate necessary
+                     temporary memory.
+        SyclDeviceCreationError: If the :class:`dpctl.SyclDevice` object
+                                 creation failed.
+        TypeError: If the list of :class:`dpctl.SyclDevice` objects was empty,
+                   or the input capsule contained a null pointer or could not
+                   be renamed.
+
+
     """
     @staticmethod
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref):
