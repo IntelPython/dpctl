@@ -1,0 +1,14 @@
+.. _dpctl_exception_api:
+
+################
+dpctl Exceptions
+################
+
+
+.. currentmodule:: dpctl
+
+.. autoexception:: SyclDeviceCreationError
+.. autoexception:: SyclKernelInvalidRangeError
+.. autoexception:: SyclKernelSubmitError
+.. autoexception:: SyclQueueCreationError
+.. autoexception:: SyclSubDeviceCreationError
