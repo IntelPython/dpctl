@@ -50,7 +50,7 @@ def test_ctxt_creation_from_filter(valid_filter):
     """
     try:
         dpctl.SyclContext(valid_filter)
-    except ValueError:
+    except dpctl.SyclContextCreationError:
         pytest.skip("Failed to create context with supported filter")
 
 
@@ -70,11 +70,11 @@ def test_context_not_equals():
     """
     try:
         ctx_gpu = dpctl.SyclContext("gpu")
-    except ValueError:
+    except dpctl.SyclContextCreationError:
         pytest.skip()
     try:
         ctx_cpu = dpctl.SyclContext("cpu")
-    except ValueError:
+    except dpctl.SyclContextCreationError:
         pytest.skip()
     assert ctx_cpu != ctx_gpu
     assert hash(ctx_cpu) != hash(ctx_gpu)
@@ -93,7 +93,7 @@ def test_context_equals():
     try:
         ctx1 = dpctl.SyclContext("gpu")
         ctx0 = dpctl.SyclContext("gpu")
-    except ValueError:
+    except dpctl.SyclContextCreationError:
         pytest.skip()
     assert ctx0 == ctx1
     assert hash(ctx0) == hash(ctx1)
@@ -118,7 +118,7 @@ def test_repr():
 def test_context_can_be_used_in_queue(valid_filter):
     try:
         ctx = dpctl.SyclContext(valid_filter)
-    except ValueError:
+    except dpctl.SyclContextCreationError:
         pytest.skip()
     devs = ctx.get_devices()
     assert len(devs) == ctx.device_count
@@ -129,7 +129,7 @@ def test_context_can_be_used_in_queue(valid_filter):
 def test_context_can_be_used_in_queue2(valid_filter):
     try:
         d = dpctl.SyclDevice(valid_filter)
-    except ValueError:
+    except dpctl.SyclContextCreationError:
         pytest.skip()
     if d.default_selector_score < 0:
         # skip test for devices rejected by default selector
@@ -141,7 +141,7 @@ def test_context_can_be_used_in_queue2(valid_filter):
 def test_context_multi_device():
     try:
         d = dpctl.SyclDevice("cpu")
-    except ValueError:
+    except dpctl.SyclContextCreationError:
         pytest.skip()
     if d.default_selector_score < 0:
         pytest.skip()
@@ -244,5 +244,5 @@ def test_invalid_capsule():
 def test_multi_device_different_platforms():
     devs = dpctl.get_devices()  # all devices
     if len(devs) > 1:
-        with pytest.raises(ValueError):
+        with pytest.raises(dpctl.SyclContextCreationError):
             dpctl.SyclContext(devs)

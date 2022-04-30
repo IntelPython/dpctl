@@ -32,7 +32,7 @@
 """
 __author__ = "Intel Corp."
 
-from dpctl._sycl_context import SyclContext
+from dpctl._sycl_context import SyclContext, SyclContextCreationError
 from dpctl._sycl_device import (
     SyclDevice,
     SyclDeviceCreationError,
@@ -77,6 +77,7 @@ from .enum_types import backend_type, device_type, event_status_type
 
 __all__ = [
     "SyclContext",
+    "SyclContextCreationError",
 ]
 __all__ += [
     "SyclDevice",

@@ -101,8 +101,8 @@ __all__ = [
 
 cdef class SyclDeviceCreationError(Exception):
     """
-    A DeviceCreationError exception is raised when
-    device could not created.
+    A SyclDeviceCreationError exception is raised when
+    SyclDevice instance could not created.
 
     """
     pass
@@ -110,7 +110,7 @@ cdef class SyclDeviceCreationError(Exception):
 
 cdef class SyclSubDeviceCreationError(Exception):
     """
-    A SubDeviceCreationError exception is raised when
+    A SyclSubDeviceCreationError exception is raised when
     sub-devices were not created.
 
     """
