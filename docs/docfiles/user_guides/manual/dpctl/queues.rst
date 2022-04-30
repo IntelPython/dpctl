@@ -45,7 +45,7 @@ the associated task completes.
 
 .. literalinclude:: ../../../../../examples/python/sycl_queue.py
     :language: python
-    :lines: 17-19, 67-79
+    :lines: 17-19, 72-89
     :caption: Constructing SyclQueue from context and device
     :linenos:
 
