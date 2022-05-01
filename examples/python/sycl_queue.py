@@ -55,7 +55,12 @@ def create_queue_from_subdevice():
     Create a queue from a sub-device.
     """
     cpu_d = dpctl.SyclDevice("opencl:cpu:0")
-    sub_devs = cpu_d.create_sub_devices(partition=4)
+    try:
+        sub_devs = cpu_d.create_sub_devices(partition=2)
+    except dpctl.SyclSubDeviceCreationError:
+        print("Could not create sub device.")
+        print(f"{cpu_d} has {cpu_d.max_compute_units} compute units")
+        return
     q = dpctl.SyclQueue(sub_devs[0])
     # a single-device context is created automatically
     print(
@@ -69,10 +74,14 @@ def create_queue_from_subdevice_multidevice_context():
     Create a queue from a sub-device.
     """
     cpu_d = dpctl.SyclDevice("opencl:cpu:0")
-    sub_devs = cpu_d.create_sub_devices(partition=4)
+    try:
+        sub_devs = cpu_d.create_sub_devices(partition=2)
+    except dpctl.SyclSubDeviceCreationError:
+        print("Could not create sub device.")
+        print(f"{cpu_d} has {cpu_d.max_compute_units} compute units")
+        return
     ctx = dpctl.SyclContext(sub_devs)
-    q = dpctl.SyclQueue(ctx, sub_devs[0])
-    # a single-device context is created automatically
+    q = dpctl.SyclQueue(ctx, sub_devs[0], partition="enable_profiling")
     print(
         "Number of devices in SyclContext " "associated with the queue: ",
         q.sycl_context.device_count,

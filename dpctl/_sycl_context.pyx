@@ -49,12 +49,24 @@ from ._backend cimport (  # noqa: E211
 )
 from ._sycl_device cimport SyclDevice
 from ._sycl_queue cimport default_async_error_handler
+from ._sycl_device import SyclDeviceCreationError
 
 __all__ = [
     "SyclContext",
+    "SyclContextCreationError",
 ]
 
 _logger = logging.getLogger(__name__)
+
+
+cdef class SyclContextCreationError(Exception):
+    """
+    A SyclContextCreationError exception is raised when
+    SyclContext could not created.
+
+    """
+    pass
+
 
 cdef void _context_capsule_deleter(object o):
     cdef DPCTLSyclContextRef CRef = NULL
@@ -162,7 +174,8 @@ cdef class SyclContext(_SyclContext):
     Raises:
         MemoryError: If the constructor could not allocate necessary
                      temporary memory.
-        ValueError: If the :class:`dpctl.SyclContext` object creation failed.
+        SyclContextCreationError: If the :class:`dpctl.SyclContext` object
+                                  creation failed.
         TypeError: If the list of :class:`dpctl.SyclDevice` objects was empty,
                    or the input capsule contained a null pointer or could not
                    be renamed.
@@ -283,11 +296,17 @@ cdef class SyclContext(_SyclContext):
         ):
             ret = self._init_context_from_devices(arg, 0)
         else:
-            dev = SyclDevice(arg)
+            try:
+                dev = SyclDevice(arg)
+            except SyclDeviceCreationError as e:
+                raise SyclContextCreationError(
+                    "SyclContext failed to be created because "
+                    f"SyclDevice could not be created from the argument {arg}"
+                ) from e
             ret = self._init_context_from_one_device(<SyclDevice> dev, 0)
         if (ret < 0):
             if (ret == -1):
-                raise ValueError("Context failed to be created.")
+                raise SyclContextCreationError("Context failed to be created.")
             elif (ret == -2):
                 raise TypeError(
                     "List of devices to create context from must be non-empty."
