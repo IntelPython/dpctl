@@ -157,11 +157,17 @@ Exceptions
 .. list-table::
     :widths: 25,50
 
+    * - :class:`SyclContextCreationError`
+      - A SyclContextCreationError exception is raised when SyclContext could not created.
+    * - :class:`SyclDeviceCreationError`
+      - A SyclDeviceCreationError exception is raised when SyclDevice instance could not created.
     * - :class:`SyclKernelInvalidRangeError`
       - A SyclKernelInvalidRangeError is raised when the provided range has less than one or more than three dimensions.
     * - :class:`SyclKernelSubmitError`
       - A SyclKernelSubmitError exception is raised when the provided :class:`.SyclKernel` could not be submitted to the :class:`.SyclQueue`.
     * - :class:`SyclQueueCreationError`
       - A SyclQueueCreationError exception is raised when a :class:`.SyclQueue` could not be created. :class:`.SyclQueue` creation can fail if the filter string is invalid, or the backend or device type values are not supported.
+    * - :class:`SyclSubDeviceCreationError`
+      - A SyclSubDeviceCreationError exception is raised when sub-devices were not created.
 
 

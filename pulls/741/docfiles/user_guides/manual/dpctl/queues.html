@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Queue &mdash; Data-parallel Control (dpctl) 0.13.0dev0+100.g9c3115d76 documentation</title>
+  <title>Queue &mdash; Data-parallel Control (dpctl) 0.13.0dev0+103.g78ce3c10f documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+100.g9c3115d76
+                0.13.0dev0+103.g78ce3c10f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -136,7 +136,7 @@ the associated task completes.</p>
 <span class="linenos"> 8</span>    <span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;opencl:cpu:0&quot;</span><span class="p">)</span>
 <span class="linenos"> 9</span>    <span class="k">try</span><span class="p">:</span>
 <span class="linenos">10</span>        <span class="n">sub_devs</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="linenos">11</span>    <span class="k">except</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SubDeviceCreationError</span><span class="p">:</span>
+<span class="linenos">11</span>    <span class="k">except</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclSubDeviceCreationError</span><span class="p">:</span>
 <span class="linenos">12</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Could not create sub device.&quot;</span><span class="p">)</span>
 <span class="linenos">13</span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cpu_d</span><span class="si">}</span><span class="s2"> has </span><span class="si">{</span><span class="n">cpu_d</span><span class="o">.</span><span class="n">max_compute_units</span><span class="si">}</span><span class="s2"> compute units&quot;</span><span class="p">)</span>
 <span class="linenos">14</span>        <span class="k">return</span>
@@ -152,23 +152,9 @@ the associated task completes.</p>
 </div>
 <p>A possible output for the example <span class="xref std std-ref">fig-constructing-queue-context-device-property:</span> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_subdevice_multidevice_context
-Traceback (most recent call last):
-  File &quot;../examples/python/sycl_queue.py&quot;, line 78, in create_queue_from_subdevice_multidevice_context
-    sub_devs = cpu_d.create_sub_devices(partition=2)
-  File &quot;dpctl/_sycl_device.pyx&quot;, line 876, in dpctl._sycl_device.SyclDevice.create_sub_devices
-  File &quot;dpctl/_sycl_device.pyx&quot;, line 749, in dpctl._sycl_device.SyclDevice.create_sub_devices_equally
-dpctl._sycl_device.SubDeviceCreationError: Sub-devices were not created.
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File &quot;../examples/python/sycl_queue.py&quot;, line 94, in &lt;module&gt;
-    runner.run_examples(&quot;Queue creation examples for dpctl.&quot;, globals())
-  File &quot;/home/runner/work/dpctl/dpctl/examples/python/_runner.py&quot;, line 84, in run_examples
-    clbl()
-  File &quot;../examples/python/sycl_queue.py&quot;, line 79, in create_queue_from_subdevice_multidevice_context
-    except dpctl.SubDeviceCreationError:
-AttributeError: module &#39;dpctl&#39; has no attribute &#39;SubDeviceCreationError&#39;
+Could not create sub device.
+&lt;dpctl.SyclDevice [backend_type.opencl, device_type.cpu,  Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz] at 0x7f29073744b0&gt; has 2 compute units
+INFO: ===========================
 </pre></div>
 </div>
 <p>When context is not specified the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">sycl::queue</a> constructor
@@ -198,7 +184,7 @@ is called.</p>
 </div>
 <p>A possible output for the example <a class="reference internal" href="#fig-constructing-queue-filter-selector"><span class="std std-ref">Constructing SyclQueue from filter selector</span></a> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_filter_selector
-Queue &lt;dpctl.SyclQueue at 0x7f7f36f37dc0, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
+Queue &lt;dpctl.SyclQueue at 0x7fc297161280, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
 Device targeted by the queue:
     Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
     Driver version  2021.13.11.0.23_160000

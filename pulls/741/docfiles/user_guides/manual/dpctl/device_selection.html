@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.13.0dev0+100.g9c3115d76 documentation</title>
+  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.13.0dev0+103.g78ce3c10f documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+100.g9c3115d76
+                0.13.0dev0+103.g78ce3c10f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -135,8 +135,15 @@ device a <code class="docutils literal notranslate"><span class="pre">ValueError
 </div>
 <p>A possible output for the example <a class="reference internal" href="#fig-gpu-device-selection"><span class="std std-ref">Selecting a GPU Device</span></a> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_gpu_device
-A GPU device is not available on the system
-INFO: ===========================
+Traceback (most recent call last):
+  File &quot;../examples/python/device_selection.py&quot;, line 135, in &lt;module&gt;
+    runner.run_examples(&quot;Device selection examples for dpctl.&quot;, globals())
+  File &quot;/home/runner/work/dpctl/dpctl/examples/python/_runner.py&quot;, line 84, in run_examples
+    clbl()
+  File &quot;../examples/python/device_selection.py&quot;, line 47, in create_gpu_device
+    d1 = dpctl.SyclDevice(&quot;gpu&quot;)
+  File &quot;dpctl/_sycl_device.pyx&quot;, line 289, in dpctl._sycl_device.SyclDevice.__cinit__
+dpctl._sycl_device.SyclDeviceCreationError: Could not create a SyclDevice with the selector string
 </pre></div>
 </div>
 </section>
@@ -208,8 +215,15 @@ strings.</p>
     Profile         EMBEDDED_PROFILE
     Filter string   opencl:accelerator:0
 
-A GPU type device is not available on the system
-INFO: ===========================
+Traceback (most recent call last):
+  File &quot;../examples/python/filter_selection.py&quot;, line 53, in &lt;module&gt;
+    runner.run_examples(&quot;Filter selection examples for dpctl.&quot;, globals())
+  File &quot;/home/runner/work/dpctl/dpctl/examples/python/_runner.py&quot;, line 84, in run_examples
+    clbl()
+  File &quot;../examples/python/filter_selection.py&quot;, line 44, in select_using_filter
+    d1 = dpctl.SyclDevice(&quot;gpu&quot;)
+  File &quot;dpctl/_sycl_device.pyx&quot;, line 289, in dpctl._sycl_device.SyclDevice.__cinit__
+dpctl._sycl_device.SyclDeviceCreationError: Could not create a SyclDevice with the selector string
 </pre></div>
 </div>
 <p>It is also possible to pass a list of devices using a filter string. The

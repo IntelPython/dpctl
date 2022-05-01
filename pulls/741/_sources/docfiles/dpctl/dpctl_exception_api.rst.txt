@@ -7,6 +7,9 @@ dpctl Exceptions
 
 .. currentmodule:: dpctl
 
+.. autoexception:: SyclContextCreationError
+.. autoexception:: SyclDeviceCreationError
 .. autoexception:: SyclKernelInvalidRangeError
 .. autoexception:: SyclKernelSubmitError
 .. autoexception:: SyclQueueCreationError
+.. autoexception:: SyclSubDeviceCreationError
