@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.13.0dev0+91.gecae1c66a documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.13.0dev0+96.g7a86fbf80 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+91.gecae1c66a
+                0.13.0dev0+96.g7a86fbf80
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -146,6 +146,23 @@ constructor. The filter string needs to conform to the
 </dd>
 </dl>
 </div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arg</strong> (<em>optional</em>) – The argument can be a selector string or None.
+Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>MemoryError</strong> – If the constructor could not allocate necessary
+    temporary memory.</p></li>
+<li><p><a class="reference internal" href="dpctl_exception_api.html#dpctl.SyclDeviceCreationError" title="dpctl.SyclDeviceCreationError"><strong>SyclDeviceCreationError</strong></a> – If the <a class="reference internal" href="#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> object
+    creation failed.</p></li>
+<li><p><strong>TypeError</strong> – If the list of <a class="reference internal" href="#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> objects was empty,
+    or the input capsule contained a null pointer or could not
+    be renamed.</p></li>
+</ul>
+</dd>
+</dl>
 <p class="rubric">Attributes:</p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.13.0dev0+91.gecae1c66a documentation</title>
+  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.13.0dev0+96.g7a86fbf80 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+91.gecae1c66a
+                0.13.0dev0+96.g7a86fbf80
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -297,6 +297,12 @@ to create a queue object for use only within a specific scope.</p>
 <col style="width: 67%" />
 </colgroup>
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_exception_api.html#dpctl.SyclContextCreationError" title="dpctl.SyclContextCreationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclContextCreationError</span></code></a></p></td>
+<td><p>A SyclContextCreationError exception is raised when SyclContext could not created.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl_exception_api.html#dpctl.SyclDeviceCreationError" title="dpctl.SyclDeviceCreationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDeviceCreationError</span></code></a></p></td>
+<td><p>A SyclDeviceCreationError exception is raised when SyclDevice instance could not created.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl_exception_api.html#dpctl.SyclKernelInvalidRangeError" title="dpctl.SyclKernelInvalidRangeError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclKernelInvalidRangeError</span></code></a></p></td>
 <td><p>A SyclKernelInvalidRangeError is raised when the provided range has less than one or more than three dimensions.</p></td>
 </tr>
@@ -305,6 +311,9 @@ to create a queue object for use only within a specific scope.</p>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl_exception_api.html#dpctl.SyclQueueCreationError" title="dpctl.SyclQueueCreationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueueCreationError</span></code></a></p></td>
 <td><p>A SyclQueueCreationError exception is raised when a <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> could not be created. <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> creation can fail if the filter string is invalid, or the backend or device type values are not supported.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl_exception_api.html#dpctl.SyclSubDeviceCreationError" title="dpctl.SyclSubDeviceCreationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclSubDeviceCreationError</span></code></a></p></td>
+<td><p>A SyclSubDeviceCreationError exception is raised when sub-devices were not created.</p></td>
 </tr>
 </tbody>
 </table>
