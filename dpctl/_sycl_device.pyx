@@ -653,7 +653,7 @@ cdef class SyclDevice(_SyclDevice):
         """
         cdef DPCTLSyclPlatformRef PRef = (
             DPCTLDevice_GetPlatform(self._device_ref)
-            )
+        )
         if (PRef == NULL):
             raise RuntimeError("Could not get platform for device.")
         else:
