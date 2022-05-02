@@ -4,6 +4,9 @@
 User Manual
 ###########
 
+Table of contents
++++++++++++++++++
+
 .. toctree::
     :maxdepth: 3
 

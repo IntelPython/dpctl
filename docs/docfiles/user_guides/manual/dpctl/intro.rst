@@ -26,13 +26,12 @@ The user guide introduces the core features of dpctl and the underlying
 concepts. The guide is meant primarily for users of the Python package. Library
 and native extension developers should refer to the programmer's guide.
 
-Table of contents
-+++++++++++++++++
-
 .. toctree::
     :maxdepth: 2
+    :caption: Table of Contents
 
     basic_concepts
     device_selection
     platforms
     devices
+    queues
