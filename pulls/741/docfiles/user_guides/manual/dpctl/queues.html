@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Queue &mdash; Data-parallel Control (dpctl) 0.13.0dev0+103.g78ce3c10f documentation</title>
+  <title>Queue &mdash; Data-parallel Control (dpctl) 0.13.0dev0+104.ga3b9787bc documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+103.g78ce3c10f
+                0.13.0dev0+104.ga3b9787bc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -94,36 +94,35 @@
              
   <section id="queue">
 <span id="queues"></span><h1>Queue<a class="headerlink" href="#queue" title="Permalink to this headline"></a></h1>
-<p>A queue is needed to schedule execution of any computation, or data
-copying on the device. Queue construction requires specifying a device
-and a context targeting that device as well as additional properties,
-such as whether profiling information should be collected or whether
-submitted tasks are executed in the order in which they were submitted.</p>
-<p>The <a class="reference internal" href="../../../dpctl/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> class represents a queue and abstracts
-the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">sycl::queue</a> SYCL runtime class.</p>
+<p>A queue is needed to schedule execution of any computation or data copying on a
+device. Queue construction requires specifying a device and a context targeting
+that device as well as additional properties, such as whether profiling
+information should be collected or whether submitted tasks are executed in the
+order in which they were submitted.</p>
+<p>The <a class="reference internal" href="../../../dpctl/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> class represents a queue and abstracts the
+<a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">sycl::queue</a> SYCL runtime class.</p>
 <section id="types-of-queues">
 <h2>Types of Queues<a class="headerlink" href="#types-of-queues" title="Permalink to this headline"></a></h2>
-<p>In SYCL tasks are submitted for execution by the SYCL runtime. The order
-in which runtime executes them on the target device is specified by
-a sequence of events which must be complete before execution is allowed.
-Submission of a task returns an event which can be used to further grow
-the graph of computational tasks. SYCL queue stores data needed to manage
-this scheduling operations.</p>
-<p>Unless specified otherwise during constriction of a queue, SYCL runtime
-executes tasks whose dependencies were met in an unspecified order,
-with possibility for some of the tasks be execute concurrently. Such
-queues are said to be ‘out-of-order’.</p>
-<p>SYCL queues can be specified to indicate that runtime must execute tasks
-in the linear order in which they were submitted. In this case tasks submitted
-to such a queue, called ‘in-order’ queues, are never executed concurrently.</p>
+<p>SYCL has a task-based execution model. The order in which a SYCL runtime
+executes a task on a target device is specified by a sequence of events which
+must be complete before execution of the task is allowed. Submission of a task
+returns an event which can be used to further grow the graph of computational
+tasks. A SYCL queue stores the needed data to manage the scheduling operations.</p>
+<p>Unless specified otherwise during constriction of a queue, a SYCL runtime
+executes tasks whose dependencies were met in an unspecified order, with
+possibility for some of the tasks to be execute concurrently. Such queues are
+said to be ‘out-of-order’.</p>
+<p>SYCL queues can be specified to indicate that runtime must execute tasks in the
+order in which they were submitted. In this case, tasks submitted to such a
+queue, called ‘in-order’ queues, are never executed concurrently.</p>
 </section>
 <section id="creating-a-new-queue">
 <h2>Creating a New Queue<a class="headerlink" href="#creating-a-new-queue" title="Permalink to this headline"></a></h2>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue(ctx,</span> <span class="pre">dev,</span> <span class="pre">property=None)</span></code> creates a new instance for
-the given compatible context and device. Keyword parameter <cite>property</cite>
-can be set to <cite>“in_order”</cite> to create an ‘in-order’ queue, to <cite>“enable_profiling”</cite>
-to dynamically collect task execution statistics in the returned event once
-the associated task completes.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue(ctx,</span> <span class="pre">dev,</span> <span class="pre">property=None)</span></code> creates a new queue instance
+for the given compatible context and device. Keyword parameter <cite>property</cite> can be
+set to <cite>“in_order”</cite> to create an ‘in-order’ queue and to <cite>“enable_profiling”</cite> to
+dynamically collect task execution statistics in the returned event once the
+associated task completes.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <span id="fig-constructing-queue-context-device-property"></span><div class="code-block-caption"><span class="caption-text">Constructing SyclQueue from context and device</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpctl</span>
@@ -150,18 +149,19 @@ the associated task completes.</p>
 </pre></div>
 </div>
 </div>
-<p>A possible output for the example <span class="xref std std-ref">fig-constructing-queue-context-device-property:</span> may be:</p>
+<p>A possible output for the example
+<span class="xref std std-ref">fig-constructing-queue-context-device-property:</span> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_subdevice_multidevice_context
 Could not create sub device.
-&lt;dpctl.SyclDevice [backend_type.opencl, device_type.cpu,  Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz] at 0x7f29073744b0&gt; has 2 compute units
+&lt;dpctl.SyclDevice [backend_type.opencl, device_type.cpu,  Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz] at 0x7f719ecfcbb0&gt; has 2 compute units
 INFO: ===========================
 </pre></div>
 </div>
-<p>When context is not specified the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">sycl::queue</a> constructor
+<p>When a context is not specified the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">sycl::queue</a> constructor
 from a device instance is called. Instead of an instance of
-<a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> the argument <cite>dev</cite> can be a valid filter
-selector string. In this case the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">sycl::queue</a> constructor
-with the corresponding <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_filter_selector.asciidoc">sycl::ext::oneapi::filter_selector</a>
+<a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> the argument <cite>dev</cite> can be a valid filter selector
+string. In this case, the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">sycl::queue</a> constructor with the
+corresponding <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_filter_selector.asciidoc">sycl::ext::oneapi::filter_selector</a>
 is called.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <span id="fig-constructing-queue-filter-selector"></span><div class="code-block-caption"><span class="caption-text">Constructing SyclQueue from filter selector</span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
@@ -182,11 +182,12 @@ is called.</p>
 </pre></div>
 </div>
 </div>
-<p>A possible output for the example <a class="reference internal" href="#fig-constructing-queue-filter-selector"><span class="std std-ref">Constructing SyclQueue from filter selector</span></a> may be:</p>
+<p>A possible output for the example <a class="reference internal" href="#fig-constructing-queue-filter-selector"><span class="std std-ref">Constructing SyclQueue from filter selector</span></a>
+may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_filter_selector
-Queue &lt;dpctl.SyclQueue at 0x7fc297161280, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
+Queue &lt;dpctl.SyclQueue at 0x7f71ebc82100, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
 Device targeted by the queue:
-    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
+    Name            Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz
     Driver version  2021.13.11.0.23_160000
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
@@ -198,31 +199,32 @@ INFO: ===========================
 </section>
 <section id="profiling-a-task-submitted-to-a-queue">
 <h2>Profiling a Task Submitted to a Queue<a class="headerlink" href="#profiling-a-task-submitted-to-a-queue" title="Permalink to this headline"></a></h2>
-<p>The result of scheduling execution of a task on queue is an event which can queried for the status
-of the task execution, can be used to order execution of the future tasks after this one is complete,
-can be used to wait for the completion of the task, and can carry profiling information of the task
-execution. The profiling information is only populated if the queue used was created with
-“enable_profiling” property and only becomes available after the task execution is complete.</p>
-<p>The class <a class="reference internal" href="../../../dpctl/SyclTimer.html#dpctl.SyclTimer" title="dpctl.SyclTimer"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclTimer</span></code></a> implements a context manager that can be used to collect cumulative
-profiling information for all the tasks submitted to the queue of interest by functions executed
-within the context:</p>
+<p>The result of scheduling execution of a task on a queue is an event. An event
+has several uses: it can be queried for the status of the task execution, it can
+be used to order execution of the future tasks after it is complete, it can be
+used to wait for execution to complete, and it can carry information to profile
+of the task execution. The profiling information is only populated if the queue
+used was created with the “enable_profiling” property and only becomes available
+after the task execution is complete.</p>
+<p>The class <a class="reference internal" href="../../../dpctl/SyclTimer.html#dpctl.SyclTimer" title="dpctl.SyclTimer"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclTimer</span></code></a> implements a Python context manager that can
+be used to collect cumulative profiling information for all the tasks submitted
+to the queue of interest by functions executed within the context:</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">Example of timing execution</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 
-<span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="nb">property</span><span class="o">=</span><span class="s2">&quot;enable_profiling&quot;</span><span class="p">)</span>
-<span class="n">timer_ctx</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclTimer</span><span class="p">()</span>
-<span class="k">with</span> <span class="n">timer_ctx</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+<span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="nb">property</span><span class="o">=</span><span class="s2">&quot;enable_profiling&quot;</span><span class="p">)</span> <span class="n">timer_ctx</span> <span class="o">=</span>
+<span class="n">dpctl</span><span class="o">.</span><span class="n">SyclTimer</span><span class="p">()</span> <span class="k">with</span> <span class="n">timer_ctx</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
     <span class="n">X</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
 
 <span class="n">host_dt</span><span class="p">,</span> <span class="n">device_dt</span> <span class="o">=</span> <span class="n">timer_ctx</span><span class="o">.</span><span class="n">dt</span>
 </pre></div>
 </div>
 </div>
-<p>The timer leverages <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_enqueue_barrier.asciidoc">oneAPI enqueue_barrier SYCL extension</a> and submits
-a barrier at context entrance and a barrier at context exit and records associated events. The elapsed
-device time is computed as <code class="docutils literal notranslate"><span class="pre">e_exit.profiling_info_start</span> <span class="pre">-</span> <span class="pre">e_enter.profiling_info_end</span></code>.</p>
+<p>The timer leverages <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_enqueue_barrier.asciidoc">oneAPI enqueue_barrier SYCL
+extension</a> and submits a barrier at context entrance and a barrier at context
+exit and records associated events. The elapsed device time is computed as
+<code class="docutils literal notranslate"><span class="pre">e_exit.profiling_info_start</span> <span class="pre">-</span> <span class="pre">e_enter.profiling_info_end</span></code>.</p>
 </section>
 </section>
 
