@@ -87,6 +87,11 @@ def check_repr(platform):
     assert r != ""
 
 
+def check_default_context(platform):
+    r = platform.default_context
+    assert type(r) is dpctl.SyclContext
+
+
 list_of_checks = [
     check_name,
     check_vendor,
