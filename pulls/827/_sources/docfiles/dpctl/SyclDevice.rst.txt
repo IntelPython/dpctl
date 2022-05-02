@@ -65,7 +65,6 @@ Attributes
 .. autoattribute:: dpctl.SyclDevice.max_write_image_args
 .. autoattribute:: dpctl.SyclDevice.name
 .. autoattribute:: dpctl.SyclDevice.parent_device
-.. autoattribute:: dpctl.SyclDevice.platform
 .. autoattribute:: dpctl.SyclDevice.preferred_vector_width_char
 .. autoattribute:: dpctl.SyclDevice.preferred_vector_width_double
 .. autoattribute:: dpctl.SyclDevice.preferred_vector_width_float
@@ -75,6 +74,7 @@ Attributes
 .. autoattribute:: dpctl.SyclDevice.preferred_vector_width_short
 .. autoattribute:: dpctl.SyclDevice.profiling_timer_resolution
 .. autoattribute:: dpctl.SyclDevice.sub_group_independent_forward_progress
+.. autoattribute:: dpctl.SyclDevice.sycl_platform
 .. autoattribute:: dpctl.SyclDevice.vendor
 
 Public methods
