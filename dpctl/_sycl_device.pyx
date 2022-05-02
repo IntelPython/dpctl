@@ -644,7 +644,7 @@ cdef class SyclDevice(_SyclDevice):
         )
 
     @property
-    def platform(self):
+    def sycl_platform(self):
         """ Returns the platform associated with this device.
 
         Returns:

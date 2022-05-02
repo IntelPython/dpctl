@@ -497,7 +497,7 @@ def check_profiling_timer_resolution(device):
 
 
 def check_platform(device):
-    p = device.platform
+    p = device.sycl_platform
     assert isinstance(p, dpctl.SyclPlatform)
 
 
