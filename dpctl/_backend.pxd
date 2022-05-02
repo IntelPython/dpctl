@@ -278,6 +278,8 @@ cdef extern from "syclinterface/dpctl_sycl_platform_interface.h":
     cdef const char *DPCTLPlatform_GetVendor(const DPCTLSyclPlatformRef)
     cdef const char *DPCTLPlatform_GetVersion(const DPCTLSyclPlatformRef)
     cdef DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms()
+    cdef DPCTLSyclContextRef DPCTLPlatform_GetDefaultContext(
+        const DPCTLSyclPlatformRef)
 
 
 cdef extern from "syclinterface/dpctl_sycl_context_interface.h":

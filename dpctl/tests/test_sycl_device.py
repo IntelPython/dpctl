@@ -496,6 +496,11 @@ def check_profiling_timer_resolution(device):
     assert isinstance(resol, int) and resol > 0
 
 
+def check_platform(device):
+    p = device.sycl_platform
+    assert isinstance(p, dpctl.SyclPlatform)
+
+
 list_of_checks = [
     check_get_max_compute_units,
     check_get_max_work_item_dims,
@@ -552,6 +557,8 @@ list_of_checks = [
     check_repr,
     check_get_global_mem_size,
     check_get_local_mem_size,
+    check_profiling_timer_resolution,
+    check_platform,
 ]
 
 

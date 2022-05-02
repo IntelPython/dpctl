@@ -446,7 +446,6 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckMemset)
 
     ASSERT_NO_FATAL_FAILURE(DPCTLfree_with_queue(p, QRef));
 
-    bool equal = true;
     for (size_t i = 0; i < nbytes; ++i) {
         ASSERT_TRUE(host_arr[i] == val);
     }

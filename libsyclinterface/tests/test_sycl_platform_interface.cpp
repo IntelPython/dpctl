@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "Support/CBindingWrapping.h"
+#include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_platform_interface.h"
 #include "dpctl_sycl_platform_manager.h"
@@ -80,6 +81,16 @@ void check_platform_backend(__dpctl_keep const DPCTLSyclPlatformRef PRef)
             return false;
         }
     }());
+}
+
+void check_platform_default_context(
+    __dpctl_keep const DPCTLSyclPlatformRef PRef)
+{
+    DPCTLSyclContextRef CRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLPlatform_GetDefaultContext(PRef));
+    EXPECT_TRUE(CRef != nullptr);
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
 }
 
 } // namespace
@@ -167,6 +178,14 @@ TEST_F(TestDPCTLSyclPlatformNull, ChkGetVersion)
     ASSERT_TRUE(version == nullptr);
 }
 
+TEST_F(TestDPCTLSyclPlatformNull, ChkGetDefaultConext)
+{
+    DPCTLSyclContextRef CRef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLPlatform_GetDefaultContext(NullPRef));
+    EXPECT_TRUE(CRef == nullptr);
+}
+
 struct TestDPCTLSyclDefaultPlatform : public ::testing::Test
 {
     DPCTLSyclPlatformRef PRef = nullptr;
@@ -205,6 +224,11 @@ TEST_P(TestDPCTLSyclPlatformInterface, ChkGetVersion)
 TEST_P(TestDPCTLSyclPlatformInterface, ChkGetBackend)
 {
     check_platform_backend(PRef);
+}
+
+TEST_P(TestDPCTLSyclPlatformInterface, ChkGetDefaultContext)
+{
+    check_platform_default_context(PRef);
 }
 
 TEST_P(TestDPCTLSyclPlatformInterface, ChkCopy)
