@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.13.0dev0+96.g7a86fbf80 documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.13.0dev0+114.g2d85a91b1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+96.g7a86fbf80
+                0.13.0dev0+114.g2d85a91b1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -110,7 +110,7 @@
 <div><ul class="simple">
 <li><p>by directly passing in a filter string to the class
 constructor. The filter string needs to conform to the
-<a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/FilterSelector/FilterSelector.adoc">DPC++ filter selector SYCL extension</a>.</p></li>
+<a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_filter_selector.asciidoc">DPC++ filter selector SYCL extension</a>.</p></li>
 </ul>
 <dl class="field-list">
 <dt class="field-odd">Example</dt>
@@ -326,7 +326,10 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="dpctl.SyclDevice.sub_group_independent_forward_progress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_independent_forward_progress</span></code></a></p></td>
 <td><p>Returns true if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.vendor" title="dpctl.SyclDevice.vendor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vendor</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sycl_platform" title="dpctl.SyclDevice.sycl_platform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_platform</span></code></a></p></td>
+<td><p>Returns the platform associated with this device.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.vendor" title="dpctl.SyclDevice.vendor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vendor</span></code></a></p></td>
 <td><p>Returns the device vendor name as a string.</p></td>
 </tr>
 </tbody>
@@ -795,6 +798,24 @@ types that can be put into vectors.</p>
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">sub_group_independent_forward_progress</span></span><a class="headerlink" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="Permalink to this definition"></a></dt>
 <dd><p>Returns true if the device supports independent forward progress of
 sub-groups with respect to other sub-groups in the same work-group.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.sycl_platform">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">sycl_platform</span></span><a class="headerlink" href="#dpctl.SyclDevice.sycl_platform" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the platform associated with this device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>The platform associated with this</dt><dd><p>device.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="SyclPlatform.html#dpctl.SyclPlatform" title="dpctl.SyclPlatform"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclPlatform</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">

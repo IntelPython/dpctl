@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Data-parallel Control (dpctl) 0.13.0dev0+96.g7a86fbf80 documentation</title>
+  <title>Index &mdash; Data-parallel Control (dpctl) 0.13.0dev0+114.g2d85a91b1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+96.g7a86fbf80
+                0.13.0dev0+114.g2d85a91b1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -255,6 +255,8 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/SyclPlatform.html#dpctl.SyclPlatform.default_context">default_context (dpctl.SyclPlatform attribute)</a>
+</li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.default_selector_score">default_selector_score (dpctl.SyclDevice attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/Device.html#dpctl.tensor.Device">Device (class in dpctl.tensor)</a>
@@ -901,8 +903,6 @@
         <li><a href="docfiles/libsyclinterface/group_EventInterface.html#index-6">function</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     DPCTLEvent_GetProfilingInfoStart
 
@@ -910,6 +910,8 @@
         <li><a href="docfiles/libsyclinterface/group_EventInterface.html#index-7">function</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     DPCTLEvent_GetProfilingInfoSubmit
 
@@ -1107,31 +1109,38 @@
 </li>
       </ul></li>
       <li>
-    DPCTLPlatform_GetName
+    DPCTLPlatform_GetDefaultContext
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-6">function</a>
 </li>
       </ul></li>
       <li>
-    DPCTLPlatform_GetPlatforms
+    DPCTLPlatform_GetName
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-7">function</a>
 </li>
       </ul></li>
       <li>
-    DPCTLPlatform_GetVendor
+    DPCTLPlatform_GetPlatforms
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-8">function</a>
 </li>
       </ul></li>
       <li>
-    DPCTLPlatform_GetVersion
+    DPCTLPlatform_GetVendor
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-9">function</a>
+</li>
+      </ul></li>
+      <li>
+    DPCTLPlatform_GetVersion
+
+      <ul>
+        <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-10">function</a>
 </li>
       </ul></li>
       <li>
@@ -1850,13 +1859,15 @@
 </li>
         <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-5">DPCTLPlatform_GetBackend</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-6">DPCTLPlatform_GetName</a>
+        <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-6">DPCTLPlatform_GetDefaultContext</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-7">DPCTLPlatform_GetPlatforms</a>
+        <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-7">DPCTLPlatform_GetName</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-8">DPCTLPlatform_GetVendor</a>
+        <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-8">DPCTLPlatform_GetPlatforms</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-9">DPCTLPlatform_GetVersion</a>
+        <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-9">DPCTLPlatform_GetVendor</a>
+</li>
+        <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-10">DPCTLPlatform_GetVersion</a>
 </li>
         <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-1">DPCTLPlatformMgr_GetInfo</a>
 </li>
@@ -2441,8 +2452,6 @@
         <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.sycl_context">(dpctl.tensor.usm_ndarray attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice.sycl_device">sycl_device (dpctl.memory.MemoryUSMDevice attribute)</a>
 
       <ul>
@@ -2457,6 +2466,10 @@
         <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.sycl_device">(dpctl.tensor.usm_ndarray attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.sycl_platform">sycl_platform (dpctl.SyclDevice attribute)</a>
+</li>
       <li><a href="docfiles/dpctl/MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice.sycl_queue">sycl_queue (dpctl.memory.MemoryUSMDevice attribute)</a>
 
       <ul>

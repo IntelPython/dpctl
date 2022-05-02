@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Platform &mdash; Data-parallel Control (dpctl) 0.13.0dev0+96.g7a86fbf80 documentation</title>
+  <title>Platform &mdash; Data-parallel Control (dpctl) 0.13.0dev0+114.g2d85a91b1 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev0+96.g7a86fbf80
+                0.13.0dev0+114.g2d85a91b1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -46,12 +46,13 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../QuickStart.html">Quick Start Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../UserManual.html">User Manual</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="intro.html">dpctl</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="intro.html#table-of-contents">Table of contents</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../UserManual.html#table-of-contents">Table of contents</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="intro.html">dpctl</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="basic_concepts.html">Basic Concepts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="device_selection.html">Device Selection</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Platform</a></li>
 <li class="toctree-l4"><a class="reference internal" href="devices.html">Device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="queues.html">Queue</a></li>
 </ul>
 </li>
 </ul>
@@ -92,7 +93,7 @@
            <div itemprop="articleBody">
              
   <section id="platform">
-<span id="querying-platforms"></span><h1>Platform<a class="headerlink" href="#platform" title="Permalink to this headline"></a></h1>
+<span id="platforms"></span><h1>Platform<a class="headerlink" href="#platform" title="Permalink to this headline"></a></h1>
 <p>A platform abstracts a device driver for one or more XPU that is connected to
 a host. The <a class="reference internal" href="../../../dpctl/SyclPlatform.html#dpctl.SyclPlatform" title="dpctl.SyclPlatform"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclPlatform</span></code></a> class represents a platform and
 abstracts the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/platform.html">sycl::platform</a> SYCL runtime class.</p>
@@ -137,9 +138,9 @@ SYCL host platform 1.2
 INFO: ===========================
 
 INFO: Executing example list_available_platforms
-&lt;dpctl.SyclPlatform [Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) Corporation,  OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3] at 0x7fb1442f3bb0&gt;
-&lt;dpctl.SyclPlatform [Intel(R) OpenCL, Intel(R) Corporation,  OpenCL 3.0 LINUX] at 0x7fb1442f3df0&gt;
-&lt;dpctl.SyclPlatform [SYCL host platform, ,  1.2] at 0x7fb1442f3e30&gt;
+&lt;dpctl.SyclPlatform [Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) Corporation,  OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3] at 0x7f5bcaa686f0&gt;
+&lt;dpctl.SyclPlatform [Intel(R) OpenCL, Intel(R) Corporation,  OpenCL 3.0 LINUX] at 0x7f5bca1d80f0&gt;
+&lt;dpctl.SyclPlatform [SYCL host platform, ,  1.2] at 0x7f5bca1d8330&gt;
 INFO: ===========================
 </pre></div>
 </div>

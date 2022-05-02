@@ -34,6 +34,9 @@ Overview
 	DPCTL_API :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`
 	:ref:`DPCTLPlatform_GetBackend<doxid-da/dbd/group___platform_interface_1ga1e33f8b1f629151fb9a20cdf983b3370>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
 
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
+	:ref:`DPCTLPlatform_GetDefaultContext<doxid-da/dbd/group___platform_interface_1ga37bec32a093850b5edfb231586097652>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
+
 	DPCTL_API const __dpctl_give char*
 	:ref:`DPCTLPlatform_GetName<doxid-da/dbd/group___platform_interface_1ga41ed6567a6cd47bc50a099d7a18e93e3>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
 
@@ -182,6 +185,35 @@ Returns a DPCTLSyclBackendType enum value identifying the SYCL backend associate
 .. rubric:: Returns:
 
 A DPCTLSyclBackendType enum value identifying the SYCL backend associated with the platform.
+
+.. index:: pair: function; DPCTLPlatform_GetDefaultContext
+.. _doxid-da/dbd/group___platform_interface_1ga37bec32a093850b5edfb231586097652:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
+	DPCTLPlatform_GetDefaultContext(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef)
+
+Returns a DPCTLSyclContextRef for default platform context.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- PRef
+
+		- Opaque pointer to a sycl::platform
+
+
+
+.. rubric:: Returns:
+
+A DPCTLSyclContextRef value for the default platform associated with this platform.
 
 .. index:: pair: function; DPCTLPlatform_GetName
 .. _doxid-da/dbd/group___platform_interface_1ga41ed6567a6cd47bc50a099d7a18e93e3:
