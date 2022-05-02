@@ -50,6 +50,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetMaxWriteImageArgs,
     DPCTLDevice_GetName,
     DPCTLDevice_GetParentDevice,
+    DPCTLDevice_GetPlatform,
     DPCTLDevice_GetPreferredVectorWidthChar,
     DPCTLDevice_GetPreferredVectorWidthDouble,
     DPCTLDevice_GetPreferredVectorWidthFloat,
@@ -80,6 +81,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLSize_t_Array_Delete,
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
+    DPCTLSyclPlatformRef,
     _aspect_type,
     _backend_type,
     _device_type,
@@ -90,6 +92,8 @@ from .enum_types import backend_type, device_type
 
 from libc.stdint cimport int64_t, uint32_t
 from libc.stdlib cimport free, malloc
+
+from ._sycl_platform cimport SyclPlatform
 
 import collections
 import warnings
@@ -638,6 +642,22 @@ cdef class SyclDevice(_SyclDevice):
         return DPCTLDevice_GetSubGroupIndependentForwardProgress(
             self._device_ref
         )
+
+    @property
+    def platform(self):
+        """ Returns the platform associated with this device.
+
+        Returns:
+            :class:`dpctl.SyclPlatform`: The platform associated with this
+                device.
+        """
+        cdef DPCTLSyclPlatformRef PRef = (
+            DPCTLDevice_GetPlatform(self._device_ref)
+            )
+        if (PRef == NULL):
+            raise RuntimeError("Could not get platform for device.")
+        else:
+            return SyclPlatform._create(PRef)
 
     @property
     def preferred_vector_width_char(self):
