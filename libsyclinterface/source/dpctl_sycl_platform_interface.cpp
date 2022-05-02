@@ -41,6 +41,7 @@ using namespace cl::sycl;
 namespace
 {
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef);
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef);
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef);
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclPlatformRef>,
                                    DPCTLPlatformVectorRef);
@@ -201,4 +202,19 @@ __dpctl_give DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms()
 
     // the wrap function is defined inside dpctl_vector_templ.cpp
     return wrap(Platforms);
+}
+
+__dpctl_give DPCTLSyclContextRef
+DPCTLPlatform_GetDefaultContext(__dpctl_keep const DPCTLSyclPlatformRef PRef)
+{
+    auto P = unwrap(PRef);
+    if (P) {
+        auto default_ctx = P->ext_oneapi_get_default_context();
+        return wrap(new context(default_ctx));
+    }
+    else {
+        error_handler("Driver version cannot be looked up for a NULL platform.",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
 }

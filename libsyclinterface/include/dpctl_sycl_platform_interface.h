@@ -142,4 +142,16 @@ DPCTLPlatform_GetVersion(__dpctl_keep const DPCTLSyclPlatformRef PRef);
 DPCTL_API
 __dpctl_give DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms(void);
 
+/*!
+ * @brief  Returns a DPCTLSyclContextRef for default platform context.
+ *
+ * @param    PRef           Opaque pointer to a sycl::platform
+ * @return   A DPCTLSyclContextRef value for the default platform associated
+ * with this platform.
+ * @ingroup PlatformInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclContextRef
+DPCTLPlatform_GetDefaultContext(__dpctl_keep const DPCTLSyclPlatformRef PRef);
+
 DPCTL_C_EXTERN_C_END
