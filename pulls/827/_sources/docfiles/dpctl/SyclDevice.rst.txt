@@ -65,6 +65,7 @@ Attributes
 .. autoattribute:: dpctl.SyclDevice.max_write_image_args
 .. autoattribute:: dpctl.SyclDevice.name
 .. autoattribute:: dpctl.SyclDevice.parent_device
+.. autoattribute:: dpctl.SyclDevice.platform
 .. autoattribute:: dpctl.SyclDevice.preferred_vector_width_char
 .. autoattribute:: dpctl.SyclDevice.preferred_vector_width_double
 .. autoattribute:: dpctl.SyclDevice.preferred_vector_width_float

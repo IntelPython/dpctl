@@ -23,6 +23,7 @@ Attributes
 ----------
 
 .. autoattribute:: dpctl.SyclPlatform.backend
+.. autoattribute:: dpctl.SyclPlatform.default_context
 .. autoattribute:: dpctl.SyclPlatform.name
 .. autoattribute:: dpctl.SyclPlatform.vendor
 .. autoattribute:: dpctl.SyclPlatform.version
