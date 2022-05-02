@@ -30,6 +30,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLPlatform_CreateFromSelector,
     DPCTLPlatform_Delete,
     DPCTLPlatform_GetBackend,
+    DPCTLPlatform_GetDefaultContext,
     DPCTLPlatform_GetName,
     DPCTLPlatform_GetPlatforms,
     DPCTLPlatform_GetVendor,
@@ -40,6 +41,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLPlatformVector_GetAt,
     DPCTLPlatformVector_Size,
     DPCTLPlatformVectorRef,
+    DPCTLSyclContextRef,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclPlatformRef,
     _backend_type,
@@ -47,7 +49,10 @@ from ._backend cimport (  # noqa: E211
 
 import warnings
 
+from ._sycl_context import SyclContextCreationError
 from .enum_types import backend_type
+
+from ._sycl_context cimport SyclContext
 
 __all__ = [
     "get_platforms",
@@ -236,10 +241,10 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def backend(self):
-        """Returns the backend_type enum value for this device
+        """Returns the backend_type enum value for this platform
 
         Returns:
-            backend_type: The backend for the device.
+            backend_type: The backend for the platform.
         """
         cdef _backend_type BTy = (
             DPCTLPlatform_GetBackend(self._platform_ref)
@@ -254,6 +259,22 @@ cdef class SyclPlatform(_SyclPlatform):
             return backend_type.opencl
         else:
             raise ValueError("Unknown backend type.")
+
+    @property
+    def default_context(self):
+        """Returns the default platform context for this platform
+
+        Returns:
+            SyclContext: The default context for the platform.
+        """
+        cdef DPCTLSyclContextRef CRef = (
+            DPCTLPlatform_GetDefaultContext(self._platform_ref)
+        )
+
+        if (CRef == NULL):
+            raise
+        else:
+            return SyclContext._create(CRef)
 
 
 def lsplatform(verbosity=0):
