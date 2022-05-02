@@ -213,8 +213,9 @@ DPCTLPlatform_GetDefaultContext(__dpctl_keep const DPCTLSyclPlatformRef PRef)
         return wrap(new context(default_ctx));
     }
     else {
-        error_handler("Driver version cannot be looked up for a NULL platform.",
-                      __FILE__, __func__, __LINE__);
+        error_handler(
+            "Default platform cannot be obtained up for a NULL platform.",
+            __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
