@@ -49,7 +49,7 @@ associated task completes.
     :linenos:
 
 A possible output for the example
-:ref:`fig-constructing-queue-context-device-property:` may be:
+:ref:`fig-constructing-queue-context-device-property` may be:
 
 .. program-output:: python ../examples/python/sycl_queue.py -r create_queue_from_subdevice_multidevice_context
 
