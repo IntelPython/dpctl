@@ -4,14 +4,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.12.0] - 03/01/2022
 
 ### Added
-- `dpctl.tensor.asarray`, `dpctl.tensor.empty` implemented (#646).
-- `dpctl.tensor.usm_ndarray` adds support for DLPack protocol. `dpctl.tensor.from_dlpack` implemented (#682).
+
+* Properties added to MemoryUSM* objects. [#647](https://github.com/IntelPython/dpctl/pull/647)
+* Added `dpctl.tensor.asarray` [#646](https://github.com/IntelPython/dpctl/pull/646)
+* Implemented DLPack support for usm_ndarray [#682](https://github.com/IntelPython/dpctl/pull/682)
+* Exported `dpctl.tensor.Device` class [#708](https://github.com/IntelPython/dpctl/pull/708) [#718](https://github.com/IntelPython/dpctl/pull/718)
+* Added testing of examples in CI [#722](https://github.com/IntelPython/dpctl/pull/722)
+* Added user manuals to dpctl documentation [#712](https://github.com/IntelPython/dpctl/pull/712) [#773](https://github.com/IntelPython/dpctl/pull/773)
 
 ### Changed
-- dpctl-capi is now renamed to `libsyclinterface` (#666).
+
+* Folder dpctl-capi/ renamed to libsyclinterface/ in sources and documentation.  [#666](https://github.com/IntelPython/dpctl/pull/666)
+ [#768](https://github.com/IntelPython/dpctl/pull/768)
+* Added workflow to publish rendered documentation on PRs [#673](https://github.com/IntelPython/dpctl/pull/673) [#753](https://github.com/IntelPython/dpctl/pull/753) [#726](https://github.com/IntelPython/dpctl/pull/726)
+* Synchronization functions and USM allocation functions release GIL [#736](https://github.com/IntelPython/dpctl/pull/736) [#766](https://github.com/IntelPython/dpctl/pull/766)
+* `dpctl.SyclEvent` destructor is made non-blocking [#751](https://github.com/IntelPython/dpctl/pull/751)
+
+### Fixed
+* Fixed for issue in code of `dpctl.tensor.usm_ndarray.T` [#653](https://github.com/IntelPython/dpctl/pull/653)
+* Fixed issue with `dpctl.tensor.reshape`'s affect on contiguity flags of usm_ndarray [#695](https://github.com/IntelPython/dpctl/pull/695)
+* Fixed handling of empty list by `dpctl.tensor.asarray` [#694](https://github.com/IntelPython/dpctl/pull/694)
+* Fixed type inference with array of empty arrays in `dpctl.tensor.asarray` [#697](https://github.com/IntelPython/dpctl/pull/697)
+* Fixed issue gh-698 with `dpctl.tensr.asarray` [#709](https://github.com/IntelPython/dpctl/pull/709)
+* Fixed performance of item assignment from numpy array [#724](https://github.com/IntelPython/dpctl/pull/724)
+* `DPCTLDeviceMgr_GetNumDevices` should not operate on rejected devices [#737](https://github.com/IntelPython/dpctl/pull/737)
+* Fixed issue gh-729 for `dpctl.tensor.reshape` applied to 0-element usm_ndarray [#756](https://github.com/IntelPython/dpctl/pull/756)
+* Fixed issue gh-728 with `dpctl.tensor.astype` [#757](https://github.com/IntelPython/dpctl/pull/757)
+* Fixed type in memory overlapping test [#770](https://github.com/IntelPython/dpctl/pull/770)
+* Fixed issue with operator.pos for `dpctl.tensor.usm_ndarray` [#783](https://github.com/IntelPython/dpctl/pull/783)
+* Only call `PyThread_Ensure` from host_task if the main-thread interpreter is initialized and not finalizing [#776](https://github.com/IntelPython/dpctl/pull/776) [#778](https://github.com/IntelPython/dpctl/pull/778) [#721](https://github.com/IntelPython/dpctl/pull/721)
+
+**Full Changelog**: https://github.com/IntelPython/dpctl/compare/0.11.4...0.12.0
 
 ## [0.11.4] - 12/03/2021
 
@@ -21,262 +47,262 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.11.3] - 11/30/2021
 
 ### Fixed
-- Set the last byte in allocated char array to zero [cherry picked from #650] (#699)
+- Set the last byte in allocated char array to zero [cherry picked from #650] [#699](https://github.com/IntelPython/dpctl/pull/699)
 
 ## [0.11.2] - 11/29/2021
 
 ### Added
-- Extending `dpctl.device_context` with nested contexts (#678)
+- Extending `dpctl.device_context` with nested contexts [#678](https://github.com/IntelPython/dpctl/pull/678)
 
 ### Fixed
-- Fixed issue #649 about incorrect behavior of `.T` method on sliced arrays (#653)
+- Fixed issue #649 about incorrect behavior of `.T` method on sliced arrays [#653](https://github.com/IntelPython/dpctl/pull/653)
 
 ## [0.11.1] - 11/10/2021
 
 ### Changed
-- Replaced uses of clang compiler with icx executable (#665)
+- Replaced uses of clang compiler with icx executable [#665](https://github.com/IntelPython/dpctl/pull/665)
 
 ## [0.11.0] - 11/01/2021
 
 ### Added
-- Use Python 3.9 in public CI (#599)
-- Add a new C API utility function (`DPCTLDeviceMgr_GetDeviceInfoStr`) to return the device info as a C string object (#620)
-- New Github workflow to build dpclt with nightly Intel llvm/sycl + drivers (#621)
-- Always raise SubDeviceCreationError even when sub-device counts are zero (#622)
-- Updated OpenCL interoprability code to fix build with Intel llvm/sycl bundle (#625)
-- Enabled use of default platform context extension in SYCL compilers that implement this extension (#627)
-- Implemented `dpctl.utils.get_execution_queue(queue_seq)` utility to help implementing "compute-follows data" convention for offload target (#632)
-- Improved code coverage (#619) (#542) (#631)
+- Use Python 3.9 in public CI [#599](https://github.com/IntelPython/dpctl/pull/599)
+- Add a new C API utility function (`DPCTLDeviceMgr_GetDeviceInfoStr`) to return the device info as a C string object [#620](https://github.com/IntelPython/dpctl/pull/620)
+- New Github workflow to build dpclt with nightly Intel llvm/sycl + drivers [#621](https://github.com/IntelPython/dpctl/pull/621)
+- Always raise SubDeviceCreationError even when sub-device counts are zero [#622](https://github.com/IntelPython/dpctl/pull/622)
+- Updated OpenCL interoprability code to fix build with Intel llvm/sycl bundle [#625](https://github.com/IntelPython/dpctl/pull/625)
+- Enabled use of default platform context extension in SYCL compilers that implement this extension [#627](https://github.com/IntelPython/dpctl/pull/627)
+- Implemented `dpctl.utils.get_execution_queue(queue_seq)` utility to help implementing "compute-follows data" convention for offload target [#632](https://github.com/IntelPython/dpctl/pull/632)
+ [#631](https://github.com/IntelPython/dpctl/pull/631)
 
 ### Changed
-- Replaced `host_device` device type with `host` in tests (#616)
-- Rework the logic in `dpctl.memory`'s `copy_from_device` method to work correctly with `host` device (#618)
-- Use `dpctl.device_type.host` instead of `dpctl.device_type.host_device` (#626)
-- Reinstate deprecated `sycl::program` and that was conditionally removed from open source DPC++ toolchain (#633)
-- Use `LoadLibraryExA` instead of `LoadLibraryA` to mitigate a possible DLL injection issue when we load the Level zero DLL on windows (#636)
-- Github coverage workflow is changed to use oneAPI 2021.3 instead of latest to work around broken profiling instrumentation in DPC++ 2021.4 (#614)
-- Update build dependencies for NumPy (#641)
-- Use "readelf" on SYCL's `pi_level_zero` library to find out and use the exact name of `ze_loader.so` in SyclInterface library (#617)
+- Replaced `host_device` device type with `host` in tests [#616](https://github.com/IntelPython/dpctl/pull/616)
+- Rework the logic in `dpctl.memory`'s `copy_from_device` method to work correctly with `host` device [#618](https://github.com/IntelPython/dpctl/pull/618)
+- Use `dpctl.device_type.host` instead of `dpctl.device_type.host_device` [#626](https://github.com/IntelPython/dpctl/pull/626)
+- Reinstate deprecated `sycl::program` and that was conditionally removed from open source DPC++ toolchain [#633](https://github.com/IntelPython/dpctl/pull/633)
+- Use `LoadLibraryExA` instead of `LoadLibraryA` to mitigate a possible DLL injection issue when we load the Level zero DLL on windows [#636](https://github.com/IntelPython/dpctl/pull/636)
+- Github coverage workflow is changed to use oneAPI 2021.3 instead of latest to work around broken profiling instrumentation in DPC++ 2021.4 [#614](https://github.com/IntelPython/dpctl/pull/614)
+- Update build dependencies for NumPy [#641](https://github.com/IntelPython/dpctl/pull/641)
+- Use "readelf" on SYCL's `pi_level_zero` library to find out and use the exact name of `ze_loader.so` in SyclInterface library [#617](https://github.com/IntelPython/dpctl/pull/617)
 
 ### Removed
-- Removed use of DPC++ features deprecated in 2021.4 and open source Intel llvm/sycl compiler (#603)
+- Removed use of DPC++ features deprecated in 2021.4 and open source Intel llvm/sycl compiler [#603](https://github.com/IntelPython/dpctl/pull/603)
 
 ### Fixed
-- Suppress errant CMake log (#610)
-- Fixes to compile dpctl using Intel llvm/sycl compiler (#603)
-- Fix for the hang is to avoid passing `nullptr` argument to `sycl::queue::prefetch` (#612)
-- Fixed the logic to return device count (#623)
-- Enabled building of C extensions with dpctl by including header defining `bool` type for C compilers (#604)
+- Suppress errant CMake log [#610](https://github.com/IntelPython/dpctl/pull/610)
+- Fixes to compile dpctl using Intel llvm/sycl compiler [#603](https://github.com/IntelPython/dpctl/pull/603)
+- Fix for the hang is to avoid passing `nullptr` argument to `sycl::queue::prefetch` [#612](https://github.com/IntelPython/dpctl/pull/612)
+- Fixed the logic to return device count [#623](https://github.com/IntelPython/dpctl/pull/623)
+- Enabled building of C extensions with dpctl by including header defining `bool` type for C compilers [#604](https://github.com/IntelPython/dpctl/pull/604)
 
 ## [0.10.0] - 09/28/2021
 
 ### Added
 - Added methods __bool__, __float__, __int__, __index__,
-  and __complex__ to usm_ndarray (#578)
+and __complex__ to usm_ndarray [#578](https://github.com/IntelPython/dpctl/pull/578)
 - Added data-API required special methods to usm_ndarray class,
-  as well as to_numpy/from_numpy, astype, reshape functions (#586)
-- Added methods to query dpctl.SyclDevice for size of global/local memory (#589)
-- Added tests for constructors with invalid capsules (#577)
-- Improved test coverage of `dpctl.SyclQueue` implementation (#574)
-- Added a test to exercise API exported function (get_event_ref). (#570)
-- Expanded tests in test_sycl_context to improve coverage (#571)
-- Tweaks to test_sycl_event to improve coverage (#567)
-- Improved coverage of dpctl.__init__ file and other service functions (#563)
-- Added test for repr and test for default argument to constructor (#565)
-- Added some tests to involve capsule (#564)
-- Added workflow for Public CI on Windows (#534)
-- DPCTLQueue_Memcpy, _Prefetch, _Memadvise become asynchronous (#557)
-- Added device aspect selector, `dpctl.select_device_with_aspects` (#558)
+as well as to_numpy/from_numpy, astype, reshape functions [#586](https://github.com/IntelPython/dpctl/pull/586)
+- Added methods to query dpctl.SyclDevice for size of global/local memory [#589](https://github.com/IntelPython/dpctl/pull/589)
+- Added tests for constructors with invalid capsules [#577](https://github.com/IntelPython/dpctl/pull/577)
+- Improved test coverage of `dpctl.SyclQueue` implementation [#574](https://github.com/IntelPython/dpctl/pull/574)
+- Added a test to exercise API exported function (get_event_ref). [#570](https://github.com/IntelPython/dpctl/pull/570)
+- Expanded tests in test_sycl_context to improve coverage [#571](https://github.com/IntelPython/dpctl/pull/571)
+- Tweaks to test_sycl_event to improve coverage [#567](https://github.com/IntelPython/dpctl/pull/567)
+- Improved coverage of dpctl.__init__ file and other service functions [#563](https://github.com/IntelPython/dpctl/pull/563)
+- Added test for repr and test for default argument to constructor [#565](https://github.com/IntelPython/dpctl/pull/565)
+- Added some tests to involve capsule [#564](https://github.com/IntelPython/dpctl/pull/564)
+- Added workflow for Public CI on Windows [#534](https://github.com/IntelPython/dpctl/pull/534)
+- DPCTLQueue_Memcpy, _Prefetch, _Memadvise become asynchronous [#557](https://github.com/IntelPython/dpctl/pull/557)
+- Added device aspect selector, `dpctl.select_device_with_aspects` [#558](https://github.com/IntelPython/dpctl/pull/558)
 - Added test based on example from #583
 
 ### Changed
-- Parametrized tests for executing OpenCL kernels compiled from source in types of arguments (#581)
-- Temporary disabled self-hosted CI jobs runner (#559)
-- Changed static method `SyclQueue._create_from_context_and_device` (#579)
-- Transitioned all Python API to use pytest over unittest, improved coverage in dpctl/memory (#575)
-- Changed `dpctl.SyclEvent.profiling_info_submit` from method to a property (#573)
-- Simplified arg parsing in SyclDevice constructor (#572)
-- Used<img> tag with alignment attribute set in README (#562)
-- Moved sycl timer into dpctl.SyclTimer (#555)
-- Used clang-format off, clang-format on to avoid include reordering in pybind11 example (#588)
+- Parametrized tests for executing OpenCL kernels compiled from source in types of arguments [#581](https://github.com/IntelPython/dpctl/pull/581)
+- Temporary disabled self-hosted CI jobs runner [#559](https://github.com/IntelPython/dpctl/pull/559)
+- Changed static method `SyclQueue._create_from_context_and_device` [#579](https://github.com/IntelPython/dpctl/pull/579)
+- Transitioned all Python API to use pytest over unittest, improved coverage in dpctl/memory [#575](https://github.com/IntelPython/dpctl/pull/575)
+- Changed `dpctl.SyclEvent.profiling_info_submit` from method to a property [#573](https://github.com/IntelPython/dpctl/pull/573)
+- Simplified arg parsing in SyclDevice constructor [#572](https://github.com/IntelPython/dpctl/pull/572)
+- Used<img> tag with alignment attribute set in README [#562](https://github.com/IntelPython/dpctl/pull/562)
+- Moved sycl timer into dpctl.SyclTimer [#555](https://github.com/IntelPython/dpctl/pull/555)
+- Used clang-format off, clang-format on to avoid include reordering in pybind11 example [#588](https://github.com/IntelPython/dpctl/pull/588)
 
 ### Fixed
-- Implemented a workaround for running conda-build using Klocwork (#566)
-- Separated pipelines for Linux and Windows (#582)
-- Fixed inconsistency in `__sycl_usm_array_interface__` of `usm_ndarray` instance (#584)
-- Fixed memory leak: Capsule deleters now free resources for renamed capsules too (#568)
-- Fixed __version__ test to allow for semantic versioning (#569)
-- Improved coverage of _types.pxi (#556)
-- Fixed `UnboundLocalError` when default queue could not be created (#554)
+- Implemented a workaround for running conda-build using Klocwork [#566](https://github.com/IntelPython/dpctl/pull/566)
+- Separated pipelines for Linux and Windows [#582](https://github.com/IntelPython/dpctl/pull/582)
+- Fixed inconsistency in `__sycl_usm_array_interface__` of `usm_ndarray` instance [#584](https://github.com/IntelPython/dpctl/pull/584)
+- Fixed memory leak: Capsule deleters now free resources for renamed capsules too [#568](https://github.com/IntelPython/dpctl/pull/568)
+- Fixed __version__ test to allow for semantic versioning [#569](https://github.com/IntelPython/dpctl/pull/569)
+- Improved coverage of _types.pxi [#556](https://github.com/IntelPython/dpctl/pull/556)
+- Fixed `UnboundLocalError` when default queue could not be created [#554](https://github.com/IntelPython/dpctl/pull/554)
 
 ## [0.9.0] - 08/25/2021
 
 ### Added
-- Improvements to logic for working with custom DPC++ toolchain (#481)
-- Add SyclContext unit test cases (#488)
-- Consolidate configurations of tools that support PEP 518 into pyproject.toml (#486)
-- Added C-API hash function, used them in Python interface (#491)
+- Improvements to logic for working with custom DPC++ toolchain [#481](https://github.com/IntelPython/dpctl/pull/481)
+- Add SyclContext unit test cases [#488](https://github.com/IntelPython/dpctl/pull/488)
+- Consolidate configurations of tools that support PEP 518 into pyproject.toml [#486](https://github.com/IntelPython/dpctl/pull/486)
+- Added C-API hash function, used them in Python interface [#491](https://github.com/IntelPython/dpctl/pull/491)
 - Add missing extra checks to ensure unwrapped pointer is not Null
 - Add error messages to L0 program creation routine
-- Improve test coverage for dpctl_sycl_queue_interface (#492)
-- Use pytest.warns in test_lsplatform3 (#495)
-- Added test class to test DRef=nullptr case (#496)
-- Extend parameterized test in test_sycl_queue_interface (#497)
+- Improve test coverage for dpctl_sycl_queue_interface [#492](https://github.com/IntelPython/dpctl/pull/492)
+- Use pytest.warns in test_lsplatform3 [#495](https://github.com/IntelPython/dpctl/pull/495)
+- Added test class to test DRef=nullptr case [#496](https://github.com/IntelPython/dpctl/pull/496)
+- Extend parameterized test in test_sycl_queue_interface [#497](https://github.com/IntelPython/dpctl/pull/497)
 - Use Memcpy, memadvise in tests
 - Expanded types tests by TestQueueSubmitRange
-- Added a test that retrieved DPCPP compiled kernel and submits them via DPCTLQueue_SubmitRange (#499)
-- Add DPCTLEvent_Copy (#504), DPCTLEvent_GetBackend (#507), DPCTLEvent_GetCommandExecutionStatus (#516),
-  DPCTLEvent_WaitAndThrow (#513), DPCTLEvent_GetWaitList (#510) functions
-- Propagate compile flags (#512)
-- Add conda package CI pipeline on GitHub Actions (#515)
-- Run tests on GPU (#518)
-- Add 3 wrapper func for event::get_profiling_info (#519)
+- Added a test that retrieved DPCPP compiled kernel and submits them via DPCTLQueue_SubmitRange [#499](https://github.com/IntelPython/dpctl/pull/499)
+, DPCTLEvent_GetCommandExecutionStatus [#516](https://github.com/IntelPython/dpctl/pull/516),
+, DPCTLEvent_GetWaitList [#510](https://github.com/IntelPython/dpctl/pull/510) functions
+- Propagate compile flags [#512](https://github.com/IntelPython/dpctl/pull/512)
+- Add conda package CI pipeline on GitHub Actions [#515](https://github.com/IntelPython/dpctl/pull/515)
+- Run tests on GPU [#518](https://github.com/IntelPython/dpctl/pull/518)
+- Add 3 wrapper func for event::get_profiling_info [#519](https://github.com/IntelPython/dpctl/pull/519)
 - Changes to build_backend.py to enable sycl-compiler-prefix on Windows
-- dtype keyword of usm_ndarray now supports np.double and other types (#526)
+- dtype keyword of usm_ndarray now supports np.double and other types [#526](https://github.com/IntelPython/dpctl/pull/526)
 - Implemented DPCTLQueue_SubmitBarrier, DPCTLQueue_SubmitBarrierForEvents,
-  SyclQueue.submit_barrier (#524)
+SyclQueue.submit_barrier [#524](https://github.com/IntelPython/dpctl/pull/524)
 - Added C-API DPCTLQueue_HasEnableProfiling
 - Added Python API SyclQueue.has_enable_profiling
 - Use public for data owning class definitions
-- Queue has enable profiling (#531)
-- Use public for data owning class definitions (#533)
-- Added logic to verify that all bits of property integer were recognized and used (#494)
+- Queue has enable profiling [#531](https://github.com/IntelPython/dpctl/pull/531)
+- Use public for data owning class definitions [#533](https://github.com/IntelPython/dpctl/pull/533)
+- Added logic to verify that all bits of property integer were recognized and used [#494](https://github.com/IntelPython/dpctl/pull/494)
 - Added support for some properties/methods of underluing device
 - A test for properties, method of q mirroring that of device
-- Conda build scripts should build wheels in the same setup invocation as install (#538)
+- Conda build scripts should build wheels in the same setup invocation as install [#538](https://github.com/IntelPython/dpctl/pull/538)
 - Added install_requires keyword to setup call
-- Added requirements.txt files in dpctl/ and in dpctl/docs (#540)
-- Improved C-API for dpctl Cython classes, added example of using them in Pybind11 extension. (#550)
-- dpctl.SyclEvent acquired ability to get command status and get profiling information. (#553)
+- Added requirements.txt files in dpctl/ and in dpctl/docs [#540](https://github.com/IntelPython/dpctl/pull/540)
+- Improved C-API for dpctl Cython classes, added example of using them in Pybind11 extension. [#550](https://github.com/IntelPython/dpctl/pull/550)
+- dpctl.SyclEvent acquired ability to get command status and get profiling information. [#553](https://github.com/IntelPython/dpctl/pull/553)
 
 ### Changed
-- Moved DPCLSyclInterface library from MANIFEST.in (#482)
+- Moved DPCLSyclInterface library from MANIFEST.in [#482](https://github.com/IntelPython/dpctl/pull/482)
 - Refactored tests
-- Use dpcpp compiler package for Linux (#514)
+- Use dpcpp compiler package for Linux [#514](https://github.com/IntelPython/dpctl/pull/514)
 - Update conda-package.yml
-- Static methods _init_helper made into functions and removed from PXD files (#532)
+- Static methods _init_helper made into functions and removed from PXD files [#532](https://github.com/IntelPython/dpctl/pull/532)
 
 ### Removed
-- Remove imports from __future__ (#485)
+- Remove imports from __future__ [#485](https://github.com/IntelPython/dpctl/pull/485)
 
 ### Fixed
-- Fix sub devices (#479)
-- Fix addressof_ref function in `SyclContext` (#488)
-- Follow `DPCTLDevice_CreateFromSelector` which passes the check (#487)
-- Fix a typo in the pytest configuration (#490)
+- Fix sub devices [#479](https://github.com/IntelPython/dpctl/pull/479)
+- Fix addressof_ref function in `SyclContext` [#488](https://github.com/IntelPython/dpctl/pull/488)
+- Follow `DPCTLDevice_CreateFromSelector` which passes the check [#487](https://github.com/IntelPython/dpctl/pull/487)
+- Fix a typo in the pytest configuration [#490](https://github.com/IntelPython/dpctl/pull/490)
 - Fixed dbg_build.sh script for Linux to use L0
 - Reuse IntelSycl_LIBRARY_DIR variable in cmake
 - CXX, dpcpp used on Windows too
 - Update conda-recipe/bld.bat
-- Change to SyclQueue.__repr__ to reflect properties (#531)
-- Static methods `_init_helper` made into functions and removed from PXD files (#532)
-- Fixed typo in pip installation instruction (#536)
-- Fixed dpctl_config.h, added dpctl_service.h, .cpp (#539)
-- Fixed `__sycl_usm_array_interface__` output for 0d arrays (#547)
+- Change to SyclQueue.__repr__ to reflect properties [#531](https://github.com/IntelPython/dpctl/pull/531)
+- Static methods `_init_helper` made into functions and removed from PXD files [#532](https://github.com/IntelPython/dpctl/pull/532)
+- Fixed typo in pip installation instruction [#536](https://github.com/IntelPython/dpctl/pull/536)
+- Fixed dpctl_config.h, added dpctl_service.h, .cpp [#539](https://github.com/IntelPython/dpctl/pull/539)
+- Fixed `__sycl_usm_array_interface__` output for 0d arrays [#547](https://github.com/IntelPython/dpctl/pull/547)
 
 ## [0.8.0] - 05/26/2021
 
 ### Added
 - Implemented support for constructing MemoryUSM* from object with
-  __sycl_usm_array_interface__ when array-info is not contiguous (#400)
-- Print the backend as part of SyclDevice.print_device_info function (#409)
-- Added dpctl/tensor/_usmarray submodule (#427)
-- Added arg checking to functions in dpctl_sycl_usm_interface.cpp (#430)
-- A static method of _Memory to create from external allocation (#430)
-- Added usm_ndarray accessors (#435)
-- Added Device class representing Data-API notion of device (#440)
-- Added free Python function as_usm_memory(obj) (#443) and associated unit
-  tests (#449)
-- Dependency for numpy 1.17 (#445)
-- Add a flag to make doxygen HTML generation optional (#450)
+__sycl_usm_array_interface__ when array-info is not contiguous [#400](https://github.com/IntelPython/dpctl/pull/400)
+- Print the backend as part of SyclDevice.print_device_info function [#409](https://github.com/IntelPython/dpctl/pull/409)
+- Added dpctl/tensor/_usmarray submodule [#427](https://github.com/IntelPython/dpctl/pull/427)
+- Added arg checking to functions in dpctl_sycl_usm_interface.cpp [#430](https://github.com/IntelPython/dpctl/pull/430)
+- A static method of _Memory to create from external allocation [#430](https://github.com/IntelPython/dpctl/pull/430)
+- Added usm_ndarray accessors [#435](https://github.com/IntelPython/dpctl/pull/435)
+- Added Device class representing Data-API notion of device [#440](https://github.com/IntelPython/dpctl/pull/440)
+- Added free Python function as_usm_memory(obj) [#443](https://github.com/IntelPython/dpctl/pull/443) and associated unit
+tests [#449](https://github.com/IntelPython/dpctl/pull/449)
+- Dependency for numpy 1.17 [#445](https://github.com/IntelPython/dpctl/pull/445)
+- Add a flag to make doxygen HTML generation optional [#450](https://github.com/IntelPython/dpctl/pull/450)
 - Added a feature to get the filter string for a device from Python using the
-  new dpctl.SyclDevice.get_filter_string method. Also added the corresponding
-  DPCTLDeviceMgr_GetPositionInDevices(DRef, device_mask) C API function (#453)
+new dpctl.SyclDevice.get_filter_string method. Also added the corresponding
+DPCTLDeviceMgr_GetPositionInDevices(DRef, device_mask) C API function [#453](https://github.com/IntelPython/dpctl/pull/453)
 - New options to setup.py to specify which dpcpp compiler to use, if L0
-  program creation is to be supported, and to generate code coverage (#426)
-- Github action to check Python code quality (#422)
-- Github action to auto-publish Sphinx docs for master (#446)
-- Github action to generate coverage report and publish to coveralls.io (#459)
+program creation is to be supported, and to generate code coverage [#426](https://github.com/IntelPython/dpctl/pull/426)
+- Github action to check Python code quality [#422](https://github.com/IntelPython/dpctl/pull/422)
+- Github action to auto-publish Sphinx docs for master [#446](https://github.com/IntelPython/dpctl/pull/446)
+- Github action to generate coverage report and publish to coveralls.io [#459](https://github.com/IntelPython/dpctl/pull/459)
 
 ### Changed
-- Rename dpctl.dptensor to dpctl.tensor (#407)
-- Changed repr for Memory objects (#442)
+- Rename dpctl.dptensor to dpctl.tensor [#407](https://github.com/IntelPython/dpctl/pull/407)
+- Changed repr for Memory objects [#442](https://github.com/IntelPython/dpctl/pull/442)
 - Used dpctl.SyclQueue instead of manager and get current queue in tests for
-  SyclProgram (#448)
+SyclProgram [#448](https://github.com/IntelPython/dpctl/pull/448)
 -
 
 ### Fixed
-- Issue #189 dpctl.memory.MemoryUSMShared(np.int64(16)) should work (#392)
-- Use size_t instead of Py_ssize_t to fit device USM pointer (#405)
+- Issue #189 dpctl.memory.MemoryUSMShared(np.int64(16)) should work [#392](https://github.com/IntelPython/dpctl/pull/392)
+- Use size_t instead of Py_ssize_t to fit device USM pointer [#405](https://github.com/IntelPython/dpctl/pull/405)
 - Various code quality issues identified by flake8 (#417, #419, #420, #422)
-- Fixed issues in slicing and array construction (#441)
-- Fixed an issue (#447) where dpctl.get_devices does not return devices in the
-  same order as sycl::device::get_devices (#451)
-- L0 program creation support on Windows (#319)
+- Fixed issues in slicing and array construction [#441](https://github.com/IntelPython/dpctl/pull/441)
+- Fixed an issue [#447](https://github.com/IntelPython/dpctl/pull/447) where dpctl.get_devices does not return devices in the
+same order as sycl::device::get_devices [#451](https://github.com/IntelPython/dpctl/pull/451)
+- L0 program creation support on Windows [#319](https://github.com/IntelPython/dpctl/pull/319)
 
 ### Removed
-- Removing public keyword to get_current_queue Cython declaration (#437)
+- Removing public keyword to get_current_queue Cython declaration [#437](https://github.com/IntelPython/dpctl/pull/437)
 
 ## [0.7.0] - 05/03/2021
 ### Added
 - Complete support for `sycl::ONEAPI::filter_selector` in dpctl.
-- C API for `sycl::queue` (#323), `syc::context` (#331), and `sycl::platform` (#298)
-  creation using opaque pointers.
+, and `sycl::platform` [#298](https://github.com/IntelPython/dpctl/pull/298)
+creation using opaque pointers.
 - A `DPCTLDeviceMgr` module in C API that caches a default context for root
-  devices (#277).
+devices [#277](https://github.com/IntelPython/dpctl/pull/277).
 - `DPCTLSyclBackendType` and `DPCTLSyclDeviceType` have a new member `ALL`
-  (#287).
+[#287](https://github.com/IntelPython/dpctl/pull/287).
 - C API now provides helper functions to convert between dpctl and SYCL enum
-  values (#296).
-- Macros to help create opaque vector classes for opaque SYCL types (#297).
-- `SyclDevice` (#321), `SyclContext` (#334), `SyclPlatform` (#336, #298),
-  `SyclQueue` (#323) have constructors that recognize filter selectors and closely
-  follow DPC++ interface.
-- Add API to get a `PyCapsule` from `SyclQueue`, `SyclContext` instances (#350).
+values [#296](https://github.com/IntelPython/dpctl/pull/296).
+- Macros to help create opaque vector classes for opaque SYCL types [#297](https://github.com/IntelPython/dpctl/pull/297).
+, `SyclContext` [#334](https://github.com/IntelPython/dpctl/pull/334), `SyclPlatform` (#336, #298),
+`SyclQueue` [#323](https://github.com/IntelPython/dpctl/pull/323) have constructors that recognize filter selectors and closely
+follow DPC++ interface.
+- Add API to get a `PyCapsule` from `SyclQueue`, `SyclContext` instances [#350](https://github.com/IntelPython/dpctl/pull/350).
 - Added `get_queue_ref_from_ptr_and_syclobj(ptr, syclobj)` that creates
-  `DPCTLSyclQueueRef` from a USM pointer and Python object `syclobj` from
-  `__sycl_usm_array_interface__` (#380).
+`DPCTLSyclQueueRef` from a USM pointer and Python object `syclobj` from
+`__sycl_usm_array_interface__` [#380](https://github.com/IntelPython/dpctl/pull/380).
 - Support for SYCL sub-devices, including sub-device creation, queue, and
-  context creation using sub-devices (#343).
+context creation using sub-devices [#343](https://github.com/IntelPython/dpctl/pull/343).
 - `SyclDevice.parent_device` property to indicate if an instance has a parent
-  device (#366).
+device [#366](https://github.com/IntelPython/dpctl/pull/366).
 - Several new getter functions for device info descriptors to device interface
-  (#300, #335, #318, #315, #308).
-- Support for SYCL device aspects (#307).
+(#300, #335, #318, #315, #308).
+- Support for SYCL device aspects [#307](https://github.com/IntelPython/dpctl/pull/307).
 - Properties for every `sycl::device` info and aspect that we support in
-  `SyclDevice` (#324).
-- Support handling async errors inside `SylQueue` instances (#346).
-- `get_backend`, `get_platform`, `get_device_type` to Python `SyclDevice` class (#300)
+`SyclDevice` [#324](https://github.com/IntelPython/dpctl/pull/324).
+- Support handling async errors inside `SylQueue` instances [#346](https://github.com/IntelPython/dpctl/pull/346).
+- `get_backend`, `get_platform`, `get_device_type` to Python `SyclDevice` class [#300](https://github.com/IntelPython/dpctl/pull/300)
 - A `_sycl_device_factory.pyx` module providing `SyclDevice` constructors using
-  standard `sycl::device_selector` classes (previously in `_sycl_device.pyx`)
-  and a new `get_devices` (#277) function to enumerate all devices.
+standard `sycl::device_selector` classes (previously in `_sycl_device.pyx`)
+and a new `get_devices` [#277](https://github.com/IntelPython/dpctl/pull/277) function to enumerate all devices.
 - `_sycl_device_factory.pyx` implements `get_num_devices` and `has_*_device(s)`
-  functions (#320).
-- Enable Python coverage in CI for Linux (#369).
+functions [#320](https://github.com/IntelPython/dpctl/pull/320).
+- Enable Python coverage in CI for Linux [#369](https://github.com/IntelPython/dpctl/pull/369).
 - Use `public` keyword in `_sycl_*.pxd` to generate header files allowing
-  non-Cython centric native extensions to work with dpctl's Python objects
-  (#218).
-- Documentation improvements (#341).
+non-Cython centric native extensions to work with dpctl's Python objects
+[#218](https://github.com/IntelPython/dpctl/pull/218).
+- Documentation improvements [#341](https://github.com/IntelPython/dpctl/pull/341).
 
 ### Changed
-- Rename dpCtl to dpctl in all comments, license headers, and docs. (#342)
+- Rename dpCtl to dpctl in all comments, license headers, and docs. [#342](https://github.com/IntelPython/dpctl/pull/342)
 - `dpctl.memory.MemoryUSM*` constructors now use `dpctl.SyclQueue()` instead of
-  `dpctl.get_current_queue()` when the `queue` keyword argument is `None` (default) (#382).
-- `dpctl.set_default_queue` has been renamed to `dpctl.set_global_queue()` (#323).
-- Changed `dpctl.dump` to `dpctl.lsplatform` (#336).
+`dpctl.get_current_queue()` when the `queue` keyword argument is `None` (default) [#382](https://github.com/IntelPython/dpctl/pull/382).
+- `dpctl.set_default_queue` has been renamed to `dpctl.set_global_queue()` [#323](https://github.com/IntelPython/dpctl/pull/323).
+- Changed `dpctl.dump` to `dpctl.lsplatform` [#336](https://github.com/IntelPython/dpctl/pull/336).
 - Various `SyclDevice` methods related to querying `sycl::info::device` were converted
-  to properties (#324).
+to properties [#324](https://github.com/IntelPython/dpctl/pull/324).
 - Various C API functions names were changed.
 
 ### Fixed
-- Possible crashes when a SYCL platform is not available (#349).
-- Fix tests which fail if GPU is not available (only CPU is available) (#359).
-- Fix breaking C API tests (#358).
-- Bandit warning about "subprocess.check_call(shell=True)" for Windows (#306).
+- Possible crashes when a SYCL platform is not available [#349](https://github.com/IntelPython/dpctl/pull/349).
+- Fix tests which fail if GPU is not available (only CPU is available) [#359](https://github.com/IntelPython/dpctl/pull/359).
+- Fix breaking C API tests [#358](https://github.com/IntelPython/dpctl/pull/358).
+- Bandit warning about "subprocess.check_call(shell=True)" for Windows [#306](https://github.com/IntelPython/dpctl/pull/306).
 
 ### Removed
 - Removed `get_num_platforms`, `has_cpu_queues`, `has_gpu_queues`, `get_num_queues`,
-  `has_sycl_platforms` (#320).
+`has_sycl_platforms` [#320](https://github.com/IntelPython/dpctl/pull/320).
 
 ## [0.6.1] - 2021-03-01
 ### Fixed
@@ -352,14 +378,14 @@ supports USM.
 
 ### Fixed
 - Several crashes in cases where an OpenCL or Level Zero platform is not available.
-  - Fix failing platform test case. (#116)
-  - Properly skip tests when no OpenCL devices are available.
-  - Add skip tests to test_sycl_usm.py
-  - Fix Gtests configuration.
+- Fix failing platform test case. [#116](https://github.com/IntelPython/dpctl/pull/116)
+- Properly skip tests when no OpenCL devices are available.
+- Add skip tests to test_sycl_usm.py
+- Fix Gtests configuration.
 
 ## [0.3.7] - 2020-10-08
 ### Fixed
-- A crash on Windows due a Level Zero driver problem. Each device was getting enumerated twice. To handle the issue, we added a temporary fix to use only first device for each device type and backend (#118).
+- A crash on Windows due a Level Zero driver problem. Each device was getting enumerated twice. To handle the issue, we added a temporary fix to use only first device for each device type and backend [#118](https://github.com/IntelPython/dpctl/pull/118).
 
 ## [0.3.6] - 2020-10-06
 ### Added
