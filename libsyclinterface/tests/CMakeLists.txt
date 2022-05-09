@@ -75,6 +75,7 @@ if(DPCTL_GENERATE_COVERAGE)
             > dpctl.lcov
         COMMAND ${GENHTML_EXE}
             ${CMAKE_CURRENT_BINARY_DIR}/dpctl.lcov
+            --no-source
             --output-directory
             ${COVERAGE_OUTPUT_DIR}/dpctl-c-api-coverage
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
