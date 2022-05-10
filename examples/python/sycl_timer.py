@@ -15,49 +15,50 @@
 # limitations under the License.
 
 
-import numba_dppy
+import dpnp
 import numpy as np
 
 import dpctl
+import dpctl.tensor as dpt
 from dpctl import SyclTimer
 
-
-@numba_dppy.kernel
-def dppy_gemm(a, b, c):
-    i = numba_dppy.get_global_id(0)
-    j = numba_dppy.get_global_id(1)
-    if i >= c.shape[0] or j >= c.shape[1]:
-        return
-    c[i, j] = 0
-    for k in range(c.shape[0]):
-        c[i, j] += a[i, k] * b[k, j]
-
-
-X = 1024
-Y = 16
-global_size = X, X
-
-griddim = X, X
-blockdim = Y, Y
-
-a = np.arange(X * X, dtype=np.float32).reshape(X, X)
-b = np.array(np.random.random(X * X), dtype=np.float32).reshape(X, X)
-c = np.ones_like(a).reshape(X, X)
+n = 4000
 
 try:
-    q = dpctl.SyclQueue("opencl:gpu", property="enable_profiling")
+    q = dpctl.SyclQueue(property="enable_profiling")
 except dpctl.SyclQueueCreationError:
     print(
         "Skipping the example, as dpctl.SyclQueue targeting "
-        "opencl:gpu device could not be created"
+        "default device could not be created"
     )
     exit(0)
-timer = SyclTimer(time_scale=1)
-with dpctl.device_context(q):
-    with timer(q):
-        dppy_gemm[griddim, blockdim](a, b, c)
-        cc = np.dot(a, b)
-    host_time, device_time = timer.dt
 
-print("Wall time: ", host_time, "\nDevice time: ", device_time)
-print(np.allclose(c, cc))
+a = dpt.reshape(dpt.arange(n * n, dtype=np.float32, sycl_queue=q), (n, n))
+b = dpt.reshape(
+    dpt.asarray(np.random.random(n * n), dtype=np.float32, sycl_queue=q), (n, n)
+)
+
+timer = SyclTimer(time_scale=1)
+
+wall_times = []
+device_times = []
+print(
+    f"Performing matrix multiplication of two {n} by {n} matrices "
+    f"on {q.sycl_device.name}, repeating 5 times."
+)
+for _ in range(5):
+    with timer(q):
+        a_matmul_b = dpnp.matmul(a, b)
+    host_time, device_time = timer.dt
+    wall_times.append(host_time)
+    device_times.append(device_time)
+
+c = dpnp.asnumpy(a_matmul_b)
+cc = np.dot(dpnp.asnumpy(a), dpnp.asnumpy(b))
+
+print("Wall time: ", wall_times, "\nDevice time: ", device_times)
+print(
+    "Accuracy test: passed."
+    if np.allclose(c, cc)
+    else (f"Accuracy test: failed. Discrepancy {np.max(np.abs(c-cc))}")
+)
