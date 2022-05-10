@@ -52,6 +52,12 @@ if(DPCTL_GENERATE_COVERAGE)
             -o
             dpctl.profdata
         COMMAND ${LLVMCov_EXE}
+            export
+            -format=lcov
+            -instr-profile=dpctl.profdata
+            "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
+            > dpctl.lcov
+        COMMAND ${LLVMCov_EXE}
             report
             -instr-profile=dpctl.profdata
             "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
