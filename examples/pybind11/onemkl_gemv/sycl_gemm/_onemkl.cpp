@@ -497,6 +497,7 @@ py::object py_dot_blocking(sycl::queue q,
             reinterpret_cast<const T *>(v2_typeless_ptr), 1, res_usm, depends);
         T res_v{};
         q.copy<T>(res_usm, &res_v, 1, {dot_ev}).wait_and_throw();
+        sycl::free(res_usm, q);
         res = py::float_(res_v);
     }
     else if (v1_typenum == UAR_FLOAT) {
@@ -507,6 +508,7 @@ py::object py_dot_blocking(sycl::queue q,
             reinterpret_cast<const T *>(v2_typeless_ptr), 1, res_usm, depends);
         T res_v(0);
         q.copy<T>(res_usm, &res_v, 1, {dot_ev}).wait_and_throw();
+        sycl::free(res_usm, q);
         res = py::float_(res_v);
     }
     else if (v1_typenum == UAR_CDOUBLE) {
@@ -517,6 +519,7 @@ py::object py_dot_blocking(sycl::queue q,
             reinterpret_cast<const T *>(v2_typeless_ptr), 1, res_usm, depends);
         T res_v{};
         q.copy<T>(res_usm, &res_v, 1, {dotc_ev}).wait_and_throw();
+        sycl::free(res_usm, q);
         res = py::cast(res_v);
     }
     else if (v1_typenum == UAR_CFLOAT) {
@@ -527,6 +530,7 @@ py::object py_dot_blocking(sycl::queue q,
             reinterpret_cast<const T *>(v2_typeless_ptr), 1, res_usm, depends);
         T res_v{};
         q.copy<T>(res_usm, &res_v, 1, {dotc_ev}).wait_and_throw();
+        sycl::free(res_usm, q);
         res = py::cast(res_v);
     }
     else {
