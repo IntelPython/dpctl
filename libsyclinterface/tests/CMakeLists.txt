@@ -54,6 +54,7 @@ if(DPCTL_GENERATE_COVERAGE)
         COMMAND ${LLVMCov_EXE}
             export
             -format=lcov
+            -ignore-filename-regex=/tmp/dpctl_*.h*
             -instr-profile=dpctl.profdata
             "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
             > dpctl.lcov
