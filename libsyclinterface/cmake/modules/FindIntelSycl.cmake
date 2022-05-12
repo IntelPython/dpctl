@@ -39,6 +39,48 @@ find_package(IntelDPCPP REQUIRED)
 set(clangxx_cmd "${CMAKE_CXX_COMPILER}")
 set(clangxx_arg "--version")
 
+# Compares the two version string that are supposed to be in x.y.z format
+# and reports if the argument VERSION_STR1 is greater than or equal than
+# version_str2. The strings are compared lexicographically after conversion to
+# lists of equal lengths, with the shorter string getting zero-padded.
+function(versions_greater_equal VERSION_STR1 VERSION_STR2 OUTPUT)
+    # Convert the strings to list
+    string(REPLACE  "." ";" VL1 ${VERSION_STR1})
+    string(REPLACE  "." ";" VL2 ${VERSION_STR2})
+    # get lengths of both lists
+    list(LENGTH VL1 VL1_LEN)
+    list(LENGTH VL2 VL2_LEN)
+    set(LEN ${VL1_LEN})
+    # If they differ in size pad the shorter list with 0s
+    if(VL1_LEN GREATER VL2_LEN)
+        math(EXPR DIFF "${VL1_LEN} - ${VL2_LEN}" OUTPUT_FORMAT DECIMAL)
+        foreach(IDX RANGE 1 ${DIFF} 1)
+            list(APPEND VL2 "0")
+        endforeach()
+    elseif(VL2_LEN GREATER VL2_LEN)
+        math(EXPR DIFF "${VL1_LEN} - ${VL2_LEN}" OUTPUT_FORMAT DECIMAL)
+        foreach(IDX RANGE 1 ${DIFF} 1)
+            list(APPEND VL2 "0")
+        endforeach()
+        set(LEN ${VL2_LEN})
+    endif()
+    math(EXPR LEN_SUB_ONE "${LEN}-1")
+    foreach(IDX RANGE 0 ${LEN_SUB_ONE} 1)
+        list(GET VL1 ${IDX} VAL1)
+        list(GET VL2 ${IDX} VAL2)
+
+        if(${VAL1} GREATER ${VAL2})
+            set(${OUTPUT} TRUE PARENT_SCOPE)
+            break()
+        elseif(${VAL1} LESS ${VAL2})
+            set(${OUTPUT} FALSE PARENT_SCOPE)
+            break()
+        else()
+            set(${OUTPUT} TRUE PARENT_SCOPE)
+        endif()
+    endforeach()
+endfunction(compare_versions)
+
 # Check if dpcpp is available
 execute_process(
     COMMAND ${clangxx_cmd} ${clangxx_arg}
@@ -84,14 +126,16 @@ endif()
 
 # Check if a specific version of DPCPP is requested.
 if(IntelSycl_FIND_VERSION AND (DEFINED IntelSycl_VERSION))
-    string(COMPARE
-        LESS_EQUAL
-        ${IntelSycl_FIND_VERSION}
+    set(VERSION_GT_FIND_VERSION FALSE)
+    versions_greater_equal(
         ${IntelSycl_VERSION}
-        VERSION_MATCH
+        ${IntelSycl_FIND_VERSION}
+        VERSION_GT_FIND_VERSION
     )
-    if(VERSION_MATCH)
+    if(VERSION_GT_FIND_VERSION)
         set(IntelSycl_FOUND TRUE)
+    else()
+        set(IntelSycl_FOUND FALSE)
     endif()
 else()
     set(IntelSycl_FOUND TRUE)
