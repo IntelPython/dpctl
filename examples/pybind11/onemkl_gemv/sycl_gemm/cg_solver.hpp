@@ -177,16 +177,16 @@ int cg_solve(sycl::queue exec_q,
     }
 
     int converged_at = max_iters;
-    sycl::event prev_dep = copy_to_p_ev;
+    sycl::event e_p = copy_to_p_ev;
     sycl::event e_x = fill_ev;
 
     for (std::int64_t i = 0; i < max_iters; ++i) {
         sycl::event gemv_ev = oneapi::mkl::blas::row_major::gemv(
             exec_q, oneapi::mkl::transpose::N, n, n, T(1), Amat, n, p, 1, T(0),
-            Ap, 1, {prev_dep});
+            Ap, 1, {e_p});
 
         sycl::event pAp_dot_ev = oneapi::mkl::blas::row_major::dot(
-            exec_q, n, p, 1, Ap, 1, pAp_dot_dev, {prev_dep, gemv_ev});
+            exec_q, n, p, 1, Ap, 1, pAp_dot_dev, {e_p, gemv_ev});
 
         T pAp_dot_host{};
         exec_q.copy<T>(pAp_dot_dev, &pAp_dot_host, 1, {pAp_dot_ev})
@@ -212,8 +212,7 @@ int cg_solve(sycl::queue exec_q,
         T beta = rs_new / rs_old;
 
         // p = r + beta * p
-        prev_dep =
-            detail::axpby_inplace(exec_q, n, T(1), r, beta, p, {r_update_ev});
+        e_p = detail::axpby_inplace(exec_q, n, T(1), r, beta, p, {r_update_ev});
         e_x = x_update_ev;
 
         rs_old = rs_new;
