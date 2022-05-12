@@ -21,10 +21,6 @@ import dpctl
 import dpctl.tensor as dpt
 
 
-def empty_like(A):
-    return dpt.empty(A.shape, A.dtype, device=A.device)
-
-
 def chebyshev(A, b, x0, nIters, lMax, lMin, depends=[]):
     """Chebyshev iterative solver using SYCL routines"""
     d = (lMax + lMin) / 2
@@ -33,9 +29,9 @@ def chebyshev(A, b, x0, nIters, lMax, lMin, depends=[]):
     x = dpt.copy(x0)
     exec_queue = A.sycl_queue
     assert exec_queue == x.sycl_queue
-    Ax = empty_like(A[:, 0])
-    r = empty_like(Ax)
-    p = empty_like(Ax)
+    Ax = dpt.empty_like(A[:, 0])
+    r = dpt.empty_like(Ax)
+    p = dpt.empty_like(Ax)
 
     e_x = dpctl.SyclEvent()
     # Ax = A @ x
@@ -131,12 +127,13 @@ def cg_solve(A, b):
     converged is False if solver has not converged, or the iteration number
     """
     exec_queue = A.sycl_queue
-    x = dpt.zeros(b.shape, dtype=b.dtype)
-    Ap = empty_like(x)
+    x = dpt.zeros_like(b)
+    Ap = dpt.empty_like(x)
 
     all_host_tasks = []
-    r = dpt.copy(b)
-    p = dpt.copy(b)
+    r = dpt.copy(b)  # synchronous copy
+    p = dpt.copy(b)  # synchronous copy
+
     rsold = sycl_gemm.norm_squared_blocking(exec_queue, r)
     if rsold < 1e-20:
         return (b, 0)
@@ -147,22 +144,21 @@ def cg_solve(A, b):
     e_x = dpctl.SyclEvent()
     for i in range(max_iters):
         # Ap = A @ p
-        he_dot, e_dot = sycl_gemm.gemv(exec_queue, A, p, Ap, depends=[e_p])
-        all_host_tasks.append(he_dot)
+        he_gemv, e_gemv = sycl_gemm.gemv(exec_queue, A, p, Ap, depends=[e_p])
+        all_host_tasks.append(he_gemv)
         # alpha = rsold / dot(p, Ap)
         alpha = rsold / sycl_gemm.dot_blocking(
-            exec_queue, p, Ap, depends=[e_dot]
+            exec_queue, p, Ap, depends=[e_p, e_gemv]
         )
         # x = x + alpha * p
         he1_x_update, e1_x_update = sycl_gemm.axpby_inplace(
-            exec_queue, alpha, p, 1, x, depends=[e_p, e_x]
+            exec_queue, alpha, p, 1, x, depends=[e_x]
         )
         all_host_tasks.append(he1_x_update)
-        e_x = e1_x_update
 
         # r = r - alpha * Ap
         he2_r_update, e2_r_update = sycl_gemm.axpby_inplace(
-            exec_queue, -alpha, Ap, 1, r, depends=[e_p]
+            exec_queue, -alpha, Ap, 1, r
         )
         all_host_tasks.append(he2_r_update)
 
