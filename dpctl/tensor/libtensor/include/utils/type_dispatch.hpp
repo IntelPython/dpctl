@@ -80,7 +80,7 @@ private:
             factory<funcPtrT, dstTy, double>{}.get(),
             factory<funcPtrT, dstTy, std::complex<float>>{}.get(),
             factory<funcPtrT, dstTy, std::complex<double>>{}.get()};
-        assert(per_dsTy.size() == _num_types);
+        assert(per_dstTy.size() == _num_types);
         return per_dstTy;
     }
 
