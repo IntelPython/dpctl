@@ -398,8 +398,7 @@ jobs:
             conda activate --stack build_env
             if [ -e CMakeLists.txt ]
             then
-               python setup.py build_ext --inplace -- -G Ninja \
-                    -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx \
+               CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja -- \
                     -DTBB_LIBRARY_DIR=${TBBROOT}/lib \
                     -DMKL_LIBRARY_DIR=${MKLROOT}/lib \
                     -DMKL_INCLUDE_DIR=${MKLROOT}/include \

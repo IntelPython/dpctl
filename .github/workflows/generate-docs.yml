@@ -63,13 +63,12 @@ jobs:
           source /opt/intel/oneapi/setvars.sh
           wget https://github.com/vovkos/doxyrest/releases/download/doxyrest-2.1.2/doxyrest-2.1.2-linux-amd64.tar.xz
           tar xf doxyrest-2.1.2-linux-amd64.tar.xz
-          python setup.py develop --                       \
-              -G "Ninja"                                   \
-              -DCMAKE_BUILD_TYPE=Debug                     \
-              -DCMAKE_C_COMPILER:PATH=icx                  \
-              -DCMAKE_CXX_COMPILER:PATH=icpx               \
-              -DDPCTL_GENERATE_DOCS=ON                     \
-              -DDPCTL_ENABLE_DOXYREST=ON                   \
+          python setup.py develop -G Ninja --build-type=Debug \
+              --                                              \
+              -DCMAKE_C_COMPILER:PATH=$(which icx)            \
+              -DCMAKE_CXX_COMPILER:PATH=$(which icpx)         \
+              -DDPCTL_GENERATE_DOCS=ON                        \
+              -DDPCTL_ENABLE_DOXYREST=ON                      \
               -DDoxyrest_DIR=`pwd`/doxyrest-2.1.2-linux-amd64
           python -c "import dpctl; print(dpctl.__version__)" || exit 1
           cd "$(find _skbuild -name cmake-build)" || exit 1
