@@ -55,6 +55,12 @@ api_dev = dpctl.tensor.Device.create_device(q)
 A = dpt.asarray(Anp, "d", device=api_dev)
 b = dpt.asarray(bnp, "d", device=api_dev)
 
+assert A.sycl_queue == b.sycl_queue
+
+# allocate buffers for computation of residual
+r = dpt.empty_like(b)
+delta = dpt.empty_like(b)
+
 timer = dpctl.SyclTimer(time_scale=1e3)
 
 iters = []
@@ -64,16 +70,21 @@ for i in range(6):
 
     print(i, "(host_dt, device_dt)=", timer.dt)
     iters.append(conv_in)
+    assert x.usm_type == A.usm_type
+    assert x.usm_type == b.usm_type
+    assert x.sycl_queue == A.sycl_queue
+    assert x.sycl_queue == b.sycl_queue
 
 print("Converged in: ", iters)
 
-r = dpt.empty_like(b)
 hev, ev = sycl_gemm.gemv(q, A, x, r)
-delta = dpt.empty_like(b)
 hev2, ev2 = sycl_gemm.sub(q, r, b, delta, [ev])
 rs = sycl_gemm.norm_squared_blocking(q, delta)
 dpctl.SyclEvent.wait_for([hev, hev2])
 print(f"Python solution residual norm squared: {rs}")
+
+assert q == api_dev.sycl_queue
+print("")
 
 x_cpp = dpt.empty_like(b)
 iters = []
