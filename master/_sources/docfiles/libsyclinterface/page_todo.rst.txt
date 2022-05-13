@@ -13,14 +13,14 @@ Todo List
 		- :target:`doxid-dd/da0/todo_1_todo000001` Add support for sycl::buffer
 
 	*
-		- Global :ref:`DPCTLQueue_SubmitNDRange <doxid-d2/d22/group___queue_interface_1gaac9356153363bb89ade3116816fca94b>` (\__dpctl_keep const DPCTLSyclKernelRef KRef, \__dpctl_keep const DPCTLSyclQueueRef QRef, \__dpctl_keep void \*\*Args, \__dpctl_keep const DPCTLKernelArgType \*ArgTypes, size_t NArgs, \__dpctl_keep const size_t gRange[3], \__dpctl_keep const size_t lRange[3], size_t NDims, \__dpctl_keep const DPCTLSyclEventRef \*DepEvents, size_t NDepEvents)
+		- Global :ref:`DPCTLQueue_SubmitNDRange <doxid-d2/d22/group___queue_interface_1ga94b6312555d533998e46c9ad312bda8e>` (\__dpctl_keep const DPCTLSyclKernelRef KRef, \__dpctl_keep const DPCTLSyclQueueRef QRef, \__dpctl_keep void \*\*Args, \__dpctl_keep const DPCTLKernelArgType \*ArgTypes, size_t NArgs, \__dpctl_keep const size_t gRange[3], \__dpctl_keep const size_t lRange[3], size_t NDims, \__dpctl_keep const DPCTLSyclEventRef \*DepEvents, size_t NDepEvents)
 
 		- :target:`doxid-dd/da0/todo_1_todo000003` sycl::buffer arguments are not supported yet.
 		  
 		  Add support for id<Dims> WorkItemOffset
 
 	*
-		- Global :ref:`DPCTLQueue_SubmitRange <doxid-d2/d22/group___queue_interface_1ga9ed0d59f789b4fb0959b0af022fdbe23>` (\__dpctl_keep const DPCTLSyclKernelRef KRef, \__dpctl_keep const DPCTLSyclQueueRef QRef, \__dpctl_keep void \*\*Args, \__dpctl_keep const DPCTLKernelArgType \*ArgTypes, size_t NArgs, \__dpctl_keep const size_t Range[3], size_t NRange, \__dpctl_keep const DPCTLSyclEventRef \*DepEvents, size_t NDepEvents)
+		- Global :ref:`DPCTLQueue_SubmitRange <doxid-d2/d22/group___queue_interface_1ga31ae37a405b585b26e10101d13283c62>` (\__dpctl_keep const DPCTLSyclKernelRef KRef, \__dpctl_keep const DPCTLSyclQueueRef QRef, \__dpctl_keep void \*\*Args, \__dpctl_keep const DPCTLKernelArgType \*ArgTypes, size_t NArgs, \__dpctl_keep const size_t Range[3], size_t NRange, \__dpctl_keep const DPCTLSyclEventRef \*DepEvents, size_t NDepEvents)
 
 		- :target:`doxid-dd/da0/todo_1_todo000002` ``sycl::buffer`` arguments are not supported yet.
 		  
