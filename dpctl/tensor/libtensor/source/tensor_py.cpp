@@ -411,9 +411,9 @@ void simplify_iteration_space(int &nd,
             }
         }
 
-        assert(simplified_shape.size() == nd);
-        assert(simplified_src_strides.size() == nd);
-        assert(simplified_dst_strides.size() == nd);
+        assert(simplified_shape.size() == static_cast<size_t>(nd));
+        assert(simplified_src_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
         int contracted_nd = simplify_iteration_two_strides(
             nd, simplified_shape.data(), simplified_src_strides.data(),
             simplified_dst_strides.data(),
@@ -472,9 +472,9 @@ void simplify_iteration_space(int &nd,
             simplified_dst_strides.push_back(dst_strides[0]);
         }
 
-        assert(simplified_shape.size() == nd);
-        assert(simplified_src_strides.size() == nd);
-        assert(simplified_dst_strides.size() == nd);
+        assert(simplified_shape.size() == static_cast<size_t>(nd));
+        assert(simplified_src_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
     }
 }
 
@@ -1329,9 +1329,9 @@ void copy_numpy_ndarray_into_usm_ndarray(
                              simplified_shape, simplified_src_strides,
                              simplified_dst_strides, src_offset, dst_offset);
 
-    assert(simplified_shape.size() == nd);
-    assert(simplified_src_strides.size() == nd);
-    assert(simplified_dst_strides.size() == nd);
+    assert(simplified_shape.size() == static_cast<size_t>(nd));
+    assert(simplified_src_strides.size() == static_cast<size_t>(nd));
+    assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
 
     // handle nd == 0
     if (nd == 0) {
