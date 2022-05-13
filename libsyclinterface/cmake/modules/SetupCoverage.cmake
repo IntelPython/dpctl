@@ -11,6 +11,7 @@ function(setup_coverage_generation)
         "-fprofile-instr-generate "
         "-fcoverage-mapping "
         "-fno-sycl-use-footer "
+#        "-save-temps=obj "
         "-DDPCTL_COVERAGE "
     )
 

@@ -76,7 +76,7 @@ def run(
         .strip("\n")
     )
     subprocess.check_call(
-        ["cmake", "--build", ".", "--target", "lcov-genhtml"],
+        ["cmake", "--build", ".", "--target", "llvm-cov"],
         cwd=cmake_build_dir,
     )
     env["LLVM_PROFILE_FILE"] = "dpctl_pytest.profraw"
@@ -108,11 +108,16 @@ def run(
         objects = []
         for root, _, files in os.walk("_skbuild"):
             for file in files:
-                if not file.endswith(".o"):
+                if not file.endswith(".so"):
                     continue
                 if os.path.join("libsyclinterface", "tests") in root:
                     continue
-                if any(match in root for match in ["libsyclinterface"]):
+                if any(
+                    match in root
+                    for match in [
+                        "libsyclinterface",
+                    ]
+                ):
                     objects.extend(["-object", os.path.join(root, file)])
         return objects
 
@@ -136,6 +141,7 @@ def run(
                 os.path.join(bin_llvm, "llvm-cov"),
                 "export",
                 "-format=lcov",
+                "-ignore-filename-regex=/tmp/dpctl_*.h*",
                 "-instr-profile=" + instr_profile_fn,
             ]
             + objects,

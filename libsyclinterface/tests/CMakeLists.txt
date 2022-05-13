@@ -52,6 +52,13 @@ if(DPCTL_GENERATE_COVERAGE)
             -o
             dpctl.profdata
         COMMAND ${LLVMCov_EXE}
+            export
+            -format=lcov
+            -ignore-filename-regex=/tmp/dpctl_*.h*
+            -instr-profile=dpctl.profdata
+            "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
+            > dpctl.lcov
+        COMMAND ${LLVMCov_EXE}
             report
             -instr-profile=dpctl.profdata
             "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
@@ -75,6 +82,7 @@ if(DPCTL_GENERATE_COVERAGE)
             > dpctl.lcov
         COMMAND ${GENHTML_EXE}
             ${CMAKE_CURRENT_BINARY_DIR}/dpctl.lcov
+            --no-source
             --output-directory
             ${COVERAGE_OUTPUT_DIR}/dpctl-c-api-coverage
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

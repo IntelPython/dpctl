@@ -380,7 +380,7 @@ jobs:
           source $CONDA/etc/profile.d/conda.sh
           conda activate
           CHANNELS="-c $GITHUB_WORKSPACE/channel -c dppy/label/dev -c intel --override-channels"
-          conda install -n examples -y $CHANNELS numba-dppy numpy dpctl || exit 1
+          conda install -n examples -y $CHANNELS numpy dpctl dpnp || exit 1
       - name: Build and run examples with native extensions
         shell: bash -l {0}
         run: |

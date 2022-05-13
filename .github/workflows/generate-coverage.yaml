@@ -110,6 +110,9 @@ jobs:
               fh3 = open('combined-dpctl-c-api-coverage.json', 'w'); \
               json.dump(f3, fh3); fh3.close()" || exit 1
           # merge combined file with coverage data and upload
+          ls -lh dpctl-c-api-coverage.json pytest-dpctl-c-api-coverage.json \
+               combined-dpctl-c-api-coverage.json \
+               $(find _skbuild -name dpctl.lcov) $(find . -name dpctl_pytest.lcov)
           coveralls --service=github --merge=combined-dpctl-c-api-coverage.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
