@@ -79,7 +79,7 @@ function(versions_greater_equal VERSION_STR1 VERSION_STR2 OUTPUT)
             set(${OUTPUT} TRUE PARENT_SCOPE)
         endif()
     endforeach()
-endfunction(compare_versions)
+endfunction(versions_greater_equal)
 
 # Check if dpcpp is available
 execute_process(
