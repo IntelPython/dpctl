@@ -49,10 +49,9 @@ def run(
             "--cmake-executable=" + cmake_executable,
         ]
     cmake_args += [
+        "--build-type=" + build_type,
+        "--generator=" + build_system,
         "--",
-        "-G",
-        build_system,
-        "-DCMAKE_BUILD_TYPE=" + build_type,
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
         "-DDPCTL_ENABLE_L0_PROGRAM_CREATION=" + ("ON" if level_zero else "OFF"),
