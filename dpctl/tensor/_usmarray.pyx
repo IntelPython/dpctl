@@ -961,7 +961,7 @@ cdef class usm_ndarray:
     def __rfloordiv__(self, other):
         return _dispatch_binary_elementwise2(other, "floor_divide", self)
 
-    def __rlshift__(self, other, mod):
+    def __rlshift__(self, other):
         return _dispatch_binary_elementwise2(other, "left_shift", self)
 
     def __rmatmul__(self, other):
@@ -976,10 +976,10 @@ cdef class usm_ndarray:
     def __ror__(self, other):
         return _dispatch_binary_elementwise(self, "logical_or", other)
 
-    def __rpow__(self, other, mod):
+    def __rpow__(self, other):
         return _dispatch_binary_elementwise2(other, "power", self)
 
-    def __rrshift__(self, other, mod):
+    def __rrshift__(self, other):
         return _dispatch_binary_elementwise2(other, "right_shift", self)
 
     def __rsub__(self, other):
