@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor.Device &mdash; Data-parallel Control (dpctl) 0.13.0dev1+31.g50be964d6 documentation</title>
+  <title>dpctl.tensor.Device &mdash; Data-parallel Control (dpctl) 0.13.0dev1+35.gfbe078eaa documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+31.g50be964d6
+                0.13.0dev1+35.gfbe078eaa
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -107,8 +107,8 @@
 <dd><p>Class representing Data-API concept of device.</p>
 <p>This is a wrapper around <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> with custom
 formatting. The class does not have public constructor,
-but a class method to construct it from device= keyword
-in Array-API functions.</p>
+but a class method <cite>create_device</cite> to construct it from device= keyword
+argument in Array-API functions.</p>
 <p>Instance can be queried for <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code>, <code class="docutils literal notranslate"><span class="pre">sycl_context</span></code>,
 or <code class="docutils literal notranslate"><span class="pre">sycl_device</span></code>.</p>
 <p class="rubric">Attributes:</p>
@@ -138,6 +138,9 @@ or <code class="docutils literal notranslate"><span class="pre">sycl_device</spa
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.Device.create_device" title="dpctl.tensor.Device.create_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_device</span></code></a>(dev)</p></td>
 <td><p>Creates instance of Device from argument.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait</span></code>()</p></td>
+<td><p>Call <code class="docutils literal notranslate"><span class="pre">wait</span></code> method of the underlying <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code>.</p></td>
 </tr>
 </tbody>
 </table>

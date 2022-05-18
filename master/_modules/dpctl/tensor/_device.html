@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._device &mdash; Data-parallel Control (dpctl) 0.13.0dev1+31.g50be964d6 documentation</title>
+  <title>dpctl.tensor._device &mdash; Data-parallel Control (dpctl) 0.13.0dev1+35.gfbe078eaa documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+31.g50be964d6
+                0.13.0dev1+35.gfbe078eaa
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -100,8 +100,8 @@
 
 <span class="sd">    This is a wrapper around :class:`dpctl.SyclQueue` with custom</span>
 <span class="sd">    formatting. The class does not have public constructor,</span>
-<span class="sd">    but a class method to construct it from device= keyword</span>
-<span class="sd">    in Array-API functions.</span>
+<span class="sd">    but a class method `create_device` to construct it from device= keyword</span>
+<span class="sd">    argument in Array-API functions.</span>
 
 <span class="sd">    Instance can be queried for ``sycl_queue``, ``sycl_context``,</span>
 <span class="sd">    or ``sycl_device``.</span>
@@ -187,7 +187,13 @@
             <span class="k">return</span> <span class="s2">&quot;Device(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
             <span class="c1"># This is a sub-device</span>
-            <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call ``wait`` method of the underlying ``sycl_queue``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue_</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span></div>
 
 
 <span class="k">def</span> <span class="nf">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
