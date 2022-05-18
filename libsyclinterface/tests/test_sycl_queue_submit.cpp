@@ -24,9 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "Support/CBindingWrapping.h"
-#ifndef DPCTL_COVERAGE
 #include "dpcpp_kernels.hpp"
-#endif
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
@@ -193,7 +191,6 @@ TEST_F(TestQueueSubmit, CheckSubmitNDRange_saxpy)
     DPCTLDeviceSelector_Delete(DSRef);
 }
 
-#ifndef DPCTL_COVERAGE
 namespace
 {
 
@@ -473,5 +470,3 @@ TEST_F(TestQueueSubmitBarrier, ChkSubmitBarrierWithEvents)
     EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Delete(DepsERefs[0]));
     EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Delete(DepsERefs[1]));
 }
-
-#endif
