@@ -1946,28 +1946,34 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("fill_value"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    m.def("default_device_fp_type", [](sycl::queue q) {
+    m.def("default_device_fp_type", [](sycl::queue q) -> std::string {
         return get_default_device_fp_type(q.get_device());
     });
-    m.def("default_device_fp_type",
-          [](sycl::device dev) { return get_default_device_fp_type(dev); });
+    m.def("default_device_fp_type_device", [](sycl::device dev) -> std::string {
+        return get_default_device_fp_type(dev);
+    });
 
-    m.def("default_device_int_type", [](sycl::queue q) {
+    m.def("default_device_int_type", [](sycl::queue q) -> std::string {
         return get_default_device_int_type(q.get_device());
     });
-    m.def("default_device_int_type",
-          [](sycl::device dev) { return get_default_device_int_type(dev); });
+    m.def("default_device_int_type_device",
+          [](sycl::device dev) -> std::string {
+              return get_default_device_int_type(dev);
+          });
 
-    m.def("default_device_bool_type", [](sycl::queue q) {
+    m.def("default_device_bool_type", [](sycl::queue q) -> std::string {
         return get_default_device_bool_type(q.get_device());
     });
-    m.def("default_device_bool_type",
-          [](sycl::device dev) { return get_default_device_bool_type(dev); });
+    m.def("default_device_bool_type_device",
+          [](sycl::device dev) -> std::string {
+              return get_default_device_bool_type(dev);
+          });
 
-    m.def("default_device_complex_type", [](sycl::queue q) {
+    m.def("default_device_complex_type", [](sycl::queue q) -> std::string {
         return get_default_device_complex_type(q.get_device());
     });
-    m.def("default_device_complex_type", [](sycl::device dev) {
-        return get_default_device_complex_type(dev);
-    });
+    m.def("default_device_complex_type_device",
+          [](sycl::device dev) -> std::string {
+              return get_default_device_complex_type(dev);
+          });
 }

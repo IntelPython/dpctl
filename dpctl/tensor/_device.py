@@ -22,8 +22,8 @@ class Device:
 
     This is a wrapper around :class:`dpctl.SyclQueue` with custom
     formatting. The class does not have public constructor,
-    but a class method to construct it from device= keyword
-    in Array-API functions.
+    but a class method `create_device` to construct it from device= keyword
+    argument in Array-API functions.
 
     Instance can be queried for ``sycl_queue``, ``sycl_context``,
     or ``sycl_device``.
@@ -110,6 +110,12 @@ class Device:
         except TypeError:
             # This is a sub-device
             return repr(self.sycl_queue)
+
+    def wait(self):
+        """
+        Call ``wait`` method of the underlying ``sycl_queue``.
+        """
+        self.sycl_queue_.wait()
 
 
 def normalize_queue_device(sycl_queue=None, device=None):
