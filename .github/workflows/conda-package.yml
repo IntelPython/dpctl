@@ -9,6 +9,8 @@ on:
 env:
   PACKAGE_NAME: dpctl
   MODULE_NAME: dpctl
+  VER_SCRIPT1: "import json; f = open('ver.json', 'r'); j = json.load(f); f.close(); "
+  VER_SCRIPT2: "d = j['dpctl'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
 
 jobs:
   build_linux:
@@ -28,7 +30,7 @@ jobs:
       - name: Cache conda packages
         uses: actions/cache@v2
         env:
-          CACHE_NUMBER: 0  # Increase to reset cache
+          CACHE_NUMBER: 1  # Increase to reset cache
         with:
           path: ~/.conda/pkgs
           key:
@@ -76,7 +78,7 @@ jobs:
       - name: Cache conda packages
         uses: actions/cache@v2
         env:
-          CACHE_NUMBER: 0  # Increase to reset cache
+          CACHE_NUMBER: 1  # Increase to reset cache
         with:
           path: /home/runner/conda_pkgs_dir
           key:
@@ -124,21 +126,25 @@ jobs:
       - name: Create conda channel
         run: |
           mkdir -p $GITHUB_WORKSPACE/channel/linux-64
-          mv ${PACKAGE_NAME}-*.tar.bz2 $GITHUB_WORKSPACE/channel/linux-64
-          conda index $GITHUB_WORKSPACE/channel
+          conda index $GITHUB_WORKSPACE/channel || exit 1
+          mv ${PACKAGE_NAME}-*.tar.bz2 $GITHUB_WORKSPACE/channel/linux-64 || exit 1
+          conda index $GITHUB_WORKSPACE/channel || exit 1
           # Test channel
-          conda search $PACKAGE_NAME -c $GITHUB_WORKSPACE/channel --override-channels
+          conda search $PACKAGE_NAME -c $GITHUB_WORKSPACE/channel --override-channels --info --json > $GITHUB_WORKSPACE/ver.json
+          cat ver.json
       - name: Collect dependencies
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
-          conda install $PACKAGE_NAME python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
+          export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
+          conda install $PACKAGE_NAME=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
+          cat lockfile
       - name: Set pkgs_dirs
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
       - name: Cache conda packages
         uses: actions/cache@v2
         env:
-          CACHE_NUMBER: 0  # Increase to reset cache
+          CACHE_NUMBER: 1  # Increase to reset cache
         with:
           path: ~/.conda/pkgs
           key:
@@ -149,7 +155,8 @@ jobs:
       - name: Install dpctl
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
-          conda install $PACKAGE_NAME pytest python=${{ matrix.python }} $CHANNELS
+          export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
+          conda install $PACKAGE_NAME=${PACKAGE_VERSION} pytest python=${{ matrix.python }} $CHANNELS
           # Test installed packages
           conda list
       - name: Smoke test
@@ -202,7 +209,7 @@ jobs:
       - name: Cache conda packages
         uses: actions/cache@v2
         env:
-          CACHE_NUMBER: 0  # Increase to reset cache
+          CACHE_NUMBER: 1  # Increase to reset cache
         with:
           path: /home/runner/conda_pkgs_dir
           key:
@@ -355,7 +362,7 @@ jobs:
       - name: Cache conda packages
         uses: actions/cache@v2
         env:
-          CACHE_NUMBER: 0  # Increase to reset cache
+          CACHE_NUMBER: 1  # Increase to reset cache
         with:
           path: ~/.conda/pkgs
           key:
