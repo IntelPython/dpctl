@@ -8,7 +8,6 @@ source:
 build:
     number: {{ GIT_DESCRIBE_NUMBER }}
     script_env:
-        - ONEAPI_ROOT              # for wheel on Linux
         - WHEELS_OUTPUT_FOLDER
 
 requirements:
@@ -22,12 +21,12 @@ requirements:
         - python
         - ninja
         - scikit-build
-        - numpy 1.19
+        - numpy
         - wheel
     run:
         - python
-        - {{ pin_compatible('numpy') }}
-        - dpcpp-cpp-rt >=2022.0
+        - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}
+        - dpcpp-cpp-rt >=2022.1
 
 test:
     requires:

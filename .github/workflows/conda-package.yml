@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        python: [3.8, 3.9]
+        python: ['3.8', '3.9', '3.10']
     steps:
       - uses: actions/checkout@v2
         with:
@@ -63,7 +63,7 @@ jobs:
 
     strategy:
       matrix:
-        python: [3.8, 3.9]
+        python: ['3.8', '3.9']
     env:
       conda-bld: C:\Miniconda\conda-bld\win-64\
     steps:
@@ -102,13 +102,9 @@ jobs:
 
     strategy:
       matrix:
-        python: [3.8, 3.9]
+        python: ['3.8', '3.9', '3.10']
         experimental: [false]
         runner: [ubuntu-latest]
-        # include:
-        #   - python: 3.8
-        #     experimental: true
-        #     runner: [self-hosted, gen9]
     continue-on-error: ${{ matrix.experimental }}
     env:
       CHANNELS: -c intel -c defaults --override-channels
@@ -178,7 +174,7 @@ jobs:
 
     strategy:
       matrix:
-        python: [3.8, 3.9]
+        python: ['3.8', '3.9']
         experimental: [false]
         runner: [windows-latest]
     continue-on-error: ${{ matrix.experimental }}
@@ -199,13 +195,23 @@ jobs:
         run: conda install conda-build
       - name: Create conda channel
         run: |
-          mkdir -p $GITHUB_WORKSPACE/channel/win-64
-          mv ${{ env.PACKAGE_NAME }}-*.tar.bz2 ${{ env.GITHUB_WORKSPACE }}/channel/win-64
+          mkdir ${{ env.GITHUB_WORKSPACE }}\channel\win-64
+          move ${{ env.PACKAGE_NAME }}-*.tar.bz2 ${{ env.GITHUB_WORKSPACE }}\channel\win-64
           conda index ${{ env.GITHUB_WORKSPACE }}/channel
           # Test channel
-          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.GITHUB_WORKSPACE }}/channel --override-channels
+          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.GITHUB_WORKSPACE }}/channel --override-channels --info --json > ${{ env.GITHUB_WORKSPACE }}\ver.json
+          more ${{ env.GITHUB_WORKSPACE }}\ver.json
       - name: Collect dependencies
-        run: conda install ${{ env.PACKAGE_NAME }} python=${{ matrix.python }} -c ${{ env.GITHUB_WORKSPACE }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
+        shell: cmd
+        run: |
+          @ECHO ON
+          copy /Y ${{ env.GITHUB_WORKSPACE }}\ver.json .
+          set "SCRIPT=%VER_SCRIPT1% %VER_SCRIPT2%"
+          FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
+             SET PACKAGE_VERSION=%%F
+          )
+          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.GITHUB_WORKSPACE }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
+          more lockfile
       - name: Cache conda packages
         uses: actions/cache@v2
         env:
@@ -220,8 +226,15 @@ jobs:
       - name: Install opencl_rt
         run: conda install opencl_rt -c intel --override-channels
       - name: Install dpctl
+        shell: cmd
         run: |
-          conda install ${{ env.PACKAGE_NAME }} pytest python=${{ matrix.python }} -c ${{ env.GITHUB_WORKSPACE }}/channel ${{ env.CHANNELS }}
+          @ECHO ON
+          copy /Y ${{ env.GITHUB_WORKSPACE }}\ver.json .
+          set "SCRIPT=%VER_SCRIPT1% %VER_SCRIPT2%"
+          FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
+             SET PACKAGE_VERSION=%%F
+          )
+          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% pytest python=${{ matrix.python }} -c ${{ env.GITHUB_WORKSPACE }}/channel ${{ env.CHANNELS }}
           # Test installed packages
           conda list
       - name: Add library
@@ -274,7 +287,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.8, 3.9]
+        python: ['3.8', '3.9', '3.10']
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -299,7 +312,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python: [3.8, 3.9]
+        python: ['3.8', '3.9', '3.10']
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -324,7 +337,7 @@ jobs:
     runs-on:  ${{ matrix.runner }}
     strategy:
       matrix:
-        python: [3.9]
+        python: ['3.9']
         experimental: [false]
         runner: [ubuntu-latest]
     continue-on-error: ${{ matrix.experimental }}
