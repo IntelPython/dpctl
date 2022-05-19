@@ -256,7 +256,12 @@ DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
     }
 
     SyclCtx = unwrap(Ctx);
-    SyclProgram = new program(*SyclCtx);
+    try {
+        SyclProgram = new program(*SyclCtx);
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
     std::string source = Source;
 
     if (CompileOpts) {
