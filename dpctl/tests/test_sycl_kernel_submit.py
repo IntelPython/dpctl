@@ -60,20 +60,17 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
 
     n_elems = 1024 * 512
     lws = 128
-    bufBytes = n_elems * dtype.itemsize
-    abuf = dpctl_mem.MemoryUSMShared(bufBytes, queue=q)
-    bbuf = dpctl_mem.MemoryUSMShared(bufBytes, queue=q)
-    cbuf = dpctl_mem.MemoryUSMShared(bufBytes, queue=q)
-    a = np.ndarray((n_elems,), buffer=abuf, dtype=dtype)
-    b = np.ndarray((n_elems,), buffer=bbuf, dtype=dtype)
-    c = np.ndarray((n_elems,), buffer=cbuf, dtype=dtype)
-    a[:] = np.arange(n_elems)
-    b[:] = np.arange(n_elems, 0, -1)
-    c[:] = 0
+    a = dpt.arange(n_elems, dtype=dtype, sycl_queue=q)
+    b = dpt.arange(n_elems, stop=0, step=-1, dtype=dtype, sycl_queue=q)
+    c = dpt.zeros(n_elems, dtype=dtype, sycl_queue=q)
+
     d = 2
-    args = [a.base, b.base, c.base, ctypes_ctor(d)]
+    args = [a.usm_data, b.usm_data, c.usm_data, ctypes_ctor(d)]
 
     assert n_elems % lws == 0
+
+    b_np = dpt.asnumpy(b)
+    a_np = dpt.asnumpy(a)
 
     for r in (
         [
@@ -86,10 +83,10 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
         timer = dpctl.SyclTimer()
         with timer(q):
             q.submit(axpyKernel, args, r).wait()
-            ref_c = a * np.array(d, dtype=dtype) + b
+            ref_c = a_np * np.array(d, dtype=dtype) + b_np
         host_dt, device_dt = timer.dt
         assert type(host_dt) is float and type(device_dt) is float
-        assert np.allclose(c, ref_c), "Failed for {}".format(r)
+        assert np.allclose(dpt.asnumpy(c), ref_c), "Failed for {}".format(r)
 
     for gr, lr in (
         (
@@ -105,10 +102,12 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
         timer = dpctl.SyclTimer()
         with timer(q):
             q.submit(axpyKernel, args, gr, lr, [dpctl.SyclEvent()]).wait()
-            ref_c = a * np.array(d, dtype=dtype) + b
+            ref_c = a_np * np.array(d, dtype=dtype) + b_np
         host_dt, device_dt = timer.dt
         assert type(host_dt) is float and type(device_dt) is float
-        assert np.allclose(c, ref_c), "Failed for {}, {}".formatg(r, lr)
+        assert np.allclose(dpt.asnumpy(c), ref_c), "Failed for {}, {}".formatg(
+            r, lr
+        )
 
 
 def test_async_submit():
