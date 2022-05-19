@@ -35,7 +35,6 @@ using namespace cl::sycl;
 
 namespace
 {
-#ifndef DPCTL_COVERAGE
 sycl::event produce_event(sycl::queue &Q, sycl::buffer<int> &data)
 {
     int N = data.get_range()[0];
@@ -55,7 +54,6 @@ sycl::event produce_event(sycl::queue &Q, sycl::buffer<int> &data)
 
     return e2;
 }
-#endif
 } // namespace
 
 struct TestDPCTLSyclEventInterface : public ::testing::Test
@@ -156,7 +154,6 @@ TEST_F(TestDPCTLSyclEventInterface, ChkGetCommandExecutionStatus)
     EXPECT_TRUE(ESTy == DPCTLSyclEventStatusType::DPCTL_COMPLETE);
 }
 
-#ifndef DPCTL_COVERAGE
 TEST_F(TestDPCTLSyclEventInterface, CheckGetProfiling)
 {
     property_list propList{property::queue::enable_profiling()};
@@ -173,7 +170,6 @@ TEST_F(TestDPCTLSyclEventInterface, CheckGetProfiling)
     EXPECT_TRUE(eEnd);
     EXPECT_TRUE(eSubmit);
 }
-#endif
 
 TEST_F(TestDPCTLSyclEventInterface, CheckGetProfiling_Invalid)
 {
@@ -195,7 +191,6 @@ TEST_F(TestDPCTLSyclEventInterface, CheckGetWaitList)
     EXPECT_NO_FATAL_FAILURE(DPCTLEventVector_Delete(EVRef));
 }
 
-#ifndef DPCTL_COVERAGE
 TEST_F(TestDPCTLSyclEventInterface, CheckGetWaitListSYCL)
 {
     sycl::queue q;
@@ -209,4 +204,3 @@ TEST_F(TestDPCTLSyclEventInterface, CheckGetWaitListSYCL)
     ASSERT_TRUE(DPCTLEventVector_Size(EVRef) > 0);
     DPCTLEventVector_Delete(EVRef);
 }
-#endif

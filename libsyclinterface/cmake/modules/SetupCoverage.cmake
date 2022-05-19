@@ -12,7 +12,6 @@ function(setup_coverage_generation)
         "-fcoverage-mapping "
         "-fno-sycl-use-footer "
 #        "-save-temps=obj "
-        "-DDPCTL_COVERAGE "
     )
 
     # Add profiling flags
