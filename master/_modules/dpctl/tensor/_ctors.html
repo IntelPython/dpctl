@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.13.0dev1+40.g252218713 documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.13.0dev1+43.g3664a3a61 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+40.g252218713
+                0.13.0dev1+43.g3664a3a61
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -625,7 +625,8 @@
     <span class="p">)</span>
     <span class="n">_step</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">step</span><span class="p">)</span> <span class="o">-</span> <span class="n">start</span>
     <span class="n">_step</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">_step</span><span class="p">)</span>
-    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_linspace_step</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">_step</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="n">_start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_linspace_step</span><span class="p">(</span><span class="n">_start</span><span class="p">,</span> <span class="n">_step</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
     <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">res</span></div>
 
