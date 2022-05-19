@@ -547,7 +547,8 @@ def arange(
     )
     _step = (start + step) - start
     _step = dt.type(_step)
-    hev, _ = ti._linspace_step(start, _step, res, sycl_queue)
+    _start = dt.type(start)
+    hev, _ = ti._linspace_step(_start, _step, res, sycl_queue)
     hev.wait()
     return res
 

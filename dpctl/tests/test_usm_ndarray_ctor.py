@@ -985,11 +985,13 @@ def test_arange(dt):
     elif np.issubdtype(dt, np.complexfloating):
         assert complex(X[47]) == 47.0 + 0.0j
 
-    X1 = dpt.arange(4, dtype=dt, sycl_queue=q)
-    assert X1.shape == (4,)
+    # choose size larger than maximal value that u1/u2 can accomodate
+    sz = int(np.iinfo(np.int16).max) + 1
+    X1 = dpt.arange(sz, dtype=dt, sycl_queue=q)
+    assert X1.shape == (sz,)
 
-    X2 = dpt.arange(4, 0, -1, dtype=dt, sycl_queue=q)
-    assert X2.shape == (4,)
+    X2 = dpt.arange(sz, 0, -1, dtype=dt, sycl_queue=q)
+    assert X2.shape == (sz,)
 
 
 @pytest.mark.parametrize(
