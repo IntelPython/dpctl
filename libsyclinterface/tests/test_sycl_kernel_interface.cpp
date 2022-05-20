@@ -81,31 +81,6 @@ struct TestDPCTLSyclKernelInterface
 };
 } // namespace
 
-TEST_P(TestDPCTLSyclKernelInterface, CheckGetFunctionName)
-{
-    auto QueueRef = DPCTLQueue_CreateForDevice(DRef, nullptr, 0);
-    auto CtxRef = DPCTLQueue_GetContext(QueueRef);
-    auto PRef =
-        DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr, CompileOpts);
-    auto AddKernel = DPCTLProgram_GetKernel(PRef, "add");
-    auto AxpyKernel = DPCTLProgram_GetKernel(PRef, "axpy");
-
-    auto fnName1 = DPCTLKernel_GetFunctionName(AddKernel);
-    auto fnName2 = DPCTLKernel_GetFunctionName(AxpyKernel);
-
-    ASSERT_STREQ("add", fnName1);
-    ASSERT_STREQ("axpy", fnName2);
-
-    DPCTLCString_Delete(fnName1);
-    DPCTLCString_Delete(fnName2);
-
-    DPCTLQueue_Delete(QueueRef);
-    DPCTLContext_Delete(CtxRef);
-    DPCTLProgram_Delete(PRef);
-    DPCTLKernel_Delete(AddKernel);
-    DPCTLKernel_Delete(AxpyKernel);
-}
-
 TEST_P(TestDPCTLSyclKernelInterface, CheckGetNumArgs)
 {
     auto QueueRef = DPCTLQueue_CreateForDevice(DRef, nullptr, 0);
@@ -130,7 +105,6 @@ TEST_P(TestDPCTLSyclKernelInterface, CheckNullPtrArg)
     DPCTLSyclKernelRef AddKernel = nullptr;
 
     ASSERT_EQ(DPCTLKernel_GetNumArgs(AddKernel), -1);
-    ASSERT_EQ(DPCTLKernel_GetFunctionName(AddKernel), nullptr);
 }
 
 INSTANTIATE_TEST_SUITE_P(TestKernelInterfaceFunctions,
