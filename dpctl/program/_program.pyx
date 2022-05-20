@@ -30,7 +30,6 @@ cimport cython.array
 from dpctl._backend cimport (  # noqa: E211, E402
     DPCTLCString_Delete,
     DPCTLKernel_Delete,
-    DPCTLKernel_GetFunctionName,
     DPCTLKernel_GetNumArgs,
     DPCTLProgram_CreateFromOCLSource,
     DPCTLProgram_CreateFromSpirv,
@@ -61,20 +60,19 @@ cdef class SyclKernel:
     """
     """
     @staticmethod
-    cdef SyclKernel _create(DPCTLSyclKernelRef kref):
+    cdef SyclKernel _create(DPCTLSyclKernelRef kref, str name):
         cdef SyclKernel ret = SyclKernel.__new__(SyclKernel)
         ret._kernel_ref = kref
-        ret._function_name = DPCTLKernel_GetFunctionName(kref)
+        ret._function_name = name
         return ret
 
     def __dealloc__(self):
         DPCTLKernel_Delete(self._kernel_ref)
-        DPCTLCString_Delete(self._function_name)
 
     def get_function_name(self):
         """ Returns the name of the ``sycl::kernel`` function.
         """
-        return self._function_name.decode()
+        return self._function_name
 
     def get_num_args(self):
         """ Returns the number of arguments for this kernel function.
@@ -121,7 +119,7 @@ cdef class SyclProgram:
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name):
         name = kernel_name.encode('utf8')
         return SyclKernel._create(DPCTLProgram_GetKernel(self._program_ref,
-                                                         name))
+                                                         name), kernel_name)
 
     def has_sycl_kernel(self, str kernel_name):
         name = kernel_name.encode('utf8')

@@ -33,11 +33,11 @@ cdef class SyclKernel:
         kernel.
     '''
     cdef DPCTLSyclKernelRef _kernel_ref
-    cdef const char *_function_name
+    cdef str _function_name
     cdef DPCTLSyclKernelRef get_kernel_ref (self)
 
     @staticmethod
-    cdef SyclKernel _create (DPCTLSyclKernelRef kref)
+    cdef SyclKernel _create (DPCTLSyclKernelRef kref, str name)
 
 
 cdef class SyclProgram:
