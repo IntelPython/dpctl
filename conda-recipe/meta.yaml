@@ -13,7 +13,7 @@ build:
 requirements:
     build:
         - {{ compiler('cxx') }}
-        - {{ compiler('dpcpp') }}  # [not osx]
+        - {{ compiler('dpcpp') }}  >=2022.1  # [not osx]
     host:
         - setuptools
         - cython
