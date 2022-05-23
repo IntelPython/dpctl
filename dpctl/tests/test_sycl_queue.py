@@ -141,18 +141,11 @@ def check_has_aspect_fp64(device):
         pytest.fail("has_aspect_fp64 call failed")
 
 
-def check_has_aspect_int64_base_atomics(device):
+def check_has_aspect_atomic64(device):
     try:
-        device.has_aspect_int64_base_atomics
+        device.has_aspect_atomic64
     except Exception:
-        pytest.fail("has_aspect_int64_base_atomics call failed")
-
-
-def check_has_aspect_int64_extended_atomics(device):
-    try:
-        device.has_aspect_int64_extended_atomics
-    except Exception:
-        pytest.fail("has_aspect_int64_extended_atomics call failed")
+        pytest.fail("has_aspect_atomic64 call failed")
 
 
 def check_has_aspect_image(device):
@@ -218,6 +211,27 @@ def check_has_aspect_usm_system_allocations(device):
         pytest.fail("has_aspect_usm_system_allocations call failed")
 
 
+def check_has_aspect_usm_atomic_host_allocations(device):
+    try:
+        device.has_aspect_usm_atomic_host_allocations
+    except Exception:
+        pytest.fail("has_aspect_usm_atomic_host_allocations call failed")
+
+
+def check_has_aspect_usm_atomic_shared_allocations(device):
+    try:
+        device.has_aspect_usm_atomic_shared_allocations
+    except Exception:
+        pytest.fail("has_aspect_usm_atomic_shared_allocations call failed")
+
+
+def check_has_aspect_host_debuggable(device):
+    try:
+        device.has_aspect_host_debuggable
+    except Exception:
+        pytest.fail("has_aspect_host_debuggable call failed")
+
+
 def check_is_accelerator(device):
     try:
         device.is_accelerator
@@ -263,8 +277,7 @@ list_of_checks = [
     check_has_aspect_custom,
     check_has_aspect_fp16,
     check_has_aspect_fp64,
-    check_has_aspect_int64_base_atomics,
-    check_has_aspect_int64_extended_atomics,
+    check_has_aspect_atomic64,
     check_has_aspect_image,
     check_has_aspect_online_compiler,
     check_has_aspect_online_linker,
@@ -274,6 +287,9 @@ list_of_checks = [
     check_has_aspect_usm_shared_allocations,
     check_has_aspect_usm_restricted_shared_allocations,
     check_has_aspect_usm_system_allocations,
+    check_has_aspect_usm_atomic_host_allocations,
+    check_has_aspect_usm_atomic_shared_allocations,
+    check_has_aspect_host_debuggable,
 ]
 
 

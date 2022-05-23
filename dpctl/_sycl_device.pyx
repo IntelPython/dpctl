@@ -420,13 +420,8 @@ cdef class SyclDevice(_SyclDevice):
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
-    def has_aspect_int64_base_atomics(self):
-        cdef _aspect_type AT = _aspect_type._int64_base_atomics
-        return DPCTLDevice_HasAspect(self._device_ref, AT)
-
-    @property
-    def has_aspect_int64_extended_atomics(self):
-        cdef _aspect_type AT = _aspect_type._int64_extended_atomics
+    def has_aspect_atomic64(self):
+        cdef _aspect_type AT = _aspect_type._atomic64
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
@@ -472,6 +467,21 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def has_aspect_usm_system_allocations(self):
         cdef _aspect_type AT = _aspect_type._usm_system_allocations
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_usm_atomic_host_allocations(self):
+        cdef _aspect_type AT = _aspect_type._usm_atomic_host_allocations
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_usm_atomic_shared_allocations(self):
+        cdef _aspect_type AT = _aspect_type._usm_atomic_shared_allocations
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_host_debuggable(self):
+        cdef _aspect_type AT = _aspect_type._host_debuggable
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property

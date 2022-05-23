@@ -149,18 +149,11 @@ def check_has_aspect_fp64(device):
         pytest.fail("has_aspect_fp64 call failed")
 
 
-def check_has_aspect_int64_base_atomics(device):
+def check_has_aspect_atomic64(device):
     try:
-        device.has_aspect_int64_base_atomics
+        device.has_aspect_atomic64
     except Exception:
-        pytest.fail("has_aspect_int64_base_atomics call failed")
-
-
-def check_has_aspect_int64_extended_atomics(device):
-    try:
-        device.has_aspect_int64_extended_atomics
-    except Exception:
-        pytest.fail("has_aspect_int64_extended_atomics call failed")
+        pytest.fail("has_aspect_atomic64 call failed")
 
 
 def check_has_aspect_image(device):
@@ -224,6 +217,27 @@ def check_has_aspect_usm_system_allocations(device):
         device.has_aspect_usm_system_allocations
     except Exception:
         pytest.fail("has_aspect_usm_system_allocations call failed")
+
+
+def check_has_aspect_usm_atomic_host_allocations(device):
+    try:
+        device.has_aspect_usm_atomic_host_allocations
+    except Exception:
+        pytest.fail("has_aspect_usm_atomic_host_allocations call failed")
+
+
+def check_has_aspect_usm_atomic_shared_allocations(device):
+    try:
+        device.has_aspect_usm_atomic_shared_allocations
+    except Exception:
+        pytest.fail("has_aspect_usm_atomic_shared_allocations call failed")
+
+
+def check_has_aspect_host_debuggable(device):
+    try:
+        device.has_aspect_host_debuggable
+    except Exception:
+        pytest.fail("has_aspect_host_debuggable call failed")
 
 
 def check_is_accelerator(device):
@@ -526,8 +540,7 @@ list_of_checks = [
     check_has_aspect_custom,
     check_has_aspect_fp16,
     check_has_aspect_fp64,
-    check_has_aspect_int64_base_atomics,
-    check_has_aspect_int64_extended_atomics,
+    check_has_aspect_atomic64,
     check_has_aspect_image,
     check_has_aspect_online_compiler,
     check_has_aspect_online_linker,
@@ -537,6 +550,9 @@ list_of_checks = [
     check_has_aspect_usm_shared_allocations,
     check_has_aspect_usm_restricted_shared_allocations,
     check_has_aspect_usm_system_allocations,
+    check_has_aspect_usm_atomic_host_allocations,
+    check_has_aspect_usm_atomic_shared_allocations,
+    check_has_aspect_host_debuggable,
     check_get_max_read_image_args,
     check_get_max_write_image_args,
     check_get_image_2d_max_width,
@@ -703,16 +719,16 @@ list_of_supported_aspects = [
     "usm_host_allocations",
     "usm_shared_allocations",
     "usm_system_allocations",
+    "host_debuggable",
+    "atomic64",
+    "usm_atomic_host_allocations",
+    "usm_atomic_shared_allocations",
 ]
 
 # SYCL 2020 spec aspects not presently
 # supported in DPC++, and dpctl
 list_of_unsupported_aspects = [
     "emulated",
-    "host_debuggable",
-    "atomic64",
-    "usm_atomic_host_allocations",
-    "usm_atomic_shared_allocations",
 ]
 
 
