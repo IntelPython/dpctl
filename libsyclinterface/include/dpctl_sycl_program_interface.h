@@ -35,52 +35,50 @@
 DPCTL_C_EXTERN_C_BEGIN
 
 /**
- * @defgroup ProgramInterface Program class C wrapper
+ * @defgroup KernelBundleInterface Kernel_bundle class C wrapper
  */
 
 /*!
- * @brief Create a Sycl program from an OpenCL SPIR-V binary file.
+ * @brief Create a Sycl kernel_bundle from an OpenCL SPIR-V binary file.
  *
- * Sycl 1.2 does not expose any method to create a sycl::program from a SPIR-V
- * IL file. To get around this limitation, we first creare a SYCL
- * interoperability program and then create a SYCL program from the
- * interoperability program. Currently, interoperability programs can be created
- * for OpenCL and Level-0 backends.
- *
- * The feature to create a Sycl kernel from a SPIR-V IL binary will be available
- * in Sycl 2.0 at which point this function may become deprecated.
+ * Uses SYCL2020 interoperability layer to create sycl::kernel_bundle object
+ * in executable state for OpenCL and Level-Zero backends from SPIR-V binary.
  *
  * @param    Ctx            An opaque pointer to a sycl::context
+ * @param    Dev            An opaque pointer to a sycl::device
  * @param    IL             SPIR-V binary
  * @param    Length         The size of the IL binary in bytes.
  * @param    CompileOpts    Optional compiler flags used when compiling the
  *                          SPIR-V binary.
- * @return   A new SyclProgramRef pointer if the program creation succeeded,
- *           else returns NULL.
- * @ingroup ProgramInterface
+ * @return   A new SyclKernelBundleRef pointer if the kernel_bundle creation
+ * succeeded, else returns NULL.
+ * @ingroup KernelBundleInterface
  */
 DPCTL_API
-__dpctl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef Ctx,
-                             __dpctl_keep const void *IL,
-                             size_t Length,
-                             const char *CompileOpts);
+__dpctl_give DPCTLSyclKernelBundleRef
+DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef Ctx,
+                                  __dpctl_keep const DPCTLSyclDeviceRef Dev,
+                                  __dpctl_keep const void *IL,
+                                  size_t Length,
+                                  const char *CompileOpts);
 
 /*!
- * @brief Create a Sycl program from an OpenCL kernel source string.
+ * @brief Create a Sycl kernel bundle from an OpenCL kernel source string.
  *
  * @param    Ctx            An opaque pointer to a sycl::context
+ * @param    Dev            An opaque pointer to a sycl::device
  * @param    Source         OpenCL source string
  * @param    CompileOpts    Extra compiler flags (refer Sycl spec.)
- * @return   A new SyclProgramRef pointer if the program creation succeeded,
- *           else returns NULL.
- * @ingroup ProgramInterface
+ * @return   A new SyclKernelBundleRef pointer if the program creation
+ * succeeded, else returns NULL.
+ * @ingroup KernelBundleInterface
  */
 DPCTL_API
-__dpctl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
-                                 __dpctl_keep const char *Source,
-                                 __dpctl_keep const char *CompileOpts);
+__dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
+    __dpctl_keep const DPCTLSyclContextRef Ctx,
+    __dpctl_keep const DPCTLSyclDeviceRef Dev,
+    __dpctl_keep const char *Source,
+    __dpctl_keep const char *CompileOpts);
 
 /*!
  * @brief Returns the SyclKernel with given name from the program, if not found
@@ -89,12 +87,12 @@ DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
  * @param    PRef           Opaque pointer to a sycl::program
  * @param    KernelName     Name of kernel
  * @return   A SyclKernel reference if the kernel exists, else NULL
- * @ingroup ProgramInterface
+ * @ingroup KernelBundleInterface
  */
 DPCTL_API
 __dpctl_give DPCTLSyclKernelRef
-DPCTLProgram_GetKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
-                       __dpctl_keep const char *KernelName);
+DPCTLKernelBundle_GetKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
+                            __dpctl_keep const char *KernelName);
 
 /*!
  * @brief Return True if a SyclKernel with given name exists in the program, if
@@ -103,19 +101,19 @@ DPCTLProgram_GetKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
  * @param    PRef           Opaque pointer to a sycl::program
  * @param    KernelName     Name of kernel
  * @return   True if the kernel exists, else False
- * @ingroup ProgramInterface
+ * @ingroup KernelBundleInterface
  */
 DPCTL_API
-bool DPCTLProgram_HasKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
-                            __dpctl_keep const char *KernelName);
+bool DPCTLKernelBundle_HasKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
+                                 __dpctl_keep const char *KernelName);
 
 /*!
- * @brief Frees the DPCTLSyclProgramRef pointer.
+ * @brief Frees the DPCTLSyclKernelBundleRef pointer.
  *
- * @param    PRef           Opaque pointer to a sycl::program
- * @ingroup ProgramInterface
+ * @param    PRef           Opaque pointer to a sycl::kernel_bundle
+ * @ingroup KernelBundleInterface
  */
 DPCTL_API
-void DPCTLProgram_Delete(__dpctl_take DPCTLSyclProgramRef PRef);
+void DPCTLKernelBundle_Delete(__dpctl_take DPCTLSyclKernelBundleRef KBRef);
 
 DPCTL_C_EXTERN_C_END

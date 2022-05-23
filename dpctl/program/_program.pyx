@@ -31,14 +31,15 @@ from dpctl._backend cimport (  # noqa: E211, E402
     DPCTLCString_Delete,
     DPCTLKernel_Delete,
     DPCTLKernel_GetNumArgs,
-    DPCTLProgram_CreateFromOCLSource,
-    DPCTLProgram_CreateFromSpirv,
-    DPCTLProgram_Delete,
-    DPCTLProgram_GetKernel,
-    DPCTLProgram_HasKernel,
+    DPCTLKernelBundle_CreateFromOCLSource,
+    DPCTLKernelBundle_CreateFromSpirv,
+    DPCTLKernelBundle_Delete,
+    DPCTLKernelBundle_GetKernel,
+    DPCTLKernelBundle_HasKernel,
     DPCTLSyclContextRef,
+    DPCTLSyclDeviceRef,
+    DPCTLSyclKernelBundleRef,
     DPCTLSyclKernelRef,
-    DPCTLSyclProgramRef,
 )
 
 __all__ = [
@@ -50,8 +51,8 @@ __all__ = [
 ]
 
 cdef class SyclProgramCompilationError(Exception):
-    """This exception is raised when a ``sycl::program`` could not be built from
-       either a SPIR-V binary file or a string source.
+    """This exception is raised when a ``sycl::kernel_bundle`` could not be
+       built from either a SPIR-V binary file or a string source.
     """
     pass
 
@@ -105,33 +106,35 @@ cdef class SyclProgram:
     """
 
     @staticmethod
-    cdef SyclProgram _create(DPCTLSyclProgramRef pref):
+    cdef SyclProgram _create(DPCTLSyclKernelBundleRef KBRef):
         cdef SyclProgram ret = SyclProgram.__new__(SyclProgram)
-        ret._program_ref = pref
+        ret._program_ref = KBRef
         return ret
 
     def __dealloc__(self):
-        DPCTLProgram_Delete(self._program_ref)
+        DPCTLKernelBundle_Delete(self._program_ref)
 
-    cdef DPCTLSyclProgramRef get_program_ref(self):
+    cdef DPCTLSyclKernelBundleRef get_program_ref(self):
         return self._program_ref
 
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name):
         name = kernel_name.encode('utf8')
-        return SyclKernel._create(DPCTLProgram_GetKernel(self._program_ref,
-                                                         name), kernel_name)
+        return SyclKernel._create(
+            DPCTLKernelBundle_GetKernel(self._program_ref, name),
+            kernel_name
+        )
 
     def has_sycl_kernel(self, str kernel_name):
         name = kernel_name.encode('utf8')
-        return DPCTLProgram_HasKernel(self._program_ref, name)
+        return DPCTLKernelBundle_HasKernel(self._program_ref, name)
 
     def addressof_ref(self):
-        """Returns the address of the C API DPCTLSyclProgramRef pointer
+        """Returns the address of the C API DPCTLSyclKernelBundleRef pointer
         as a long.
 
         Returns:
-            The address of the ``DPCTLSyclProgramRef`` pointer used to create
-            this :class:`dpctl.SyclProgram` object cast to a ``size_t``.
+            The address of the ``DPCTLSyclKernelBundleRef`` pointer used to
+            create this :class:`dpctl.SyclProgram` object cast to a ``size_t``.
         """
         return int(<size_t>self._program_ref)
 
@@ -140,9 +143,10 @@ cpdef create_program_from_source(SyclQueue q, unicode src, unicode copts=""):
     """
         Creates a Sycl interoperability program from an OpenCL source string.
 
-        We use the ``DPCTLProgram_CreateFromOCLSource()`` C API function to
-        create a ``sycl::program`` from an OpenCL source program that can
-        contain multiple kernels. Note currently only supported for OpenCL.
+        We use the ``DPCTLKernelBundle_CreateFromOCLSource()`` C API function
+        to create a ``sycl::kernel_bundle<sycl::bundle_state::executable>``
+        from an OpenCL source program that can contain multiple kernels.
+        Note: This function is currently only supported for the OpenCL backend.
 
         Parameters:
             q (SyclQueue)   : The :class:`SyclQueue` for which the
@@ -153,24 +157,27 @@ cpdef create_program_from_source(SyclQueue q, unicode src, unicode copts=""):
 
         Returns:
             program (SyclProgram): A :class:`SyclProgram` object wrapping the
-            ``sycl::program`` returned by the C API.
+            ``sycl::kernel_bundle<sycl::bundle_state::executable>`` returned
+            by the C API.
 
         Raises:
-            SyclProgramCompilationError: If a SYCL program could not be created.
+            SyclProgramCompilationError: If a SYCL kernel bundle could not be
+            created.
     """
 
-    cdef DPCTLSyclProgramRef Pref
+    cdef DPCTLSyclKernelBundleRef KBref
     cdef bytes bSrc = src.encode('utf8')
     cdef bytes bCOpts = copts.encode('utf8')
     cdef const char *Src = <const char*>bSrc
     cdef const char *COpts = <const char*>bCOpts
     cdef DPCTLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
-    Pref = DPCTLProgram_CreateFromOCLSource(CRef, Src, COpts)
+    cdef DPCTLSyclDeviceRef DRef = q.get_sycl_device().get_device_ref()
+    KBref = DPCTLKernelBundle_CreateFromOCLSource(CRef, DRef, Src, COpts)
 
-    if Pref is NULL:
+    if KBref is NULL:
         raise SyclProgramCompilationError()
 
-    return SyclProgram._create(Pref)
+    return SyclProgram._create(KBref)
 
 
 cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
@@ -178,8 +185,9 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
     """
         Creates a Sycl interoperability program from an SPIR-V binary.
 
-        We use the ``DPCTLProgram_CreateFromOCLSpirv()`` C API function to
-        create a ``sycl::program`` object from an compiled SPIR-V binary file.
+        We use the ``DPCTLKernelBundle_CreateFromOCLSpirv()`` C API function to
+        create a ``sycl::kernel_bundle<sycl::bundle_state::executable>`` object
+        from an compiled SPIR-V binary file.
 
         Parameters:
             q (SyclQueue): The :class:`SyclQueue` for which the
@@ -190,20 +198,25 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
 
         Returns:
             program (SyclProgram): A :class:`SyclProgram` object wrapping the
-            ``sycl::program`` returned by the C API.
+            ``sycl::kernel_bundle<sycl::bundle_state::executable>`` returned by
+            the C API.
 
         Raises:
-            SyclProgramCompilationError: If a SYCL program could not be created.
+            SyclProgramCompilationError: If a SYCL kernel bundle could not be
+            created.
     """
 
-    cdef DPCTLSyclProgramRef Pref
+    cdef DPCTLSyclKernelBundleRef KBref
     cdef const unsigned char *dIL = &IL[0]
     cdef DPCTLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
+    cdef DPCTLSyclDeviceRef DRef = q.get_sycl_device().get_device_ref()
     cdef size_t length = IL.shape[0]
     cdef bytes bCOpts = copts.encode('utf8')
     cdef const char *COpts = <const char*>bCOpts
-    Pref = DPCTLProgram_CreateFromSpirv(CRef, <const void*>dIL, length, COpts)
-    if Pref is NULL:
+    KBref = DPCTLKernelBundle_CreateFromSpirv(
+        CRef, DRef, <const void*>dIL, length, COpts
+    )
+    if KBref is NULL:
         raise SyclProgramCompilationError()
 
-    return SyclProgram._create(Pref)
+    return SyclProgram._create(KBref)

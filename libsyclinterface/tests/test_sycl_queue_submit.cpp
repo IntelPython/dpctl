@@ -79,11 +79,11 @@ TEST_F(TestQueueSubmit, CheckSubmitRange_saxpy)
     ASSERT_TRUE(QRef);
     auto CRef = DPCTLQueue_GetContext(QRef);
     ASSERT_TRUE(CRef);
-    auto PRef = DPCTLProgram_CreateFromSpirv(CRef, spirvBuffer.data(),
-                                             spirvFileSize, nullptr);
-    ASSERT_TRUE(PRef != nullptr);
-    ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "axpy"));
-    auto AxpyKernel = DPCTLProgram_GetKernel(PRef, "axpy");
+    auto KBRef = DPCTLKernelBundle_CreateFromSpirv(
+        CRef, DRef, spirvBuffer.data(), spirvFileSize, nullptr);
+    ASSERT_TRUE(KBRef != nullptr);
+    ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, "axpy"));
+    auto AxpyKernel = DPCTLKernelBundle_GetKernel(KBRef, "axpy");
 
     // Create the input args
     auto a = DPCTLmalloc_shared(SIZE * sizeof(float), QRef);
@@ -120,7 +120,7 @@ TEST_F(TestQueueSubmit, CheckSubmitRange_saxpy)
     DPCTLfree_with_queue((DPCTLSyclUSMRef)c, QRef);
     DPCTLQueue_Delete(QRef);
     DPCTLContext_Delete(CRef);
-    DPCTLProgram_Delete(PRef);
+    DPCTLKernelBundle_Delete(KBRef);
     DPCTLDevice_Delete(DRef);
     DPCTLDeviceSelector_Delete(DSRef);
 }
@@ -139,11 +139,11 @@ TEST_F(TestQueueSubmit, CheckSubmitNDRange_saxpy)
     ASSERT_TRUE(QRef);
     auto CRef = DPCTLQueue_GetContext(QRef);
     ASSERT_TRUE(CRef);
-    auto PRef = DPCTLProgram_CreateFromSpirv(CRef, spirvBuffer.data(),
-                                             spirvFileSize, nullptr);
-    ASSERT_TRUE(PRef != nullptr);
-    ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "axpy"));
-    auto AxpyKernel = DPCTLProgram_GetKernel(PRef, "axpy");
+    auto KBRef = DPCTLKernelBundle_CreateFromSpirv(
+        CRef, DRef, spirvBuffer.data(), spirvFileSize, nullptr);
+    ASSERT_TRUE(KBRef != nullptr);
+    ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, "axpy"));
+    auto AxpyKernel = DPCTLKernelBundle_GetKernel(KBRef, "axpy");
 
     // Create the input args
     auto a = DPCTLmalloc_shared(SIZE * sizeof(float), QRef);
@@ -185,7 +185,7 @@ TEST_F(TestQueueSubmit, CheckSubmitNDRange_saxpy)
     DPCTLfree_with_queue((DPCTLSyclUSMRef)c, QRef);
     DPCTLQueue_Delete(QRef);
     DPCTLContext_Delete(CRef);
-    DPCTLProgram_Delete(PRef);
+    DPCTLKernelBundle_Delete(KBRef);
     DPCTLDevice_Delete(DRef);
     DPCTLDeviceSelector_Delete(DSRef);
 }

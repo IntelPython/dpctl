@@ -47,7 +47,7 @@ struct TestDPCTLSyclProgramInterface
     DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLSyclContextRef CRef = nullptr;
     DPCTLSyclQueueRef QRef = nullptr;
-    DPCTLSyclProgramRef PRef = nullptr;
+    DPCTLSyclKernelBundleRef KBRef = nullptr;
     std::ifstream spirvFile;
     size_t spirvFileSize;
     std::vector<char> spirvBuffer;
@@ -67,8 +67,8 @@ struct TestDPCTLSyclProgramInterface
             spirvBuffer.reserve(spirvFileSize);
             spirvFile.seekg(0, std::ios::beg);
             spirvFile.read(spirvBuffer.data(), spirvFileSize);
-            PRef = DPCTLProgram_CreateFromSpirv(CRef, spirvBuffer.data(),
-                                                spirvFileSize, nullptr);
+            KBRef = DPCTLKernelBundle_CreateFromSpirv(
+                CRef, DRef, spirvBuffer.data(), spirvFileSize, nullptr);
         }
     }
 
@@ -88,41 +88,42 @@ struct TestDPCTLSyclProgramInterface
         DPCTLDevice_Delete(DRef);
         DPCTLQueue_Delete(QRef);
         DPCTLContext_Delete(CRef);
-        DPCTLProgram_Delete(PRef);
+        DPCTLKernelBundle_Delete(KBRef);
     }
 };
 
 TEST_P(TestDPCTLSyclProgramInterface, ChkCreateFromSpirv)
 {
 
-    ASSERT_TRUE(PRef != nullptr);
-    ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "add"));
-    ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "axpy"));
-    ASSERT_FALSE(DPCTLProgram_HasKernel(PRef, nullptr));
+    ASSERT_TRUE(KBRef != nullptr);
+    ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, "add"));
+    ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, "axpy"));
+    ASSERT_FALSE(DPCTLKernelBundle_HasKernel(KBRef, nullptr));
 }
 
 TEST_P(TestDPCTLSyclProgramInterface, ChkCreateFromSpirvNull)
 {
     DPCTLSyclContextRef Null_CRef = nullptr;
+    DPCTLSyclDeviceRef Null_DRef = nullptr;
     const void *null_spirv = nullptr;
-    DPCTLSyclProgramRef PRef = nullptr;
-    EXPECT_NO_FATAL_FAILURE(
-        PRef = DPCTLProgram_CreateFromSpirv(Null_CRef, null_spirv, 0, nullptr));
-    ASSERT_TRUE(PRef == nullptr);
+    DPCTLSyclKernelBundleRef KBRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(KBRef = DPCTLKernelBundle_CreateFromSpirv(
+                                Null_CRef, Null_DRef, null_spirv, 0, nullptr));
+    ASSERT_TRUE(KBRef == nullptr);
 }
 
 TEST_P(TestDPCTLSyclProgramInterface, ChkHasKernelNullProgram)
 {
 
-    DPCTLSyclProgramRef NullRef = nullptr;
-    ASSERT_FALSE(DPCTLProgram_HasKernel(NullRef, "add"));
+    DPCTLSyclKernelBundleRef NullRef = nullptr;
+    ASSERT_FALSE(DPCTLKernelBundle_HasKernel(NullRef, "add"));
 }
 
 TEST_P(TestDPCTLSyclProgramInterface, ChkGetKernel)
 {
-    auto AddKernel = DPCTLProgram_GetKernel(PRef, "add");
-    auto AxpyKernel = DPCTLProgram_GetKernel(PRef, "axpy");
-    auto NullKernel = DPCTLProgram_GetKernel(PRef, nullptr);
+    auto AddKernel = DPCTLKernelBundle_GetKernel(KBRef, "add");
+    auto AxpyKernel = DPCTLKernelBundle_GetKernel(KBRef, "axpy");
+    auto NullKernel = DPCTLKernelBundle_GetKernel(KBRef, nullptr);
 
     ASSERT_TRUE(AddKernel != nullptr);
     ASSERT_TRUE(AxpyKernel != nullptr);
@@ -134,10 +135,10 @@ TEST_P(TestDPCTLSyclProgramInterface, ChkGetKernel)
 
 TEST_P(TestDPCTLSyclProgramInterface, ChkGetKernelNullProgram)
 {
-    DPCTLSyclProgramRef NullRef = nullptr;
+    DPCTLSyclKernelBundleRef NullRef = nullptr;
     DPCTLSyclKernelRef KRef = nullptr;
 
-    EXPECT_NO_FATAL_FAILURE(KRef = DPCTLProgram_GetKernel(NullRef, "add"));
+    EXPECT_NO_FATAL_FAILURE(KRef = DPCTLKernelBundle_GetKernel(NullRef, "add"));
     EXPECT_TRUE(KRef == nullptr);
 }
 
@@ -159,7 +160,7 @@ struct TestOCLProgramFromSource : public ::testing::Test
     DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLSyclContextRef CRef = nullptr;
     DPCTLSyclQueueRef QRef = nullptr;
-    DPCTLSyclProgramRef PRef = nullptr;
+    DPCTLSyclKernelBundleRef KBRef = nullptr;
 
     TestOCLProgramFromSource()
     {
@@ -170,8 +171,8 @@ struct TestOCLProgramFromSource : public ::testing::Test
         QRef = DPCTLQueue_Create(CRef, DRef, nullptr, DPCTL_DEFAULT_PROPERTY);
 
         if (DRef)
-            PRef = DPCTLProgram_CreateFromOCLSource(CRef, CLProgramStr,
-                                                    CompileOpts);
+            KBRef = DPCTLKernelBundle_CreateFromOCLSource(
+                CRef, DRef, CLProgramStr, CompileOpts);
     }
 
     ~TestOCLProgramFromSource()
@@ -179,7 +180,7 @@ struct TestOCLProgramFromSource : public ::testing::Test
         DPCTLDevice_Delete(DRef);
         DPCTLQueue_Delete(QRef);
         DPCTLContext_Delete(CRef);
-        DPCTLProgram_Delete(PRef);
+        DPCTLKernelBundle_Delete(KBRef);
     }
 };
 
@@ -188,9 +189,9 @@ TEST_F(TestOCLProgramFromSource, CheckCreateFromOCLSource)
     if (!DRef)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 
-    ASSERT_TRUE(PRef != nullptr);
-    ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "add"));
-    ASSERT_TRUE(DPCTLProgram_HasKernel(PRef, "axpy"));
+    ASSERT_TRUE(KBRef != nullptr);
+    ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, "add"));
+    ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, "axpy"));
 }
 
 TEST_F(TestOCLProgramFromSource, CheckCreateFromOCLSourceNull)
@@ -201,14 +202,14 @@ TEST_F(TestOCLProgramFromSource, CheckCreateFromOCLSourceNull)
             b[index] = a[index];
         }
     )CLC";
-    DPCTLSyclProgramRef PRef = nullptr;
+    DPCTLSyclKernelBundleRef KBRef = nullptr;
 
     if (!DRef)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 
-    EXPECT_NO_FATAL_FAILURE(PRef = DPCTLProgram_CreateFromOCLSource(
-                                CRef, InvalidCLProgramStr, CompileOpts););
-    ASSERT_TRUE(PRef == nullptr);
+    EXPECT_NO_FATAL_FAILURE(KBRef = DPCTLKernelBundle_CreateFromOCLSource(
+                                CRef, DRef, InvalidCLProgramStr, CompileOpts););
+    ASSERT_TRUE(KBRef == nullptr);
 }
 
 TEST_F(TestOCLProgramFromSource, CheckGetKernelOCLSource)
@@ -216,8 +217,8 @@ TEST_F(TestOCLProgramFromSource, CheckGetKernelOCLSource)
     if (!DRef)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 
-    auto AddKernel = DPCTLProgram_GetKernel(PRef, "add");
-    auto AxpyKernel = DPCTLProgram_GetKernel(PRef, "axpy");
+    auto AddKernel = DPCTLKernelBundle_GetKernel(KBRef, "add");
+    auto AxpyKernel = DPCTLKernelBundle_GetKernel(KBRef, "axpy");
     ASSERT_TRUE(AddKernel != nullptr);
     ASSERT_TRUE(AxpyKernel != nullptr);
     DPCTLKernel_Delete(AddKernel);

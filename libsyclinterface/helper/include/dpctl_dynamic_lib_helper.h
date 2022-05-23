@@ -75,13 +75,13 @@ public:
         void *sym = dlsym(_handle, symName);
         char *error = dlerror();
 
-        if (NULL != error) {
+        if (nullptr != error) {
             return nullptr;
         }
 #elif defined(_WIN32) || defined(_WIN64)
         void *sym = (void *)GetProcAddress((HMODULE)_handle, symName);
 
-        if (NULL == sym) {
+        if (nullptr == sym) {
             return nullptr;
         }
 #endif

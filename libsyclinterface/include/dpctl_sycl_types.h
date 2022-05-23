@@ -60,16 +60,16 @@ typedef struct DPCTLOpaqueSyclEvent *DPCTLSyclEventRef;
 typedef struct DPCTLOpaqueSyclKernel *DPCTLSyclKernelRef;
 
 /*!
+ * @brief Opaque pointer to a ``sycl::kernel_bundle``
+ *
+ */
+typedef struct DPCTLOpaqueSyclKernelBundle *DPCTLSyclKernelBundleRef;
+
+/*!
  * @brief Opaque pointer to a ``sycl::platform``
  *
  */
 typedef struct DPCTLOpaqueSyclPlatform *DPCTLSyclPlatformRef;
-
-/*!
- * @brief Opaque pointer to a ``sycl::program``
- *
- */
-typedef struct DPCTLOpaqueSyclProgram *DPCTLSyclProgramRef;
 
 /*!
  * @brief Opaque pointer to a ``sycl::queue``

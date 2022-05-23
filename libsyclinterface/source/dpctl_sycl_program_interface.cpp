@@ -24,14 +24,10 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#ifndef __SYCL_INTERNAL_API
-// make sure that sycl::program is defined and implemented
-#define __SYCL_INTERNAL_API
-#endif
-
 #include "dpctl_sycl_program_interface.h"
 #include "Config/dpctl_config.h"
 #include "Support/CBindingWrapping.h"
+#include "dpctl_dynamic_lib_helper.h"
 #include "dpctl_error_handlers.h"
 #include <CL/cl.h>     /* OpenCL headers     */
 #include <CL/sycl.hpp> /* Sycl headers       */
@@ -39,7 +35,6 @@
 #include <sstream>
 
 #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
-#include "dpctl_dynamic_lib_helper.h"
 // Note: include ze_api.h before level_zero.hpp. Make sure clang-format does
 // not reorder the includes.
 // clang-format off
@@ -52,112 +47,442 @@ using namespace cl::sycl;
 
 namespace
 {
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel_bundle<bundle_state::executable>,
+                                   DPCTLSyclKernelBundleRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
+
+#ifdef __linux__
+static const char *clLoaderName = DPCTL_LIBCL_LOADER_FILENAME;
+static const int clLibLoadFlags = RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL;
+#elif defined(_WIN64)
+static const char *clLoaderName = "OpenCL.dll";
+static const int clLibLoadFlags = 0;
+#else
+#error "OpenCL program compilation is unavailable for this platform"
+#endif
+
+typedef cl_program (*clCreateProgramWithSourceFT)(cl_context,
+                                                  cl_uint,
+                                                  const char **,
+                                                  const size_t *,
+                                                  cl_int *);
+const char *clCreateProgramWithSource_Name = "clCreateProgramWithSource";
+clCreateProgramWithSourceFT get_clCreateProgramWithSource()
+{
+    static dpctl::DynamicLibHelper clLib(clLoaderName, clLibLoadFlags);
+    if (!clLib.opened()) {
+        error_handler("The OpenCL loader dynamic library could not "
+                      "be opened.",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+
+    static auto st_clCreateProgramWithSourceF =
+        clLib.getSymbol<clCreateProgramWithSourceFT>(
+            clCreateProgramWithSource_Name);
+
+    return st_clCreateProgramWithSourceF;
+}
+
+typedef cl_program (*clCreateProgramWithILFT)(cl_context,
+                                              const void *,
+                                              size_t,
+                                              cl_int *);
+const char *clCreateProgramWithIL_Name = "clCreateProgramWithIL";
+clCreateProgramWithILFT get_clCreateProgramWithIL()
+{
+    static dpctl::DynamicLibHelper clLib(clLoaderName, clLibLoadFlags);
+    if (!clLib.opened()) {
+        error_handler("The OpenCL loader dynamic library could not "
+                      "be opened.",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+    static auto st_clCreateProgramWithILF =
+        clLib.getSymbol<clCreateProgramWithILFT>(clCreateProgramWithIL_Name);
+
+    return st_clCreateProgramWithILF;
+}
+typedef cl_int (*clBuildProgramFT)(cl_program,
+                                   cl_uint,
+                                   const cl_device_id *,
+                                   const char *,
+                                   void (*)(cl_program, void *),
+                                   void *);
+const char *clBuildProgram_Name = "clBuildProgram";
+clBuildProgramFT get_clBuldProgram()
+{
+    static dpctl::DynamicLibHelper clLib(clLoaderName, clLibLoadFlags);
+    if (!clLib.opened()) {
+        error_handler("The OpenCL loader dynamic library could not "
+                      "be opened.",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+    static auto st_clBuildProgramF =
+        clLib.getSymbol<clBuildProgramFT>(clBuildProgram_Name);
+
+    return st_clBuildProgramF;
+}
+
+typedef cl_kernel (*clCreateKernelFT)(cl_program, const char *, cl_int *);
+const char *clCreateKernel_Name = "clCreateKernel";
+clCreateKernelFT get_clCreateKernel()
+{
+    static dpctl::DynamicLibHelper clLib(clLoaderName, clLibLoadFlags);
+    if (!clLib.opened()) {
+        error_handler("The OpenCL loader dynamic library could not "
+                      "be opened.",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+    static auto st_clCreateKernelF =
+        clLib.getSymbol<clCreateKernelFT>(clCreateKernel_Name);
+
+    return st_clCreateKernelF;
+}
+
+std::string _GetErrorCode_ocl_impl(cl_int code)
+{
+    if (code == CL_BUILD_PROGRAM_FAILURE) {
+        return "CL_BUILD_PROGRAM_FAILURE (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == CL_INVALID_CONTEXT) {
+        return "CL_INVALID_CONTEXT (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == CL_INVALID_DEVICE) {
+        return "CL_INVALID_DEVICE (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == CL_INVALID_VALUE) {
+        return "CL_INVALID_VALUE (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == CL_OUT_OF_RESOURCES) {
+        return "CL_OUT_OF_RESOURCES (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == CL_OUT_OF_HOST_MEMORY) {
+        return "CL_OUT_OF_HOST_MEMORY (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == CL_INVALID_OPERATION) {
+        return "CL_INVALID_OPERATION (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == CL_INVALID_BINARY) {
+        return "CL_INVALID_BINARY (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+
+    return "<< ERROR CODE UNRECOGNIZED >> (code=" +
+           std::to_string(static_cast<int>(code)) + ")";
+}
+
+constexpr backend cl_be = backend::opencl;
+
+DPCTLSyclKernelBundleRef
+_CreateKernelBundle_common_ocl_impl(cl_program clProgram,
+                                    const context &ctx,
+                                    const device &dev,
+                                    const char *CompileOpts)
+{
+    backend_traits<cl_be>::return_type<device> clDevice;
+    clDevice = get_native<cl_be>(dev);
+
+    // Last to pointers are notification function pointer and user-data pointer
+    // that can be passed to the notification function.
+    auto clBuildProgramF = get_clBuldProgram();
+    if (clBuildProgramF == nullptr) {
+        return nullptr;
+    }
+    cl_int build_status =
+        clBuildProgramF(clProgram, 1, &clDevice, CompileOpts, nullptr, nullptr);
+
+    if (build_status != CL_SUCCESS) {
+        error_handler("clBuildProgram failed: " +
+                          _GetErrorCode_ocl_impl(build_status),
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+
+    kernel_bundle<bundle_state::executable> kb =
+        make_kernel_bundle<cl_be, bundle_state::executable>(clProgram, ctx);
+    return wrap(new kernel_bundle<bundle_state::executable>(kb));
+}
+
+DPCTLSyclKernelBundleRef
+_CreateKernelBundleWithOCLSource_ocl_impl(const context &ctx,
+                                          const device &dev,
+                                          const char *oclSrc,
+                                          const char *CompileOpts)
+{
+    auto clCreateProgramWithSourceF = get_clCreateProgramWithSource();
+    if (clCreateProgramWithSourceF == nullptr) {
+        return nullptr;
+    }
+
+    backend_traits<cl_be>::return_type<context> clContext;
+    clContext = get_native<cl_be>(ctx);
+
+    cl_int build_with_source_err_code = CL_SUCCESS;
+    cl_program clProgram = clCreateProgramWithSourceF(
+        clContext, 1, &oclSrc, nullptr, &build_with_source_err_code);
+
+    if (build_with_source_err_code != CL_SUCCESS) {
+        error_handler("clPCreateProgramWithSource failed with " +
+                          _GetErrorCode_ocl_impl(build_with_source_err_code),
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+
+    return _CreateKernelBundle_common_ocl_impl(clProgram, ctx, dev,
+                                               CompileOpts);
+}
+
+DPCTLSyclKernelBundleRef
+_CreateKernelBundleWithIL_ocl_impl(const context &ctx,
+                                   const device &dev,
+                                   const void *IL,
+                                   size_t il_length,
+                                   const char *CompileOpts)
+{
+    auto clCreateProgramWithILF = get_clCreateProgramWithIL();
+    if (clCreateProgramWithILF == nullptr) {
+        return nullptr;
+    }
+
+    backend_traits<cl_be>::return_type<context> clContext;
+    clContext = get_native<cl_be>(ctx);
+
+    cl_int create_err_code = CL_SUCCESS;
+    cl_program clProgram =
+        clCreateProgramWithILF(clContext, IL, il_length, &create_err_code);
+
+    if (create_err_code != CL_SUCCESS) {
+        error_handler("OpenCL program could not be created from the SPIR-V "
+                      "binary. OpenCL Error " +
+                          _GetErrorCode_ocl_impl(create_err_code),
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+
+    return _CreateKernelBundle_common_ocl_impl(clProgram, ctx, dev,
+                                               CompileOpts);
+}
+
+bool _HasKernel_ocl_impl(const kernel_bundle<bundle_state::executable> &kb,
+                         const char *kernel_name)
+{
+    auto clCreateKernelF = get_clCreateKernel();
+    if (clCreateKernelF == nullptr) {
+        return false;
+    }
+
+    std::vector<cl_program> oclKB = get_native<cl_be>(kb);
+
+    bool found = false;
+    for (auto &cl_pr : oclKB) {
+        cl_int create_kernel_err_code = CL_SUCCESS;
+        [[maybe_unused]] cl_kernel try_kern =
+            clCreateKernelF(cl_pr, kernel_name, &create_kernel_err_code);
+        if (create_kernel_err_code == CL_SUCCESS) {
+            found = true;
+            break;
+        }
+    }
+    return found;
+}
+
+__dpctl_give DPCTLSyclKernelRef
+_GetKernel_ocl_impl(const kernel_bundle<bundle_state::executable> &kb,
+                    const char *kernel_name)
+{
+    auto clCreateKernelF = get_clCreateKernel();
+    if (clCreateKernelF == nullptr) {
+        return nullptr;
+    }
+
+    std::vector<cl_program> oclKB = get_native<cl_be>(kb);
+
+    bool found = false;
+    cl_kernel ocl_kernel_from_kb;
+    for (auto &cl_pr : oclKB) {
+        cl_int create_kernel_err_code = CL_SUCCESS;
+        cl_kernel try_kern =
+            clCreateKernelF(cl_pr, kernel_name, &create_kernel_err_code);
+        if (create_kernel_err_code == CL_SUCCESS) {
+            found = true;
+            ocl_kernel_from_kb = try_kern;
+            break;
+        }
+    }
+    if (found) {
+        try {
+            context ctx = kb.get_context();
+
+            kernel interop_kernel = make_kernel<cl_be>(ocl_kernel_from_kb, ctx);
+
+            return wrap(new kernel(interop_kernel));
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+    }
+    else {
+        error_handler("Kernel " + std::string(kernel_name) + " not found.",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+}
+
 #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
 
 #ifdef __linux__
 static const char *zeLoaderName = DPCTL_LIBZE_LOADER_FILENAME;
-static const int libLoadFlags = RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL;
+static const int zeLibLoadFlags = RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL;
 #elif defined(_WIN64)
 static const char *zeLoaderName = "ze_loader.dll";
-static const int libLoadFlags = 0;
+static const int zeLibLoadFlags = 0;
 #else
 #error "Level Zero program compilation is unavailable for this platform"
 #endif
+
+constexpr sycl::backend ze_be = sycl::backend::ext_oneapi_level_zero;
 
 typedef ze_result_t (*zeModuleCreateFT)(ze_context_handle_t,
                                         ze_device_handle_t,
                                         const ze_module_desc_t *,
                                         ze_module_handle_t *,
                                         ze_module_build_log_handle_t *);
-
-const char *zeModuleCreateFuncName = "zeModuleCreate";
-
-#endif // #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
-
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(program, DPCTLSyclProgramRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
-
-__dpctl_give DPCTLSyclProgramRef
-createOpenCLInterOpProgram(const context &SyclCtx,
-                           __dpctl_keep const void *IL,
-                           size_t length,
-                           const char *CompileOpts)
+const char *zeModuleCreate_Name = "zeModuleCreate";
+zeModuleCreateFT get_zeModuleCreate()
 {
-    cl_int err;
-    auto CLCtx = get_native<backend::opencl>(SyclCtx);
-    auto CLProgram = clCreateProgramWithIL(CLCtx, IL, length, &err);
-    if (err) {
-        std::stringstream ss;
-        ss << "OpenCL program could not be created from the SPIR-V "
-              "binary. OpenCL Error "
-           << err << ".";
-        error_handler(ss.str(), __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
-    auto SyclDevices = SyclCtx.get_devices();
-
-    // Get a list of CL Devices from the Sycl devices
-    auto CLDevices = new cl_device_id[SyclDevices.size()];
-    for (auto i = 0ul; i < SyclDevices.size(); ++i)
-        CLDevices[i] = get_native<backend::opencl>(SyclDevices[i]);
-
-    // Build the OpenCL interoperability program
-    err = clBuildProgram(CLProgram, (cl_uint)(SyclDevices.size()), CLDevices,
-                         CompileOpts, nullptr, nullptr);
-    // free the CLDevices array
-    delete[] CLDevices;
-
-    if (err) {
-        std::stringstream ss;
-        ss << "OpenCL program could not be built. OpenCL Error " << err << ".";
-        error_handler(ss.str(), __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
-
-    // Create the Sycl program from OpenCL program
-    try {
-        auto SyclProgram = new program(SyclCtx, CLProgram);
-        return wrap(SyclProgram);
-    } catch (std::exception const &e) {
-        error_handler(e, __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
-}
-
-#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
-
-zeModuleCreateFT getZeModuleCreateFn()
-{
-    static dpctl::DynamicLibHelper zeLib(zeLoaderName, libLoadFlags);
+    static dpctl::DynamicLibHelper zeLib(zeLoaderName, zeLibLoadFlags);
     if (!zeLib.opened()) {
         error_handler("The level zero loader dynamic library could not "
                       "be opened.",
                       __FILE__, __func__, __LINE__);
         return nullptr;
     }
-    static auto stZeModuleCreateF =
-        zeLib.getSymbol<zeModuleCreateFT>(zeModuleCreateFuncName);
+    static auto st_zeModuleCreateF =
+        zeLib.getSymbol<zeModuleCreateFT>(zeModuleCreate_Name);
 
-    return stZeModuleCreateF;
+    return st_zeModuleCreateF;
 }
 
-__dpctl_give DPCTLSyclProgramRef
-createLevelZeroInterOpProgram(const context &SyclCtx,
-                              const void *IL,
-                              size_t length,
-                              const char *CompileOpts)
+typedef ze_result_t (*zeModuleDestroyFT)(ze_module_handle_t);
+const char *zeModuleDestroy_Name = "zeModuleDestroy";
+zeModuleDestroyFT get_zeModuleDestroy()
 {
-    auto ZeCtx = get_native<backend::ext_oneapi_level_zero>(SyclCtx);
-    auto SyclDevices = SyclCtx.get_devices();
-    if (SyclDevices.size() > 1) {
-        error_handler("Level zero program can be created for only one device.",
+    static dpctl::DynamicLibHelper zeLib(zeLoaderName, zeLibLoadFlags);
+    if (!zeLib.opened()) {
+        error_handler("The level zero loader dynamic library could not "
+                      "be opened.",
                       __FILE__, __func__, __LINE__);
         return nullptr;
     }
+    static auto st_zeModuleDestroyF =
+        zeLib.getSymbol<zeModuleDestroyFT>(zeModuleDestroy_Name);
 
-    // Specialization constants are not yet supported.
-    // Refer https://bit.ly/33UEDYN for details on specialization constants.
+    return st_zeModuleDestroyF;
+}
+
+typedef ze_result_t (*zeKernelCreateFT)(ze_module_handle_t,
+                                        const ze_kernel_desc_t *,
+                                        ze_kernel_handle_t *);
+const char *zeKernelCreate_Name = "zeKernelCreate";
+zeKernelCreateFT get_zeKernelCreate()
+{
+    static dpctl::DynamicLibHelper zeLib(zeLoaderName, zeLibLoadFlags);
+    if (!zeLib.opened()) {
+        error_handler("The level zero loader dynamic library could not "
+                      "be opened.",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+    static auto st_zeKernelCreateF =
+        zeLib.getSymbol<zeKernelCreateFT>(zeKernelCreate_Name);
+
+    return st_zeKernelCreateF;
+}
+
+std::string _GetErrorCode_ze_impl(ze_result_t code)
+{
+    if (code == ZE_RESULT_ERROR_UNINITIALIZED) {
+        return "ZE_RESULT_ERROR_UNINITIALIZED (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == ZE_RESULT_ERROR_DEVICE_LOST) {
+        return "ZE_RESULT_ERROR_DEVICE_LOST (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == ZE_RESULT_ERROR_INVALID_NULL_HANDLE) {
+        return "ZE_RESULT_ERROR_INVALID_NULL_HANDLE (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == ZE_RESULT_ERROR_INVALID_NULL_POINTER) {
+        return "ZE_RESULT_ERROR_INVALID_NULL_POINTER (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == ZE_RESULT_ERROR_INVALID_ENUMERATION) {
+        return "ZE_RESULT_ERROR_INVALID_ENUMERATION (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == ZE_RESULT_ERROR_INVALID_NATIVE_BINARY) {
+        return "ZE_RESULT_ERROR_INVALID_NATIVE_BINARY (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == ZE_RESULT_ERROR_INVALID_SIZE) {
+        return "ZE_RESULT_ERROR_INVALID_SIZE (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY) {
+        return "ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY) {
+        return "ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == ZE_RESULT_ERROR_MODULE_BUILD_FAILURE) {
+        return "ZE_RESULT_ERROR_MODULE_BUILD_FAILURE (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+    else if (code == ZE_RESULT_ERROR_INVALID_MODULE_UNLINKED) {
+        return "ZE_RESULT_ERROR_INVALID_MODULE_UNLINKED (code=" +
+               std::to_string(static_cast<int>(code)) + ")";
+    }
+
+    return "<< UNRECOGNIZE ZE_RESULT_T CODE >> (code=" +
+           std::to_string(static_cast<int>(code)) + ")";
+}
+
+__dpctl_give DPCTLSyclKernelBundleRef
+_CreateKernelBundleWithIL_ze_impl(const context &SyclCtx,
+                                  const device &SyclDev,
+                                  const void *IL,
+                                  size_t il_length,
+                                  const char *CompileOpts)
+{
+    auto zeModuleCreateFn = get_zeModuleCreate();
+    if (zeModuleCreateFn == nullptr) {
+        error_handler("ZeModuleCreateFn is invalid.", __FILE__, __func__,
+                      __LINE__);
+        return nullptr;
+    }
+
+    backend_traits<ze_be>::return_type<context> ZeContext;
+    ZeContext = get_native<ze_be>(SyclCtx);
+
+    backend_traits<ze_be>::return_type<device> ZeDevice;
+    ZeDevice = get_native<ze_be>(SyclDev);
+
+    // Specialization constants are not supported by DPCTL at the moment
     ze_module_constants_t ZeSpecConstants = {};
     ZeSpecConstants.numConstants = 0;
 
@@ -165,118 +490,210 @@ createLevelZeroInterOpProgram(const context &SyclCtx,
     ze_module_desc_t ZeModuleDesc = {};
     ZeModuleDesc.stype = ZE_STRUCTURE_TYPE_MODULE_DESC;
     ZeModuleDesc.format = ZE_MODULE_FORMAT_IL_SPIRV;
-    ZeModuleDesc.inputSize = length;
+    ZeModuleDesc.inputSize = il_length;
     ZeModuleDesc.pInputModule = (uint8_t *)IL;
     ZeModuleDesc.pBuildFlags = CompileOpts;
     ZeModuleDesc.pConstants = &ZeSpecConstants;
 
-    auto ZeDevice = get_native<backend::ext_oneapi_level_zero>(SyclDevices[0]);
     ze_module_handle_t ZeModule;
 
-    auto stZeModuleCreateF = getZeModuleCreateFn();
-
-    if (!stZeModuleCreateF) {
-        error_handler("ZeModuleCreateFn is invalid.", __FILE__, __func__,
-                      __LINE__);
+    auto ret_code = zeModuleCreateFn(ZeContext, ZeDevice, &ZeModuleDesc,
+                                     &ZeModule, nullptr);
+    if (ret_code != ZE_RESULT_SUCCESS) {
+        error_handler("Module creation failed " +
+                          _GetErrorCode_ze_impl(ret_code),
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 
-    auto ret =
-        stZeModuleCreateF(ZeCtx, ZeDevice, &ZeModuleDesc, &ZeModule, nullptr);
-    if (ret != ZE_RESULT_SUCCESS) {
-        error_handler("ZeModule creation failed.", __FILE__, __func__,
-                      __LINE__);
-        return nullptr;
-    }
-
-    // Create the Sycl program from the ZeModule
     try {
-        auto ZeProgram =
-            new program(sycl::ext::oneapi::level_zero::make_program(
-                SyclCtx, reinterpret_cast<uintptr_t>(ZeModule)));
-        return wrap(ZeProgram);
+        auto kb = make_kernel_bundle<ze_be, bundle_state::executable>(
+            {ZeModule, ext::oneapi::level_zero::ownership::keep}, SyclCtx);
+
+        return wrap(new kernel_bundle<bundle_state::executable>(kb));
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
+        auto zeModuleDestroyFn = get_zeModuleDestroy();
+        if (zeModuleDestroyFn) {
+            zeModuleDestroyFn(ZeModule);
+        }
         return nullptr;
     }
 }
+
+__dpctl_give DPCTLSyclKernelRef
+_GetKernel_ze_impl(const kernel_bundle<bundle_state::executable> &kb,
+                   const char *kernel_name)
+{
+    auto zeKernelCreateFn = get_zeKernelCreate();
+    if (zeKernelCreateFn == nullptr) {
+        error_handler("Could not load zeKernelCreate function.", __FILE__,
+                      __func__, __LINE__);
+        return nullptr;
+    }
+
+    auto ZeKernelBundle = sycl::get_native<ze_be>(kb);
+    bool found = false;
+
+    // Populate the Level Zero kernel descriptions
+    ze_kernel_desc_t ZeKernelDescr = {ZE_STRUCTURE_TYPE_KERNEL_DESC, nullptr,
+                                      0, // flags
+                                      kernel_name};
+
+    std::unique_ptr<sycl::kernel> syclInteropKern_ptr;
+    ze_kernel_handle_t ZeKern;
+    for (auto &ZeM : ZeKernelBundle) {
+        ze_result_t ze_status = zeKernelCreateFn(ZeM, &ZeKernelDescr, &ZeKern);
+
+        if (ze_status == ZE_RESULT_SUCCESS) {
+            found = true;
+            auto ctx = kb.get_context();
+            auto k = make_kernel<ze_be>(
+                {kb, ZeKern, ext::oneapi::level_zero::ownership::keep}, ctx);
+            syclInteropKern_ptr = std::unique_ptr<kernel>(new kernel(k));
+            break;
+        }
+        else {
+            if (ze_status != ZE_RESULT_ERROR_INVALID_KERNEL_NAME) {
+                error_handler("zeKernelCreate failed: " +
+                                  _GetErrorCode_ze_impl(ze_status),
+                              __FILE__, __func__, __LINE__);
+                return nullptr;
+            }
+        }
+    }
+
+    if (found) {
+        return wrap(new kernel(*syclInteropKern_ptr));
+    }
+    else {
+        error_handler("Kernel named " + std::string(kernel_name) +
+                          " could not be found.",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+}
+
+bool _HasKernel_ze_impl(const kernel_bundle<bundle_state::executable> &kb,
+                        const char *kernel_name)
+{
+    auto zeKernelCreateFn = get_zeKernelCreate();
+    if (zeKernelCreateFn == nullptr) {
+        error_handler("Could not load zeKernelCreate function.", __FILE__,
+                      __func__, __LINE__);
+        return false;
+    }
+
+    auto ZeKernelBundle = sycl::get_native<ze_be>(kb);
+
+    // Populate the Level Zero kernel descriptions
+    ze_kernel_desc_t ZeKernelDescr = {ZE_STRUCTURE_TYPE_KERNEL_DESC, nullptr,
+                                      0, // flags
+                                      kernel_name};
+
+    std::unique_ptr<sycl::kernel> syclInteropKern_ptr;
+    ze_kernel_handle_t ZeKern;
+    for (auto &ZeM : ZeKernelBundle) {
+        ze_result_t ze_status = zeKernelCreateFn(ZeM, &ZeKernelDescr, &ZeKern);
+
+        if (ze_status == ZE_RESULT_SUCCESS) {
+            return true;
+        }
+        else {
+            if (ze_status != ZE_RESULT_ERROR_INVALID_KERNEL_NAME) {
+                error_handler("zeKernelCreate failed: " +
+                                  _GetErrorCode_ze_impl(ze_status),
+                              __FILE__, __func__, __LINE__);
+                return false;
+            }
+        }
+    }
+
+    return false;
+}
+
 #endif /* #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION */
 
 } /* end of anonymous namespace */
 
-__dpctl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
-                             __dpctl_keep const void *IL,
-                             size_t length,
-                             const char *CompileOpts)
+__dpctl_give DPCTLSyclKernelBundleRef
+DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
+                                  __dpctl_keep const DPCTLSyclDeviceRef DevRef,
+                                  __dpctl_keep const void *IL,
+                                  size_t length,
+                                  const char *CompileOpts)
 {
-    DPCTLSyclProgramRef Pref = nullptr;
-    context *SyclCtx = nullptr;
+    DPCTLSyclKernelBundleRef KBRef = nullptr;
     if (!CtxRef) {
         error_handler("Cannot create program from SPIR-V as the supplied SYCL "
                       "context is NULL.",
                       __FILE__, __func__, __LINE__);
-        return Pref;
+        return KBRef;
     }
-    SyclCtx = unwrap(CtxRef);
+    if (!DevRef) {
+        error_handler("Cannot create program from SPIR-V as the supplied SYCL "
+                      "device is NULL.",
+                      __FILE__, __func__, __LINE__);
+        return KBRef;
+    }
+
+    context *SyclCtx = unwrap(CtxRef);
+    device *SyclDev = unwrap(DevRef);
     // get the backend type
     auto BE = SyclCtx->get_platform().get_backend();
     switch (BE) {
     case backend::opencl:
-        Pref = createOpenCLInterOpProgram(*SyclCtx, IL, length, CompileOpts);
+        KBRef = _CreateKernelBundleWithIL_ocl_impl(*SyclCtx, *SyclDev, IL,
+                                                   length, CompileOpts);
         break;
     case backend::ext_oneapi_level_zero:
 #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
-        Pref = createLevelZeroInterOpProgram(*SyclCtx, IL, length, CompileOpts);
+        KBRef = _CreateKernelBundleWithIL_ze_impl(*SyclCtx, *SyclDev, IL,
+                                                  length, CompileOpts);
 #endif
         break;
     default:
+        error_handler("Backend " + std::to_string(static_cast<int>(BE)) +
+                          " is not supported",
+                      __FILE__, __func__, __LINE__);
         break;
     }
-    return Pref;
+    return KBRef;
 }
 
-__dpctl_give DPCTLSyclProgramRef
-DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
-                                 __dpctl_keep const char *Source,
-                                 __dpctl_keep const char *CompileOpts)
+__dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
+    __dpctl_keep const DPCTLSyclContextRef Ctx,
+    __dpctl_keep const DPCTLSyclDeviceRef Dev,
+    __dpctl_keep const char *Source,
+    __dpctl_keep const char *CompileOpts)
 {
-    std::string compileOpts;
     context *SyclCtx = nullptr;
-    program *SyclProgram = nullptr;
+    device *SyclDev = nullptr;
 
     if (!Ctx) {
         error_handler("Input Ctx is nullptr.", __FILE__, __func__, __LINE__);
         return nullptr;
     }
-
+    if (!Dev) {
+        error_handler("Input Dev is nullptr.", __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
     if (!Source) {
         error_handler("Input Source is nullptr.", __FILE__, __func__, __LINE__);
         return nullptr;
     }
 
     SyclCtx = unwrap(Ctx);
-    try {
-        SyclProgram = new program(*SyclCtx);
-    } catch (std::exception const &e) {
-        error_handler(e, __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
-    std::string source = Source;
-
-    if (CompileOpts) {
-        compileOpts = CompileOpts;
-    }
+    SyclDev = unwrap(Dev);
 
     // get the backend type
     auto BE = SyclCtx->get_platform().get_backend();
     switch (BE) {
     case backend::opencl:
         try {
-            SyclProgram->build_with_source(source, compileOpts);
-            return wrap(SyclProgram);
+            return _CreateKernelBundleWithOCLSource_ocl_impl(
+                *SyclCtx, *SyclDev, Source, CompileOpts);
         } catch (std::exception const &e) {
-            delete SyclProgram;
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
@@ -284,45 +701,47 @@ DPCTLProgram_CreateFromOCLSource(__dpctl_keep const DPCTLSyclContextRef Ctx,
     case backend::ext_oneapi_level_zero:
         error_handler("CreateFromSource is not supported in Level Zero.",
                       __FILE__, __func__, __LINE__);
-        delete SyclProgram;
         return nullptr;
     default:
         error_handler("CreateFromSource is not supported in unknown backend.",
                       __FILE__, __func__, __LINE__);
-        delete SyclProgram;
         return nullptr;
     }
 }
 
 __dpctl_give DPCTLSyclKernelRef
-DPCTLProgram_GetKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
-                       __dpctl_keep const char *KernelName)
-{
-    if (!PRef) {
-        error_handler("Input PRef is nullptr", __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
-    auto SyclProgram = unwrap(PRef);
-    if (!KernelName) {
-        error_handler("Input KernelName is nullptr", __FILE__, __func__,
-                      __LINE__);
-        return nullptr;
-    }
-    std::string name = KernelName;
-    try {
-        auto SyclKernel = new kernel(SyclProgram->get_kernel(name));
-        return wrap(SyclKernel);
-    } catch (std::exception const &e) {
-        error_handler(e, __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
-}
-
-bool DPCTLProgram_HasKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
+DPCTLKernelBundle_GetKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
                             __dpctl_keep const char *KernelName)
 {
-    if (!PRef) {
-        error_handler("Input PRef is nullptr", __FILE__, __func__, __LINE__);
+    if (!KBRef) {
+        error_handler("Input KBRef is nullptr", __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+    if (!KernelName) {
+        error_handler("Input KernelName is nullptr", __FILE__, __func__,
+                      __LINE__);
+        return nullptr;
+    }
+    auto SyclKB = unwrap(KBRef);
+    sycl::backend be = SyclKB->get_backend();
+    switch (be) {
+    case sycl::backend::opencl:
+        return _GetKernel_ocl_impl(*SyclKB, KernelName);
+    case sycl::backend::ext_oneapi_level_zero:
+        return _GetKernel_ze_impl(*SyclKB, KernelName);
+    default:
+        error_handler("Backend " + std::to_string(static_cast<int>(be)) +
+                          " is not supported.",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+}
+
+bool DPCTLKernelBundle_HasKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
+                                 __dpctl_keep const char *KernelName)
+{
+    if (!KBRef) {
+        error_handler("Input KBRef is nullptr", __FILE__, __func__, __LINE__);
         return false;
     }
     if (!KernelName) {
@@ -331,16 +750,22 @@ bool DPCTLProgram_HasKernel(__dpctl_keep DPCTLSyclProgramRef PRef,
         return false;
     }
 
-    auto SyclProgram = unwrap(PRef);
-    try {
-        return SyclProgram->has_kernel(KernelName);
-    } catch (std::exception const &e) {
-        error_handler(e, __FILE__, __func__, __LINE__);
+    auto SyclKB = unwrap(KBRef);
+    sycl::backend be = SyclKB->get_backend();
+    switch (be) {
+    case sycl::backend::opencl:
+        return _HasKernel_ocl_impl(*SyclKB, KernelName);
+    case sycl::backend::ext_oneapi_level_zero:
+        return _HasKernel_ze_impl(*SyclKB, KernelName);
+    default:
+        error_handler("Backend " + std::to_string(static_cast<int>(be)) +
+                          " is not supported.",
+                      __FILE__, __func__, __LINE__);
         return false;
     }
 }
 
-void DPCTLProgram_Delete(__dpctl_take DPCTLSyclProgramRef PRef)
+void DPCTLKernelBundle_Delete(__dpctl_take DPCTLSyclKernelBundleRef KBRef)
 {
-    delete unwrap(PRef);
+    delete unwrap(KBRef);
 }

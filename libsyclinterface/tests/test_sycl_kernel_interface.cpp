@@ -85,17 +85,17 @@ TEST_P(TestDPCTLSyclKernelInterface, CheckGetNumArgs)
 {
     auto QueueRef = DPCTLQueue_CreateForDevice(DRef, nullptr, 0);
     auto CtxRef = DPCTLQueue_GetContext(QueueRef);
-    auto PRef =
-        DPCTLProgram_CreateFromOCLSource(CtxRef, CLProgramStr, CompileOpts);
-    auto AddKernel = DPCTLProgram_GetKernel(PRef, "add");
-    auto AxpyKernel = DPCTLProgram_GetKernel(PRef, "axpy");
+    auto KBRef = DPCTLKernelBundle_CreateFromOCLSource(
+        CtxRef, DRef, CLProgramStr, CompileOpts);
+    auto AddKernel = DPCTLKernelBundle_GetKernel(KBRef, "add");
+    auto AxpyKernel = DPCTLKernelBundle_GetKernel(KBRef, "axpy");
 
     ASSERT_EQ(DPCTLKernel_GetNumArgs(AddKernel), 3ul);
     ASSERT_EQ(DPCTLKernel_GetNumArgs(AxpyKernel), 4ul);
 
     DPCTLQueue_Delete(QueueRef);
     DPCTLContext_Delete(CtxRef);
-    DPCTLProgram_Delete(PRef);
+    DPCTLKernelBundle_Delete(KBRef);
     DPCTLKernel_Delete(AddKernel);
     DPCTLKernel_Delete(AxpyKernel);
 }
