@@ -1,4 +1,5 @@
-//===- dpctl_sycl_program_interface.cpp - Implements C API for sycl::program =//
+//===- dpctl_sycl_program_interface.cpp - Implements C API for
+// sycl::kernel_bundle<sycl::bundle_state::executable> =//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -63,6 +64,35 @@ static const int clLibLoadFlags = 0;
 #error "OpenCL program compilation is unavailable for this platform"
 #endif
 
+constexpr backend cl_be = backend::opencl;
+
+struct cl_loader
+{
+public:
+    static cl_loader &get()
+    {
+        static cl_loader _loader;
+        return _loader;
+    }
+
+    template <typename retTy> retTy getSymbol(const char *name)
+    {
+        if (!opened) {
+            error_handler("The OpenCL loader dynamic library could not "
+                          "be opened.",
+                          __FILE__, __func__, __LINE__);
+
+            return nullptr;
+        }
+        return clLib.getSymbol<retTy>(name);
+    }
+
+private:
+    dpctl::DynamicLibHelper clLib;
+    bool opened;
+    cl_loader() : clLib(clLoaderName, clLibLoadFlags), opened(clLib.opened()) {}
+};
+
 typedef cl_program (*clCreateProgramWithSourceFT)(cl_context,
                                                   cl_uint,
                                                   const char **,
@@ -71,16 +101,8 @@ typedef cl_program (*clCreateProgramWithSourceFT)(cl_context,
 const char *clCreateProgramWithSource_Name = "clCreateProgramWithSource";
 clCreateProgramWithSourceFT get_clCreateProgramWithSource()
 {
-    static dpctl::DynamicLibHelper clLib(clLoaderName, clLibLoadFlags);
-    if (!clLib.opened()) {
-        error_handler("The OpenCL loader dynamic library could not "
-                      "be opened.",
-                      __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
-
     static auto st_clCreateProgramWithSourceF =
-        clLib.getSymbol<clCreateProgramWithSourceFT>(
+        cl_loader::get().getSymbol<clCreateProgramWithSourceFT>(
             clCreateProgramWithSource_Name);
 
     return st_clCreateProgramWithSourceF;
@@ -93,15 +115,9 @@ typedef cl_program (*clCreateProgramWithILFT)(cl_context,
 const char *clCreateProgramWithIL_Name = "clCreateProgramWithIL";
 clCreateProgramWithILFT get_clCreateProgramWithIL()
 {
-    static dpctl::DynamicLibHelper clLib(clLoaderName, clLibLoadFlags);
-    if (!clLib.opened()) {
-        error_handler("The OpenCL loader dynamic library could not "
-                      "be opened.",
-                      __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
     static auto st_clCreateProgramWithILF =
-        clLib.getSymbol<clCreateProgramWithILFT>(clCreateProgramWithIL_Name);
+        cl_loader::get().getSymbol<clCreateProgramWithILFT>(
+            clCreateProgramWithIL_Name);
 
     return st_clCreateProgramWithILF;
 }
@@ -114,15 +130,8 @@ typedef cl_int (*clBuildProgramFT)(cl_program,
 const char *clBuildProgram_Name = "clBuildProgram";
 clBuildProgramFT get_clBuldProgram()
 {
-    static dpctl::DynamicLibHelper clLib(clLoaderName, clLibLoadFlags);
-    if (!clLib.opened()) {
-        error_handler("The OpenCL loader dynamic library could not "
-                      "be opened.",
-                      __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
     static auto st_clBuildProgramF =
-        clLib.getSymbol<clBuildProgramFT>(clBuildProgram_Name);
+        cl_loader::get().getSymbol<clBuildProgramFT>(clBuildProgram_Name);
 
     return st_clBuildProgramF;
 }
@@ -182,8 +191,6 @@ std::string _GetErrorCode_ocl_impl(cl_int code)
     return "<< ERROR CODE UNRECOGNIZED >> (code=" +
            std::to_string(static_cast<int>(code)) + ")";
 }
-
-constexpr backend cl_be = backend::opencl;
 
 DPCTLSyclKernelBundleRef
 _CreateKernelBundle_common_ocl_impl(cl_program clProgram,
@@ -354,6 +361,33 @@ static const int zeLibLoadFlags = 0;
 
 constexpr sycl::backend ze_be = sycl::backend::ext_oneapi_level_zero;
 
+struct ze_loader
+{
+public:
+    static ze_loader &get()
+    {
+        static ze_loader _loader;
+        return _loader;
+    }
+
+    template <typename retTy> retTy getSymbol(const char *name)
+    {
+        if (!opened) {
+            error_handler("The Level-Zero loader dynamic library could not "
+                          "be opened.",
+                          __FILE__, __func__, __LINE__);
+
+            return nullptr;
+        }
+        return zeLib.getSymbol<retTy>(name);
+    }
+
+private:
+    dpctl::DynamicLibHelper zeLib;
+    bool opened;
+    ze_loader() : zeLib(zeLoaderName, zeLibLoadFlags), opened(zeLib.opened()) {}
+};
+
 typedef ze_result_t (*zeModuleCreateFT)(ze_context_handle_t,
                                         ze_device_handle_t,
                                         const ze_module_desc_t *,
@@ -362,15 +396,8 @@ typedef ze_result_t (*zeModuleCreateFT)(ze_context_handle_t,
 const char *zeModuleCreate_Name = "zeModuleCreate";
 zeModuleCreateFT get_zeModuleCreate()
 {
-    static dpctl::DynamicLibHelper zeLib(zeLoaderName, zeLibLoadFlags);
-    if (!zeLib.opened()) {
-        error_handler("The level zero loader dynamic library could not "
-                      "be opened.",
-                      __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
     static auto st_zeModuleCreateF =
-        zeLib.getSymbol<zeModuleCreateFT>(zeModuleCreate_Name);
+        ze_loader::get().getSymbol<zeModuleCreateFT>(zeModuleCreate_Name);
 
     return st_zeModuleCreateF;
 }
@@ -379,15 +406,8 @@ typedef ze_result_t (*zeModuleDestroyFT)(ze_module_handle_t);
 const char *zeModuleDestroy_Name = "zeModuleDestroy";
 zeModuleDestroyFT get_zeModuleDestroy()
 {
-    static dpctl::DynamicLibHelper zeLib(zeLoaderName, zeLibLoadFlags);
-    if (!zeLib.opened()) {
-        error_handler("The level zero loader dynamic library could not "
-                      "be opened.",
-                      __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
     static auto st_zeModuleDestroyF =
-        zeLib.getSymbol<zeModuleDestroyFT>(zeModuleDestroy_Name);
+        ze_loader::get().getSymbol<zeModuleDestroyFT>(zeModuleDestroy_Name);
 
     return st_zeModuleDestroyF;
 }
@@ -398,15 +418,8 @@ typedef ze_result_t (*zeKernelCreateFT)(ze_module_handle_t,
 const char *zeKernelCreate_Name = "zeKernelCreate";
 zeKernelCreateFT get_zeKernelCreate()
 {
-    static dpctl::DynamicLibHelper zeLib(zeLoaderName, zeLibLoadFlags);
-    if (!zeLib.opened()) {
-        error_handler("The level zero loader dynamic library could not "
-                      "be opened.",
-                      __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
     static auto st_zeKernelCreateF =
-        zeLib.getSymbol<zeKernelCreateFT>(zeKernelCreate_Name);
+        ze_loader::get().getSymbol<zeKernelCreateFT>(zeKernelCreate_Name);
 
     return st_zeKernelCreateF;
 }
