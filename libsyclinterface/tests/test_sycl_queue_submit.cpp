@@ -28,8 +28,8 @@
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_event_interface.h"
+#include "dpctl_sycl_kernel_bundle_interface.h"
 #include "dpctl_sycl_kernel_interface.h"
-#include "dpctl_sycl_program_interface.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_usm_interface.h"
 #include <CL/sycl.hpp>

@@ -1,4 +1,5 @@
-//===- dpctl_sycl_program_interface.h - C API for sycl::program  -*-C++-*- ===//
+//===- dpctl_sycl_kernel_bundle_interface.h - C API for
+//     sycl::kernel_bundle<sycl::bundle_state::executable>      -*-C++-*- ===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -84,7 +85,7 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
  * @brief Returns the SyclKernel with given name from the program, if not found
  * then return NULL.
  *
- * @param    PRef           Opaque pointer to a sycl::program
+ * @param    KBRef          Opaque pointer to a sycl::kernel_bundle
  * @param    KernelName     Name of kernel
  * @return   A SyclKernel reference if the kernel exists, else NULL
  * @ingroup KernelBundleInterface
@@ -98,7 +99,7 @@ DPCTLKernelBundle_GetKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
  * @brief Return True if a SyclKernel with given name exists in the program, if
  * not found then returns False.
  *
- * @param    PRef           Opaque pointer to a sycl::program
+ * @param    KBRef          Opaque pointer to a sycl::kernel_bundle
  * @param    KernelName     Name of kernel
  * @return   True if the kernel exists, else False
  * @ingroup KernelBundleInterface

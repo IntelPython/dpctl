@@ -1,5 +1,5 @@
-//===- dpctl_sycl_program_interface.cpp - Implements C API for
-// sycl::kernel_bundle<sycl::bundle_state::executable> =//
+//===- dpctl_sycl_kernel_bundle_interface.cpp - Implements C API for
+//    sycl::kernel_bundle<sycl::bundle_state::executable>  ---------------===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -21,11 +21,11 @@
 ///
 /// \file
 /// This file implements the functions declared in
-/// dpctl_sycl_program_interface.h.
+/// dpctl_sycl_kernel_bundle_interface.h.
 ///
 //===----------------------------------------------------------------------===//
 
-#include "dpctl_sycl_program_interface.h"
+#include "dpctl_sycl_kernel_bundle_interface.h"
 #include "Config/dpctl_config.h"
 #include "Support/CBindingWrapping.h"
 #include "dpctl_dynamic_lib_helper.h"

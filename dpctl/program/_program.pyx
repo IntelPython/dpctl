@@ -97,12 +97,13 @@ cdef class SyclKernel:
 
 
 cdef class SyclProgram:
-    """ Wraps a ``sycl::program`` object created from an OpenCL interoperability
-        program.
+    """ Wraps a ``sycl::kernel_bundle<sycl::bundle_state::executable>`` object
+    created using SYCL interoperability layer with underlying backends. Only the
+    OpenCL and Level-Zero backends are currently supported.
 
-        SyclProgram exposes the C API from ``dpctl_sycl_program_interface.h``. A
-        SyclProgram can be created from either a source string or a SPIR-V
-        binary file.
+    SyclProgram exposes the C API from ``dpctl_sycl_kernel_bundle_interface.h``.
+    A SyclProgram can be created from either a source string or a SPIR-V
+    binary file.
     """
 
     @staticmethod
