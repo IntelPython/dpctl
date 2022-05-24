@@ -191,11 +191,8 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
     case aspect::fp64:
         ss << "fp64";
         break;
-    case aspect::int64_base_atomics:
-        ss << "int64_base_atomics";
-        break;
-    case aspect::int64_extended_atomics:
-        ss << "int64_extended_atomics";
+    case aspect::atomic64:
+        ss << "atomic64";
         break;
     case aspect::image:
         ss << "image";
@@ -223,6 +220,15 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
         break;
     case aspect::usm_system_allocations:
         ss << "usm_system_allocations";
+        break;
+    case aspect::usm_atomic_host_allocations:
+        ss << "usm_atomic_host_allocations";
+        break;
+    case aspect::usm_atomic_shared_allocations:
+        ss << "usm_atomic_shared_allocations";
+        break;
+    case aspect::host_debuggable:
+        ss << "host_debuggable";
         break;
     default:
         throw std::runtime_error("Unsupported aspect type");
@@ -257,11 +263,8 @@ aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
     else if (aspectTyStr == "fp64") {
         aspectTy = aspect::fp64;
     }
-    else if (aspectTyStr == "int64_base_atomics") {
-        aspectTy = aspect::int64_base_atomics;
-    }
-    else if (aspectTyStr == "int64_extended_atomics") {
-        aspectTy = aspect::int64_extended_atomics;
+    else if (aspectTyStr == "atomic64") {
+        aspectTy = aspect::atomic64;
     }
     else if (aspectTyStr == "image") {
         aspectTy = aspect::image;
@@ -290,6 +293,15 @@ aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
     else if (aspectTyStr == "usm_system_allocations") {
         aspectTy = aspect::usm_system_allocations;
     }
+    else if (aspectTyStr == "usm_atomic_host_allocations") {
+        aspectTy = aspect::usm_atomic_host_allocations;
+    }
+    else if (aspectTyStr == "usm_atomic_shared_allocations") {
+        aspectTy = aspect::usm_atomic_shared_allocations;
+    }
+    else if (aspectTyStr == "host_debuggable") {
+        aspectTy = aspect::host_debuggable;
+    }
     else {
         // \todo handle the error
         throw std::runtime_error("Unsupported aspect type");
@@ -314,10 +326,8 @@ aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy)
         return aspect::fp16;
     case DPCTLSyclAspectType::fp64:
         return aspect::fp64;
-    case DPCTLSyclAspectType::int64_base_atomics:
-        return aspect::int64_base_atomics;
-    case DPCTLSyclAspectType::int64_extended_atomics:
-        return aspect::int64_extended_atomics;
+    case DPCTLSyclAspectType::atomic64:
+        return aspect::atomic64;
     case DPCTLSyclAspectType::image:
         return aspect::image;
     case DPCTLSyclAspectType::online_compiler:
@@ -336,6 +346,12 @@ aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy)
         return aspect::usm_restricted_shared_allocations;
     case DPCTLSyclAspectType::usm_system_allocations:
         return aspect::usm_system_allocations;
+    case DPCTLSyclAspectType::usm_atomic_host_allocations:
+        return aspect::usm_atomic_host_allocations;
+    case DPCTLSyclAspectType::usm_atomic_shared_allocations:
+        return aspect::usm_atomic_shared_allocations;
+    case DPCTLSyclAspectType::host_debuggable:
+        return aspect::host_debuggable;
     default:
         throw std::runtime_error("Unsupported aspect type");
     }
@@ -358,10 +374,8 @@ DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(aspect Aspect)
         return DPCTLSyclAspectType::fp16;
     case aspect::fp64:
         return DPCTLSyclAspectType::fp64;
-    case aspect::int64_base_atomics:
-        return DPCTLSyclAspectType::int64_base_atomics;
-    case aspect::int64_extended_atomics:
-        return DPCTLSyclAspectType::int64_extended_atomics;
+    case aspect::atomic64:
+        return DPCTLSyclAspectType::atomic64;
     case aspect::image:
         return DPCTLSyclAspectType::image;
     case aspect::online_compiler:
@@ -380,6 +394,12 @@ DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(aspect Aspect)
         return DPCTLSyclAspectType::usm_restricted_shared_allocations;
     case aspect::usm_system_allocations:
         return DPCTLSyclAspectType::usm_system_allocations;
+    case aspect::usm_atomic_host_allocations:
+        return DPCTLSyclAspectType::usm_atomic_host_allocations;
+    case aspect::usm_atomic_shared_allocations:
+        return DPCTLSyclAspectType::usm_atomic_shared_allocations;
+    case aspect::host_debuggable:
+        return DPCTLSyclAspectType::host_debuggable;
     default:
         throw std::runtime_error("Unsupported aspect type");
     }

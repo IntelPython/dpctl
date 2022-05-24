@@ -109,8 +109,7 @@ typedef enum
     custom,
     fp16,
     fp64,
-    int64_base_atomics,
-    int64_extended_atomics,
+    atomic64,
     image,
     online_compiler,
     online_linker,
@@ -119,7 +118,10 @@ typedef enum
     usm_host_allocations,
     usm_shared_allocations,
     usm_restricted_shared_allocations,
-    usm_system_allocations
+    usm_system_allocations,
+    usm_atomic_host_allocations,
+    usm_atomic_shared_allocations,
+    host_debuggable,
 } DPCTLSyclAspectType;
 
 /*!

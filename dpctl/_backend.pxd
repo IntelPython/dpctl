@@ -83,8 +83,7 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _custom                             'custom',
         _fp16                               'fp16',
         _fp64                               'fp64',
-        _int64_base_atomics                 'int64_base_atomics',
-        _int64_extended_atomics             'int64_extended_atomics',
+        _atomic64                           'atomic64',
         _image                              'image',
         _online_compiler                    'online_compiler',
         _online_linker                      'online_linker',
@@ -93,7 +92,10 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _usm_host_allocations               'usm_host_allocations',
         _usm_shared_allocations             'usm_shared_allocations',
         _usm_restricted_shared_allocations  'usm_restricted_shared_allocations',
-        _usm_system_allocations             'usm_system_allocations'
+        _usm_system_allocations             'usm_system_allocations',
+        _usm_atomic_host_allocations        'usm_atomic_host_allocations',
+        _usm_atomic_shared_allocations      'usm_atomic_shared_allocations',
+        _host_debuggable                    'host_debuggable',
 
     ctypedef enum _partition_affinity_domain_type 'DPCTLPartitionAffinityDomainType':
         _not_applicable                     'not_applicable',

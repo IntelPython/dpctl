@@ -82,10 +82,7 @@ auto build_params()
             std::make_pair("custom", cl::sycl::aspect::custom),
             std::make_pair("fp16", cl::sycl::aspect::fp16),
             std::make_pair("fp64", cl::sycl::aspect::fp64),
-            std::make_pair("int64_base_atomics",
-                           cl::sycl::aspect::int64_base_atomics),
-            std::make_pair("int64_extended_atomics",
-                           cl::sycl::aspect::int64_extended_atomics),
+            std::make_pair("atomic64", cl::sycl::aspect::atomic64),
             std::make_pair("online_compiler",
                            cl::sycl::aspect::online_compiler),
             std::make_pair("online_linker", cl::sycl::aspect::online_linker),
@@ -100,7 +97,13 @@ auto build_params()
             std::make_pair("usm_restricted_shared_allocations",
                            cl::sycl::aspect::usm_restricted_shared_allocations),
             std::make_pair("usm_system_allocations",
-                           cl::sycl::aspect::usm_system_allocations));
+                           cl::sycl::aspect::usm_system_allocations),
+            std::make_pair("usm_atomic_host_allocations",
+                           cl::sycl::aspect::usm_atomic_host_allocations),
+            std::make_pair("usm_atomic_shared_allocations",
+                           cl::sycl::aspect::usm_atomic_shared_allocations),
+            std::make_pair("host_debuggable",
+                           cl::sycl::aspect::host_debuggable));
 
     auto pairs =
         build_param_pairs<const char *,
