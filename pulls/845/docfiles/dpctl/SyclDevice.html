@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.13.0dev1+52.gfdfe02601 documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.13.0dev1+58.g76fb4aeec documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+52.gfdfe02601
+                0.13.0dev1+58.g76fb4aeec
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -191,31 +191,31 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_accelerator" title="dpctl.SyclDevice.has_aspect_accelerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_accelerator</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_cpu" title="dpctl.SyclDevice.has_aspect_cpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_cpu</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_atomic64" title="dpctl.SyclDevice.has_aspect_atomic64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_atomic64</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_custom" title="dpctl.SyclDevice.has_aspect_custom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_custom</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_cpu" title="dpctl.SyclDevice.has_aspect_cpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_cpu</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_fp16" title="dpctl.SyclDevice.has_aspect_fp16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_fp16</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_custom" title="dpctl.SyclDevice.has_aspect_custom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_custom</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_fp64" title="dpctl.SyclDevice.has_aspect_fp64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_fp64</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_fp16" title="dpctl.SyclDevice.has_aspect_fp16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_fp16</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_gpu" title="dpctl.SyclDevice.has_aspect_gpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_gpu</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_fp64" title="dpctl.SyclDevice.has_aspect_fp64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_fp64</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_host" title="dpctl.SyclDevice.has_aspect_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_host</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_gpu" title="dpctl.SyclDevice.has_aspect_gpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_gpu</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_host" title="dpctl.SyclDevice.has_aspect_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_host</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_host_debuggable" title="dpctl.SyclDevice.has_aspect_host_debuggable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_host_debuggable</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_image" title="dpctl.SyclDevice.has_aspect_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_image</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_int64_base_atomics" title="dpctl.SyclDevice.has_aspect_int64_base_atomics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_int64_base_atomics</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_int64_extended_atomics" title="dpctl.SyclDevice.has_aspect_int64_extended_atomics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_int64_extended_atomics</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_online_compiler" title="dpctl.SyclDevice.has_aspect_online_compiler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_online_compiler</span></code></a></p></td>
@@ -225,6 +225,12 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_queue_profiling" title="dpctl.SyclDevice.has_aspect_queue_profiling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_queue_profiling</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations" title="dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_atomic_host_allocations</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations" title="dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_atomic_shared_allocations</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_device_allocations" title="dpctl.SyclDevice.has_aspect_usm_device_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_device_allocations</span></code></a></p></td>
@@ -451,6 +457,11 @@ string``backend:device_type:relative_id`` selecting the device.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_atomic64">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_atomic64</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_atomic64" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_cpu">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_cpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_cpu" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -481,18 +492,13 @@ string``backend:device_type:relative_id`` selecting the device.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_host_debuggable">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_host_debuggable</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_host_debuggable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_image">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_image</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_image" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_int64_base_atomics">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_int64_base_atomics</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_int64_base_atomics" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_int64_extended_atomics">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_int64_extended_atomics</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_int64_extended_atomics" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -508,6 +514,16 @@ string``backend:device_type:relative_id`` selecting the device.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_queue_profiling">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_queue_profiling</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_queue_profiling" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_atomic_host_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_atomic_shared_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
