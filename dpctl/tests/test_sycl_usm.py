@@ -473,13 +473,24 @@ def check_view(v):
     """
     assert type(v) is View
     buf = v.buffer_
+    buf_usm_type = buf.get_usm_type()
     m = as_usm_memory(v)
-    assert m.get_usm_type() == buf.get_usm_type()
+    assert m.get_usm_type() == buf_usm_type
     assert m._pointer == buf._pointer
-    assert m.sycl_device == buf.sycl_device
+    if buf_usm_type == "host":
+        buf_ctx = buf.sycl_context
+        assert m.sycl_context == buf_ctx
+        assert m.sycl_device == buf_ctx.get_devices()[0]
+    else:
+        assert m.sycl_context == buf.sycl_context
+        assert m.sycl_device == buf.sycl_device
 
 
 def test_with_constructor(memory_ctor):
+    """
+    Tests that memory objects reconstructed from __sycl_usm_array_interface__
+    are consistent with the original memory buffer.
+    """
     try:
         buf = memory_ctor(64)
     except Exception:
