@@ -104,7 +104,6 @@ if(WIN32)
         "-Wunused-function "
         "-Wuninitialized "
         "-Wmissing-declarations "
-        "-Wno-deprecated-declarations "
     )
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WARNING_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS}")
@@ -123,7 +122,6 @@ elseif(UNIX)
         "-Wuninitialized "
         "-Wmissing-declarations "
         "-fdiagnostics-color=auto "
-        "-Wno-deprecated-declarations "
     )
     string(CONCAT SDL_FLAGS
         "-fstack-protector "

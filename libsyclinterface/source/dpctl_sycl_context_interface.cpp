@@ -196,7 +196,7 @@ DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef)
         return DPCTL_OPENCL;
     case backend::ext_oneapi_level_zero:
         return DPCTL_LEVEL_ZERO;
-    case backend::cuda:
+    case backend::ext_oneapi_cuda:
         return DPCTL_CUDA;
     default:
         return DPCTL_UNKNOWN_BACKEND;
