@@ -26,7 +26,7 @@ Classes
     * - :class:`SyclKernel`
       - [FIXME]: <class 'type'> has a docstring with no summary
     * - :class:`SyclProgram`
-      - Wraps a ``sycl::program`` object created from an OpenCL interoperability program.
+      - Wraps a ``sycl::kernel_bundle<sycl::bundle_state::executable>`` object created using SYCL interoperability layer with underlying backends. Only the OpenCL and Level-Zero backends are currently supported.
 
 
 .. _dpctl.program_functions:

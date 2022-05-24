@@ -212,9 +212,9 @@ Returns the SyclKernel with given name from the program, if not found then retur
 	:widths: 20 80
 
 	*
-		- PRef
+		- KBRef
 
-		- Opaque pointer to a sycl::program
+		- Opaque pointer to a sycl::kernel_bundle
 
 	*
 		- KernelName
@@ -249,9 +249,9 @@ Return True if a SyclKernel with given name exists in the program, if not found 
 	:widths: 20 80
 
 	*
-		- PRef
+		- KBRef
 
-		- Opaque pointer to a sycl::program
+		- Opaque pointer to a sycl::kernel_bundle
 
 	*
 		- KernelName
