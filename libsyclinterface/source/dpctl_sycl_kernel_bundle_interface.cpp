@@ -64,6 +64,13 @@ static const int clLibLoadFlags = 0;
 #error "OpenCL program compilation is unavailable for this platform"
 #endif
 
+#define CodeStringSuffix(code)                                                 \
+    std::string(" (code=") + std::to_string(static_cast<int>(code)) + ")"
+
+#define EnumCaseString(code)                                                   \
+    case code:                                                                 \
+        return std::string(#code) + CodeStringSuffix(code)
+
 constexpr backend cl_be = backend::opencl;
 
 struct cl_loader
@@ -155,41 +162,18 @@ clCreateKernelFT get_clCreateKernel()
 
 std::string _GetErrorCode_ocl_impl(cl_int code)
 {
-    if (code == CL_BUILD_PROGRAM_FAILURE) {
-        return "CL_BUILD_PROGRAM_FAILURE (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
+    switch (code) {
+        EnumCaseString(CL_BUILD_PROGRAM_FAILURE);
+        EnumCaseString(CL_INVALID_CONTEXT);
+        EnumCaseString(CL_INVALID_DEVICE);
+        EnumCaseString(CL_INVALID_VALUE);
+        EnumCaseString(CL_OUT_OF_RESOURCES);
+        EnumCaseString(CL_OUT_OF_HOST_MEMORY);
+        EnumCaseString(CL_INVALID_OPERATION);
+        EnumCaseString(CL_INVALID_BINARY);
+    default:
+        return "<< ERROR CODE UNRECOGNIZED >>" + CodeStringSuffix(code);
     }
-    else if (code == CL_INVALID_CONTEXT) {
-        return "CL_INVALID_CONTEXT (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == CL_INVALID_DEVICE) {
-        return "CL_INVALID_DEVICE (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == CL_INVALID_VALUE) {
-        return "CL_INVALID_VALUE (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == CL_OUT_OF_RESOURCES) {
-        return "CL_OUT_OF_RESOURCES (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == CL_OUT_OF_HOST_MEMORY) {
-        return "CL_OUT_OF_HOST_MEMORY (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == CL_INVALID_OPERATION) {
-        return "CL_INVALID_OPERATION (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == CL_INVALID_BINARY) {
-        return "CL_INVALID_BINARY (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-
-    return "<< ERROR CODE UNRECOGNIZED >> (code=" +
-           std::to_string(static_cast<int>(code)) + ")";
 }
 
 DPCTLSyclKernelBundleRef
@@ -426,53 +410,21 @@ zeKernelCreateFT get_zeKernelCreate()
 
 std::string _GetErrorCode_ze_impl(ze_result_t code)
 {
-    if (code == ZE_RESULT_ERROR_UNINITIALIZED) {
-        return "ZE_RESULT_ERROR_UNINITIALIZED (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
+    switch (code) {
+        EnumCaseString(ZE_RESULT_ERROR_UNINITIALIZED);
+        EnumCaseString(ZE_RESULT_ERROR_DEVICE_LOST);
+        EnumCaseString(ZE_RESULT_ERROR_INVALID_NULL_HANDLE);
+        EnumCaseString(ZE_RESULT_ERROR_INVALID_NULL_POINTER);
+        EnumCaseString(ZE_RESULT_ERROR_INVALID_ENUMERATION);
+        EnumCaseString(ZE_RESULT_ERROR_INVALID_NATIVE_BINARY);
+        EnumCaseString(ZE_RESULT_ERROR_INVALID_SIZE);
+        EnumCaseString(ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY);
+        EnumCaseString(ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY);
+        EnumCaseString(ZE_RESULT_ERROR_MODULE_BUILD_FAILURE);
+        EnumCaseString(ZE_RESULT_ERROR_INVALID_MODULE_UNLINKED);
+    default:
+        return "<< UNRECOGNIZED ZE_RESULT_T CODE >> " + CodeStringSuffix(code);
     }
-    else if (code == ZE_RESULT_ERROR_DEVICE_LOST) {
-        return "ZE_RESULT_ERROR_DEVICE_LOST (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == ZE_RESULT_ERROR_INVALID_NULL_HANDLE) {
-        return "ZE_RESULT_ERROR_INVALID_NULL_HANDLE (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == ZE_RESULT_ERROR_INVALID_NULL_POINTER) {
-        return "ZE_RESULT_ERROR_INVALID_NULL_POINTER (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == ZE_RESULT_ERROR_INVALID_ENUMERATION) {
-        return "ZE_RESULT_ERROR_INVALID_ENUMERATION (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == ZE_RESULT_ERROR_INVALID_NATIVE_BINARY) {
-        return "ZE_RESULT_ERROR_INVALID_NATIVE_BINARY (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == ZE_RESULT_ERROR_INVALID_SIZE) {
-        return "ZE_RESULT_ERROR_INVALID_SIZE (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY) {
-        return "ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY) {
-        return "ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == ZE_RESULT_ERROR_MODULE_BUILD_FAILURE) {
-        return "ZE_RESULT_ERROR_MODULE_BUILD_FAILURE (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-    else if (code == ZE_RESULT_ERROR_INVALID_MODULE_UNLINKED) {
-        return "ZE_RESULT_ERROR_INVALID_MODULE_UNLINKED (code=" +
-               std::to_string(static_cast<int>(code)) + ")";
-    }
-
-    return "<< UNRECOGNIZE ZE_RESULT_T CODE >> (code=" +
-           std::to_string(static_cast<int>(code)) + ")";
 }
 
 __dpctl_give DPCTLSyclKernelBundleRef
