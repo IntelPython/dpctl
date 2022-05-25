@@ -154,7 +154,8 @@ TEST_P(TestDPCTLSyclKernelBundleInterface, ChkGetKernelNullProgram)
     EXPECT_TRUE(KRef == nullptr);
 }
 
-struct TestOCLKernelBundleFromSource : public ::testing::Test
+struct TestOCLKernelBundleFromSource
+    : public ::testing::TestWithParam<const char *>
 {
     const char *CLProgramStr = R"CLC(
         kernel void add(global int* a, global int* b, global int* c) {
@@ -175,7 +176,7 @@ struct TestOCLKernelBundleFromSource : public ::testing::Test
 
     TestOCLKernelBundleFromSource()
     {
-        auto DS = DPCTLFilterSelector_Create("opencl:gpu");
+        auto DS = DPCTLFilterSelector_Create(GetParam());
         DRef = DPCTLDevice_CreateFromSelector(DS);
         DPCTLDeviceSelector_Delete(DS);
         CRef = DPCTLDeviceMgr_GetCachedContext(DRef);
@@ -183,6 +184,15 @@ struct TestOCLKernelBundleFromSource : public ::testing::Test
         if (DRef)
             KBRef = DPCTLKernelBundle_CreateFromOCLSource(
                 CRef, DRef, CLProgramStr, CompileOpts);
+    }
+
+    void SetUp()
+    {
+        if (!DRef) {
+            auto message = "Skipping as no device of type " +
+                           std::string(GetParam()) + ".";
+            GTEST_SKIP_(message.c_str());
+        }
     }
 
     ~TestOCLKernelBundleFromSource()
@@ -196,17 +206,14 @@ struct TestOCLKernelBundleFromSource : public ::testing::Test
     }
 };
 
-TEST_F(TestOCLKernelBundleFromSource, CheckCreateFromOCLSource)
+TEST_P(TestOCLKernelBundleFromSource, CheckCreateFromOCLSource)
 {
-    if (!DRef)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
-
     ASSERT_TRUE(KBRef != nullptr);
     ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, "add"));
     ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, "axpy"));
 }
 
-TEST_F(TestOCLKernelBundleFromSource, CheckCreateFromOCLSourceNull)
+TEST_P(TestOCLKernelBundleFromSource, CheckCreateFromOCLSourceNull)
 {
     const char *InvalidCLProgramStr = R"CLC(
         kernel void invalid(global foo* a, global bar* b) {
@@ -215,9 +222,6 @@ TEST_F(TestOCLKernelBundleFromSource, CheckCreateFromOCLSourceNull)
         }
     )CLC";
     DPCTLSyclKernelBundleRef KBRef = nullptr;
-
-    if (!DRef)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
 
     EXPECT_NO_FATAL_FAILURE(KBRef = DPCTLKernelBundle_CreateFromOCLSource(
                                 CRef, DRef, InvalidCLProgramStr, CompileOpts););
@@ -236,11 +240,8 @@ TEST_F(TestOCLKernelBundleFromSource, CheckCreateFromOCLSourceNull)
     ASSERT_TRUE(KBRef == nullptr);
 }
 
-TEST_F(TestOCLKernelBundleFromSource, CheckGetKernelOCLSource)
+TEST_P(TestOCLKernelBundleFromSource, CheckGetKernelOCLSource)
 {
-    if (!DRef)
-        GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
-
     auto AddKernel = DPCTLKernelBundle_GetKernel(KBRef, "add");
     auto AxpyKernel = DPCTLKernelBundle_GetKernel(KBRef, "axpy");
     ASSERT_TRUE(AddKernel != nullptr);
@@ -260,6 +261,10 @@ INSTANTIATE_TEST_SUITE_P(KernelBundleCreationFromSpirv,
                                            "level_zero:gpu",
 #endif
                                            "opencl:cpu:0"));
+
+INSTANTIATE_TEST_SUITE_P(KernelBundleCreationFromSource,
+                         TestOCLKernelBundleFromSource,
+                         ::testing::Values("opencl:gpu", "opencl:cpu"));
 
 struct TestKernelBundleUnsupportedBackend : public ::testing::Test
 {
