@@ -594,6 +594,11 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
                       __FILE__, __func__, __LINE__);
         return KBRef;
     }
+    if ((!IL) || (length == 0)) {
+        error_handler("Cannot create program from null SPIR-V buffer.",
+                      __FILE__, __func__, __LINE__);
+        return KBRef;
+    }
 
     context *SyclCtx = unwrap(CtxRef);
     device *SyclDev = unwrap(DevRef);

@@ -42,24 +42,22 @@
 
 using namespace cl::sycl;
 
-struct TestDPCTLSyclProgramInterface
+struct TestDPCTLSyclKernelBundleInterface
     : public ::testing::TestWithParam<const char *>
 {
     DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLSyclContextRef CRef = nullptr;
-    DPCTLSyclQueueRef QRef = nullptr;
     DPCTLSyclKernelBundleRef KBRef = nullptr;
     std::ifstream spirvFile;
     size_t spirvFileSize;
     std::vector<char> spirvBuffer;
 
-    TestDPCTLSyclProgramInterface()
+    TestDPCTLSyclKernelBundleInterface()
     {
         auto DS = DPCTLFilterSelector_Create(GetParam());
         DRef = DPCTLDevice_CreateFromSelector(DS);
         DPCTLDeviceSelector_Delete(DS);
         CRef = DPCTLDeviceMgr_GetCachedContext(DRef);
-        QRef = DPCTLQueue_Create(CRef, DRef, nullptr, DPCTL_DEFAULT_PROPERTY);
 
         if (DRef) {
             spirvFile.open("./multi_kernel.spv",
@@ -82,18 +80,20 @@ struct TestDPCTLSyclProgramInterface
         }
     }
 
-    ~TestDPCTLSyclProgramInterface()
+    ~TestDPCTLSyclKernelBundleInterface()
     {
-        if (DRef)
+        if (DRef) {
             spirvFile.close();
-        DPCTLDevice_Delete(DRef);
-        DPCTLQueue_Delete(QRef);
-        DPCTLContext_Delete(CRef);
-        DPCTLKernelBundle_Delete(KBRef);
+            DPCTLDevice_Delete(DRef);
+        }
+        if (CRef)
+            DPCTLContext_Delete(CRef);
+        if (KBRef)
+            DPCTLKernelBundle_Delete(KBRef);
     }
 };
 
-TEST_P(TestDPCTLSyclProgramInterface, ChkCreateFromSpirv)
+TEST_P(TestDPCTLSyclKernelBundleInterface, ChkCreateFromSpirv)
 {
 
     ASSERT_TRUE(KBRef != nullptr);
@@ -102,25 +102,36 @@ TEST_P(TestDPCTLSyclProgramInterface, ChkCreateFromSpirv)
     ASSERT_FALSE(DPCTLKernelBundle_HasKernel(KBRef, nullptr));
 }
 
-TEST_P(TestDPCTLSyclProgramInterface, ChkCreateFromSpirvNull)
+TEST_P(TestDPCTLSyclKernelBundleInterface, ChkCreateFromSpirvNull)
 {
     DPCTLSyclContextRef Null_CRef = nullptr;
     DPCTLSyclDeviceRef Null_DRef = nullptr;
     const void *null_spirv = nullptr;
     DPCTLSyclKernelBundleRef KBRef = nullptr;
+    // Null context
     EXPECT_NO_FATAL_FAILURE(KBRef = DPCTLKernelBundle_CreateFromSpirv(
                                 Null_CRef, Null_DRef, null_spirv, 0, nullptr));
     ASSERT_TRUE(KBRef == nullptr);
+
+    // Null device
+    EXPECT_NO_FATAL_FAILURE(KBRef = DPCTLKernelBundle_CreateFromSpirv(
+                                CRef, Null_DRef, null_spirv, 0, nullptr));
+    ASSERT_TRUE(KBRef == nullptr);
+
+    // Null IL
+    EXPECT_NO_FATAL_FAILURE(KBRef = DPCTLKernelBundle_CreateFromSpirv(
+                                CRef, DRef, null_spirv, 0, nullptr));
+    ASSERT_TRUE(KBRef == nullptr);
 }
 
-TEST_P(TestDPCTLSyclProgramInterface, ChkHasKernelNullProgram)
+TEST_P(TestDPCTLSyclKernelBundleInterface, ChkHasKernelNullProgram)
 {
 
     DPCTLSyclKernelBundleRef NullRef = nullptr;
     ASSERT_FALSE(DPCTLKernelBundle_HasKernel(NullRef, "add"));
 }
 
-TEST_P(TestDPCTLSyclProgramInterface, ChkGetKernel)
+TEST_P(TestDPCTLSyclKernelBundleInterface, ChkGetKernel)
 {
     auto AddKernel = DPCTLKernelBundle_GetKernel(KBRef, "add");
     auto AxpyKernel = DPCTLKernelBundle_GetKernel(KBRef, "axpy");
@@ -134,7 +145,7 @@ TEST_P(TestDPCTLSyclProgramInterface, ChkGetKernel)
     EXPECT_NO_FATAL_FAILURE(DPCTLKernel_Delete(NullKernel));
 }
 
-TEST_P(TestDPCTLSyclProgramInterface, ChkGetKernelNullProgram)
+TEST_P(TestDPCTLSyclKernelBundleInterface, ChkGetKernelNullProgram)
 {
     DPCTLSyclKernelBundleRef NullRef = nullptr;
     DPCTLSyclKernelRef KRef = nullptr;
@@ -143,7 +154,7 @@ TEST_P(TestDPCTLSyclProgramInterface, ChkGetKernelNullProgram)
     EXPECT_TRUE(KRef == nullptr);
 }
 
-struct TestOCLProgramFromSource : public ::testing::Test
+struct TestOCLKernelBundleFromSource : public ::testing::Test
 {
     const char *CLProgramStr = R"CLC(
         kernel void add(global int* a, global int* b, global int* c) {
@@ -160,32 +171,32 @@ struct TestOCLProgramFromSource : public ::testing::Test
     const char *CompileOpts = "-cl-fast-relaxed-math";
     DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLSyclContextRef CRef = nullptr;
-    DPCTLSyclQueueRef QRef = nullptr;
     DPCTLSyclKernelBundleRef KBRef = nullptr;
 
-    TestOCLProgramFromSource()
+    TestOCLKernelBundleFromSource()
     {
         auto DS = DPCTLFilterSelector_Create("opencl:gpu");
         DRef = DPCTLDevice_CreateFromSelector(DS);
         DPCTLDeviceSelector_Delete(DS);
         CRef = DPCTLDeviceMgr_GetCachedContext(DRef);
-        QRef = DPCTLQueue_Create(CRef, DRef, nullptr, DPCTL_DEFAULT_PROPERTY);
 
         if (DRef)
             KBRef = DPCTLKernelBundle_CreateFromOCLSource(
                 CRef, DRef, CLProgramStr, CompileOpts);
     }
 
-    ~TestOCLProgramFromSource()
+    ~TestOCLKernelBundleFromSource()
     {
-        DPCTLDevice_Delete(DRef);
-        DPCTLQueue_Delete(QRef);
-        DPCTLContext_Delete(CRef);
-        DPCTLKernelBundle_Delete(KBRef);
+        if (DRef)
+            DPCTLDevice_Delete(DRef);
+        if (CRef)
+            DPCTLContext_Delete(CRef);
+        if (KBRef)
+            DPCTLKernelBundle_Delete(KBRef);
     }
 };
 
-TEST_F(TestOCLProgramFromSource, CheckCreateFromOCLSource)
+TEST_F(TestOCLKernelBundleFromSource, CheckCreateFromOCLSource)
 {
     if (!DRef)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
@@ -195,7 +206,7 @@ TEST_F(TestOCLProgramFromSource, CheckCreateFromOCLSource)
     ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, "axpy"));
 }
 
-TEST_F(TestOCLProgramFromSource, CheckCreateFromOCLSourceNull)
+TEST_F(TestOCLKernelBundleFromSource, CheckCreateFromOCLSourceNull)
 {
     const char *InvalidCLProgramStr = R"CLC(
         kernel void invalid(global foo* a, global bar* b) {
@@ -211,9 +222,21 @@ TEST_F(TestOCLProgramFromSource, CheckCreateFromOCLSourceNull)
     EXPECT_NO_FATAL_FAILURE(KBRef = DPCTLKernelBundle_CreateFromOCLSource(
                                 CRef, DRef, InvalidCLProgramStr, CompileOpts););
     ASSERT_TRUE(KBRef == nullptr);
+
+    DPCTLSyclContextRef Null_CRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(
+        KBRef = DPCTLKernelBundle_CreateFromOCLSource(
+            Null_CRef, DRef, InvalidCLProgramStr, CompileOpts););
+    ASSERT_TRUE(KBRef == nullptr);
+
+    DPCTLSyclDeviceRef Null_DRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(
+        KBRef = DPCTLKernelBundle_CreateFromOCLSource(
+            CRef, Null_DRef, InvalidCLProgramStr, CompileOpts););
+    ASSERT_TRUE(KBRef == nullptr);
 }
 
-TEST_F(TestOCLProgramFromSource, CheckGetKernelOCLSource)
+TEST_F(TestOCLKernelBundleFromSource, CheckGetKernelOCLSource)
 {
     if (!DRef)
         GTEST_SKIP_("Skipping as no OpenCL GPU device found.\n");
@@ -226,8 +249,8 @@ TEST_F(TestOCLProgramFromSource, CheckGetKernelOCLSource)
     DPCTLKernel_Delete(AxpyKernel);
 }
 
-INSTANTIATE_TEST_SUITE_P(ProgramCreationFromSpriv,
-                         TestDPCTLSyclProgramInterface,
+INSTANTIATE_TEST_SUITE_P(KernelBundleCreationFromSpirv,
+                         TestDPCTLSyclKernelBundleInterface,
                          ::testing::Values("opencl",
                                            "opencl:gpu",
                                            "opencl:cpu",
@@ -237,3 +260,70 @@ INSTANTIATE_TEST_SUITE_P(ProgramCreationFromSpriv,
                                            "level_zero:gpu",
 #endif
                                            "opencl:cpu:0"));
+
+struct TestKernelBundleUnsupportedBackend : public ::testing::Test
+{
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclContextRef CRef = nullptr;
+
+    TestKernelBundleUnsupportedBackend()
+    {
+        auto DS = DPCTLFilterSelector_Create("host:host");
+        DRef = DPCTLDevice_CreateFromSelector(DS);
+        DPCTLDeviceSelector_Delete(DS);
+        if (DRef)
+            CRef = DPCTLDeviceMgr_GetCachedContext(DRef);
+    }
+
+    void SetUp()
+    {
+        if (!DRef) {
+            std::string message = "Skipping as host device is not enabled.";
+            GTEST_SKIP_(message.c_str());
+        }
+    }
+
+    ~TestKernelBundleUnsupportedBackend()
+    {
+        if (DRef)
+            DPCTLDevice_Delete(DRef);
+        if (CRef)
+            DPCTLContext_Delete(CRef);
+    }
+};
+
+TEST_F(TestKernelBundleUnsupportedBackend, CheckCreateFromSource)
+{
+    const char *src = R"CLC(
+        kernel void set(global int* a, int v) {
+            size_t index = get_global_id(0);
+            a[index] = v;
+        }
+    )CLC";
+    const char *opts = "";
+
+    DPCTLSyclKernelBundleRef KBRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(
+        KBRef = DPCTLKernelBundle_CreateFromOCLSource(CRef, DRef, src, opts));
+    ASSERT_TRUE(KBRef == nullptr);
+}
+
+TEST_F(TestKernelBundleUnsupportedBackend, CheckCreateFromSpirv)
+{
+    std::ifstream spirvFile;
+    size_t spirvFileSize;
+    std::vector<char> spirvBuffer;
+
+    spirvFile.open("./multi_kernel.spv", std::ios::binary | std::ios::ate);
+    spirvFileSize = std::filesystem::file_size("./multi_kernel.spv");
+    spirvBuffer.reserve(spirvFileSize);
+    spirvFile.seekg(0, std::ios::beg);
+    spirvFile.read(spirvBuffer.data(), spirvFileSize);
+    spirvFile.close();
+
+    DPCTLSyclKernelBundleRef KBRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(
+        KBRef = DPCTLKernelBundle_CreateFromSpirv(
+            CRef, DRef, spirvBuffer.data(), spirvFileSize, nullptr));
+    ASSERT_TRUE(KBRef == nullptr);
+}
