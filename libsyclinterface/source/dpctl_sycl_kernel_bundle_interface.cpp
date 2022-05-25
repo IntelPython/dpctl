@@ -147,15 +147,8 @@ typedef cl_kernel (*clCreateKernelFT)(cl_program, const char *, cl_int *);
 const char *clCreateKernel_Name = "clCreateKernel";
 clCreateKernelFT get_clCreateKernel()
 {
-    static dpctl::DynamicLibHelper clLib(clLoaderName, clLibLoadFlags);
-    if (!clLib.opened()) {
-        error_handler("The OpenCL loader dynamic library could not "
-                      "be opened.",
-                      __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
     static auto st_clCreateKernelF =
-        clLib.getSymbol<clCreateKernelFT>(clCreateKernel_Name);
+        cl_loader::get().getSymbol<clCreateKernelFT>(clCreateKernel_Name);
 
     return st_clCreateKernelF;
 }
