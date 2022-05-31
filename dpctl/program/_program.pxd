@@ -41,7 +41,7 @@ cdef class SyclKernel:
 
 
 cdef class SyclProgram:
-    ''' Wraps a sycl::kernel_bundle<sycl::bundle_state::executable> object created from
+    ''' Wraps a sycl::kernel_bundle<sycl::bundle_state::executable> object created by
         using SYCL interoperability layer for OpenCL and Level-Zero backends.
 
         SyclProgram exposes the C API from dpctl_sycl_kernel_bundle_interface.h. A
