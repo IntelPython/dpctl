@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kernel class C wrapper &mdash; Data-parallel Control (dpctl) 0.13.0dev1+62.g6b21cf54f documentation</title>
+  <title>Kernel class C wrapper &mdash; Data-parallel Control (dpctl) 0.13.0dev1+63.g9c9b0b3b8 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -16,6 +16,7 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/target-highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+62.g6b21cf54f
+                0.13.0dev1+63.g9c9b0b3b8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -103,11 +104,11 @@
            <div itemprop="articleBody">
              
   <section id="kernel-class-c-wrapper">
-<span id="doxid-da-df6-group-kernel-interface"></span><span id="index-0"></span><h1>Kernel class C wrapper<a class="headerlink" href="#kernel-class-c-wrapper" title="Permalink to this headline"></a></h1>
+<span id="doxid-da-df6-group-kernel-interface"></span><span id="index-0"></span><h1>Kernel class C wrapper<a class="headerlink" href="#kernel-class-c-wrapper" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// global functions</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
@@ -117,9 +118,9 @@
 <a class="reference internal" href="#doxid-da-df6-group-kernel-interface-1gae585c0ae9e5e1826ca24aac6f9b2a71d"><span class="std std-ref">DPCTLKernel_GetNumArgs</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span></pre>
 </section>
 <section id="detailed-documentation">
-<span id="details-da-df6-group-kernel-interface"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this headline"></a></h2>
+<span id="details-da-df6-group-kernel-interface"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading"></a></h2>
 <section id="global-functions">
-<h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this headline"></a></h3>
+<h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this heading"></a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1ga02cb1ddc64d9f78d228a5dc222c8862b"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLKernel_Delete</span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">)</span></pre>
 <p>Deletes the DPCTLSyclKernelRef after casting it to a sycl::kernel.</p>

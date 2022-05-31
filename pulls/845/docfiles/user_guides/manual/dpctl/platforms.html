@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Platform &mdash; Data-parallel Control (dpctl) 0.13.0dev1+62.g6b21cf54f documentation</title>
+  <title>Platform &mdash; Data-parallel Control (dpctl) 0.13.0dev1+63.g9c9b0b3b8 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -16,6 +16,7 @@
         <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
         <script src="../../../../_static/jquery.js"></script>
         <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../../_static/doctools.js"></script>
         <script src="../../../../_static/target-highlight.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+62.g6b21cf54f
+                0.13.0dev1+63.g9c9b0b3b8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -93,12 +94,12 @@
            <div itemprop="articleBody">
              
   <section id="platform">
-<span id="platforms"></span><h1>Platform<a class="headerlink" href="#platform" title="Permalink to this headline"></a></h1>
+<span id="platforms"></span><h1>Platform<a class="headerlink" href="#platform" title="Permalink to this heading"></a></h1>
 <p>A platform abstracts a device driver for one or more XPU that is connected to
 a host. The <a class="reference internal" href="../../../dpctl/SyclPlatform.html#dpctl.SyclPlatform" title="dpctl.SyclPlatform"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclPlatform</span></code></a> class represents a platform and
 abstracts the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/platform.html">sycl::platform</a> SYCL runtime class.</p>
 <section id="listing-available-platforms">
-<h2>Listing Available Platforms<a class="headerlink" href="#listing-available-platforms" title="Permalink to this headline"></a></h2>
+<h2>Listing Available Platforms<a class="headerlink" href="#listing-available-platforms" title="Permalink to this heading"></a></h2>
 <p>The platforms available on a system can be queried using the
 <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.lsplatform" title="dpctl.lsplatform"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.lsplatform()</span></code></a> function. In addition, as illustrated in the following
 example it is possible to print out metadata about a platform.</p>
@@ -138,9 +139,9 @@ SYCL host platform 1.2
 INFO: ===========================
 
 INFO: Executing example list_available_platforms
-&lt;dpctl.SyclPlatform [Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) Corporation,  OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3] at 0x7fb207a467b0&gt;
-&lt;dpctl.SyclPlatform [Intel(R) OpenCL, Intel(R) Corporation,  OpenCL 3.0 LINUX] at 0x7fb20791fcb0&gt;
-&lt;dpctl.SyclPlatform [SYCL host platform, ,  1.2] at 0x7fb1fdd3f170&gt;
+&lt;dpctl.SyclPlatform [Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) Corporation,  OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3] at 0x7fe88c24d5b0&gt;
+&lt;dpctl.SyclPlatform [Intel(R) OpenCL, Intel(R) Corporation,  OpenCL 3.0 LINUX] at 0x7fe88c2f6330&gt;
+&lt;dpctl.SyclPlatform [SYCL host platform, ,  1.2] at 0x7fe882673430&gt;
 INFO: ===========================
 </pre></div>
 </div>

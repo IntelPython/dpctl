@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Queue class helper functions &mdash; Data-parallel Control (dpctl) 0.13.0dev1+62.g6b21cf54f documentation</title>
+  <title>Queue class helper functions &mdash; Data-parallel Control (dpctl) 0.13.0dev1+63.g9c9b0b3b8 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -16,6 +16,7 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/target-highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+62.g6b21cf54f
+                0.13.0dev1+63.g9c9b0b3b8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -103,11 +104,11 @@
            <div itemprop="articleBody">
              
   <section id="queue-class-helper-functions">
-<span id="doxid-d0-dde-group-queue-manager"></span><span id="index-0"></span><h1>Queue class helper functions<a class="headerlink" href="#queue-class-helper-functions" title="Permalink to this headline"></a></h1>
+<span id="doxid-d0-dde-group-queue-manager"></span><span id="index-0"></span><h1>Queue class helper functions<a class="headerlink" href="#queue-class-helper-functions" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// global functions</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span>
@@ -132,9 +133,9 @@
 <a class="reference internal" href="#doxid-d0-dde-group-queue-manager-1gaf767ec0189383390b6bc63835eef1543"><span class="std std-ref">DPCTLQueueMgr_SetGlobalQueue</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">);</span></pre>
 </section>
 <section id="detailed-documentation">
-<span id="details-d0-dde-group-queue-manager"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this headline"></a></h2>
+<span id="details-d0-dde-group-queue-manager"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading"></a></h2>
 <section id="global-functions">
-<h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this headline"></a></h3>
+<h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this heading"></a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-dde-group-queue-manager-1gaa1e5044153f900fff9b779b30f3b0538"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span>
 <span class="n">DPCTLQueueMgr_GetCurrentQueue</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
 <p>Get the current sycl::queue for the thread of execution.</p>
