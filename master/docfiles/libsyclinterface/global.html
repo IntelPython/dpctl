@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.13.0dev1+49.g3340f3381 documentation</title>
+  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.13.0dev1+64.g45db6eaa9 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -16,6 +16,7 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/target-highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+49.g3340f3381
+                0.13.0dev1+64.g45db6eaa9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -57,9 +58,9 @@
 <li class="toctree-l2"><a class="reference internal" href="group_DeviceSelectors.html">Device selection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_EventInterface.html">Event class C wrapper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_KernelInterface.html">Kernel class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_KernelBundleInterface.html">Kernel_bundle class C wrapper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_PlatformInterface.html">Platform class C wrapper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_PlatformManager.html">Platform class helper functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="group_ProgramInterface.html">Program class C wrapper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_QueueInterface.html">Queue class C wrapper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_QueueManager.html">Queue class helper functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_Service.html">Service functions</a></li>
@@ -111,11 +112,11 @@
            <div itemprop="articleBody">
              
   <span class="target" id="global"></span><section id="global-namespace">
-<span id="index-0"></span><h1>Global Namespace<a class="headerlink" href="#global-namespace" title="Permalink to this headline"></a></h1>
+<span id="index-0"></span><h1>Global Namespace<a class="headerlink" href="#global-namespace" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
 
 <span class="k">typedef</span> <span class="kt">void</span> <a class="reference internal" href="#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="p">(</span><span class="kt">int</span> <span class="n">err_code</span><span class="p">);</span>
@@ -126,9 +127,9 @@
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclDevice</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclDeviceSelector</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclEvent</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclKernelBundle</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclKernel</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclPlatform</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclProgram</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a665a90816ae3328f517ba19c70e4b172"><span class="std std-ref">DPCTLSyclProgramRef</span></a><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclQueue</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclUSM</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span class="std std-ref">DPCTLSyclUSMRef</span></a><span></span><span class="p">;</span>
 
@@ -480,11 +481,40 @@
 <span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a65819357fd48d2ed7452b65f9c92ef27"><span class="std std-ref">DPCTLEventVector_Size</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">);</span>
 
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span>
+<a class="reference internal" href="group_KernelBundleInterface.html#doxid-d2-d0d-group-kernel-bundle-interface-1gaa753c9ba7f39524d2f87cb7caae74350"><span class="std std-ref">DPCTLKernelBundle_CreateFromOCLSource</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">Ctx</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">Dev</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">Source</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">CompileOpts</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span>
+<a class="reference internal" href="group_KernelBundleInterface.html#doxid-d2-d0d-group-kernel-bundle-interface-1ga6062cc6a4c81ca4f4079d792c9f135b8"><span class="std std-ref">DPCTLKernelBundle_CreateFromSpirv</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">Ctx</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">Dev</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">IL</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Length</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">CompileOpts</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">void</span>
+<a class="reference internal" href="group_KernelBundleInterface.html#doxid-d2-d0d-group-kernel-bundle-interface-1ga0bf45ad7930bf8e973be31e48b0fde9d"><span class="std std-ref">DPCTLKernelBundle_Delete</span></a><span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span> <span class="n">KBRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span>
+<a class="reference internal" href="group_KernelBundleInterface.html#doxid-d2-d0d-group-kernel-bundle-interface-1ga7826d57d69cf2d000ccd332541159e33"><span class="std std-ref">DPCTLKernelBundle_GetKernel</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span> <span class="n">KBRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">KernelName</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<a class="reference internal" href="group_KernelBundleInterface.html#doxid-d2-d0d-group-kernel-bundle-interface-1gaec25b409112401cd5ca12edbc96d4dbf"><span class="std std-ref">DPCTLKernelBundle_HasKernel</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span> <span class="n">KBRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">KernelName</span>
+    <span class="p">);</span>
+
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
 <a class="reference internal" href="group_KernelInterface.html#doxid-da-df6-group-kernel-interface-1ga02cb1ddc64d9f78d228a5dc222c8862b"><span class="std std-ref">DPCTLKernel_Delete</span></a><span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span>
-
-<span class="n">DPCTL_API</span> <span class="k">const</span> <span class="n">__dpctl_give</span> <span class="kt">char</span><span class="o">*</span>
-<a class="reference internal" href="group_KernelInterface.html#doxid-da-df6-group-kernel-interface-1gae2ce409c1dc3b57349128438c9c9096b"><span class="std std-ref">DPCTLKernel_GetFunctionName</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <a class="reference internal" href="group_KernelInterface.html#doxid-da-df6-group-kernel-interface-1gae585c0ae9e5e1826ca24aac6f9b2a71d"><span class="std std-ref">DPCTLKernel_GetNumArgs</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span>
@@ -554,36 +584,6 @@
 
 <span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <a class="reference internal" href="group_PlatformManager.html#doxid-d5-dcf-group-platform-manager-1ga713c99c0d385de070ae32d4d7657401e"><span class="std std-ref">DPCTLPlatformVector_Size</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="group_PlatformManager.html#doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span class="std std-ref">DPCTLPlatformVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">);</span>
-
-<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a665a90816ae3328f517ba19c70e4b172"><span class="std std-ref">DPCTLSyclProgramRef</span></a><span></span>
-<a class="reference internal" href="group_ProgramInterface.html#doxid-d1-dbb-group-program-interface-1gae1f8caf6c9bb8d8683b3717f63e56ae7"><span class="std std-ref">DPCTLProgram_CreateFromOCLSource</span></a><span></span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">Ctx</span><span class="p">,</span>
-    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">Source</span><span class="p">,</span>
-    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">CompileOpts</span>
-    <span class="p">);</span>
-
-<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a665a90816ae3328f517ba19c70e4b172"><span class="std std-ref">DPCTLSyclProgramRef</span></a><span></span>
-<a class="reference internal" href="group_ProgramInterface.html#doxid-d1-dbb-group-program-interface-1gade20300fcd7d69bdb6ae7cad54ee0f78"><span class="std std-ref">DPCTLProgram_CreateFromSpirv</span></a><span></span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">Ctx</span><span class="p">,</span>
-    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">IL</span><span class="p">,</span>
-    <span class="kt">size_t</span> <span class="n">Length</span><span class="p">,</span>
-    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">CompileOpts</span>
-    <span class="p">);</span>
-
-<span class="n">DPCTL_API</span> <span class="kt">void</span>
-<a class="reference internal" href="group_ProgramInterface.html#doxid-d1-dbb-group-program-interface-1ga29760f4984675c264bbdf11b92b89c08"><span class="std std-ref">DPCTLProgram_Delete</span></a><span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a665a90816ae3328f517ba19c70e4b172"><span class="std std-ref">DPCTLSyclProgramRef</span></a><span></span> <span class="n">PRef</span><span class="p">);</span>
-
-<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span>
-<a class="reference internal" href="group_ProgramInterface.html#doxid-d1-dbb-group-program-interface-1ga86fcd9c7af5bc38a056e237c89b3fa9c"><span class="std std-ref">DPCTLProgram_GetKernel</span></a><span></span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a665a90816ae3328f517ba19c70e4b172"><span class="std std-ref">DPCTLSyclProgramRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
-    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">KernelName</span>
-    <span class="p">);</span>
-
-<span class="n">DPCTL_API</span> <span class="kt">bool</span>
-<a class="reference internal" href="group_ProgramInterface.html#doxid-d1-dbb-group-program-interface-1ga9c266676f09dd0ed681adfe2d6b1ff06"><span class="std std-ref">DPCTLProgram_HasKernel</span></a><span></span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a665a90816ae3328f517ba19c70e4b172"><span class="std std-ref">DPCTLSyclProgramRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
-    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">KernelName</span>
-    <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">bool</span>
 <a class="reference internal" href="group_QueueInterface.html#doxid-d2-d22-group-queue-interface-1ga8a957bd257ec77b0f57bcb3c35e1e479"><span class="std std-ref">DPCTLQueue_AreEq</span></a><span></span><span class="p">(</span>
@@ -826,9 +826,9 @@
     <span class="p">);</span></pre>
 </section>
 <section id="detailed-documentation">
-<span id="details-global"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this headline"></a></h2>
+<span id="details-global"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading"></a></h2>
 <section id="typedefs">
-<h3>Typedefs<a class="headerlink" href="#typedefs" title="Permalink to this headline"></a></h3>
+<h3>Typedefs<a class="headerlink" href="#typedefs" title="Permalink to this heading"></a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span id="index-1"></span><span></span><span class="k">typedef</span> <span class="kt">void</span> <span class="n">error_handler_callback</span><span class="p">(</span><span class="kt">int</span> <span class="n">err_code</span><span class="p">)</span></pre>
 <p>Type of function to be used in SYCL async error handler provide by DPCTL.</p>
 <p class="rubric">Parameters:</p>
@@ -851,19 +851,19 @@
 <p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::device_selector</span></code></p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span id="index-5"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclEvent</span><span class="o">*</span> <span class="n">DPCTLSyclEventRef</span></pre>
 <p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span id="index-6"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclKernel</span><span class="o">*</span> <span class="n">DPCTLSyclKernelRef</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span id="index-6"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclKernelBundle</span><span class="o">*</span> <span class="n">DPCTLSyclKernelBundleRef</span></pre>
+<p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle</span></code></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span id="index-7"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclKernel</span><span class="o">*</span> <span class="n">DPCTLSyclKernelRef</span></pre>
 <p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::kernel</span></code></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span id="index-7"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclPlatform</span><span class="o">*</span> <span class="n">DPCTLSyclPlatformRef</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span id="index-8"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclPlatform</span><span class="o">*</span> <span class="n">DPCTLSyclPlatformRef</span></pre>
 <p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a665a90816ae3328f517ba19c70e4b172"><span id="index-8"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclProgram</span><span class="o">*</span> <span class="n">DPCTLSyclProgramRef</span></pre>
-<p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::program</span></code></p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span id="index-9"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclQueue</span><span class="o">*</span> <span class="n">DPCTLSyclQueueRef</span></pre>
 <p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code></p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span id="index-10"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclUSM</span><span class="o">*</span> <span class="n">DPCTLSyclUSMRef</span></pre>
 <p>Used to pass a <code class="docutils literal notranslate"><span class="pre">sycl::usm</span></code> memory opaquely through DPCTL interfaces.</p>
 </section>
 <section id="global-functions">
-<h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this headline"></a></h3>
+<h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this heading"></a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a4ef25a38cbf63e618016302e8ebf480d"><span id="index-11"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLDevice_GetImage2dMaxHeight</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::image2d_max_height">info::device::image2d_max_height</a>&gt;().</p>

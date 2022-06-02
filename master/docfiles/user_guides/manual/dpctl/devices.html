@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device &mdash; Data-parallel Control (dpctl) 0.13.0dev1+49.g3340f3381 documentation</title>
+  <title>Device &mdash; Data-parallel Control (dpctl) 0.13.0dev1+64.g45db6eaa9 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -16,6 +16,7 @@
         <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
         <script src="../../../../_static/jquery.js"></script>
         <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../../_static/doctools.js"></script>
         <script src="../../../../_static/target-highlight.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+49.g3340f3381
+                0.13.0dev1+64.g45db6eaa9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -93,12 +94,12 @@
            <div itemprop="articleBody">
              
   <section id="device">
-<span id="devices"></span><h1>Device<a class="headerlink" href="#device" title="Permalink to this headline"></a></h1>
+<span id="devices"></span><h1>Device<a class="headerlink" href="#device" title="Permalink to this heading"></a></h1>
 <p>A device is an abstract representation for an XPU. The <a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>
 class represents a device and is a wrapper over the
 <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device.html">sycl::device</a> SYCL runtime class.</p>
 <section id="creating-devices">
-<h2>Creating Devices<a class="headerlink" href="#creating-devices" title="Permalink to this headline"></a></h2>
+<h2>Creating Devices<a class="headerlink" href="#creating-devices" title="Permalink to this heading"></a></h2>
 <p>We touched upon device creation under the <a class="reference internal" href="device_selection.html#device-selection"><span class="std std-ref">Device Selection</span></a> section. the
 <a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> class includes a default constructor to create a
 “default” device that is selected by the SYCL runtime. Users can also use
@@ -106,7 +107,7 @@ explicit <a class="reference internal" href="device_selection.html#sec-filter-se
 device.</p>
 </section>
 <section id="listing-devices">
-<h2>Listing Devices<a class="headerlink" href="#listing-devices" title="Permalink to this headline"></a></h2>
+<h2>Listing Devices<a class="headerlink" href="#listing-devices" title="Permalink to this heading"></a></h2>
 <p><a class="reference internal" href="../../../dpctl/dpctl_pyapi.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> provides the <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code></a> utility function to list
 the available devices on a user’s system. The list of devices returned depends
 on available hardware, installed drivers, as well as by
@@ -210,7 +211,7 @@ application.</p>
 </div>
 </section>
 <section id="device-aspects-and-information-descriptors">
-<h2>Device Aspects and Information Descriptors<a class="headerlink" href="#device-aspects-and-information-descriptors" title="Permalink to this headline"></a></h2>
+<h2>Device Aspects and Information Descriptors<a class="headerlink" href="#device-aspects-and-information-descriptors" title="Permalink to this heading"></a></h2>
 <p>A device can have various <em>aspects</em> and <em>information descriptors</em> that describe
 its hardware characteristics. <a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#table.device.aspect">Aspects</a> are boolean
 characteristics of the device, whereas
@@ -242,7 +243,7 @@ listing all the aspects and information descriptor properties in
 <a class="reference internal" href="../../../dpctl/SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>.</p>
 </section>
 <section id="sub-devices">
-<span id="sec-devices-sub-devices"></span><h2>Sub-devices<a class="headerlink" href="#sub-devices" title="Permalink to this headline"></a></h2>
+<span id="sec-devices-sub-devices"></span><h2>Sub-devices<a class="headerlink" href="#sub-devices" title="Permalink to this heading"></a></h2>
 <p>It is possible for a device to be partitioned into “sub-devices”. A sub-device
 represents a sub-set of the computational units within a device that are grouped
 based on some hardware criteria. For example, a two socket CPU device may be

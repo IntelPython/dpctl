@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Queue &mdash; Data-parallel Control (dpctl) 0.13.0dev1+49.g3340f3381 documentation</title>
+  <title>Queue &mdash; Data-parallel Control (dpctl) 0.13.0dev1+64.g45db6eaa9 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -16,6 +16,7 @@
         <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
         <script src="../../../../_static/jquery.js"></script>
         <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../../_static/doctools.js"></script>
         <script src="../../../../_static/target-highlight.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+49.g3340f3381
+                0.13.0dev1+64.g45db6eaa9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -93,7 +94,7 @@
            <div itemprop="articleBody">
              
   <section id="queue">
-<span id="queues"></span><h1>Queue<a class="headerlink" href="#queue" title="Permalink to this headline"></a></h1>
+<span id="queues"></span><h1>Queue<a class="headerlink" href="#queue" title="Permalink to this heading"></a></h1>
 <p>A queue is needed to schedule execution of any computation or data copying on a
 device. Queue construction requires specifying a device and a context targeting
 that device as well as additional properties, such as whether profiling
@@ -102,7 +103,7 @@ order in which they were submitted.</p>
 <p>The <a class="reference internal" href="../../../dpctl/SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> class represents a queue and abstracts the
 <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/queue.html">sycl::queue</a> SYCL runtime class.</p>
 <section id="types-of-queues">
-<h2>Types of Queues<a class="headerlink" href="#types-of-queues" title="Permalink to this headline"></a></h2>
+<h2>Types of Queues<a class="headerlink" href="#types-of-queues" title="Permalink to this heading"></a></h2>
 <p>SYCL has a task-based execution model. The order in which a SYCL runtime
 executes a task on a target device is specified by a sequence of events which
 must be complete before execution of the task is allowed. Submission of a task
@@ -117,7 +118,7 @@ order in which they were submitted. In this case, tasks submitted to such a
 queue, called ‘in-order’ queues, are never executed concurrently.</p>
 </section>
 <section id="creating-a-new-queue">
-<h2>Creating a New Queue<a class="headerlink" href="#creating-a-new-queue" title="Permalink to this headline"></a></h2>
+<h2>Creating a New Queue<a class="headerlink" href="#creating-a-new-queue" title="Permalink to this heading"></a></h2>
 <p><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue(ctx,</span> <span class="pre">dev,</span> <span class="pre">property=None)</span></code> creates a new queue instance
 for the given compatible context and device. Keyword parameter <cite>property</cite> can be
 set to <cite>“in_order”</cite> to create an ‘in-order’ queue and to <cite>“enable_profiling”</cite> to
@@ -153,7 +154,7 @@ associated task completes.</p>
 <a class="reference internal" href="#fig-constructing-queue-context-device-property"><span class="std std-ref">Constructing SyclQueue from context and device</span></a> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_subdevice_multidevice_context
 Could not create sub device.
-&lt;dpctl.SyclDevice [backend_type.opencl, device_type.cpu,  Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz] at 0x7fa9eea33eb0&gt; has 2 compute units
+&lt;dpctl.SyclDevice [backend_type.opencl, device_type.cpu,  Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz] at 0x7faee5bd4f30&gt; has 2 compute units
 INFO: ===========================
 </pre></div>
 </div>
@@ -185,7 +186,7 @@ is called.</p>
 <p>A possible output for the example <a class="reference internal" href="#fig-constructing-queue-filter-selector"><span class="std std-ref">Constructing SyclQueue from filter selector</span></a>
 may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_filter_selector
-Queue &lt;dpctl.SyclQueue at 0x7fb0e1fd3540, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
+Queue &lt;dpctl.SyclQueue at 0x7fbdf16cd740, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
 Device targeted by the queue:
     Name            Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
     Driver version  2022.13.3.0.16_160000
@@ -198,7 +199,7 @@ INFO: ===========================
 </div>
 </section>
 <section id="profiling-a-task-submitted-to-a-queue">
-<h2>Profiling a Task Submitted to a Queue<a class="headerlink" href="#profiling-a-task-submitted-to-a-queue" title="Permalink to this headline"></a></h2>
+<h2>Profiling a Task Submitted to a Queue<a class="headerlink" href="#profiling-a-task-submitted-to-a-queue" title="Permalink to this heading"></a></h2>
 <p>The result of scheduling execution of a task on a queue is an event. An event
 has several uses: it can be queried for the status of the task execution, it can
 be used to order execution of the future tasks after it is complete, it can be

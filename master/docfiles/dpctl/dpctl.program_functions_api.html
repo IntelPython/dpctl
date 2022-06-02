@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.program Functions &mdash; Data-parallel Control (dpctl) 0.13.0dev1+49.g3340f3381 documentation</title>
+  <title>dpctl.program Functions &mdash; Data-parallel Control (dpctl) 0.13.0dev1+64.g45db6eaa9 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -16,6 +16,7 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/target-highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -31,7 +32,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+49.g3340f3381
+                0.13.0dev1+64.g45db6eaa9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -76,16 +77,17 @@
            <div itemprop="articleBody">
              
   <section id="dpctl-program-functions">
-<span id="dpctl-program-functions-api"></span><h1>dpctl.program Functions<a class="headerlink" href="#dpctl-program-functions" title="Permalink to this headline"></a></h1>
+<span id="dpctl-program-functions-api"></span><h1>dpctl.program Functions<a class="headerlink" href="#dpctl-program-functions" title="Permalink to this heading"></a></h1>
 <section id="functions">
-<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h2>
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.program.create_program_from_source">
 <span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">create_program_from_source</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.create_program_from_source" title="Permalink to this definition"></a></dt>
 <dd><p>Creates a Sycl interoperability program from an OpenCL source string.</p>
-<p>We use the <code class="docutils literal notranslate"><span class="pre">DPCTLProgram_CreateFromOCLSource()</span></code> C API function to
-create a <code class="docutils literal notranslate"><span class="pre">sycl::program</span></code> from an OpenCL source program that can
-contain multiple kernels. Note currently only supported for OpenCL.</p>
+<p>We use the <code class="docutils literal notranslate"><span class="pre">DPCTLKernelBundle_CreateFromOCLSource()</span></code> C API function
+to create a <code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code>
+from an OpenCL source program that can contain multiple kernels.
+Note: This function is currently only supported for the OpenCL backend.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -98,13 +100,17 @@ when compiling the program.</p></li>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A <a class="reference internal" href="SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the
-<code class="docutils literal notranslate"><span class="pre">sycl::program</span></code> returned by the C API.</p>
+<code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code> returned
+by the C API.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>program (<a class="reference internal" href="SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram">SyclProgram</a>)</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference internal" href="dpctl.program_exception_api.html#dpctl.program.SyclProgramCompilationError" title="dpctl.program.SyclProgramCompilationError"><strong>SyclProgramCompilationError</strong></a> – If a SYCL program could not be created.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="dpctl.program_exception_api.html#dpctl.program.SyclProgramCompilationError" title="dpctl.program.SyclProgramCompilationError"><strong>SyclProgramCompilationError</strong></a> – If a SYCL kernel bundle could not be</p></li>
+<li><p><strong>created.</strong> – </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -113,8 +119,9 @@ when compiling the program.</p></li>
 <dt class="sig sig-object py" id="dpctl.program.create_program_from_spirv">
 <span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">create_program_from_spirv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.create_program_from_spirv" title="Permalink to this definition"></a></dt>
 <dd><p>Creates a Sycl interoperability program from an SPIR-V binary.</p>
-<p>We use the <code class="docutils literal notranslate"><span class="pre">DPCTLProgram_CreateFromOCLSpirv()</span></code> C API function to
-create a <code class="docutils literal notranslate"><span class="pre">sycl::program</span></code> object from an compiled SPIR-V binary file.</p>
+<p>We use the <code class="docutils literal notranslate"><span class="pre">DPCTLKernelBundle_CreateFromOCLSpirv()</span></code> C API function to
+create a <code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code> object
+from an compiled SPIR-V binary file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -127,13 +134,17 @@ when compiling the program.</p></li>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A <a class="reference internal" href="SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the
-<code class="docutils literal notranslate"><span class="pre">sycl::program</span></code> returned by the C API.</p>
+<code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code> returned by
+the C API.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>program (<a class="reference internal" href="SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram">SyclProgram</a>)</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference internal" href="dpctl.program_exception_api.html#dpctl.program.SyclProgramCompilationError" title="dpctl.program.SyclProgramCompilationError"><strong>SyclProgramCompilationError</strong></a> – If a SYCL program could not be created.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="dpctl.program_exception_api.html#dpctl.program.SyclProgramCompilationError" title="dpctl.program.SyclProgramCompilationError"><strong>SyclProgramCompilationError</strong></a> – If a SYCL kernel bundle could not be</p></li>
+<li><p><strong>created.</strong> – </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

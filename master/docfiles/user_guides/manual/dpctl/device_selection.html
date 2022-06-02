@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.13.0dev1+49.g3340f3381 documentation</title>
+  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.13.0dev1+64.g45db6eaa9 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -16,6 +16,7 @@
         <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
         <script src="../../../../_static/jquery.js"></script>
         <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../../_static/doctools.js"></script>
         <script src="../../../../_static/target-highlight.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+49.g3340f3381
+                0.13.0dev1+64.g45db6eaa9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -93,11 +94,11 @@
            <div itemprop="articleBody">
              
   <section id="device-selection">
-<span id="id1"></span><h1>Device Selection<a class="headerlink" href="#device-selection" title="Permalink to this headline"></a></h1>
+<span id="id1"></span><h1>Device Selection<a class="headerlink" href="#device-selection" title="Permalink to this heading"></a></h1>
 <p>Device selection refers to programmatically selecting a single device from
 the set of  <a class="reference internal" href="devices.html#devices"><span class="std std-ref">devices</span></a> available on the system.</p>
 <section id="selecting-a-specific-type-of-device">
-<h2>Selecting a Specific Type of Device<a class="headerlink" href="#selecting-a-specific-type-of-device" title="Permalink to this headline"></a></h2>
+<h2>Selecting a Specific Type of Device<a class="headerlink" href="#selecting-a-specific-type-of-device" title="Permalink to this heading"></a></h2>
 <p>If a user needs to select a specific type of device such as a GPU, they can
 directly use one of the helper functions included inside dpctl. Dpctl includes
 <a class="reference internal" href="../../../dpctl/dpctl_pyapi.html#dpctl-device-selection-functions"><span class="std std-ref">helper functions</span></a> for selecting
@@ -148,7 +149,7 @@ dpctl._sycl_device.SyclDeviceCreationError: Could not create a SyclDevice with t
 </div>
 </section>
 <section id="selecting-a-device-using-a-filter-string">
-<span id="sec-filter-selection"></span><h2>Selecting a Device Using a Filter String<a class="headerlink" href="#selecting-a-device-using-a-filter-string" title="Permalink to this headline"></a></h2>
+<span id="sec-filter-selection"></span><h2>Selecting a Device Using a Filter String<a class="headerlink" href="#selecting-a-device-using-a-filter-string" title="Permalink to this heading"></a></h2>
 <p>Along with using the default device selection functions, a more explicit way of
 device selection involves the use of <em>filter strings</em> (refer
 <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_filter_selector.asciidoc">oneAPI filter selection extension</a>). The example
@@ -277,7 +278,7 @@ detail.</p>
 </div>
 </section>
 <section id="advanced-device-selection">
-<h2>Advanced Device Selection<a class="headerlink" href="#advanced-device-selection" title="Permalink to this headline"></a></h2>
+<h2>Advanced Device Selection<a class="headerlink" href="#advanced-device-selection" title="Permalink to this heading"></a></h2>
 <p>Till now we have discussed device selection using methods that defer the
 selection logic to the SYCL runtime. However, real-world applications may
 require more precise control over device selection. Dpctl offers a way for users

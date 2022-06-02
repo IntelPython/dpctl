@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data-parallel Control (dpctl) 0.13.0dev1+49.g3340f3381 documentation</title>
+  <title>Quick Start Guide &mdash; Data-parallel Control (dpctl) 0.13.0dev1+64.g45db6eaa9 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -16,6 +16,7 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/target-highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+49.g3340f3381
+                0.13.0dev1+64.g45db6eaa9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -99,9 +100,9 @@
            <div itemprop="articleBody">
              
   <section id="quick-start-guide">
-<span id="id1"></span><h1>Quick Start Guide<a class="headerlink" href="#quick-start-guide" title="Permalink to this headline"></a></h1>
+<span id="id1"></span><h1>Quick Start Guide<a class="headerlink" href="#quick-start-guide" title="Permalink to this heading"></a></h1>
 <section id="installing-from-oneapi">
-<h2>Installing from oneAPI<a class="headerlink" href="#installing-from-oneapi" title="Permalink to this headline"></a></h2>
+<h2>Installing from oneAPI<a class="headerlink" href="#installing-from-oneapi" title="Permalink to this heading"></a></h2>
 <p>Dpctl is available as part of the oneAPI Intel Distribution of Python (IDP).
 Please follow <a class="reference external" href="https://software.intel.com/content/www/us/en/develop/articles/installation-guide-for-intel-oneapi-toolkits.html">oneAPI installation guide</a> to install oneAPI. In this quick
 start guide, it is assumed oneAPI is installed in the standard location and the
@@ -136,7 +137,7 @@ installed. You can install GPU drivers by following the
 </div>
 </section>
 <section id="install-wheel-package-from-pypi">
-<h2>Install Wheel package from Pypi<a class="headerlink" href="#install-wheel-package-from-pypi" title="Permalink to this headline"></a></h2>
+<h2>Install Wheel package from Pypi<a class="headerlink" href="#install-wheel-package-from-pypi" title="Permalink to this heading"></a></h2>
 <p>Dpctl can also be istalled from Pypi.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install --index-url https://pypi.anaconda.org/intel/simple dpctl
 </pre></div>
@@ -159,17 +160,17 @@ or <code class="docutils literal notranslate"><span class="pre">PATH</span></cod
 </div>
 </section>
 <section id="building-from-source">
-<h2>Building from source<a class="headerlink" href="#building-from-source" title="Permalink to this headline"></a></h2>
+<h2>Building from source<a class="headerlink" href="#building-from-source" title="Permalink to this heading"></a></h2>
 <p>To build dpctl from source, we need dpcpp and GPU drivers (and optionally CPU
 OpenCL drivers). It is preferable to use the dpcpp compiler packaged as part of
 oneAPI. However, it is possible to use a custom build of dpcpp to build dpctl,
 especially if you want to enable CUDA support.</p>
 <section id="building-using-oneapi-dpcpp">
-<h3>Building using oneAPI dpcpp<a class="headerlink" href="#building-using-oneapi-dpcpp" title="Permalink to this headline"></a></h3>
+<h3>Building using oneAPI dpcpp<a class="headerlink" href="#building-using-oneapi-dpcpp" title="Permalink to this heading"></a></h3>
 <p>As before, oneAPI and graphics drivers should be installed on the system prior
 to proceeding further.</p>
 <section id="activate-oneapi-as-follows">
-<h4>Activate oneAPI as follows<a class="headerlink" href="#activate-oneapi-as-follows" title="Permalink to this headline"></a></h4>
+<h4>Activate oneAPI as follows<a class="headerlink" href="#activate-oneapi-as-follows" title="Permalink to this heading"></a></h4>
 <p>On Linux</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span> <span class="si">${</span><span class="nv">ONEAPI_ROOT</span><span class="si">}</span>/setvars.sh
 </pre></div>
@@ -180,7 +181,7 @@ to proceeding further.</p>
 </div>
 </section>
 <section id="build-and-install-using-conda-build">
-<h4>Build and install using conda-build<a class="headerlink" href="#build-and-install-using-conda-build" title="Permalink to this headline"></a></h4>
+<h4>Build and install using conda-build<a class="headerlink" href="#build-and-install-using-conda-build" title="Permalink to this heading"></a></h4>
 <p>The conda-recipe included with the sources can be used to build the dpctl
 package. The advantage of this approach is that all dependencies are pulled in
 from oneAPI’s intelpython conda channel that was installed as part of oneAPI.</p>
@@ -205,7 +206,7 @@ conda build --croot=C:/tmp conda-recipe -c <span class="s2">&quot;</span><span c
 </div>
 </section>
 <section id="build-and-install-with-scikit-build">
-<h4>Build and install with scikit-build<a class="headerlink" href="#build-and-install-with-scikit-build" title="Permalink to this headline"></a></h4>
+<h4>Build and install with scikit-build<a class="headerlink" href="#build-and-install-with-scikit-build" title="Permalink to this heading"></a></h4>
 <p>To build using Python <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> and <code class="docutils literal notranslate"><span class="pre">scikit-build</span></code>, the following Python packages should be
 installed:</p>
 <blockquote>
@@ -236,7 +237,7 @@ installed:</p>
 </section>
 </section>
 <section id="building-using-custom-dpcpp">
-<h3>Building using custom dpcpp<a class="headerlink" href="#building-using-custom-dpcpp" title="Permalink to this headline"></a></h3>
+<h3>Building using custom dpcpp<a class="headerlink" href="#building-using-custom-dpcpp" title="Permalink to this heading"></a></h3>
 <p>It is possible to build dpctl from source using .. _DPC++ toolchain: <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md">https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md</a>
 instead of the DPC++ compiler that comes with oneAPI. One reason for doing this
 may be to enable support for CUDA devices.</p>
@@ -253,7 +254,7 @@ may be to enable support for CUDA devices.</p>
 </section>
 </section>
 <section id="using-dpctl">
-<h2>Using dpctl<a class="headerlink" href="#using-dpctl" title="Permalink to this headline"></a></h2>
+<h2>Using dpctl<a class="headerlink" href="#using-dpctl" title="Permalink to this heading"></a></h2>
 <p>Dpctl requires a DPC++ runtime. When dpctl is installed via conda then it uses
 the DPC++ runtime from <code class="docutils literal notranslate"><span class="pre">dpcpp_cpp_rt</span></code> package that is part of IDP. When using
 <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> make sure a compatible version of DPC++ runtime is available on
@@ -261,9 +262,9 @@ the system. The easiest way to setup a DPC++ runtime will be by activating
 oneAPI.</p>
 </section>
 <section id="running-examples-and-tests">
-<h2>Running examples and tests<a class="headerlink" href="#running-examples-and-tests" title="Permalink to this headline"></a></h2>
+<h2>Running examples and tests<a class="headerlink" href="#running-examples-and-tests" title="Permalink to this heading"></a></h2>
 <section id="running-the-examples">
-<h3>Running the examples<a class="headerlink" href="#running-the-examples" title="Permalink to this headline"></a></h3>
+<h3>Running the examples<a class="headerlink" href="#running-the-examples" title="Permalink to this heading"></a></h3>
 <p>After setting up dpctl you can try out the Python examples as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> script <span class="k">in</span> <span class="sb">`</span>ls examples/python/<span class="sb">`</span>
 <span class="k">do</span>
@@ -280,7 +281,7 @@ located under <em>examples/cython</em>. Each example in the folder can be built 
 examples.</p>
 </section>
 <section id="running-the-python-tests">
-<h3>Running the Python tests<a class="headerlink" href="#running-the-python-tests" title="Permalink to this headline"></a></h3>
+<h3>Running the Python tests<a class="headerlink" href="#running-the-python-tests" title="Permalink to this heading"></a></h3>
 <p>The dpctl Python test suite can be executed as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest --pyargs dpctl
 </pre></div>
@@ -288,7 +289,7 @@ examples.</p>
 </section>
 </section>
 <section id="building-the-dpctlsyclinterface-library">
-<h2>Building the DPCTLSyclInterface library<a class="headerlink" href="#building-the-dpctlsyclinterface-library" title="Permalink to this headline"></a></h2>
+<h2>Building the DPCTLSyclInterface library<a class="headerlink" href="#building-the-dpctlsyclinterface-library" title="Permalink to this heading"></a></h2>
 <p>The libDPCTLSyclInterface is a shared library used by the Python package.
 To build the library you will need <code class="docutils literal notranslate"><span class="pre">DPC++</span></code> toolchain, <code class="docutils literal notranslate"><span class="pre">cmake</span></code>,
 <code class="docutils literal notranslate"><span class="pre">ninja</span></code> or <code class="docutils literal notranslate"><span class="pre">make</span></code>, and optionally <code class="docutils literal notranslate"><span class="pre">gtest</span> <span class="pre">1.10</span></code> if you wish to run the

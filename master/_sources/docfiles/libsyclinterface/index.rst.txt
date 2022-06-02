@@ -10,9 +10,9 @@ libsyclinterface
 	group_DeviceSelectors.rst
 	group_EventInterface.rst
 	group_KernelInterface.rst
+	group_KernelBundleInterface.rst
 	group_PlatformInterface.rst
 	group_PlatformManager.rst
-	group_ProgramInterface.rst
 	group_QueueInterface.rst
 	group_QueueManager.rst
 	group_Service.rst
@@ -26,9 +26,9 @@ libsyclinterface
 |	:ref:`Device selection<doxid-d8/d27/group___device_selectors>`
 |	:ref:`Event class C wrapper<doxid-df/d2d/group___event_interface>`
 |	:ref:`Kernel class C wrapper<doxid-da/df6/group___kernel_interface>`
+|	:ref:`Kernel_bundle class C wrapper<doxid-d2/d0d/group___kernel_bundle_interface>`
 |	:ref:`Platform class C wrapper<doxid-da/dbd/group___platform_interface>`
 |	:ref:`Platform class helper functions<doxid-d5/dcf/group___platform_manager>`
-|	:ref:`Program class C wrapper<doxid-d1/dbb/group___program_interface>`
 |	:ref:`Queue class C wrapper<doxid-d2/d22/group___queue_interface>`
 |	:ref:`Queue class helper functions<doxid-d0/dde/group___queue_manager>`
 |	:ref:`Service functions<doxid-d8/d1a/group___service>`

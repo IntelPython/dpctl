@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Data-parallel Control (dpctl) 0.13.0dev1+49.g3340f3381 documentation</title>
+  <title>Index &mdash; Data-parallel Control (dpctl) 0.13.0dev1+64.g45db6eaa9 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/doxyrest-pygments.css" type="text/css" />
@@ -15,6 +15,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/target-highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -30,7 +31,7 @@
             <a href="index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+49.g3340f3381
+                0.13.0dev1+64.g45db6eaa9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -1025,17 +1026,10 @@
 </li>
       </ul></li>
       <li>
-    DPCTLKernel_GetFunctionName
-
-      <ul>
-        <li><a href="docfiles/libsyclinterface/group_KernelInterface.html#index-2">function</a>
-</li>
-      </ul></li>
-      <li>
     DPCTLKernel_GetNumArgs
 
       <ul>
-        <li><a href="docfiles/libsyclinterface/group_KernelInterface.html#index-3">function</a>
+        <li><a href="docfiles/libsyclinterface/group_KernelInterface.html#index-2">function</a>
 </li>
       </ul></li>
       <li>
@@ -1043,6 +1037,41 @@
 
       <ul>
         <li><a href="docfiles/libsyclinterface/enum_DPCTLKernelArgType.html#index-0">enum</a>
+</li>
+      </ul></li>
+      <li>
+    DPCTLKernelBundle_CreateFromOCLSource
+
+      <ul>
+        <li><a href="docfiles/libsyclinterface/group_KernelBundleInterface.html#index-1">function</a>
+</li>
+      </ul></li>
+      <li>
+    DPCTLKernelBundle_CreateFromSpirv
+
+      <ul>
+        <li><a href="docfiles/libsyclinterface/group_KernelBundleInterface.html#index-2">function</a>
+</li>
+      </ul></li>
+      <li>
+    DPCTLKernelBundle_Delete
+
+      <ul>
+        <li><a href="docfiles/libsyclinterface/group_KernelBundleInterface.html#index-3">function</a>
+</li>
+      </ul></li>
+      <li>
+    DPCTLKernelBundle_GetKernel
+
+      <ul>
+        <li><a href="docfiles/libsyclinterface/group_KernelBundleInterface.html#index-4">function</a>
+</li>
+      </ul></li>
+      <li>
+    DPCTLKernelBundle_HasKernel
+
+      <ul>
+        <li><a href="docfiles/libsyclinterface/group_KernelBundleInterface.html#index-5">function</a>
 </li>
       </ul></li>
       <li>
@@ -1197,41 +1226,6 @@
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-8">function</a>
-</li>
-      </ul></li>
-      <li>
-    DPCTLProgram_CreateFromOCLSource
-
-      <ul>
-        <li><a href="docfiles/libsyclinterface/group_ProgramInterface.html#index-1">function</a>
-</li>
-      </ul></li>
-      <li>
-    DPCTLProgram_CreateFromSpirv
-
-      <ul>
-        <li><a href="docfiles/libsyclinterface/group_ProgramInterface.html#index-2">function</a>
-</li>
-      </ul></li>
-      <li>
-    DPCTLProgram_Delete
-
-      <ul>
-        <li><a href="docfiles/libsyclinterface/group_ProgramInterface.html#index-3">function</a>
-</li>
-      </ul></li>
-      <li>
-    DPCTLProgram_GetKernel
-
-      <ul>
-        <li><a href="docfiles/libsyclinterface/group_ProgramInterface.html#index-4">function</a>
-</li>
-      </ul></li>
-      <li>
-    DPCTLProgram_HasKernel
-
-      <ul>
-        <li><a href="docfiles/libsyclinterface/group_ProgramInterface.html#index-5">function</a>
 </li>
       </ul></li>
       <li>
@@ -1543,21 +1537,21 @@
 </li>
       </ul></li>
       <li>
-    DPCTLSyclKernelRef
+    DPCTLSyclKernelBundleRef
 
       <ul>
         <li><a href="docfiles/libsyclinterface/global.html#index-6">typedef</a>
 </li>
       </ul></li>
       <li>
-    DPCTLSyclPlatformRef
+    DPCTLSyclKernelRef
 
       <ul>
         <li><a href="docfiles/libsyclinterface/global.html#index-7">typedef</a>
 </li>
       </ul></li>
       <li>
-    DPCTLSyclProgramRef
+    DPCTLSyclPlatformRef
 
       <ul>
         <li><a href="docfiles/libsyclinterface/global.html#index-8">typedef</a>
@@ -1874,9 +1868,17 @@
 </li>
         <li><a href="docfiles/libsyclinterface/group_KernelInterface.html#index-1">DPCTLKernel_Delete</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_KernelInterface.html#index-2">DPCTLKernel_GetFunctionName</a>
+        <li><a href="docfiles/libsyclinterface/group_KernelInterface.html#index-2">DPCTLKernel_GetNumArgs</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_KernelInterface.html#index-3">DPCTLKernel_GetNumArgs</a>
+        <li><a href="docfiles/libsyclinterface/group_KernelBundleInterface.html#index-1">DPCTLKernelBundle_CreateFromOCLSource</a>
+</li>
+        <li><a href="docfiles/libsyclinterface/group_KernelBundleInterface.html#index-2">DPCTLKernelBundle_CreateFromSpirv</a>
+</li>
+        <li><a href="docfiles/libsyclinterface/group_KernelBundleInterface.html#index-3">DPCTLKernelBundle_Delete</a>
+</li>
+        <li><a href="docfiles/libsyclinterface/group_KernelBundleInterface.html#index-4">DPCTLKernelBundle_GetKernel</a>
+</li>
+        <li><a href="docfiles/libsyclinterface/group_KernelBundleInterface.html#index-5">DPCTLKernelBundle_HasKernel</a>
 </li>
         <li><a href="docfiles/libsyclinterface/group_USMInterface.html#index-6">DPCTLmalloc_device</a>
 </li>
@@ -1919,16 +1921,6 @@
         <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-7">DPCTLPlatformVector_GetAt</a>
 </li>
         <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-8">DPCTLPlatformVector_Size</a>
-</li>
-        <li><a href="docfiles/libsyclinterface/group_ProgramInterface.html#index-1">DPCTLProgram_CreateFromOCLSource</a>
-</li>
-        <li><a href="docfiles/libsyclinterface/group_ProgramInterface.html#index-2">DPCTLProgram_CreateFromSpirv</a>
-</li>
-        <li><a href="docfiles/libsyclinterface/group_ProgramInterface.html#index-3">DPCTLProgram_Delete</a>
-</li>
-        <li><a href="docfiles/libsyclinterface/group_ProgramInterface.html#index-4">DPCTLProgram_GetKernel</a>
-</li>
-        <li><a href="docfiles/libsyclinterface/group_ProgramInterface.html#index-5">DPCTLProgram_HasKernel</a>
 </li>
         <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-1">DPCTLQueue_AreEq</a>
 </li>
@@ -2084,11 +2076,11 @@
 </li>
         <li><a href="docfiles/libsyclinterface/group_KernelInterface.html#index-0">Kernel class C wrapper</a>
 </li>
+        <li><a href="docfiles/libsyclinterface/group_KernelBundleInterface.html#index-0">Kernel_bundle class C wrapper</a>
+</li>
         <li><a href="docfiles/libsyclinterface/group_PlatformInterface.html#index-0">Platform class C wrapper</a>
 </li>
         <li><a href="docfiles/libsyclinterface/group_PlatformManager.html#index-0">Platform class helper functions</a>
-</li>
-        <li><a href="docfiles/libsyclinterface/group_ProgramInterface.html#index-0">Program class C wrapper</a>
 </li>
         <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-0">Queue class C wrapper</a>
 </li>
@@ -2204,6 +2196,15 @@
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_KernelInterface.html#index-0">group</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    Kernel_bundle class C wrapper
+
+      <ul>
+        <li><a href="docfiles/libsyclinterface/group_KernelBundleInterface.html#index-0">group</a>
 </li>
       </ul></li>
   </ul></td>
@@ -2359,10 +2360,10 @@
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_float">preferred_vector_width_float (dpctl.SyclDevice attribute)</a>
 </li>
-      <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_half">preferred_vector_width_half (dpctl.SyclDevice attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_half">preferred_vector_width_half (dpctl.SyclDevice attribute)</a>
+</li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_int">preferred_vector_width_int (dpctl.SyclDevice attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_long">preferred_vector_width_long (dpctl.SyclDevice attribute)</a>
@@ -2387,13 +2388,6 @@
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.profiling_timer_resolution">profiling_timer_resolution (dpctl.SyclDevice attribute)</a>
 </li>
-      <li>
-    Program class C wrapper
-
-      <ul>
-        <li><a href="docfiles/libsyclinterface/group_ProgramInterface.html#index-0">group</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -2600,11 +2594,11 @@
 </li>
         <li><a href="docfiles/libsyclinterface/global.html#index-5">DPCTLSyclEventRef</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/global.html#index-6">DPCTLSyclKernelRef</a>
+        <li><a href="docfiles/libsyclinterface/global.html#index-6">DPCTLSyclKernelBundleRef</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/global.html#index-7">DPCTLSyclPlatformRef</a>
+        <li><a href="docfiles/libsyclinterface/global.html#index-7">DPCTLSyclKernelRef</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/global.html#index-8">DPCTLSyclProgramRef</a>
+        <li><a href="docfiles/libsyclinterface/global.html#index-8">DPCTLSyclPlatformRef</a>
 </li>
         <li><a href="docfiles/libsyclinterface/global.html#index-9">DPCTLSyclQueueRef</a>
 </li>

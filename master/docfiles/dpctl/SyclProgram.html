@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.program.SyclProgram &mdash; Data-parallel Control (dpctl) 0.13.0dev1+49.g3340f3381 documentation</title>
+  <title>dpctl.program.SyclProgram &mdash; Data-parallel Control (dpctl) 0.13.0dev1+64.g45db6eaa9 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -16,6 +16,7 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/target-highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev1+49.g3340f3381
+                0.13.0dev1+64.g45db6eaa9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -100,14 +101,15 @@
            <div itemprop="articleBody">
              
   <section id="dpctl-program-syclprogram">
-<span id="syclprogram-api"></span><h1>dpctl.program.SyclProgram<a class="headerlink" href="#dpctl-program-syclprogram" title="Permalink to this headline"></a></h1>
+<span id="syclprogram-api"></span><h1>dpctl.program.SyclProgram<a class="headerlink" href="#dpctl-program-syclprogram" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.program.SyclProgram">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">SyclProgram</span></span><a class="headerlink" href="#dpctl.program.SyclProgram" title="Permalink to this definition"></a></dt>
-<dd><p>Wraps a <code class="docutils literal notranslate"><span class="pre">sycl::program</span></code> object created from an OpenCL interoperability
-program.</p>
-<p>SyclProgram exposes the C API from <code class="docutils literal notranslate"><span class="pre">dpctl_sycl_program_interface.h</span></code>. A
-SyclProgram can be created from either a source string or a SPIR-V
+<dd><p>Wraps a <code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code> object
+created using SYCL interoperability layer with underlying backends. Only the
+OpenCL and Level-Zero backends are currently supported.</p>
+<p>SyclProgram exposes the C API from <code class="docutils literal notranslate"><span class="pre">dpctl_sycl_kernel_bundle_interface.h</span></code>.
+A SyclProgram can be created from either a source string or a SPIR-V
 binary file.</p>
 <p class="rubric">Public methods:</p>
 <table class="autosummary longtable docutils align-default">
@@ -117,7 +119,7 @@ binary file.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.program.SyclProgram.addressof_ref" title="dpctl.program.SyclProgram.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a></p></td>
-<td><p>Returns the address of the C API DPCTLSyclProgramRef pointer as a long.</p></td>
+<td><p>Returns the address of the C API DPCTLSyclKernelBundleRef pointer as a long.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.program.SyclProgram.get_sycl_kernel" title="dpctl.program.SyclProgram.get_sycl_kernel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_kernel</span></code></a></p></td>
 <td><p></p></td>
@@ -130,16 +132,16 @@ binary file.</p>
 </dd></dl>
 
 <section id="public-methods">
-<h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this headline"></a></h2>
+<h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.program.SyclProgram.addressof_ref">
 <span class="sig-prename descclassname"><span class="pre">dpctl.program.SyclProgram.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclProgram.addressof_ref" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the address of the C API DPCTLSyclProgramRef pointer
+<dd><p>Returns the address of the C API DPCTLSyclKernelBundleRef pointer
 as a long.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclProgramRef</span></code> pointer used to create
-this <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclProgram</span></code> object cast to a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
+<dd class="field-odd"><p>The address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclKernelBundleRef</span></code> pointer used to
+create this <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclProgram</span></code> object cast to a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>

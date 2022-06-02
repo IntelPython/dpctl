@@ -35,9 +35,9 @@ Overview
 	typedef struct DPCTLOpaqueSyclDevice* :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`;
 	typedef struct DPCTLOpaqueSyclDeviceSelector* :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`;
 	typedef struct DPCTLOpaqueSyclEvent* :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`;
+	typedef struct DPCTLOpaqueSyclKernelBundle* :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>`;
 	typedef struct DPCTLOpaqueSyclKernel* :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`;
 	typedef struct DPCTLOpaqueSyclPlatform* :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`;
-	typedef struct DPCTLOpaqueSyclProgram* :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>`;
 	typedef struct DPCTLOpaqueSyclQueue* :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>`;
 	typedef struct DPCTLOpaqueSyclUSM* :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>`;
 
@@ -389,11 +389,40 @@ Overview
 	DPCTL_API size_t
 	:ref:`DPCTLEventVector_Size<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a65819357fd48d2ed7452b65f9c92ef27>`(__dpctl_keep :ref:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>` VRef);
 
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>`
+	:ref:`DPCTLKernelBundle_CreateFromOCLSource<doxid-d2/d0d/group___kernel_bundle_interface_1gaa753c9ba7f39524d2f87cb7caae74350>`(
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` Ctx,
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` Dev,
+		__dpctl_keep const char* Source,
+		__dpctl_keep const char* CompileOpts
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>`
+	:ref:`DPCTLKernelBundle_CreateFromSpirv<doxid-d2/d0d/group___kernel_bundle_interface_1ga6062cc6a4c81ca4f4079d792c9f135b8>`(
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` Ctx,
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` Dev,
+		__dpctl_keep const void* IL,
+		size_t Length,
+		const char* CompileOpts
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLKernelBundle_Delete<doxid-d2/d0d/group___kernel_bundle_interface_1ga0bf45ad7930bf8e973be31e48b0fde9d>`(__dpctl_take :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>` KBRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`
+	:ref:`DPCTLKernelBundle_GetKernel<doxid-d2/d0d/group___kernel_bundle_interface_1ga7826d57d69cf2d000ccd332541159e33>`(
+		__dpctl_keep :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>` KBRef,
+		__dpctl_keep const char* KernelName
+		);
+
+	DPCTL_API bool
+	:ref:`DPCTLKernelBundle_HasKernel<doxid-d2/d0d/group___kernel_bundle_interface_1gaec25b409112401cd5ca12edbc96d4dbf>`(
+		__dpctl_keep :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>` KBRef,
+		__dpctl_keep const char* KernelName
+		);
+
 	DPCTL_API void
 	:ref:`DPCTLKernel_Delete<doxid-da/df6/group___kernel_interface_1ga02cb1ddc64d9f78d228a5dc222c8862b>`(__dpctl_take :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
-
-	DPCTL_API const __dpctl_give char*
-	:ref:`DPCTLKernel_GetFunctionName<doxid-da/df6/group___kernel_interface_1gae2ce409c1dc3b57349128438c9c9096b>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
 	DPCTL_API size_t
 	:ref:`DPCTLKernel_GetNumArgs<doxid-da/df6/group___kernel_interface_1gae585c0ae9e5e1826ca24aac6f9b2a71d>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
@@ -463,36 +492,6 @@ Overview
 
 	DPCTL_API size_t
 	:ref:`DPCTLPlatformVector_Size<doxid-d5/dcf/group___platform_manager_1ga713c99c0d385de070ae32d4d7657401e>`(__dpctl_keep :ref:`DPCTLPlatformVectorRef<doxid-d5/dcf/group___platform_manager_1ga18dc8588af45614eb2f4a9f7b25a6047>` VRef);
-
-	DPCTL_API __dpctl_give :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>`
-	:ref:`DPCTLProgram_CreateFromOCLSource<doxid-d1/dbb/group___program_interface_1gae1f8caf6c9bb8d8683b3717f63e56ae7>`(
-		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` Ctx,
-		__dpctl_keep const char* Source,
-		__dpctl_keep const char* CompileOpts
-		);
-
-	DPCTL_API __dpctl_give :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>`
-	:ref:`DPCTLProgram_CreateFromSpirv<doxid-d1/dbb/group___program_interface_1gade20300fcd7d69bdb6ae7cad54ee0f78>`(
-		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` Ctx,
-		__dpctl_keep const void* IL,
-		size_t Length,
-		const char* CompileOpts
-		);
-
-	DPCTL_API void
-	:ref:`DPCTLProgram_Delete<doxid-d1/dbb/group___program_interface_1ga29760f4984675c264bbdf11b92b89c08>`(__dpctl_take :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>` PRef);
-
-	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`
-	:ref:`DPCTLProgram_GetKernel<doxid-d1/dbb/group___program_interface_1ga86fcd9c7af5bc38a056e237c89b3fa9c>`(
-		__dpctl_keep :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>` PRef,
-		__dpctl_keep const char* KernelName
-		);
-
-	DPCTL_API bool
-	:ref:`DPCTLProgram_HasKernel<doxid-d1/dbb/group___program_interface_1ga9c266676f09dd0ed681adfe2d6b1ff06>`(
-		__dpctl_keep :ref:`DPCTLSyclProgramRef<doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172>` PRef,
-		__dpctl_keep const char* KernelName
-		);
 
 	DPCTL_API bool
 	:ref:`DPCTLQueue_AreEq<doxid-d2/d22/group___queue_interface_1ga8a957bd257ec77b0f57bcb3c35e1e479>`(
@@ -806,6 +805,16 @@ Opaque pointer to a ``sycl::device_selector``
 
 Opaque pointer to a ``sycl::event``
 
+.. index:: pair: typedef; DPCTLSyclKernelBundleRef
+.. _doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef struct DPCTLOpaqueSyclKernelBundle* DPCTLSyclKernelBundleRef
+
+Opaque pointer to a ``sycl::kernel_bundle``
+
 .. index:: pair: typedef; DPCTLSyclKernelRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844:
 
@@ -825,16 +834,6 @@ Opaque pointer to a ``sycl::kernel``
 	typedef struct DPCTLOpaqueSyclPlatform* DPCTLSyclPlatformRef
 
 Opaque pointer to a ``sycl::platform``
-
-.. index:: pair: typedef; DPCTLSyclProgramRef
-.. _doxid-df/d57/dpctl__sycl__types_8h_1a665a90816ae3328f517ba19c70e4b172:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef struct DPCTLOpaqueSyclProgram* DPCTLSyclProgramRef
-
-Opaque pointer to a ``sycl::program``
 
 .. index:: pair: typedef; DPCTLSyclQueueRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a:
