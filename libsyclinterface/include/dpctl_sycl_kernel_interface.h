@@ -39,19 +39,6 @@ DPCTL_C_EXTERN_C_BEGIN
  */
 
 /*!
- * @brief Returns a C string for the kernel name.
- *
- * @param    KRef           DPCTLSyclKernelRef pointer to an OpenCL
- *                          interoperability kernel.
- * @return   If a kernel name exists then returns it as a C string, else
- *           returns a nullptr.
- * @ingroup KernelInterface
- */
-DPCTL_API
-__dpctl_give const char *
-DPCTLKernel_GetFunctionName(__dpctl_keep const DPCTLSyclKernelRef KRef);
-
-/*!
  * @brief Returns the number of arguments for the OpenCL kernel.
  *
  * @param    KRef           DPCTLSyclKernelRef pointer to an OpenCL

@@ -28,7 +28,6 @@ pybind11_add_module(${py_module_name}
     use_queue_device/_example.cpp
 )
 target_include_directories(${py_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
-target_compile_options(${py_module_name} PRIVATE -Wno-deprecated-declarations)
 install(TARGETS ${py_module_name}
   DESTINATION use_queue_device
 )

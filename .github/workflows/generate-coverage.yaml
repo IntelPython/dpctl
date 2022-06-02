@@ -85,7 +85,7 @@ jobs:
         shell: bash -l {0}
         run: |
           source /opt/intel/oneapi/setvars.sh
-          python scripts/gen_coverage.py
+          SYCL_ENABLE_HOST_DEVICE=1 python scripts/gen_coverage.py
 
       - name: Install coverall dependencies
         shell: bash -l {0}

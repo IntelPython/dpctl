@@ -90,7 +90,7 @@ TEST_F(TestHelperFns, ChkDPCTLBackendTypeToSyclBackend)
 
     EXPECT_NO_FATAL_FAILURE(res = DPCTL_DPCTLBackendTypeToSyclBackend(
                                 DPCTLSyclBackendType::DPCTL_CUDA));
-    ASSERT_TRUE(res == sycl::backend::cuda);
+    ASSERT_TRUE(res == sycl::backend::ext_oneapi_cuda);
 
     EXPECT_NO_FATAL_FAILURE(res = DPCTL_DPCTLBackendTypeToSyclBackend(
                                 DPCTLSyclBackendType::DPCTL_HOST));
@@ -125,8 +125,8 @@ TEST_F(TestHelperFns, ChkSyclBackendToDPCTLBackendType)
         DTy = DPCTL_SyclBackendToDPCTLBackendType(sycl::backend::host));
     ASSERT_TRUE(DTy == DPCTLSyclBackendType::DPCTL_HOST);
 
-    EXPECT_NO_FATAL_FAILURE(
-        DTy = DPCTL_SyclBackendToDPCTLBackendType(sycl::backend::cuda));
+    EXPECT_NO_FATAL_FAILURE(DTy = DPCTL_SyclBackendToDPCTLBackendType(
+                                sycl::backend::ext_oneapi_cuda));
     ASSERT_TRUE(DTy == DPCTLSyclBackendType::DPCTL_CUDA);
 
     EXPECT_NO_FATAL_FAILURE(

@@ -89,7 +89,7 @@ backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy)
 {
     switch (BeTy) {
     case DPCTLSyclBackendType::DPCTL_CUDA:
-        return backend::cuda;
+        return backend::ext_oneapi_cuda;
     case DPCTLSyclBackendType::DPCTL_HOST:
         return backend::host;
     case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO:
@@ -106,7 +106,7 @@ backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy)
 DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(backend B)
 {
     switch (B) {
-    case backend::cuda:
+    case backend::ext_oneapi_cuda:
         return DPCTLSyclBackendType::DPCTL_CUDA;
     case backend::host:
         return DPCTLSyclBackendType::DPCTL_HOST;

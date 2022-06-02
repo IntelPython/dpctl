@@ -50,7 +50,7 @@ target_include_directories(${py_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
 get_target_property(_sycl_gemm_sources ${py_module_name} SOURCES)
 set_source_files_properties(${_sycl_gemm_sources}
   PROPERTIES
-  COMPILE_OPTIONS "-O3;-Wno-deprecated-declarations"
+  COMPILE_OPTIONS "-O3"
 )
 
 add_executable(standalone_cpp

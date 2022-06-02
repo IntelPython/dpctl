@@ -39,23 +39,6 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
 
 } /* end of anonymous namespace */
 
-__dpctl_give const char *
-DPCTLKernel_GetFunctionName(__dpctl_keep const DPCTLSyclKernelRef Kernel)
-{
-    if (!Kernel) {
-        error_handler("Cannot get the number of arguments "
-                      "as input is a nullptr.",
-                      __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
-
-    auto SyclKernel = unwrap(Kernel);
-    auto kernel_name = SyclKernel->get_info<info::kernel::function_name>();
-    if (kernel_name.empty())
-        return nullptr;
-    return dpctl::helper::cstring_from_string(kernel_name);
-}
-
 size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef Kernel)
 {
     if (!Kernel) {

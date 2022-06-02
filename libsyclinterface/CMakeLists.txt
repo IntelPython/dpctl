@@ -71,6 +71,23 @@ if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
     endif()
 endif()
 
+if (UNIX)
+  find_library(PI_OPENCL_LIB
+      NAMES pi_opencl
+      HINTS ${IntelSycl_LIBRARY_DIR}
+  )
+  find_program(READELF_PROG readelf)
+  find_program(GREP_PROG grep)
+  execute_process(
+    COMMAND ${READELF_PROG} -d ${PI_OPENCL_LIB}
+    COMMAND ${GREP_PROG} OpenCL
+    COMMAND ${GREP_PROG} -Po "libOpenCL[^\]]*"
+    OUTPUT_VARIABLE LIBCL_LOADER_FILENAME
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_STRIP_TRAILING_WHITESPACE
+  )
+endif()
+
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Config/dpctl_config.h.in
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Config/dpctl_config.h
@@ -87,7 +104,6 @@ if(WIN32)
         "-Wunused-function "
         "-Wuninitialized "
         "-Wmissing-declarations "
-        "-Wno-deprecated-declarations "
     )
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WARNING_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS}")
@@ -106,7 +122,6 @@ elseif(UNIX)
         "-Wuninitialized "
         "-Wmissing-declarations "
         "-fdiagnostics-color=auto "
-        "-Wno-deprecated-declarations "
     )
     string(CONCAT SDL_FLAGS
         "-fstack-protector "
@@ -193,7 +208,6 @@ target_include_directories(DPCTLSyclInterface
 )
 target_link_libraries(DPCTLSyclInterface
   PRIVATE ${IntelSycl_SYCL_LIBRARY}
-  PRIVATE ${IntelSycl_OPENCL_LIBRARY}
 )
 
 if(DPCTL_ENABLE_GLOG)

@@ -22,7 +22,7 @@
 """
 
 
-from .._backend cimport DPCTLSyclKernelRef, DPCTLSyclProgramRef
+from .._backend cimport DPCTLSyclKernelBundleRef, DPCTLSyclKernelRef
 from .._sycl_context cimport SyclContext
 from .._sycl_device cimport SyclDevice
 from .._sycl_queue cimport SyclQueue
@@ -33,26 +33,26 @@ cdef class SyclKernel:
         kernel.
     '''
     cdef DPCTLSyclKernelRef _kernel_ref
-    cdef const char *_function_name
+    cdef str _function_name
     cdef DPCTLSyclKernelRef get_kernel_ref (self)
 
     @staticmethod
-    cdef SyclKernel _create (DPCTLSyclKernelRef kref)
+    cdef SyclKernel _create (DPCTLSyclKernelRef kref, str name)
 
 
 cdef class SyclProgram:
-    ''' Wraps a sycl::program object created from an OpenCL interoperability
-        program.
+    ''' Wraps a sycl::kernel_bundle<sycl::bundle_state::executable> object created by
+        using SYCL interoperability layer for OpenCL and Level-Zero backends.
 
-        SyclProgram exposes the C API from dpctl_sycl_program_interface.h. A
+        SyclProgram exposes the C API from dpctl_sycl_kernel_bundle_interface.h. A
         SyclProgram can be created from either a source string or a SPIR-V
         binary file.
     '''
-    cdef DPCTLSyclProgramRef _program_ref
+    cdef DPCTLSyclKernelBundleRef _program_ref
 
     @staticmethod
-    cdef  SyclProgram _create (DPCTLSyclProgramRef pref)
-    cdef  DPCTLSyclProgramRef get_program_ref (self)
+    cdef  SyclProgram _create (DPCTLSyclKernelBundleRef pref)
+    cdef  DPCTLSyclKernelBundleRef get_program_ref (self)
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name)
 
 

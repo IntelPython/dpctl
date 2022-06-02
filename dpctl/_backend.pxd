@@ -120,7 +120,7 @@ cdef extern from "syclinterface/dpctl_sycl_types.h":
     cdef struct DPCTLOpaqueSyclEvent
     cdef struct DPCTLOpaqueSyclKernel
     cdef struct DPCTLOpaqueSyclPlatform
-    cdef struct DPCTLOpaqueSyclProgram
+    cdef struct DPCTLOpaqueSyclKernelBundle
     cdef struct DPCTLOpaqueSyclQueue
     cdef struct DPCTLOpaqueSyclUSM
 
@@ -130,7 +130,7 @@ cdef extern from "syclinterface/dpctl_sycl_types.h":
     ctypedef DPCTLOpaqueSyclEvent          *DPCTLSyclEventRef
     ctypedef DPCTLOpaqueSyclKernel         *DPCTLSyclKernelRef
     ctypedef DPCTLOpaqueSyclPlatform       *DPCTLSyclPlatformRef
-    ctypedef DPCTLOpaqueSyclProgram        *DPCTLSyclProgramRef
+    ctypedef DPCTLOpaqueSyclKernelBundle   *DPCTLSyclKernelBundleRef
     ctypedef DPCTLOpaqueSyclQueue          *DPCTLSyclQueueRef
     ctypedef DPCTLOpaqueSyclUSM            *DPCTLSyclUSMRef
 
@@ -250,7 +250,6 @@ cdef extern from "syclinterface/dpctl_sycl_event_interface.h":
 
 
 cdef extern from "syclinterface/dpctl_sycl_kernel_interface.h":
-    cdef const char* DPCTLKernel_GetFunctionName(const DPCTLSyclKernelRef KRef)
     cdef size_t DPCTLKernel_GetNumArgs(const DPCTLSyclKernelRef KRef)
     cdef void DPCTLKernel_Delete(DPCTLSyclKernelRef KRef)
 
@@ -305,22 +304,24 @@ cdef extern from "syclinterface/dpctl_sycl_context_interface.h":
     cdef void DPCTLContext_Delete(DPCTLSyclContextRef CtxRef)
 
 
-cdef extern from "syclinterface/dpctl_sycl_program_interface.h":
-    cdef DPCTLSyclProgramRef DPCTLProgram_CreateFromSpirv(
+cdef extern from "syclinterface/dpctl_sycl_kernel_bundle_interface.h":
+    cdef DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSpirv(
         const DPCTLSyclContextRef Ctx,
+        const DPCTLSyclDeviceRef Dev,
         const void *IL,
         size_t Length,
         const char *CompileOpts)
-    cdef DPCTLSyclProgramRef DPCTLProgram_CreateFromOCLSource(
+    cdef DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
         const DPCTLSyclContextRef Ctx,
+        const DPCTLSyclDeviceRef Dev,
         const char *Source,
         const char *CompileOpts)
-    cdef DPCTLSyclKernelRef DPCTLProgram_GetKernel(
-        DPCTLSyclProgramRef PRef,
+    cdef DPCTLSyclKernelRef DPCTLKernelBundle_GetKernel(
+        DPCTLSyclKernelBundleRef KBRef,
         const char *KernelName)
-    cdef bool DPCTLProgram_HasKernel(DPCTLSyclProgramRef PRef,
+    cdef bool DPCTLKernelBundle_HasKernel(DPCTLSyclKernelBundleRef KBRef,
                                      const char *KernelName)
-    cdef void DPCTLProgram_Delete(DPCTLSyclProgramRef PRef)
+    cdef void DPCTLKernelBundle_Delete(DPCTLSyclKernelBundleRef KBRef)
 
 
 cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":

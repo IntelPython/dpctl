@@ -353,7 +353,7 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckGetBackend)
     auto Bty = DPCTLQueue_GetBackend(QRef);
     switch (Bty) {
     case DPCTL_CUDA:
-        EXPECT_TRUE(Backend == backend::cuda);
+        EXPECT_TRUE(Backend == backend::ext_oneapi_cuda);
         break;
     case DPCTL_HOST:
         EXPECT_TRUE(Backend == backend::host);

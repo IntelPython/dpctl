@@ -31,6 +31,24 @@ def get_spirv_abspath(fn):
     return spirv_file
 
 
+def _check_multi_kernel_program(prog):
+    assert type(prog) is dpctl_prog.SyclProgram
+
+    assert type(prog.addressof_ref()) is int
+    assert prog.has_sycl_kernel("add")
+    assert prog.has_sycl_kernel("axpy")
+
+    addKernel = prog.get_sycl_kernel("add")
+    axpyKernel = prog.get_sycl_kernel("axpy")
+
+    assert "add" == addKernel.get_function_name()
+    assert "axpy" == axpyKernel.get_function_name()
+    assert 3 == addKernel.get_num_args()
+    assert 4 == axpyKernel.get_num_args()
+    assert type(addKernel.addressof_ref()) is int
+    assert type(axpyKernel.addressof_ref()) is int
+
+
 def test_create_program_from_source_ocl():
     oclSrc = "                                                             \
     kernel void add(global int* a, global int* b, global int* c) {         \
@@ -46,18 +64,7 @@ def test_create_program_from_source_ocl():
     except dpctl.SyclQueueCreationError:
         pytest.skip("No OpenCL queue is available")
     prog = dpctl_prog.create_program_from_source(q, oclSrc)
-    assert prog is not None
-
-    assert prog.has_sycl_kernel("add")
-    assert prog.has_sycl_kernel("axpy")
-
-    addKernel = prog.get_sycl_kernel("add")
-    axpyKernel = prog.get_sycl_kernel("axpy")
-
-    assert "add" == addKernel.get_function_name()
-    assert "axpy" == axpyKernel.get_function_name()
-    assert 3 == addKernel.get_num_args()
-    assert 4 == axpyKernel.get_num_args()
+    _check_multi_kernel_program(prog)
 
 
 def test_create_program_from_spirv_ocl():
@@ -69,17 +76,7 @@ def test_create_program_from_spirv_ocl():
     with open(spirv_file, "rb") as fin:
         spirv = fin.read()
     prog = dpctl_prog.create_program_from_spirv(q, spirv)
-    assert prog is not None
-    assert prog.has_sycl_kernel("add")
-    assert prog.has_sycl_kernel("axpy")
-
-    addKernel = prog.get_sycl_kernel("add")
-    axpyKernel = prog.get_sycl_kernel("axpy")
-
-    assert "add" == addKernel.get_function_name()
-    assert "axpy" == axpyKernel.get_function_name()
-    assert 3 == addKernel.get_num_args()
-    assert 4 == axpyKernel.get_num_args()
+    _check_multi_kernel_program(prog)
 
 
 def test_create_program_from_spirv_l0():
@@ -90,7 +87,8 @@ def test_create_program_from_spirv_l0():
     spirv_file = get_spirv_abspath("multi_kernel.spv")
     with open(spirv_file, "rb") as fin:
         spirv = fin.read()
-    dpctl_prog.create_program_from_spirv(q, spirv)
+    prog = dpctl_prog.create_program_from_spirv(q, spirv)
+    _check_multi_kernel_program(prog)
 
 
 @pytest.mark.xfail(
@@ -110,4 +108,17 @@ def test_create_program_from_source_l0():
         size_t index = get_global_id(0);                                   \
         c[index] = a[index] + d*b[index];                                  \
     }"
-    dpctl_prog.create_program_from_source(q, oclSrc)
+    prog = dpctl_prog.create_program_from_source(q, oclSrc)
+    _check_multi_kernel_program(prog)
+
+
+def test_create_program_from_invalid_src_ocl():
+    try:
+        q = dpctl.SyclQueue("opencl")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("No OpenCL queue is available")
+    invalid_oclSrc = "                                                     \
+    kernel void add(                                                       \
+    }"
+    with pytest.raises(dpctl_prog.SyclProgramCompilationError):
+        dpctl_prog.create_program_from_source(q, invalid_oclSrc)
