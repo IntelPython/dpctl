@@ -178,7 +178,7 @@ _CreateKernelBundle_common_ocl_impl(cl_program clProgram,
     backend_traits<cl_be>::return_type<device> clDevice;
     clDevice = get_native<cl_be>(dev);
 
-    // Last to pointers are notification function pointer and user-data pointer
+    // Last two pointers are notification function pointer and user-data pointer
     // that can be passed to the notification function.
     auto clBuildProgramF = get_clBuldProgram();
     if (clBuildProgramF == nullptr) {
