@@ -6,6 +6,9 @@
 #ifndef DLPACK_DLPACK_H_
 #define DLPACK_DLPACK_H_
 
+/**
+ * \brief Compatibility with C++
+ */
 #ifdef __cplusplus
 #define DLPACK_EXTERN_C extern "C"
 #else
@@ -13,7 +16,10 @@
 #endif
 
 /*! \brief The current version of dlpack */
-#define DLPACK_VERSION 60
+#define DLPACK_VERSION 70
+
+/*! \brief The current ABI version of dlpack */
+#define DLPACK_ABI_VERSION 1
 
 /*! \brief DLPACK_DLL prefix for windows */
 #ifdef _WIN32
@@ -35,7 +41,11 @@ extern "C" {
 /*!
  * \brief The device type in DLDevice.
  */
+#ifdef __cplusplus
+typedef enum : int32_t {
+#else
 typedef enum {
+#endif
   /*! \brief CPU device */
   kDLCPU = 1,
   /*! \brief CUDA GPU device */
@@ -75,6 +85,10 @@ typedef enum {
    *
    */
   kDLOneAPI = 14,
+  /*! \brief GPU support for next generation WebGPU standard. */
+  kDLWebGPU = 15,
+  /*! \brief Qualcomm Hexagon DSP */
+  kDLHexagon = 16,
 } DLDeviceType;
 
 /*!
@@ -87,7 +101,7 @@ typedef struct {
    * \brief The device index.
    * For vanilla CPU memory, pinned memory, or managed memory, this is set to 0.
    */
-  int device_id;
+  int32_t device_id;
 } DLDevice;
 
 /*!
@@ -115,7 +129,9 @@ typedef enum {
 } DLDataTypeCode;
 
 /*!
- * \brief The data type the tensor can hold.
+ * \brief The data type the tensor can hold. The data type is assumed to follow the
+ * native endian-ness. An explicit error message should be raised when attempting to
+ * export an array with non-native endianness
  *
  *  Examples
  *   - float: type_code = 2, bits = 32, lanes=1
@@ -172,7 +188,7 @@ typedef struct {
   /*! \brief The device of the tensor */
   DLDevice device;
   /*! \brief Number of dimensions */
-  int ndim;
+  int32_t ndim;
   /*! \brief The data type of the pointer*/
   DLDataType dtype;
   /*! \brief The shape of the tensor */
