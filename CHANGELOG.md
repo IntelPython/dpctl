@@ -4,6 +4,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [dev]
+
+### Added
+
+* Implemented and deployed dedicated kernels for copying with casting [#781](https://github.com/IntelPython/dpctl/781), used in `__setitem__`, implementaion of `asarray`, `dpctl.tensor.copy` functions.
+* Implemented dedicated copying kernel for `dpctl.tensor.reshape` function [#810](https://github.com/IntelPython/dpctl/810), added support for `copy` keyword [#807](https://github.com/IntelPython/dpctl/807).
+* Implemented dedicated kernel to copy with casting from `numpy.ndarray` into `dpctl.tensor.usm_ndarray` [#817](https://github.com/IntelPython/dpctl/pull/817).
+
+* Implemented `dpctl.tensor.permute_dims` function from array-API [#787](https://github.com/IntelPython/dpctl/pull/787).
+* Implemented `dpctl.tensor.expand_dims` function from array-API [#788](https://github.com/IntelPython/dpctl/pull/788).
+* Implemented `dpctl.tensor.squeeze` function from array-API [#790](https://github.com/IntelPython/dpctl/pull/790).
+* Implemented `dpctl.tensor.broadcast_to` function from array-API [#791](https://github.com/IntelPython/dpctl/791).
+* Implemented `dpctl.tensor.broadcast_arrays` function from array-API [#798](https://github.com/IntelPython/dpctl/798).
+* Implemented `dpctl.tensor.flip` function from array-API [#801](https://github.com/IntelPython/dpctl/801).
+* Implemented `dpctl.tensor.usm_ndarray.mT` property per array-API [#805](https://github.com/IntelPython/dpctl/805).
+* Implemented `dpctl.tensor.roll` function from array-API [#809](https://github.com/IntelPython/dpctl/809).
+* Implemented `dpctl.tensor.arange` function from array-API [#814](https://github.com/IntelPython/dpctl/814).
+* Implemented `dpctl.tensor.zeros` function from array-API [#816](https://github.com/IntelPython/dpctl/816).
+* Implemented `dpctl.tensor.zeros` function from array-API [#816](https://github.com/IntelPython/dpctl/816).
+* Implemented `dpctl.tensor.ones`, `dpctl.tensor.full`, `dpctl.tensor.empty_like`, `dpctl.tensor.zeros_like`, `dpctl.tensor.ones_like`, `dpctl.tensor.full_like` functions from array-API [#822](https://github.com/IntelPython/dpctl/pull/822).
+* Implemented `DPCTLQueue_Memset` function in SyclInterface library [#812](https://github.com/IntelPython/dpctl/812), and exposed it for `dpctl.memory.MemoryUSM*` classes [#815](https://github.com/IntelPython/dpctl/815).
+* Implemented `dpctl.utils.get_coerced_usm_type` to deduced usm type of the output array from types of input arrays in compute-follows-data execution model [#797](https://github.com/IntelPython/dpctl/pull/797).
+* Added `dpctl.SyclDevice.profiling_timer_resolution` property [#825](https://github.com/IntelPython/dpctl/pull/825).
+* Added `dpctl.SyclDevice.platform` and `dpctl.SyclPlatform.default_context` properties [#827](https://github.com/IntelPython/dpctl/pull/827).
+* Provided pybind11 example for functions working on `dpctl.tensor.usm_ndarray` container applying oneMKL functions [#780](https://github.com/IntelPython/dpctl/pull/780), [#793](https://github.com/IntelPython/dpctl/pull/793), [#819](https://github.com/IntelPython/dpctl/pull/819). The example was expanded to demonstrate implementing iterative linear solvers (Chebyshev solver, and Conjugate-Gradient solver) by asynchronously submitting individual SYCL kernels from Python [#821](https://github.com/IntelPython/dpctl/pull/821), [#833](https://github.com/IntelPython/dpctl/pull/833), [#838](https://github.com/IntelPython/dpctl/pull/838).
+* Wrote manual page about working with `dpctl.SyclQueue` [#829](https://github.com/IntelPython/dpctl/pull/829).
+
+### Changed
+
+* Enhanced coverage collection for SyclInterface library by also collecting it during pytest run and combining traces with those collected during C-test run [#818](https://github.com/IntelPython/dpctl/pull/818). This change also allows to not rebuild SyclInterface library when building C-test executable.
+* Exported `keep_args_alive` utility in `dpctl4pybind11.hpp` header [#820](https://github.com/IntelPython/dpctl/pull/820). The utility uses `sycl::handler::host_task` to keep given Python arguments alive until eac `sycl::event` from the given vector of events is complete. The host task is scheduled on the SYCL queue provided as the first argument.
+* Changed the size of struct underlying `dpctl.SyclEvent` to avoid storing Python object previously used to keep kernel arguments scheduled with `dpctl.SyclQueue.submit` [#823](https://github.com/IntelPython/dpctl/pull/823).
+* Fixed docstring for `dpctl.SyclTimer` [#824](https://github.com/IntelPython/dpctl/pull/824).
+* Changed type of exceptions raised on failure to create `dpctl.SyclDevice` from `ValueError` to `dpctl.SyclDeviceCreationError` [#826](https://github.com/IntelPython/dpctl/pull/826).
+* Improved performance of pybind11 type casters [#837](https://github.com/IntelPython/dpctl/pull/837).
+* Changed implementation of `dpctl.SyclProgram` from using deprecated `sycl::program` to `sycl::kernel_bundle` [#845](https://github.com/IntelPython/dpctl/pull/845).
+* Removed deprecated device aspects, added new supported aspects [#844](https://github.com/IntelPython/dpctl/pull/844).
+* Updated vendored `dlpack.h` to version 0.7 [#847](https://github.com/IntelPython/dpctl/pull/847).
+
+### Fixed
+
+* Fixed `dpctl.lsplatform()` to work correctly when used from within Jupyter notebook [#800](https://github.com/IntelPython/dpctl/pull/800).
+* Fixed script to drive debug build [#835](https://github.com/IntelPython/dpctl/pull/835) and fixed code to compile in debug mode [#836](https://github.com/IntelPython/dpctl/pull/836).
+
 ## [0.12.0] - 03/01/2022
 
 ### Added
