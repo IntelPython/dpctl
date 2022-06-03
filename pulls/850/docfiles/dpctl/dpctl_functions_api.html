@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl Functions &mdash; Data-parallel Control (dpctl) 0.13.0dev2+4.g9d7bb2123 documentation</title>
+  <title>dpctl Functions &mdash; Data-parallel Control (dpctl) 0.13.0dev2+4.g2ee07beba documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -32,7 +32,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev2+4.g9d7bb2123
+                0.13.0dev2+4.g2ee07beba
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -384,49 +384,59 @@ device is printed.</p></li>
 <dt class="field-odd">Example</dt>
 <dd class="field-odd"><p>On a system with an OpenCL CPU driver, OpenCL GPU driver,
 Level Zero GPU driver, running the command.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span>.. code-block:: bash
-
-    $ python -c &quot;import dpctl; dpctl.lsplatform()&quot;
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">block</span><span class="p">::</span> <span class="n">bash</span>
 </pre></div>
 </div>
+<blockquote>
+<div><p>$ python -c “import dpctl; dpctl.lsplatform()”</p>
+</div></blockquote>
 <p>returns</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">block</span><span class="p">::</span>
-
-    <span class="n">Platform</span> <span class="mi">0</span><span class="p">::</span>
-        <span class="n">Name</span>        <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">OpenCL</span>
-        <span class="n">Version</span>     <span class="n">OpenCL</span> <span class="mf">2.1</span> <span class="n">LINUX</span>
-        <span class="n">Vendor</span>      <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Corporation</span>
-        <span class="n">Profile</span>     <span class="n">FULL_PROFILE</span>
-        <span class="n">Backend</span>     <span class="n">opencl</span>
-        <span class="n">Devices</span>     <span class="mi">1</span>
-            <span class="n">Device</span> <span class="mi">0</span><span class="p">::</span>
-            <span class="n">Name</span>            <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Core</span><span class="p">(</span><span class="n">TM</span><span class="p">)</span> <span class="n">i7</span><span class="o">-</span><span class="mi">9700</span> <span class="n">CPU</span> <span class="o">@</span> <span class="mf">3.00</span><span class="n">GHz</span>
-            <span class="n">Driver</span> <span class="n">version</span>  <span class="mf">2020.11.11.0.13_160000</span>
-            <span class="n">Device</span> <span class="nb">type</span>     <span class="n">cpu</span>
-    <span class="n">Platform</span> <span class="mi">1</span><span class="p">::</span>
-        <span class="n">Name</span>        <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">OpenCL</span> <span class="n">HD</span> <span class="n">Graphics</span>
-        <span class="n">Version</span>     <span class="n">OpenCL</span> <span class="mf">3.0</span>
-        <span class="n">Vendor</span>      <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Corporation</span>
-        <span class="n">Profile</span>     <span class="n">FULL_PROFILE</span>
-        <span class="n">Backend</span>     <span class="n">opencl</span>
-        <span class="n">Devices</span>     <span class="mi">1</span>
-            <span class="n">Device</span> <span class="mi">0</span><span class="p">::</span>
-            <span class="n">Name</span>            <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Graphics</span> <span class="n">Gen9</span> <span class="p">[</span><span class="mh">0x3e98</span><span class="p">]</span>
-            <span class="n">Driver</span> <span class="n">version</span>  <span class="mf">20.47.18513</span>
-            <span class="n">Device</span> <span class="nb">type</span>     <span class="n">gpu</span>
-    <span class="n">Platform</span> <span class="mi">2</span><span class="p">::</span>
-        <span class="n">Name</span>        <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Level</span><span class="o">-</span><span class="n">Zero</span>
-        <span class="n">Version</span>     <span class="mf">1.0</span>
-        <span class="n">Vendor</span>      <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Corporation</span>
-        <span class="n">Profile</span>     <span class="n">FULL_PROFILE</span>
-        <span class="n">Backend</span>     <span class="n">level_zero</span>
-        <span class="n">Devices</span>     <span class="mi">1</span>
-            <span class="n">Device</span> <span class="mi">0</span><span class="p">::</span>
-            <span class="n">Name</span>            <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Graphics</span> <span class="n">Gen9</span> <span class="p">[</span><span class="mh">0x3e98</span><span class="p">]</span>
-            <span class="n">Driver</span> <span class="n">version</span>  <span class="mf">1.0.18513</span>
-            <span class="n">Device</span> <span class="nb">type</span>     <span class="n">gpu</span>
 </pre></div>
 </div>
+<blockquote>
+<div><dl>
+<dt>Platform 0::</dt><dd><p>Name        Intel(R) OpenCL
+Version     OpenCL 2.1 LINUX
+Vendor      Intel(R) Corporation
+Profile     FULL_PROFILE
+Backend     opencl
+Devices     1</p>
+<blockquote>
+<div><p>Device 0::
+Name            Intel(R) Core(TM) i7-9700 CPU &#64; 3.00GHz
+Driver version  2020.11.11.0.13_160000
+Device type     cpu</p>
+</div></blockquote>
+</dd>
+<dt>Platform 1::</dt><dd><p>Name        Intel(R) OpenCL HD Graphics
+Version     OpenCL 3.0
+Vendor      Intel(R) Corporation
+Profile     FULL_PROFILE
+Backend     opencl
+Devices     1</p>
+<blockquote>
+<div><p>Device 0::
+Name            Intel(R) Graphics Gen9 [0x3e98]
+Driver version  20.47.18513
+Device type     gpu</p>
+</div></blockquote>
+</dd>
+<dt>Platform 2::</dt><dd><p>Name        Intel(R) Level-Zero
+Version     1.0
+Vendor      Intel(R) Corporation
+Profile     FULL_PROFILE
+Backend     level_zero
+Devices     1</p>
+<blockquote>
+<div><p>Device 0::
+Name            Intel(R) Graphics Gen9 [0x3e98]
+Driver version  1.0.18513
+Device type     gpu</p>
+</div></blockquote>
+</dd>
+</dl>
+</div></blockquote>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><p><strong>verbosity</strong> (<em>optional</em>) – Defaults to 0.
