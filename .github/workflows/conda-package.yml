@@ -28,7 +28,7 @@ jobs:
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
       - name: Cache conda packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -76,7 +76,7 @@ jobs:
           activate-environment: ""
 
       - name: Cache conda packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -138,7 +138,7 @@ jobs:
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
       - name: Cache conda packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -213,7 +213,7 @@ jobs:
           conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.GITHUB_WORKSPACE }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
           more lockfile
       - name: Cache conda packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -373,7 +373,7 @@ jobs:
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
       - name: Cache conda packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
