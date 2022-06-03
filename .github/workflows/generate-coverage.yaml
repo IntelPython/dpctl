@@ -44,7 +44,7 @@ jobs:
 
       - name: Cache Gtest
         id: cache-gtest
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             /home/runner/work/googletest-release-1.11.0/install
