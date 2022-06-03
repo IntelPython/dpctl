@@ -298,7 +298,7 @@ def lsplatform(verbosity=0):
         On a system with an OpenCL CPU driver, OpenCL GPU driver,
         Level Zero GPU driver, running the command. ::
 
-        $python -c "import dpctl; dpctl.lsplatform()"
+            $ python -c "import dpctl; dpctl.lsplatform()"
 
         returns ::
 
