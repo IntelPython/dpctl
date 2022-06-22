@@ -1,6 +1,7 @@
 recursive-include dpctl/include *.h
 include dpctl/include/dpctl4pybind11.hpp
 recursive-include dpctl *.pxd
+recursive-include dpctl *.cmake
 include dpctl/_sycl_context.h
 include dpctl/_sycl_context_api.h
 include dpctl/_sycl_device.h
