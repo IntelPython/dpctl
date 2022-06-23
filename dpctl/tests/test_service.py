@@ -23,6 +23,7 @@ import glob
 import os
 import os.path
 import re
+import subprocess
 import sys
 
 import pytest
@@ -153,3 +154,31 @@ def test_syclinterface():
         ), "Installation does not have DPCTLSyclInterface.dll"
     else:
         raise RuntimeError("Unsupported system")
+
+
+def test_main_includes():
+    res = subprocess.run(
+        [sys.executable, "-m", "dpctl", "--includes"], capture_output=True
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    assert res.stdout.decode("utf-8").startswith("-I")
+
+
+def test_main_library():
+    res = subprocess.run(
+        [sys.executable, "-m", "dpctl", "--library"], capture_output=True
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    assert res.stdout.decode("utf-8").startswith("-L")
+
+
+def test_cmakedir():
+    res = subprocess.run(
+        [sys.executable, "-m", "dpctl", "--cmakedir"], capture_output=True
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    cmake_dir = res.stdout.decode("utf-8").strip()
+    assert os.path.exists(os.path.join(cmake_dir, "FindDpctl.cmake"))
