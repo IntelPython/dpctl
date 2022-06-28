@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.13.0dev2+9.g16ed729f documentation</title>
+  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.13.0dev2+11.g42afc0cf3 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -34,7 +34,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev2+9.g16ed729f
+                0.13.0dev2+11.g42afc0cf3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -129,22 +129,15 @@ device a <code class="docutils literal notranslate"><span class="pre">ValueError
 <span class="linenos">13</span>        <span class="n">d2</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_gpu_device</span><span class="p">()</span>
 <span class="linenos">14</span>        <span class="k">assert</span> <span class="n">d1</span> <span class="o">==</span> <span class="n">d2</span>
 <span class="linenos">15</span>        <span class="n">d1</span><span class="o">.</span><span class="n">print_device_info</span><span class="p">()</span>
-<span class="linenos">16</span>    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+<span class="linenos">16</span>    <span class="k">except</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDeviceCreationError</span><span class="p">:</span>
 <span class="linenos">17</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A GPU device is not available on the system&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <p>A possible output for the example <a class="reference internal" href="#fig-gpu-device-selection"><span class="std std-ref">Selecting a GPU Device</span></a> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_gpu_device
-Traceback (most recent call last):
-  File &quot;/home/runner/work/dpctl/dpctl/docs/../examples/python/device_selection.py&quot;, line 135, in &lt;module&gt;
-    runner.run_examples(&quot;Device selection examples for dpctl.&quot;, globals())
-  File &quot;/home/runner/work/dpctl/dpctl/examples/python/_runner.py&quot;, line 84, in run_examples
-    clbl()
-  File &quot;/home/runner/work/dpctl/dpctl/docs/../examples/python/device_selection.py&quot;, line 47, in create_gpu_device
-    d1 = dpctl.SyclDevice(&quot;gpu&quot;)
-  File &quot;dpctl/_sycl_device.pyx&quot;, line 293, in dpctl._sycl_device.SyclDevice.__cinit__
-dpctl._sycl_device.SyclDeviceCreationError: Could not create a SyclDevice with the selector string
+A GPU device is not available on the system
+INFO: ===========================
 </pre></div>
 </div>
 </section>
@@ -170,13 +163,13 @@ strings.</p>
 <span class="linenos"> 8</span>    <span class="k">try</span><span class="p">:</span>
 <span class="linenos"> 9</span>        <span class="n">d1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
 <span class="linenos">10</span>        <span class="n">d1</span><span class="o">.</span><span class="n">print_device_info</span><span class="p">()</span>
-<span class="linenos">11</span>    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+<span class="linenos">11</span>    <span class="k">except</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDeviceCreationError</span><span class="p">:</span>
 <span class="linenos">12</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A CPU type device is not available on the system&quot;</span><span class="p">)</span>
 <span class="linenos">13</span>
 <span class="linenos">14</span>    <span class="k">try</span><span class="p">:</span>
 <span class="linenos">15</span>        <span class="n">d1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;opencl:cpu:0&quot;</span><span class="p">)</span>
 <span class="linenos">16</span>        <span class="n">d1</span><span class="o">.</span><span class="n">print_device_info</span><span class="p">()</span>
-<span class="linenos">17</span>    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+<span class="linenos">17</span>    <span class="k">except</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDeviceCreationError</span><span class="p">:</span>
 <span class="linenos">18</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;An OpenCL CPU driver needs to be installed on the system&quot;</span><span class="p">)</span>
 <span class="linenos">19</span>
 <span class="linenos">20</span>    <span class="n">d1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
@@ -185,7 +178,7 @@ strings.</p>
 <span class="linenos">23</span>    <span class="k">try</span><span class="p">:</span>
 <span class="linenos">24</span>        <span class="n">d1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
 <span class="linenos">25</span>        <span class="n">d1</span><span class="o">.</span><span class="n">print_device_info</span><span class="p">()</span>
-<span class="linenos">26</span>    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+<span class="linenos">26</span>    <span class="k">except</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDeviceCreationError</span><span class="p">:</span>
 <span class="linenos">27</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A GPU type device is not available on the system&quot;</span><span class="p">)</span>
 <span class="linenos">28</span>
 <span class="linenos">29</span>
@@ -198,13 +191,13 @@ strings.</p>
 </div>
 <p>A possible output for the example <a class="reference internal" href="#fig-filter-selection"><span class="std std-ref">Device Creation With Filter Strings</span></a> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example select_using_filter
-    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
+    Name            Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz
     Driver version  2022.13.3.0.16_160000
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
     Filter string   opencl:cpu:0
 
-    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
+    Name            Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz
     Driver version  2022.13.3.0.16_160000
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
@@ -216,15 +209,8 @@ strings.</p>
     Profile         EMBEDDED_PROFILE
     Filter string   opencl:accelerator:0
 
-Traceback (most recent call last):
-  File &quot;/home/runner/work/dpctl/dpctl/docs/../examples/python/filter_selection.py&quot;, line 53, in &lt;module&gt;
-    runner.run_examples(&quot;Filter selection examples for dpctl.&quot;, globals())
-  File &quot;/home/runner/work/dpctl/dpctl/examples/python/_runner.py&quot;, line 84, in run_examples
-    clbl()
-  File &quot;/home/runner/work/dpctl/dpctl/docs/../examples/python/filter_selection.py&quot;, line 44, in select_using_filter
-    d1 = dpctl.SyclDevice(&quot;gpu&quot;)
-  File &quot;dpctl/_sycl_device.pyx&quot;, line 293, in dpctl._sycl_device.SyclDevice.__cinit__
-dpctl._sycl_device.SyclDeviceCreationError: Could not create a SyclDevice with the selector string
+A GPU type device is not available on the system
+INFO: ===========================
 </pre></div>
 </div>
 <p>It is also possible to pass a list of devices using a filter string. The
@@ -351,7 +337,7 @@ supports double precision arithmetic and SYCL USM shared memory allocation.</p>
 </div>
 <p>A possible output for the example <a class="reference internal" href="#fig-select-device-with-aspects"><span class="std std-ref">Device Selection Using Aspects</span></a> may be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_device_with_aspects
-    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
+    Name            Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz
     Driver version  2022.13.3.0.16_160000
     Vendor          Intel(R) Corporation
     Profile         FULL_PROFILE
