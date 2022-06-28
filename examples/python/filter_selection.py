@@ -28,13 +28,13 @@ def select_using_filter():
     try:
         d1 = dpctl.SyclDevice("cpu")
         d1.print_device_info()
-    except ValueError:
+    except dpctl.SyclDeviceCreationError:
         print("A CPU type device is not available on the system")
 
     try:
         d1 = dpctl.SyclDevice("opencl:cpu:0")
         d1.print_device_info()
-    except ValueError:
+    except dpctl.SyclDeviceCreationError:
         print("An OpenCL CPU driver needs to be installed on the system")
 
     d1 = dpctl.SyclDevice("0")
@@ -43,7 +43,7 @@ def select_using_filter():
     try:
         d1 = dpctl.SyclDevice("gpu")
         d1.print_device_info()
-    except ValueError:
+    except dpctl.SyclDeviceCreationError:
         print("A GPU type device is not available on the system")
 
 

@@ -48,7 +48,7 @@ def create_gpu_device():
         d2 = dpctl.select_gpu_device()
         assert d1 == d2
         d1.print_device_info()
-    except ValueError:
+    except dpctl.SyclDeviceCreationError:
         print("A GPU device is not available on the system")
 
 
