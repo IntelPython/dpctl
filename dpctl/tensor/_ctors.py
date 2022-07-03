@@ -471,22 +471,24 @@ def _coerce_and_infer_dt(*args, dt):
         raise ValueError(f"Data type {dt} is not supported")
 
 
+def _round_for_arange(tmp):
+    k = int(tmp)
+    if k > 0 and float(k) < tmp:
+        tmp = tmp + 1
+    return tmp
+
+
 def _get_arange_length(start, stop, step):
     "Compute length of arange sequence"
     span = stop - start
     if type(step) in [int, float] and type(span) in [int, float]:
-        offset = -1 if step > 0 else 1
-        tmp = 1 + (span + offset) / step
-        return tmp
+        return _round_for_arange(span / step)
     tmp = span / step
     if type(tmp) is complex and tmp.imag == 0:
         tmp = tmp.real
     else:
         return tmp
-    k = int(tmp)
-    if k > 0 and float(k) < tmp:
-        tmp = tmp + 1
-    return tmp
+    return _round_for_arange(tmp)
 
 
 def arange(

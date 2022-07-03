@@ -994,6 +994,20 @@ def test_arange(dt):
     assert X2.shape == (sz,)
 
 
+def test_arange_fp():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    assert dpt.arange(7, 0, -2, dtype="f4", device=q).shape == (4,)
+    assert dpt.arange(0, 1, 0.25, dtype="f4", device=q).shape == (4,)
+
+    if q.sycl_device.has_aspect_fp64:
+        assert dpt.arange(7, 0, -2, dtype="f8", device=q).shape == (4,)
+    assert dpt.arange(0, 1, 0.25, dtype="f4", device=q).shape == (4,)
+
+
 @pytest.mark.parametrize(
     "dt",
     _all_dtypes,
