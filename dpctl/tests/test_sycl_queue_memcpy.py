@@ -24,9 +24,9 @@ import dpctl
 import dpctl.memory
 
 
-def _create_memory():
+def _create_memory(q):
     nbytes = 1024
-    mobj = dpctl.memory.MemoryUSMShared(nbytes)
+    mobj = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
     return mobj
 
 
@@ -35,9 +35,9 @@ def _create_memory():
     reason="No SYCL devices except the default host device.",
 )
 def test_memcpy_copy_usm_to_usm():
-    mobj1 = _create_memory()
-    mobj2 = _create_memory()
     q = dpctl.SyclQueue()
+    mobj1 = _create_memory(q)
+    mobj2 = _create_memory(q)
 
     mv1 = memoryview(mobj1)
     mv2 = memoryview(mobj2)
@@ -54,8 +54,8 @@ def test_memcpy_copy_usm_to_usm():
 #    reason="No SYCL devices except the default host device."
 # )
 def test_memcpy_type_error():
-    mobj = _create_memory()
-    q = mobj._queue
+    q = dpctl.SyclQueue()
+    mobj = _create_memory(q)
 
     with pytest.raises(TypeError) as cm:
         q.memcpy(None, mobj, 3)
