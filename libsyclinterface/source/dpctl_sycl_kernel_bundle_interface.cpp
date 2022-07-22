@@ -32,7 +32,11 @@
 #include "dpctl_error_handlers.h"
 #include <CL/cl.h>     /* OpenCL headers     */
 #include <CL/sycl.hpp> /* Sycl headers       */
+#if __has_include(<sycl/backend/opencl.hpp>)
+#include <sycl/backend/opencl.hpp>
+#else
 #include <CL/sycl/backend/opencl.hpp>
+#endif
 #include <sstream>
 
 #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
@@ -40,7 +44,11 @@
 // not reorder the includes.
 // clang-format off
 #include "ze_api.h" /* Level Zero headers */
-#include "sycl/ext/oneapi/backend/level_zero.hpp"
+#if __has_include(<sycl/backend/level_zero.hpp>)
+#include <sycl/backend/level_zero.hpp>
+#else
+#include <CL/sycl/backend/level_zero.hpp>
+#endif
 // clang-format on
 #endif
 
