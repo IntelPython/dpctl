@@ -1,0 +1,266 @@
+.. index:: pair: group; Kernel_bundle class C wrapper
+.. _doxid-d2/d0d/group___kernel_bundle_interface:
+
+Kernel_bundle class C wrapper
+=============================
+
+.. toctree::
+	:hidden:
+
+Overview
+~~~~~~~~
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	
+	// global functions
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>`
+	:ref:`DPCTLKernelBundle_CreateFromOCLSource<doxid-d2/d0d/group___kernel_bundle_interface_1gaa753c9ba7f39524d2f87cb7caae74350>`(
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` Ctx,
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` Dev,
+		__dpctl_keep const char* Source,
+		__dpctl_keep const char* CompileOpts
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>`
+	:ref:`DPCTLKernelBundle_CreateFromSpirv<doxid-d2/d0d/group___kernel_bundle_interface_1ga6062cc6a4c81ca4f4079d792c9f135b8>`(
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` Ctx,
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` Dev,
+		__dpctl_keep const void* IL,
+		size_t Length,
+		const char* CompileOpts
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLKernelBundle_Delete<doxid-d2/d0d/group___kernel_bundle_interface_1ga0bf45ad7930bf8e973be31e48b0fde9d>`(__dpctl_take :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>` KBRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`
+	:ref:`DPCTLKernelBundle_GetKernel<doxid-d2/d0d/group___kernel_bundle_interface_1ga7826d57d69cf2d000ccd332541159e33>`(
+		__dpctl_keep :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>` KBRef,
+		__dpctl_keep const char* KernelName
+		);
+
+	DPCTL_API bool
+	:ref:`DPCTLKernelBundle_HasKernel<doxid-d2/d0d/group___kernel_bundle_interface_1gaec25b409112401cd5ca12edbc96d4dbf>`(
+		__dpctl_keep :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>` KBRef,
+		__dpctl_keep const char* KernelName
+		);
+
+.. _details-d2/d0d/group___kernel_bundle_interface:
+
+Detailed Documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+Global Functions
+----------------
+
+.. index:: pair: function; DPCTLKernelBundle_CreateFromOCLSource
+.. _doxid-d2/d0d/group___kernel_bundle_interface_1gaa753c9ba7f39524d2f87cb7caae74350:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>`
+	DPCTLKernelBundle_CreateFromOCLSource(
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` Ctx,
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` Dev,
+		__dpctl_keep const char* Source,
+		__dpctl_keep const char* CompileOpts
+		)
+
+Create a Sycl kernel bundle from an OpenCL kernel source string.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- Ctx
+
+		- An opaque pointer to a sycl::context
+
+	*
+		- Dev
+
+		- An opaque pointer to a sycl::device
+
+	*
+		- Source
+
+		- OpenCL source string
+
+	*
+		- CompileOpts
+
+		- Extra compiler flags (refer Sycl spec.)
+
+
+
+.. rubric:: Returns:
+
+A new SyclKernelBundleRef pointer if the program creation succeeded, else returns NULL.
+
+.. index:: pair: function; DPCTLKernelBundle_CreateFromSpirv
+.. _doxid-d2/d0d/group___kernel_bundle_interface_1ga6062cc6a4c81ca4f4079d792c9f135b8:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>`
+	DPCTLKernelBundle_CreateFromSpirv(
+		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` Ctx,
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` Dev,
+		__dpctl_keep const void* IL,
+		size_t Length,
+		const char* CompileOpts
+		)
+
+Create a Sycl kernel_bundle from an OpenCL SPIR-V binary file.
+
+Uses SYCL2020 interoperability layer to create sycl::kernel_bundle object in executable state for OpenCL and Level-Zero backends from SPIR-V binary.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- Ctx
+
+		- An opaque pointer to a sycl::context
+
+	*
+		- Dev
+
+		- An opaque pointer to a sycl::device
+
+	*
+		- IL
+
+		- SPIR-V binary
+
+	*
+		- Length
+
+		- The size of the IL binary in bytes.
+
+	*
+		- CompileOpts
+
+		- Optional compiler flags used when compiling the SPIR-V binary.
+
+
+
+.. rubric:: Returns:
+
+A new SyclKernelBundleRef pointer if the kernel_bundle creation succeeded, else returns NULL.
+
+.. index:: pair: function; DPCTLKernelBundle_Delete
+.. _doxid-d2/d0d/group___kernel_bundle_interface_1ga0bf45ad7930bf8e973be31e48b0fde9d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLKernelBundle_Delete(__dpctl_take :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>` KBRef)
+
+Frees the DPCTLSyclKernelBundleRef pointer.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- PRef
+
+		- Opaque pointer to a sycl::kernel_bundle
+
+.. index:: pair: function; DPCTLKernelBundle_GetKernel
+.. _doxid-d2/d0d/group___kernel_bundle_interface_1ga7826d57d69cf2d000ccd332541159e33:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`
+	DPCTLKernelBundle_GetKernel(
+		__dpctl_keep :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>` KBRef,
+		__dpctl_keep const char* KernelName
+		)
+
+Returns the SyclKernel with given name from the program, if not found then return NULL.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KBRef
+
+		- Opaque pointer to a sycl::kernel_bundle
+
+	*
+		- KernelName
+
+		- Name of kernel
+
+
+
+.. rubric:: Returns:
+
+A SyclKernel reference if the kernel exists, else NULL
+
+.. index:: pair: function; DPCTLKernelBundle_HasKernel
+.. _doxid-d2/d0d/group___kernel_bundle_interface_1gaec25b409112401cd5ca12edbc96d4dbf:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLKernelBundle_HasKernel(
+		__dpctl_keep :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>` KBRef,
+		__dpctl_keep const char* KernelName
+		)
+
+Return True if a SyclKernel with given name exists in the program, if not found then returns False.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KBRef
+
+		- Opaque pointer to a sycl::kernel_bundle
+
+	*
+		- KernelName
+
+		- Name of kernel
+
+
+
+.. rubric:: Returns:
+
+True if the kernel exists, else False
+
