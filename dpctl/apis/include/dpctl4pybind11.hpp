@@ -465,7 +465,7 @@ public:
             throw py::error_already_set();
     }
 
-    char *get_data()
+    char *get_data() const
     {
         PyObject *raw_o = this->ptr();
         PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
@@ -473,12 +473,12 @@ public:
         return UsmNDArray_GetData(raw_ar);
     }
 
-    template <typename T> T *get_data()
+    template <typename T> T *get_data() const
     {
         return reinterpret_cast<T *>(get_data());
     }
 
-    int get_ndim()
+    int get_ndim() const
     {
         PyObject *raw_o = this->ptr();
         PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
@@ -486,7 +486,7 @@ public:
         return UsmNDArray_GetNDim(raw_ar);
     }
 
-    const py::ssize_t *get_shape_raw()
+    const py::ssize_t *get_shape_raw() const
     {
         PyObject *raw_o = this->ptr();
         PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
@@ -494,13 +494,13 @@ public:
         return UsmNDArray_GetShape(raw_ar);
     }
 
-    py::ssize_t get_shape(int i)
+    py::ssize_t get_shape(int i) const
     {
         auto shape_ptr = get_shape_raw();
         return shape_ptr[i];
     }
 
-    const py::ssize_t *get_strides_raw()
+    const py::ssize_t *get_strides_raw() const
     {
         PyObject *raw_o = this->ptr();
         PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
@@ -508,7 +508,7 @@ public:
         return UsmNDArray_GetStrides(raw_ar);
     }
 
-    py::ssize_t get_size()
+    py::ssize_t get_size() const
     {
         PyObject *raw_o = this->ptr();
         PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
@@ -525,7 +525,7 @@ public:
         return nelems;
     }
 
-    std::pair<py::ssize_t, py::ssize_t> get_minmax_offsets()
+    std::pair<py::ssize_t, py::ssize_t> get_minmax_offsets() const
     {
         PyObject *raw_o = this->ptr();
         PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
@@ -559,7 +559,7 @@ public:
         return std::make_pair(offset_min, offset_max);
     }
 
-    sycl::queue get_queue()
+    sycl::queue get_queue() const
     {
         PyObject *raw_o = this->ptr();
         PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
@@ -568,7 +568,7 @@ public:
         return *(reinterpret_cast<sycl::queue *>(QRef));
     }
 
-    int get_typenum()
+    int get_typenum() const
     {
         PyObject *raw_o = this->ptr();
         PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
@@ -576,7 +576,7 @@ public:
         return UsmNDArray_GetTypenum(raw_ar);
     }
 
-    int get_flags()
+    int get_flags() const
     {
         PyObject *raw_o = this->ptr();
         PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
@@ -584,7 +584,7 @@ public:
         return UsmNDArray_GetFlags(raw_ar);
     }
 
-    int get_elemsize()
+    int get_elemsize() const
     {
         PyObject *raw_o = this->ptr();
         PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
