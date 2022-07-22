@@ -45,6 +45,10 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
         q = dpctl.SyclQueue("opencl", property="enable_profiling")
     except dpctl.SyclQueueCreationError:
         pytest.skip("OpenCL queue could not be created")
+    if dtype == np.dtype("f8") and q.sycl_device.has_aspect_fp64 is False:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
     # OpenCL conventions for indexing global_id is opposite to
     # that of SYCL (and DPCTL)
     oclSrc = (

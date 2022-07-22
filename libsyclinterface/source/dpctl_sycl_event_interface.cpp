@@ -60,8 +60,12 @@ void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef)
 {
     if (ERef) {
         auto SyclEvent = unwrap(ERef);
-        if (SyclEvent)
-            SyclEvent->wait();
+        try {
+            if (SyclEvent)
+                SyclEvent->wait();
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
     }
     else {
         error_handler("Cannot wait for the event. DPCTLSyclEventRef as "
@@ -74,8 +78,12 @@ void DPCTLEvent_WaitAndThrow(__dpctl_keep DPCTLSyclEventRef ERef)
 {
     if (ERef) {
         auto SyclEvent = unwrap(ERef);
-        if (SyclEvent)
-            SyclEvent->wait_and_throw();
+        try {
+            if (SyclEvent)
+                SyclEvent->wait_and_throw();
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
     }
     else {
         error_handler("Cannot wait_and_throw for the event. DPCTLSyclEventRef "
