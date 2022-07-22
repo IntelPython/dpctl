@@ -40,7 +40,7 @@ sycl::event produce_event(sycl::queue &Q, sycl::buffer<int> &data)
     int N = data.get_range()[0];
 
     auto e1 = Q.submit([&](sycl::handler &h) {
-        sycl::accessor a{data, h, sycl::write_only, sycl::noinit};
+        sycl::accessor a{data, h, sycl::write_only, sycl::no_init};
         h.parallel_for(N, [=](sycl::id<1> i) { a[i] = 1; });
     });
 
