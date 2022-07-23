@@ -601,6 +601,14 @@ def test_tofrom_numpy(shape, dtype, usm_type):
 @pytest.mark.parametrize("src_usm_type", ["device", "shared", "host"])
 @pytest.mark.parametrize("dst_usm_type", ["device", "shared", "host"])
 def test_setitem_same_dtype(dtype, src_usm_type, dst_usm_type):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default SyclQueue.")
+    if q.sycl_device.has_aspect_fp64 is False and dtype in ["f8", "c16"]:
+        pytest.skip(
+            "Device does not support double precision floating point types."
+        )
     Xnp = (
         np.random.randint(-10, 10, size=2 * 3 * 4)
         .astype(dtype)
@@ -649,6 +657,12 @@ def test_setitem_same_dtype(dtype, src_usm_type, dst_usm_type):
 )
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
 def test_setitem_scalar(dtype, usm_type):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default SyclQueue")
+    if q.sycl_device.has_aspect_fp64 is False and dtype in ["f8", "c16"]:
+        pytest.skip("Device does not support double precision floating type")
     X = dpt.usm_ndarray((6, 6), dtype=dtype, buffer=usm_type)
     for i in range(X.size):
         X[np.unravel_index(i, X.shape)] = np.asarray(i, dtype=dtype)
@@ -673,13 +687,22 @@ def test_setitem_errors():
     X[:] = Y[None, :, 0]
 
 
-def test_setitem_different_dtypes():
-    X = dpt.from_numpy(np.ones(10, "f4"))
-    Y = dpt.from_numpy(np.zeros(10, "f4"))
-    Z = dpt.usm_ndarray((20,), "d")
+@pytest.mark.parametrize("src_dt,dst_dt", [("i4", "i8"), ("f4", "f8")])
+def test_setitem_different_dtypes(src_dt, dst_dt):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default queue could not be created")
+    if dst_dt == "f8" and q.sycl_device.has_aspect_fp64 is False:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
+    X = dpt.from_numpy(np.ones(10, src_dt), sycl_queue=q)
+    Y = dpt.from_numpy(np.zeros(10, src_dt), sycl_queue=q)
+    Z = dpt.empty((20,), dtype=dst_dt, sycl_queue=q)
     Z[::2] = X
     Z[1::2] = Y
-    assert np.allclose(dpt.asnumpy(Z), np.tile(np.array([1, 0], "d"), 10))
+    assert np.allclose(dpt.asnumpy(Z), np.tile(np.array([1, 0], Z.dtype), 10))
 
 
 def test_shape_setter():
@@ -804,8 +827,8 @@ def test_to_device_migration():
 def test_astype():
     X = dpt.empty((5, 5), dtype="i4")
     X[:] = np.full((5, 5), 7, dtype="i4")
-    Y = dpt.astype(X, "c16", order="C")
-    assert np.allclose(dpt.to_numpy(Y), np.full((5, 5), 7, dtype="c16"))
+    Y = dpt.astype(X, "c8", order="C")
+    assert np.allclose(dpt.to_numpy(Y), np.full((5, 5), 7, dtype="c8"))
     Y = dpt.astype(X[::2, ::-1], "f2", order="K")
     assert np.allclose(dpt.to_numpy(Y), np.full(Y.shape, 7, dtype="f2"))
     Y = dpt.astype(X[::2, ::-1], "i4", order="K", copy=False)
@@ -946,7 +969,15 @@ def test_zeros(dtype):
     _all_dtypes,
 )
 def test_ones(dtype):
-    X = dpt.ones(10, dtype=dtype)
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not created default queue")
+    if dtype in ["f8", "c16"] and q.sycl_device.has_aspect_fp64 is False:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
+    X = dpt.ones(10, dtype=dtype, sycl_queue=q)
     assert np.array_equal(dpt.asnumpy(X), np.ones(10, dtype=dtype))
 
 
@@ -955,7 +986,15 @@ def test_ones(dtype):
     _all_dtypes,
 )
 def test_full(dtype):
-    X = dpt.full(10, 4, dtype=dtype)
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not created default queue")
+    if dtype in ["f8", "c16"] and q.sycl_device.has_aspect_fp64 is False:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
+    X = dpt.full(10, 4, dtype=dtype, sycl_queue=q)
     assert np.array_equal(dpt.asnumpy(X), np.full(10, 4, dtype=dtype))
 
 
@@ -976,6 +1015,10 @@ def test_arange(dt):
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
 
+    if dt in ["f8", "c16"] and q.sycl_device.has_aspect_fp64 is False:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
     X = dpt.arange(0, 123, dtype=dt, sycl_queue=q)
     dt = np.dtype(dt)
     if np.issubdtype(dt, np.integer):
@@ -1093,6 +1136,10 @@ def test_ones_like(dt, usm_kind):
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
+    if dt in ["f8", "c16"] and q.sycl_device.has_aspect_fp64 is False:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
 
     X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.ones_like(X)
@@ -1128,6 +1175,11 @@ def test_full_like(dt, usm_kind):
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
+
+    if dt in ["f8", "c16"] and q.sycl_device.has_aspect_fp64 is False:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
 
     fill_v = np.dtype(dt).type(1)
     X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
