@@ -111,7 +111,7 @@ bool DPCTLKernelBundle_HasKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
 /*!
  * @brief Frees the DPCTLSyclKernelBundleRef pointer.
  *
- * @param    PRef           Opaque pointer to a sycl::kernel_bundle
+ * @param   KBRef           Opaque pointer to a sycl::kernel_bundle
  * @ingroup KernelBundleInterface
  */
 DPCTL_API
