@@ -47,7 +47,7 @@ __dpctl_give const char *DPCTLService_GetDPCPPVersion(void);
  * @brief Initialize logger if compiled to use logger, no-op otherwise.
  *
  * @param app_name  C-string for application name reflected in the log.
- * @paral log_dir   C-string for directory where log files are placed.
+ * @param log_dir   C-string for directory where log files are placed.
  * @ingroup Service
  */
 DPCTL_API
