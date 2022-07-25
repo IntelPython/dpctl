@@ -386,101 +386,154 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def has_aspect_host(self):
+        "Returns True if this device is a host device, False otherwise"
         cdef _aspect_type AT = _aspect_type._host
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_cpu(self):
+        "Returns True if this device is a CPU device, False otherwise"
         cdef _aspect_type AT = _aspect_type._cpu
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_gpu(self):
+        "Returns True if this device is a GPU device, False otherwise"
         cdef _aspect_type AT = _aspect_type._gpu
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_accelerator(self):
+        "Returns True if this device is an accelerator device, False otherwise"
         cdef _aspect_type AT = _aspect_type._accelerator
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_custom(self):
+        "Returns True if this device is a custom device, False otherwise"
         cdef _aspect_type AT = _aspect_type._custom
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_fp16(self):
+        """ Returns True if kernels submitted to this device
+        may use 16-bit floating point types, False otherwise
+        """
         cdef _aspect_type AT = _aspect_type._fp16
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_fp64(self):
+        """  Returns True if kernels submitted to this device
+        may use 64-bit floating point types, False otherwise
+        """
         cdef _aspect_type AT = _aspect_type._fp64
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_atomic64(self):
+        """ Returns True if kernels submitted to this device
+        may perform 64-bit atomic operations, False otherwise
+        """
         cdef _aspect_type AT = _aspect_type._atomic64
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_image(self):
+        """ Returns True if this device supports images, False otherwise
+        """
         cdef _aspect_type AT = _aspect_type._image
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_online_compiler(self):
+        """ Returns True if this device supports online compilation of
+        device code, False otherwise
+        """
         cdef _aspect_type AT = _aspect_type._online_compiler
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_online_linker(self):
+        """ Returns True if this device supports online linking of
+        device code, False otherwise
+        """
         cdef _aspect_type AT = _aspect_type._online_linker
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_queue_profiling(self):
+        """ Returns True if this device supports queue profiling,
+        False otherwise
+        """
         cdef _aspect_type AT = _aspect_type._queue_profiling
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_usm_device_allocations(self):
+        """ Returns True if this device supports explicit USM allocations,
+        False otherwise
+        """
         cdef _aspect_type AT = _aspect_type._usm_device_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_usm_host_allocations(self):
+        """ Returns True if this device can access USM-host memory,
+        False otherwise
+        """
         cdef _aspect_type AT = _aspect_type._usm_host_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_usm_shared_allocations(self):
+        """ Returns True if this device supports USM-shared memory
+        allocated on the same device, False otherwise
+        """
         cdef _aspect_type AT = _aspect_type._usm_shared_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_usm_restricted_shared_allocations(self):
+        """ Deprecated property, do not use.
+        """
         cdef _aspect_type AT = _aspect_type._usm_restricted_shared_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_usm_system_allocations(self):
+        """ Returns True if system allocator may be used instead of SYCL USM
+        allocation mechanism for USM-shared allocations on this device,
+        False otherwise
+        """
         cdef _aspect_type AT = _aspect_type._usm_system_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_usm_atomic_host_allocations(self):
+        """ Returns True if this device supports USM-host allocations and
+        the host and this device may concurrently access and atomically
+        modify host allocations, False otherwise
+        """
         cdef _aspect_type AT = _aspect_type._usm_atomic_host_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_usm_atomic_shared_allocations(self):
+        """ Returns True if this device supports USM-shared allocations and
+        the host and other devices in the same context as this device may
+        concurrently access and atomically modify shared allocations,
+        False otherwise
+        """
         cdef _aspect_type AT = _aspect_type._usm_atomic_shared_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_host_debuggable(self):
+        """ Returns True if kernels running on this device can be debugged
+        using standard debuggers that are normally available on the host
+        system, False otherwise
+        """
         cdef _aspect_type AT = _aspect_type._host_debuggable
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
@@ -521,6 +574,10 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def default_selector_score(self):
+        """ Integer score assigned to this device by DPC++ runtime's default
+        scoring function. Score of -1 denotes that this device was rejected
+        and may not be properly programmed by the DPC++ runtime.
+        """
         cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create()
         cdef int score = -1
         if (DSRef):
@@ -531,16 +588,16 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def max_read_image_args(self):
         """ Returns the maximum number of simultaneous image objects that
-            can be read from by a kernel. The minimum value is 128 if the
-            SYCL device has aspect::image.
+        can be read from by a kernel. The minimum value is 128 if the
+        SYCL device has aspect::image.
         """
         return DPCTLDevice_GetMaxReadImageArgs(self._device_ref)
 
     @property
     def max_write_image_args(self):
         """ Returns the maximum number of simultaneous image objects that
-            can be written to by a kernel. The minimum value is 8 if the SYCL
-            device has aspect::image.
+        can be written to by a kernel. The minimum value is 8 if the SYCL
+        device has aspect::image.
         """
         return DPCTLDevice_GetMaxWriteImageArgs(self._device_ref)
 
@@ -585,10 +642,7 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def max_work_item_dims(self):
         """ Returns the maximum dimensions that specify the global and local
-            work-item IDs used by the data parallel execution model.
-
-            The cb value is 3 if this SYCL device is not of device
-            type ``info::device_type::custom``.
+        work-item IDs used by the data parallel execution model.
         """
         cdef uint32_t max_work_item_dims = 0
         max_work_item_dims = DPCTLDevice_GetMaxWorkItemDims(self._device_ref)
@@ -597,9 +651,9 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def max_work_item_sizes(self):
         """ Returns the maximum number of work-items that are permitted in each
-            dimension of the work-group of the nd_range. The minimum value is
-            `(1; 1; 1)` for devices that are not of device type
-            ``info::device_type::custom``.
+        dimension of the work-group of the nd_range. The minimum value is
+        `(1; 1; 1)` for devices that are not of device type
+        ``info::device_type::custom``.
         """
         return (
             self._max_work_item_sizes[0],
@@ -610,7 +664,7 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def max_compute_units(self):
         """ Returns the number of parallel compute units available to the
-            device. The minimum value is 1.
+        device. The minimum value is 1.
         """
         cdef uint32_t max_compute_units = 0
         max_compute_units = DPCTLDevice_GetMaxComputeUnits(self._device_ref)
@@ -619,9 +673,9 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def max_work_group_size(self):
         """ Returns the maximum number of work-items
-            that are permitted in a work-group executing a
-            kernel on a single compute unit. The minimum
-            value is 1.
+        that are permitted in a work-group executing a
+        kernel on a single compute unit. The minimum
+        value is 1.
         """
         cdef uint32_t max_work_group_size = 0
         max_work_group_size = DPCTLDevice_GetMaxWorkGroupSize(self._device_ref)
@@ -630,12 +684,12 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def max_num_sub_groups(self):
         """ Returns the maximum number of sub-groups
-            in a work-group for any kernel executed on the
-            device. The minimum value is 1.
+        in a work-group for any kernel executed on the
+        device. The minimum value is 1.
 
-            Returns:
-                int: The maximum number of sub-groups support per work-group by
-                the device.
+        Returns:
+            int: The maximum number of sub-groups support per work-group by
+            the device.
         """
         cdef uint32_t max_num_sub_groups = 0
         if (not self.is_host):
@@ -647,7 +701,7 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def sub_group_independent_forward_progress(self):
         """ Returns true if the device supports independent forward progress of
-            sub-groups with respect to other sub-groups in the same work-group.
+        sub-groups with respect to other sub-groups in the same work-group.
         """
         return DPCTLDevice_GetSubGroupIndependentForwardProgress(
             self._device_ref
@@ -659,7 +713,7 @@ cdef class SyclDevice(_SyclDevice):
 
         Returns:
             :class:`dpctl.SyclPlatform`: The platform associated with this
-                device.
+            device.
         """
         cdef DPCTLSyclPlatformRef PRef = (
             DPCTLDevice_GetPlatform(self._device_ref)
@@ -672,49 +726,49 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def preferred_vector_width_char(self):
         """ Returns the preferred native vector width size for built-in scalar
-            types that can be put into vectors.
+        types that can be put into vectors.
         """
         return DPCTLDevice_GetPreferredVectorWidthChar(self._device_ref)
 
     @property
     def preferred_vector_width_short(self):
         """ Returns the preferred native vector width size for built-in scalar
-            types that can be put into vectors.
+        types that can be put into vectors.
         """
         return DPCTLDevice_GetPreferredVectorWidthShort(self._device_ref)
 
     @property
     def preferred_vector_width_int(self):
         """ Returns the preferred native vector width size for built-in scalar
-            types that can be put into vectors.
+        types that can be put into vectors.
         """
         return DPCTLDevice_GetPreferredVectorWidthInt(self._device_ref)
 
     @property
     def preferred_vector_width_long(self):
         """ Returns the preferred native vector width size for built-in scalar
-            types that can be put into vectors.
+        types that can be put into vectors.
         """
         return DPCTLDevice_GetPreferredVectorWidthLong(self._device_ref)
 
     @property
     def preferred_vector_width_float(self):
         """ Returns the preferred native vector width size for built-in scalar
-            types that can be put into vectors.
+        types that can be put into vectors.
         """
         return DPCTLDevice_GetPreferredVectorWidthFloat(self._device_ref)
 
     @property
     def preferred_vector_width_double(self):
         """ Returns the preferred native vector width size for built-in scalar
-            types that can be put into vectors.
+        types that can be put into vectors.
         """
         return DPCTLDevice_GetPreferredVectorWidthDouble(self._device_ref)
 
     @property
     def preferred_vector_width_half(self):
         """ Returns the preferred native vector width size for built-in scalar
-            types that can be put into vectors.
+        types that can be put into vectors.
         """
         return DPCTLDevice_GetPreferredVectorWidthHalf(self._device_ref)
 
@@ -763,6 +817,7 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def __name__(self):
+        "Name of the class `dpctl.SyclDevice`"
         return "SyclDevice"
 
     def __repr__(self):
@@ -788,13 +843,13 @@ cdef class SyclDevice(_SyclDevice):
 
     cdef list create_sub_devices_equally(self, size_t count):
         """ Returns a list of sub-devices partitioned from this SYCL device
-            based on the ``count`` parameter.
+        based on the ``count`` parameter.
 
-            The returned list contains as many sub-devices as can be created
-            such that each sub-device contains count compute units. If the
-            device’s total number of compute units is not evenly divided by
-            count, then the remaining compute units are not included in any of
-            the sub-devices.
+        The returned list contains as many sub-devices as can be created
+        such that each sub-device contains count compute units. If the
+        device’s total number of compute units is not evenly divided by
+        count, then the remaining compute units are not included in any of
+        the sub-devices.
         """
         cdef DPCTLDeviceVectorRef DVRef = NULL
         if count > 0:
@@ -809,10 +864,10 @@ cdef class SyclDevice(_SyclDevice):
 
     cdef list create_sub_devices_by_counts(self, object counts):
         """ Returns a list of sub-devices partitioned from this SYCL device
-            based on the ``counts`` parameter.
+        based on the ``counts`` parameter.
 
-            For each non-zero value ``M`` in the counts vector, a sub-device
-            with ``M`` compute units is created.
+        For each non-zero value ``M`` in the counts vector, a sub-device
+        with ``M`` compute units is created.
         """
         cdef int ncounts = len(counts)
         cdef size_t *counts_buff = NULL
@@ -850,7 +905,7 @@ cdef class SyclDevice(_SyclDevice):
         self, _partition_affinity_domain_type domain
     ):
         """ Returns a list of sub-devices partitioned from this SYCL device by
-            affinity domain based on the ``domain`` parameter.
+        affinity domain based on the ``domain`` parameter.
         """
         cdef DPCTLDeviceVectorRef DVRef = NULL
         DVRef = DPCTLDevice_CreateSubDevicesByAffinity(self._device_ref, domain)
@@ -1007,6 +1062,7 @@ cdef class SyclDevice(_SyclDevice):
         return DPCTLDevice_AreEq(self._device_ref, other.get_device_ref())
 
     def __eq__(self, other):
+        "Returns True if two devices are the same"
         if isinstance(other, SyclDevice):
             return self.equals(<SyclDevice> other)
         else:
@@ -1014,8 +1070,7 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def filter_string(self):
-        """
-        For a parent device, returns a fully specified filter selector
+        """ For a parent device, returns a fully specified filter selector
         string``backend:device_type:relative_id`` selecting the device.
 
         Returns:
@@ -1056,8 +1111,7 @@ cdef class SyclDevice(_SyclDevice):
             raise TypeError("This SyclDevice is not a root device")
 
     cdef int get_backend_and_device_type_ordinal(self):
-        """
-        If this device is a root ``sycl::device``, returns the ordinal
+        """ If this device is a root ``sycl::device``, returns the ordinal
         position of this device in the vector
         ``sycl::device::get_devices(device_type_of_this_device)``
         filtered to contain only devices with the same backend as this
@@ -1070,8 +1124,7 @@ cdef class SyclDevice(_SyclDevice):
         return relId
 
     cdef int get_device_type_ordinal(self):
-        """
-        If this device is a root ``sycl::device``, returns the ordinal
+        """ If this device is a root ``sycl::device``, returns the ordinal
         position of this device in the vector
         ``sycl::device::get_devices(device_type_of_this_device)``
 
@@ -1086,8 +1139,7 @@ cdef class SyclDevice(_SyclDevice):
         return relId
 
     cdef int get_backend_ordinal(self):
-        """
-        If this device is a root ``sycl::device``, returns the ordinal
+        """ If this device is a root ``sycl::device``, returns the ordinal
         position of this device in the vector ``sycl::device::get_devices()``
         filtered to contain only devices with the same backend as this
         device.
@@ -1103,8 +1155,7 @@ cdef class SyclDevice(_SyclDevice):
         return relId
 
     cdef int get_overall_ordinal(self):
-        """
-        If this device is a root ``sycl::device``, returns the ordinal
+        """ If this device is a root ``sycl::device``, returns the ordinal
         position of this device in the vector ``sycl::device::get_devices()``
         filtered to contain only devices with the same backend as this
         device.
@@ -1121,8 +1172,7 @@ cdef class SyclDevice(_SyclDevice):
         return relId
 
     def get_filter_string(self, include_backend=True, include_device_type=True):
-        """
-        get_filter_string(include_backend=True, include_device_type=True)
+        """ get_filter_string(include_backend=True, include_device_type=True)
 
         For a parent device, returns a filter selector string
         that includes backend or device type based on the value

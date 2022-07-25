@@ -262,6 +262,7 @@ cdef class usm_ndarray:
 
     @property
     def _pointer(self):
+        "Returns USM pointer for data allocation encoded as integer"
         return <size_t> self.get_data()
 
     cdef Py_ssize_t get_offset(self) except *:
@@ -577,6 +578,9 @@ cdef class usm_ndarray:
 
     @property
     def T(self):
+        """ Returns tranposed array for 2D array, raises `ValueError`
+        otherwise.
+        """
         if self.nd_ == 2:
             return _transpose(self)
         else:
@@ -588,6 +592,8 @@ cdef class usm_ndarray:
 
     @property
     def mT(self):
+        """ Returns array where the last two dimensions are transposed.
+        """
         if self.nd_ < 2:
             raise ValueError(
                 "array.mT requires array to have at least 2-dimensons."
@@ -596,6 +602,9 @@ cdef class usm_ndarray:
 
     @property
     def real(self):
+        """ Returns real component for arrays with complex data-types
+        and returns itself for all other data-types.
+        """
         if (self.typenum_ < UAR_CFLOAT):
             # elements are real
             return self
@@ -604,6 +613,9 @@ cdef class usm_ndarray:
 
     @property
     def imag(self):
+        """ Returns imaginary component for arrays with complex data-types
+        and returns zero array for all other data-types.
+        """
         if (self.typenum_ < UAR_CFLOAT):
             # elements are real
             return _zero_like(self)
