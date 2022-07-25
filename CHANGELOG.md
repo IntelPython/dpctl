@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `dpctl.SyclDevice.platform` and `dpctl.SyclPlatform.default_context` properties [#827](https://github.com/IntelPython/dpctl/pull/827).
 * Provided pybind11 example for functions working on `dpctl.tensor.usm_ndarray` container applying oneMKL functions [#780](https://github.com/IntelPython/dpctl/pull/780), [#793](https://github.com/IntelPython/dpctl/pull/793), [#819](https://github.com/IntelPython/dpctl/pull/819). The example was expanded to demonstrate implementing iterative linear solvers (Chebyshev solver, and Conjugate-Gradient solver) by asynchronously submitting individual SYCL kernels from Python [#821](https://github.com/IntelPython/dpctl/pull/821), [#833](https://github.com/IntelPython/dpctl/pull/833), [#838](https://github.com/IntelPython/dpctl/pull/838).
 * Wrote manual page about working with `dpctl.SyclQueue` [#829](https://github.com/IntelPython/dpctl/pull/829).
+* Added cmake scripts to dpctl package layout and a way to query the location [#853](https://github.com/IntelPython/dpctl/pull/853).
+
 
 ### Changed
 
