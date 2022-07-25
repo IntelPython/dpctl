@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclTimer &mdash; Data-parallel Control (dpctl) 0.13.0dev2+26.g809cdf45e documentation</title>
+  <title>dpctl.SyclTimer &mdash; Data-parallel Control (dpctl) 0.13.0dev2+31.g594351fec documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -34,7 +34,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev2+26.g809cdf45e
+                0.13.0dev2+31.g594351fec
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -155,7 +155,7 @@ one second.</p></li>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclTimer.dt" title="dpctl.SyclTimer.dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns a tuple of elapsed times where first element is the duration as measured by the host timer, while the second element is the duration as measured by the device timer and encoded in profiling events</p></td>
 </tr>
 </tbody>
 </table>
@@ -166,7 +166,11 @@ one second.</p></li>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclTimer.dt">
 <span class="sig-prename descclassname"><span class="pre">SyclTimer.</span></span><span class="sig-name descname"><span class="pre">dt</span></span><a class="headerlink" href="#dpctl.SyclTimer.dt" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns a tuple of elapsed times where first
+element is the duration as measured by the host timer,
+while the second element is the duration as measured by
+the device timer and encoded in profiling events</p>
+</dd></dl>
 
 </section>
 </section>

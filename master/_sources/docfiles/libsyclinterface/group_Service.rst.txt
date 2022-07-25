@@ -82,7 +82,12 @@ Initialize logger if compiled to use logger, no-op otherwise.
 	*
 		- app_name
 
-		- C-string for application name reflected in the log. @paral log_dir C-string for directory where log files are placed.
+		- C-string for application name reflected in the log.
+
+	*
+		- log_dir
+
+		- C-string for directory where log files are placed.
 
 .. index:: pair: function; DPCTLService_ShutdownLogger
 .. _doxid-d8/d1a/group___service_1ga9699c638b54314fc1398af7d48df0353:

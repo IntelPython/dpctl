@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl._sycl_timer &mdash; Data-parallel Control (dpctl) 0.13.0dev2+26.g809cdf45e documentation</title>
+  <title>dpctl._sycl_timer &mdash; Data-parallel Control (dpctl) 0.13.0dev2+31.g594351fec documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev2+26.g809cdf45e
+                0.13.0dev2+31.g594351fec
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -172,6 +172,10 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a tuple of elapsed times where first</span>
+<span class="sd">        element is the duration as measured by the host timer,</span>
+<span class="sd">        while the second element is the duration as measured by</span>
+<span class="sd">        the device timer and encoded in profiling events&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">event_start</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">event_finish</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">(</span>

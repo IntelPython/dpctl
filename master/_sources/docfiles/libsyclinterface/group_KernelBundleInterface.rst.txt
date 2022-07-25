@@ -186,7 +186,7 @@ Frees the DPCTLSyclKernelBundleRef pointer.
 	:widths: 20 80
 
 	*
-		- PRef
+		- KBRef
 
 		- Opaque pointer to a sycl::kernel_bundle
 

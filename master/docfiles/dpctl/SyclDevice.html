@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.13.0dev2+26.g809cdf45e documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.13.0dev2+31.g594351fec documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -34,7 +34,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev2+26.g809cdf45e
+                0.13.0dev2+31.g594351fec
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -175,7 +175,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p>Returns the backend_type enum value for this device</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.default_selector_score" title="dpctl.SyclDevice.default_selector_score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_selector_score</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Integer score assigned to this device by DPC++ runtime's default scoring function.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.device_type" title="dpctl.SyclDevice.device_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">device_type</span></code></a></p></td>
 <td><p>Returns the type of the device as a <cite>device_type</cite> enum.</p></td>
@@ -190,64 +190,64 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p>Returns the size of global memory on this device in bytes.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_accelerator" title="dpctl.SyclDevice.has_aspect_accelerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_accelerator</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if this device is an accelerator device, False otherwise</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_atomic64" title="dpctl.SyclDevice.has_aspect_atomic64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_atomic64</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if kernels submitted to this device may perform 64-bit atomic operations, False otherwise</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_cpu" title="dpctl.SyclDevice.has_aspect_cpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_cpu</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if this device is a CPU device, False otherwise</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_custom" title="dpctl.SyclDevice.has_aspect_custom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_custom</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if this device is a custom device, False otherwise</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_fp16" title="dpctl.SyclDevice.has_aspect_fp16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_fp16</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if kernels submitted to this device may use 16-bit floating point types, False otherwise</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_fp64" title="dpctl.SyclDevice.has_aspect_fp64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_fp64</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if kernels submitted to this device may use 64-bit floating point types, False otherwise</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_gpu" title="dpctl.SyclDevice.has_aspect_gpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_gpu</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if this device is a GPU device, False otherwise</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_host" title="dpctl.SyclDevice.has_aspect_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_host</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if this device is a host device, False otherwise</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_host_debuggable" title="dpctl.SyclDevice.has_aspect_host_debuggable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_host_debuggable</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if kernels running on this device can be debugged using standard debuggers that are normally available on the host system, False otherwise</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_image" title="dpctl.SyclDevice.has_aspect_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_image</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if this device supports images, False otherwise</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_online_compiler" title="dpctl.SyclDevice.has_aspect_online_compiler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_online_compiler</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if this device supports online compilation of device code, False otherwise</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_online_linker" title="dpctl.SyclDevice.has_aspect_online_linker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_online_linker</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if this device supports online linking of device code, False otherwise</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_queue_profiling" title="dpctl.SyclDevice.has_aspect_queue_profiling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_queue_profiling</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if this device supports queue profiling, False otherwise</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations" title="dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_atomic_host_allocations</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if this device supports USM-host allocations and the host and this device may concurrently access and atomically modify host allocations, False otherwise</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations" title="dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_atomic_shared_allocations</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if this device supports USM-shared allocations and the host and other devices in the same context as this device may concurrently access and atomically modify shared allocations, False otherwise</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_device_allocations" title="dpctl.SyclDevice.has_aspect_usm_device_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_device_allocations</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if this device supports explicit USM allocations, False otherwise</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_host_allocations" title="dpctl.SyclDevice.has_aspect_usm_host_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_host_allocations</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if this device can access USM-host memory, False otherwise</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations" title="dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_restricted_shared_allocations</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Deprecated property, do not use.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_shared_allocations" title="dpctl.SyclDevice.has_aspect_usm_shared_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_shared_allocations</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if this device supports USM-shared memory allocated on the same device, False otherwise</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_system_allocations" title="dpctl.SyclDevice.has_aspect_usm_system_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_system_allocations</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Returns True if system allocator may be used instead of SYCL USM allocation mechanism for USM-shared allocations on this device, False otherwise</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_2d_max_height" title="dpctl.SyclDevice.image_2d_max_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_2d_max_height</span></code></a></p></td>
 <td><p>Returns the maximum height of a 2D image or 1D image in pixels.</p></td>
@@ -383,7 +383,10 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.default_selector_score">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">default_selector_score</span></span><a class="headerlink" href="#dpctl.SyclDevice.default_selector_score" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Integer score assigned to this device by DPC++ runtime’s default
+scoring function. Score of -1 denotes that this device was rejected
+and may not be properly programmed by the DPC++ runtime.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.device_type">
@@ -455,102 +458,140 @@ string``backend:device_type:relative_id`` selecting the device.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_accelerator">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_accelerator</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_accelerator" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this device is an accelerator device, False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_atomic64">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_atomic64</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_atomic64" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if kernels submitted to this device
+may perform 64-bit atomic operations, False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_cpu">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_cpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_cpu" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this device is a CPU device, False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_custom">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_custom</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_custom" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this device is a custom device, False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_fp16">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_fp16</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_fp16" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if kernels submitted to this device
+may use 16-bit floating point types, False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_fp64">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_fp64</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_fp64" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if kernels submitted to this device
+may use 64-bit floating point types, False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_gpu">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_gpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_gpu" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this device is a GPU device, False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_host">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_host</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_host" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this device is a host device, False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_host_debuggable">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_host_debuggable</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_host_debuggable" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if kernels running on this device can be debugged
+using standard debuggers that are normally available on the host
+system, False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_image">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_image</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_image" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this device supports images, False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_online_compiler">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_online_compiler</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_online_compiler" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this device supports online compilation of
+device code, False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_online_linker">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_online_linker</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_online_linker" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this device supports online linking of
+device code, False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_queue_profiling">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_queue_profiling</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_queue_profiling" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this device supports queue profiling,
+False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_atomic_host_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this device supports USM-host allocations and
+the host and this device may concurrently access and atomically
+modify host allocations, False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_atomic_shared_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this device supports USM-shared allocations and
+the host and other devices in the same context as this device may
+concurrently access and atomically modify shared allocations,
+False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_device_allocations">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_device_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_device_allocations" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this device supports explicit USM allocations,
+False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_host_allocations">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_host_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_host_allocations" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this device can access USM-host memory,
+False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_restricted_shared_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Deprecated property, do not use.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_shared_allocations">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_shared_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_shared_allocations" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this device supports USM-shared memory
+allocated on the same device, False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_system_allocations">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_system_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_system_allocations" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if system allocator may be used instead of SYCL USM
+allocation mechanism for USM-shared allocations on this device,
+False otherwise</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.image_2d_max_height">
@@ -697,8 +738,6 @@ value is 1.</p>
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_dims</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_dims" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum dimensions that specify the global and local
 work-item IDs used by the data parallel execution model.</p>
-<p>The cb value is 3 if this SYCL device is not of device
-type <code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -823,11 +862,8 @@ sub-groups with respect to other sub-groups in the same work-group.</p>
 <dd><p>Returns the platform associated with this device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>The platform associated with this</dt><dd><p>device.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-odd"><p>The platform associated with this
+device.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="SyclPlatform.html#dpctl.SyclPlatform" title="dpctl.SyclPlatform"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclPlatform</span></code></a></p>
