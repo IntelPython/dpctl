@@ -682,10 +682,12 @@ cdef class SyclQueue(_SyclQueue):
 
     @property
     def sycl_context(self):
+        "Returns :class:`.SyclContext` underlying this queue"
         return self._context
 
     @property
     def sycl_device(self):
+        "Returns :class:`.SyclDevice` underlying this queue"
         return self._device
 
     cpdef SyclContext get_sycl_context(self):
@@ -926,6 +928,7 @@ cdef class SyclQueue(_SyclQueue):
 
     @property
     def __name__(self):
+        "The name of :class:`dpctl.SyclQueue` object"
         return "SyclQueue"
 
     def __repr__(self):

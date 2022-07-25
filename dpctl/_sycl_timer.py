@@ -93,6 +93,10 @@ class SyclTimer:
 
     @property
     def dt(self):
+        """Returns a tuple of elapsed times where first
+        element is the duration as measured by the host timer,
+        while the second element is the duration as measured by
+        the device timer and encoded in profiling events"""
         self.event_start.wait()
         self.event_finish.wait()
         return (
