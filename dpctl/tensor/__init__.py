@@ -39,6 +39,7 @@ from dpctl.tensor._dlpack import from_dlpack
 from dpctl.tensor._manipulation_functions import (
     broadcast_arrays,
     broadcast_to,
+    concat,
     expand_dims,
     flip,
     permute_dims,
@@ -66,6 +67,7 @@ __all__ = [
     "flip",
     "reshape",
     "roll",
+    "concat",
     "broadcast_arrays",
     "broadcast_to",
     "expand_dims",
