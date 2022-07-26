@@ -50,19 +50,18 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 std::string get_device_info_str(const device &Device)
 {
     std::stringstream ss;
+    static constexpr const char *_endl = "\n";
 
     ss << std::setw(4) << " " << std::left << std::setw(16) << "Name"
-       << Device.get_info<info::device::name>() << '\n'
-       << std::setw(4) << " " << std::left << std::setw(16) << "Driver version"
-       << Device.get_info<info::device::driver_version>() << '\n'
+       << Device.get_info<info::device::name>() << _endl << std::setw(4) << " "
+       << std::left << std::setw(16) << "Driver version"
+       << Device.get_info<info::device::driver_version>() << _endl
        << std::setw(4) << " " << std::left << std::setw(16) << "Vendor"
-       << Device.get_info<info::device::vendor>() << '\n'
-       << std::setw(4) << " " << std::left << std::setw(16) << "Profile"
-       << Device.get_info<info::device::profile>() << '\n'
-       << std::setw(4) << " " << std::left << std::setw(16) << "Filter string"
-       << Device.get_platform().get_backend() << ":"
-       << DPCTL_DeviceTypeToStr(Device.get_info<info::device::device_type>())
-       << ":" << DPCTL_GetRelativeDeviceId(Device) << '\n';
+       << Device.get_info<info::device::vendor>() << _endl << std::setw(4)
+       << " " << std::left << std::setw(16) << "Profile"
+       << Device.get_info<info::device::profile>() << _endl << std::setw(4)
+       << " " << std::left << std::setw(16) << "Filter string"
+       << DPCTL_GetDeviceFilterString(Device) << _endl;
 
     return ss.str();
 }
