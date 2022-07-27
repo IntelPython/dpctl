@@ -298,7 +298,7 @@ def concat(arrays, axis=0):
     if n == 0:
         raise TypeError("Missing 1 required positional argument: 'arrays'")
 
-    if not isinstance(arrays, list) and not isinstance(arrays, tuple):
+    if not isinstance(arrays, (list, tuple)):
         raise TypeError(f"Expected tuple or list type, got {type(arrays)}.")
 
     for X in arrays:
@@ -314,8 +314,12 @@ def concat(arrays, axis=0):
         raise ValueError("All the input arrays must have usm_type")
 
     X0 = arrays[0]
-    if any(X0.dtype != arrays[i].dtype for i in range(1, n)):
-        raise ValueError("All the input arrays must have same dtype")
+    if not all(Xi.dtype.char in "?bBhHiIlLqQefdFD" for Xi in arrays):
+        raise ValueError("Unsupported dtype encountered.")
+
+    res_dtype = X0.dtype
+    for i in range(1, n):
+        res_dtype = np.promote_types(res_dtype, arrays[i])
 
     for i in range(1, n):
         if X0.ndim != arrays[i].ndim:
@@ -349,7 +353,7 @@ def concat(arrays, axis=0):
     )
 
     res = dpt.empty(
-        res_shape, dtype=X0.dtype, usm_type=res_usm_type, sycl_queue=exec_q
+        res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
     hev_list = []
