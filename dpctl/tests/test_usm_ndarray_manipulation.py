@@ -748,16 +748,20 @@ def test_concat_incorrect_queue():
     pytest.raises(ValueError, dpt.concat, [X, Y])
 
 
-def test_concat_incorrect_dtype():
+def test_concat_different_dtype():
     try:
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
 
     X = dpt.ones((2, 2), dtype=np.int64, sycl_queue=q)
-    Y = dpt.ones((2, 2), dtype=np.uint64, sycl_queue=q)
+    Y = dpt.ones((3, 2), dtype=np.uint32, sycl_queue=q)
 
-    pytest.raises(ValueError, dpt.concat, [X, Y])
+    XY = dpt.concat([X, Y])
+
+    assert XY.dtype is X.dtype
+    assert XY.shape == (5, 2)
+    assert XY.sycl_queue == q
 
 
 def test_concat_incorrect_ndim():
