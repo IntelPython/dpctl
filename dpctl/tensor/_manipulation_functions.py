@@ -18,11 +18,12 @@
 from itertools import chain, product, repeat
 
 import numpy as np
-from numpy.core.numeric import normalize_axis_tuple
+from numpy.core.numeric import normalize_axis_index, normalize_axis_tuple
 
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
+import dpctl.utils as dputils
 
 
 def _broadcast_strides(X_shape, X_strides, res_ndim):
@@ -284,4 +285,91 @@ def roll(X, shift, axes=None):
         hev_list.append(hev)
 
     dpctl.SyclEvent.wait_for(hev_list)
+    return res
+
+
+def concat(arrays, axis=0):
+    """
+    concat(arrays: tuple or list of usm_ndarrays, axis: int) -> usm_ndarray
+
+    Joins a sequence of arrays along an existing axis.
+    """
+    n = len(arrays)
+    if n == 0:
+        raise TypeError("Missing 1 required positional argument: 'arrays'")
+
+    if not isinstance(arrays, (list, tuple)):
+        raise TypeError(f"Expected tuple or list type, got {type(arrays)}.")
+
+    for X in arrays:
+        if not isinstance(X, dpt.usm_ndarray):
+            raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+
+    exec_q = dputils.get_execution_queue([X.sycl_queue for X in arrays])
+    if exec_q is None:
+        raise ValueError("All the input arrays must have same sycl queue")
+
+    res_usm_type = dputils.get_coerced_usm_type([X.usm_type for X in arrays])
+    if res_usm_type is None:
+        raise ValueError("All the input arrays must have usm_type")
+
+    X0 = arrays[0]
+    if not all(Xi.dtype.char in "?bBhHiIlLqQefdFD" for Xi in arrays):
+        raise ValueError("Unsupported dtype encountered.")
+
+    res_dtype = X0.dtype
+    for i in range(1, n):
+        res_dtype = np.promote_types(res_dtype, arrays[i])
+
+    for i in range(1, n):
+        if X0.ndim != arrays[i].ndim:
+            raise ValueError(
+                "All the input arrays must have same number of "
+                "dimensions, but the array at index 0 has "
+                f"{X0.ndim} dimension(s) and the array at index "
+                f"{i} has {arrays[i].ndim} dimension(s)"
+            )
+
+    axis = normalize_axis_index(axis, X0.ndim)
+    X0_shape = X0.shape
+    for i in range(1, n):
+        Xi_shape = arrays[i].shape
+        for j in range(X0.ndim):
+            if X0_shape[j] != Xi_shape[j] and j != axis:
+                raise ValueError(
+                    "All the input array dimensions for the "
+                    "concatenation axis must match exactly, but "
+                    f"along dimension {j}, the array at index 0 "
+                    f"has size {X0_shape[j]} and the array at "
+                    f"index {i} has size {Xi_shape[j]}"
+                )
+
+    res_shape_axis = 0
+    for X in arrays:
+        res_shape_axis = res_shape_axis + X.shape[axis]
+
+    res_shape = tuple(
+        X0_shape[i] if i != axis else res_shape_axis for i in range(X0.ndim)
+    )
+
+    res = dpt.empty(
+        res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
+    )
+
+    hev_list = []
+    fill_start = 0
+    for i in range(n):
+        fill_end = fill_start + arrays[i].shape[axis]
+        c_shapes_copy = tuple(
+            np.s_[fill_start:fill_end] if j == axis else np.s_[:]
+            for j in range(X0.ndim)
+        )
+        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=arrays[i], dst=res[c_shapes_copy], sycl_queue=exec_q
+        )
+        fill_start = fill_end
+        hev_list.append(hev)
+
+    dpctl.SyclEvent.wait_for(hev_list)
+
     return res

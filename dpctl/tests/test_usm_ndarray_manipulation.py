@@ -725,3 +725,167 @@ def test_roll_2d(data):
     Y = dpt.roll(X, sh, ax)
     Ynp = np.roll(Xnp, sh, ax)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_concat_incorrect_type():
+    Xnp = np.ones((2, 2))
+    pytest.raises(TypeError, dpt.concat)
+    pytest.raises(TypeError, dpt.concat, [])
+    pytest.raises(TypeError, dpt.concat, Xnp)
+    pytest.raises(TypeError, dpt.concat, [Xnp, Xnp])
+
+
+def test_concat_incorrect_queue():
+    try:
+        q1 = dpctl.SyclQueue()
+        q2 = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    X = dpt.ones((2, 2), sycl_queue=q1)
+    Y = dpt.ones((2, 2), sycl_queue=q2)
+
+    pytest.raises(ValueError, dpt.concat, [X, Y])
+
+
+def test_concat_different_dtype():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    X = dpt.ones((2, 2), dtype=np.int64, sycl_queue=q)
+    Y = dpt.ones((3, 2), dtype=np.uint32, sycl_queue=q)
+
+    XY = dpt.concat([X, Y])
+
+    assert XY.dtype is X.dtype
+    assert XY.shape == (5, 2)
+    assert XY.sycl_queue == q
+
+
+def test_concat_incorrect_ndim():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    X = dpt.ones((2, 2), sycl_queue=q)
+    Y = dpt.ones((2, 2, 2), sycl_queue=q)
+
+    pytest.raises(ValueError, dpt.concat, [X, Y])
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        [(2, 2), (3, 3), 0],
+        [(2, 2), (3, 3), 1],
+        [(3, 2), (3, 3), 0],
+        [(2, 3), (3, 3), 1],
+    ],
+)
+def test_concat_incorrect_shape(data):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xshape, Yshape, axis = data
+
+    X = dpt.ones(Xshape, sycl_queue=q)
+    Y = dpt.ones(Yshape, sycl_queue=q)
+
+    pytest.raises(ValueError, dpt.concat, [X, Y], axis)
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        [(6,), 0],
+        [(2, 3), 1],
+        [(3, 2), -1],
+        [(1, 6), 0],
+        [(2, 1, 3), 2],
+    ],
+)
+def test_concat_1array(data):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xshape, axis = data
+
+    Xnp = np.arange(6).reshape(Xshape)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+
+    Ynp = np.concatenate([Xnp], axis=axis)
+    Y = dpt.concat([X], axis=axis)
+
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+    Ynp = np.concatenate((Xnp,), axis=axis)
+    Y = dpt.concat((X,), axis=axis)
+
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        [(1,), (1,), 0],
+        [(0, 2), (2, 2), 0],
+        [(2, 1), (2, 2), -1],
+        [(2, 2, 2), (2, 1, 2), 1],
+    ],
+)
+def test_concat_2arrays(data):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xshape, Yshape, axis = data
+
+    Xnp = np.ones(Xshape)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+
+    Ynp = np.zeros(Yshape)
+    Y = dpt.asarray(Ynp, sycl_queue=q)
+
+    Znp = np.concatenate([Xnp, Ynp], axis=axis)
+    Z = dpt.concat([X, Y], axis=axis)
+
+    assert_array_equal(Znp, dpt.asnumpy(Z))
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        [(1,), (1,), (1,), 0],
+        [(0, 2), (2, 2), (1, 2), 0],
+        [(2, 1, 2), (2, 2, 2), (2, 4, 2), 1],
+    ],
+)
+def test_concat_3arrays(data):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    Xshape, Yshape, Zshape, axis = data
+
+    Xnp = np.ones(Xshape)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+
+    Ynp = np.zeros(Yshape)
+    Y = dpt.asarray(Ynp, sycl_queue=q)
+
+    Znp = np.full(Zshape, 2.0)
+    Z = dpt.asarray(Znp, sycl_queue=q)
+
+    Rnp = np.concatenate([Xnp, Ynp, Znp], axis=axis)
+    R = dpt.concat([X, Y, Z], axis=axis)
+
+    assert_array_equal(Rnp, dpt.asnumpy(R))
