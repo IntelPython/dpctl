@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.13.0dev2+35.g299bd7e07 documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.13.0dev2+39.g8e04e0697 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0dev2+35.g299bd7e07
+                0.13.0dev2+39.g8e04e0697
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -97,11 +97,12 @@
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">repeat</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
+<span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span><span class="p">,</span> <span class="n">normalize_axis_tuple</span>
 
 <span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
+<span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">dputils</span>
 
 
 <span class="k">def</span> <span class="nf">_broadcast_strides</span><span class="p">(</span><span class="n">X_shape</span><span class="p">,</span> <span class="n">X_strides</span><span class="p">,</span> <span class="n">res_ndim</span><span class="p">):</span>
@@ -363,6 +364,93 @@
         <span class="n">hev_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hev</span><span class="p">)</span>
 
     <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">hev_list</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="concat"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.concat">[docs]</a><span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    concat(arrays: tuple or list of usm_ndarrays, axis: int) -&gt; usm_ndarray</span>
+
+<span class="sd">    Joins a sequence of arrays along an existing axis.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Missing 1 required positional argument: &#39;arrays&#39;&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected tuple or list type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected usm_ndarray type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dputils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">sycl_queue</span> <span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All the input arrays must have same sycl queue&quot;</span><span class="p">)</span>
+
+    <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">dputils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">res_usm_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All the input arrays must have usm_type&quot;</span><span class="p">)</span>
+
+    <span class="n">X0</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">Xi</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span> <span class="ow">in</span> <span class="s2">&quot;?bBhHiIlLqQefdFD&quot;</span> <span class="k">for</span> <span class="n">Xi</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unsupported dtype encountered.&quot;</span><span class="p">)</span>
+
+    <span class="n">res_dtype</span> <span class="o">=</span> <span class="n">X0</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">res_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">promote_types</span><span class="p">(</span><span class="n">res_dtype</span><span class="p">,</span> <span class="n">arrays</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">X0</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">arrays</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;All the input arrays must have same number of &quot;</span>
+                <span class="s2">&quot;dimensions, but the array at index 0 has &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">X0</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dimension(s) and the array at index &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> has </span><span class="si">{</span><span class="n">arrays</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dimension(s)&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">X0</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+    <span class="n">X0_shape</span> <span class="o">=</span> <span class="n">X0</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">Xi_shape</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X0</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">X0_shape</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="n">Xi_shape</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">!=</span> <span class="n">axis</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;All the input array dimensions for the &quot;</span>
+                    <span class="s2">&quot;concatenation axis must match exactly, but &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;along dimension </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">, the array at index 0 &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;has size </span><span class="si">{</span><span class="n">X0_shape</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2"> and the array at &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> has size </span><span class="si">{</span><span class="n">Xi_shape</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+    <span class="n">res_shape_axis</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">:</span>
+        <span class="n">res_shape_axis</span> <span class="o">=</span> <span class="n">res_shape_axis</span> <span class="o">+</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+
+    <span class="n">res_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="n">X0_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span> <span class="k">else</span> <span class="n">res_shape_axis</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X0</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+    <span class="p">)</span>
+
+    <span class="n">hev_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">fill_start</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">fill_end</span> <span class="o">=</span> <span class="n">fill_start</span> <span class="o">+</span> <span class="n">arrays</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+        <span class="n">c_shapes_copy</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="n">fill_start</span><span class="p">:</span><span class="n">fill_end</span><span class="p">]</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="n">axis</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[:]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X0</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">arrays</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">[</span><span class="n">c_shapes_copy</span><span class="p">],</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="p">)</span>
+        <span class="n">fill_start</span> <span class="o">=</span> <span class="n">fill_end</span>
+        <span class="n">hev_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hev</span><span class="p">)</span>
+
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">hev_list</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">res</span></div>
 </pre></div>
 

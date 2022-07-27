@@ -33,6 +33,7 @@ Array Manipulation
 
 .. autofunction:: broadcast_arrays
 .. autofunction:: broadcast_to
+.. autofunction:: concat
 .. autofunction:: expand_dims
 .. autofunction:: flip
 .. autofunction:: permute_dims

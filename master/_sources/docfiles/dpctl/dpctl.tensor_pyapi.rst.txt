@@ -82,6 +82,8 @@ Array Manipulation
       - -> list of usm_ndarrays Broadcasts one or more usm_ndarrays against one another.
     * - :func:`broadcast_to()`
       - -> usm_ndarray Broadcast an array to a new shape; returns the broadcasted array as a view.
+    * - :func:`concat()`
+      - -> usm_ndarray Joins a sequence of arrays along an existing axis.
     * - :func:`expand_dims()`
       - -> usm_ndarray Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axes; returns a view, if possible, a copy otherwise with the number of dimensions increased.
     * - :func:`flip()`
