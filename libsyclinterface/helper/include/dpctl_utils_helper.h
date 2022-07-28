@@ -198,6 +198,18 @@ DPCTL_API
 int64_t DPCTL_GetRelativeDeviceId(const sycl::device &Device);
 
 /*!
+ * @brief Gives the filter string which would select given root device if
+ * used as argument to ``sycl::ext::oneapi::filter_selector``. Throws exception
+ * if filter string can not be constructed.
+ *
+ * @param    Device         A ``sycl::device`` object whose filter selector
+ *                          needs to be computed.
+ * @return   Filter selector for the device.
+ */
+DPCTL_API
+std::string DPCTL_GetDeviceFilterString(const sycl::device &Device);
+
+/*!
  * @brief Converts a ``sycl::info::event_command_status`` enum value to
  * corresponding DPCTLSyclEventStatusType enum value.
  *

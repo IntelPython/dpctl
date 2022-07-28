@@ -470,6 +470,38 @@ int64_t DPCTL_GetRelativeDeviceId(const device &Device)
     return relid;
 }
 
+std::string DPCTL_GetDeviceFilterString(const device &Device)
+{
+    std::stringstream ss;
+    static constexpr const char *filter_string_separator = ":";
+
+    auto be = Device.get_platform().get_backend();
+
+    switch (be) {
+    case backend::ext_oneapi_level_zero:
+        ss << "level_zero";
+        break;
+    case backend::ext_oneapi_cuda:
+        ss << "cuda";
+        break;
+    case backend::opencl:
+        ss << "opencl";
+        break;
+    case backend::host:
+        ss << "host";
+        break;
+    default:
+        ss << "unknown";
+    };
+
+    ss << filter_string_separator;
+    ss << DPCTL_DeviceTypeToStr(Device.get_info<info::device::device_type>());
+    ss << filter_string_separator;
+    ss << DPCTL_GetRelativeDeviceId(Device);
+
+    return ss.str();
+}
+
 DPCTLSyclEventStatusType
 DPCTL_SyclEventStatusToDPCTLEventStatusType(info::event_command_status E)
 {
