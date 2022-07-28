@@ -453,14 +453,12 @@ def empty(
     return res
 
 
-def _coerce_and_infer_dt(*args, dt):
+def _coerce_and_infer_dt(*args, dt, sycl_queue):
     "Deduce arange type from sequence spec"
     nd, seq_dt, d = _array_info_sequence(args)
     if d != _host_set or nd != (len(args),):
         raise ValueError("start, stop and step must be Python scalars")
-    if dt is None:
-        dt = seq_dt
-    dt = np.dtype(dt)
+    dt = _get_dtype(dt, sycl_queue, ref_type=seq_dt)
     if np.issubdtype(dt, np.integer):
         return tuple(int(v) for v in args), dt
     elif np.issubdtype(dt, np.floating):
@@ -526,11 +524,15 @@ def arange(
     if stop is None:
         stop = start
         start = 0
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     (
         start,
         stop,
         step,
-    ), dt = _coerce_and_infer_dt(start, stop, step, dt=dtype)
+    ), dt = _coerce_and_infer_dt(
+        start, stop, step, dt=dtype, sycl_queue=sycl_queue
+    )
     try:
         tmp = _get_arange_length(start, stop, step)
         sh = int(tmp)
@@ -538,8 +540,6 @@ def arange(
             sh = 0
     except TypeError:
         sh = 0
-    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
-    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     res = dpt.usm_ndarray(
         (sh,),
         dtype=dt,
