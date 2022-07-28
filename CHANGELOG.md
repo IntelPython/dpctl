@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [dev]
+## [0.13.0] - 07/28/2022
 
 ### Added
 
@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Fixed `dpctl.lsplatform()` to work correctly when used from within Jupyter notebook [#800](https://github.com/IntelPython/dpctl/pull/800).
 * Fixed script to drive debug build [#835](https://github.com/IntelPython/dpctl/pull/835) and fixed code to compile in debug mode [#836](https://github.com/IntelPython/dpctl/pull/836).
+* Fixed filter selector string produced in outputs of `dpctl.lsplatform(verbosity=2)` and `dpctl.SyclDevice.print_device_info` [#866](https://github.com/IntelPython/dpctl/pull/866).
 * Fixed issue with slicing reported in gh-870 in [#871](https://github.com/IntelPython/dpctl/pull/871).
 
 ## [0.12.0] - 03/01/2022
