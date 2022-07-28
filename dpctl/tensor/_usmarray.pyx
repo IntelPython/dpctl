@@ -234,10 +234,10 @@ cdef class usm_ndarray:
             else:
                 self._cleanup()
                 raise ValueError(
-                    "buffer='{}' is not understood. "
+                    ("buffer='{}' is not understood. "
                     "Recognized values are 'device', 'shared',  'host', "
                     "an instance of `MemoryUSM*` object, or a usm_ndarray"
-                    "".format(buffer))
+                     "").format(buffer))
         elif isinstance(buffer, usm_ndarray):
             _buffer = buffer.usm_data
         else:
@@ -246,8 +246,8 @@ cdef class usm_ndarray:
         if (_offset + ary_min_displacement < 0 or
            (_offset + ary_max_displacement + 1) * itemsize > _buffer.nbytes):
             self._cleanup()
-            raise ValueError("buffer='{}' can not accomodate the requested "
-                             "array.".format(buffer))
+            raise ValueError(("buffer='{}' can not accomodate "
+                              "the requested array.").format(buffer))
         self.base_ = _buffer
         self.data_ = (<char *> (<size_t> _buffer._pointer)) + itemsize * _offset
         self.shape_ = shape_ptr
