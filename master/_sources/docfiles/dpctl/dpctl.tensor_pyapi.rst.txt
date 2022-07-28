@@ -96,6 +96,8 @@ Array Manipulation
       - -> usm_ndarray Rolls array elements along a specified axis.
     * - :func:`squeeze()`
       - -> usm_ndarray Removes singleton dimensions (axes) from X; returns a view, if possible, a copy otherwise, but with all or a subset of the dimensions of length 1 removed.
+    * - :func:`stack()`
+      - -> usm_ndarray Joins a sequence of arrays along a new axis.
 
 
 

@@ -40,3 +40,4 @@ Array Manipulation
 .. autofunction:: reshape
 .. autofunction:: roll
 .. autofunction:: squeeze
+.. autofunction:: stack
