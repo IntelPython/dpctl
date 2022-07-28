@@ -21,7 +21,7 @@ requirements:
         - python
         - ninja
         - scikit-build
-        - numpy
+        - numpy 1.19
         - wheel
     run:
         - python
