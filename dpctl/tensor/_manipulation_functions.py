@@ -288,12 +288,7 @@ def roll(X, shift, axes=None):
     return res
 
 
-def concat(arrays, axis=0):
-    """
-    concat(arrays: tuple or list of usm_ndarrays, axis: int) -> usm_ndarray
-
-    Joins a sequence of arrays along an existing axis.
-    """
+def _arrays_validation(arrays):
     n = len(arrays)
     if n == 0:
         raise TypeError("Missing 1 required positional argument: 'arrays'")
@@ -324,11 +319,23 @@ def concat(arrays, axis=0):
     for i in range(1, n):
         if X0.ndim != arrays[i].ndim:
             raise ValueError(
-                "All the input arrays must have same number of "
-                "dimensions, but the array at index 0 has "
-                f"{X0.ndim} dimension(s) and the array at index "
-                f"{i} has {arrays[i].ndim} dimension(s)"
+                "All the input arrays must have same number of dimensions, "
+                f"but the array at index 0 has {X0.ndim} dimension(s) and the "
+                f"array at index {i} has {arrays[i].ndim} dimension(s)"
             )
+    return res_dtype, res_usm_type, exec_q
+
+
+def concat(arrays, axis=0):
+    """
+    concat(arrays: tuple or list of usm_ndarrays, axis: int) -> usm_ndarray
+
+    Joins a sequence of arrays along an existing axis.
+    """
+    res_dtype, res_usm_type, exec_q = _arrays_validation(arrays)
+
+    n = len(arrays)
+    X0 = arrays[0]
 
     axis = normalize_axis_index(axis, X0.ndim)
     X0_shape = X0.shape
@@ -337,11 +344,10 @@ def concat(arrays, axis=0):
         for j in range(X0.ndim):
             if X0_shape[j] != Xi_shape[j] and j != axis:
                 raise ValueError(
-                    "All the input array dimensions for the "
-                    "concatenation axis must match exactly, but "
-                    f"along dimension {j}, the array at index 0 "
-                    f"has size {X0_shape[j]} and the array at "
-                    f"index {i} has size {Xi_shape[j]}"
+                    "All the input array dimensions for the concatenation "
+                    f"axis must match exactly, but along dimension {j}, the "
+                    f"array at index 0 has size {X0_shape[j]} and the array "
+                    f"at index {i} has size {Xi_shape[j]}"
                 )
 
     res_shape_axis = 0
@@ -368,6 +374,48 @@ def concat(arrays, axis=0):
             src=arrays[i], dst=res[c_shapes_copy], sycl_queue=exec_q
         )
         fill_start = fill_end
+        hev_list.append(hev)
+
+    dpctl.SyclEvent.wait_for(hev_list)
+
+    return res
+
+
+def stack(arrays, axis=0):
+    """
+    stack(arrays: tuple or list of usm_ndarrays, axis: int) -> usm_ndarray
+
+    Joins a sequence of arrays along a new axis.
+    """
+    res_dtype, res_usm_type, exec_q = _arrays_validation(arrays)
+
+    n = len(arrays)
+    X0 = arrays[0]
+    res_ndim = X0.ndim + 1
+    axis = normalize_axis_index(axis, res_ndim)
+    X0_shape = X0.shape
+
+    for i in range(1, n):
+        if X0_shape != arrays[i].shape:
+            raise ValueError("All input arrays must have the same shape")
+
+    res_shape = tuple(
+        X0_shape[i - 1 * (i >= axis)] if i != axis else n
+        for i in range(res_ndim)
+    )
+
+    res = dpt.empty(
+        res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
+    )
+
+    hev_list = []
+    for i in range(n):
+        c_shapes_copy = tuple(
+            i if j == axis else np.s_[:] for j in range(res_ndim)
+        )
+        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=arrays[i], dst=res[c_shapes_copy], sycl_queue=exec_q
+        )
         hev_list.append(hev)
 
     dpctl.SyclEvent.wait_for(hev_list)

@@ -45,6 +45,7 @@ from dpctl.tensor._manipulation_functions import (
     permute_dims,
     roll,
     squeeze,
+    stack,
 )
 from dpctl.tensor._reshape import reshape
 from dpctl.tensor._usmarray import usm_ndarray
@@ -68,6 +69,7 @@ __all__ = [
     "reshape",
     "roll",
     "concat",
+    "stack",
     "broadcast_arrays",
     "broadcast_to",
     "expand_dims",
