@@ -1,0 +1,104 @@
+.. _dpctl.tensor_pyapi:
+
+############
+dpctl.tensor
+############
+
+.. currentmodule:: dpctl.tensor
+
+.. automodule:: dpctl.tensor
+
+
+.. _dpctl.tensor_classes:
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   Device
+   usm_ndarray
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`Device`
+      - Class representing Data-API concept of device.
+    * - :class:`usm_ndarray`
+      - See :class:`dpctl.memory.MemoryUSMShared` for allowed keyword arguments.
+
+
+.. _dpctl.tensor_array_construction:
+
+Array Construction
+------------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`arange()`
+      - -> usm_ndarray Args: start: device (optional): array API concept of device where the output array is created. `device` can be `None`, a oneAPI filter selector string, an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by `dpctl.tensor.usm_array.device`. Default: `None`.
+    * - :func:`asarray()`
+      - Converts `obj` to :class:`dpctl.tensor.usm_ndarray`.
+    * - :func:`asnumpy()`
+      - Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary` into `numpy.ndarray` instance of the same shape and same data type.
+    * - :func:`astype()`
+      - Returns a copy of the array, cast to a specified type.
+    * - :func:`copy()`
+      - Creates a copy of given instance of `usm_ndarray`.
+    * - :func:`empty()`
+      - Creates `usm_ndarray` from uninitialized USM allocation.
+    * - :func:`empty_like()`
+      - Creates `usm_ndarray` from uninitialized USM allocation.
+    * - :func:`from_dlpack()`
+      - dpctl.tensor.from_dlpack(obj) Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python object `obj` that implements `__dlpack__` protocol. The output array is always a zero-copy view of the input.
+    * - :func:`from_numpy()`
+      - Creates :class:`dpctl.tensor.usm_ndarray` from instance of `numpy.ndarray`.
+    * - :func:`full()`
+      - Creates `usm_ndarray` with elements of one.
+    * - :func:`full_like()`
+      - Creates `usm_ndarray` from USM allocation initialized with zeros.
+    * - :func:`ones()`
+      - Creates `usm_ndarray` with elements of one.
+    * - :func:`ones_like()`
+      - Creates `usm_ndarray` from USM allocation initialized with zeros.
+    * - :func:`to_numpy()`
+      - Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary` into `numpy.ndarray` instance of the same shape and same data type.
+    * - :func:`zeros()`
+      - Creates `usm_ndarray` with zero elements.
+    * - :func:`zeros_like()`
+      - Creates `usm_ndarray` from USM allocation initialized with zeros.
+
+.. _dpctl.tensor_array_manipulation:
+
+Array Manipulation
+------------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`broadcast_arrays()`
+      - -> list of usm_ndarrays Broadcasts one or more usm_ndarrays against one another.
+    * - :func:`broadcast_to()`
+      - -> usm_ndarray Broadcast an array to a new shape; returns the broadcasted array as a view.
+    * - :func:`concat()`
+      - -> usm_ndarray Joins a sequence of arrays along an existing axis.
+    * - :func:`expand_dims()`
+      - -> usm_ndarray Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axes; returns a view, if possible, a copy otherwise with the number of dimensions increased.
+    * - :func:`flip()`
+      - -> usm_ndarray Reverses the order of elements in an array along the given axis.
+    * - :func:`permute_dims()`
+      - -> usm_ndarray Permute the axes (dimensions) of an array; returns the permuted array as a view.
+    * - :func:`reshape()`
+      - -> usm_ndarray Reshapes given usm_ndarray into new shape. Returns a view, if possible, a copy otherwise. Memory layout of the copy is controlled by order keyword.
+    * - :func:`roll()`
+      - -> usm_ndarray Rolls array elements along a specified axis.
+    * - :func:`squeeze()`
+      - -> usm_ndarray Removes singleton dimensions (axes) from X; returns a view, if possible, a copy otherwise, but with all or a subset of the dimensions of length 1 removed.
+
+
+
+
+
+
