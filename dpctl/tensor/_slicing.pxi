@@ -110,6 +110,7 @@ cdef object _basic_slice_meta(object ind, tuple shape,
         new_strides = list()
         k = 0
         new_offset = offset
+        is_empty = False
         for i in range(len(ind)):
             ind_i = ind[i]
             if (ind_i is Ellipsis):
@@ -127,23 +128,27 @@ cdef object _basic_slice_meta(object ind, tuple shape,
                 str_i = (1 if sh_i == 0 else sl_step) * strides[k]
                 new_shape.append(sh_i)
                 new_strides.append(str_i)
-                if sh_i > 0:
+                if sh_i > 0 and not is_empty:
                     new_offset = new_offset + sl_start * strides[k]
+                if sh_i == 0:
+                    is_empty = True
                 k = k_new
             elif is_integral(ind_i):
                 ind_i = ind_i.__index__()
                 if 0 <= ind_i < shape[k]:
                     k_new = k + 1
-                    new_offset = new_offset + ind_i * strides[k]
+                    if not is_empty:
+                        new_offset = new_offset + ind_i * strides[k]
                     k = k_new
                 elif -shape[k] <= ind_i < 0:
                     k_new = k + 1
-                    new_offset = new_offset + (shape[k] + ind_i) * strides[k]
+                    if not is_empty:
+                        new_offset = new_offset + (shape[k] + ind_i) * strides[k]
                     k = k_new
                 else:
                     raise IndexError(
-                        "Index {0} is out of range for "
-                        "axes {1} with size {2}".format(ind_i, k, shape[k]))
+                        ("Index {0} is out of range for "
+                        "axes {1} with size {2}").format(ind_i, k, shape[k]))
         new_shape.extend(shape[k:])
         new_strides.extend(strides[k:])
         return (tuple(new_shape), tuple(new_strides), new_offset)
