@@ -889,3 +889,113 @@ def test_concat_3arrays(data):
     R = dpt.concat([X, Y, Z], axis=axis)
 
     assert_array_equal(Rnp, dpt.asnumpy(R))
+
+
+def test_stack_incorrect_shape():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    X = dpt.ones((1,), sycl_queue=q)
+    Y = dpt.ones((2,), sycl_queue=q)
+
+    pytest.raises(ValueError, dpt.stack, [X, Y], 0)
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        [(6,), 0],
+        [(2, 3), 1],
+        [(3, 2), -1],
+        [(1, 6), 2],
+        [(2, 1, 3), 2],
+    ],
+)
+def test_stack_1array(data):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    shape, axis = data
+
+    Xnp = np.arange(6).reshape(shape)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+
+    Ynp = np.stack([Xnp], axis=axis)
+    Y = dpt.stack([X], axis=axis)
+
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+    Ynp = np.stack((Xnp,), axis=axis)
+    Y = dpt.stack((X,), axis=axis)
+
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        [(1,), 0],
+        [(0, 2), 0],
+        [(2, 0), 0],
+        [(2, 3), 0],
+        [(2, 3), 1],
+        [(2, 3), 2],
+        [(2, 3), -1],
+        [(2, 3), -2],
+        [(2, 2, 2), 1],
+    ],
+)
+def test_stack_2arrays(data):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    shape, axis = data
+
+    Xnp = np.ones(shape)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+
+    Ynp = np.zeros(shape)
+    Y = dpt.asarray(Ynp, sycl_queue=q)
+
+    Znp = np.stack([Xnp, Ynp], axis=axis)
+    print(Znp.shape)
+    Z = dpt.stack([X, Y], axis=axis)
+
+    assert_array_equal(Znp, dpt.asnumpy(Z))
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        [(1,), 0],
+        [(0, 2), 0],
+        [(2, 1, 2), 1],
+    ],
+)
+def test_stack_3arrays(data):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    shape, axis = data
+
+    Xnp = np.ones(shape)
+    X = dpt.asarray(Xnp, sycl_queue=q)
+
+    Ynp = np.zeros(shape)
+    Y = dpt.asarray(Ynp, sycl_queue=q)
+
+    Znp = np.full(shape, 2.0)
+    Z = dpt.asarray(Znp, sycl_queue=q)
+
+    Rnp = np.stack([Xnp, Ynp, Znp], axis=axis)
+    R = dpt.stack([X, Y, Z], axis=axis)
+
+    assert_array_equal(Rnp, dpt.asnumpy(R))
