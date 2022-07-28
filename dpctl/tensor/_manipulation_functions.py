@@ -288,7 +288,7 @@ def roll(X, shift, axes=None):
     return res
 
 
-def arrays_validation(arrays):
+def _arrays_validation(arrays):
     n = len(arrays)
     if n == 0:
         raise TypeError("Missing 1 required positional argument: 'arrays'")
@@ -332,7 +332,7 @@ def concat(arrays, axis=0):
 
     Joins a sequence of arrays along an existing axis.
     """
-    res_dtype, res_usm_type, exec_q = arrays_validation(arrays)
+    res_dtype, res_usm_type, exec_q = _arrays_validation(arrays)
 
     n = len(arrays)
     X0 = arrays[0]
@@ -387,7 +387,7 @@ def stack(arrays, axis=0):
 
     Joins a sequence of arrays along a new axis.
     """
-    res_dtype, res_usm_type, exec_q = arrays_validation(arrays)
+    res_dtype, res_usm_type, exec_q = _arrays_validation(arrays)
 
     n = len(arrays)
     X0 = arrays[0]
