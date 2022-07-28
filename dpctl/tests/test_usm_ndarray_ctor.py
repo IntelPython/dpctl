@@ -219,6 +219,9 @@ def test_empty_slice():
     assert Y.shape == X.shape
     Z = X[::2]
     assert Z.shape == X.shape
+    X = dpt.empty((0, 4), dtype="u1")
+    assert X[:, 1].shape == (0,)
+    assert X[:, 1:3].shape == (0, 2)
 
 
 def test_slice_constructor_1d():
