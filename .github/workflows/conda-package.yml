@@ -304,7 +304,7 @@ jobs:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
           conda install anaconda-client
-          anaconda --token $ANACONDA_TOKEN upload --user dppy --label dev ${PACKAGE_NAME}-*.tar.bz2
+          anaconda --token $ANACONDA_TOKEN upload --user py-dp-exts --label dev ${PACKAGE_NAME}-*.tar.bz2
 
   upload_windows:
     needs: test_windows
@@ -330,7 +330,7 @@ jobs:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
           conda install anaconda-client
-          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
+          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user py-dp-exts --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
 
   test_examples_linux:
     needs: build_linux
@@ -399,7 +399,7 @@ jobs:
         run: |
           source $CONDA/etc/profile.d/conda.sh
           conda activate
-          CHANNELS="-c $GITHUB_WORKSPACE/channel -c dppy/label/dev -c intel --override-channels"
+          CHANNELS="-c $GITHUB_WORKSPACE/channel -c py-dp-exts/label/dev -c intel --override-channels"
           conda install -n examples -y $CHANNELS numpy dpctl dpnp || exit 1
       - name: Build and run examples with native extensions
         shell: bash -l {0}
