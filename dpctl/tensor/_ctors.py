@@ -197,7 +197,7 @@ def _asarray_from_numpy_ndarray(
     if usm_type is None:
         usm_type = "device"
     if dtype is None:
-        dtype = ary.dtype
+        dtype = _get_dtype(dtype, sycl_queue, ref_type=ary.dtype)
     copy_q = normalize_queue_device(sycl_queue=None, device=sycl_queue)
     f_contig = ary.flags["F"]
     c_contig = ary.flags["C"]
