@@ -493,7 +493,6 @@ def _get_arange_length(start, stop, step):
 
 def arange(
     start,
-    /,
     stop=None,
     step=1,
     *,
