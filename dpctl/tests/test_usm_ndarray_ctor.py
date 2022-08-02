@@ -708,6 +708,23 @@ def test_setitem_different_dtypes(src_dt, dst_dt):
     assert np.allclose(dpt.asnumpy(Z), np.tile(np.array([1, 0], Z.dtype), 10))
 
 
+def test_setitem_wingaps():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default queue could not be created")
+    if np.dtype("intc").itemsize == np.dtype("int32").itemsize:
+        dpt_dst = dpt.empty(4, dtype="int32", sycl_queue=q)
+        np_src = np.arange(4, dtype="intc")
+        dpt_dst[:] = np_src  # should not raise exceptions
+        assert np.array_equal(dpt.asnumpy(dpt_dst), np_src)
+    if np.dtype("long").itemsize == np.dtype("longlong").itemsize:
+        dpt_dst = dpt.empty(4, dtype="longlong", sycl_queue=q)
+        np_src = np.arange(4, dtype="long")
+        dpt_dst[:] = np_src  # should not raise exceptions
+        assert np.array_equal(dpt.asnumpy(dpt_dst), np_src)
+
+
 def test_shape_setter():
     def cc_strides(sh):
         return np.empty(sh, dtype="u1").strides
