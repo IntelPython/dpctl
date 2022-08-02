@@ -245,6 +245,9 @@ struct usm_ndarray_types
         else {
             throw_unrecognized_typenum_error(typenum);
         }
+        // return code signalling error, should never be reached
+        assert(false);
+        return -1;
     }
 
 private:
