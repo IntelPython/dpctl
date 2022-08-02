@@ -228,9 +228,22 @@ struct usm_ndarray_types
         else if (typenum == UAR_HALF_) {
             return static_cast<int>(typenum_t::HALF);
         }
+        else if (typenum == UAR_INT || typenum == UAR_UINT) {
+            switch (sizeof(int)) {
+            case sizeof(std::int32_t):
+                return ((typenum == UAR_INT)
+                            ? static_cast<int>(typenum_t::INT32)
+                            : static_cast<int>(typenum_t::UINT32));
+            case sizeof(std::int64_t):
+                return ((typenum == UAR_INT)
+                            ? static_cast<int>(typenum_t::INT64)
+                            : static_cast<int>(typenum_t::UINT64));
+            default:
+                throw_unrecognized_typenum_error(typenum);
+            }
+        }
         else {
-            throw std::runtime_error("Unrecogized typenum " +
-                                     std::to_string(typenum) + " encountered.");
+            throw_unrecognized_typenum_error(typenum);
         }
     }
 
@@ -285,6 +298,12 @@ private:
         types.init_constants();
 
         return types;
+    }
+
+    void throw_unrecognized_typenum_error(int typenum)
+    {
+        throw std::runtime_error("Unrecogized typenum " +
+                                 std::to_string(typenum) + " encountered.");
     }
 };
 
