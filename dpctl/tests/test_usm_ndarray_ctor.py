@@ -1075,6 +1075,34 @@ def test_arange_fp():
     "dt",
     _all_dtypes,
 )
+def test_linspace(dt):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default queue could not be created")
+    X = dpt.linspace(0, 1, num=2, dtype=dt, sycl_queue=q)
+    assert np.allclose(dpt.asnumpy(X), np.linspace(0, 1, num=2, dtype=dt))
+
+
+def test_linspace_fp():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default queue could not be created")
+    n = 16
+    X = dpt.linspace(0, n - 1, num=n, sycl_queue=q)
+    if q.sycl_device.has_aspect_fp64:
+        assert X.dtype == np.dtype("float64")
+    else:
+        assert X.dtype == np.dtype("float32")
+    assert X.shape == (n,)
+    assert X.strides == (1,)
+
+
+@pytest.mark.parametrize(
+    "dt",
+    _all_dtypes,
+)
 @pytest.mark.parametrize(
     "usm_kind",
     [

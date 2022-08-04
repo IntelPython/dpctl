@@ -14,6 +14,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import operator
+
 import numpy as np
 
 import dpctl
@@ -196,9 +198,12 @@ def _asarray_from_numpy_ndarray(
         raise TypeError(f"Expected numpy.ndarray, got {type(ary)}")
     if usm_type is None:
         usm_type = "device"
-    if dtype is None:
-        dtype = _get_dtype(dtype, sycl_queue, ref_type=ary.dtype)
     copy_q = normalize_queue_device(sycl_queue=None, device=sycl_queue)
+    if dtype is None:
+        ary_dtype = ary.dtype
+        dtype = _get_dtype(dtype, copy_q, ref_type=ary_dtype)
+        if dtype.itemsize > ary_dtype.itemsize:
+            dtype = ary_dtype
     f_contig = ary.flags["F"]
     c_contig = ary.flags["C"]
     fc_contig = f_contig or c_contig
@@ -292,7 +297,7 @@ def asarray(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -430,7 +435,7 @@ def empty(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -453,11 +458,11 @@ def empty(
     return res
 
 
-def _coerce_and_infer_dt(*args, dt, sycl_queue):
+def _coerce_and_infer_dt(*args, dt, sycl_queue, err_msg, allow_bool=False):
     "Deduce arange type from sequence spec"
     nd, seq_dt, d = _array_info_sequence(args)
     if d != _host_set or nd != (len(args),):
-        raise ValueError("start, stop and step must be Python scalars")
+        raise ValueError(err_msg)
     dt = _get_dtype(dt, sycl_queue, ref_type=seq_dt)
     if np.issubdtype(dt, np.integer):
         return tuple(int(v) for v in args), dt
@@ -465,6 +470,8 @@ def _coerce_and_infer_dt(*args, dt, sycl_queue):
         return tuple(float(v) for v in args), dt
     elif np.issubdtype(dt, np.complexfloating):
         return tuple(complex(v) for v in args), dt
+    elif allow_bool and dt.char == "?":
+        return tuple(bool(v) for v in args), dt
     else:
         raise ValueError(f"Data type {dt} is not supported")
 
@@ -517,7 +524,7 @@ def arange(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -526,12 +533,14 @@ def arange(
         start = 0
     dpctl.utils.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
-    (
+    (start, stop, step,), dt = _coerce_and_infer_dt(
         start,
         stop,
         step,
-    ), dt = _coerce_and_infer_dt(
-        start, stop, step, dt=dtype, sycl_queue=sycl_queue
+        dt=dtype,
+        sycl_queue=sycl_queue,
+        err_msg="start, stop, and step must be Python scalars",
+        allow_bool=False,
     )
     try:
         tmp = _get_arange_length(start, stop, step)
@@ -579,7 +588,7 @@ def zeros(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -627,7 +636,7 @@ def ones(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -683,7 +692,7 @@ def full(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -733,7 +742,7 @@ def empty_like(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -790,7 +799,7 @@ def zeros_like(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -847,7 +856,7 @@ def ones_like(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -911,7 +920,7 @@ def full_like(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -942,3 +951,82 @@ def full_like(
         usm_type=usm_type,
         sycl_queue=sycl_queue,
     )
+
+
+def linspace(
+    start,
+    stop,
+    /,
+    num,
+    *,
+    dtype=None,
+    device=None,
+    endpoint=True,
+    sycl_queue=None,
+    usm_type="device",
+):
+    """
+    linspace(start, stop, num, dtype=None, device=None, endpoint=True,
+        sycl_queue=None, usm_type=None): usm_ndarray
+
+    Returns evenly spaced numbers of specified interval.
+
+    Args:
+        start: the start of the interval.
+        stop: the end of the interval. If the `endpoint` is `False`, the
+            function must generate `num+1` evenly spaced points starting
+            with `start` and ending with `stop` and exclude the `stop`
+            from the returned array such that the returned array consists
+            of evenly spaced numbers over the half-open interval
+            `[start, stop)`. If `endpoint` is `True`, the output
+            array must consist of evenly spaced numbers over the closed
+            interval `[start, stop]`. Default: `True`.
+        num: number of samples. Must be a non-negative integer; otherwise,
+            the function must raise an exception.
+        dtype: output array data type. Should be a floating data type.
+            If `dtype` is `None`, the output array must be the default
+            floating point data type. Default: `None`.
+        device (optional): array API concept of device where the output array
+            is created. `device` can be `None`, a oneAPI filter selector string,
+            an instance of :class:`dpctl.SyclDevice` corresponding to a
+            non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
+            `dpctl.tensor.usm_array.device`. Default: `None`.
+        usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+            allocation for the output array. Default: `"device"`.
+        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
+            for output array allocation and copying. `sycl_queue` and `device`
+            are exclusive keywords, i.e. use one or another. If both are
+            specified, a `TypeError` is raised unless both imply the same
+            underlying SYCL queue to be used. If both are `None`, the
+            `dpctl.SyclQueue()` is used for allocation and copying.
+            Default: `None`.
+        endpoint: boolean indicating whether to include `stop` in the
+            interval. Default: `True`.
+    """
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    if endpoint not in [True, False]:
+        raise TypeError("endpoint keyword argument must be of boolean type")
+    num = operator.index(num)
+    if num < 0:
+        raise ValueError("Number of points must be non-negative")
+    ((start, stop,), dt) = _coerce_and_infer_dt(
+        start,
+        stop,
+        dt=dtype,
+        sycl_queue=sycl_queue,
+        err_msg="start and stop must be Python scalars.",
+        allow_bool=True,
+    )
+    if dtype is None and np.issubdtype(dt, np.integer):
+        dt = ti.default_device_fp_type(sycl_queue)
+        dt = np.dtype(dt)
+        start = float(start)
+        stop = float(stop)
+    res = dpt.empty(num, dtype=dt, sycl_queue=sycl_queue)
+    hev, _ = ti._linspace_affine(
+        start, stop, dst=res, include_endpoint=endpoint, sycl_queue=sycl_queue
+    )
+    hev.wait()
+    return res
