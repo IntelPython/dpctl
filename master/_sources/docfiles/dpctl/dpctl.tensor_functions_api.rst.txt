@@ -22,6 +22,7 @@ Array Construction
 .. autofunction:: from_numpy
 .. autofunction:: full
 .. autofunction:: full_like
+.. autofunction:: linspace
 .. autofunction:: ones
 .. autofunction:: ones_like
 .. autofunction:: to_numpy

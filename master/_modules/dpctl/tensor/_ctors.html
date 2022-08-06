@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.13.0+4.gda1bf688f documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.13.0+8.g92d2e05e2 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.13.0+4.gda1bf688f
+                0.13.0+8.g92d2e05e2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -92,6 +92,8 @@
 <span class="c1">#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
+
+<span class="kn">import</span> <span class="nn">operator</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -275,9 +277,12 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected numpy.ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">usm_type</span> <span class="o">=</span> <span class="s2">&quot;device&quot;</span>
-    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">dtype</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">dtype</span>
     <span class="n">copy_q</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ary_dtype</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy_q</span><span class="p">,</span> <span class="n">ref_type</span><span class="o">=</span><span class="n">ary_dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">&gt;</span> <span class="n">ary_dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">:</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">ary_dtype</span>
     <span class="n">f_contig</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;F&quot;</span><span class="p">]</span>
     <span class="n">c_contig</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span>
     <span class="n">fc_contig</span> <span class="o">=</span> <span class="n">f_contig</span> <span class="ow">or</span> <span class="n">c_contig</span>
@@ -371,7 +376,7 @@
 <span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
 <span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
 <span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
-<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            underlying SYCL queue to be used. If both are `None`, the</span>
 <span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -509,7 +514,7 @@
 <span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
 <span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
 <span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
-<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            underlying SYCL queue to be used. If both are `None`, the</span>
 <span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -532,20 +537,20 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<span class="k">def</span> <span class="nf">_coerce_and_infer_dt</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_coerce_and_infer_dt</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">,</span> <span class="n">allow_bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="s2">&quot;Deduce arange type from sequence spec&quot;</span>
     <span class="n">nd</span><span class="p">,</span> <span class="n">seq_dt</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">_array_info_sequence</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">d</span> <span class="o">!=</span> <span class="n">_host_set</span> <span class="ow">or</span> <span class="n">nd</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">),):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;start, stop and step must be Python scalars&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">seq_dt</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">ref_type</span><span class="o">=</span><span class="n">seq_dt</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">args</span><span class="p">),</span> <span class="n">dt</span>
     <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">args</span><span class="p">),</span> <span class="n">dt</span>
     <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">complex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">args</span><span class="p">),</span> <span class="n">dt</span>
+    <span class="k">elif</span> <span class="n">allow_bool</span> <span class="ow">and</span> <span class="n">dt</span><span class="o">.</span><span class="n">char</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">args</span><span class="p">),</span> <span class="n">dt</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data type </span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span>
 
@@ -598,18 +603,24 @@
 <span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
 <span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
 <span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
-<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            underlying SYCL queue to be used. If both are `None`, the</span>
 <span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">stop</span> <span class="o">=</span> <span class="n">start</span>
         <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="p">(</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">,),</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">_coerce_and_infer_dt</span><span class="p">(</span>
         <span class="n">start</span><span class="p">,</span>
         <span class="n">stop</span><span class="p">,</span>
         <span class="n">step</span><span class="p">,</span>
-    <span class="p">),</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">_coerce_and_infer_dt</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">dt</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="n">err_msg</span><span class="o">=</span><span class="s2">&quot;start, stop, and step must be Python scalars&quot;</span><span class="p">,</span>
+        <span class="n">allow_bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="n">_get_arange_length</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
         <span class="n">sh</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
@@ -617,8 +628,6 @@
             <span class="n">sh</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="n">sh</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
         <span class="p">(</span><span class="n">sh</span><span class="p">,),</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
@@ -658,7 +667,7 @@
 <span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
 <span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
 <span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
-<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            underlying SYCL queue to be used. If both are `None`, the</span>
 <span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -706,7 +715,7 @@
 <span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
 <span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
 <span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
-<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            underlying SYCL queue to be used. If both are `None`, the</span>
 <span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -762,7 +771,7 @@
 <span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
 <span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
 <span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
-<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            underlying SYCL queue to be used. If both are `None`, the</span>
 <span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -812,7 +821,7 @@
 <span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
 <span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
 <span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
-<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            underlying SYCL queue to be used. If both are `None`, the</span>
 <span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -869,7 +878,7 @@
 <span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
 <span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
 <span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
-<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            underlying SYCL queue to be used. If both are `None`, the</span>
 <span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -926,7 +935,7 @@
 <span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
 <span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
 <span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
-<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            underlying SYCL queue to be used. If both are `None`, the</span>
 <span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -990,7 +999,7 @@
 <span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
 <span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
 <span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
-<span class="sd">            underlying SYCL queue to be used. If both a `None`, the</span>
+<span class="sd">            underlying SYCL queue to be used. If both are `None`, the</span>
 <span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1021,6 +1030,85 @@
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
     <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="linspace"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.linspace">[docs]</a><span class="k">def</span> <span class="nf">linspace</span><span class="p">(</span>
+    <span class="n">start</span><span class="p">,</span>
+    <span class="n">stop</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">num</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    linspace(start, stop, num, dtype=None, device=None, endpoint=True,</span>
+<span class="sd">        sycl_queue=None, usm_type=None): usm_ndarray</span>
+
+<span class="sd">    Returns evenly spaced numbers of specified interval.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        start: the start of the interval.</span>
+<span class="sd">        stop: the end of the interval. If the `endpoint` is `False`, the</span>
+<span class="sd">            function must generate `num+1` evenly spaced points starting</span>
+<span class="sd">            with `start` and ending with `stop` and exclude the `stop`</span>
+<span class="sd">            from the returned array such that the returned array consists</span>
+<span class="sd">            of evenly spaced numbers over the half-open interval</span>
+<span class="sd">            `[start, stop)`. If `endpoint` is `True`, the output</span>
+<span class="sd">            array must consist of evenly spaced numbers over the closed</span>
+<span class="sd">            interval `[start, stop]`. Default: `True`.</span>
+<span class="sd">        num: number of samples. Must be a non-negative integer; otherwise,</span>
+<span class="sd">            the function must raise an exception.</span>
+<span class="sd">        dtype: output array data type. Should be a floating data type.</span>
+<span class="sd">            If `dtype` is `None`, the output array must be the default</span>
+<span class="sd">            floating point data type. Default: `None`.</span>
+<span class="sd">        device (optional): array API concept of device where the output array</span>
+<span class="sd">            is created. `device` can be `None`, a oneAPI filter selector string,</span>
+<span class="sd">            an instance of :class:`dpctl.SyclDevice` corresponding to a</span>
+<span class="sd">            non-partitioned SYCL device, an instance of</span>
+<span class="sd">            :class:`dpctl.SyclQueue`, or a `Device` object returnedby</span>
+<span class="sd">            `dpctl.tensor.usm_array.device`. Default: `None`.</span>
+<span class="sd">        usm_type (&quot;device&quot;|&quot;shared&quot;|&quot;host&quot;, optional): The type of SYCL USM</span>
+<span class="sd">            allocation for the output array. Default: `&quot;device&quot;`.</span>
+<span class="sd">        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use</span>
+<span class="sd">            for output array allocation and copying. `sycl_queue` and `device`</span>
+<span class="sd">            are exclusive keywords, i.e. use one or another. If both are</span>
+<span class="sd">            specified, a `TypeError` is raised unless both imply the same</span>
+<span class="sd">            underlying SYCL queue to be used. If both are `None`, the</span>
+<span class="sd">            `dpctl.SyclQueue()` is used for allocation and copying.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">        endpoint: boolean indicating whether to include `stop` in the</span>
+<span class="sd">            interval. Default: `True`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">endpoint</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;endpoint keyword argument must be of boolean type&quot;</span><span class="p">)</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of points must be non-negative&quot;</span><span class="p">)</span>
+    <span class="p">((</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,),</span> <span class="n">dt</span><span class="p">)</span> <span class="o">=</span> <span class="n">_coerce_and_infer_dt</span><span class="p">(</span>
+        <span class="n">start</span><span class="p">,</span>
+        <span class="n">stop</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="n">err_msg</span><span class="o">=</span><span class="s2">&quot;start and stop must be Python scalars.&quot;</span><span class="p">,</span>
+        <span class="n">allow_bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_fp_type</span><span class="p">(</span><span class="n">sycl_queue</span><span class="p">)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_linspace_affine</span><span class="p">(</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">include_endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
+    <span class="p">)</span>
+    <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">res</span></div>
 </pre></div>
 
            </div>

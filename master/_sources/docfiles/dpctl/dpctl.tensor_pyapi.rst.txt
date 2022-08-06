@@ -59,6 +59,8 @@ Array Construction
       - Creates `usm_ndarray` with elements of one.
     * - :func:`full_like()`
       - Creates `usm_ndarray` from USM allocation initialized with zeros.
+    * - :func:`linspace()`
+      - : usm_ndarray Returns evenly spaced numbers of specified interval.
     * - :func:`ones()`
       - Creates `usm_ndarray` with elements of one.
     * - :func:`ones_like()`
