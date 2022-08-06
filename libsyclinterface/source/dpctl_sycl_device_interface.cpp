@@ -232,7 +232,11 @@ DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     auto D = unwrap(DRef);
     if (D) {
         try {
+#if __SYCL_COMPILER_VERSION >= 20220805
+            auto id_sizes = D->get_info<info::device::max_work_item_sizes<3>>();
+#else
             auto id_sizes = D->get_info<info::device::max_work_item_sizes>();
+#endif
             sizes = new size_t[3];
             for (auto i = 0ul; i < 3; ++i) {
                 sizes[i] = id_sizes[i];
