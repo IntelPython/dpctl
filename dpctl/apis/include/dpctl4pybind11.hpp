@@ -305,55 +305,13 @@ namespace memory
 class usm_memory : public py::object
 {
 public:
-    // Use macro once Pybind11 2.9.3 is released instead of code bewteen
-    // START_TOKEN and END_TOKEN
-    /*
-       PYBIND11_OBJECT_CVT(
-          usm_memory,
-          py::object,
-          [](PyObject *o) -> bool{ return PyObject_TypeCheck(o, &Py_MemoryType)
-       != 0;},
-          [](PyObject *o) -> PyObject* { return as_usm_memory(o); }
-        )
-     */
-    // START_TOKEN
-
-    // these constructors do not validate, but since borrowed_t and stolen_t are
-    // protected struct members of the object, they can only be called
-    // internally.
-    usm_memory(py::handle h, borrowed_t) : py::object(h, borrowed_t{}) {}
-    usm_memory(py::handle h, stolen_t) : py::object(h, stolen_t{}) {}
-
-    static bool check_(py::handle h)
-    {
-        return h.ptr() != nullptr &&
-               PyObject_TypeCheck(h.ptr(), &Py_MemoryType);
-    }
-
-    template <typename Policy_>
-    /* NOLINTNEXTLINE(google-explicit-constructor) */
-    usm_memory(const py::detail::accessor<Policy_> &a)
-        : usm_memory(py::object(a))
-    {
-    }
-
-    usm_memory(const py::object &o)
-        : py::object(check_(o) ? o.inc_ref().ptr() : as_usm_memory(o.ptr()),
-                     stolen_t{})
-    {
-        if (!m_ptr)
-            throw py::error_already_set();
-    }
-
-    /* NOLINTNEXTLINE(google-explicit-constructor) */
-    usm_memory(py::object &&o)
-        : py::object(check_(o) ? o.release().ptr() : as_usm_memory(o.ptr()),
-                     stolen_t{})
-    {
-        if (!m_ptr)
-            throw py::error_already_set();
-    }
-    // END_TOKEN
+    PYBIND11_OBJECT_CVT(
+        usm_memory,
+        py::object,
+        [](PyObject *o) -> bool {
+            return PyObject_TypeCheck(o, &Py_MemoryType) != 0;
+        },
+        [](PyObject *o) -> PyObject * { return as_usm_memory(o); })
 
     usm_memory()
         : py::object(::dpctl::detail::dpctl_api::get().default_usm_memory_(),
@@ -412,50 +370,9 @@ namespace tensor
 class usm_ndarray : public py::object
 {
 public:
-    // In Pybind11 2.9.3 replace code between START_TOKEN and END_TOKEN with
-    // macro
-    /*
-      PYBIND11_OBJECT(
-          usm_ndarray,
-          py::object,
-          [](PyObject *o) -> bool {return PyObject_TypeCheck(o, &PyUSMArrayType)
-      != 0;}
-      )
-     */
-
-    // START_TOKEN
-    static bool check_(py::handle h)
-    {
-        return h.ptr() != nullptr &&
-               PyObject_TypeCheck(h.ptr(), &PyUSMArrayType);
-    }
-
-    // these constructors do not validate, but since borrowed_t and stolen_t are
-    // protected struct members of the object, they can only be called
-    // internally.
-    usm_ndarray(py::handle h, borrowed_t) : py::object(h, borrowed_t{}) {}
-    usm_ndarray(py::handle h, stolen_t) : py::object(h, stolen_t{}) {}
-
-    template <typename Policy_>
-    /* NOLINTNEXTLINE(google-explicit-constructor) */
-    usm_ndarray(const py::detail::accessor<Policy_> &a)
-        : usm_ndarray(py::object(a))
-    {
-    }
-
-    usm_ndarray(const py::object &o) : py::object(o)
-    {
-        if (m_ptr && !check_(m_ptr))
-            throw PYBIND11_OBJECT_CHECK_FAILED(usm_ndarray, m_ptr);
-    }
-
-    /* NOLINTNEXTLINE(google-explicit-constructor) */
-    usm_ndarray(py::object &&o) : py::object(std::move(o))
-    {
-        if (m_ptr && !check_(m_ptr))
-            throw PYBIND11_OBJECT_CHECK_FAILED(usm_ndarray, m_ptr);
-    }
-    // END_TOKEN
+    PYBIND11_OBJECT(usm_ndarray, py::object, [](PyObject *o) -> bool {
+        return PyObject_TypeCheck(o, &PyUSMArrayType) != 0;
+    })
 
     usm_ndarray()
         : py::object(::dpctl::detail::dpctl_api::get().default_usm_ndarray_(),
