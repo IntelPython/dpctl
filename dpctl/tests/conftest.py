@@ -20,4 +20,14 @@
 import os
 import sys
 
+from _device_attributes_checks import (
+    check,
+    device_selector,
+    invalid_filter,
+    valid_filter,
+)
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "helper"))
+
+# common fixtures
+__all__ = ["check", "device_selector", "invalid_filter", "valid_filter"]

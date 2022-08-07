@@ -25,307 +25,6 @@ from helper import create_invalid_capsule
 
 import dpctl
 
-list_of_standard_selectors = [
-    dpctl.select_accelerator_device,
-    dpctl.select_cpu_device,
-    dpctl.select_default_device,
-    dpctl.select_gpu_device,
-    dpctl.select_host_device,
-]
-
-list_of_valid_filter_selectors = [
-    "opencl",
-    "opencl:gpu",
-    "opencl:cpu",
-    "opencl:gpu:0",
-    "gpu",
-    "cpu",
-    "level_zero",
-    "level_zero:gpu",
-    "opencl:cpu:0",
-    "level_zero:gpu:0",
-    "gpu:0",
-    "gpu:1",
-    "1",
-]
-
-list_of_invalid_filter_selectors = [
-    "-1",
-    "opencl:gpu:-1",
-    "level_zero:cpu:0",
-    "abc",
-]
-
-
-# Unit test cases that will be run for every device
-def check_get_max_compute_units(device):
-    max_compute_units = device.max_compute_units
-    assert max_compute_units > 0
-
-
-def check_get_max_work_item_dims(device):
-    max_work_item_dims = device.max_work_item_dims
-    assert max_work_item_dims > 0
-
-
-def check_get_max_work_item_sizes1d(device):
-    max_work_item_sizes = device.max_work_item_sizes1d
-    for size in max_work_item_sizes:
-        assert size is not None
-
-
-def check_get_max_work_item_sizes2d(device):
-    max_work_item_sizes = device.max_work_item_sizes2d
-    for size in max_work_item_sizes:
-        assert size is not None
-
-
-def check_get_max_work_item_sizes3d(device):
-    max_work_item_sizes = device.max_work_item_sizes3d
-    for size in max_work_item_sizes:
-        assert size is not None
-
-
-def check_get_max_work_group_size(device):
-    max_work_group_size = device.max_work_group_size
-    # Special case for FPGA simulator
-    if device.is_accelerator:
-        assert max_work_group_size >= 0
-    else:
-        assert max_work_group_size > 0
-
-
-def check_get_max_num_sub_groups(device):
-    max_num_sub_groups = device.max_num_sub_groups
-    # Special case for FPGA simulator
-    if device.is_accelerator or device.is_host:
-        assert max_num_sub_groups >= 0
-    else:
-        assert max_num_sub_groups > 0
-
-
-def check_has_aspect_host(device):
-    try:
-        device.has_aspect_host
-    except Exception:
-        pytest.fail("has_aspect_host call failed")
-
-
-def check_has_aspect_cpu(device):
-    try:
-        device.has_aspect_cpu
-    except Exception:
-        pytest.fail("has_aspect_cpu call failed")
-
-
-def check_has_aspect_gpu(device):
-    try:
-        device.has_aspect_gpu
-    except Exception:
-        pytest.fail("has_aspect_gpu call failed")
-
-
-def check_has_aspect_accelerator(device):
-    try:
-        device.has_aspect_accelerator
-    except Exception:
-        pytest.fail("has_aspect_accelerator call failed")
-
-
-def check_has_aspect_custom(device):
-    try:
-        device.has_aspect_custom
-    except Exception:
-        pytest.fail("has_aspect_custom call failed")
-
-
-def check_has_aspect_fp16(device):
-    try:
-        device.has_aspect_fp16
-    except Exception:
-        pytest.fail("has_aspect_fp16 call failed")
-
-
-def check_has_aspect_fp64(device):
-    try:
-        device.has_aspect_fp64
-    except Exception:
-        pytest.fail("has_aspect_fp64 call failed")
-
-
-def check_has_aspect_atomic64(device):
-    try:
-        device.has_aspect_atomic64
-    except Exception:
-        pytest.fail("has_aspect_atomic64 call failed")
-
-
-def check_has_aspect_image(device):
-    try:
-        device.has_aspect_image
-    except Exception:
-        pytest.fail("has_aspect_image call failed")
-
-
-def check_has_aspect_online_compiler(device):
-    try:
-        device.has_aspect_online_compiler
-    except Exception:
-        pytest.fail("has_aspect_online_compiler call failed")
-
-
-def check_has_aspect_online_linker(device):
-    try:
-        device.has_aspect_online_linker
-    except Exception:
-        pytest.fail("has_aspect_online_linker call failed")
-
-
-def check_has_aspect_queue_profiling(device):
-    try:
-        device.has_aspect_queue_profiling
-    except Exception:
-        pytest.fail("has_aspect_queue_profiling call failed")
-
-
-def check_has_aspect_usm_device_allocations(device):
-    try:
-        device.has_aspect_usm_device_allocations
-    except Exception:
-        pytest.fail("has_aspect_usm_device_allocations call failed")
-
-
-def check_has_aspect_usm_host_allocations(device):
-    try:
-        device.has_aspect_usm_host_allocations
-    except Exception:
-        pytest.fail("has_aspect_usm_host_allocations call failed")
-
-
-def check_has_aspect_usm_shared_allocations(device):
-    try:
-        device.has_aspect_usm_shared_allocations
-    except Exception:
-        pytest.fail("has_aspect_usm_shared_allocations call failed")
-
-
-def check_has_aspect_usm_restricted_shared_allocations(device):
-    try:
-        device.has_aspect_usm_restricted_shared_allocations
-    except Exception:
-        pytest.fail("has_aspect_usm_restricted_shared_allocations call failed")
-
-
-def check_has_aspect_usm_system_allocations(device):
-    try:
-        device.has_aspect_usm_system_allocations
-    except Exception:
-        pytest.fail("has_aspect_usm_system_allocations call failed")
-
-
-def check_has_aspect_usm_atomic_host_allocations(device):
-    try:
-        device.has_aspect_usm_atomic_host_allocations
-    except Exception:
-        pytest.fail("has_aspect_usm_atomic_host_allocations call failed")
-
-
-def check_has_aspect_usm_atomic_shared_allocations(device):
-    try:
-        device.has_aspect_usm_atomic_shared_allocations
-    except Exception:
-        pytest.fail("has_aspect_usm_atomic_shared_allocations call failed")
-
-
-def check_has_aspect_host_debuggable(device):
-    try:
-        device.has_aspect_host_debuggable
-    except Exception:
-        pytest.fail("has_aspect_host_debuggable call failed")
-
-
-def check_is_accelerator(device):
-    try:
-        device.is_accelerator
-    except Exception:
-        pytest.fail("is_accelerator call failed")
-
-
-def check_is_cpu(device):
-    try:
-        device.is_cpu
-    except Exception:
-        pytest.fail("is_cpu call failed")
-
-
-def check_is_gpu(device):
-    try:
-        device.is_gpu
-    except Exception:
-        pytest.fail("is_gpu call failed")
-
-
-def check_is_host(device):
-    try:
-        device.is_host
-    except Exception:
-        pytest.fail("is_hostcall failed")
-
-
-list_of_checks = [
-    check_get_max_compute_units,
-    check_get_max_work_item_dims,
-    check_get_max_work_item_sizes1d,
-    check_get_max_work_item_sizes2d,
-    check_get_max_work_item_sizes3d,
-    check_get_max_work_group_size,
-    check_get_max_num_sub_groups,
-    check_is_accelerator,
-    check_is_cpu,
-    check_is_gpu,
-    check_is_host,
-    check_has_aspect_host,
-    check_has_aspect_cpu,
-    check_has_aspect_gpu,
-    check_has_aspect_accelerator,
-    check_has_aspect_custom,
-    check_has_aspect_fp16,
-    check_has_aspect_fp64,
-    check_has_aspect_atomic64,
-    check_has_aspect_image,
-    check_has_aspect_online_compiler,
-    check_has_aspect_online_linker,
-    check_has_aspect_queue_profiling,
-    check_has_aspect_usm_device_allocations,
-    check_has_aspect_usm_host_allocations,
-    check_has_aspect_usm_shared_allocations,
-    check_has_aspect_usm_restricted_shared_allocations,
-    check_has_aspect_usm_system_allocations,
-    check_has_aspect_usm_atomic_host_allocations,
-    check_has_aspect_usm_atomic_shared_allocations,
-    check_has_aspect_host_debuggable,
-]
-
-
-@pytest.fixture(params=list_of_valid_filter_selectors)
-def valid_filter(request):
-    return request.param
-
-
-@pytest.fixture(params=list_of_invalid_filter_selectors)
-def invalid_filter(request):
-    return request.param
-
-
-@pytest.fixture(params=list_of_standard_selectors)
-def device_selector(request):
-    return request.param
-
-
-@pytest.fixture(params=list_of_checks)
-def check(request):
-    return request.param
-
 
 def test_standard_selectors(device_selector, check):
     """
@@ -376,7 +75,12 @@ def test_invalid_filter_selectors(invalid_filter):
     An invalid filter string should always be caught and a
     SyclQueueCreationError raised.
     """
-    with pytest.raises(dpctl.SyclQueueCreationError):
+    expected_exception = (
+        dpctl.SyclQueueCreationError
+        if isinstance(invalid_filter, str)
+        else TypeError
+    )
+    with pytest.raises(expected_exception):
         dpctl.SyclQueue(invalid_filter)
 
 
@@ -497,6 +201,21 @@ def test_queue_capsule():
     assert q == q2
     del cap2  # call deleter on non-renamed capsule
     assert q2 != []  # compare with other types
+
+
+def test_queue_ctor():
+    # construct from device
+    try:
+        d = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("Could not create default device")
+    q = dpctl.SyclQueue(d)
+    assert q.sycl_device == d
+
+    ctx = dpctl.SyclContext(d)
+    q = dpctl.SyclQueue(ctx, d)
+    assert q.sycl_context == ctx
+    assert q.sycl_device == d
 
 
 def test_cpython_api_SyclQueue_GetQueueRef():
