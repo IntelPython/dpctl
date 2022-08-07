@@ -211,7 +211,7 @@ uint32_t
 DPCTLDevice_GetMaxWorkItemDims(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
- * @brief Wrapper for get_info<info::device::max_work_item_sizes>().
+ * @brief Wrapper for get_info<info::device::max_work_item_sizes<1>>().
  *
  * @param    DRef           Opaque pointer to a ``sycl::device``
  * @return   Returns the valid result if device exists else returns NULL.
@@ -219,7 +219,42 @@ DPCTLDevice_GetMaxWorkItemDims(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  */
 DPCTL_API
 __dpctl_keep size_t *
-DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+DPCTLDevice_GetMaxWorkItemSizes1d(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper for get_info<info::device::max_work_item_sizes<2>>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the valid result if device exists else returns NULL.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_keep size_t *
+DPCTLDevice_GetMaxWorkItemSizes2d(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper for get_info<info::device::max_work_item_sizes<3>>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the valid result if device exists else returns NULL.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_keep size_t *
+DPCTLDevice_GetMaxWorkItemSizes3d(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper for deprecated get_info<info::device::max_work_item_sizes>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the valid result if device exists else returns NULL.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_keep size_t *
+DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+    __attribute__((deprecated("DPCTLDevice_GetMaxWorkItemSizes is deprecated ",
+                              "Use DPCTLDevice_WorkItemSizes3d instead")));
 
 /*!
  * @brief Wrapper for get_info<info::device::max_work_group_size>().

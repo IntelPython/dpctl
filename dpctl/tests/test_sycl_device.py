@@ -76,8 +76,20 @@ def check_get_max_work_item_dims(device):
     assert max_work_item_dims > 0
 
 
-def check_get_max_work_item_sizes(device):
-    max_work_item_sizes = device.max_work_item_sizes
+def check_get_max_work_item_sizes1d(device):
+    max_work_item_sizes = device.max_work_item_sizes1d
+    for size in max_work_item_sizes:
+        assert size is not None
+
+
+def check_get_max_work_item_sizes2d(device):
+    max_work_item_sizes = device.max_work_item_sizes2d
+    for size in max_work_item_sizes:
+        assert size is not None
+
+
+def check_get_max_work_item_sizes3d(device):
+    max_work_item_sizes = device.max_work_item_sizes3d
     for size in max_work_item_sizes:
         assert size is not None
 
@@ -518,7 +530,9 @@ def check_platform(device):
 list_of_checks = [
     check_get_max_compute_units,
     check_get_max_work_item_dims,
-    check_get_max_work_item_sizes,
+    check_get_max_work_item_sizes1d,
+    check_get_max_work_item_sizes2d,
+    check_get_max_work_item_sizes3d,
     check_get_max_work_group_size,
     check_get_max_num_sub_groups,
     check_is_accelerator,

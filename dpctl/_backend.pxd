@@ -157,7 +157,9 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
     cdef uint32_t DPCTLDevice_GetMaxNumSubGroups(const DPCTLSyclDeviceRef DRef)
     cdef size_t DPCTLDevice_GetMaxWorkGroupSize(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetMaxWorkItemDims(const DPCTLSyclDeviceRef DRef)
-    cdef size_t *DPCTLDevice_GetMaxWorkItemSizes(const DPCTLSyclDeviceRef DRef)
+    cdef size_t *DPCTLDevice_GetMaxWorkItemSizes1d(const DPCTLSyclDeviceRef DRef)
+    cdef size_t *DPCTLDevice_GetMaxWorkItemSizes2d(const DPCTLSyclDeviceRef DRef)
+    cdef size_t *DPCTLDevice_GetMaxWorkItemSizes3d(const DPCTLSyclDeviceRef DRef)
     cdef const char *DPCTLDevice_GetName(const DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclPlatformRef DPCTLDevice_GetPlatform(
         const DPCTLSyclDeviceRef DRef)
