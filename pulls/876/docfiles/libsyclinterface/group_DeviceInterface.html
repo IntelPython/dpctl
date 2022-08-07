@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device class C wrapper &mdash; Data-parallel Control (dpctl) 0.14.0dev0+7.gf0be3820f documentation</title>
+  <title>Device class C wrapper &mdash; Data-parallel Control (dpctl) 0.14.0dev0+8.g58bc588d3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -34,7 +34,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+7.gf0be3820f
+                0.14.0dev0+8.g58bc588d3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -176,7 +176,16 @@
 <a class="reference internal" href="#doxid-db-dd1-group-device-interface-1ga365748d856fa3af3fe3ed288bb19c55a"><span class="std std-ref">DPCTLDevice_GetMaxWorkItemDims</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
-<a class="reference internal" href="#doxid-db-dd1-group-device-interface-1gac5292cd7933df4ef7fb15a3d0d05d463"><span class="std std-ref">DPCTLDevice_GetMaxWorkItemSizes</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
+<a class="reference internal" href="#doxid-db-dd1-group-device-interface-1ga3643a18462c86ad2b0b16a092c24f1f2"><span class="std std-ref">DPCTLDevice_GetMaxWorkItemSizes</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
+<a class="reference internal" href="#doxid-db-dd1-group-device-interface-1gaa78a3bce74306fb72c9e3fd9023f8e7d"><span class="std std-ref">DPCTLDevice_GetMaxWorkItemSizes1d</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
+<a class="reference internal" href="#doxid-db-dd1-group-device-interface-1ga1b2a59d26b76f44c13e6396906ebd182"><span class="std std-ref">DPCTLDevice_GetMaxWorkItemSizes2d</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
+<a class="reference internal" href="#doxid-db-dd1-group-device-interface-1ga21f1e0cfb75b6ba9dd8ad2c87573e769"><span class="std std-ref">DPCTLDevice_GetMaxWorkItemSizes3d</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="k">const</span> <span class="n">__dpctl_give</span> <span class="kt">char</span><span class="o">*</span>
 <a class="reference internal" href="#doxid-db-dd1-group-device-interface-1ga36ca01c406d1200b56e94a98595ffb0d"><span class="std std-ref">DPCTLDevice_GetName</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
@@ -539,9 +548,9 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the valid result if device exists else returns 0.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gac5292cd7933df4ef7fb15a3d0d05d463"><span id="index-18"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga3643a18462c86ad2b0b16a092c24f1f2"><span id="index-18"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
 <span class="n">DPCTLDevice_GetMaxWorkItemSizes</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
-<p>Wrapper for get_info&lt;<a class="reference external" href="info::device::max_work_item_sizes">info::device::max_work_item_sizes</a>&gt;().</p>
+<p>Wrapper for deprecated get_info&lt;<a class="reference external" href="info::device::max_work_item_sizes">info::device::max_work_item_sizes</a>&gt;().</p>
 <p class="rubric">Parameters:</p>
 <table class="colwidths-given docutils align-default">
 <colgroup>
@@ -556,7 +565,58 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the valid result if device exists else returns NULL.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga36ca01c406d1200b56e94a98595ffb0d"><span id="index-19"></span><span></span><span class="n">DPCTL_API</span> <span class="k">const</span> <span class="n">__dpctl_give</span> <span class="kt">char</span><span class="o">*</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gaa78a3bce74306fb72c9e3fd9023f8e7d"><span id="index-19"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
+<span class="n">DPCTLDevice_GetMaxWorkItemSizes1d</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
+<p>Wrapper for get_info&lt;<a class="reference external" href="info::device">info::device</a>::max_work_item_sizes&lt;1&gt;&gt;().</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>DRef</p></td>
+<td><p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>Returns the valid result if device exists else returns NULL.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga1b2a59d26b76f44c13e6396906ebd182"><span id="index-20"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
+<span class="n">DPCTLDevice_GetMaxWorkItemSizes2d</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
+<p>Wrapper for get_info&lt;<a class="reference external" href="info::device">info::device</a>::max_work_item_sizes&lt;2&gt;&gt;().</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>DRef</p></td>
+<td><p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>Returns the valid result if device exists else returns NULL.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga21f1e0cfb75b6ba9dd8ad2c87573e769"><span id="index-21"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
+<span class="n">DPCTLDevice_GetMaxWorkItemSizes3d</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
+<p>Wrapper for get_info&lt;<a class="reference external" href="info::device">info::device</a>::max_work_item_sizes&lt;3&gt;&gt;().</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>DRef</p></td>
+<td><p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>Returns the valid result if device exists else returns NULL.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga36ca01c406d1200b56e94a98595ffb0d"><span id="index-22"></span><span></span><span class="n">DPCTL_API</span> <span class="k">const</span> <span class="n">__dpctl_give</span> <span class="kt">char</span><span class="o">*</span>
 <span class="n">DPCTLDevice_GetName</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Returns a C string for the device name.</p>
 <p class="rubric">Parameters:</p>
@@ -573,7 +633,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>A C string containing the OpenCL device name.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga7a5b8354f2f4937eb0b6229ba8436ecc"><span id="index-20"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga7a5b8354f2f4937eb0b6229ba8436ecc"><span id="index-23"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span>
 <span class="n">DPCTLDevice_GetPlatform</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Returns the <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> for the device as DPCTLSyclPlatformRef opaque pointer.</p>
 <p class="rubric">Parameters:</p>
@@ -590,7 +650,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>An opaque pointer to the sycl::platform for the device.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga3e46c34f5ec44d1a40f3fcd80452a526"><span id="index-21"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga3e46c34f5ec44d1a40f3fcd80452a526"><span id="index-24"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLDevice_GetPreferredVectorWidthChar</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::preferred_vector_width_char">info::device::preferred_vector_width_char</a>&gt;.</p>
 <p class="rubric">Parameters:</p>
@@ -607,7 +667,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gafa9c9d2c7e8c69f5ee48af4023cdef42"><span id="index-22"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gafa9c9d2c7e8c69f5ee48af4023cdef42"><span id="index-25"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLDevice_GetPreferredVectorWidthDouble</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::preferred_vector_width_double">info::device::preferred_vector_width_double</a>&gt;.</p>
 <p class="rubric">Parameters:</p>
@@ -624,7 +684,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga24e82d7e0ebb66ce127f303309acb599"><span id="index-23"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga24e82d7e0ebb66ce127f303309acb599"><span id="index-26"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLDevice_GetPreferredVectorWidthFloat</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::preferred_vector_width_float">info::device::preferred_vector_width_float</a>&gt;.</p>
 <p class="rubric">Parameters:</p>
@@ -641,7 +701,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the preferred native vector width size for built-in scalar type.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga6c7c492ae186724113bb5b3397cba77e"><span id="index-24"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga6c7c492ae186724113bb5b3397cba77e"><span id="index-27"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLDevice_GetPreferredVectorWidthHalf</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over <code class="docutils literal notranslate"><span class="pre">device.get_info&lt;info::device::preferred_vector_width_half&gt;</span></code>.</p>
 <p class="rubric">Parameters:</p>
@@ -658,7 +718,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gaf43ca0045d4f4ebd0abd85a0c1b7dd47"><span id="index-25"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gaf43ca0045d4f4ebd0abd85a0c1b7dd47"><span id="index-28"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLDevice_GetPreferredVectorWidthInt</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::preferred_vector_width_int">info::device::preferred_vector_width_int</a>&gt;.</p>
 <p class="rubric">Parameters:</p>
@@ -675,7 +735,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga76f48effcd21089c077673ccdfb615f9"><span id="index-26"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga76f48effcd21089c077673ccdfb615f9"><span id="index-29"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLDevice_GetPreferredVectorWidthLong</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::preferred_vector_width_long">info::device::preferred_vector_width_long</a>&gt;.</p>
 <p class="rubric">Parameters:</p>
@@ -692,7 +752,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gab23c05c90e4b3a3417253e52b5d88290"><span id="index-27"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gab23c05c90e4b3a3417253e52b5d88290"><span id="index-30"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLDevice_GetPreferredVectorWidthShort</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::preferred_vector_width_short">info::device::preferred_vector_width_short</a>&gt;.</p>
 <p class="rubric">Parameters:</p>
@@ -709,7 +769,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gafd08f141480c1eb8eb243c88823e85b0"><span id="index-28"></span><span></span><span class="n">DPCTL_C_EXTERN_C_END</span> <span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gafd08f141480c1eb8eb243c88823e85b0"><span id="index-31"></span><span></span><span class="n">DPCTL_C_EXTERN_C_END</span> <span class="n">DPCTL_API</span> <span class="kt">bool</span>
 <span class="n">DPCTLDevice_GetSubGroupIndependentForwardProgress</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::sub_group_independent_forward_progress">info::device::sub_group_independent_forward_progress</a>&gt;.</p>
 <p class="rubric">Parameters:</p>
@@ -726,7 +786,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns true if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gae1af63c0f0016c766dd2703abc657bec"><span id="index-29"></span><span></span><span class="n">DPCTL_API</span> <span class="k">const</span> <span class="n">__dpctl_give</span> <span class="kt">char</span><span class="o">*</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gae1af63c0f0016c766dd2703abc657bec"><span id="index-32"></span><span></span><span class="n">DPCTL_API</span> <span class="k">const</span> <span class="n">__dpctl_give</span> <span class="kt">char</span><span class="o">*</span>
 <span class="n">DPCTLDevice_GetVendor</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Returns a C string corresponding to the vendor name.</p>
 <p class="rubric">Parameters:</p>
@@ -743,7 +803,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>A C string containing the OpenCL device vendor name.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gada8dabfcfaf6a76079dd64fdf07d19a2"><span id="index-30"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gada8dabfcfaf6a76079dd64fdf07d19a2"><span id="index-33"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
 <span class="n">DPCTLDevice_HasAspect</span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">,</span>
     <a class="reference internal" href="enum_DPCTLSyclAspectType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a5f57a140cfab264daf4500bdac0be389"><span class="std std-ref">DPCTLSyclAspectType</span></a><span></span> <span class="n">AT</span>
@@ -766,7 +826,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>True if sycl::device has device::aspect, else false.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga00b3410f618ec90c88a3d892b62e3409"><span id="index-31"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga00b3410f618ec90c88a3d892b62e3409"><span id="index-34"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
 <span class="n">DPCTLDevice_IsAccelerator</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Returns true if this SYCL device is an OpenCL device and the device type is <code class="docutils literal notranslate"><span class="pre">sycl::info::device_type::accelerator</span></code>.</p>
 <p class="rubric">Parameters:</p>
@@ -783,7 +843,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>True if the device type is an accelerator, else False.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gab5f205e2cc7e3112c6265c0ffdffaa57"><span id="index-32"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gab5f205e2cc7e3112c6265c0ffdffaa57"><span id="index-35"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
 <span class="n">DPCTLDevice_IsCPU</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Returns true if this SYCL device is an OpenCL device and the device type is <code class="docutils literal notranslate"><span class="pre">sycl::info::device_type::cpu</span></code>.</p>
 <p class="rubric">Parameters:</p>
@@ -800,7 +860,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>True if the device type is a cpu, else False.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gaf8f14aedc1fd3b836bd07c2e4be5d541"><span id="index-33"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gaf8f14aedc1fd3b836bd07c2e4be5d541"><span id="index-36"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
 <span class="n">DPCTLDevice_IsGPU</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Returns true if this SYCL device is an OpenCL device and the device type is <code class="docutils literal notranslate"><span class="pre">sycl::info::device_type::gpu</span></code>.</p>
 <p class="rubric">Parameters:</p>
@@ -817,7 +877,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>True if the device type is a gpu, else False.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gabad898eaf8374c3259598a140e7abd7c"><span id="index-34"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gabad898eaf8374c3259598a140e7abd7c"><span id="index-37"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
 <span class="n">DPCTLDevice_IsHost</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Returns true if this SYCL device is a host device.</p>
 <p class="rubric">Parameters:</p>
@@ -834,7 +894,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>True if the device is a host device, else False.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga4ff6d7f04e60ee4afd68010348a5f65c"><span id="index-35"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1ga4ff6d7f04e60ee4afd68010348a5f65c"><span id="index-38"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
 <span class="n">DPCTLDevice_IsHostUnifiedMemory</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Returns True if the device and the host share a unified memory subsystem, else returns False.</p>
 <p class="rubric">Parameters:</p>

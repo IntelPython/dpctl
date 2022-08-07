@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.14.0dev0+7.gf0be3820f documentation</title>
+  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.14.0dev0+8.g58bc588d3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -34,7 +34,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+7.gf0be3820f
+                0.14.0dev0+8.g58bc588d3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -142,6 +142,10 @@
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLSyclBackendType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1aa217d239d7e3752c49bd9fd42c71c933"><span class="std std-ref">DPCTLSyclBackendType</span></a><span></span><span class="p">;</span>
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLSyclDeviceType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a15d8954e4e712e2ec00838a9283d13ff"><span class="std std-ref">DPCTLSyclDeviceType</span></a><span></span><span class="p">;</span>
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLSyclEventStatusType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021"><span class="std std-ref">DPCTLSyclEventStatusType</span></a><span></span><span class="p">;</span>
+
+<span class="c1">// global variables</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span> <span class="n">Use</span> <span class="n">DPCTLDevice_WorkItemSizes3d</span> <span class="doxyrest-code-target target" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1adb85bf94c83cb285e385f74d2a6d0b85"><span></span><span class="n">instead</span></span><span></span><span class="p">;</span>
 
 <span class="c1">// global functions</span>
 
@@ -281,7 +285,16 @@
 <a class="reference internal" href="group_DeviceInterface.html#doxid-db-dd1-group-device-interface-1ga365748d856fa3af3fe3ed288bb19c55a"><span class="std std-ref">DPCTLDevice_GetMaxWorkItemDims</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
-<a class="reference internal" href="group_DeviceInterface.html#doxid-db-dd1-group-device-interface-1gac5292cd7933df4ef7fb15a3d0d05d463"><span class="std std-ref">DPCTLDevice_GetMaxWorkItemSizes</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
+<a class="reference internal" href="group_DeviceInterface.html#doxid-db-dd1-group-device-interface-1ga3643a18462c86ad2b0b16a092c24f1f2"><span class="std std-ref">DPCTLDevice_GetMaxWorkItemSizes</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
+<a class="reference internal" href="group_DeviceInterface.html#doxid-db-dd1-group-device-interface-1gaa78a3bce74306fb72c9e3fd9023f8e7d"><span class="std std-ref">DPCTLDevice_GetMaxWorkItemSizes1d</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
+<a class="reference internal" href="group_DeviceInterface.html#doxid-db-dd1-group-device-interface-1ga1b2a59d26b76f44c13e6396906ebd182"><span class="std std-ref">DPCTLDevice_GetMaxWorkItemSizes2d</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
+<a class="reference internal" href="group_DeviceInterface.html#doxid-db-dd1-group-device-interface-1ga21f1e0cfb75b6ba9dd8ad2c87573e769"><span class="std std-ref">DPCTLDevice_GetMaxWorkItemSizes3d</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <a class="reference internal" href="#doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a34dbd5b5dbde22ba5f1d5205de298d81"><span class="std std-ref">DPCTLDevice_GetMaxWriteImageArgs</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
