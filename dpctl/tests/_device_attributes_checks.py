@@ -74,6 +74,13 @@ def check_get_max_work_item_sizes3d(device):
         assert size is not None
 
 
+@pytest.mark.filterwarnings("DeprecationWarning:")
+def check_get_max_work_item_sizes(device):
+    max_work_item_sizes = device.max_work_item_sizes
+    for size in max_work_item_sizes:
+        assert size is not None
+
+
 def check_get_max_work_group_size(device):
     max_work_group_size = device.max_work_group_size
     # Special case for FPGA simulator
@@ -513,6 +520,7 @@ list_of_checks = [
     check_get_max_work_item_sizes1d,
     check_get_max_work_item_sizes2d,
     check_get_max_work_item_sizes3d,
+    check_get_max_work_item_sizes,
     check_get_max_work_group_size,
     check_get_max_num_sub_groups,
     check_is_accelerator,

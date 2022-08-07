@@ -700,11 +700,10 @@ cdef class SyclDevice(_SyclDevice):
         `(1; 1; 1)` for devices that are not of device type
         ``info::device_type::custom``.
         """
-        import warnings
         warnings.warn(
-            "Use dpctl.SyclDevice.max_work_item_sizes3d",
+            "dpctl.SyclDevice.max_work_item_sizes is deprecated, "
+            "use dpctl.SyclDevice.max_work_item_sizes3d instead",
             DeprecationWarning,
-            stacklevel=2
         )
         return (
             self._max_work_item_sizes[0],
