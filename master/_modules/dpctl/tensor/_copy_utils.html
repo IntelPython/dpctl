@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.0dev0+10.gd2da805ba documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.0dev0+15.gb68b1e403 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+10.gd2da805ba
+                0.14.0dev0+15.gb68b1e403
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -160,8 +160,15 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected usm_ndarray, got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">dst</span><span class="p">)))</span>
     <span class="n">src_ary</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">dst</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">copy_q</span> <span class="o">=</span> <span class="n">dst</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="k">if</span> <span class="n">copy_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">has_aspect_fp64</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">src_ary_dt_c</span> <span class="o">=</span> <span class="n">src_ary</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span>
+        <span class="k">if</span> <span class="n">src_ary_dt_c</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+            <span class="n">src_ary</span> <span class="o">=</span> <span class="n">src_ary</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">src_ary_dt_c</span> <span class="o">==</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span>
+            <span class="n">src_ary</span> <span class="o">=</span> <span class="n">src_ary</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_copy_numpy_ndarray_into_usm_ndarray</span><span class="p">(</span>
-        <span class="n">src</span><span class="o">=</span><span class="n">src_ary</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">dst</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">src_ary</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">copy_q</span>
     <span class="p">)</span>
 
 
