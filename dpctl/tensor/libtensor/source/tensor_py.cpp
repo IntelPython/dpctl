@@ -43,7 +43,7 @@ template <typename srcT, typename dstT> class copy_cast_from_host_kernel;
 template <typename srcT, typename dstT, int nd> class copy_cast_spec_kernel;
 template <typename Ty> class copy_for_reshape_generic_kernel;
 template <typename Ty> class linear_sequence_step_kernel;
-template <typename Ty> class linear_sequence_affine_kernel;
+template <typename Ty, typename wTy> class linear_sequence_affine_kernel;
 
 static dpctl::tensor::detail::usm_ndarray_types array_types;
 
@@ -1526,7 +1526,7 @@ typedef sycl::event (*lin_space_affine_fn_ptr_t)(
 static lin_space_affine_fn_ptr_t
     lin_space_affine_dispatch_vector[_ns::num_types];
 
-template <typename Ty> class LinearSequenceAffineFunctor
+template <typename Ty, typename wTy> class LinearSequenceAffineFunctor
 {
 private:
     Ty *p = nullptr;
@@ -1544,8 +1544,8 @@ public:
     void operator()(sycl::id<1> wiid) const
     {
         auto i = wiid.get(0);
-        double wc = double(i) / n;
-        double w = double(n - i) / n;
+        wTy wc = wTy(i) / n;
+        wTy w = wTy(n - i) / n;
         if constexpr (is_complex<Ty>::value) {
             auto _w = static_cast<typename Ty::value_type>(w);
             auto _wc = static_cast<typename Ty::value_type>(wc);
@@ -1578,13 +1578,23 @@ sycl::event lin_space_affine_impl(sycl::queue exec_q,
         throw;
     }
 
+    bool device_supports_doubles = exec_q.get_device().has(sycl::aspect::fp64);
     sycl::event lin_space_affine_event = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
-        cgh.parallel_for<linear_sequence_affine_kernel<Ty>>(
-            sycl::range<1>{nelems},
-            LinearSequenceAffineFunctor<Ty>(array_data, start_v, end_v,
-                                            (include_endpoint) ? nelems - 1
-                                                               : nelems));
+        if (device_supports_doubles) {
+            cgh.parallel_for<linear_sequence_affine_kernel<Ty, double>>(
+                sycl::range<1>{nelems},
+                LinearSequenceAffineFunctor<Ty, double>(
+                    array_data, start_v, end_v,
+                    (include_endpoint) ? nelems - 1 : nelems));
+        }
+        else {
+            cgh.parallel_for<linear_sequence_affine_kernel<Ty, float>>(
+                sycl::range<1>{nelems},
+                LinearSequenceAffineFunctor<Ty, float>(
+                    array_data, start_v, end_v,
+                    (include_endpoint) ? nelems - 1 : nelems));
+        }
     });
 
     return lin_space_affine_event;
