@@ -46,7 +46,9 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetMaxReadImageArgs,
     DPCTLDevice_GetMaxWorkGroupSize,
     DPCTLDevice_GetMaxWorkItemDims,
-    DPCTLDevice_GetMaxWorkItemSizes,
+    DPCTLDevice_GetMaxWorkItemSizes1d,
+    DPCTLDevice_GetMaxWorkItemSizes2d,
+    DPCTLDevice_GetMaxWorkItemSizes3d,
     DPCTLDevice_GetMaxWriteImageArgs,
     DPCTLDevice_GetName,
     DPCTLDevice_GetParentDevice,
@@ -185,7 +187,7 @@ cdef void _init_helper(_SyclDevice device, DPCTLSyclDeviceRef DRef):
     device._name = DPCTLDevice_GetName(DRef)
     device._driver_version = DPCTLDevice_GetDriverVersion(DRef)
     device._vendor = DPCTLDevice_GetVendor(DRef)
-    device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes(DRef)
+    device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes3d(DRef)
 
 
 cdef class SyclDevice(_SyclDevice):
@@ -263,7 +265,7 @@ cdef class SyclDevice(_SyclDevice):
         self._name = DPCTLDevice_GetName(self._device_ref)
         self._driver_version = DPCTLDevice_GetDriverVersion(self._device_ref)
         self._max_work_item_sizes = (
-            DPCTLDevice_GetMaxWorkItemSizes(self._device_ref)
+            DPCTLDevice_GetMaxWorkItemSizes3d(self._device_ref)
         )
         self._vendor = DPCTLDevice_GetVendor(self._device_ref)
         return 0
@@ -649,12 +651,60 @@ cdef class SyclDevice(_SyclDevice):
         return max_work_item_dims
 
     @property
+    def max_work_item_sizes1d(self):
+        """ Returns the maximum number of work-items that are permitted in each
+        dimension of the work-group of the nd_range<1>. The minimum value is
+        `(1 )` for devices that are not of device type
+         ``info::device_type::custom``.
+        """
+        cdef size_t *max_work_item_sizes1d = NULL
+        max_work_item_sizes1d = DPCTLDevice_GetMaxWorkItemSizes1d(
+            self._device_ref
+        )
+        res = (max_work_item_sizes1d[0], )
+        DPCTLSize_t_Array_Delete(max_work_item_sizes1d)
+        return res
+
+    @property
+    def max_work_item_sizes2d(self):
+        """ Returns the maximum number of work-items that are permitted in each
+        dimension of the work-group of the nd_range<2>. The minimum value is
+        `(1; 1)` for devices that are not of device type
+         ``info::device_type::custom``.
+        """
+        cdef size_t *max_work_item_sizes2d = NULL
+        max_work_item_sizes2d = DPCTLDevice_GetMaxWorkItemSizes2d(
+            self._device_ref
+        )
+        res = (max_work_item_sizes2d[0], max_work_item_sizes2d[1],)
+        DPCTLSize_t_Array_Delete(max_work_item_sizes2d)
+        return res
+
+    @property
+    def max_work_item_sizes3d(self):
+        """ Returns the maximum number of work-items that are permitted in each
+        dimension of the work-group of the nd_range<3>. The minimum value is
+        `(1; 1; 1)` for devices that are not of device type
+         ``info::device_type::custom``.
+        """
+        return (
+            self._max_work_item_sizes[0],
+            self._max_work_item_sizes[1],
+            self._max_work_item_sizes[2],
+        )
+
+    @property
     def max_work_item_sizes(self):
         """ Returns the maximum number of work-items that are permitted in each
         dimension of the work-group of the nd_range. The minimum value is
         `(1; 1; 1)` for devices that are not of device type
         ``info::device_type::custom``.
         """
+        warnings.warn(
+            "dpctl.SyclDevice.max_work_item_sizes is deprecated, "
+            "use dpctl.SyclDevice.max_work_item_sizes3d instead",
+            DeprecationWarning,
+        )
         return (
             self._max_work_item_sizes[0],
             self._max_work_item_sizes[1],

@@ -46,6 +46,31 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclDeviceRef>,
                                    DPCTLDeviceVectorRef)
 
+template <int dim>
+__dpctl_keep size_t *
+DPCTLDevice__GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t *sizes = nullptr;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+#if __SYCL_COMPILER_VERSION >= 20220805
+            auto id_sizes =
+                D->get_info<info::device::max_work_item_sizes<dim>>();
+#else
+            auto id_sizes = D->get_info<info::device::max_work_item_sizes>();
+#endif
+            sizes = new size_t[dim];
+            for (auto i = 0ul; i < dim; ++i) {
+                sizes[i] = id_sizes[i];
+            }
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return sizes;
+}
+
 } /* end of anonymous namespace */
 
 __dpctl_give DPCTLSyclDeviceRef
@@ -226,22 +251,27 @@ DPCTLDevice_GetMaxWorkItemDims(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 __dpctl_keep size_t *
+DPCTLDevice_GetMaxWorkItemSizes1d(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    return DPCTLDevice__GetMaxWorkItemSizes<1>(DRef);
+}
+
+__dpctl_keep size_t *
+DPCTLDevice_GetMaxWorkItemSizes2d(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    return DPCTLDevice__GetMaxWorkItemSizes<2>(DRef);
+}
+
+__dpctl_keep size_t *
+DPCTLDevice_GetMaxWorkItemSizes3d(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    return DPCTLDevice__GetMaxWorkItemSizes<3>(DRef);
+}
+
+__dpctl_keep size_t *
 DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    size_t *sizes = nullptr;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            auto id_sizes = D->get_info<info::device::max_work_item_sizes>();
-            sizes = new size_t[3];
-            for (auto i = 0ul; i < 3; ++i) {
-                sizes[i] = id_sizes[i];
-            }
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
-    return sizes;
+    return DPCTLDevice__GetMaxWorkItemSizes<3>(DRef);
 }
 
 size_t
