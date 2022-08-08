@@ -84,7 +84,16 @@ Overview
 	:ref:`DPCTLDevice_GetMaxWorkItemDims<doxid-db/dd1/group___device_interface_1ga365748d856fa3af3fe3ed288bb19c55a>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API __dpctl_keep size_t*
-	:ref:`DPCTLDevice_GetMaxWorkItemSizes<doxid-db/dd1/group___device_interface_1gac5292cd7933df4ef7fb15a3d0d05d463>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+	:ref:`DPCTLDevice_GetMaxWorkItemSizes<doxid-db/dd1/group___device_interface_1ga3643a18462c86ad2b0b16a092c24f1f2>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API __dpctl_keep size_t*
+	:ref:`DPCTLDevice_GetMaxWorkItemSizes1d<doxid-db/dd1/group___device_interface_1gaa78a3bce74306fb72c9e3fd9023f8e7d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API __dpctl_keep size_t*
+	:ref:`DPCTLDevice_GetMaxWorkItemSizes2d<doxid-db/dd1/group___device_interface_1ga1b2a59d26b76f44c13e6396906ebd182>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API __dpctl_keep size_t*
+	:ref:`DPCTLDevice_GetMaxWorkItemSizes3d<doxid-db/dd1/group___device_interface_1ga21f1e0cfb75b6ba9dd8ad2c87573e769>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API const __dpctl_give char*
 	:ref:`DPCTLDevice_GetName<doxid-db/dd1/group___device_interface_1ga36ca01c406d1200b56e94a98595ffb0d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
@@ -664,7 +673,7 @@ Wrapper for get_info<info::device::max_work_item_dimensions>().
 Returns the valid result if device exists else returns 0.
 
 .. index:: pair: function; DPCTLDevice_GetMaxWorkItemSizes
-.. _doxid-db/dd1/group___device_interface_1gac5292cd7933df4ef7fb15a3d0d05d463:
+.. _doxid-db/dd1/group___device_interface_1ga3643a18462c86ad2b0b16a092c24f1f2:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -672,7 +681,94 @@ Returns the valid result if device exists else returns 0.
 	DPCTL_API __dpctl_keep size_t*
 	DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper for get_info<info::device::max_work_item_sizes>().
+Wrapper for deprecated get_info<info::device::max_work_item_sizes>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns NULL.
+
+.. index:: pair: function; DPCTLDevice_GetMaxWorkItemSizes1d
+.. _doxid-db/dd1/group___device_interface_1gaa78a3bce74306fb72c9e3fd9023f8e7d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_keep size_t*
+	DPCTLDevice_GetMaxWorkItemSizes1d(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper for get_info<info::device::max_work_item_sizes<1>>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns NULL.
+
+.. index:: pair: function; DPCTLDevice_GetMaxWorkItemSizes2d
+.. _doxid-db/dd1/group___device_interface_1ga1b2a59d26b76f44c13e6396906ebd182:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_keep size_t*
+	DPCTLDevice_GetMaxWorkItemSizes2d(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper for get_info<info::device::max_work_item_sizes<2>>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns NULL.
+
+.. index:: pair: function; DPCTLDevice_GetMaxWorkItemSizes3d
+.. _doxid-db/dd1/group___device_interface_1ga21f1e0cfb75b6ba9dd8ad2c87573e769:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_keep size_t*
+	DPCTLDevice_GetMaxWorkItemSizes3d(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper for get_info<info::device::max_work_item_sizes<3>>().
 
 
 
