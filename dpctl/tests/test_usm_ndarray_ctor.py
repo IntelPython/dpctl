@@ -1080,6 +1080,8 @@ def test_linspace(dt):
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Default queue could not be created")
+    if dt in ["f8", "c16"] and not q.sycl_device.has_aspect_fp64:
+        pytest.skip("Device does not support double precision")
     X = dpt.linspace(0, 1, num=2, dtype=dt, sycl_queue=q)
     assert np.allclose(dpt.asnumpy(X), np.linspace(0, 1, num=2, dtype=dt))
 

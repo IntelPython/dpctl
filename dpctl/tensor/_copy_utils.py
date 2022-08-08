@@ -81,8 +81,15 @@ def _copy_from_numpy_into(dst, np_ary):
     if not isinstance(dst, dpt.usm_ndarray):
         raise TypeError("Expected usm_ndarray, got {}".format(type(dst)))
     src_ary = np.broadcast_to(np_ary, dst.shape)
+    copy_q = dst.sycl_queue
+    if copy_q.sycl_device.has_aspect_fp64 is False:
+        src_ary_dt_c = src_ary.dtype.char
+        if src_ary_dt_c == "d":
+            src_ary = src_ary.astype(np.float32)
+        elif src_ary_dt_c == "D":
+            src_ary = src_ary.astype(np.complex64)
     ti._copy_numpy_ndarray_into_usm_ndarray(
-        src=src_ary, dst=dst, sycl_queue=dst.sycl_queue
+        src=src_ary, dst=dst, sycl_queue=copy_q
     )
 
 
