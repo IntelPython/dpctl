@@ -349,7 +349,7 @@ def lsplatform(verbosity=0):
     cdef DPCTLSyclPlatformRef PRef = NULL
 
     if not isinstance(verbosity, int):
-        print(
+        warnings.warn(
             "Illegal verbosity level. Accepted values are 0, 1, or 2. "
             "Using the default verbosity level of 0."
         )
