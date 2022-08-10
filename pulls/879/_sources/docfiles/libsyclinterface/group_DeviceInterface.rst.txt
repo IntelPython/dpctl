@@ -1,0 +1,1291 @@
+.. index:: pair: group; Device class C wrapper
+.. _doxid-db/dd1/group___device_interface:
+
+Device class C wrapper
+======================
+
+.. toctree::
+	:hidden:
+
+Overview
+~~~~~~~~
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	
+	// global functions
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_AreEq<doxid-db/dd1/group___device_interface_1gaba5f155a106aa09f770639cc22ee0ddd>`(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef1,
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef2
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	:ref:`DPCTLDevice_Copy<doxid-db/dd1/group___device_interface_1ga02c7b900248b1aac0fe096c874c71c2b>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	:ref:`DPCTLDevice_Create<doxid-db/dd1/group___device_interface_1gaa0f24449bcf7721e2a23cc6b2c1d291a>`(void);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	:ref:`DPCTLDevice_CreateFromSelector<doxid-db/dd1/group___device_interface_1ga371463122c4ec271be68364d1e9a284d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>` DSRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>`
+	:ref:`DPCTLDevice_CreateSubDevicesByAffinity<doxid-db/dd1/group___device_interface_1gae0b93c3e13a3882ba5599a7321a2253c>`(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		:ref:`DPCTLPartitionAffinityDomainType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670>` PartAffDomTy
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>`
+	:ref:`DPCTLDevice_CreateSubDevicesByCounts<doxid-db/dd1/group___device_interface_1ga794e3f46e0c4805e6eb56b55524fd3f9>`(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		__dpctl_keep size_t* counts,
+		size_t ncounts
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>`
+	:ref:`DPCTLDevice_CreateSubDevicesEqually<doxid-db/dd1/group___device_interface_1ga75e3383f16c69d7ccb8377609e61964a>`(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		size_t count
+		);
+
+	DPCTL_API void
+	:ref:`DPCTLDevice_Delete<doxid-db/dd1/group___device_interface_1ga062853b5082debfcae7d7b840907b667>`(__dpctl_take :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`
+	:ref:`DPCTLDevice_GetBackend<doxid-db/dd1/group___device_interface_1gac031eb6d9209db0c88c545e221d37692>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API :ref:`DPCTLSyclDeviceType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>`
+	:ref:`DPCTLDevice_GetDeviceType<doxid-db/dd1/group___device_interface_1ga312596705e48023c62735ca1fe7a380f>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API const __dpctl_give char*
+	:ref:`DPCTLDevice_GetDriverVersion<doxid-db/dd1/group___device_interface_1gacb59e0e106b1538a8e974db4fed7228c>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint64_t
+	:ref:`DPCTLDevice_GetGlobalMemSize<doxid-db/dd1/group___device_interface_1gaa0035ff7868faf6763f1543b14dc5dee>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint64_t
+	:ref:`DPCTLDevice_GetLocalMemSize<doxid-db/dd1/group___device_interface_1ga6b9c79792534de95e407fc57c4f3a559>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetMaxComputeUnits<doxid-db/dd1/group___device_interface_1gac9635668177d01284e64d1d4373a391a>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetMaxNumSubGroups<doxid-db/dd1/group___device_interface_1ga6c5a99a6da732f5cee47a09ff1559a30>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLDevice_GetMaxWorkGroupSize<doxid-db/dd1/group___device_interface_1gaffdc9aeff99885627cd26364df7479de>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetMaxWorkItemDims<doxid-db/dd1/group___device_interface_1ga365748d856fa3af3fe3ed288bb19c55a>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API __dpctl_keep size_t*
+	:ref:`DPCTLDevice_GetMaxWorkItemSizes<doxid-db/dd1/group___device_interface_1gac5292cd7933df4ef7fb15a3d0d05d463>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API __dpctl_keep size_t*
+	:ref:`DPCTLDevice_GetMaxWorkItemSizes1d<doxid-db/dd1/group___device_interface_1gaa78a3bce74306fb72c9e3fd9023f8e7d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API __dpctl_keep size_t*
+	:ref:`DPCTLDevice_GetMaxWorkItemSizes2d<doxid-db/dd1/group___device_interface_1ga1b2a59d26b76f44c13e6396906ebd182>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API __dpctl_keep size_t*
+	:ref:`DPCTLDevice_GetMaxWorkItemSizes3d<doxid-db/dd1/group___device_interface_1ga21f1e0cfb75b6ba9dd8ad2c87573e769>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API const __dpctl_give char*
+	:ref:`DPCTLDevice_GetName<doxid-db/dd1/group___device_interface_1ga36ca01c406d1200b56e94a98595ffb0d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
+	:ref:`DPCTLDevice_GetPlatform<doxid-db/dd1/group___device_interface_1ga7a5b8354f2f4937eb0b6229ba8436ecc>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetPreferredVectorWidthChar<doxid-db/dd1/group___device_interface_1ga3e46c34f5ec44d1a40f3fcd80452a526>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetPreferredVectorWidthDouble<doxid-db/dd1/group___device_interface_1gafa9c9d2c7e8c69f5ee48af4023cdef42>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetPreferredVectorWidthFloat<doxid-db/dd1/group___device_interface_1ga24e82d7e0ebb66ce127f303309acb599>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetPreferredVectorWidthHalf<doxid-db/dd1/group___device_interface_1ga6c7c492ae186724113bb5b3397cba77e>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetPreferredVectorWidthInt<doxid-db/dd1/group___device_interface_1gaf43ca0045d4f4ebd0abd85a0c1b7dd47>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetPreferredVectorWidthLong<doxid-db/dd1/group___device_interface_1ga76f48effcd21089c077673ccdfb615f9>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetPreferredVectorWidthShort<doxid-db/dd1/group___device_interface_1gab23c05c90e4b3a3417253e52b5d88290>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_C_EXTERN_C_END DPCTL_API bool
+	:ref:`DPCTLDevice_GetSubGroupIndependentForwardProgress<doxid-db/dd1/group___device_interface_1gafd08f141480c1eb8eb243c88823e85b0>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API const __dpctl_give char*
+	:ref:`DPCTLDevice_GetVendor<doxid-db/dd1/group___device_interface_1gae1af63c0f0016c766dd2703abc657bec>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_HasAspect<doxid-db/dd1/group___device_interface_1gada8dabfcfaf6a76079dd64fdf07d19a2>`(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		:ref:`DPCTLSyclAspectType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389>` AT
+		);
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_IsAccelerator<doxid-db/dd1/group___device_interface_1ga00b3410f618ec90c88a3d892b62e3409>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_IsCPU<doxid-db/dd1/group___device_interface_1gab5f205e2cc7e3112c6265c0ffdffaa57>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_IsGPU<doxid-db/dd1/group___device_interface_1gaf8f14aedc1fd3b836bd07c2e4be5d541>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_IsHost<doxid-db/dd1/group___device_interface_1gabad898eaf8374c3259598a140e7abd7c>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API bool
+	:ref:`DPCTLDevice_IsHostUnifiedMemory<doxid-db/dd1/group___device_interface_1ga4ff6d7f04e60ee4afd68010348a5f65c>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+.. _details-db/dd1/group___device_interface:
+
+Detailed Documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+Global Functions
+----------------
+
+.. index:: pair: function; DPCTLDevice_AreEq
+.. _doxid-db/dd1/group___device_interface_1gaba5f155a106aa09f770639cc22ee0ddd:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_AreEq(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef1,
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef2
+		)
+
+Checks if two DPCTLSyclDeviceRef objects point to the same sycl::device.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef1
+
+		- First opaque pointer to a ``sycl::device``.
+
+	*
+		- DRef2
+
+		- Second opaque pointer to a ``sycl::device``.
+
+
+
+.. rubric:: Returns:
+
+True if the underlying sycl::device are same, false otherwise.
+
+.. index:: pair: function; DPCTLDevice_Copy
+.. _doxid-db/dd1/group___device_interface_1ga02c7b900248b1aac0fe096c874c71c2b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	DPCTLDevice_Copy(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns a copy of the DPCTLSyclDeviceRef object.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- DPCTLSyclDeviceRef object to be copied.
+
+
+
+.. rubric:: Returns:
+
+A new DPCTLSyclDeviceRef created by copying the passed in DPCTLSyclDeviceRef object.
+
+.. index:: pair: function; DPCTLDevice_Create
+.. _doxid-db/dd1/group___device_interface_1gaa0f24449bcf7721e2a23cc6b2c1d291a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	DPCTLDevice_Create(void)
+
+Returns a new DPCTLSyclDeviceRef opaque object wrapping a SYCL device instance as a host device.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to a ``sycl::device`` created as an instance of the host device.
+
+.. index:: pair: function; DPCTLDevice_CreateFromSelector
+.. _doxid-db/dd1/group___device_interface_1ga371463122c4ec271be68364d1e9a284d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	DPCTLDevice_CreateFromSelector(__dpctl_keep const :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>` DSRef)
+
+Returns a new DPCTLSyclDeviceRef opaque object created using the provided device_selector.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DSRef
+
+		- An opaque pointer to a ``sycl::device_selector``.
+
+
+
+.. rubric:: Returns:
+
+Returns an opaque pointer to a SYCL device created using the device_selector, if the requested device could not be created a nullptr is returned.
+
+.. index:: pair: function; DPCTLDevice_CreateSubDevicesByAffinity
+.. _doxid-db/dd1/group___device_interface_1gae0b93c3e13a3882ba5599a7321a2253c:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>`
+	DPCTLDevice_CreateSubDevicesByAffinity(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		:ref:`DPCTLPartitionAffinityDomainType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670>` PartAffDomTy
+		)
+
+Returns a vector of sub-devices partitioned from this SYCL device by affinity domain based on the domain parameter.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+	*
+		- PartAffDomTy
+
+		- A DPCTLPartitionAffinityDomainType enum value
+
+
+
+.. rubric:: Returns:
+
+A :ref:`DPCTLDeviceVectorRef <doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>` containing :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` objects
+
+.. index:: pair: function; DPCTLDevice_CreateSubDevicesByCounts
+.. _doxid-db/dd1/group___device_interface_1ga794e3f46e0c4805e6eb56b55524fd3f9:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>`
+	DPCTLDevice_CreateSubDevicesByCounts(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		__dpctl_keep size_t* counts,
+		size_t ncounts
+		)
+
+Returns a vector of sub devices partitioned from this SYCL device based on the counts parameter. For each non-zero value M in the counts vector, a sub device with M compute units is created.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+	*
+		- counts
+
+		- Array with count compute units that need to contains in subdevices
+
+	*
+		- ncounts
+
+		- Number of counts
+
+
+
+.. rubric:: Returns:
+
+A :ref:`DPCTLDeviceVectorRef <doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>` containing :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` objects
+
+.. index:: pair: function; DPCTLDevice_CreateSubDevicesEqually
+.. _doxid-db/dd1/group___device_interface_1ga75e3383f16c69d7ccb8377609e61964a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>`
+	DPCTLDevice_CreateSubDevicesEqually(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		size_t count
+		)
+
+Returns a vector of sub devices partitioned from this SYCL device based on the count parameter. The returned vector contains as many sub devices as can be created such that each sub device contains count compute units. If the device’s total number of compute units is not evenly divided by count, then the remaining compute units are not included in any of the sub devices.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+	*
+		- count
+
+		- Count compute units that need to contains in subdevices
+
+
+
+.. rubric:: Returns:
+
+A :ref:`DPCTLDeviceVectorRef <doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>` containing :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` objects
+
+.. index:: pair: function; DPCTLDevice_Delete
+.. _doxid-db/dd1/group___device_interface_1ga062853b5082debfcae7d7b840907b667:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLDevice_Delete(__dpctl_take :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Deletes a DPCTLSyclDeviceRef pointer after casting to to sycl::device.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- The DPCTLSyclDeviceRef pointer to be freed.
+
+.. index:: pair: function; DPCTLDevice_GetBackend
+.. _doxid-db/dd1/group___device_interface_1gac031eb6d9209db0c88c545e221d37692:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`
+	DPCTLDevice_GetBackend(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns the backend for the device.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+A DPCTLSyclBackendType enum value representing the ``sycl::backend`` for the device.
+
+.. index:: pair: function; DPCTLDevice_GetDeviceType
+.. _doxid-db/dd1/group___device_interface_1ga312596705e48023c62735ca1fe7a380f:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API :ref:`DPCTLSyclDeviceType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>`
+	DPCTLDevice_GetDeviceType(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns the DPCTLSyclDeviceType enum value for the DPCTLSyclDeviceRef argument.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+The DPCTLSyclDeviceType value corresponding to the device.
+
+.. index:: pair: function; DPCTLDevice_GetDriverVersion
+.. _doxid-db/dd1/group___device_interface_1gacb59e0e106b1538a8e974db4fed7228c:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API const __dpctl_give char*
+	DPCTLDevice_GetDriverVersion(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns the OpenCL software driver version as a C string.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+A C string in the form major_number.minor.number that corresponds to the OpenCL driver version if this is a OpenCL device.
+
+.. index:: pair: function; DPCTLDevice_GetGlobalMemSize
+.. _doxid-db/dd1/group___device_interface_1gaa0035ff7868faf6763f1543b14dc5dee:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint64_t
+	DPCTLDevice_GetGlobalMemSize(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::global_mem_size>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns 0.
+
+.. index:: pair: function; DPCTLDevice_GetLocalMemSize
+.. _doxid-db/dd1/group___device_interface_1ga6b9c79792534de95e407fc57c4f3a559:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint64_t
+	DPCTLDevice_GetLocalMemSize(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::local_mem_size>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns 0.
+
+.. index:: pair: function; DPCTLDevice_GetMaxComputeUnits
+.. _doxid-db/dd1/group___device_interface_1gac9635668177d01284e64d1d4373a391a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetMaxComputeUnits(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::max_compute_units>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns 0.
+
+.. index:: pair: function; DPCTLDevice_GetMaxNumSubGroups
+.. _doxid-db/dd1/group___device_interface_1ga6c5a99a6da732f5cee47a09ff1559a30:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetMaxNumSubGroups(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::max_num_sub_groups>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns 0.
+
+.. index:: pair: function; DPCTLDevice_GetMaxWorkGroupSize
+.. _doxid-db/dd1/group___device_interface_1gaffdc9aeff99885627cd26364df7479de:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLDevice_GetMaxWorkGroupSize(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper for get_info<info::device::max_work_group_size>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns 0.
+
+.. index:: pair: function; DPCTLDevice_GetMaxWorkItemDims
+.. _doxid-db/dd1/group___device_interface_1ga365748d856fa3af3fe3ed288bb19c55a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetMaxWorkItemDims(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper for get_info<info::device::max_work_item_dimensions>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns 0.
+
+.. index:: pair: function; DPCTLDevice_GetMaxWorkItemSizes
+.. _doxid-db/dd1/group___device_interface_1gac5292cd7933df4ef7fb15a3d0d05d463:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_keep size_t*
+	DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper for deprecated get_info<info::device::max_work_item_sizes>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns NULL.
+
+.. index:: pair: function; DPCTLDevice_GetMaxWorkItemSizes1d
+.. _doxid-db/dd1/group___device_interface_1gaa78a3bce74306fb72c9e3fd9023f8e7d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_keep size_t*
+	DPCTLDevice_GetMaxWorkItemSizes1d(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper for get_info<info::device::max_work_item_sizes<1>>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns NULL.
+
+.. index:: pair: function; DPCTLDevice_GetMaxWorkItemSizes2d
+.. _doxid-db/dd1/group___device_interface_1ga1b2a59d26b76f44c13e6396906ebd182:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_keep size_t*
+	DPCTLDevice_GetMaxWorkItemSizes2d(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper for get_info<info::device::max_work_item_sizes<2>>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns NULL.
+
+.. index:: pair: function; DPCTLDevice_GetMaxWorkItemSizes3d
+.. _doxid-db/dd1/group___device_interface_1ga21f1e0cfb75b6ba9dd8ad2c87573e769:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_keep size_t*
+	DPCTLDevice_GetMaxWorkItemSizes3d(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper for get_info<info::device::max_work_item_sizes<3>>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns NULL.
+
+.. index:: pair: function; DPCTLDevice_GetName
+.. _doxid-db/dd1/group___device_interface_1ga36ca01c406d1200b56e94a98595ffb0d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API const __dpctl_give char*
+	DPCTLDevice_GetName(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns a C string for the device name.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+A C string containing the OpenCL device name.
+
+.. index:: pair: function; DPCTLDevice_GetPlatform
+.. _doxid-db/dd1/group___device_interface_1ga7a5b8354f2f4937eb0b6229ba8436ecc:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
+	DPCTLDevice_GetPlatform(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns the ``sycl::platform`` for the device as DPCTLSyclPlatformRef opaque pointer.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to the sycl::platform for the device.
+
+.. index:: pair: function; DPCTLDevice_GetPreferredVectorWidthChar
+.. _doxid-db/dd1/group___device_interface_1ga3e46c34f5ec44d1a40f3fcd80452a526:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetPreferredVectorWidthChar(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::preferred_vector_width_char>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the preferred native vector width size for built-in scalar types that can be put into vectors.
+
+.. index:: pair: function; DPCTLDevice_GetPreferredVectorWidthDouble
+.. _doxid-db/dd1/group___device_interface_1gafa9c9d2c7e8c69f5ee48af4023cdef42:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetPreferredVectorWidthDouble(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::preferred_vector_width_double>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the preferred native vector width size for built-in scalar types that can be put into vectors.
+
+.. index:: pair: function; DPCTLDevice_GetPreferredVectorWidthFloat
+.. _doxid-db/dd1/group___device_interface_1ga24e82d7e0ebb66ce127f303309acb599:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetPreferredVectorWidthFloat(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::preferred_vector_width_float>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the preferred native vector width size for built-in scalar type.
+
+.. index:: pair: function; DPCTLDevice_GetPreferredVectorWidthHalf
+.. _doxid-db/dd1/group___device_interface_1ga6c7c492ae186724113bb5b3397cba77e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetPreferredVectorWidthHalf(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over ``device.get_info<info::device::preferred_vector_width_half>``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the preferred native vector width size for built-in scalar types that can be put into vectors.
+
+.. index:: pair: function; DPCTLDevice_GetPreferredVectorWidthInt
+.. _doxid-db/dd1/group___device_interface_1gaf43ca0045d4f4ebd0abd85a0c1b7dd47:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetPreferredVectorWidthInt(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::preferred_vector_width_int>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the preferred native vector width size for built-in scalar types that can be put into vectors.
+
+.. index:: pair: function; DPCTLDevice_GetPreferredVectorWidthLong
+.. _doxid-db/dd1/group___device_interface_1ga76f48effcd21089c077673ccdfb615f9:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetPreferredVectorWidthLong(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::preferred_vector_width_long>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the preferred native vector width size for built-in scalar types that can be put into vectors.
+
+.. index:: pair: function; DPCTLDevice_GetPreferredVectorWidthShort
+.. _doxid-db/dd1/group___device_interface_1gab23c05c90e4b3a3417253e52b5d88290:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetPreferredVectorWidthShort(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::preferred_vector_width_short>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the preferred native vector width size for built-in scalar types that can be put into vectors.
+
+.. index:: pair: function; DPCTLDevice_GetSubGroupIndependentForwardProgress
+.. _doxid-db/dd1/group___device_interface_1gafd08f141480c1eb8eb243c88823e85b0:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_C_EXTERN_C_END DPCTL_API bool
+	DPCTLDevice_GetSubGroupIndependentForwardProgress(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::sub_group_independent_forward_progress>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns true if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group.
+
+.. index:: pair: function; DPCTLDevice_GetVendor
+.. _doxid-db/dd1/group___device_interface_1gae1af63c0f0016c766dd2703abc657bec:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API const __dpctl_give char*
+	DPCTLDevice_GetVendor(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns a C string corresponding to the vendor name.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+A C string containing the OpenCL device vendor name.
+
+.. index:: pair: function; DPCTLDevice_HasAspect
+.. _doxid-db/dd1/group___device_interface_1gada8dabfcfaf6a76079dd64fdf07d19a2:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_HasAspect(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		:ref:`DPCTLSyclAspectType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389>` AT
+		)
+
+Checks if device has aspect.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+	*
+		- AT
+
+		- DPCTLSyclAspectType of ``device::aspect``.
+
+
+
+.. rubric:: Returns:
+
+True if sycl::device has device::aspect, else false.
+
+.. index:: pair: function; DPCTLDevice_IsAccelerator
+.. _doxid-db/dd1/group___device_interface_1ga00b3410f618ec90c88a3d892b62e3409:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_IsAccelerator(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns true if this SYCL device is an OpenCL device and the device type is ``sycl::info::device_type::accelerator``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+True if the device type is an accelerator, else False.
+
+.. index:: pair: function; DPCTLDevice_IsCPU
+.. _doxid-db/dd1/group___device_interface_1gab5f205e2cc7e3112c6265c0ffdffaa57:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_IsCPU(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns true if this SYCL device is an OpenCL device and the device type is ``sycl::info::device_type::cpu``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+True if the device type is a cpu, else False.
+
+.. index:: pair: function; DPCTLDevice_IsGPU
+.. _doxid-db/dd1/group___device_interface_1gaf8f14aedc1fd3b836bd07c2e4be5d541:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_IsGPU(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns true if this SYCL device is an OpenCL device and the device type is ``sycl::info::device_type::gpu``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+True if the device type is a gpu, else False.
+
+.. index:: pair: function; DPCTLDevice_IsHost
+.. _doxid-db/dd1/group___device_interface_1gabad898eaf8374c3259598a140e7abd7c:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_IsHost(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns true if this SYCL device is a host device.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+True if the device is a host device, else False.
+
+.. index:: pair: function; DPCTLDevice_IsHostUnifiedMemory
+.. _doxid-db/dd1/group___device_interface_1ga4ff6d7f04e60ee4afd68010348a5f65c:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLDevice_IsHostUnifiedMemory(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Returns True if the device and the host share a unified memory subsystem, else returns False.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Boolean indicating if the device shares a unified memory subsystem with the host.
+
