@@ -125,11 +125,10 @@ int c_columnwise_total_no_mkl(DPCTLSyclQueueRef q_ref,
                     it.get_group(), (i < n) ? mat_acc[it.get_global_id()] : 0.0,
                     std::plus<double>());
                 if (it.get_local_id(0) == 0) {
-                    sycl::ext::oneapi::atomic_ref<
-                        double, sycl::memory_order::relaxed,
-                        sycl::memory_scope::system,
-                        sycl::access::address_space::global_space>(ct_acc[j]) +=
-                        group_sum;
+                    sycl::atomic_ref<double, sycl::memory_order::relaxed,
+                                     sycl::memory_scope::system,
+                                     sycl::access::address_space::global_space>(
+                        ct_acc[j]) += group_sum;
                 }
             });
     });
