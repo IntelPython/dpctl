@@ -60,8 +60,7 @@ int c_columnwise_total(DPCTLSyclQueueRef q_ref,
             ev.wait_and_throw();
         } catch (sycl::exception const &e) {
             std::cout << "\t\tCaught synchronous SYCL exception during fill:\n"
-                      << e.what() << std::endl
-                      << "OpenCL status: " << e.get_cl_code() << std::endl;
+                      << e.what() << std::endl;
             goto cleanup;
         }
 
@@ -72,8 +71,7 @@ int c_columnwise_total(DPCTLSyclQueueRef q_ref,
             q.wait();
         } catch (sycl::exception const &e) {
             std::cout << "\t\tCaught synchronous SYCL exception during GEMV:\n"
-                      << e.what() << std::endl
-                      << "OpenCL status: " << e.get_cl_code() << std::endl;
+                      << e.what() << std::endl;
             goto cleanup;
         }
     }
@@ -128,8 +126,8 @@ int c_columnwise_total_no_mkl(DPCTLSyclQueueRef q_ref,
                     std::plus<double>());
                 if (it.get_local_id(0) == 0) {
                     sycl::ext::oneapi::atomic_ref<
-                        double, sycl::ext::oneapi::memory_order::relaxed,
-                        sycl::ext::oneapi::memory_scope::system,
+                        double, sycl::memory_order::relaxed,
+                        sycl::memory_scope::system,
                         sycl::access::address_space::global_space>(ct_acc[j]) +=
                         group_sum;
                 }
