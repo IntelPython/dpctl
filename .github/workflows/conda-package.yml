@@ -393,7 +393,7 @@ jobs:
           conda install -n examples -y ninja $CHANNELS || exit 1
           conda install -n examples -y pybind11 cython scikit-build $CHANNELS || exit 1
           conda install -n examples -y mkl-dpcpp mkl-devel-dpcpp dpcpp_cpp_rt $CHANNELS || exit 1
-          conda create -y -n build_env -c intel dpcpp_linux-64
+          conda create -y -n build_env -c intel gcc_linux-64 gxx_linux-64 dpcpp_linux-64
       - name: Install dpctl
         shell: bash -l {0}
         run: |
@@ -424,7 +424,7 @@ jobs:
                     -DMKL_INCLUDE_DIR=${MKLROOT}/include \
                     -DTBB_INCLUDE_DIR=${TBBROOT}/include || exit 1
             else
-               CC=dpcpp CXX=dpcpp LD_SHARED="dpcpp -shared" \
+               CC=dpcpp CXX=dpcpp LDSHARED="dpcpp -shared" \
                     python setup.py build_ext --inplace || exit 1
             fi
             conda deactivate
@@ -441,10 +441,20 @@ jobs:
           do
             pushd $d
             conda activate --stack build_env
-            CC=dpcpp CXX=dpcpp LD_SHARED="dpcpp -shared" \
+            CC=dpcpp CXX=dpcpp LDSHARED="dpcpp -shared" \
                    python setup.py build_ext --inplace || exit 1
             conda deactivate
             LD_LIBRARY_PATH=${CONDA_PREFIX}/lib python run.py || exit 1
+            popd
+          done
+          cd ../c
+          for d in $(ls)
+          do
+            pushd $d
+            conda activate --stack build_env
+            python setup.py build_ext --inplace || exit 1
+            conda deactivate
+            python -m pytest tests || exit 1
             popd
           done
       - name: Run Python examples
