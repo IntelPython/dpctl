@@ -83,6 +83,7 @@ jobs:
       - name: Run array API test
         shell: bash -l {0}
         run: |
+          cd /home/runner/work/array-api-tests
           export ARRAY_API_TESTS_MODULE=dpctl.tensor
           pytest array_api_tests/
           
