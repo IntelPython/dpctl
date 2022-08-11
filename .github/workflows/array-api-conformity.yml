@@ -77,13 +77,13 @@ jobs:
       - name: Install array API test dependencies
         shell: bash -l {0}
         run: |
+          cd /home/runner/work/array-api-tests-2022.05.18
           python -m pip install numpy==1.22.1
-          pip install -r array-api-tests-2022.05.18/requirements.txt
+          pip install -r requirements.txt
 
       - name: Run array API test
         shell: bash -l {0}
         run: |
           export ARRAY_API_TESTS_MODULE=dpctl.tensor
-          cd /home/runner/work/array-api-tests-2022.05.18
           pytest array_api_tests/ --ci
           
