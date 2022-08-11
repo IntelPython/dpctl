@@ -86,3 +86,4 @@ jobs:
           export ARRAY_API_TESTS_MODULE=dpctl.tensor
           cd /home/runner/work/array-api-tests-2022.05.18
           pytest array_api_tests/ --ci
+          
