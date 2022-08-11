@@ -250,11 +250,9 @@ DPCTLDevice_GetMaxWorkItemSizes3d(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * @return   Returns the valid result if device exists else returns NULL.
  * @ingroup DeviceInterface
  */
-DPCTL_API
-__dpctl_keep size_t *
-DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-    __attribute__((deprecated("DPCTLDevice_GetMaxWorkItemSizes is deprecated ",
-                              "Use DPCTLDevice_WorkItemSizes3d instead")));
+[[deprecated("Use DPCTLDevice_WorkItemSizes3d instead")]] DPCTL_API
+    __dpctl_keep size_t *
+    DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Wrapper for get_info<info::device::max_work_group_size>().
