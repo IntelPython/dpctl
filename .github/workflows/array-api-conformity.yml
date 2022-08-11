@@ -84,5 +84,5 @@ jobs:
         shell: bash -l {0}
         run: |
           export ARRAY_API_TESTS_MODULE=dpctl.tensor
-          pytest --ci array_api_tests/
+          pytest array_api_tests/
           
