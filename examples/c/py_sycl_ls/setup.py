@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,18 +17,16 @@
 import os.path
 import sysconfig
 
-import numpy as np
 from setuptools import Extension, setup
 
 import dpctl
 
 setup(
-    name="syclbuffer",
-    version="0.0.0",
-    description="An example of Cython extension calling SYCL routines",
+    name="py_sycl_ls",
+    version="0.0.1",
+    description="An example of C extension calling SYCLInterface routines",
     long_description="""
-    Example of using SYCL to work on host allocated NumPy array using
-    SYCL buffers by calling oneMKL functions.
+    Example of using SYCLInterface.
 
     See README.md for more details.
     """,
@@ -37,37 +35,27 @@ setup(
     url="https://github.com/IntelPython/dpctl",
     ext_modules=[
         Extension(
-            name="syclbuffer",
+            name="py_sycl_ls._py_sycl_ls",
             sources=[
-                "_buffer_example.pyx",
-                "use_sycl_buffer.cpp",
+                "src/py_sycl-ls.c",
             ],
             include_dirs=[
-                ".",
-                np.get_include(),
                 dpctl.get_include(),
                 os.path.join(sysconfig.get_paths()["include"], ".."),
             ],
             library_dirs=[
-                os.path.join(sysconfig.get_paths()["stdlib"], ".."),
+                os.path.join(dpctl.get_include(), ".."),
             ],
-            libraries=["sycl"]
-            + [
-                "mkl_sycl",
-                "mkl_intel_ilp64",
-                "mkl_tbb_thread",
-                "mkl_core",
-                "tbb",
+            libraries=["DPCTLSyclInterface"],
+            runtime_library_dirs=[
+                os.path.join(dpctl.get_include(), ".."),
             ],
-            runtime_library_dirs=[],
             extra_compile_args=[
                 "-Wall",
                 "-Wextra",
-                "-fsycl",
-                "-fsycl-unnamed-lambda",
             ],
             extra_link_args=["-fPIC"],
-            language="c++",
+            language="c",
         )
     ],
 )
