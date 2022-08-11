@@ -51,10 +51,6 @@ Overview
 	enum :ref:`DPCTLSyclDeviceType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>`;
 	enum :ref:`DPCTLSyclEventStatusType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1ac950d7ef3975b7c553971613f4a27021>`;
 
-	// global variables
-
-	DPCTL_API __dpctl_keep size_t Use DPCTLDevice_WorkItemSizes3d :target:`instead<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1adb85bf94c83cb285e385f74d2a6d0b85>`;
-
 	// global functions
 
 	DPCTL_API const __dpctl_give char*
@@ -193,7 +189,7 @@ Overview
 	:ref:`DPCTLDevice_GetMaxWorkItemDims<doxid-db/dd1/group___device_interface_1ga365748d856fa3af3fe3ed288bb19c55a>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API __dpctl_keep size_t*
-	:ref:`DPCTLDevice_GetMaxWorkItemSizes<doxid-db/dd1/group___device_interface_1ga3643a18462c86ad2b0b16a092c24f1f2>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+	:ref:`DPCTLDevice_GetMaxWorkItemSizes<doxid-db/dd1/group___device_interface_1gac5292cd7933df4ef7fb15a3d0d05d463>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API __dpctl_keep size_t*
 	:ref:`DPCTLDevice_GetMaxWorkItemSizes1d<doxid-db/dd1/group___device_interface_1gaa78a3bce74306fb72c9e3fd9023f8e7d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
