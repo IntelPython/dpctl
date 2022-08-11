@@ -68,11 +68,7 @@ jobs:
         shell: bash -l {0}
         run: |
           source /opt/intel/oneapi/setvars.sh
-          python setup.py develop -G Ninja                    \
-              --                                              \
-              -DCMAKE_C_COMPILER:PATH=$(which icx)            \
-              -DCMAKE_CXX_COMPILER:PATH=$(which icpx)
-              python -c "import dpctl; dpctl.lsplatform()" || exit 1   
+          python scripts/build_locally.py 
           
       - name: Install array API test dependencies
         shell: bash -l {0}
