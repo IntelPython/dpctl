@@ -86,5 +86,6 @@ jobs:
         run: |
           cd /home/runner/work/array-api-tests-2022.05.18/
           export ARRAY_API_TESTS_MODULE=dpctl.tensor
+          git submodule update --init
           pytest --ci array_api_tests/
           
