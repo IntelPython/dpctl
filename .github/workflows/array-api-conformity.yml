@@ -1,0 +1,79 @@
+name: Check array api conformity
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  array-api-test:
+    name: Test array API standard conformity
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Add Intel repository
+        run: |
+          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+          sudo apt-get update
+
+      - name: Install Intel OneAPI
+        run: |
+          sudo apt-get install intel-oneapi-compiler-dpcpp-cpp
+          sudo apt-get install intel-oneapi-tbb
+
+      - name: Install CMake and Ninja
+        shell: bash -l {0}
+        run: |
+          sudo apt-get install cmake ninja-build
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          architecture: x64
+      
+      - name: Cache array API tests
+        id: cache-array-api-tests
+        uses: actions/cache@v3
+        with:
+          path: |
+            /home/runner/work/array-api-tests/
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/home/runner/work/array-api-tests/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Get array API tests repo
+        if: steps.cache-array-api-tests.outputs.cache-hit != 'true'
+        shell: bash -l {0}
+        run: |
+          cd /home/runner/work
+          git clone --recurse-submodules https://github.com/data-apis/array-api-tests -b 2022.05.18
+
+      - name: Install array API test dependencies
+        shell: bash -l {0}
+        run: |
+          cd /home/runner/work/array-api-tests
+          pip install -r requirements.txt
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install dpctl dependencies
+        shell: bash -l {0}
+        run: |
+          pip install numpy cython setuptools pytest scikit-build
+
+      - name: Build dpctl+run conformity test
+        shell: bash -l {0}
+        run: |
+          source /opt/intel/oneapi/setvars.sh
+          python setup.py develop -- -G Ninja -DCMAKE_C_COMPILER:PATH=$(which icx) -DCMAKE_CXX_COMPILER:PATH=$(which icpx)
+          cd /home/runner/work/array-api-tests
+          export ARRAY_API_TESTS_MODULE=dpctl.tensor
+          pytest array_api_tests/ --ci
