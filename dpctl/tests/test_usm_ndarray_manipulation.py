@@ -965,7 +965,6 @@ def test_stack_2arrays(data):
     Y = dpt.asarray(Ynp, sycl_queue=q)
 
     Znp = np.stack([Xnp, Ynp], axis=axis)
-    print(Znp.shape)
     Z = dpt.stack([X, Y], axis=axis)
 
     assert_array_equal(Znp, dpt.asnumpy(Z))
