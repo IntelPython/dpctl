@@ -220,3 +220,13 @@ def test_asarray_copy_false():
     assert Y6 is Xf
     with pytest.raises(ValueError):
         dpt.asarray(Xf, copy=False, order="C")
+
+
+def test_asarray_invalid_dtype():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create a queue")
+    Xnp = np.array([1, 2, 3], dtype=object)
+    with pytest.raises(TypeError):
+        dpt.asarray(Xnp, sycl_queue=q)
