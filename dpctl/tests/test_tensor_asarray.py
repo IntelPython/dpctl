@@ -177,11 +177,17 @@ def test_asarray_scalars():
     Y = dpt.asarray(5)
     assert Y.dtype == np.dtype(int)
     Y = dpt.asarray(5.2)
-    assert Y.dtype == np.dtype(float)
+    if Y.sycl_device.has_aspect_fp64:
+        assert Y.dtype == np.dtype(float)
+    else:
+        assert Y.dtype == np.dtype(np.float32)
     Y = dpt.asarray(np.float32(2.3))
     assert Y.dtype == np.dtype(np.float32)
     Y = dpt.asarray(1.0j)
-    assert Y.dtype == np.dtype(complex)
+    if Y.sycl_device.has_aspect_fp64:
+        assert Y.dtype == np.dtype(complex)
+    else:
+        assert Y.dtype == np.dtype(np.complex64)
     Y = dpt.asarray(ctypes.c_int(8))
     assert Y.dtype == np.dtype(ctypes.c_int)
 
