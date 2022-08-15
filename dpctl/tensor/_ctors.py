@@ -44,7 +44,7 @@ def _get_dtype(dtype, sycl_obj, ref_type=None):
             dtype = ti.default_device_complex_type(sycl_obj)
             return np.dtype(dtype)
         else:
-            raise ValueError(f"Reference type {ref_type} not recognized.")
+            raise TypeError(f"Reference type {ref_type} not recognized.")
     else:
         return np.dtype(dtype)
 
@@ -199,6 +199,11 @@ def _asarray_from_numpy_ndarray(
     if usm_type is None:
         usm_type = "device"
     copy_q = normalize_queue_device(sycl_queue=None, device=sycl_queue)
+    if ary.dtype.char not in "?bBhHiIlLqQefdFD":
+        raise TypeError(
+            f"Numpy array of data type {ary.dtype} is not supported. "
+            "Please convert the input to an array with numeric data type."
+        )
     if dtype is None:
         ary_dtype = ary.dtype
         dtype = _get_dtype(dtype, copy_q, ref_type=ary_dtype)
