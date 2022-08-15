@@ -59,18 +59,19 @@ def _copy_to_numpy(ary):
 def _copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
     "Copies numpy array `np_ary` into a new usm_ndarray"
     # This may peform a copy to meet stated requirements
-    Xnp = np.require(np_ary, requirements=["A", "O", "C", "E"])
-    if sycl_queue:
-        ctor_kwargs = {"queue": sycl_queue}
+    Xnp = np.require(np_ary, requirements=["A", "E"])
+    alloc_q = normalize_queue_device(sycl_queue=sycl_queue, device=None)
+    dt = Xnp.dtype
+    if dt.char in "dD" and alloc_q.sycl_device.has_aspect_fp64 is False:
+        Xusm_dtype = (
+            np.dtype("float32") if dt.char == "d" else np.dtype("complex64")
+        )
     else:
-        ctor_kwargs = dict()
-    Xusm = dpt.usm_ndarray(
-        Xnp.shape,
-        dtype=Xnp.dtype,
-        buffer=usm_type,
-        buffer_ctor_kwargs=ctor_kwargs,
+        Xusm_dtype = dt
+    Xusm = dpt.empty(
+        Xnp.shape, dtype=Xusm_dtype, usm_type=usm_type, sycl_queue=sycl_queue
     )
-    Xusm.usm_data.copy_from_host(Xnp.reshape((-1)).view("u1"))
+    _copy_from_numpy_into(Xusm, Xnp)
     return Xusm
 
 
