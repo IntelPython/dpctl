@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.0dev0+27.g4b31460be documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.0dev0+33.gbacb1406b documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+27.g4b31460be
+                0.14.0dev0+33.gbacb1406b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -138,18 +138,19 @@
 <span class="k">def</span> <span class="nf">_copy_from_numpy</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="s2">&quot;Copies numpy array `np_ary` into a new usm_ndarray&quot;</span>
     <span class="c1"># This may peform a copy to meet stated requirements</span>
-    <span class="n">Xnp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">requirements</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">sycl_queue</span><span class="p">:</span>
-        <span class="n">ctor_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">}</span>
+    <span class="n">Xnp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">requirements</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">])</span>
+    <span class="n">alloc_q</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">Xnp</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">char</span> <span class="ow">in</span> <span class="s2">&quot;dD&quot;</span> <span class="ow">and</span> <span class="n">alloc_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">has_aspect_fp64</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">Xusm_dtype</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">char</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;complex64&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">ctor_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-    <span class="n">Xusm</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
-        <span class="n">Xnp</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">Xnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">buffer</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
-        <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="n">ctor_kwargs</span><span class="p">,</span>
+        <span class="n">Xusm_dtype</span> <span class="o">=</span> <span class="n">dt</span>
+    <span class="n">Xusm</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">Xnp</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">Xusm_dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
     <span class="p">)</span>
-    <span class="n">Xusm</span><span class="o">.</span><span class="n">usm_data</span><span class="o">.</span><span class="n">copy_from_host</span><span class="p">(</span><span class="n">Xnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="s2">&quot;u1&quot;</span><span class="p">))</span>
+    <span class="n">_copy_from_numpy_into</span><span class="p">(</span><span class="n">Xusm</span><span class="p">,</span> <span class="n">Xnp</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Xusm</span>
 
 
