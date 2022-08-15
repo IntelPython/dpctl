@@ -937,7 +937,7 @@ cdef class usm_ndarray:
                 except Exception:
                     raise ValueError(
                         f"Input of type {type(val)} could not be "
-                        "converted to numpy.ndarray"
+                        "converted to usm_ndarray"
                     )
 
     def __sub__(first, other):
