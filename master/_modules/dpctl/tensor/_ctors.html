@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.0dev0+22.g948bc65f0 documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.0dev0+27.g4b31460be documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+22.g948bc65f0
+                0.14.0dev0+27.g4b31460be
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -123,7 +123,7 @@
             <span class="n">dtype</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_complex_type</span><span class="p">(</span><span class="n">sycl_obj</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reference type </span><span class="si">{</span><span class="n">ref_type</span><span class="si">}</span><span class="s2"> not recognized.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reference type </span><span class="si">{</span><span class="n">ref_type</span><span class="si">}</span><span class="s2"> not recognized.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
 
@@ -278,6 +278,11 @@
     <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">usm_type</span> <span class="o">=</span> <span class="s2">&quot;device&quot;</span>
     <span class="n">copy_q</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;?bBhHiIlLqQefdFD&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Numpy array of data type </span><span class="si">{</span><span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is not supported. &quot;</span>
+            <span class="s2">&quot;Please convert the input to an array with numeric data type.&quot;</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ary_dtype</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">dtype</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy_q</span><span class="p">,</span> <span class="n">ref_type</span><span class="o">=</span><span class="n">ary_dtype</span><span class="p">)</span>
