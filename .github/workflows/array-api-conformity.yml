@@ -33,7 +33,7 @@ jobs:
         with:
           python-version: '3.9'
           architecture: x64
-      
+
       - name: Cache array API tests
         id: cache-array-api-tests
         uses: actions/cache@v3
