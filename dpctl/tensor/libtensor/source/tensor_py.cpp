@@ -570,8 +570,10 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     if (both_c_contig || both_f_contig) {
         if (src_type_id == dst_type_id) {
 
-            sycl::event copy_ev = exec_q.memcpy(
-                dst_data, src_data, src_nelems * src_elem_size, depends);
+            sycl::event copy_ev =
+                exec_q.memcpy(static_cast<void *>(dst_data),
+                              static_cast<const void *>(src_data),
+                              src_nelems * src_elem_size, depends);
 
             // make sure src and dst are not GC-ed before copy_ev is complete
             return std::make_pair(
@@ -1285,8 +1287,10 @@ void copy_numpy_ndarray_into_usm_ndarray(
         if (src_type_id == dst_type_id) {
             int src_elem_size = npy_src.itemsize();
 
-            sycl::event copy_ev = exec_q.memcpy(
-                dst_data, src_data, src_nelems * src_elem_size, depends);
+            sycl::event copy_ev =
+                exec_q.memcpy(static_cast<void *>(dst_data),
+                              static_cast<const void *>(src_data),
+                              src_nelems * src_elem_size, depends);
 
             // wait for copy_ev to complete
             copy_ev.wait_and_throw();
