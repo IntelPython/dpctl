@@ -177,11 +177,17 @@ def test_asarray_scalars():
     Y = dpt.asarray(5)
     assert Y.dtype == np.dtype(int)
     Y = dpt.asarray(5.2)
-    assert Y.dtype == np.dtype(float)
+    if Y.sycl_device.has_aspect_fp64:
+        assert Y.dtype == np.dtype(float)
+    else:
+        assert Y.dtype == np.dtype(np.float32)
     Y = dpt.asarray(np.float32(2.3))
     assert Y.dtype == np.dtype(np.float32)
     Y = dpt.asarray(1.0j)
-    assert Y.dtype == np.dtype(complex)
+    if Y.sycl_device.has_aspect_fp64:
+        assert Y.dtype == np.dtype(complex)
+    else:
+        assert Y.dtype == np.dtype(np.complex64)
     Y = dpt.asarray(ctypes.c_int(8))
     assert Y.dtype == np.dtype(ctypes.c_int)
 
@@ -220,3 +226,13 @@ def test_asarray_copy_false():
     assert Y6 is Xf
     with pytest.raises(ValueError):
         dpt.asarray(Xf, copy=False, order="C")
+
+
+def test_asarray_invalid_dtype():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create a queue")
+    Xnp = np.array([1, 2, 3], dtype=object)
+    with pytest.raises(TypeError):
+        dpt.asarray(Xnp, sycl_queue=q)

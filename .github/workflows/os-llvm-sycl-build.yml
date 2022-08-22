@@ -41,7 +41,7 @@ jobs:
           cd /home/runner/work
           mkdir -p sycl_bundle
           cd sycl_bundle
-          export LATEST_LLVM_TAG=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/intel/llvm.git | tail --lines=1)
+          export LATEST_LLVM_TAG=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/intel/llvm.git | grep sycl-nightly | tail --lines=1)
           export LATEST_LLVM_TAG_SHA=$(echo ${LATEST_LLVM_TAG} | awk '{print $1}')
           export NIGHTLY_TAG=$(python3 -c "import sys, urllib.parse as ul; print (ul.quote_plus(sys.argv[1]))" \
              $(echo ${LATEST_LLVM_TAG} | awk '{gsub(/^refs\/tags\//, "", $2)} {print $2}'))

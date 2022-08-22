@@ -588,7 +588,10 @@ _all_dtypes = [
 )
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
 def test_tofrom_numpy(shape, dtype, usm_type):
-    q = dpctl.SyclQueue()
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could nto create default SyclQueue")
     Xnp = np.zeros(shape, dtype=dtype)
     Xusm = dpt.from_numpy(Xnp, usm_type=usm_type, sycl_queue=q)
     Ynp = np.ones(shape, dtype=dtype)
