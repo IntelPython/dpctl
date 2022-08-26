@@ -691,3 +691,54 @@ size_t DPCTLDevice_GetProfilingTimerResolution(
         return 0;
     }
 }
+
+uint32_t DPCTLDevice_GetGlobalMemCacheLineSize(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    if (DRef) {
+        auto D = unwrap(DRef);
+        return D->get_info<info::device::global_mem_cache_line_size>();
+    }
+    else {
+        error_handler("Argument DRef is null", __FILE__, __func__, __LINE__);
+        return 0;
+    }
+}
+
+uint64_t
+DPCTLDevice_GetGlobalMemCacheSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    if (DRef) {
+        auto D = unwrap(DRef);
+        return D->get_info<info::device::global_mem_cache_size>();
+    }
+    else {
+        error_handler("Argument DRef is null", __FILE__, __func__, __LINE__);
+        return 0;
+    }
+}
+
+DPCTLGlobalMemCacheType
+DPCTLDevice_GetGlobalMemCacheType(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    if (DRef) {
+        auto D = unwrap(DRef);
+        auto mem_type = D->get_info<info::device::global_mem_cache_type>();
+        switch (mem_type) {
+        case info::global_mem_cache_type::none:
+            return DPCTL_MEM_CACHE_TYPE_NONE;
+        case info::global_mem_cache_type::read_only:
+            return DPCTL_MEM_CACHE_TYPE_READ_ONLY;
+        case info::global_mem_cache_type::read_write:
+            return DPCTL_MEM_CACHE_TYPE_READ_WRITE;
+        }
+        // If execution reaches here unrecognized mem_type was returned. Check
+        // values in the enumeration `info::global_mem_cache_type` in SYCL specs
+        assert(false);
+        return DPCTL_MEM_CACHE_TYPE_INDETERMINATE;
+    }
+    else {
+        error_handler("Argument DRef is null", __FILE__, __func__, __LINE__);
+        return DPCTL_MEM_CACHE_TYPE_INDETERMINATE;
+    }
+}
