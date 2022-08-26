@@ -494,9 +494,6 @@ DPCTL_API
 __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     DPCTLPartitionAffinityDomainType PartAffDomTy);
-
-DPCTL_C_EXTERN_C_END
-
 /*!
  * @brief Wrapper over
  * device.get_info<info::device::sub_group_independent_forward_progress>.
@@ -633,3 +630,38 @@ size_t DPCTLDevice_Hash(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 DPCTL_API
 size_t DPCTLDevice_GetProfilingTimerResolution(
     __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::global_mem_cache_line_size>
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the size of global memory cache line in bytes as uint32_t.
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetGlobalMemCacheLineSize(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::global_mem_cache_size>
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the size of global memory cache in bytes as uint64_t.
+ */
+DPCTL_API
+uint64_t
+DPCTLDevice_GetGlobalMemCacheSize(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::global_mem_cache_type>
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the type of global memory cache supported.
+ */
+DPCTL_API
+DPCTLGlobalMemCacheType
+DPCTLDevice_GetGlobalMemCacheType(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+DPCTL_C_EXTERN_C_END

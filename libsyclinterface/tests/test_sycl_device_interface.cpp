@@ -407,6 +407,30 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetProfilingTimerResolution)
     EXPECT_TRUE(res != 0);
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetGlobalMemCacheSize)
+{
+    uint64_t res = 0;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetGlobalMemCacheSize(DRef));
+    EXPECT_TRUE(res != 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetGlobalMemCacheLineSize)
+{
+    uint32_t res = 0;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetGlobalMemCacheLineSize(DRef));
+    EXPECT_TRUE(res != 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetGlobalMemCacheType)
+{
+    DPCTLGlobalMemCacheType res = DPCTL_MEM_CACHE_TYPE_INDETERMINATE;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetGlobalMemCacheType(DRef));
+    EXPECT_TRUE(res != DPCTL_MEM_CACHE_TYPE_INDETERMINATE);
+    EXPECT_TRUE((res == DPCTL_MEM_CACHE_TYPE_NONE ||
+                 res == DPCTL_MEM_CACHE_TYPE_READ_ONLY ||
+                 res == DPCTL_MEM_CACHE_TYPE_READ_WRITE));
+}
+
 INSTANTIATE_TEST_SUITE_P(DPCTLDeviceFns,
                          TestDPCTLSyclDeviceInterface,
                          ::testing::Values("opencl",
@@ -712,4 +736,26 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetProfilingTimerResolution)
     EXPECT_NO_FATAL_FAILURE(
         res = DPCTLDevice_GetProfilingTimerResolution(Null_DRef));
     ASSERT_TRUE(res == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetGlobalMemCacheSize)
+{
+    uint64_t res = 1;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetGlobalMemCacheSize(Null_DRef));
+    ASSERT_TRUE(res == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetGlobalMemCacheLineSize)
+{
+    uint32_t res = 1;
+    EXPECT_NO_FATAL_FAILURE(
+        res = DPCTLDevice_GetGlobalMemCacheLineSize(Null_DRef));
+    ASSERT_TRUE(res == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetGlobalMemCacheType)
+{
+    DPCTLGlobalMemCacheType res = DPCTL_MEM_CACHE_TYPE_NONE;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetGlobalMemCacheType(Null_DRef));
+    ASSERT_TRUE(res == DPCTL_MEM_CACHE_TYPE_INDETERMINATE);
 }
