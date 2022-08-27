@@ -1035,3 +1035,68 @@ def linspace(
     )
     hev.wait()
     return res
+
+def eye(
+    n_rows,
+    n_cols=None,
+    /,
+    *,
+    k=0,
+    dtype=None,
+    order="C",
+    device=None,
+    usm_type="device",
+    sycl_queue=None
+    ):
+        """
+        eye(n_rows, n_cols = None, /, *, k = 0, dtype = None, \
+        device = None, usm_type="device", sycl_queue=None) -> usm_ndarray
+
+        Creates `usm_ndarray` where the `k`th diagonal elements are one and others are zero.
+
+        Args:
+            n_rows: number of rows in the output array.
+            n_cols (optional): number of columns in the output array. If None,
+            n_cols = n_rows. Default: `None`.
+            k: index of the diagonal, with 0 as the main diagonal. A positive value of k
+            is an upper diagonal, a negative value is a low diagonal. Default: `0`.
+            dtype (optional): data type of the array. Can be typestring,
+                a `numpy.dtype` object, `numpy` char string, or a numpy
+                scalar type. Default: None
+            order ("C" or F"): memory layout for the array. Default: "C"
+            device (optional): array API concept of device where the output array
+                is created. `device` can be `None`, a oneAPI filter selector string,
+                an instance of :class:`dpctl.SyclDevice` corresponding to a
+                non-partitioned SYCL device, an instance of
+                :class:`dpctl.SyclQueue`, or a `Device` object returnedby
+                `dpctl.tensor.usm_array.device`. Default: `None`.
+            usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+                allocation for the output array. Default: `"device"`.
+            sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
+                for output array allocation and copying. `sycl_queue` and `device`
+                are exclusive keywords, i.e. use one or another. If both are
+                specified, a `TypeError` is raised unless both imply the same
+                underlying SYCL queue to be used. If both are `None`, the
+                `dpctl.SyclQueue()` is used for allocation and copying.
+                Default: `None`.
+        """
+        if n_cols is None:
+            n_cols = n_rows
+        #allocate a 1D array of zeros, length equal to n_cols * n_rows
+        x = zeros((n_rows * n_cols,), dtype=dtype, order=order, device=device, usm_type=usm_type, sycl_queue=sycl_queue)
+        if k > -n_rows and k < n_cols:
+            #find the length of an arbitrary diagonal
+            l = min(n_cols, n_rows, n_cols-k, n_rows+k)
+            #i is the first element of the diagonal, j is the last, s is the step size
+            if order == "C":
+                s = n_cols+1
+                i = k if k >= 0 else n_cols*-k
+            else:
+                s = n_rows+1
+                i = n_rows*k if k > 0 else -k
+            #last index + 1 prevents slice from excluding the last element
+            j = i+((l-1)*s)+1
+            x[i:j:s] = 1
+            #copy=False ensures no wasted memory copying the array
+            #and as the order parameter is the same, a copy should never be necessary
+        return dpt.reshape(x, (n_rows, n_cols), order=order, copy=False)
