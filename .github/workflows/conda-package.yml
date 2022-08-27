@@ -30,7 +30,7 @@ jobs:
       - name: Cache conda packages
         uses: actions/cache@v3
         env:
-          CACHE_NUMBER: 1  # Increase to reset cache
+          CACHE_NUMBER: 3  # Increase to reset cache
         with:
           path: ~/.conda/pkgs
           key:
@@ -78,7 +78,7 @@ jobs:
       - name: Cache conda packages
         uses: actions/cache@v3
         env:
-          CACHE_NUMBER: 1  # Increase to reset cache
+          CACHE_NUMBER: 3  # Increase to reset cache
         with:
           path: /home/runner/conda_pkgs_dir
           key:
@@ -107,7 +107,7 @@ jobs:
         runner: [ubuntu-latest]
     continue-on-error: ${{ matrix.experimental }}
     env:
-      CHANNELS: -c intel -c defaults --override-channels
+      CHANNELS: -c defaults -c intel --override-channels
 
     steps:
       - name: Download artifact
@@ -132,7 +132,7 @@ jobs:
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda install $PACKAGE_NAME=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
+          conda create -n test_dpctl $PACKAGE_NAME=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
           cat lockfile
       - name: Set pkgs_dirs
         run: |
@@ -140,7 +140,7 @@ jobs:
       - name: Cache conda packages
         uses: actions/cache@v3
         env:
-          CACHE_NUMBER: 1  # Increase to reset cache
+          CACHE_NUMBER: 3  # Increase to reset cache
         with:
           path: ~/.conda/pkgs
           key:
@@ -152,16 +152,20 @@ jobs:
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda install $PACKAGE_NAME=${PACKAGE_VERSION} pytest python=${{ matrix.python }} $CHANNELS
+          conda create -n test_dpctl $PACKAGE_NAME=${PACKAGE_VERSION} pytest python=${{ matrix.python }} $CHANNELS
           # Test installed packages
           conda list
       - name: Smoke test
         run: |
+          . $CONDA/etc/profile.d/conda.sh
+          conda activate test_dpctl
           export OCL_ICD_FILENAMES=libintelocl.so
           export SYCL_ENABLE_HOST_DEVICE=1
           python -c "import dpctl; dpctl.lsplatform()"
       - name: Run tests
         run: |
+          . $CONDA/etc/profile.d/conda.sh
+          conda activate test_dpctl
           # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
           export OCL_ICD_FILENAMES=libintelocl.so
           export SYCL_ENABLE_HOST_DEVICE=1
@@ -179,7 +183,7 @@ jobs:
         runner: [windows-latest]
     continue-on-error: ${{ matrix.experimental }}
     env:
-      CHANNELS: -c intel -c defaults --override-channels
+      CHANNELS: -c defaults -c intel --override-channels
 
     steps:
       - name: Download artifact
@@ -215,7 +219,7 @@ jobs:
       - name: Cache conda packages
         uses: actions/cache@v3
         env:
-          CACHE_NUMBER: 1  # Increase to reset cache
+          CACHE_NUMBER: 3  # Increase to reset cache
         with:
           path: /home/runner/conda_pkgs_dir
           key:
@@ -342,7 +346,7 @@ jobs:
         runner: [ubuntu-latest]
     continue-on-error: ${{ matrix.experimental }}
     env:
-      CHANNELS: -c intel -c defaults --override-channels
+      CHANNELS: -c defaults -c intel --override-channels
 
     steps:
       - name: Install conda-build
@@ -361,10 +365,12 @@ jobs:
       - name: Create conda channel
         run: |
           mkdir -p $GITHUB_WORKSPACE/channel/linux-64
-          mv ${PACKAGE_NAME}-*.tar.bz2 $GITHUB_WORKSPACE/channel/linux-64
-          conda index $GITHUB_WORKSPACE/channel
+          conda index $GITHUB_WORKSPACE/channel || exit 1
+          mv ${PACKAGE_NAME}-*.tar.bz2 $GITHUB_WORKSPACE/channel/linux-64 || exit 1
+          conda index $GITHUB_WORKSPACE/channel || exit 1
           # Test channel
-          conda search $PACKAGE_NAME -c $GITHUB_WORKSPACE/channel --override-channels
+          conda search $PACKAGE_NAME -c $GITHUB_WORKSPACE/channel --override-channels --info --json > $GITHUB_WORKSPACE/ver.json
+          cat ver.json
       - name: Collect dependencies
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
@@ -375,7 +381,7 @@ jobs:
       - name: Cache conda packages
         uses: actions/cache@v3
         env:
-          CACHE_NUMBER: 1  # Increase to reset cache
+          CACHE_NUMBER: 3  # Increase to reset cache
         with:
           path: ~/.conda/pkgs
           key:
@@ -387,7 +393,7 @@ jobs:
         shell: bash -l {0}
         run: |
           CHANNELS="${{ env.CHANNELS }}"
-          source $CONDA/etc/profile.d/conda.sh
+          . $CONDA/etc/profile.d/conda.sh
           conda create -n examples -y pytest python=${{ matrix.python }} $CHANNELS
           conda install -n examples -y cmake">=3.22" $CHANNELS || exit 1
           conda install -n examples -y ninja $CHANNELS || exit 1
@@ -398,9 +404,9 @@ jobs:
         shell: bash -l {0}
         run: |
           source $CONDA/etc/profile.d/conda.sh
-          conda activate
-          CHANNELS="-c $GITHUB_WORKSPACE/channel -c dppy/label/dev -c intel --override-channels"
-          conda install -n examples -y $CHANNELS numpy dpctl dpnp || exit 1
+          CHANNELS="-c $GITHUB_WORKSPACE/channel -c dppy/label/dev -c intel -c defaults --override-channels"
+          export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
+          conda install -n examples -y ${CHANNELS} dpctl=${PACKAGE_VERSION} dpnp">=0.10.1" || exit 1
       - name: Build and run examples with native extensions
         shell: bash -l {0}
         run: |
