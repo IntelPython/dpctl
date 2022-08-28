@@ -73,7 +73,12 @@ from dpctl._sycl_queue_manager import (
 from ._device_selection import select_device_with_aspects
 from ._sycl_timer import SyclTimer
 from ._version import get_versions
-from .enum_types import backend_type, device_type, event_status_type
+from .enum_types import (
+    backend_type,
+    device_type,
+    event_status_type,
+    global_mem_cache_type,
+)
 
 __all__ = [
     "SyclContext",
@@ -127,6 +132,7 @@ __all__ += [
     "device_type",
     "backend_type",
     "event_status_type",
+    "global_mem_cache_type",
 ]
 __all__ += [
     "get_include",

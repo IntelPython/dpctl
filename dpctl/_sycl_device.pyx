@@ -34,6 +34,9 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetBackend,
     DPCTLDevice_GetDeviceType,
     DPCTLDevice_GetDriverVersion,
+    DPCTLDevice_GetGlobalMemCacheLineSize,
+    DPCTLDevice_GetGlobalMemCacheSize,
+    DPCTLDevice_GetGlobalMemCacheType,
     DPCTLDevice_GetGlobalMemSize,
     DPCTLDevice_GetImage2dMaxHeight,
     DPCTLDevice_GetImage2dMaxWidth,
@@ -87,12 +90,13 @@ from ._backend cimport (  # noqa: E211
     _aspect_type,
     _backend_type,
     _device_type,
+    _global_mem_cache_type,
     _partition_affinity_domain_type,
 )
 
-from .enum_types import backend_type, device_type
+from .enum_types import backend_type, device_type, global_mem_cache_type
 
-from libc.stdint cimport int64_t, uint32_t
+from libc.stdint cimport int64_t, uint32_t, uint64_t
 from libc.stdlib cimport free, malloc
 
 from ._sycl_platform cimport SyclPlatform
@@ -1097,6 +1101,50 @@ cdef class SyclDevice(_SyclDevice):
         if (timer_res == 0):
             raise RuntimeError("Failed to get device timer resolution.")
         return timer_res
+
+    @property
+    def global_mem_cache_type(self):
+        """ Global device cache memory type.
+
+        Returns:
+            global_mem_cache_type: type of cache memory
+        Raises:
+            A RuntimeError is raised if an unrecognized memory type
+            is reported by runtime.
+        """
+        cdef _global_mem_cache_type gmcTy = (
+           DPCTLDevice_GetGlobalMemCacheType(self._device_ref)
+        )
+        if gmcTy == _global_mem_cache_type._MEM_CACHE_TYPE_READ_WRITE:
+            return global_mem_cache_type.read_write
+        elif gmcTy == _global_mem_cache_type._MEM_CACHE_TYPE_READ_ONLY:
+            return global_mem_cache_type.read_only
+        elif gmcTy == _global_mem_cache_type._MEM_CACHE_TYPE_NONE:
+            return global_mem_cache_type.none
+        elif gmcTy == _global_mem_cache_type._MEM_CACHE_TYPE_INDETERMINATE:
+            raise RuntimeError("Unrecognized global memory cache type reported")
+
+    @property
+    def global_mem_cache_size(self):
+        """ Global device memory cache size.
+
+        Returns:
+            int: Cache size in bytes
+        """
+        cdef uint64_t cache_sz = DPCTLDevice_GetGlobalMemCacheSize(
+            self._device_ref)
+        return cache_sz
+
+    @property
+    def global_mem_cache_line_size(self):
+        """ Global device memory cache line size.
+
+        Returns:
+            int: Cache size in bytes
+        """
+        cdef uint64_t cache_line_sz = DPCTLDevice_GetGlobalMemCacheLineSize(
+            self._device_ref)
+        return cache_line_sz
 
     cdef cpp_bool equals(self, SyclDevice other):
         """ Returns ``True`` if the :class:`dpctl.SyclDevice` argument has the

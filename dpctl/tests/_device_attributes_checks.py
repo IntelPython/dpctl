@@ -543,7 +543,7 @@ def check_driver_version(device):
 
 def check_vendor(device):
     ve = device.vendor
-    assert ve
+    assert ve or device.is_host
     assert type(ve) is str
 
 
@@ -561,6 +561,23 @@ def check_backend(device):
 def check_device_type(device):
     dt = device.device_type
     assert type(dt) is dpctl.device_type
+
+
+def check_global_mem_cache_type(device):
+    gmc_ty = device.global_mem_cache_type
+    assert type(gmc_ty) is dpctl.global_mem_cache_type
+
+
+def check_global_mem_cache_size(device):
+    gmc_sz = device.global_mem_cache_size
+    assert type(gmc_sz) is int
+    assert gmc_sz
+
+
+def check_global_mem_cache_line_size(device):
+    gmc_sz = device.global_mem_cache_line_size
+    assert type(gmc_sz) is int
+    assert gmc_sz
 
 
 list_of_checks = [
@@ -634,6 +651,9 @@ list_of_checks = [
     check_default_selector_score,
     check_backend,
     check_device_type,
+    check_global_mem_cache_type,
+    check_global_mem_cache_size,
+    check_global_mem_cache_line_size,
 ]
 
 
