@@ -302,6 +302,10 @@ public:
 namespace memory
 {
 
+// since PYBIND11_OBJECT_CVT uses error_already_set without namespace,
+// this allows to avoid compilation error
+using pybind11::error_already_set;
+
 class usm_memory : public py::object
 {
 public:
