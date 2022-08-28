@@ -27,6 +27,9 @@ Attributes
 .. autoattribute:: dpctl.SyclDevice.device_type
 .. autoattribute:: dpctl.SyclDevice.driver_version
 .. autoattribute:: dpctl.SyclDevice.filter_string
+.. autoattribute:: dpctl.SyclDevice.global_mem_cache_line_size
+.. autoattribute:: dpctl.SyclDevice.global_mem_cache_size
+.. autoattribute:: dpctl.SyclDevice.global_mem_cache_type
 .. autoattribute:: dpctl.SyclDevice.global_mem_size
 .. autoattribute:: dpctl.SyclDevice.has_aspect_accelerator
 .. autoattribute:: dpctl.SyclDevice.has_aspect_atomic64

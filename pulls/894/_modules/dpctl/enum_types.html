@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.enum_types &mdash; Data-parallel Control (dpctl) 0.14.0dev0+42.gb240222ee documentation</title>
+  <title>dpctl.enum_types &mdash; Data-parallel Control (dpctl) 0.14.0dev0+46.g4b0c66f7e documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+42.gb240222ee
+                0.14.0dev0+46.g4b0c66f7e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -175,6 +175,25 @@
     <span class="n">submitted</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">running</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">complete</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="global_mem_cache_type"><a class="viewcode-back" href="../../docfiles/dpctl/dpctl_enum_api.html#dpctl.global_mem_cache_type">[docs]</a><span class="k">class</span> <span class="nc">global_mem_cache_type</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An enumeration of global memory cache types for a device.</span>
+
+<span class="sd">    :Example:</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import dpctl</span>
+<span class="sd">            dev = dpctl.SyclDevice()</span>
+<span class="sd">            print(dev.global_mem_cache_type)</span>
+<span class="sd">            # Possible output: &lt;global_mem_cache_type.read_write: 4&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">indeterminate</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">none</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">read_only</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">read_write</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
 </pre></div>
 
            </div>
