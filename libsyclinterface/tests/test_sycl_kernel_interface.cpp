@@ -137,8 +137,14 @@ TEST_P(TestDPCTLSyclKernelInterface, CheckGetPrivateMemSize)
     EXPECT_NO_FATAL_FAILURE(axpy_private_mem_sz =
                                 DPCTLKernel_GetPrivateMemSize(AxpyKRef));
 
-    ASSERT_TRUE(add_private_mem_sz != 0);
-    ASSERT_TRUE(axpy_private_mem_sz != 0);
+    if (DPCTLDevice_IsGPU(DRef)) {
+        ASSERT_TRUE(add_private_mem_sz != 0);
+        ASSERT_TRUE(axpy_private_mem_sz != 0);
+    }
+    else {
+        ASSERT_TRUE(add_private_mem_sz >= 0);
+        ASSERT_TRUE(axpy_private_mem_sz >= 0);
+    }
 }
 
 TEST_P(TestDPCTLSyclKernelInterface, CheckGetMaxNumSubGroups)
