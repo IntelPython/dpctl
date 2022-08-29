@@ -1047,7 +1047,7 @@ def eye(
     order="C",
     device=None,
     usm_type="device",
-    sycl_queue=None
+    sycl_queue=None,
 ):
     """
     eye(n_rows, n_cols = None, /, *, k = 0, dtype = None, \
@@ -1098,23 +1098,19 @@ def eye(
         order=order,
         device=device,
         usm_type=usm_type,
-        sycl_queue=sycl_queue
+        sycl_queue=sycl_queue,
         )
     if k > -n_rows and k < n_cols:
         # find the length of the diagonal
-        L = min(
-            n_cols,
-            n_rows,
-            n_cols-k,
-            n_rows+k)
+        L = min(n_cols, n_rows, n_cols - k, n_rows + k)
         # i is the first index of diagonal, j is the last, s is the step size
         if order == "C":
             s = n_cols + 1
-            i = k if k >= 0 else n_cols*-k
+            i = k if k >= 0 else n_cols * -k
         else:
             s = n_rows + 1
-            i = n_rows*k if k > 0 else -k
-        j = i + s*(L-1) + 1
+            i = n_rows * k if k > 0 else -k
+        j = i + s * (L - 1) + 1
         x[i:j:s] = 1
         # copy=False ensures no wasted memory copying the array
     return dpt.reshape(x, (n_rows, n_cols), order=order, copy=False)
