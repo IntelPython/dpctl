@@ -1301,9 +1301,9 @@ def test_eye(shapes, k, orders):
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
 
-    shape=shapes
-    k=k
-    order=orders
+    shape = shapes
+    k = k
+    order = orders
 
     Xnp = np.eye(*shape, k=k, order=order)
     X = dpt.eye(*shape, k=k, order=order, sycl_queue=q)
