@@ -16,7 +16,6 @@
 
 import ctypes
 import numbers
-from typing import Type
 
 import numpy as np
 import pytest
@@ -1292,7 +1291,8 @@ def test_common_arg_validation():
     with pytest.raises(TypeError):
         dpt.eye(4, k=1.2)
 
-@pytest.mark.parametrize("shapes", [(0,), (1,), (7,), (6, 1), (3, 9), (10,5)])
+
+@pytest.mark.parametrize("shapes", [(0,), (1,), (7,), (6, 1), (3, 9), (10, 5)])
 @pytest.mark.parametrize("k", np.arange(-4, 5, 1))
 @pytest.mark.parametrize("orders", ["C", "F"])
 def test_eye(shapes, k, orders):
