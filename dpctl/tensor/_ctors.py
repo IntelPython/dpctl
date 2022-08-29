@@ -1099,7 +1099,7 @@ def eye(
         device=device,
         usm_type=usm_type,
         sycl_queue=sycl_queue,
-        )
+    )
     if k > -n_rows and k < n_cols:
         # find the length of the diagonal
         L = min(n_cols, n_rows, n_cols - k, n_rows + k)
