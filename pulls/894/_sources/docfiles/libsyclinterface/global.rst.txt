@@ -444,8 +444,26 @@ Overview
 	DPCTL_API void
 	:ref:`DPCTLKernel_Delete<doxid-da/df6/group___kernel_interface_1ga02cb1ddc64d9f78d228a5dc222c8862b>`(__dpctl_take :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
+	DPCTL_API uint32_t
+	:ref:`DPCTLKernel_GetCompileNumSubGroups<doxid-da/df6/group___kernel_interface_1gab94f84a23cabefeda98896a35707c694>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLKernel_GetCompileSubGroupSize<doxid-da/df6/group___kernel_interface_1gaac45a42a0c66f550c099b635f2cecad7>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLKernel_GetMaxNumSubGroups<doxid-da/df6/group___kernel_interface_1ga87026b11e734302aa8238ad38fc6b14a>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
 	DPCTL_API size_t
 	:ref:`DPCTLKernel_GetNumArgs<doxid-da/df6/group___kernel_interface_1gae585c0ae9e5e1826ca24aac6f9b2a71d>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLKernel_GetPreferredWorkGroupSizeMultiple<doxid-da/df6/group___kernel_interface_1ga54f99084068d619b9bd5a624c02b5fbb>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLKernel_GetPrivateMemSize<doxid-da/df6/group___kernel_interface_1ga8b5b72e2f69a5eaeab645e96bf28b411>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLKernel_GetWorkGroupSize<doxid-da/df6/group___kernel_interface_1ga2ddbfad26249fccbf46c8f044c4244d4>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
 	:ref:`DPCTLPlatform_Copy<doxid-da/dbd/group___platform_interface_1ga5bddf303912d4344608af42735dfd6f8>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);

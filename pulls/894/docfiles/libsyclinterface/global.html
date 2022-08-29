@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.14.0dev0+46.g8381f26c4 documentation</title>
+  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.14.0dev0+47.gce14cb960 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -34,7 +34,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+46.g8381f26c4
+                0.14.0dev0+47.gce14cb960
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -536,8 +536,26 @@
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
 <a class="reference internal" href="group_KernelInterface.html#doxid-da-df6-group-kernel-interface-1ga02cb1ddc64d9f78d228a5dc222c8862b"><span class="std std-ref">DPCTLKernel_Delete</span></a><span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span>
 
+<span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<a class="reference internal" href="group_KernelInterface.html#doxid-da-df6-group-kernel-interface-1gab94f84a23cabefeda98896a35707c694"><span class="std std-ref">DPCTLKernel_GetCompileNumSubGroups</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<a class="reference internal" href="group_KernelInterface.html#doxid-da-df6-group-kernel-interface-1gaac45a42a0c66f550c099b635f2cecad7"><span class="std std-ref">DPCTLKernel_GetCompileSubGroupSize</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<a class="reference internal" href="group_KernelInterface.html#doxid-da-df6-group-kernel-interface-1ga87026b11e734302aa8238ad38fc6b14a"><span class="std std-ref">DPCTLKernel_GetMaxNumSubGroups</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span>
+
 <span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <a class="reference internal" href="group_KernelInterface.html#doxid-da-df6-group-kernel-interface-1gae585c0ae9e5e1826ca24aac6f9b2a71d"><span class="std std-ref">DPCTLKernel_GetNumArgs</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<a class="reference internal" href="group_KernelInterface.html#doxid-da-df6-group-kernel-interface-1ga54f99084068d619b9bd5a624c02b5fbb"><span class="std std-ref">DPCTLKernel_GetPreferredWorkGroupSizeMultiple</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<a class="reference internal" href="group_KernelInterface.html#doxid-da-df6-group-kernel-interface-1ga8b5b72e2f69a5eaeab645e96bf28b411"><span class="std std-ref">DPCTLKernel_GetPrivateMemSize</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<a class="reference internal" href="group_KernelInterface.html#doxid-da-df6-group-kernel-interface-1ga2ddbfad26249fccbf46c8f044c4244d4"><span class="std std-ref">DPCTLKernel_GetWorkGroupSize</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span>
 <a class="reference internal" href="group_PlatformInterface.html#doxid-da-dbd-group-platform-interface-1ga5bddf303912d4344608af42735dfd6f8"><span class="std std-ref">DPCTLPlatform_Copy</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">);</span>
