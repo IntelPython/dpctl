@@ -264,6 +264,14 @@ cdef extern from "syclinterface/dpctl_sycl_event_interface.h":
 cdef extern from "syclinterface/dpctl_sycl_kernel_interface.h":
     cdef size_t DPCTLKernel_GetNumArgs(const DPCTLSyclKernelRef KRef)
     cdef void DPCTLKernel_Delete(DPCTLSyclKernelRef KRef)
+    cdef size_t DPCTLKernel_GetWorkGroupSize(const DPCTLSyclKernelRef KRef)
+    cdef size_t DPCTLKernel_GetPreferredWorkGroupSizeMultiple(const DPCTLSyclKernelRef KRef)
+    cdef size_t DPCTLKernel_GetPrivateMemSize(const DPCTLSyclKernelRef KRef)
+    cdef uint32_t DPCTLKernel_GetMaxNumSubGroups(const DPCTLSyclKernelRef KRef)
+##  Next line is commented out due to issue in DPC++ runtime
+#   cdef uint32_t DPCTLKernel_GetMaxSubGroupSize(const DPCTLSyclKernelRef KRef)
+    cdef uint32_t DPCTLKernel_GetCompileNumSubGroups(const DPCTLSyclKernelRef KRef)
+    cdef uint32_t DPCTLKernel_GetCompileSubGroupSize(const DPCTLSyclKernelRef KRef)
 
 
 cdef extern from "syclinterface/dpctl_sycl_platform_manager.h":
