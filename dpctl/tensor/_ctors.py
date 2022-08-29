@@ -1083,11 +1083,16 @@ def eye(
         if n_cols is None:
             n_cols = n_rows
         #allocate a 1D array of zeros, length equal to n_cols * n_rows
+        k_dt = type(k)
+        if not np.issubdtype(k_dt, np.integer):
+            raise TypeError(
+                "k keyword must be an integer, got {type}".format(type=k_dt)
+            )
         x = zeros((n_rows * n_cols,), dtype=dtype, order=order, device=device, usm_type=usm_type, sycl_queue=sycl_queue)
         if k > -n_rows and k < n_cols:
-            #find the length of an arbitrary diagonal
+            #find the length of the diagonal
             l = min(n_cols, n_rows, n_cols-k, n_rows+k)
-            #i is the first element of the diagonal, j is the last, s is the step size
+            #i is the first index of the diagonal in 1D index space, j is the last, s is the step size
             if order == "C":
                 s = n_cols+1
                 i = k if k >= 0 else n_cols*-k

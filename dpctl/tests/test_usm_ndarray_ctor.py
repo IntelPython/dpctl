@@ -16,6 +16,7 @@
 
 import ctypes
 import numbers
+from typing import Type
 
 import numpy as np
 import pytest
@@ -1276,6 +1277,8 @@ def test_common_arg_validation():
         dpt.ones_like(X, order=order)
     with pytest.raises(ValueError):
         dpt.full_like(X, 1, order=order)
+    with pytest.raises(ValueError):
+        dpt.eye(4, order=order)
     X = dict()
     # test for type validation
     with pytest.raises(TypeError):
@@ -1286,3 +1289,23 @@ def test_common_arg_validation():
         dpt.ones_like(X)
     with pytest.raises(TypeError):
         dpt.full_like(X, 1)
+    with pytest.raises(TypeError):
+        dpt.eye(4, k=1.2)
+
+@pytest.mark.parametrize("shapes", [(0,), (1,), (7,), (6, 1), (3, 9), (10,5)])
+@pytest.mark.parametrize("k", np.arange(-4, 5, 1))
+@pytest.mark.parametrize("orders", ["C", "F"])
+def test_eye(shapes, k, orders):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    shape=shapes
+    k=k
+    order=orders
+
+    Xnp = np.eye(*shape, k=k, order=order)
+    X = dpt.eye(*shape, k=k, order=order, sycl_queue=q)
+
+    np.testing.assert_array_equal(Xnp, dpt.asnumpy(X))
