@@ -49,6 +49,8 @@ def _check_multi_kernel_program(prog):
     assert type(axpyKernel.addressof_ref()) is int
 
     for krn in [addKernel, axpyKernel]:
+        na = krn.num_args
+        assert na == krn.get_num_args()
         wgsz = krn.work_group_size
         assert type(wgsz) is int
         pwgszm = krn.preferred_work_group_size_multiple
