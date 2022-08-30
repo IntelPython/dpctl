@@ -1087,11 +1087,15 @@ def eye(
     if n_cols is None:
         n_cols = n_rows
     # allocate a 1D array of zeros, length equal to n_cols * n_rows
-    k_dt = type(k)
-    if not np.issubdtype(k_dt, np.integer):
-        raise TypeError(
-            "k keyword must be an integer, got {type}".format(type=k_dt)
+    if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
+        raise ValueError(
+            "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
+    else:
+        order = order[0].upper()
+    n_rows = operator.index(n_rows)
+    n_cols = operator.index(n_cols)
+    k = operator.index(k)
     x = zeros(
         (n_rows * n_cols,),
         dtype=dtype,

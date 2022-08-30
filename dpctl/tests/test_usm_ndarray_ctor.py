@@ -1288,24 +1288,25 @@ def test_common_arg_validation():
         dpt.ones_like(X)
     with pytest.raises(TypeError):
         dpt.full_like(X, 1)
-    with pytest.raises(TypeError):
-        dpt.eye(4, k=1.2)
 
 
-@pytest.mark.parametrize("shapes", [(0,), (1,), (7,), (6, 1), (3, 9), (10, 5)])
-@pytest.mark.parametrize("k", np.arange(-4, 5, 1))
-@pytest.mark.parametrize("orders", ["C", "F"])
-def test_eye(shapes, k, orders):
+@pytest.mark.parametrize("dtype", _all_dtypes)
+def test_eye(dtype):
+    X = dpt.eye(4, 5, dtype=dtype)
+    Xnp = np.eye(4, 5, dtype=dtype)
+    assert X.dtype == Xnp.dtype
+    assert np.array_equal(Xnp, dpt.asnumpy(X))
+
+
+@pytest.mark.parametrize("shape", [(7,), (6, 1), (10, 5), (3, 9)])
+@pytest.mark.parametrize("k", np.arange(-2, 2, 1))
+@pytest.mark.parametrize("order", ["C", "F"])
+def test_eye_shapes(shape, k, order):
     try:
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
-
-    shape = shapes
-    k = k
-    order = orders
-
     Xnp = np.eye(*shape, k=k, order=order)
     X = dpt.eye(*shape, k=k, order=order, sycl_queue=q)
 
-    np.testing.assert_array_equal(Xnp, dpt.asnumpy(X))
+    assert np.array_equal(Xnp, dpt.asnumpy(X))
