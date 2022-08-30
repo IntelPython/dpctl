@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Data-parallel Control (dpctl) 0.14.0dev0+47.gce14cb960 documentation</title>
+  <title>Index &mdash; Data-parallel Control (dpctl) 0.14.0dev0+49.g4096a6185 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+47.gce14cb960
+                0.14.0dev0+49.g4096a6185
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -207,6 +207,10 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/SyclKernel.html#dpctl.program.SyclKernel.compile_num_sub_groups">compile_num_sub_groups (dpctl.program.SyclKernel attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl/SyclKernel.html#dpctl.program.SyclKernel.compile_sub_group_size">compile_sub_group_size (dpctl.program.SyclKernel attribute)</a>
+</li>
       <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.concat">concat() (in module dpctl.tensor)</a>
 </li>
       <li>
@@ -226,6 +230,8 @@
         <li><a href="docfiles/dpctl/MemoryUSMShared.html#dpctl.memory.MemoryUSMShared.copy_from_device">(in module dpctl.memory.MemoryUSMShared)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice.copy_from_host">copy_from_host() (in module dpctl.memory.MemoryUSMDevice)</a>
 
       <ul>
@@ -234,8 +240,6 @@
         <li><a href="docfiles/dpctl/MemoryUSMShared.html#dpctl.memory.MemoryUSMShared.copy_from_host">(in module dpctl.memory.MemoryUSMShared)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice.copy_to_host">copy_to_host() (in module dpctl.memory.MemoryUSMDevice)</a>
 
       <ul>
@@ -2358,9 +2362,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.max_compute_units">max_compute_units (dpctl.SyclDevice attribute)</a>
 </li>
-      <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.max_num_sub_groups">max_num_sub_groups (dpctl.SyclDevice attribute)</a>
+      <li><a href="docfiles/dpctl/SyclKernel.html#dpctl.program.SyclKernel.max_num_sub_groups">max_num_sub_groups (dpctl.program.SyclKernel attribute)</a>
+
+      <ul>
+        <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.max_num_sub_groups">(dpctl.SyclDevice attribute)</a>
 </li>
+      </ul></li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.max_read_image_args">max_read_image_args (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl/SyclKernel.html#dpctl.program.SyclKernel.max_sub_group_size">max_sub_group_size (dpctl.program.SyclKernel attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.max_work_group_size">max_work_group_size (dpctl.SyclDevice attribute)</a>
 </li>
@@ -2378,10 +2388,10 @@
 </li>
       <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.mem_advise">mem_advise() (in module dpctl.SyclQueue)</a>
 </li>
-      <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.memcpy">memcpy() (in module dpctl.SyclQueue)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.memcpy">memcpy() (in module dpctl.SyclQueue)</a>
+</li>
       <li><a href="docfiles/dpctl/MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice">MemoryUSMDevice (class in dpctl.memory)</a>
 </li>
       <li><a href="docfiles/dpctl/MemoryUSMHost.html#dpctl.memory.MemoryUSMHost">MemoryUSMHost (class in dpctl.memory)</a>
@@ -2497,15 +2507,17 @@
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_float">preferred_vector_width_float (dpctl.SyclDevice attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_half">preferred_vector_width_half (dpctl.SyclDevice attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_int">preferred_vector_width_int (dpctl.SyclDevice attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_long">preferred_vector_width_long (dpctl.SyclDevice attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.preferred_vector_width_short">preferred_vector_width_short (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl/SyclKernel.html#dpctl.program.SyclKernel.preferred_work_group_size_multiple">preferred_work_group_size_multiple (dpctl.program.SyclKernel attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.prefetch">prefetch() (in module dpctl.SyclQueue)</a>
 </li>
@@ -2516,6 +2528,8 @@
 </li>
       </ul></li>
       <li><a href="docfiles/dpctl/SyclPlatform.html#dpctl.SyclPlatform.print_platform_info">print_platform_info() (in module dpctl.SyclPlatform)</a>
+</li>
+      <li><a href="docfiles/dpctl/SyclKernel.html#dpctl.program.SyclKernel.private_mem_size">private_mem_size (dpctl.program.SyclKernel attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclEvent.html#dpctl.SyclEvent.profiling_info_end">profiling_info_end (dpctl.SyclEvent attribute)</a>
 </li>
@@ -2800,6 +2814,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/SyclEvent.html#dpctl.SyclEvent.wait_for">wait_for() (in module dpctl.SyclEvent)</a>
+</li>
+      <li><a href="docfiles/dpctl/SyclKernel.html#dpctl.program.SyclKernel.work_group_size">work_group_size (dpctl.program.SyclKernel attribute)</a>
 </li>
   </ul></td>
 </tr></table>
