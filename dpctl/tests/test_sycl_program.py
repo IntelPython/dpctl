@@ -65,7 +65,7 @@ def _check_multi_kernel_program(prog):
         ), "SyclKernel.max_sub_group_size acquired implementation, fix the test"
         cmnsg = krn.compile_num_sub_groups
         assert type(cmnsg) is int
-        cmsgsz = krn.compile_num_sub_groups
+        cmsgsz = krn.compile_sub_group_size
         assert type(cmsgsz) is int
 
 
