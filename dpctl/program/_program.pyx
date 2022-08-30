@@ -103,6 +103,12 @@ cdef class SyclKernel:
         return int(<size_t>self._kernel_ref)
 
     @property
+    def num_args(self):
+        """ Property equivalent to method call `SyclKernel.get_num_args()`
+        """
+        return self.get_num_args()
+
+    @property
     def work_group_size(self):
         """ Returns the maximum number of work-items in a work-group that can
         be used to execute the kernel on device it was built for.
