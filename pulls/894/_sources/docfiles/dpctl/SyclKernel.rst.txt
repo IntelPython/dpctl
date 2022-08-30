@@ -26,6 +26,7 @@ Attributes
 .. autoattribute:: dpctl.program.SyclKernel.compile_sub_group_size
 .. autoattribute:: dpctl.program.SyclKernel.max_num_sub_groups
 .. autoattribute:: dpctl.program.SyclKernel.max_sub_group_size
+.. autoattribute:: dpctl.program.SyclKernel.num_args
 .. autoattribute:: dpctl.program.SyclKernel.preferred_work_group_size_multiple
 .. autoattribute:: dpctl.program.SyclKernel.private_mem_size
 .. autoattribute:: dpctl.program.SyclKernel.work_group_size

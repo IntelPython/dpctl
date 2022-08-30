@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.program.SyclKernel &mdash; Data-parallel Control (dpctl) 0.14.0dev0+49.g4096a6185 documentation</title>
+  <title>dpctl.program.SyclKernel &mdash; Data-parallel Control (dpctl) 0.14.0dev0+52.gaf0a32547 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -34,7 +34,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+49.g4096a6185
+                0.14.0dev0+52.gaf0a32547
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -124,13 +124,16 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.program.SyclKernel.max_sub_group_size" title="dpctl.program.SyclKernel.max_sub_group_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_sub_group_size</span></code></a></p></td>
 <td><p>Returns the maximum sub-groups size for this kernel.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.program.SyclKernel.preferred_work_group_size_multiple" title="dpctl.program.SyclKernel.preferred_work_group_size_multiple"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_work_group_size_multiple</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.program.SyclKernel.num_args" title="dpctl.program.SyclKernel.num_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_args</span></code></a></p></td>
+<td><p>Property equivalent to method call <cite>SyclKernel.get_num_args()</cite></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.program.SyclKernel.preferred_work_group_size_multiple" title="dpctl.program.SyclKernel.preferred_work_group_size_multiple"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_work_group_size_multiple</span></code></a></p></td>
 <td><p>Returns a value, of which work-group size is preferred to be a multiple, for executing the kernel on the device it was built for.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.program.SyclKernel.private_mem_size" title="dpctl.program.SyclKernel.private_mem_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">private_mem_size</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.program.SyclKernel.private_mem_size" title="dpctl.program.SyclKernel.private_mem_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">private_mem_size</span></code></a></p></td>
 <td><p>Returns the minimum amount of private memory, in bytes, used by each work-item in the kernel.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.program.SyclKernel.work_group_size" title="dpctl.program.SyclKernel.work_group_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">work_group_size</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.program.SyclKernel.work_group_size" title="dpctl.program.SyclKernel.work_group_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">work_group_size</span></code></a></p></td>
 <td><p>Returns the maximum number of work-items in a work-group that can be used to execute the kernel on device it was built for.</p></td>
 </tr>
 </tbody>
@@ -181,6 +184,12 @@ or 0 (if not specified).</p>
 <dt class="sig sig-object py" id="dpctl.program.SyclKernel.max_sub_group_size">
 <span class="sig-prename descclassname"><span class="pre">SyclKernel.</span></span><span class="sig-name descname"><span class="pre">max_sub_group_size</span></span><a class="headerlink" href="#dpctl.program.SyclKernel.max_sub_group_size" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum sub-groups size for this kernel.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.program.SyclKernel.num_args">
+<span class="sig-prename descclassname"><span class="pre">SyclKernel.</span></span><span class="sig-name descname"><span class="pre">num_args</span></span><a class="headerlink" href="#dpctl.program.SyclKernel.num_args" title="Permalink to this definition"></a></dt>
+<dd><p>Property equivalent to method call <cite>SyclKernel.get_num_args()</cite></p>
 </dd></dl>
 
 <dl class="py attribute">

@@ -851,7 +851,7 @@ Opaque pointer to a ``sycl::event``
 
 	typedef struct DPCTLOpaqueSyclKernelBundle* DPCTLSyclKernelBundleRef
 
-Opaque pointer to a ``sycl::kernel_bundle``
+Opaque pointer to a ``sycl::kernel_bundle<sycl::bundle_state::executable>``
 
 .. index:: pair: typedef; DPCTLSyclKernelRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844:
