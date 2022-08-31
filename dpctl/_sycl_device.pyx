@@ -293,7 +293,8 @@ cdef class SyclDevice(_SyclDevice):
             ret = self._init_from_selector(DSRef)
             if ret == -1:
                 raise SyclDeviceCreationError(
-                    "Could not create a SyclDevice with the selector string"
+                    "Could not create a SyclDevice with the selector string "
+		    "'{selector_string}'".format(selector_string=arg)
                 )
         elif isinstance(arg, _SyclDevice):
             ret = self._init_from__SyclDevice(arg)
