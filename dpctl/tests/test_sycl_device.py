@@ -129,6 +129,13 @@ def test_hashing_of_device():
     assert device_dict
 
 
+def test_equal():
+    d1 = dpctl.SyclDevice()
+    d2 = dpctl.SyclDevice()
+    assert d1 != Ellipsis
+    assert d1 == d2
+
+
 list_of_supported_aspects = [
     "cpu",
     "gpu",
