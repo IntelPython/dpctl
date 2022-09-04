@@ -250,7 +250,7 @@ DPCTLDevice_GetMaxWorkItemSizes3d(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * @return   Returns the valid result if device exists else returns NULL.
  * @ingroup DeviceInterface
  */
-#if __cplusplus
+#if __cplusplus || (defined(__GNUC__) && __GNUC__ > 10)
 [[deprecated("Use DPCTLDevice_WorkItemSizes3d instead")]]
 #endif
 DPCTL_API __dpctl_keep size_t *
