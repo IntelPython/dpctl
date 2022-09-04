@@ -122,7 +122,8 @@ cdef class SyclKernel:
         a multiple, for executing the kernel on the device it was built for.
         """
         cdef size_t v = DPCTLKernel_GetPreferredWorkGroupSizeMultiple(
-            self._kernel_ref)
+            self._kernel_ref
+	)
         return v
 
     @property

@@ -42,7 +42,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * @brief Returns the number of arguments for the sycl
  * interoperability kernel.
  *
- * @param    KRef           DPCTLSyclKernelRef pointer to an SYCL
+ * @param    KRef           DPCTLSyclKernelRef pointer to a SYCL
  *                          interoperability kernel.
  * @return   Returns the number of arguments for the interoperability
  *           kernel.
@@ -55,7 +55,7 @@ size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef KRef);
  * @brief Deletes the DPCTLSyclKernelRef after casting it to a
  * ``sycl::kernel``.
  *
- * @param    KRef           DPCTLSyclKernelRef pointer to an SYCL
+ * @param    KRef           DPCTLSyclKernelRef pointer to a SYCL
  *                          interoperability kernel.
  * @ingroup KernelInterface
  */
@@ -66,10 +66,11 @@ void DPCTLKernel_Delete(__dpctl_take DPCTLSyclKernelRef KRef);
  * !brief Wrapper around
  * `kernel::get_info<info::kernel_device_specific::work_group_size>()`.
  *
- * @param   KRef           DPCTLSyclKernelRef pointer to an SYCL
+ * @param   KRef           DPCTLSyclKernelRef pointer to a SYCL
  *                         interoperability kernel.
  * @return  Returns the maximum number of work-items in a work-group
- *          that can be used to execute a kernel on a specific device.
+ *          that can be used to execute a kernel on the device it was
+ *          built for.
  * @ingroup KernelInterface
  */
 DPCTL_API
@@ -79,10 +80,10 @@ size_t DPCTLKernel_GetWorkGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef);
  * !brief Wrapper around
  * `kernel::get_info<info::kernel_device_specific::preferred_work_group_size_multiple>()`.
  *
- * @param   KRef           DPCTLSyclKernelRef pointer to an SYCL
+ * @param   KRef           DPCTLSyclKernelRef pointer to a SYCL
  *                         interoperability kernel.
  * @return  Returns a value, of which work-group size is preferred to be a
- * multiple, for executing a kernel on a specific device.
+ * multiple, for executing a kernel on the device it was built for.
  * @ingroup KernelInterface
  */
 DPCTL_API
@@ -93,7 +94,7 @@ size_t DPCTLKernel_GetPreferredWorkGroupSizeMultiple(
  * !brief Wrapper around
  * `kernel::get_info<info::kernel_device_specific::private_mem_size>()`.
  *
- * @param   KRef           DPCTLSyclKernelRef pointer to an SYCL
+ * @param   KRef           DPCTLSyclKernelRef pointer to a SYCL
  *                         interoperability kernel.
  * @return  Returns the minimum amount of private memory, in bytes,
  *          used by each work-item in the kernel.
