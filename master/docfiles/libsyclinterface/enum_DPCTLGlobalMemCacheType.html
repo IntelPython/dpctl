@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>enum DPCTLKernelArgType &mdash; Data-parallel Control (dpctl) 0.14.0dev0+57.gf48cf30fb documentation</title>
+  <title>enum DPCTLGlobalMemCacheType &mdash; Data-parallel Control (dpctl) 0.14.0dev0+57.gf48cf30fb documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -22,8 +22,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="enum DPCTLPartitionAffinityDomainType" href="enum_DPCTLPartitionAffinityDomainType.html" />
-    <link rel="prev" title="enum DPCTLGlobalMemCacheType" href="enum_DPCTLGlobalMemCacheType.html" /> 
+    <link rel="next" title="enum DPCTLKernelArgType" href="enum_DPCTLKernelArgType.html" />
+    <link rel="prev" title="Global Namespace" href="global.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -67,12 +67,8 @@
 <li class="toctree-l2"><a class="reference internal" href="group_USMInterface.html">USM Interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page_todo.html">Todo List</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="global.html">Global Namespace</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="enum_DPCTLGlobalMemCacheType.html">enum DPCTLGlobalMemCacheType</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">enum DPCTLKernelArgType</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#detailed-documentation">Detailed Documentation</a></li>
-</ul>
-</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">enum DPCTLGlobalMemCacheType</a></li>
+<li class="toctree-l3"><a class="reference internal" href="enum_DPCTLKernelArgType.html">enum DPCTLKernelArgType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLPartitionAffinityDomainType.html">enum DPCTLPartitionAffinityDomainType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLQueuePropertyType.html">enum DPCTLQueuePropertyType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclAspectType.html">enum DPCTLSyclAspectType</a></li>
@@ -103,9 +99,9 @@
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="index.html">libsyclinterface</a> &raquo;</li>
           <li><a href="global.html">Global Namespace</a> &raquo;</li>
-      <li>enum DPCTLKernelArgType</li>
+      <li>enum DPCTLGlobalMemCacheType</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/docfiles/libsyclinterface/enum_DPCTLKernelArgType.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/docfiles/libsyclinterface/enum_DPCTLGlobalMemCacheType.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -113,46 +109,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="enum-dpctlkernelargtype">
-<span id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089"></span><span id="index-0"></span><h1>enum DPCTLKernelArgType<a class="headerlink" href="#enum-dpctlkernelargtype" title="Permalink to this heading"></a></h1>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
-<p>Supported types for kernel arguments to be passed to a Sycl kernel using DPCTL. <a class="reference internal" href="#details-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089"><span class="std std-ref">More…</span></a></p>
+  <section id="enum-dpctlglobalmemcachetype">
+<span id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a229ff3945c2347aa0999fe2e28aaa94d"></span><span id="index-0"></span><h1>enum DPCTLGlobalMemCacheType<a class="headerlink" href="#enum-dpctlglobalmemcachetype" title="Permalink to this heading"></a></h1>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;dpctl_sycl_enum_types.h&gt;</span><span class="cp"></span>
 
-<span class="k">enum</span> <span class="n">DPCTLKernelArgType</span>
+<span class="k">enum</span> <span class="n">DPCTLGlobalMemCacheType</span>
 <span class="p">{</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089aa64f2eda338a0ab2c9908ed3b4b13e28"><span></span><span class="n">DPCTL_CHAR</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089a7e509470448096791c4562a780167af6"><span></span><span class="n">DPCTL_SIGNED_CHAR</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089a7ac29c6dbe1a624e0c643d2213e338ad"><span></span><span class="n">DPCTL_UNSIGNED_CHAR</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089a52647c15a8dc9b6a8e291041a61dea9b"><span></span><span class="n">DPCTL_SHORT</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089a8d298230de001a118114d3f131a4560f"><span></span><span class="n">DPCTL_INT</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089ac0f870cd24d337ea4ac315ef4ba78a35"><span></span><span class="n">DPCTL_UNSIGNED_INT</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089adf877eb9fb89ab6fb2a73c811c68efd1"><span></span><span class="n">DPCTL_UNSIGNED_INT8</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089ad3d11a5ac35436974b2da1cdff2d47b6"><span></span><span class="n">DPCTL_LONG</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089a9ba552678ef2c9df779e4000e001114f"><span></span><span class="n">DPCTL_UNSIGNED_LONG</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089a1a4514a74f1ea022f6d90d1fdbb566ce"><span></span><span class="n">DPCTL_LONG_LONG</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089aa39c37abf9129d5080438695dc3b6b01"><span></span><span class="n">DPCTL_UNSIGNED_LONG_LONG</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089ae8bb8ff226b420022ae91726441d0ece"><span></span><span class="n">DPCTL_SIZE_T</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089a02d37ac1677aabdce409ab4dc37e89a9"><span></span><span class="n">DPCTL_FLOAT</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089ac31bd362e587d3f2c9d2db9fa67a995f"><span></span><span class="n">DPCTL_DOUBLE</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089a35a34fc6d864ba0acc7d982e021c54ef"><span></span><span class="n">DPCTL_LONG_DOUBLE</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089a68399621c4ff81e521dd7cddf2afc9b8"><span></span><span class="n">DPCTL_VOID_PTR</span></span><span></span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a229ff3945c2347aa0999fe2e28aaa94dac9009826b3e89c0c49a3931db8052cea"><span></span><span class="n">DPCTL_MEM_CACHE_TYPE_INDETERMINATE</span></span><span></span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a229ff3945c2347aa0999fe2e28aaa94daa1a1c24cda9e5ad331650c11b4be600b"><span></span><span class="n">DPCTL_MEM_CACHE_TYPE_NONE</span></span><span></span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a229ff3945c2347aa0999fe2e28aaa94daf5cfec2cb8de08f2cfc705aacb74ff6a"><span></span><span class="n">DPCTL_MEM_CACHE_TYPE_READ_ONLY</span></span><span></span><span class="p">,</span>
+    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1a229ff3945c2347aa0999fe2e28aaa94dacb38e39becaaa0b0c93b2cd00327e6c5"><span></span><span class="n">DPCTL_MEM_CACHE_TYPE_READ_WRITE</span></span><span></span><span class="p">,</span>
 <span class="p">};</span></pre>
-</section>
-<section id="detailed-documentation">
-<span id="details-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading"></a></h2>
-<p>Supported types for kernel arguments to be passed to a Sycl kernel using DPCTL.</p>
-<p>Todo Add support for sycl::buffer</p>
-</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="enum_DPCTLGlobalMemCacheType.html" class="btn btn-neutral float-left" title="enum DPCTLGlobalMemCacheType" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="enum_DPCTLPartitionAffinityDomainType.html" class="btn btn-neutral float-right" title="enum DPCTLPartitionAffinityDomainType" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="global.html" class="btn btn-neutral float-left" title="Global Namespace" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="enum_DPCTLKernelArgType.html" class="btn btn-neutral float-right" title="enum DPCTLKernelArgType" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

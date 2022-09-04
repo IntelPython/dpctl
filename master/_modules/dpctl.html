@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.14.0dev0+42.g8655e9827 documentation</title>
+  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.14.0dev0+57.gf48cf30fb documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+42.g8655e9827
+                0.14.0dev0+57.gf48cf30fb
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -151,7 +151,12 @@
 <span class="kn">from</span> <span class="nn">._device_selection</span> <span class="kn">import</span> <span class="n">select_device_with_aspects</span>
 <span class="kn">from</span> <span class="nn">._sycl_timer</span> <span class="kn">import</span> <span class="n">SyclTimer</span>
 <span class="kn">from</span> <span class="nn">._version</span> <span class="kn">import</span> <span class="n">get_versions</span>
-<span class="kn">from</span> <span class="nn">.enum_types</span> <span class="kn">import</span> <span class="n">backend_type</span><span class="p">,</span> <span class="n">device_type</span><span class="p">,</span> <span class="n">event_status_type</span>
+<span class="kn">from</span> <span class="nn">.enum_types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">backend_type</span><span class="p">,</span>
+    <span class="n">device_type</span><span class="p">,</span>
+    <span class="n">event_status_type</span><span class="p">,</span>
+    <span class="n">global_mem_cache_type</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;SyclContext&quot;</span><span class="p">,</span>
@@ -205,6 +210,7 @@
     <span class="s2">&quot;device_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;backend_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;event_status_type&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;global_mem_cache_type&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="p">[</span>
     <span class="s2">&quot;get_include&quot;</span><span class="p">,</span>

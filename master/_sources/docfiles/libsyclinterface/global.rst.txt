@@ -7,6 +7,7 @@ Global Namespace
 .. toctree::
 	:hidden:
 
+	enum_DPCTLGlobalMemCacheType.rst
 	enum_DPCTLKernelArgType.rst
 	enum_DPCTLPartitionAffinityDomainType.rst
 	enum_DPCTLQueuePropertyType.rst
@@ -43,6 +44,7 @@ Overview
 
 	// enums
 
+	enum :ref:`DPCTLGlobalMemCacheType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229ff3945c2347aa0999fe2e28aaa94d>`;
 	enum :ref:`DPCTLKernelArgType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>`;
 	enum :ref:`DPCTLPartitionAffinityDomainType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670>`;
 	enum :ref:`DPCTLQueuePropertyType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a439a88c8e537df22ac3e2c66fce3ad4f>`;
@@ -152,6 +154,15 @@ Overview
 	DPCTL_API const __dpctl_give char*
 	:ref:`DPCTLDevice_GetDriverVersion<doxid-db/dd1/group___device_interface_1gacb59e0e106b1538a8e974db4fed7228c>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetGlobalMemCacheLineSize<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ac47e84e08c40272eb54358b6ab76c0f0>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint64_t
+	:ref:`DPCTLDevice_GetGlobalMemCacheSize<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ae4641fb22da8c78a1c5b3c9a0c0fd913>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API :ref:`DPCTLGlobalMemCacheType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229ff3945c2347aa0999fe2e28aaa94d>`
+	:ref:`DPCTLDevice_GetGlobalMemCacheType<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a34aef85cc31edf294aece8d68f5bccba>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
 	DPCTL_API uint64_t
 	:ref:`DPCTLDevice_GetGlobalMemSize<doxid-db/dd1/group___device_interface_1gaa0035ff7868faf6763f1543b14dc5dee>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
@@ -236,8 +247,8 @@ Overview
 	DPCTL_API size_t
 	:ref:`DPCTLDevice_GetProfilingTimerResolution<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a5fe67bf4915e62ce08d80d810f0e8632>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
-	DPCTL_C_EXTERN_C_END DPCTL_API bool
-	:ref:`DPCTLDevice_GetSubGroupIndependentForwardProgress<doxid-db/dd1/group___device_interface_1gafd08f141480c1eb8eb243c88823e85b0>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+	DPCTL_API bool
+	:ref:`DPCTLDevice_GetSubGroupIndependentForwardProgress<doxid-db/dd1/group___device_interface_1ga04b9c4bc38af587f9498ec9b39152e8f>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API const __dpctl_give char*
 	:ref:`DPCTLDevice_GetVendor<doxid-db/dd1/group___device_interface_1gae1af63c0f0016c766dd2703abc657bec>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
@@ -433,8 +444,26 @@ Overview
 	DPCTL_API void
 	:ref:`DPCTLKernel_Delete<doxid-da/df6/group___kernel_interface_1ga02cb1ddc64d9f78d228a5dc222c8862b>`(__dpctl_take :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
+	DPCTL_API uint32_t
+	:ref:`DPCTLKernel_GetCompileNumSubGroups<doxid-da/df6/group___kernel_interface_1gab94f84a23cabefeda98896a35707c694>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLKernel_GetCompileSubGroupSize<doxid-da/df6/group___kernel_interface_1gaac45a42a0c66f550c099b635f2cecad7>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLKernel_GetMaxNumSubGroups<doxid-da/df6/group___kernel_interface_1ga87026b11e734302aa8238ad38fc6b14a>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
 	DPCTL_API size_t
 	:ref:`DPCTLKernel_GetNumArgs<doxid-da/df6/group___kernel_interface_1gae585c0ae9e5e1826ca24aac6f9b2a71d>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLKernel_GetPreferredWorkGroupSizeMultiple<doxid-da/df6/group___kernel_interface_1ga54f99084068d619b9bd5a624c02b5fbb>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLKernel_GetPrivateMemSize<doxid-da/df6/group___kernel_interface_1ga8b5b72e2f69a5eaeab645e96bf28b411>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLKernel_GetWorkGroupSize<doxid-da/df6/group___kernel_interface_1ga2ddbfad26249fccbf46c8f044c4244d4>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
 	:ref:`DPCTLPlatform_Copy<doxid-da/dbd/group___platform_interface_1ga5bddf303912d4344608af42735dfd6f8>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
@@ -822,7 +851,7 @@ Opaque pointer to a ``sycl::event``
 
 	typedef struct DPCTLOpaqueSyclKernelBundle* DPCTLSyclKernelBundleRef
 
-Opaque pointer to a ``sycl::kernel_bundle``
+Opaque pointer to a ``sycl::kernel_bundle<sycl::bundle_state::executable>``
 
 .. index:: pair: typedef; DPCTLSyclKernelRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844:
@@ -866,6 +895,93 @@ Used to pass a ``sycl::usm`` memory opaquely through DPCTL interfaces.
 
 Global Functions
 ----------------
+
+.. index:: pair: function; DPCTLDevice_GetGlobalMemCacheLineSize
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ac47e84e08c40272eb54358b6ab76c0f0:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetGlobalMemCacheLineSize(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::global_mem_cache_line_size>
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the size of global memory cache line in bytes as uint32_t.
+
+.. index:: pair: function; DPCTLDevice_GetGlobalMemCacheSize
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ae4641fb22da8c78a1c5b3c9a0c0fd913:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint64_t
+	DPCTLDevice_GetGlobalMemCacheSize(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::global_mem_cache_size>
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the size of global memory cache in bytes as uint64_t.
+
+.. index:: pair: function; DPCTLDevice_GetGlobalMemCacheType
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a34aef85cc31edf294aece8d68f5bccba:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API :ref:`DPCTLGlobalMemCacheType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229ff3945c2347aa0999fe2e28aaa94d>`
+	DPCTLDevice_GetGlobalMemCacheType(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::global_mem_cache_type>
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the type of global memory cache supported.
 
 .. index:: pair: function; DPCTLDevice_GetImage2dMaxHeight
 .. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a4ef25a38cbf63e618016302e8ebf480d:

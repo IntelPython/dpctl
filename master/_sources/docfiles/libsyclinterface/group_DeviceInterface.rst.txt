@@ -122,8 +122,8 @@ Overview
 	DPCTL_API uint32_t
 	:ref:`DPCTLDevice_GetPreferredVectorWidthShort<doxid-db/dd1/group___device_interface_1gab23c05c90e4b3a3417253e52b5d88290>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
-	DPCTL_C_EXTERN_C_END DPCTL_API bool
-	:ref:`DPCTLDevice_GetSubGroupIndependentForwardProgress<doxid-db/dd1/group___device_interface_1gafd08f141480c1eb8eb243c88823e85b0>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+	DPCTL_API bool
+	:ref:`DPCTLDevice_GetSubGroupIndependentForwardProgress<doxid-db/dd1/group___device_interface_1ga04b9c4bc38af587f9498ec9b39152e8f>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API const __dpctl_give char*
 	:ref:`DPCTLDevice_GetVendor<doxid-db/dd1/group___device_interface_1gae1af63c0f0016c766dd2703abc657bec>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
@@ -1050,12 +1050,12 @@ Wrapper over device.get_info<info::device::preferred_vector_width_short>.
 Returns the preferred native vector width size for built-in scalar types that can be put into vectors.
 
 .. index:: pair: function; DPCTLDevice_GetSubGroupIndependentForwardProgress
-.. _doxid-db/dd1/group___device_interface_1gafd08f141480c1eb8eb243c88823e85b0:
+.. _doxid-db/dd1/group___device_interface_1ga04b9c4bc38af587f9498ec9b39152e8f:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_C_EXTERN_C_END DPCTL_API bool
+	DPCTL_API bool
 	DPCTLDevice_GetSubGroupIndependentForwardProgress(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
 Wrapper over device.get_info<info::device::sub_group_independent_forward_progress>.

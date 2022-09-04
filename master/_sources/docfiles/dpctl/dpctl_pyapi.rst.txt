@@ -149,6 +149,8 @@ Enums
       - An enumeration of supported SYCL device types.
     * - :class:`event_status_type`
       - An enumeration of SYCL event states.
+    * - :class:`global_mem_cache_type`
+      - An enumeration of global memory cache types for a device.
 
 
 Exceptions

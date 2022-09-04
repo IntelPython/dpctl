@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl Enums &mdash; Data-parallel Control (dpctl) 0.14.0dev0+42.g8655e9827 documentation</title>
+  <title>dpctl Enums &mdash; Data-parallel Control (dpctl) 0.14.0dev0+57.gf48cf30fb documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -32,7 +32,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+42.g8655e9827
+                0.14.0dev0+57.gf48cf30fb
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -128,6 +128,22 @@
 <span class="n">ev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">execution_status</span> <span class="p">)</span>
 <span class="c1"># Possible output: &lt;event_status_type.complete: 4&gt;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dpctl.global_mem_cache_type">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">global_mem_cache_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/enum_types.html#global_mem_cache_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.global_mem_cache_type" title="Permalink to this definition"></a></dt>
+<dd><p>An enumeration of global memory cache types for a device.</p>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="n">dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dev</span><span class="o">.</span><span class="n">global_mem_cache_type</span><span class="p">)</span>
+<span class="c1"># Possible output: &lt;global_mem_cache_type.read_write: 4&gt;</span>
 </pre></div>
 </div>
 </dd>
