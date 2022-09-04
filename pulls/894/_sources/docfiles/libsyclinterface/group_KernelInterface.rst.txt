@@ -74,7 +74,7 @@ Deletes the DPCTLSyclKernelRef after casting it to a ``sycl::kernel``.
 	*
 		- KRef
 
-		- DPCTLSyclKernelRef pointer to an SYCL interoperability kernel.
+		- DPCTLSyclKernelRef pointer to a SYCL interoperability kernel.
 
 .. index:: pair: function; DPCTLKernel_GetCompileNumSubGroups
 .. _doxid-da/df6/group___kernel_interface_1gab94f84a23cabefeda98896a35707c694:
@@ -184,7 +184,7 @@ Returns the number of arguments for the sycl interoperability kernel.
 	*
 		- KRef
 
-		- DPCTLSyclKernelRef pointer to an SYCL interoperability kernel.
+		- DPCTLSyclKernelRef pointer to a SYCL interoperability kernel.
 
 
 
@@ -213,13 +213,13 @@ Returns the number of arguments for the interoperability kernel.
 	*
 		- KRef
 
-		- DPCTLSyclKernelRef pointer to an SYCL interoperability kernel.
+		- DPCTLSyclKernelRef pointer to a SYCL interoperability kernel.
 
 
 
 .. rubric:: Returns:
 
-Returns a value, of which work-group size is preferred to be a multiple, for executing a kernel on a specific device.
+Returns a value, of which work-group size is preferred to be a multiple, for executing a kernel on the device it was built for.
 
 .. index:: pair: function; DPCTLKernel_GetPrivateMemSize
 .. _doxid-da/df6/group___kernel_interface_1ga8b5b72e2f69a5eaeab645e96bf28b411:
@@ -242,7 +242,7 @@ Returns a value, of which work-group size is preferred to be a multiple, for exe
 	*
 		- KRef
 
-		- DPCTLSyclKernelRef pointer to an SYCL interoperability kernel.
+		- DPCTLSyclKernelRef pointer to a SYCL interoperability kernel.
 
 
 
@@ -271,11 +271,11 @@ Returns the minimum amount of private memory, in bytes, used by each work-item i
 	*
 		- KRef
 
-		- DPCTLSyclKernelRef pointer to an SYCL interoperability kernel.
+		- DPCTLSyclKernelRef pointer to a SYCL interoperability kernel.
 
 
 
 .. rubric:: Returns:
 
-Returns the maximum number of work-items in a work-group that can be used to execute a kernel on a specific device.
+Returns the maximum number of work-items in a work-group that can be used to execute a kernel on the device it was built for.
 
