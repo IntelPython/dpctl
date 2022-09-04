@@ -586,14 +586,6 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkDriverVersion)
     ASSERT_TRUE(driver_version == nullptr);
 }
 
-TEST_F(TestDPCTLSyclDeviceNullArgs, ChkIsHostUnifiedMemory)
-{
-    bool is_hum = true;
-    EXPECT_NO_FATAL_FAILURE(is_hum =
-                                DPCTLDevice_IsHostUnifiedMemory(Null_DRef));
-    ASSERT_FALSE(is_hum);
-}
-
 TEST_F(TestDPCTLSyclDeviceNullArgs, ChkAreEq)
 {
     bool are_eq = true;

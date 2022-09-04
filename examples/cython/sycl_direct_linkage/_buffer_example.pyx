@@ -24,7 +24,7 @@ import numpy as np
 from cython.operator cimport dereference as deref
 
 
-cdef extern from "CL/sycl.hpp" namespace "cl::sycl":
+cdef extern from "CL/sycl.hpp" namespace "sycl":
     cdef cppclass queue nogil:
         pass
 

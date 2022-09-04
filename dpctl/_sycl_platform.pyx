@@ -81,7 +81,7 @@ cdef void _init_helper(_SyclPlatform platform, DPCTLSyclPlatformRef PRef):
 
 cdef class SyclPlatform(_SyclPlatform):
     """ SyclPlatform(self, arg=None)
-        Python class representing ``cl::sycl::platform`` class.
+        Python class representing ``sycl::platform`` class.
 
         SyclPlatform() - create platform selected by sycl::default_selector
         SyclPlatform(filter_selector) - create platform selected by filter

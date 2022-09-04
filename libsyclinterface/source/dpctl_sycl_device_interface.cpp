@@ -367,20 +367,6 @@ DPCTLDevice_GetDriverVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return cstr_driver;
 }
 
-bool DPCTLDevice_IsHostUnifiedMemory(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    bool ret = false;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            ret = D->get_info<info::device::host_unified_memory>();
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
-    return ret;
-}
-
 bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
                        __dpctl_keep const DPCTLSyclDeviceRef DRef2)
 {

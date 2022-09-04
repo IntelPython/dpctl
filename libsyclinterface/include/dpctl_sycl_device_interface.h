@@ -313,19 +313,6 @@ __dpctl_give const char *
 DPCTLDevice_GetVendor(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
- * @brief Returns True if the device and the host share a unified memory
- * subsystem, else returns False.
- *
- * @param    DRef           Opaque pointer to a ``sycl::device``
- * @return   Boolean indicating if the device shares a unified memory subsystem
- * with the host.
- * @ingroup DeviceInterface
- */
-DPCTL_API
-bool DPCTLDevice_IsHostUnifiedMemory(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef);
-
-/*!
  * @brief Checks if two DPCTLSyclDeviceRef objects point to the same
  * sycl::device.
  *
