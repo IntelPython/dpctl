@@ -29,7 +29,8 @@
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 
-using namespace cl::sycl;
+using namespace sycl;
+
 struct TestUnsupportedFilters : public ::testing::TestWithParam<const char *>
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;

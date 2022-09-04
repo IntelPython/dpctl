@@ -36,7 +36,7 @@
 #include <set>
 #include <sstream>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {

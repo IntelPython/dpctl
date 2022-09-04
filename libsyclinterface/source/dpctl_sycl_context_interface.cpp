@@ -30,7 +30,7 @@
 #include <CL/sycl.hpp>
 #include <vector>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {

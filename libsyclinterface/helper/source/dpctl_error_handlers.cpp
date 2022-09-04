@@ -31,8 +31,7 @@
 #include <glog/logging.h>
 #endif
 
-void DPCTL_AsyncErrorHandler::operator()(
-    const cl::sycl::exception_list &exceptions)
+void DPCTL_AsyncErrorHandler::operator()(const sycl::exception_list &exceptions)
 {
     for (std::exception_ptr const &e : exceptions) {
         try {

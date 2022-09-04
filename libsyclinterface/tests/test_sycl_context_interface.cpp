@@ -33,7 +33,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {

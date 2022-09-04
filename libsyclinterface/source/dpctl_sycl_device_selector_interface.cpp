@@ -28,7 +28,7 @@
 #include "dpctl_error_handlers.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {

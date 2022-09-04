@@ -32,7 +32,7 @@
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 struct TestDPCTLSyclDeviceInterface
     : public ::testing::TestWithParam<const char *>

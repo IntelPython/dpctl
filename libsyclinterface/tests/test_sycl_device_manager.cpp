@@ -186,7 +186,7 @@ struct TestGetNumDevicesForBTy : public ::testing::TestWithParam<int>
 
 TEST_P(TestGetNumDevicesForBTy, ChkGetNumDevices)
 {
-    auto platforms = cl::sycl::platform::get_platforms();
+    auto platforms = sycl::platform::get_platforms();
     size_t nDevices = 0;
     sycl::default_selector mRanker;
     for (const auto &P : platforms) {

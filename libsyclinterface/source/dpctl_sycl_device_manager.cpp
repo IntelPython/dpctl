@@ -35,7 +35,7 @@
 #include <unordered_map>
 #include <vector>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {

@@ -30,7 +30,7 @@
 #include "dpctl_sycl_device_interface.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {

@@ -31,7 +31,7 @@
 #include <CL/sycl.hpp> /* Sycl headers */
 #include <cstdint>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {

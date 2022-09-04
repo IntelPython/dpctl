@@ -35,7 +35,7 @@
 #include <cstring>
 #include <vector>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {

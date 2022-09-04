@@ -35,7 +35,7 @@
 #include <thread>
 
 using namespace std;
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {

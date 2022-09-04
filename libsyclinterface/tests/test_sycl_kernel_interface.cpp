@@ -36,7 +36,7 @@
 #include <array>
 #include <gtest/gtest.h>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {
