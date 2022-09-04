@@ -1131,7 +1131,8 @@ cdef class SyclDevice(_SyclDevice):
             int: Cache size in bytes
         """
         cdef uint64_t cache_sz = DPCTLDevice_GetGlobalMemCacheSize(
-            self._device_ref)
+            self._device_ref
+	)
         return cache_sz
 
     @property
@@ -1142,7 +1143,8 @@ cdef class SyclDevice(_SyclDevice):
             int: Cache size in bytes
         """
         cdef uint64_t cache_line_sz = DPCTLDevice_GetGlobalMemCacheLineSize(
-            self._device_ref)
+            self._device_ref
+	)
         return cache_line_sz
 
     cdef cpp_bool equals(self, SyclDevice other):
