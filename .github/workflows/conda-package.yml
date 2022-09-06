@@ -562,6 +562,7 @@ jobs:
           conda activate test_dpctl
           cd /home/runner/work/array-api-tests
           pip install -r requirements.txt
+          pip install numpy==1.22.1
       - name: Install jq
         shell: bash -l {0}
         run: |
@@ -570,20 +571,20 @@ jobs:
         id: run-array-api-tests
         shell: bash -l {0}
         run: |
-          FILE=/home/runner/work/array-api-tests/.report.json
+          FILE=/home/runner/work/.report.json
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
           # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
           export OCL_ICD_FILENAMES=libintelocl.so
           export SYCL_ENABLE_HOST_DEVICE=1
           python -c "import dpctl; dpctl.lsplatform()"
-          export ARRAY_API_TESTS_MODULE=dpctl.tensor
+          export ARRAY_API_TESTS_MODULE=numpy.array_api
           cd /home/runner/work/array-api-tests
           pytest --ci --json-report --json-report-file=$FILE array_api_tests/ || true
       - name: Set Github environment variables
         shell: bash -l {0}
         run: |
-          FILE=/home/runner/work/array-api-tests/.report.json
+          FILE=/home/runner/work/.report.json
           if test -f "$FILE"; then
             PASSED_TESTS=$(jq '.summary | .passed // 0' $FILE)
             FAILED_TESTS=$(jq '.summary | .failed // 0' $FILE)
