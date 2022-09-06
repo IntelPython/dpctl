@@ -39,11 +39,12 @@ DPCTL_C_EXTERN_C_BEGIN
  */
 
 /*!
- * @brief Returns the number of arguments for the OpenCL kernel.
+ * @brief Returns the number of arguments for the sycl
+ * interoperability kernel.
  *
- * @param    KRef           DPCTLSyclKernelRef pointer to an OpenCL
+ * @param    KRef           DPCTLSyclKernelRef pointer to a SYCL
  *                          interoperability kernel.
- * @return   Returns the number of arguments for the OpenCL interoperability
+ * @return   Returns the number of arguments for the interoperability
  *           kernel.
  * @ingroup KernelInterface
  */
@@ -51,13 +52,112 @@ DPCTL_API
 size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef KRef);
 
 /*!
- * @brief Deletes the DPCTLSyclKernelRef after casting it to a sycl::kernel.
+ * @brief Deletes the DPCTLSyclKernelRef after casting it to a
+ * ``sycl::kernel``.
  *
- * @param    KRef           DPCTLSyclKernelRef pointer to an OpenCL
+ * @param    KRef           DPCTLSyclKernelRef pointer to a SYCL
  *                          interoperability kernel.
  * @ingroup KernelInterface
  */
 DPCTL_API
 void DPCTLKernel_Delete(__dpctl_take DPCTLSyclKernelRef KRef);
+
+/*!
+ * !brief Wrapper around
+ * `kernel::get_info<info::kernel_device_specific::work_group_size>()`.
+ *
+ * @param   KRef           DPCTLSyclKernelRef pointer to a SYCL
+ *                         interoperability kernel.
+ * @return  Returns the maximum number of work-items in a work-group
+ *          that can be used to execute a kernel on the device it was
+ *          built for.
+ * @ingroup KernelInterface
+ */
+DPCTL_API
+size_t DPCTLKernel_GetWorkGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef);
+
+/*!
+ * !brief Wrapper around
+ * `kernel::get_info<info::kernel_device_specific::preferred_work_group_size_multiple>()`.
+ *
+ * @param   KRef           DPCTLSyclKernelRef pointer to a SYCL
+ *                         interoperability kernel.
+ * @return  Returns a value, of which work-group size is preferred to be a
+ * multiple, for executing a kernel on the device it was built for.
+ * @ingroup KernelInterface
+ */
+DPCTL_API
+size_t DPCTLKernel_GetPreferredWorkGroupSizeMultiple(
+    __dpctl_keep const DPCTLSyclKernelRef KRef);
+
+/*!
+ * !brief Wrapper around
+ * `kernel::get_info<info::kernel_device_specific::private_mem_size>()`.
+ *
+ * @param   KRef           DPCTLSyclKernelRef pointer to a SYCL
+ *                         interoperability kernel.
+ * @return  Returns the minimum amount of private memory, in bytes,
+ *          used by each work-item in the kernel.
+ * @ingroup KernelInterface
+ */
+DPCTL_API
+size_t
+DPCTLKernel_GetPrivateMemSize(__dpctl_keep const DPCTLSyclKernelRef KRef);
+
+/*!
+ * !brief Wrapper around
+ * `kernel::get_info<info::kernel_device_specific::max_num_sub_groups>()`.
+ *
+ * @param   KRef           DPCTLSyclKernelRef pointer to an SYCL
+ *                         interoperability kernel.
+ * @return  Returns the maximum number of sub-groups for this kernel.
+ * @ingroup KernelInterface
+ */
+DPCTL_API
+uint32_t
+DPCTLKernel_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclKernelRef KRef);
+
+#if 0
+/*!
+ * !brief Wrapper around
+ * `kernel::get_info<info::kernel_device_specific::max_sub_group_size>()`.
+ *
+ * @param   KRef           DPCTLSyclKernelRef pointer to an SYCL
+ *                         interoperability kernel.
+ * @return  Returns the maximum sub-group size for this kernel.
+ * @ingroup KernelInterface
+ */
+DPCTL_API
+uint32_t
+DPCTLKernel_GetMaxSubGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef);
+#endif
+
+/*!
+ * !brief Wrapper around
+ * `kernel::get_info<info::kernel_device_specific::compile_num_sub_groups>()`.
+ *
+ * @param   KRef           DPCTLSyclKernelRef pointer to an SYCL
+ *                         interoperability kernel.
+ * @return  Returns the number of sub-groups specified by the kernel,
+ *          or 0 (if not specified).
+ * @ingroup KernelInterface
+ */
+DPCTL_API
+uint32_t
+DPCTLKernel_GetCompileNumSubGroups(__dpctl_keep const DPCTLSyclKernelRef KRef);
+
+/*!
+ * !brief Wrapper around
+ * `kernel::get_info<info::kernel_device_specific::compile_sub_group_size>()`.
+ *
+ * @param   KRef           DPCTLSyclKernelRef pointer to an SYCL
+ *                         interoperability kernel.
+ * @return  Returns the required sub-group size specified by this kernel,
+ *          or 0 (if not specified).
+ * @ingroup KernelInterface
+ */
+DPCTL_API
+uint32_t
+DPCTLKernel_GetCompileSubGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef);
 
 DPCTL_C_EXTERN_C_END

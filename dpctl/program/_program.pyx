@@ -26,11 +26,18 @@ a OpenCL source string or a SPIR-V binary file.
 """
 
 cimport cython.array
+from libc.stdint cimport uint32_t
 
-from dpctl._backend cimport (  # noqa: E211, E402
+from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLCString_Delete,
     DPCTLKernel_Delete,
+    DPCTLKernel_GetCompileNumSubGroups,
+    DPCTLKernel_GetCompileSubGroupSize,
+    DPCTLKernel_GetMaxNumSubGroups,
     DPCTLKernel_GetNumArgs,
+    DPCTLKernel_GetPreferredWorkGroupSizeMultiple,
+    DPCTLKernel_GetPrivateMemSize,
+    DPCTLKernel_GetWorkGroupSize,
     DPCTLKernelBundle_CreateFromOCLSource,
     DPCTLKernelBundle_CreateFromSpirv,
     DPCTLKernelBundle_Delete,
@@ -94,6 +101,68 @@ cdef class SyclKernel:
             this :class:`dpctl.SyclKernel` object cast to a ``size_t``.
         """
         return int(<size_t>self._kernel_ref)
+
+    @property
+    def num_args(self):
+        """ Property equivalent to method call `SyclKernel.get_num_args()`
+        """
+        return self.get_num_args()
+
+    @property
+    def work_group_size(self):
+        """ Returns the maximum number of work-items in a work-group that can
+        be used to execute the kernel on device it was built for.
+        """
+        cdef size_t v = DPCTLKernel_GetWorkGroupSize(self._kernel_ref)
+        return v
+
+    @property
+    def preferred_work_group_size_multiple(self):
+        """ Returns a value, of which work-group size is preferred to be
+        a multiple, for executing the kernel on the device it was built for.
+        """
+        cdef size_t v = DPCTLKernel_GetPreferredWorkGroupSizeMultiple(
+            self._kernel_ref
+	)
+        return v
+
+    @property
+    def private_mem_size(self):
+        """ Returns the minimum amount of private memory, in bytes, used by each
+        work-item in the kernel.
+        """
+        cdef size_t v = DPCTLKernel_GetPrivateMemSize(self._kernel_ref)
+        return v
+
+    @property
+    def max_num_sub_groups(self):
+        """ Returns the maximum number of sub-groups for this kernel.
+        """
+        cdef uint32_t n = DPCTLKernel_GetMaxNumSubGroups(self._kernel_ref)
+        return n
+
+    @property
+    def max_sub_group_size(self):
+        """ Returns the maximum sub-groups size for this kernel.
+        """
+        cdef uint32_t sz = 0
+        return NotImplemented
+
+    @property
+    def compile_num_sub_groups(self):
+        """ Returns the number of sub-groups specified by this kernel,
+        or 0 (if not specified).
+        """
+        cdef size_t n = DPCTLKernel_GetCompileNumSubGroups(self._kernel_ref)
+        return n
+
+    @property
+    def compile_sub_group_size(self):
+        """ Returns the required sub-group size specified by this kernel,
+        or 0 (if not specified).
+        """
+        cdef size_t n = DPCTLKernel_GetCompileSubGroupSize(self._kernel_ref)
+        return n
 
 
 cdef class SyclProgram:

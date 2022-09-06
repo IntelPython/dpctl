@@ -21,7 +21,7 @@
 types defined by dpctl's C API.
 """
 
-from libc.stdint cimport int64_t, uint32_t
+from libc.stdint cimport int64_t, uint32_t, uint64_t
 from libcpp cimport bool
 
 
@@ -112,6 +112,12 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _RUNNING            'DPCTL_RUNNING'
         _COMPLETE           'DPCTL_COMPLETE'
 
+    ctypedef enum _global_mem_cache_type 'DPCTLGlobalMemCacheType':
+        _MEM_CACHE_TYPE_INDETERMINATE    'DPCTL_MEM_CACHE_TYPE_INDETERMINATE'
+        _MEM_CACHE_TYPE_NONE             'DPCTL_MEM_CACHE_TYPE_NONE'
+        _MEM_CACHE_TYPE_READ_ONLY        'DPCTL_MEM_CACHE_TYPE_READ_ONLY'
+        _MEM_CACHE_TYPE_READ_WRITE       'DPCTL_MEM_CACHE_TYPE_READ_WRITE'
+
 
 cdef extern from "syclinterface/dpctl_sycl_types.h":
     cdef struct DPCTLOpaqueSyclContext
@@ -195,6 +201,10 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
         _partition_affinity_domain_type PartitionAffinityDomainTy)
     cdef DPCTLSyclDeviceRef DPCTLDevice_GetParentDevice(const DPCTLSyclDeviceRef DRef)
     cdef size_t DPCTLDevice_GetProfilingTimerResolution(const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetGlobalMemCacheLineSize(const DPCTLSyclDeviceRef DRef)
+    cdef uint64_t DPCTLDevice_GetGlobalMemCacheSize(const DPCTLSyclDeviceRef DRef)
+    cdef _global_mem_cache_type DPCTLDevice_GetGlobalMemCacheType(
+        const DPCTLSyclDeviceRef DRef)
 
 
 cdef extern from "syclinterface/dpctl_sycl_device_manager.h":
@@ -254,6 +264,14 @@ cdef extern from "syclinterface/dpctl_sycl_event_interface.h":
 cdef extern from "syclinterface/dpctl_sycl_kernel_interface.h":
     cdef size_t DPCTLKernel_GetNumArgs(const DPCTLSyclKernelRef KRef)
     cdef void DPCTLKernel_Delete(DPCTLSyclKernelRef KRef)
+    cdef size_t DPCTLKernel_GetWorkGroupSize(const DPCTLSyclKernelRef KRef)
+    cdef size_t DPCTLKernel_GetPreferredWorkGroupSizeMultiple(const DPCTLSyclKernelRef KRef)
+    cdef size_t DPCTLKernel_GetPrivateMemSize(const DPCTLSyclKernelRef KRef)
+    cdef uint32_t DPCTLKernel_GetMaxNumSubGroups(const DPCTLSyclKernelRef KRef)
+##  Next line is commented out due to issue in DPC++ runtime
+#   cdef uint32_t DPCTLKernel_GetMaxSubGroupSize(const DPCTLSyclKernelRef KRef)
+    cdef uint32_t DPCTLKernel_GetCompileNumSubGroups(const DPCTLSyclKernelRef KRef)
+    cdef uint32_t DPCTLKernel_GetCompileSubGroupSize(const DPCTLSyclKernelRef KRef)
 
 
 cdef extern from "syclinterface/dpctl_sycl_platform_manager.h":

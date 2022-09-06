@@ -60,7 +60,8 @@ typedef struct DPCTLOpaqueSyclEvent *DPCTLSyclEventRef;
 typedef struct DPCTLOpaqueSyclKernel *DPCTLSyclKernelRef;
 
 /*!
- * @brief Opaque pointer to a ``sycl::kernel_bundle``
+ * @brief Opaque pointer to a
+ * ``sycl::kernel_bundle<sycl::bundle_state::executable>``
  *
  */
 typedef struct DPCTLOpaqueSyclKernelBundle *DPCTLSyclKernelBundleRef;

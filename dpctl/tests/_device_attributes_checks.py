@@ -36,52 +36,52 @@ list_of_invalid_filter_selectors = [
 
 
 # Unit test cases that will be run for every device
-def check_get_max_compute_units(device):
+def check_max_compute_units(device):
     max_compute_units = device.max_compute_units
     assert max_compute_units > 0
 
 
-def check_get_global_mem_size(device):
+def check_global_mem_size(device):
     global_mem_size = device.global_mem_size
     assert global_mem_size > 0
 
 
-def check_get_local_mem_size(device):
+def check_local_mem_size(device):
     local_mem_size = device.local_mem_size
     assert local_mem_size > 0
 
 
-def check_get_max_work_item_dims(device):
+def check_max_work_item_dims(device):
     max_work_item_dims = device.max_work_item_dims
     assert max_work_item_dims > 0
 
 
-def check_get_max_work_item_sizes1d(device):
+def check_max_work_item_sizes1d(device):
     max_work_item_sizes = device.max_work_item_sizes1d
     for size in max_work_item_sizes:
         assert size is not None
 
 
-def check_get_max_work_item_sizes2d(device):
+def check_max_work_item_sizes2d(device):
     max_work_item_sizes = device.max_work_item_sizes2d
     for size in max_work_item_sizes:
         assert size is not None
 
 
-def check_get_max_work_item_sizes3d(device):
+def check_max_work_item_sizes3d(device):
     max_work_item_sizes = device.max_work_item_sizes3d
     for size in max_work_item_sizes:
         assert size is not None
 
 
 @pytest.mark.filterwarnings("DeprecationWarning:")
-def check_get_max_work_item_sizes(device):
+def check_max_work_item_sizes(device):
     max_work_item_sizes = device.max_work_item_sizes
     for size in max_work_item_sizes:
         assert size is not None
 
 
-def check_get_max_work_group_size(device):
+def check_max_work_group_size(device):
     max_work_group_size = device.max_work_group_size
     # Special case for FPGA simulator
     if device.is_accelerator:
@@ -90,7 +90,7 @@ def check_get_max_work_group_size(device):
         assert max_work_group_size > 0
 
 
-def check_get_max_num_sub_groups(device):
+def check_max_num_sub_groups(device):
     max_num_sub_groups = device.max_num_sub_groups
     # Special case for FPGA simulator
     if device.is_accelerator or device.is_host:
@@ -267,105 +267,105 @@ def check_is_host(device):
         pytest.fail("is_hostcall failed")
 
 
-def check_get_max_read_image_args(device):
+def check_max_read_image_args(device):
     try:
         device.max_read_image_args
     except Exception:
         pytest.fail("max_read_image_args call failed")
 
 
-def check_get_max_write_image_args(device):
+def check_max_write_image_args(device):
     try:
         device.max_write_image_args
     except Exception:
         pytest.fail("max_write_image_args call failed")
 
 
-def check_get_image_2d_max_width(device):
+def check_image_2d_max_width(device):
     try:
         device.image_2d_max_width
     except Exception:
         pytest.fail("image_2d_max_width call failed")
 
 
-def check_get_image_2d_max_height(device):
+def check_image_2d_max_height(device):
     try:
         device.image_2d_max_height
     except Exception:
         pytest.fail("image_2d_max_height call failed")
 
 
-def check_get_image_3d_max_width(device):
+def check_image_3d_max_width(device):
     try:
         device.image_3d_max_width
     except Exception:
         pytest.fail("image_3d_max_width call failed")
 
 
-def check_get_image_3d_max_height(device):
+def check_image_3d_max_height(device):
     try:
         device.image_3d_max_height
     except Exception:
         pytest.fail("image_3d_max_height call failed")
 
 
-def check_get_image_3d_max_depth(device):
+def check_image_3d_max_depth(device):
     try:
         device.image_3d_max_depth
     except Exception:
         pytest.fail("image_3d_max_depth call failed")
 
 
-def check_get_sub_group_independent_forward_progress(device):
+def check_sub_group_independent_forward_progress(device):
     try:
         device.sub_group_independent_forward_progress
     except Exception:
         pytest.fail("sub_group_independent_forward_progress call failed")
 
 
-def check_get_preferred_vector_width_char(device):
+def check_preferred_vector_width_char(device):
     try:
         device.preferred_vector_width_char
     except Exception:
         pytest.fail("preferred_vector_width_char call failed")
 
 
-def check_get_preferred_vector_width_short(device):
+def check_preferred_vector_width_short(device):
     try:
         device.preferred_vector_width_short
     except Exception:
         pytest.fail("preferred_vector_width_short call failed")
 
 
-def check_get_preferred_vector_width_int(device):
+def check_preferred_vector_width_int(device):
     try:
         device.preferred_vector_width_int
     except Exception:
         pytest.fail("preferred_vector_width_int call failed")
 
 
-def check_get_preferred_vector_width_long(device):
+def check_preferred_vector_width_long(device):
     try:
         device.preferred_vector_width_long
     except Exception:
         pytest.fail("preferred_vector_width_long call failed")
 
 
-def check_get_preferred_vector_width_float(device):
+def check_preferred_vector_width_float(device):
     try:
         device.preferred_vector_width_float
     except Exception:
         pytest.fail("preferred_vector_width_float call failed")
 
 
-def check_get_preferred_vector_width_double(device):
+def check_preferred_vector_width_double(device):
     try:
         device.preferred_vector_width_double
     except Exception:
         pytest.fail("preferred_vector_width_double call failed")
 
 
-def check_get_preferred_vector_width_half(device):
+def check_preferred_vector_width_half(device):
     try:
         device.preferred_vector_width_half
     except Exception:
@@ -514,27 +514,93 @@ def check_platform(device):
     assert isinstance(p, dpctl.SyclPlatform)
 
 
+def check_parent_device(device):
+    pd = device.parent_device
+    assert pd is None or isinstance(pd, dpctl.SyclDevice)
+
+
+def check_filter_string(device):
+    try:
+        fs = device.filter_string
+        assert type(fs) is str
+        dd = dpctl.SyclDevice(fs)
+        assert device == dd
+    except TypeError:
+        pass
+
+
+def check_name(device):
+    dn = device.name
+    assert dn
+    assert type(dn) is str
+
+
+def check_driver_version(device):
+    dv = device.driver_version
+    assert dv
+    assert type(dv) is str
+
+
+def check_vendor(device):
+    ve = device.vendor
+    assert ve or device.is_host
+    assert type(ve) is str
+
+
+def check_default_selector_score(device):
+    sc = device.default_selector_score
+    assert type(sc) is int
+    assert sc > 0
+
+
+def check_backend(device):
+    be = device.backend
+    assert type(be) is dpctl.backend_type
+
+
+def check_device_type(device):
+    dt = device.device_type
+    assert type(dt) is dpctl.device_type
+
+
+def check_global_mem_cache_type(device):
+    gmc_ty = device.global_mem_cache_type
+    assert type(gmc_ty) is dpctl.global_mem_cache_type
+
+
+def check_global_mem_cache_size(device):
+    gmc_sz = device.global_mem_cache_size
+    assert type(gmc_sz) is int
+    assert gmc_sz
+
+
+def check_global_mem_cache_line_size(device):
+    gmc_sz = device.global_mem_cache_line_size
+    assert type(gmc_sz) is int
+    assert gmc_sz
+
+
 list_of_checks = [
-    check_get_max_compute_units,
-    check_get_max_work_item_dims,
-    check_get_max_work_item_sizes1d,
-    check_get_max_work_item_sizes2d,
-    check_get_max_work_item_sizes3d,
-    check_get_max_work_item_sizes,
-    check_get_max_work_group_size,
-    check_get_max_num_sub_groups,
+    check_max_compute_units,
+    check_max_work_item_dims,
+    check_max_work_item_sizes1d,
+    check_max_work_item_sizes2d,
+    check_max_work_item_sizes3d,
+    check_max_work_item_sizes,
+    check_max_work_group_size,
+    check_max_num_sub_groups,
     check_is_accelerator,
     check_is_cpu,
     check_is_gpu,
     check_is_host,
-    check_get_sub_group_independent_forward_progress,
-    check_get_preferred_vector_width_char,
-    check_get_preferred_vector_width_short,
-    check_get_preferred_vector_width_int,
-    check_get_preferred_vector_width_long,
-    check_get_preferred_vector_width_float,
-    check_get_preferred_vector_width_double,
-    check_get_preferred_vector_width_half,
+    check_sub_group_independent_forward_progress,
+    check_preferred_vector_width_char,
+    check_preferred_vector_width_short,
+    check_preferred_vector_width_int,
+    check_preferred_vector_width_long,
+    check_preferred_vector_width_float,
+    check_preferred_vector_width_double,
+    check_preferred_vector_width_half,
     check_has_aspect_host,
     check_has_aspect_cpu,
     check_has_aspect_gpu,
@@ -555,13 +621,13 @@ list_of_checks = [
     check_has_aspect_usm_atomic_host_allocations,
     check_has_aspect_usm_atomic_shared_allocations,
     check_has_aspect_host_debuggable,
-    check_get_max_read_image_args,
-    check_get_max_write_image_args,
-    check_get_image_2d_max_width,
-    check_get_image_2d_max_height,
-    check_get_image_3d_max_width,
-    check_get_image_3d_max_height,
-    check_get_image_3d_max_depth,
+    check_max_read_image_args,
+    check_max_write_image_args,
+    check_image_2d_max_width,
+    check_image_2d_max_height,
+    check_image_3d_max_width,
+    check_image_3d_max_height,
+    check_image_3d_max_depth,
     check_create_sub_devices_equally,
     check_create_sub_devices_by_counts,
     check_create_sub_devices_by_affinity_not_applicable,
@@ -573,10 +639,21 @@ list_of_checks = [
     check_create_sub_devices_by_affinity_next_partitionable,
     check_print_device_info,
     check_repr,
-    check_get_global_mem_size,
-    check_get_local_mem_size,
+    check_global_mem_size,
+    check_local_mem_size,
     check_profiling_timer_resolution,
     check_platform,
+    check_parent_device,
+    check_filter_string,
+    check_vendor,
+    check_driver_version,
+    check_name,
+    check_default_selector_score,
+    check_backend,
+    check_device_type,
+    check_global_mem_cache_type,
+    check_global_mem_cache_size,
+    check_global_mem_cache_line_size,
 ]
 
 

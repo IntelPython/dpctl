@@ -96,3 +96,22 @@ class event_status_type(Enum):
     submitted = auto()
     running = auto()
     complete = auto()
+
+
+class global_mem_cache_type(Enum):
+    """
+    An enumeration of global memory cache types for a device.
+
+    :Example:
+        .. code-block:: python
+
+            import dpctl
+            dev = dpctl.SyclDevice()
+            print(dev.global_mem_cache_type)
+            # Possible output: <global_mem_cache_type.read_write: 4>
+    """
+
+    indeterminate = auto()
+    none = auto()
+    read_only = auto()
+    read_write = auto()
