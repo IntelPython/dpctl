@@ -524,14 +524,13 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
         }
     }
 
-    // check same contexts
+    // check compatibility of execution queue and allocation queue
     sycl::queue src_q = src.get_queue();
     sycl::queue dst_q = dst.get_queue();
 
-    sycl::context exec_ctx = exec_q.get_context();
-    if (src_q.get_context() != exec_ctx || dst_q.get_context() != exec_ctx) {
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src_q, dst_q})) {
         throw py::value_error(
-            "Execution queue context is not the same as allocation contexts");
+            "Execution queue is not compatible with allocation queues");
     }
 
     int src_typenum = src.get_typenum();
@@ -938,10 +937,9 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     sycl::queue src_q = src.get_queue();
     sycl::queue dst_q = dst.get_queue();
 
-    sycl::context exec_ctx = exec_q.get_context();
-    if (src_q.get_context() != exec_ctx || dst_q.get_context() != exec_ctx) {
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src_q, dst_q})) {
         throw py::value_error(
-            "Execution queue context is not the same as allocation contexts");
+            "Execution queue is not compatible with allocation queues");
     }
 
     if (src_nelems == 1) {
@@ -1255,10 +1253,9 @@ void copy_numpy_ndarray_into_usm_ndarray(
 
     sycl::queue dst_q = dst.get_queue();
 
-    sycl::context exec_ctx = exec_q.get_context();
-    if (dst_q.get_context() != exec_ctx) {
-        throw py::value_error("Execution queue context is not the same as the "
-                              "allocation context");
+    if (!dpctl::utils::queues_are_compatible(exec_q, {dst_q})) {
+        throw py::value_error("Execution queue is not compatible with the "
+                              "allocation queue");
     }
 
     // here we assume that NumPy's type numbers agree with ours for types
