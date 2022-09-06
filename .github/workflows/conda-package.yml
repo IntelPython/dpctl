@@ -562,7 +562,6 @@ jobs:
           conda activate test_dpctl
           cd /home/runner/work/array-api-tests
           pip install -r requirements.txt
-          pip install numpy==1.22.1
       - name: Install jq
         shell: bash -l {0}
         run: |
@@ -578,7 +577,7 @@ jobs:
           export OCL_ICD_FILENAMES=libintelocl.so
           export SYCL_ENABLE_HOST_DEVICE=1
           python -c "import dpctl; dpctl.lsplatform()"
-          export ARRAY_API_TESTS_MODULE=numpy.array_api
+          export ARRAY_API_TESTS_MODULE=dpctl.tensor
           cd /home/runner/work/array-api-tests
           pytest --ci --json-report --json-report-file=$FILE array_api_tests/ || true
       - name: Set Github environment variables
