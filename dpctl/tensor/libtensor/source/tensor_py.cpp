@@ -932,6 +932,7 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
 
     auto fn = copy_for_reshape_generic_dispatch_vector[type_id];
 
+    // packed_shape_strides = [src_shape, src_strides, dst_shape, dst_strides]
     py::ssize_t *packed_shapes_strides =
         sycl::malloc_device<py::ssize_t>(2 * (src_nd + dst_nd), exec_q);
 
@@ -939,92 +940,88 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
         throw std::runtime_error("Unabled to allocate device memory");
     }
 
-    sycl::event src_shape_copy_ev =
-        exec_q.copy<py::ssize_t>(src_shape, packed_shapes_strides, src_nd);
-    sycl::event dst_shape_copy_ev = exec_q.copy<py::ssize_t>(
-        dst_shape, packed_shapes_strides + 2 * src_nd, dst_nd);
+    using shT = std::vector<py::ssize_t>;
+    std::shared_ptr<shT> packed_host_shapes_strides_shp =
+        std::make_shared<shT>(2 * (src_nd + dst_nd));
+
+    std::copy(src_shape, src_shape + src_nd,
+              packed_host_shapes_strides_shp->begin());
+    std::copy(dst_shape, dst_shape + dst_nd,
+              packed_host_shapes_strides_shp->begin() + 2 * src_nd);
 
     const py::ssize_t *src_strides = src.get_strides_raw();
-    sycl::event src_strides_copy_ev;
     if (src_strides == nullptr) {
-        using shT = std::vector<py::ssize_t>;
         int src_flags = src.get_flags();
-        std::shared_ptr<shT> contig_src_strides_shp;
         if (src_flags & USM_ARRAY_C_CONTIGUOUS) {
-            contig_src_strides_shp =
-                std::make_shared<shT>(c_contiguous_strides(src_nd, src_shape));
+            const shT &src_contig_strides =
+                c_contiguous_strides(src_nd, src_shape);
+            std::copy(src_contig_strides.begin(), src_contig_strides.end(),
+                      packed_host_shapes_strides_shp->begin() + src_nd);
         }
         else if (src_flags & USM_ARRAY_F_CONTIGUOUS) {
-            contig_src_strides_shp =
-                std::make_shared<shT>(f_contiguous_strides(src_nd, src_shape));
+            const shT &src_contig_strides =
+                c_contiguous_strides(src_nd, src_shape);
+            std::copy(src_contig_strides.begin(), src_contig_strides.end(),
+                      packed_host_shapes_strides_shp->begin() + src_nd);
         }
         else {
-            sycl::event::wait({src_shape_copy_ev, dst_shape_copy_ev});
             sycl::free(packed_shapes_strides, exec_q);
             throw std::runtime_error(
                 "Invalid src array encountered: in copy_for_reshape function");
         }
-        src_strides_copy_ev =
-            exec_q.copy<py::ssize_t>(contig_src_strides_shp->data(),
-                                     packed_shapes_strides + src_nd, src_nd);
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(src_strides_copy_ev);
-            cgh.host_task([contig_src_strides_shp]() {
-                // Capturing shared pointer ensure it is freed after its data
-                // are copied into packed USM vector
-            });
-        });
     }
     else {
-        src_strides_copy_ev = exec_q.copy<py::ssize_t>(
-            src_strides, packed_shapes_strides + src_nd, src_nd);
+        std::copy(src_strides, src_strides + src_nd,
+                  packed_host_shapes_strides_shp->begin() + src_nd);
     }
 
     const py::ssize_t *dst_strides = dst.get_strides_raw();
-    sycl::event dst_strides_copy_ev;
     if (dst_strides == nullptr) {
-        using shT = std::vector<py::ssize_t>;
         int dst_flags = dst.get_flags();
-        std::shared_ptr<shT> contig_dst_strides_shp;
         if (dst_flags & USM_ARRAY_C_CONTIGUOUS) {
-            contig_dst_strides_shp =
-                std::make_shared<shT>(c_contiguous_strides(dst_nd, dst_shape));
+            const shT &dst_contig_strides =
+                c_contiguous_strides(dst_nd, dst_shape);
+            std::copy(dst_contig_strides.begin(), dst_contig_strides.end(),
+                      packed_host_shapes_strides_shp->begin() + 2 * src_nd +
+                          dst_nd);
         }
         else if (dst_flags & USM_ARRAY_F_CONTIGUOUS) {
-            contig_dst_strides_shp =
-                std::make_shared<shT>(f_contiguous_strides(dst_nd, dst_shape));
+            const shT &dst_contig_strides =
+                f_contiguous_strides(dst_nd, dst_shape);
+            std::copy(dst_contig_strides.begin(), dst_contig_strides.end(),
+                      packed_host_shapes_strides_shp->begin() + 2 * src_nd +
+                          dst_nd);
         }
         else {
-            sycl::event::wait(
-                {src_shape_copy_ev, dst_shape_copy_ev, src_strides_copy_ev});
             sycl::free(packed_shapes_strides, exec_q);
             throw std::runtime_error(
                 "Invalid dst array encountered: in copy_for_reshape function");
         }
-        dst_strides_copy_ev = exec_q.copy<py::ssize_t>(
-            contig_dst_strides_shp->data(),
-            packed_shapes_strides + 2 * src_nd + dst_nd, dst_nd);
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(dst_strides_copy_ev);
-            cgh.host_task([contig_dst_strides_shp]() {
-                // Capturing shared pointer ensure it is freed after its data
-                // are copied into packed USM vector
-            });
-        });
     }
     else {
-        dst_strides_copy_ev = exec_q.copy<py::ssize_t>(
-            dst_strides, packed_shapes_strides + 2 * src_nd + dst_nd, dst_nd);
+        std::copy(dst_strides, dst_strides + dst_nd,
+                  packed_host_shapes_strides_shp->begin() + 2 * src_nd +
+                      dst_nd);
     }
+
+    // copy packed shapes and strides from host to devices
+    sycl::event packed_shape_strides_copy_ev = exec_q.copy<py::ssize_t>(
+        packed_host_shapes_strides_shp->data(), packed_shapes_strides,
+        packed_host_shapes_strides_shp->size());
+    exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(packed_shape_strides_copy_ev);
+        cgh.host_task([packed_host_shapes_strides_shp] {
+            // Capturing shared pointer ensures that the underlying vector is
+            // not destroyed until after its data are copied into packed USM
+            // vector
+        });
+    });
 
     char *src_data = src.get_data();
     char *dst_data = dst.get_data();
 
-    std::vector<sycl::event> all_deps(depends.size() + 4);
-    all_deps.push_back(src_shape_copy_ev);
-    all_deps.push_back(dst_shape_copy_ev);
-    all_deps.push_back(src_strides_copy_ev);
-    all_deps.push_back(dst_strides_copy_ev);
+    std::vector<sycl::event> all_deps(depends.size() + 1);
+    all_deps.push_back(packed_shape_strides_copy_ev);
     all_deps.insert(std::end(all_deps), std::begin(depends), std::end(depends));
 
     sycl::event copy_for_reshape_event =
