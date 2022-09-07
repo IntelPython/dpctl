@@ -707,8 +707,9 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
                   shp_host_shape_strides->begin() + nd);
     }
 
-    sycl::event copy_shape_ev = exec_q.copy<py::ssize_t>(
-        shp_host_shape_strides->data(), shape_strides, 3 * nd);
+    sycl::event copy_shape_ev =
+        exec_q.copy<py::ssize_t>(shp_host_shape_strides->data(), shape_strides,
+                                 shp_host_shape_strides->size());
 
     exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_shape_ev);
