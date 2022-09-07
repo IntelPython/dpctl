@@ -31,7 +31,7 @@
 #include <CL/sycl.hpp>
 #include <oneapi/mkl.hpp>
 
-int c_columnwise_total(sycl::queue &q,
+int c_columnwise_total(sycl::queue q,
                        size_t n,
                        size_t m,
                        double *mat,
