@@ -479,6 +479,46 @@ void simplify_iteration_space(int &nd,
     }
 }
 
+sycl::event _populate_packed_shape_strides_for_copycast_kernel(
+    sycl::queue exec_q,
+    int src_flags,
+    int dst_flags,
+    py::ssize_t *device_shape_strides, // to be populated
+    const std::vector<py::ssize_t> &common_shape,
+    const std::vector<py::ssize_t> &src_strides,
+    const std::vector<py::ssize_t> &dst_strides)
+{
+    using shT = std::vector<py::ssize_t>;
+    size_t nd = common_shape.size();
+
+    // create host temporary for packed shape and strides managed by shared
+    // pointer. Packed vector is concatenation of common_shape, src_stride and
+    // std_strides
+    std::shared_ptr<shT> shp_host_shape_strides = std::make_shared<shT>(3 * nd);
+    std::copy(common_shape.begin(), common_shape.end(),
+              shp_host_shape_strides->begin());
+
+    std::copy(src_strides.begin(), src_strides.end(),
+              shp_host_shape_strides->begin() + nd);
+
+    std::copy(dst_strides.begin(), dst_strides.end(),
+              shp_host_shape_strides->begin() + 2 * nd);
+
+    sycl::event copy_shape_ev = exec_q.copy<py::ssize_t>(
+        shp_host_shape_strides->data(), device_shape_strides,
+        shp_host_shape_strides->size());
+
+    exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(copy_shape_ev);
+        cgh.host_task([shp_host_shape_strides]() {
+            // increment shared pointer ref-count to keep it alive
+            // till copy operation completes;
+        });
+    });
+
+    return copy_shape_ev;
+}
+
 std::pair<sycl::event, sycl::event>
 copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
                                   dpctl::tensor::usm_ndarray dst,
@@ -677,47 +717,10 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
         throw std::runtime_error("Unabled to allocate device memory");
     }
 
-    // create host temporary for packed shape and strides managed by shared
-    // pointer
-    std::shared_ptr<shT> shp_host_shape_strides = std::make_shared<shT>(3 * nd);
-    std::copy(simplified_shape.begin(), simplified_shape.end(),
-              shp_host_shape_strides->begin());
-
-    if (src_strides == nullptr) {
-        const shT &src_contig_strides = (src_flags & USM_ARRAY_C_CONTIGUOUS)
-                                            ? c_contiguous_strides(nd, shape)
-                                            : f_contiguous_strides(nd, shape);
-        std::copy(src_contig_strides.begin(), src_contig_strides.end(),
-                  shp_host_shape_strides->begin() + nd);
-    }
-    else {
-        std::copy(simplified_src_strides.begin(), simplified_src_strides.end(),
-                  shp_host_shape_strides->begin() + nd);
-    }
-
-    if (dst_strides == nullptr) {
-        const shT &dst_contig_strides = (src_flags & USM_ARRAY_C_CONTIGUOUS)
-                                            ? c_contiguous_strides(nd, shape)
-                                            : f_contiguous_strides(nd, shape);
-        std::copy(dst_contig_strides.begin(), dst_contig_strides.end(),
-                  shp_host_shape_strides->begin() + 2 * nd);
-    }
-    else {
-        std::copy(simplified_dst_strides.begin(), simplified_dst_strides.end(),
-                  shp_host_shape_strides->begin() + nd);
-    }
-
     sycl::event copy_shape_ev =
-        exec_q.copy<py::ssize_t>(shp_host_shape_strides->data(), shape_strides,
-                                 shp_host_shape_strides->size());
-
-    exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(copy_shape_ev);
-        cgh.host_task([shp_host_shape_strides]() {
-            // increment shared pointer ref-count to keep it alive
-            // till copy operation completes;
-        });
-    });
+        _populate_packed_shape_strides_for_copycast_kernel(
+            exec_q, src_flags, dst_flags, shape_strides, simplified_shape,
+            simplified_src_strides, simplified_dst_strides);
 
     sycl::event copy_and_cast_generic_ev = copy_and_cast_fn(
         exec_q, src_nelems, nd, shape_strides, src_data, src_offset, dst_data,
