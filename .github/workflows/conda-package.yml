@@ -476,3 +476,134 @@ jobs:
             echo "Executing ${script}"
             python ${script} || exit 1
           done
+
+  array-api-conformity:
+    needs: test_linux
+    runs-on:  ${{ matrix.runner }}
+
+    strategy:
+      matrix:
+        python: ['3.10']
+        experimental: [false]
+        runner: [ubuntu-latest]
+    continue-on-error: ${{ matrix.experimental }}
+    env:
+      CHANNELS: -c intel -c defaults --override-channels
+    steps:
+      - name: Cache array API tests
+        id: cache-array-api-tests
+        uses: actions/cache@v3
+        env:
+          ARRAY_CACHE: 3
+        with:
+          path: |
+            /home/runner/work/array-api-tests/
+          key: ${{ runner.os }}-array-api-${{ env.cache-name }}-{{ env.ARRAY_CACHE }}-${{ hashFiles('/home/runner/work/array-api-tests/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Clone array API tests repo
+        if: steps.cache-array-api-tests.outputs.cache-hit != 'true'
+        shell: bash -l {0}
+        run: |
+          cd /home/runner/work
+          git clone --recurse-submodules https://github.com/data-apis/array-api-tests array-api-tests
+          cd array-api-tests
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+      - name: Add conda to system path
+        run: echo $CONDA/bin >> $GITHUB_PATH
+      - name: Install conda-build
+        # Needed to be able to run conda index
+        run: conda install conda-build
+      - name: Create conda channel
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/channel/linux-64
+          conda index $GITHUB_WORKSPACE/channel || exit 1
+          mv ${PACKAGE_NAME}-*.tar.bz2 $GITHUB_WORKSPACE/channel/linux-64 || exit 1
+          conda index $GITHUB_WORKSPACE/channel || exit 1
+          # Test channel
+          conda search $PACKAGE_NAME -c $GITHUB_WORKSPACE/channel --override-channels --info --json > $GITHUB_WORKSPACE/ver.json
+          cat ver.json
+      - name: Collect dependencies
+        run: |
+          CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
+          conda create -n test_dpctl $PACKAGE_NAME=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
+          cat lockfile
+      - name: Set pkgs_dirs
+        run: |
+          echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
+      - name: Cache conda packages
+        uses: actions/cache@v3
+        env:
+          CACHE_NUMBER: 3  # Increase to reset cache
+        with:
+          path: ~/.conda/pkgs
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+      - name: Install dpctl
+        run: |
+          CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
+          conda create -n test_dpctl $PACKAGE_NAME=${PACKAGE_VERSION} pytest python=${{ matrix.python }} $CHANNELS
+          # Test installed packages
+          conda list
+      - name: Install array API test dependencies
+        shell: bash -l {0}
+        run: |
+          . $CONDA/etc/profile.d/conda.sh
+          conda activate test_dpctl
+          cd /home/runner/work/array-api-tests
+          pip install -r requirements.txt
+      - name: Install jq
+        shell: bash -l {0}
+        run: |
+          sudo apt-get install jq
+      - name: Run array API conformance tests
+        id: run-array-api-tests
+        shell: bash -l {0}
+        run: |
+          FILE=/home/runner/work/.report.json
+          . $CONDA/etc/profile.d/conda.sh
+          conda activate test_dpctl
+          # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
+          export OCL_ICD_FILENAMES=libintelocl.so
+          export SYCL_ENABLE_HOST_DEVICE=1
+          python -c "import dpctl; dpctl.lsplatform()"
+          export ARRAY_API_TESTS_MODULE=dpctl.tensor
+          cd /home/runner/work/array-api-tests
+          pytest --ci --json-report --json-report-file=$FILE array_api_tests/ || true
+      - name: Set Github environment variables
+        shell: bash -l {0}
+        run: |
+          FILE=/home/runner/work/.report.json
+          if test -f "$FILE"; then
+            PASSED_TESTS=$(jq '.summary | .passed // 0' $FILE)
+            FAILED_TESTS=$(jq '.summary | .failed // 0' $FILE)
+            SKIPPED_TESTS=$(jq '.summary | .skipped // 0' $FILE)
+            MESSAGE="Array API standard conformance tests ran successfully.
+            Passed: $PASSED_TESTS
+            Failed: $FAILED_TESTS
+            Skipped: $SKIPPED_TESTS"
+            echo "MESSAGE<<EOF" >> $GITHUB_ENV
+            echo "$MESSAGE" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            MESSAGE=$'Array API standard conformance tests failed to run.'
+            echo "MESSAGE=$MESSAGE" >> $GITHUB_ENV
+          fi
+      - name: Post result to PR
+        uses: mshick/add-pr-comment@v1
+        with:
+          message: |
+            ${{ env.MESSAGE }}
+          allow-repeats: true
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token-user-login: 'github-actions[bot]'
