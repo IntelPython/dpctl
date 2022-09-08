@@ -22,7 +22,7 @@ import dpctl
 
 def create_default_device():
     """
-    Create default SyclDevice using `cl::sycl::default_selector`.
+    Create default SyclDevice using `sycl::default_selector`.
 
     Device created can be influenced by environment variable
     SYCL_DEVICE_FILTER, which determines SYCL devices seen by the

@@ -34,7 +34,7 @@
 #include <exception>
 #include <stdexcept>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {

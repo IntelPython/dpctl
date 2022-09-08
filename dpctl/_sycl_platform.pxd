@@ -25,7 +25,7 @@ from ._backend cimport DPCTLSyclDeviceSelectorRef, DPCTLSyclPlatformRef
 
 
 cdef class _SyclPlatform:
-    ''' A helper metaclass to abstract a cl::sycl::platform instance.
+    ''' A helper metaclass to abstract a ``sycl::platform`` instance.
     '''
     cdef DPCTLSyclPlatformRef _platform_ref
     cdef const char *_vendor

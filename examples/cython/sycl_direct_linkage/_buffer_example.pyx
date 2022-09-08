@@ -24,14 +24,14 @@ import numpy as np
 from cython.operator cimport dereference as deref
 
 
-cdef extern from "CL/sycl.hpp" namespace "cl::sycl":
+cdef extern from "CL/sycl.hpp" namespace "sycl":
     cdef cppclass queue nogil:
         pass
 
 
 cdef extern from "sycl_function.hpp":
     int c_columnwise_total(
-        queue& q, size_t n, size_t m, double *m, double *ct
+        queue q, size_t n, size_t m, double *m, double *ct
     ) nogil
 
 

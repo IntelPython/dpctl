@@ -52,7 +52,7 @@
 // clang-format on
 #endif
 
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {

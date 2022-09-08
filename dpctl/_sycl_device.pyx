@@ -129,7 +129,7 @@ cdef class SyclSubDeviceCreationError(Exception):
 
 cdef class _SyclDevice:
     """
-    A helper data-owner class to abstract a cl::sycl::device instance.
+    A helper data-owner class to abstract a `sycl::device` instance.
     """
 
     def __dealloc__(self):

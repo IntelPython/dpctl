@@ -35,7 +35,7 @@
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef);
 

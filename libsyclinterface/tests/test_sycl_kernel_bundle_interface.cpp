@@ -40,7 +40,7 @@
 #include <fstream>
 #include <gtest/gtest.h>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 struct TestDPCTLSyclKernelBundleInterface
     : public ::testing::TestWithParam<const char *>

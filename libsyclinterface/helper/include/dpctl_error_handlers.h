@@ -42,7 +42,7 @@ public:
     {
     }
 
-    void operator()(const cl::sycl::exception_list &exceptions);
+    void operator()(const sycl::exception_list &exceptions);
 };
 
 enum error_level : int

@@ -186,7 +186,7 @@ cdef class _SyclQueue:
 cdef class SyclQueue(_SyclQueue):
     """
     SyclQueue(*args, **kwargs)
-    Python class representing ``cl::sycl::queue``. There are multiple
+    Python class representing ``sycl::queue``. There are multiple
     ways to create a :class:`dpctl.SyclQueue` object:
 
         - Invoking the constructor with no arguments creates a context using
@@ -258,7 +258,7 @@ cdef class SyclQueue(_SyclQueue):
             context will be created from the specified device.
         dev (str, :class:`dpctl.SyclDevice`, capsule, optional): Sycl device
              to create :class:`dpctl.SyclQueue` from. If not specified, sycl
-             device selected by ``cl::sycl::default_selector`` is used.
+             device selected by ``sycl::default_selector`` is used.
              The argument must be explicitly specified if `ctxt` argument is
              provided.
 

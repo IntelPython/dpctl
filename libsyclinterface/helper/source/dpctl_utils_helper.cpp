@@ -27,7 +27,7 @@
 #include <sstream>
 #include <string>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 /*!
  * Transforms enum info::device_type to string.
@@ -164,7 +164,7 @@ DPCTLSyclDeviceType DPCTL_SyclDeviceTypeToDPCTLDeviceType(info::device_type D)
 }
 
 /*!
- * Transforms cl::sycl::aspect to string.
+ * Transforms sycl::aspect to string.
  */
 std::string DPCTL_AspectToStr(aspect aspectTy)
 {
@@ -237,7 +237,7 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
 }
 
 /*!
- * Transforms string to cl::sycl::aspect.
+ * Transforms string to sycl::aspect.
  */
 aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
 {

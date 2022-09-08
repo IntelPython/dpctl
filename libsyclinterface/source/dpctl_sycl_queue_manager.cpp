@@ -30,7 +30,7 @@
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <vector>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 /*------------------------------- Private helpers ----------------------------*/
 

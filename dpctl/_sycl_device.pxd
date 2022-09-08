@@ -33,7 +33,7 @@ cdef public api class _SyclDevice [
     object Py_SyclDeviceObject,
     type Py_SyclDeviceType
 ]:
-    """ A helper data-owner class to abstract a `cl::sycl::device` instance.
+    """ A helper data-owner class to abstract a `sycl::device` instance.
     """
     cdef DPCTLSyclDeviceRef _device_ref
     cdef const char *_vendor

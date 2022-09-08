@@ -32,7 +32,7 @@
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 struct TestDPCTLSyclDeviceInterface
     : public ::testing::TestWithParam<const char *>
@@ -584,14 +584,6 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkDriverVersion)
     EXPECT_NO_FATAL_FAILURE(driver_version =
                                 DPCTLDevice_GetDriverVersion(Null_DRef));
     ASSERT_TRUE(driver_version == nullptr);
-}
-
-TEST_F(TestDPCTLSyclDeviceNullArgs, ChkIsHostUnifiedMemory)
-{
-    bool is_hum = true;
-    EXPECT_NO_FATAL_FAILURE(is_hum =
-                                DPCTLDevice_IsHostUnifiedMemory(Null_DRef));
-    ASSERT_FALSE(is_hum);
 }
 
 TEST_F(TestDPCTLSyclDeviceNullArgs, ChkAreEq)

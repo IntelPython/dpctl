@@ -74,40 +74,36 @@ auto build_params()
         "opencl:gpu", "opencl:cpu", "level_zero:gpu", "host");
 
     constexpr auto param_2 =
-        get_param_list<std::pair<const char *, cl::sycl::aspect>>(
-            std::make_pair("host", cl::sycl::aspect::host),
-            std::make_pair("cpu", cl::sycl::aspect::cpu),
-            std::make_pair("gpu", cl::sycl::aspect::gpu),
-            std::make_pair("accelerator", cl::sycl::aspect::accelerator),
-            std::make_pair("custom", cl::sycl::aspect::custom),
-            std::make_pair("fp16", cl::sycl::aspect::fp16),
-            std::make_pair("fp64", cl::sycl::aspect::fp64),
-            std::make_pair("atomic64", cl::sycl::aspect::atomic64),
-            std::make_pair("online_compiler",
-                           cl::sycl::aspect::online_compiler),
-            std::make_pair("online_linker", cl::sycl::aspect::online_linker),
-            std::make_pair("queue_profiling",
-                           cl::sycl::aspect::queue_profiling),
+        get_param_list<std::pair<const char *, sycl::aspect>>(
+            std::make_pair("host", sycl::aspect::host),
+            std::make_pair("cpu", sycl::aspect::cpu),
+            std::make_pair("gpu", sycl::aspect::gpu),
+            std::make_pair("accelerator", sycl::aspect::accelerator),
+            std::make_pair("custom", sycl::aspect::custom),
+            std::make_pair("fp16", sycl::aspect::fp16),
+            std::make_pair("fp64", sycl::aspect::fp64),
+            std::make_pair("atomic64", sycl::aspect::atomic64),
+            std::make_pair("online_compiler", sycl::aspect::online_compiler),
+            std::make_pair("online_linker", sycl::aspect::online_linker),
+            std::make_pair("queue_profiling", sycl::aspect::queue_profiling),
             std::make_pair("usm_device_allocations",
-                           cl::sycl::aspect::usm_device_allocations),
+                           sycl::aspect::usm_device_allocations),
             std::make_pair("usm_host_allocations",
-                           cl::sycl::aspect::usm_host_allocations),
+                           sycl::aspect::usm_host_allocations),
             std::make_pair("usm_shared_allocations",
-                           cl::sycl::aspect::usm_shared_allocations),
+                           sycl::aspect::usm_shared_allocations),
             std::make_pair("usm_restricted_shared_allocations",
-                           cl::sycl::aspect::usm_restricted_shared_allocations),
+                           sycl::aspect::usm_restricted_shared_allocations),
             std::make_pair("usm_system_allocations",
-                           cl::sycl::aspect::usm_system_allocations),
+                           sycl::aspect::usm_system_allocations),
             std::make_pair("usm_atomic_host_allocations",
-                           cl::sycl::aspect::usm_atomic_host_allocations),
+                           sycl::aspect::usm_atomic_host_allocations),
             std::make_pair("usm_atomic_shared_allocations",
-                           cl::sycl::aspect::usm_atomic_shared_allocations),
-            std::make_pair("host_debuggable",
-                           cl::sycl::aspect::host_debuggable));
+                           sycl::aspect::usm_atomic_shared_allocations),
+            std::make_pair("host_debuggable", sycl::aspect::host_debuggable));
 
     auto pairs =
-        build_param_pairs<const char *,
-                          std::pair<const char *, cl::sycl::aspect>,
+        build_param_pairs<const char *, std::pair<const char *, sycl::aspect>,
                           param_1.size(), param_2.size()>(param_1, param_2);
 
     return build_gtest_values(pairs);
@@ -117,7 +113,7 @@ auto build_params()
 
 struct TestDPCTLSyclDeviceInterfaceAspects
     : public ::testing::TestWithParam<
-          std::pair<const char *, std::pair<const char *, cl::sycl::aspect>>>
+          std::pair<const char *, std::pair<const char *, sycl::aspect>>>
 {
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
     DPCTLSyclDeviceRef DRef = nullptr;

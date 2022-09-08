@@ -36,7 +36,7 @@ cdef public api class SyclEvent(_SyclEvent) [
     object PySyclEventObject,
     type PySyclEventType
 ]:
-    """ Python wrapper class for a ``cl::sycl::event``
+    """ Python wrapper class for a ``sycl::event``
     """
     @staticmethod
     cdef SyclEvent _create (DPCTLSyclEventRef event)
