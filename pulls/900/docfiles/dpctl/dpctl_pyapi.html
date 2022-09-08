@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.14.0dev0+65.g32cfa2548 documentation</title>
+  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.14.0dev0+70.g0e2d51447 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -34,7 +34,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+65.g32cfa2548
+                0.14.0dev0+70.g0e2d51447
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -157,13 +157,13 @@ to create a queue object for use only within a specific scope.</p>
 <td><p>A Python wrapper for the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device.html">sycl::device</a> C++ class.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclEvent</span></code></a></p></td>
-<td><p>Python class representing <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code>. There are multiple ways to create a <a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a> object: - Invoking the constructor with no arguments creates a ready event using the default constructor of the <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code>.</p></td>
+<td><p>Python class representing <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code>. There are multiple ways to create a <a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a> object: - Invoking the constructor with no arguments creates a ready event using the default constructor of the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="SyclPlatform.html#dpctl.SyclPlatform" title="dpctl.SyclPlatform"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclPlatform</span></code></a></p></td>
-<td><p>Python class representing <code class="docutils literal notranslate"><span class="pre">cl::sycl::platform</span></code> class.</p></td>
+<td><p>Python class representing <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> class.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a></p></td>
-<td><p>Python class representing <code class="docutils literal notranslate"><span class="pre">cl::sycl::queue</span></code>. There are multiple ways to create a <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object: - Invoking the constructor with no arguments creates a context using the default selector.</p></td>
+<td><p>Python class representing <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>. There are multiple ways to create a <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object: - Invoking the constructor with no arguments creates a context using the default selector.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="SyclTimer.html#dpctl.SyclTimer" title="dpctl.SyclTimer"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclTimer</span></code></a></p></td>
 <td><p>Python class to measure device time of execution of commands submitted to <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> as well as the wall-time.</p></td>

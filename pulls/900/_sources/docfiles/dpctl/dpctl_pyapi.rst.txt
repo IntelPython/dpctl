@@ -56,11 +56,11 @@ Classes
     * - :class:`SyclDevice`
       - A Python wrapper for the :sycl_device:`sycl::device <>` C++ class.
     * - :class:`SyclEvent`
-      - Python class representing ``cl::sycl::event``. There are multiple ways to create a :class:`dpctl.SyclEvent` object: - Invoking the constructor with no arguments creates a ready event using the default constructor of the ``cl::sycl::event``.
+      - Python class representing ``sycl::event``. There are multiple ways to create a :class:`dpctl.SyclEvent` object: - Invoking the constructor with no arguments creates a ready event using the default constructor of the ``sycl::event``.
     * - :class:`SyclPlatform`
-      - Python class representing ``cl::sycl::platform`` class.
+      - Python class representing ``sycl::platform`` class.
     * - :class:`SyclQueue`
-      - Python class representing ``cl::sycl::queue``. There are multiple ways to create a :class:`dpctl.SyclQueue` object: - Invoking the constructor with no arguments creates a context using the default selector.
+      - Python class representing ``sycl::queue``. There are multiple ways to create a :class:`dpctl.SyclQueue` object: - Invoking the constructor with no arguments creates a context using the default selector.
     * - :class:`SyclTimer`
       - Python class to measure device time of execution of commands submitted to :class:`dpctl.SyclQueue` as well as the wall-time.
 

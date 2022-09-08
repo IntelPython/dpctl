@@ -274,9 +274,6 @@ Overview
 	DPCTL_API bool
 	:ref:`DPCTLDevice_IsHost<doxid-db/dd1/group___device_interface_1gabad898eaf8374c3259598a140e7abd7c>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
-	DPCTL_API bool
-	:ref:`DPCTLDevice_IsHostUnifiedMemory<doxid-db/dd1/group___device_interface_1ga4ff6d7f04e60ee4afd68010348a5f65c>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
-
 	DPCTL_API :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
 	:ref:`DPCTLDeviceMgr_GetCachedContext<doxid-dc/ddc/group___device_manager_1gabb587f003e809eaef26d7dbd253ec88e>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
