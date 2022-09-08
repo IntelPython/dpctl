@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclEvent &mdash; Data-parallel Control (dpctl) 0.14.0dev0+57.gf48cf30fb documentation</title>
+  <title>dpctl.SyclEvent &mdash; Data-parallel Control (dpctl) 0.14.0dev0+61.g09b255546 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -34,7 +34,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+57.gf48cf30fb
+                0.14.0dev0+61.g09b255546
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -106,12 +106,12 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.SyclEvent">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent" title="Permalink to this definition"></a></dt>
-<dd><p>Python class representing <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code>. There are multiple
+<dd><p>Python class representing <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code>. There are multiple
 ways to create a <a class="reference internal" href="#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a> object:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Invoking the constructor with no arguments creates a ready event
-using the default constructor of the <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code>.</p></li>
+using the default constructor of the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code>.</p></li>
 </ul>
 <dl class="field-list">
 <dt class="field-odd">Example</dt>
@@ -161,13 +161,13 @@ named <code class="docutils literal notranslate"><span class="pre">PyCapsule</sp
 <td><p>Returns the event_status_type enum value for this event.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclEvent.profiling_info_end" title="dpctl.SyclEvent.profiling_info_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">profiling_info_end</span></code></a></p></td>
-<td><p>Returns the 64-bit time value in nanoseconds when <code class="docutils literal notranslate"><span class="pre">cl::sycl::command_group</span></code> finished execution on the device.</p></td>
+<td><p>Returns the 64-bit time value in nanoseconds when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> finished execution on the device.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclEvent.profiling_info_start" title="dpctl.SyclEvent.profiling_info_start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">profiling_info_start</span></code></a></p></td>
-<td><p>Returns the 64-bit time value in nanoseconds when <code class="docutils literal notranslate"><span class="pre">cl::sycl::command_group</span></code> started execution on the device.</p></td>
+<td><p>Returns the 64-bit time value in nanoseconds when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> started execution on the device.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclEvent.profiling_info_submit" title="dpctl.SyclEvent.profiling_info_submit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">profiling_info_submit</span></code></a></p></td>
-<td><p>Returns the 64-bit time value in nanoseconds when <code class="docutils literal notranslate"><span class="pre">cl::sycl::command_group</span></code> was submitted to the queue.</p></td>
+<td><p>Returns the 64-bit time value in nanoseconds when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> was submitted to the queue.</p></td>
 </tr>
 </tbody>
 </table>
@@ -200,7 +200,7 @@ named <code class="docutils literal notranslate"><span class="pre">PyCapsule</sp
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclEvent._get_capsule" title="dpctl.SyclEvent._get_capsule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_capsule</span></code></a></p></td>
-<td><p>Returns a copy of the underlying <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code> pointer as a void pointer inside a named <code class="docutils literal notranslate"><span class="pre">PyCapsule</span></code> that has the name <strong>SyclEventRef</strong>.</p></td>
+<td><p>Returns a copy of the underlying <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> pointer as a void pointer inside a named <code class="docutils literal notranslate"><span class="pre">PyCapsule</span></code> that has the name <strong>SyclEventRef</strong>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -233,21 +233,21 @@ associated with this event.</p>
 <dt class="sig sig-object py" id="dpctl.SyclEvent.profiling_info_end">
 <span class="sig-prename descclassname"><span class="pre">SyclEvent.</span></span><span class="sig-name descname"><span class="pre">profiling_info_end</span></span><a class="headerlink" href="#dpctl.SyclEvent.profiling_info_end" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the 64-bit time value in nanoseconds
-when <code class="docutils literal notranslate"><span class="pre">cl::sycl::command_group</span></code> finished execution on the device.</p>
+when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> finished execution on the device.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclEvent.profiling_info_start">
 <span class="sig-prename descclassname"><span class="pre">SyclEvent.</span></span><span class="sig-name descname"><span class="pre">profiling_info_start</span></span><a class="headerlink" href="#dpctl.SyclEvent.profiling_info_start" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the 64-bit time value in nanoseconds
-when <code class="docutils literal notranslate"><span class="pre">cl::sycl::command_group</span></code> started execution on the device.</p>
+when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> started execution on the device.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclEvent.profiling_info_submit">
 <span class="sig-prename descclassname"><span class="pre">SyclEvent.</span></span><span class="sig-name descname"><span class="pre">profiling_info_submit</span></span><a class="headerlink" href="#dpctl.SyclEvent.profiling_info_submit" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the 64-bit time value in nanoseconds
-when <code class="docutils literal notranslate"><span class="pre">cl::sycl::command_group</span></code> was submitted to the queue.</p>
+when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> was submitted to the queue.</p>
 </dd></dl>
 
 </section>
@@ -291,7 +291,7 @@ on this event.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclEvent._get_capsule">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclEvent.</span></span><span class="sig-name descname"><span class="pre">_get_capsule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent._get_capsule" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a copy of the underlying <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code> pointer as a void
+<dd><p>Returns a copy of the underlying <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> pointer as a void
 pointer inside a named <code class="docutils literal notranslate"><span class="pre">PyCapsule</span></code> that has the name
 <strong>SyclEventRef</strong>. The ownership of the pointer inside the capsule is
 passed to the caller, and pointer is deleted when the capsule goes out
@@ -299,7 +299,7 @@ of scope.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A capsule object storing a copy of the
-<code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code> pointer belonging to a
+<code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> pointer belonging to a
 <a class="reference internal" href="#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -307,7 +307,7 @@ of scope.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><strong>ValueError</strong> – If the <code class="docutils literal notranslate"><span class="pre">DPCTLEvent_Copy</span></code> fails to copy the
-    <code class="docutils literal notranslate"><span class="pre">cl::sycl::event</span></code> pointer.</p>
+    <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> pointer.</p>
 </dd>
 </dl>
 </dd></dl>

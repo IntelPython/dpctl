@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclQueue &mdash; Data-parallel Control (dpctl) 0.14.0dev0+57.gf48cf30fb documentation</title>
+  <title>dpctl.SyclQueue &mdash; Data-parallel Control (dpctl) 0.14.0dev0+61.g09b255546 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -34,7 +34,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+57.gf48cf30fb
+                0.14.0dev0+61.g09b255546
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -106,7 +106,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.SyclQueue">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclQueue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue" title="Permalink to this definition"></a></dt>
-<dd><p>Python class representing <code class="docutils literal notranslate"><span class="pre">cl::sycl::queue</span></code>. There are multiple
+<dd><p>Python class representing <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>. There are multiple
 ways to create a <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object:</p>
 <blockquote>
 <div><ul class="simple">
@@ -194,7 +194,7 @@ using <a class="reference internal" href="#dpctl.SyclQueue._get_capsule" title="
 context will be created from the specified device.</p></li>
 <li><p><strong>dev</strong> (str, <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>, capsule, optional) – <p>Sycl device
 to create <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> from. If not specified, sycl
-device selected by <code class="docutils literal notranslate"><span class="pre">cl::sycl::default_selector</span></code> is used.
+device selected by <code class="docutils literal notranslate"><span class="pre">sycl::default_selector</span></code> is used.
 The argument must be explicitly specified if <cite>ctxt</cite> argument is
 provided.</p>
 <p>If <cite>dev</cite> is a named <code class="docutils literal notranslate"><span class="pre">PyCapsule</span></code> called <strong>“SyclQueueRef”</strong> and

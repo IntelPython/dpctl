@@ -146,9 +146,6 @@ Overview
 	DPCTL_API bool
 	:ref:`DPCTLDevice_IsHost<doxid-db/dd1/group___device_interface_1gabad898eaf8374c3259598a140e7abd7c>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
-	DPCTL_API bool
-	:ref:`DPCTLDevice_IsHostUnifiedMemory<doxid-db/dd1/group___device_interface_1ga4ff6d7f04e60ee4afd68010348a5f65c>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
-
 .. _details-db/dd1/group___device_interface:
 
 Detailed Documentation
@@ -1259,33 +1256,4 @@ Returns true if this SYCL device is a host device.
 .. rubric:: Returns:
 
 True if the device is a host device, else False.
-
-.. index:: pair: function; DPCTLDevice_IsHostUnifiedMemory
-.. _doxid-db/dd1/group___device_interface_1ga4ff6d7f04e60ee4afd68010348a5f65c:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	DPCTL_API bool
-	DPCTLDevice_IsHostUnifiedMemory(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
-
-Returns True if the device and the host share a unified memory subsystem, else returns False.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- DRef
-
-		- Opaque pointer to a ``sycl::device``
-
-
-
-.. rubric:: Returns:
-
-Boolean indicating if the device shares a unified memory subsystem with the host.
 
