@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.utils._onetrace_context &mdash; Data-parallel Control (dpctl) 0.14.0dev0+68.g115a69737 documentation</title>
+  <title>dpctl.utils._onetrace_context &mdash; Data-parallel Control (dpctl) 0.14.0dev0+68.gffcea6d2e documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+68.g115a69737
+                0.14.0dev0+68.gffcea6d2e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -99,7 +99,7 @@
 
 <div class="viewcode-block" id="onetrace_enabled"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.utils_functions_api.html#dpctl.utils.onetrace_enabled">[docs]</a><span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">onetrace_enabled</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot; Enable `onetrace` collection for kernels executed in this context.</span>
+    <span class="sd">&quot;&quot;&quot;Enable `onetrace` collection for kernels executed in this context.</span>
 
 <span class="sd">    N.B.: Proper working of this utility assumes that Python interpreter</span>
 <span class="sd">    has been launched by `onetrace` tool from intel/pti-gpu project.</span>
@@ -107,8 +107,7 @@
 <span class="sd">    :Example:</span>
 <span class="sd">        Launch the Python interpreter using `onetrace` tool: ::</span>
 
-<span class="sd">            $ onetrace --conditional-collection -v -t --demangle \</span>
-<span class="sd">                python script.py</span>
+<span class="sd">            $ onetrace --conditional-collection -v -t --demangle python app.py</span>
 
 <span class="sd">        Now using the context manager in the Python sessions enables</span>
 <span class="sd">        data collection and its output for every offloaded kernel ::</span>
