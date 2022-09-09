@@ -583,12 +583,13 @@ jobs:
       - name: Set Github environment variables
         shell: bash -l {0}
         run: |
+          export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
           FILE=/home/runner/work/.report.json
           if test -f "$FILE"; then
             PASSED_TESTS=$(jq '.summary | .passed // 0' $FILE)
             FAILED_TESTS=$(jq '.summary | .failed // 0' $FILE)
             SKIPPED_TESTS=$(jq '.summary | .skipped // 0' $FILE)
-            MESSAGE="Array API standard conformance tests ran successfully.
+            MESSAGE="Array API standard conformance tests for dpctl=$PACKAGE_VERSION ran successfully.
             Passed: $PASSED_TESTS
             Failed: $FAILED_TESTS
             Skipped: $SKIPPED_TESTS"
@@ -596,7 +597,7 @@ jobs:
             echo "$MESSAGE" >> $GITHUB_ENV
             echo "EOF" >> $GITHUB_ENV
           else
-            MESSAGE=$'Array API standard conformance tests failed to run.'
+            MESSAGE="Array API standard conformance tests failed to run for dpctl=$PACKAGE_VERSION."
             echo "MESSAGE=$MESSAGE" >> $GITHUB_ENV
           fi
       - name: Post result to PR
