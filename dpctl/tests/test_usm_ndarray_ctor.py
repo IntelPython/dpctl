@@ -684,8 +684,12 @@ def test_setitem_scalar(dtype, usm_type):
 
 
 def test_setitem_errors():
-    X = dpt.usm_ndarray((4,), dtype="u1")
-    Y = dpt.usm_ndarray((4, 2), dtype="u1")
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default queue could not be created")
+    X = dpt.empty((4,), dtype="u1", sycl_queue=q)
+    Y = dpt.empty((4, 2), dtype="u1", sycl_queue=q)
     with pytest.raises(ValueError):
         X[:] = Y
     with pytest.raises(ValueError):

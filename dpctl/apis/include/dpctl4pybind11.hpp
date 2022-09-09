@@ -547,6 +547,19 @@ sycl::event keep_args_alive(sycl::queue q,
     return host_task_ev;
 }
 
+template <std::size_t num>
+bool queues_are_compatible(sycl::queue exec_q,
+                           const sycl::queue (&alloc_qs)[num])
+{
+    for (std::size_t i = 0; i < num; ++i) {
+
+        if (exec_q != alloc_qs[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 } // end namespace utils
 
 } // end namespace dpctl

@@ -23,6 +23,7 @@
 //===----------------------------------------------------------------------===//
 
 #include <CL/sycl.hpp>
+#include <algorithm>
 #include <complex>
 #include <cstdint>
 #include <pybind11/complex.h>
@@ -478,6 +479,46 @@ void simplify_iteration_space(int &nd,
     }
 }
 
+sycl::event _populate_packed_shape_strides_for_copycast_kernel(
+    sycl::queue exec_q,
+    int src_flags,
+    int dst_flags,
+    py::ssize_t *device_shape_strides, // to be populated
+    const std::vector<py::ssize_t> &common_shape,
+    const std::vector<py::ssize_t> &src_strides,
+    const std::vector<py::ssize_t> &dst_strides)
+{
+    using shT = std::vector<py::ssize_t>;
+    size_t nd = common_shape.size();
+
+    // create host temporary for packed shape and strides managed by shared
+    // pointer. Packed vector is concatenation of common_shape, src_stride and
+    // std_strides
+    std::shared_ptr<shT> shp_host_shape_strides = std::make_shared<shT>(3 * nd);
+    std::copy(common_shape.begin(), common_shape.end(),
+              shp_host_shape_strides->begin());
+
+    std::copy(src_strides.begin(), src_strides.end(),
+              shp_host_shape_strides->begin() + nd);
+
+    std::copy(dst_strides.begin(), dst_strides.end(),
+              shp_host_shape_strides->begin() + 2 * nd);
+
+    sycl::event copy_shape_ev = exec_q.copy<py::ssize_t>(
+        shp_host_shape_strides->data(), device_shape_strides,
+        shp_host_shape_strides->size());
+
+    exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(copy_shape_ev);
+        cgh.host_task([shp_host_shape_strides]() {
+            // increment shared pointer ref-count to keep it alive
+            // till copy operation completes;
+        });
+    });
+
+    return copy_shape_ev;
+}
+
 std::pair<sycl::event, sycl::event>
 copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
                                   dpctl::tensor::usm_ndarray dst,
@@ -524,14 +565,13 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
         }
     }
 
-    // check same contexts
+    // check compatibility of execution queue and allocation queue
     sycl::queue src_q = src.get_queue();
     sycl::queue dst_q = dst.get_queue();
 
-    sycl::context exec_ctx = exec_q.get_context();
-    if (src_q.get_context() != exec_ctx || dst_q.get_context() != exec_ctx) {
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src_q, dst_q})) {
         throw py::value_error(
-            "Execution queue context is not the same as allocation contexts");
+            "Execution queue is not compatible with allocation queues");
     }
 
     int src_typenum = src.get_typenum();
@@ -664,12 +704,6 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
         }
     }
 
-    std::shared_ptr<shT> shp_shape = std::make_shared<shT>(simplified_shape);
-    std::shared_ptr<shT> shp_src_strides =
-        std::make_shared<shT>(simplified_src_strides);
-    std::shared_ptr<shT> shp_dst_strides =
-        std::make_shared<shT>(simplified_dst_strides);
-
     // Generic implementation
     auto copy_and_cast_fn =
         copy_and_cast_generic_dispatch_table[dst_type_id][src_type_id];
@@ -684,76 +718,13 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     }
 
     sycl::event copy_shape_ev =
-        exec_q.copy<py::ssize_t>(shp_shape->data(), shape_strides, nd);
-
-    exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(copy_shape_ev);
-        cgh.host_task([shp_shape]() {
-            // increment shared pointer ref-count to keep it alive
-            // till copy operation completes;
-        });
-    });
-
-    sycl::event copy_src_strides_ev;
-    if (src_strides == nullptr) {
-        std::shared_ptr<shT> shp_contig_src_strides =
-            std::make_shared<shT>((src_flags & USM_ARRAY_C_CONTIGUOUS)
-                                      ? c_contiguous_strides(nd, shape)
-                                      : f_contiguous_strides(nd, shape));
-        copy_src_strides_ev = exec_q.copy<py::ssize_t>(
-            shp_contig_src_strides->data(), shape_strides + nd, nd);
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(copy_src_strides_ev);
-            cgh.host_task([shp_contig_src_strides]() {
-                // increment shared pointer ref-count to keep it alive
-                // till copy operation completes;
-            });
-        });
-    }
-    else {
-        copy_src_strides_ev = exec_q.copy<py::ssize_t>(shp_src_strides->data(),
-                                                       shape_strides + nd, nd);
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(copy_src_strides_ev);
-            cgh.host_task([shp_src_strides]() {
-                // increment shared pointer ref-count to keep it alive
-                // till copy operation completes;
-            });
-        });
-    }
-
-    sycl::event copy_dst_strides_ev;
-    if (dst_strides == nullptr) {
-        std::shared_ptr<shT> shp_contig_dst_strides =
-            std::make_shared<shT>((dst_flags & USM_ARRAY_C_CONTIGUOUS)
-                                      ? c_contiguous_strides(nd, shape)
-                                      : f_contiguous_strides(nd, shape));
-        copy_dst_strides_ev = exec_q.copy<py::ssize_t>(
-            shp_contig_dst_strides->data(), shape_strides + 2 * nd, nd);
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(copy_dst_strides_ev);
-            cgh.host_task([shp_contig_dst_strides]() {
-                // increment shared pointer ref-count to keep it alive
-                // till copy operation completes;
-            });
-        });
-    }
-    else {
-        copy_dst_strides_ev = exec_q.copy<py::ssize_t>(
-            shp_dst_strides->data(), shape_strides + 2 * nd, nd);
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(copy_dst_strides_ev);
-            cgh.host_task([shp_dst_strides]() {
-                // increment shared pointer ref-count to keep it alive
-                // till copy operation completes;
-            });
-        });
-    }
+        _populate_packed_shape_strides_for_copycast_kernel(
+            exec_q, src_flags, dst_flags, shape_strides, simplified_shape,
+            simplified_src_strides, simplified_dst_strides);
 
     sycl::event copy_and_cast_generic_ev = copy_and_cast_fn(
         exec_q, src_nelems, nd, shape_strides, src_data, src_offset, dst_data,
-        dst_offset, depends,
-        {copy_shape_ev, copy_src_strides_ev, copy_dst_strides_ev});
+        dst_offset, depends, {copy_shape_ev});
 
     // async free of shape_strides temporary
     auto ctx = exec_q.get_context();
@@ -938,10 +909,9 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     sycl::queue src_q = src.get_queue();
     sycl::queue dst_q = dst.get_queue();
 
-    sycl::context exec_ctx = exec_q.get_context();
-    if (src_q.get_context() != exec_ctx || dst_q.get_context() != exec_ctx) {
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src_q, dst_q})) {
         throw py::value_error(
-            "Execution queue context is not the same as allocation contexts");
+            "Execution queue is not compatible with allocation queues");
     }
 
     if (src_nelems == 1) {
@@ -966,6 +936,7 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
 
     auto fn = copy_for_reshape_generic_dispatch_vector[type_id];
 
+    // packed_shape_strides = [src_shape, src_strides, dst_shape, dst_strides]
     py::ssize_t *packed_shapes_strides =
         sycl::malloc_device<py::ssize_t>(2 * (src_nd + dst_nd), exec_q);
 
@@ -973,92 +944,88 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
         throw std::runtime_error("Unabled to allocate device memory");
     }
 
-    sycl::event src_shape_copy_ev =
-        exec_q.copy<py::ssize_t>(src_shape, packed_shapes_strides, src_nd);
-    sycl::event dst_shape_copy_ev = exec_q.copy<py::ssize_t>(
-        dst_shape, packed_shapes_strides + 2 * src_nd, dst_nd);
+    using shT = std::vector<py::ssize_t>;
+    std::shared_ptr<shT> packed_host_shapes_strides_shp =
+        std::make_shared<shT>(2 * (src_nd + dst_nd));
+
+    std::copy(src_shape, src_shape + src_nd,
+              packed_host_shapes_strides_shp->begin());
+    std::copy(dst_shape, dst_shape + dst_nd,
+              packed_host_shapes_strides_shp->begin() + 2 * src_nd);
 
     const py::ssize_t *src_strides = src.get_strides_raw();
-    sycl::event src_strides_copy_ev;
     if (src_strides == nullptr) {
-        using shT = std::vector<py::ssize_t>;
         int src_flags = src.get_flags();
-        std::shared_ptr<shT> contig_src_strides_shp;
         if (src_flags & USM_ARRAY_C_CONTIGUOUS) {
-            contig_src_strides_shp =
-                std::make_shared<shT>(c_contiguous_strides(src_nd, src_shape));
+            const shT &src_contig_strides =
+                c_contiguous_strides(src_nd, src_shape);
+            std::copy(src_contig_strides.begin(), src_contig_strides.end(),
+                      packed_host_shapes_strides_shp->begin() + src_nd);
         }
         else if (src_flags & USM_ARRAY_F_CONTIGUOUS) {
-            contig_src_strides_shp =
-                std::make_shared<shT>(f_contiguous_strides(src_nd, src_shape));
+            const shT &src_contig_strides =
+                c_contiguous_strides(src_nd, src_shape);
+            std::copy(src_contig_strides.begin(), src_contig_strides.end(),
+                      packed_host_shapes_strides_shp->begin() + src_nd);
         }
         else {
-            sycl::event::wait({src_shape_copy_ev, dst_shape_copy_ev});
             sycl::free(packed_shapes_strides, exec_q);
             throw std::runtime_error(
                 "Invalid src array encountered: in copy_for_reshape function");
         }
-        src_strides_copy_ev =
-            exec_q.copy<py::ssize_t>(contig_src_strides_shp->data(),
-                                     packed_shapes_strides + src_nd, src_nd);
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(src_strides_copy_ev);
-            cgh.host_task([contig_src_strides_shp]() {
-                // Capturing shared pointer ensure it is freed after its data
-                // are copied into packed USM vector
-            });
-        });
     }
     else {
-        src_strides_copy_ev = exec_q.copy<py::ssize_t>(
-            src_strides, packed_shapes_strides + src_nd, src_nd);
+        std::copy(src_strides, src_strides + src_nd,
+                  packed_host_shapes_strides_shp->begin() + src_nd);
     }
 
     const py::ssize_t *dst_strides = dst.get_strides_raw();
-    sycl::event dst_strides_copy_ev;
     if (dst_strides == nullptr) {
-        using shT = std::vector<py::ssize_t>;
         int dst_flags = dst.get_flags();
-        std::shared_ptr<shT> contig_dst_strides_shp;
         if (dst_flags & USM_ARRAY_C_CONTIGUOUS) {
-            contig_dst_strides_shp =
-                std::make_shared<shT>(c_contiguous_strides(dst_nd, dst_shape));
+            const shT &dst_contig_strides =
+                c_contiguous_strides(dst_nd, dst_shape);
+            std::copy(dst_contig_strides.begin(), dst_contig_strides.end(),
+                      packed_host_shapes_strides_shp->begin() + 2 * src_nd +
+                          dst_nd);
         }
         else if (dst_flags & USM_ARRAY_F_CONTIGUOUS) {
-            contig_dst_strides_shp =
-                std::make_shared<shT>(f_contiguous_strides(dst_nd, dst_shape));
+            const shT &dst_contig_strides =
+                f_contiguous_strides(dst_nd, dst_shape);
+            std::copy(dst_contig_strides.begin(), dst_contig_strides.end(),
+                      packed_host_shapes_strides_shp->begin() + 2 * src_nd +
+                          dst_nd);
         }
         else {
-            sycl::event::wait(
-                {src_shape_copy_ev, dst_shape_copy_ev, src_strides_copy_ev});
             sycl::free(packed_shapes_strides, exec_q);
             throw std::runtime_error(
                 "Invalid dst array encountered: in copy_for_reshape function");
         }
-        dst_strides_copy_ev = exec_q.copy<py::ssize_t>(
-            contig_dst_strides_shp->data(),
-            packed_shapes_strides + 2 * src_nd + dst_nd, dst_nd);
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(dst_strides_copy_ev);
-            cgh.host_task([contig_dst_strides_shp]() {
-                // Capturing shared pointer ensure it is freed after its data
-                // are copied into packed USM vector
-            });
-        });
     }
     else {
-        dst_strides_copy_ev = exec_q.copy<py::ssize_t>(
-            dst_strides, packed_shapes_strides + 2 * src_nd + dst_nd, dst_nd);
+        std::copy(dst_strides, dst_strides + dst_nd,
+                  packed_host_shapes_strides_shp->begin() + 2 * src_nd +
+                      dst_nd);
     }
+
+    // copy packed shapes and strides from host to devices
+    sycl::event packed_shape_strides_copy_ev = exec_q.copy<py::ssize_t>(
+        packed_host_shapes_strides_shp->data(), packed_shapes_strides,
+        packed_host_shapes_strides_shp->size());
+    exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(packed_shape_strides_copy_ev);
+        cgh.host_task([packed_host_shapes_strides_shp] {
+            // Capturing shared pointer ensures that the underlying vector is
+            // not destroyed until after its data are copied into packed USM
+            // vector
+        });
+    });
 
     char *src_data = src.get_data();
     char *dst_data = dst.get_data();
 
-    std::vector<sycl::event> all_deps(depends.size() + 4);
-    all_deps.push_back(src_shape_copy_ev);
-    all_deps.push_back(dst_shape_copy_ev);
-    all_deps.push_back(src_strides_copy_ev);
-    all_deps.push_back(dst_strides_copy_ev);
+    std::vector<sycl::event> all_deps(depends.size() + 1);
+    all_deps.push_back(packed_shape_strides_copy_ev);
     all_deps.insert(std::end(all_deps), std::begin(depends), std::end(depends));
 
     sycl::event copy_for_reshape_event =
@@ -1255,10 +1222,9 @@ void copy_numpy_ndarray_into_usm_ndarray(
 
     sycl::queue dst_q = dst.get_queue();
 
-    sycl::context exec_ctx = exec_q.get_context();
-    if (dst_q.get_context() != exec_ctx) {
-        throw py::value_error("Execution queue context is not the same as the "
-                              "allocation context");
+    if (!dpctl::utils::queues_are_compatible(exec_q, {dst_q})) {
+        throw py::value_error("Execution queue is not compatible with the "
+                              "allocation queue");
     }
 
     // here we assume that NumPy's type numbers agree with ours for types
@@ -1369,11 +1335,6 @@ void copy_numpy_ndarray_into_usm_ndarray(
     // Create shared pointers with shape and src/dst strides, copy into device
     // memory
     using shT = std::vector<py::ssize_t>;
-    std::shared_ptr<shT> shp_shape = std::make_shared<shT>(simplified_shape);
-    std::shared_ptr<shT> shp_src_strides =
-        std::make_shared<shT>(simplified_src_strides);
-    std::shared_ptr<shT> shp_dst_strides =
-        std::make_shared<shT>(simplified_dst_strides);
 
     // Get implementation function pointer
     auto copy_and_cast_from_host_blocking_fn =
@@ -1389,42 +1350,22 @@ void copy_numpy_ndarray_into_usm_ndarray(
         throw std::runtime_error("Unabled to allocate device memory");
     }
 
-    sycl::event copy_shape_ev =
-        exec_q.copy<py::ssize_t>(shp_shape->data(), shape_strides, nd);
+    std::shared_ptr<shT> host_shape_strides_shp = std::make_shared<shT>(3 * nd);
+    std::copy(simplified_shape.begin(), simplified_shape.end(),
+              host_shape_strides_shp->begin());
+    std::copy(simplified_src_strides.begin(), simplified_src_strides.end(),
+              host_shape_strides_shp->begin() + nd);
+    std::copy(simplified_dst_strides.begin(), simplified_dst_strides.end(),
+              host_shape_strides_shp->begin() + 2 * nd);
 
-    exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(copy_shape_ev);
-        cgh.host_task([shp_shape]() {
-            // increment shared pointer ref-count to keep it alive
-            // till copy operation completes;
-        });
-    });
-
-    sycl::event copy_src_strides_ev = exec_q.copy<py::ssize_t>(
-        shp_src_strides->data(), shape_strides + nd, nd);
-    exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(copy_src_strides_ev);
-        cgh.host_task([shp_src_strides]() {
-            // increment shared pointer ref-count to keep it alive
-            // till copy operation completes;
-        });
-    });
-
-    sycl::event copy_dst_strides_ev = exec_q.copy<py::ssize_t>(
-        shp_dst_strides->data(), shape_strides + 2 * nd, nd);
-    exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(copy_dst_strides_ev);
-        cgh.host_task([shp_dst_strides]() {
-            // increment shared pointer ref-count to keep it alive
-            // till copy operation completes;
-        });
-    });
+    sycl::event copy_packed_ev =
+        exec_q.copy<py::ssize_t>(host_shape_strides_shp->data(), shape_strides,
+                                 host_shape_strides_shp->size());
 
     copy_and_cast_from_host_blocking_fn(
         exec_q, src_nelems, nd, shape_strides, src_data, src_offset,
         npy_src_min_nelem_offset, npy_src_max_nelem_offset, dst_data,
-        dst_offset, depends,
-        {copy_shape_ev, copy_src_strides_ev, copy_dst_strides_ev});
+        dst_offset, depends, {copy_packed_ev});
 
     sycl::free(shape_strides, exec_q);
 
