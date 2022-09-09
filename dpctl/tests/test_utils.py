@@ -111,3 +111,13 @@ def validate_usm_type_arg():
         dpctl.utils.validate_usm_type("inv", allow_none=True)
     with pytest.raises(ValueError):
         dpctl.utils.validate_usm_type("inv", allow_none=False)
+
+
+def test_onetrace_enabled():
+    import os
+
+    v_name = "PTI_ENABLE_COLLECTION"
+    v_v = os.getenv(v_name, None)
+    with dpctl.utils.onetrace_enabled():
+        assert os.getenv(v_name, None) == "1"
+    assert os.getenv(v_name, None) == v_v
