@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.utils Functions &mdash; Data-parallel Control (dpctl) 0.14.0dev0+68.g1cd98a35a documentation</title>
+  <title>dpctl.utils Functions &mdash; Data-parallel Control (dpctl) 0.14.0dev0+68.g115a69737 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -32,7 +32,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+68.g1cd98a35a
+                0.14.0dev0+68.g115a69737
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -112,8 +112,25 @@ or returns <cite>None</cite> if queues are not equal.</p>
 <dd><p>Enable <cite>onetrace</cite> collection for kernels executed in this context.</p>
 <p>N.B.: Proper working of this utility assumes that Python interpreter
 has been launched by <cite>onetrace</cite> tool from intel/pti-gpu project.</p>
-<blockquote>
-<div></div></blockquote>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p>Launch the Python interpreter using <cite>onetrace</cite> tool:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span>$ onetrace --conditional-collection -v -t --demangle                 python script.py
+</pre></div>
+</div>
+<p>Now using the context manager in the Python sessions enables
+data collection and its output for every offloaded kernel</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+<span class="kn">from</span> <span class="nn">dpctl.utils</span> <span class="kn">import</span> <span class="n">onetrace_enabled</span>
+
+<span class="c1"># onetrace output reporting on execution of the kernel</span>
+<span class="c1"># should be seen, starting with &quot;Device Timeline&quot;</span>
+<span class="k">with</span> <span class="n">onetrace_enabled</span><span class="p">():</span>
+    <span class="n">dpt</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int16&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
