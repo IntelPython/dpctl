@@ -1,3 +1,16 @@
+# Contributing
+
+We welcome your contributions. To contribute, please
+- create an [issue](https://github.com/IntelPython/dpctl/issues/new),
+- participate in [discussions](https://github.com/IntelPython/dpctl/discussions), or
+- open a [pull request](https://github.com/IntelPython/dpctl/compare) from changes committed to your own fork
+of `dpctl`.
+
+**N.B.**: Please make sure to tick the checkmark "[x] Allow edits from maintainers" to allow proper functioning
+of automation bots, see "[Working with forks](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork)" GitHub document for more details.
+
+
+
 # Mechanical Source Issues
 
 ## Source Code Formatting
@@ -30,11 +43,11 @@ clang-format -style=file -i         \
 
 We use the following Python code style tools:
 - [black](https://black.readthedocs.io/en/stable/) code formatter.
-    - Revision: `20.8b1`.
+    - Revision: `22.3.0`.
 - [flake8](https://flake8.pycqa.org/en/latest/) linter.
-    - Revision `3.9.1`.
+    - Revision `4.0.1`.
 - [isort](https://pycqa.github.io/isort/) import sorter.
-    - Revision `5.8.0`.
+    - Revision `5.10.1`.
 
 - Refer `pyproject.toml` and `.flake8` config files for current configurations.
 
@@ -63,7 +76,7 @@ purpose of the file. The standard header looks like this:
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2021 Intel Corporation
+// Copyright 2020-2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -103,7 +116,7 @@ Every Python and Cython file should only include the following license header:
 ```
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
