@@ -113,6 +113,7 @@ def validate_usm_type_arg():
         dpctl.utils.validate_usm_type("inv", allow_none=False)
 
 
+@pytest.mark.filterwarnings("ignore:.*:RuntimeWarning")
 def test_onetrace_enabled():
     import os
 
