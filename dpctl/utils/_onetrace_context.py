@@ -14,8 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 from contextlib import contextmanager
+from os import environ, getenv
+from platform import system as sys_platform
+
+_UNCHECKED = sys_platform() == "Linux"
+del sys_platform
 
 
 @contextmanager
@@ -42,13 +46,31 @@ def onetrace_enabled():
                 dpt.arange(100, dtype='int16')
 
     """
+    global _UNCHECKED
+
+    if _UNCHECKED:
+        _UNCHECKED = False
+        if not (
+            getenv("PTI_ENABLE", None) == "1"
+            and "onetrace_tool" in getenv("LD_PRELOAD", "")
+        ):
+            import warnings
+
+            warnings.warn(
+                "It looks like Python interpreter was not started using "
+                "`onetrace` utility. Using `onetrace_enabled` may have "
+                "no effect. See `onetrace_enabled.__doc__` for usage.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+
     _env_var_name = "PTI_ENABLE_COLLECTION"
-    saved = os.getenv(_env_var_name, None)
+    saved = getenv(_env_var_name, None)
     try:
-        os.environ[_env_var_name] = "1"
+        environ[_env_var_name] = "1"
         yield
     finally:
         if saved is None:
-            del os.environ[_env_var_name]
+            del environ[_env_var_name]
         else:
-            os.environ[_env_var_name] = saved
+            environ[_env_var_name] = saved
