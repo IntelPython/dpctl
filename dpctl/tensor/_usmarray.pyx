@@ -779,13 +779,14 @@ cdef class usm_ndarray:
             NotImplementedError: when non-default value of `stream` keyword
                 is used.
         """
-        if stream is None:
-            return c_dlpack.to_dlpack_capsule(self)
+        _caps = c_dlpack.to_dlpack_capsule(self)
+        if (stream is None or type(stream) is not dpctl.SyclQueue or
+            stream == self.sycl_queue):
+            pass
         else:
-            raise NotImplementedError(
-                "Only stream=None is supported. "
-                "Use `dpctl.SyclQueue.submit_barrier` to synchronize queues."
-            )
+            ev = self.sycl_queue.submit_barrier()
+            stream.submit_barrier(dependent_events=[ev])
+        return _caps
 
     def __dlpack_device__(self):
         """
