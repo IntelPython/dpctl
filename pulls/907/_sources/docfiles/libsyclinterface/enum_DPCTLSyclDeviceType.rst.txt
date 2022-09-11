@@ -1,0 +1,25 @@
+.. index:: pair: enum; DPCTLSyclDeviceType
+.. _doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff:
+
+enum DPCTLSyclDeviceType
+========================
+
+DPCTL device types that are equivalent to Sycl's device_type.
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_sycl_enum_types.h>
+
+	enum DPCTLSyclDeviceType
+	{
+	    :target:`DPCTL_ACCELERATOR<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa77c06e8aa17a0393baa03104d93a1c2c>`    = 1<<0,
+	    :target:`DPCTL_AUTOMATIC<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa56e696aa054417023c07b5d43f0ce30d>`      = 1<<1,
+	    :target:`DPCTL_CPU<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa7301bd6676b8167d6048d08072ceeb2e>`            = 1<<2,
+	    :target:`DPCTL_CUSTOM<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffad64472511a7f7b3c711d56e34266e252>`         = 1<<3,
+	    :target:`DPCTL_GPU<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffae4512c7eb1e876858fdf27090914265f>`            = 1<<4,
+	    :target:`DPCTL_HOST_DEVICE<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa6f66b14770eab4e002d856217057a935>`    = 1<<5,
+	    :target:`DPCTL_ALL<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa965ac28a750a70af103119b14a0476e8>`            =(1<<6) - 1,
+	    :target:`DPCTL_UNKNOWN_DEVICE<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ffa8e4d82c04d9f20cac007a0fe6b86250f>` = 0,
+	};
+
