@@ -1296,8 +1296,6 @@ def test_common_arg_validation():
         dpt.ones_like(X, order=order)
     with pytest.raises(ValueError):
         dpt.full_like(X, 1, order=order)
-    with pytest.raises(ValueError):
-        dpt.eye(4, order=order)
     X = dict()
     # test for type validation
     with pytest.raises(TypeError):
