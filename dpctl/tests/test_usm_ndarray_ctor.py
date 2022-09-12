@@ -1256,6 +1256,24 @@ def test_full_like(dt, usm_kind):
     assert np.array_equal(dpt.asnumpy(Y), np.ones(X.shape, dtype=X.dtype))
 
 
+@pytest.mark.parametrize("dtype", _all_dtypes)
+@pytest.mark.parametrize("usm_kind", ["shared", "device", "host"])
+def test_eye(dtype, usm_kind):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    if dtype in ["f8", "c16"] and q.sycl_device.has_aspect_fp64 is False:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
+    X = dpt.eye(4, 5, k=1, dtype=dtype, usm_type=usm_kind, sycl_queue=q)
+    Xnp = np.eye(4, 5, k=1, dtype=dtype)
+    assert X.dtype == Xnp.dtype
+    assert np.array_equal(Xnp, dpt.asnumpy(X))
+
+
 def test_common_arg_validation():
     order = "I"
     # invalid order must raise ValueError
@@ -1267,6 +1285,8 @@ def test_common_arg_validation():
         dpt.ones(10, order=order)
     with pytest.raises(ValueError):
         dpt.full(10, 1, order=order)
+    with pytest.raises(ValueError):
+        dpt.eye(10, order=order)
     X = dpt.empty(10)
     with pytest.raises(ValueError):
         dpt.empty_like(X, order=order)
@@ -1288,25 +1308,3 @@ def test_common_arg_validation():
         dpt.ones_like(X)
     with pytest.raises(TypeError):
         dpt.full_like(X, 1)
-
-
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_eye(dtype):
-    X = dpt.eye(4, 5, dtype=dtype)
-    Xnp = np.eye(4, 5, dtype=dtype)
-    assert X.dtype == Xnp.dtype
-    assert np.array_equal(Xnp, dpt.asnumpy(X))
-
-
-@pytest.mark.parametrize("shape", [(7,), (6, 1), (10, 5), (3, 9)])
-@pytest.mark.parametrize("k", np.arange(-2, 2, 1))
-@pytest.mark.parametrize("order", ["C", "F"])
-def test_eye_shapes(shape, k, order):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
-    Xnp = np.eye(*shape, k=k, order=order)
-    X = dpt.eye(*shape, k=k, order=order, sycl_queue=q)
-
-    assert np.array_equal(Xnp, dpt.asnumpy(X))
