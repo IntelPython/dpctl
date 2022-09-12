@@ -1102,8 +1102,9 @@ def eye(
             usm_type=usm_type,
             sycl_queue=sycl_queue,
         )
-    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    dtype = _get_dtype(dtype, sycl_queue)
     res = dpt.usm_ndarray(
         (n_rows, n_cols),
         dtype=dtype,
