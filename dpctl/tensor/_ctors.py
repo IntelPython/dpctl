@@ -1084,9 +1084,6 @@ def eye(
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
-    if n_cols is None:
-        n_cols = n_rows
-    # allocate a 1D array of zeros, length equal to n_cols * n_rows
     if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
         raise ValueError(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
@@ -1094,27 +1091,27 @@ def eye(
     else:
         order = order[0].upper()
     n_rows = operator.index(n_rows)
-    n_cols = operator.index(n_cols)
+    n_cols = n_rows if n_cols is None else operator.index(n_cols)
     k = operator.index(k)
-    x = zeros(
-        (n_rows * n_cols,),
+    if k >= n_cols or -k >= n_rows:
+        return dpt.zeros(
+            (n_rows, n_cols),
+            dtype=dtype,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    res = dpt.usm_ndarray(
+        (n_rows, n_cols),
         dtype=dtype,
+        buffer=usm_type,
         order=order,
-        device=device,
-        usm_type=usm_type,
-        sycl_queue=sycl_queue,
+        buffer_ctor_kwargs={"queue": sycl_queue},
     )
-    if k > -n_rows and k < n_cols:
-        # find the length of the diagonal
-        L = min(n_cols, n_rows, n_cols - k, n_rows + k)
-        # i is the first index of diagonal, j is the last, s is the step size
-        if order == "C":
-            s = n_cols + 1
-            i = k if k >= 0 else n_cols * -k
-        else:
-            s = n_rows + 1
-            i = n_rows * k if k > 0 else -k
-        j = i + s * (L - 1) + 1
-        x[i:j:s] = 1
-        # copy=False ensures no wasted memory copying the array
-    return dpt.reshape(x, (n_rows, n_cols), order=order, copy=False)
+    if n_rows != 0 and n_cols != 0:
+        hev, _ = ti._eye(k, dst=res, sycl_queue=sycl_queue)
+        hev.wait()
+    return res

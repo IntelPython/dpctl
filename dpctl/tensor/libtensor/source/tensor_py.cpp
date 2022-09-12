@@ -45,6 +45,7 @@ template <typename srcT, typename dstT, int nd> class copy_cast_spec_kernel;
 template <typename Ty> class copy_for_reshape_generic_kernel;
 template <typename Ty> class linear_sequence_step_kernel;
 template <typename Ty, typename wTy> class linear_sequence_affine_kernel;
+template <typename Ty> class eye_kernel;
 
 static dpctl::tensor::detail::usm_ndarray_types array_types;
 
@@ -1742,6 +1743,144 @@ usm_ndarray_full(py::object py_value,
     }
 }
 
+/* ================ Eye ================== */
+
+typedef sycl::event (*eye_fn_ptr_t)(sycl::queue,
+                                    size_t nelems, // num_elements
+                                    py::ssize_t start,
+                                    py::ssize_t end,
+                                    py::ssize_t step,
+                                    char *, // dst_data_ptr
+                                    const std::vector<sycl::event> &);
+
+static eye_fn_ptr_t eye_dispatch_vector[_ns::num_types];
+
+template <typename Ty> class EyeFunctor
+{
+private:
+    Ty *p = nullptr;
+    py::ssize_t start_v;
+    py::ssize_t end_v;
+    py::ssize_t step_v;
+
+public:
+    EyeFunctor(char *dst_p,
+               const py::ssize_t v0,
+               const py::ssize_t v1,
+               const py::ssize_t dv)
+        : p(reinterpret_cast<Ty *>(dst_p)), start_v(v0), end_v(v1), step_v(dv)
+    {
+    }
+
+    void operator()(sycl::id<1> wiid) const
+    {
+        Ty set_v = 0;
+        py::ssize_t i = static_cast<py::ssize_t>(wiid.get(0));
+        if (i >= start_v and i <= end_v) {
+            if ((i - start_v) % step_v == 0) {
+                set_v = 1;
+            }
+        }
+        p[i] = set_v;
+    }
+};
+
+template <typename Ty>
+sycl::event eye_impl(sycl::queue exec_q,
+                     size_t nelems,
+                     const py::ssize_t start,
+                     const py::ssize_t end,
+                     const py::ssize_t step,
+                     char *array_data,
+                     const std::vector<sycl::event> &depends)
+{
+    sycl::event eye_event = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.parallel_for<eye_kernel<Ty>>(
+            sycl::range<1>{nelems},
+            EyeFunctor<Ty>(array_data, start, end, step));
+    });
+
+    return eye_event;
+}
+
+template <typename fnT, typename Ty> struct EyeFactory
+{
+    fnT get()
+    {
+        fnT f = eye_impl<Ty>;
+        return f;
+    }
+};
+
+std::pair<sycl::event, sycl::event>
+eye(py::ssize_t k,
+    dpctl::tensor::usm_ndarray dst,
+    sycl::queue exec_q,
+    const std::vector<sycl::event> &depends = {})
+{
+    // dst must be 2D
+
+    if (dst.get_ndim() != 2) {
+        throw py::value_error(
+            "usm_ndarray_eye: Expecting 2D array to populate");
+    }
+
+    sycl::queue dst_q = dst.get_queue();
+    if (dst_q != exec_q && dst_q.get_context() != exec_q.get_context()) {
+        throw py::value_error(
+            "Execution queue context is not the same as allocation context");
+    }
+
+    int dst_typenum = dst.get_typenum();
+    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
+
+    const py::ssize_t nelem = dst.get_size();
+    const py::ssize_t rows = dst.get_shape(0);
+    const py::ssize_t cols = dst.get_shape(1);
+    if (rows == 0 || cols == 0) {
+        // nothing to do
+        return std::make_pair(sycl::event{}, sycl::event{});
+    }
+
+    bool is_dst_c_contig = ((dst.get_flags() & USM_ARRAY_C_CONTIGUOUS) != 0);
+    bool is_dst_f_contig = ((dst.get_flags() & USM_ARRAY_F_CONTIGUOUS) != 0);
+    if (!is_dst_c_contig && !is_dst_f_contig) {
+        throw py::value_error("USM array is not contiguous");
+    }
+
+    py::ssize_t start;
+    if (is_dst_c_contig) {
+        start = (k < 0) ? -k * cols : k;
+    }
+    else {
+        start = (k < 0) ? -k : k * rows;
+    }
+
+    py::ssize_t step;
+    if (dst.get_strides_raw() == nullptr) {
+        step = (is_dst_c_contig) ? cols + 1 : rows + 1;
+    }
+    else {
+        const py::ssize_t *strides = dst.get_strides_raw();
+        step = strides[0] + strides[1];
+    }
+
+    const py::ssize_t length = std::min({rows, cols, rows + k, cols - k});
+    const py::ssize_t end = start + step * (length - 1) + 1;
+
+    char *dst_data = dst.get_data();
+    sycl::event eye_event;
+
+    auto fn = eye_dispatch_vector[dst_typeid];
+
+    eye_event = fn(exec_q, static_cast<size_t>(nelem), start, end, step,
+                   dst_data, depends);
+
+    return std::make_pair(keep_args_alive(exec_q, {dst}, {eye_event}),
+                          eye_event);
+}
+
 // populate dispatch tables
 void init_copy_and_cast_dispatch_tables(void)
 {
@@ -1795,6 +1934,10 @@ void init_copy_for_reshape_dispatch_vector(void)
     DispatchVectorBuilder<full_contig_fn_ptr_t, FullContigFactory, num_types>
         dvb3;
     dvb3.populate_dispatch_vector(full_contig_dispatch_vector);
+
+    DispatchVectorBuilder<eye_fn_ptr_t, EyeFactory, num_types>
+        dvb4;
+    dvb4.populate_dispatch_vector(eye_dispatch_vector);
 
     return;
 }
@@ -1899,6 +2042,16 @@ PYBIND11_MODULE(_tensor_impl, m)
     m.def("_full_usm_ndarray", &usm_ndarray_full,
           "Populate usm_ndarray `dst` with given fill_value.",
           py::arg("fill_value"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
+
+    m.def("_eye", &eye,
+          "Fills input 2D contiguous usm_ndarray `dst` with "
+          "zeros outside of the diagonal "
+          "specified by "
+          "the diagonal index `k` "
+          "which is filled with ones."
+          "Returns a tuple of events: (ht_event, comp_event)",
+          py::arg("k"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
     m.def("default_device_fp_type", [](sycl::queue q) -> std::string {
