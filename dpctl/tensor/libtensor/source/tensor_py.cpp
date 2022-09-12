@@ -1827,9 +1827,9 @@ eye(py::ssize_t k,
     }
 
     sycl::queue dst_q = dst.get_queue();
-    if (dst_q != exec_q && dst_q.get_context() != exec_q.get_context()) {
-        throw py::value_error(
-            "Execution queue context is not the same as allocation context");
+    if (!dpctl::utils::queues_are_compatible(exec_q, {dst_q})) {
+        throw py::value_error("Execution queue is not compatible with the "
+                              "allocation queue");
     }
 
     int dst_typenum = dst.get_typenum();
@@ -1857,17 +1857,17 @@ eye(py::ssize_t k,
         start = (k < 0) ? -k : k * rows;
     }
 
+    const py::ssize_t *strides = dst.get_strides_raw();
     py::ssize_t step;
-    if (dst.get_strides_raw() == nullptr) {
+    if (strides == nullptr) {
         step = (is_dst_c_contig) ? cols + 1 : rows + 1;
     }
     else {
-        const py::ssize_t *strides = dst.get_strides_raw();
         step = strides[0] + strides[1];
     }
 
     const py::ssize_t length = std::min({rows, cols, rows + k, cols - k});
-    const py::ssize_t end = start + step * (length - 1) + 1;
+    const py::ssize_t end = start + step * (length - 1);
 
     char *dst_data = dst.get_data();
     sycl::event eye_event;
