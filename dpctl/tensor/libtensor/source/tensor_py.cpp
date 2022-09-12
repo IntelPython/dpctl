@@ -1935,8 +1935,7 @@ void init_copy_for_reshape_dispatch_vector(void)
         dvb3;
     dvb3.populate_dispatch_vector(full_contig_dispatch_vector);
 
-    DispatchVectorBuilder<eye_fn_ptr_t, EyeFactory, num_types>
-        dvb4;
+    DispatchVectorBuilder<eye_fn_ptr_t, EyeFactory, num_types> dvb4;
     dvb4.populate_dispatch_vector(eye_dispatch_vector);
 
     return;
