@@ -481,8 +481,6 @@ void simplify_iteration_space(int &nd,
 
 sycl::event _populate_packed_shape_strides_for_copycast_kernel(
     sycl::queue exec_q,
-    int src_flags,
-    int dst_flags,
     py::ssize_t *device_shape_strides, // to be populated
     const std::vector<py::ssize_t> &common_shape,
     const std::vector<py::ssize_t> &src_strides,
@@ -719,8 +717,8 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
 
     sycl::event copy_shape_ev =
         _populate_packed_shape_strides_for_copycast_kernel(
-            exec_q, src_flags, dst_flags, shape_strides, simplified_shape,
-            simplified_src_strides, simplified_dst_strides);
+            exec_q, shape_strides, simplified_shape, simplified_src_strides,
+            simplified_dst_strides);
 
     sycl::event copy_and_cast_generic_ev = copy_and_cast_fn(
         exec_q, src_nelems, nd, shape_strides, src_data, src_offset, dst_data,
