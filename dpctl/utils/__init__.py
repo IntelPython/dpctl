@@ -23,9 +23,11 @@ from ._compute_follows_data import (
     get_execution_queue,
     validate_usm_type,
 )
+from ._onetrace_context import onetrace_enabled
 
 __all__ = [
     "get_execution_queue",
     "get_coerced_usm_type",
     "validate_usm_type",
+    "onetrace_enabled",
 ]
