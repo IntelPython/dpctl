@@ -18,6 +18,7 @@ Array Construction
 .. autofunction:: copy
 .. autofunction:: empty
 .. autofunction:: empty_like
+.. autofunction:: eye
 .. autofunction:: from_dlpack
 .. autofunction:: from_numpy
 .. autofunction:: full

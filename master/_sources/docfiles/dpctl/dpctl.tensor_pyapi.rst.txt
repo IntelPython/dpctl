@@ -51,6 +51,8 @@ Array Construction
       - Creates `usm_ndarray` from uninitialized USM allocation.
     * - :func:`empty_like()`
       - Creates `usm_ndarray` from uninitialized USM allocation.
+    * - :func:`eye()`
+      - -> usm_ndarray Creates `usm_ndarray` with ones on the `k`th diagonal.
     * - :func:`from_dlpack()`
       - dpctl.tensor.from_dlpack(obj) Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python object `obj` that implements `__dlpack__` protocol. The output array is always a zero-copy view of the input.
     * - :func:`from_numpy()`
