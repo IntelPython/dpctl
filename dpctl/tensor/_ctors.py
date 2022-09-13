@@ -1058,12 +1058,12 @@ def eye(
     Args:
         n_rows: number of rows in the output array.
         n_cols (optional): number of columns in the output array. If None,
-        n_cols = n_rows. Default: `None`.
+            n_cols = n_rows. Default: `None`.
         k: index of the diagonal, with 0 as the main diagonal.
-        A positive value of k is a superdiagonal, a negative value
-        is a subdiagonal.
-        Raises `TypeError` if k is not an integer.
-        Default: `0`.
+            A positive value of k is a superdiagonal, a negative value
+            is a subdiagonal.
+            Raises `TypeError` if k is not an integer.
+            Default: `0`.
         dtype (optional): data type of the array. Can be typestring,
             a `numpy.dtype` object, `numpy` char string, or a numpy
             scalar type. Default: None
