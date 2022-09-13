@@ -25,6 +25,17 @@ Functions
     * - :func:`validate_usm_type()`
       - [FIXME]: <class 'builtin_function_or_method'> has a docstring with no summary
 
+.. _dpctl.utils_other_functions:
+
+Other Functions
+---------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`onetrace_enabled()`
+      - Enable `onetrace` collection for kernels executed in this context.
+
 
 
 
