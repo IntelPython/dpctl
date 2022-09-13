@@ -90,9 +90,9 @@ def check_max_work_item_sizes3d(device):
         assert size is not None
 
 
-@pytest.mark.filterwarnings("DeprecationWarning:")
 def check_max_work_item_sizes(device):
-    max_work_item_sizes = device.max_work_item_sizes
+    with pytest.warns(DeprecationWarning):
+        max_work_item_sizes = device.max_work_item_sizes
     for size in max_work_item_sizes:
         assert size is not None
 
