@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Queue class helper functions &mdash; Data-parallel Control (dpctl) 0.14.0dev0+109.g53fd80b4b documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/target-highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Service functions" href="group_Service.html" />
+    <link rel="prev" title="Queue class C wrapper" href="group_QueueInterface.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          </a>
+              <div class="version">
+                0.14.0dev0+109.g53fd80b4b
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/UserManual.html">User Manual</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../dpctl/dpctl_pyapi.html">dpctl</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">libsyclinterface</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="group_ContextInterface.html">Context class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceInterface.html">Device class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceManager.html">Device class helper functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceSelectors.html">Device selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_EventInterface.html">Event class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_KernelInterface.html">Kernel class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_KernelBundleInterface.html">Kernel_bundle class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_PlatformInterface.html">Platform class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_PlatformManager.html">Platform class helper functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_QueueInterface.html">Queue class C wrapper</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Queue class helper functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detailed-documentation">Detailed Documentation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#global-functions">Global Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="group_Service.html">Service functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_USMInterface.html">USM Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="page_todo.html">Todo List</a></li>
+<li class="toctree-l2"><a class="reference internal" href="global.html">Global Namespace</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data-parallel Control (dpctl)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">libsyclinterface</a> &raquo;</li>
+      <li>Queue class helper functions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/docfiles/libsyclinterface/group_QueueManager.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="queue-class-helper-functions">
+<span id="doxid-d0-dde-group-queue-manager"></span><span id="index-0"></span><h1>Queue class helper functions<a class="headerlink" href="#queue-class-helper-functions" title="Permalink to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// global functions</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d0-dde-group-queue-manager-1gaa1e5044153f900fff9b779b30f3b0538"><span class="std std-ref">DPCTLQueueMgr_GetCurrentQueue</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<a class="reference internal" href="#doxid-d0-dde-group-queue-manager-1gac4dacf08c61ae001907660867185ea7a"><span class="std std-ref">DPCTLQueueMgr_GetQueueStackSize</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<a class="reference internal" href="#doxid-d0-dde-group-queue-manager-1ga38b8e0f4ea42601d27eda0d5413c5164"><span class="std std-ref">DPCTLQueueMgr_GlobalQueueIsCurrent</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<a class="reference internal" href="#doxid-d0-dde-group-queue-manager-1ga77d39c59561d3f427a1dde1ce81652db"><span class="std std-ref">DPCTLQueueMgr_IsCurrentQueue</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">void</span>
+<a class="reference internal" href="#doxid-d0-dde-group-queue-manager-1gac5fa7690c281328a070f2409b548df73"><span class="std std-ref">DPCTLQueueMgr_PopQueue</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">void</span>
+<a class="reference internal" href="#doxid-d0-dde-group-queue-manager-1gac9c2b3d22c3bfb0797c0b35551d331b7"><span class="std std-ref">DPCTLQueueMgr_PushQueue</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">void</span>
+<a class="reference internal" href="#doxid-d0-dde-group-queue-manager-1gaf767ec0189383390b6bc63835eef1543"><span class="std std-ref">DPCTLQueueMgr_SetGlobalQueue</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">);</span></pre>
+</section>
+<section id="detailed-documentation">
+<span id="details-d0-dde-group-queue-manager"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading"></a></h2>
+<section id="global-functions">
+<h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this heading"></a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-dde-group-queue-manager-1gaa1e5044153f900fff9b779b30f3b0538"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span>
+<span class="n">DPCTLQueueMgr_GetCurrentQueue</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
+<p>Get the current sycl::queue for the thread of execution.</p>
+<p>Dpctl lets an application access a “current queue” as soon as the application loads dpctl. The initial current queue also termed the global queue is a queue created using SYCL’s default_selector. The current queue is set per thread and can be changed for a specific execution scope using the PushQueue and PopQueue functions in this module. The global queue can also be changed by using SetGlobalQueue.</p>
+<p>The DPCTLQueueMgr_GetCurrentQueue function returns the current queue in the current scope from where the function was called.</p>
+<p class="rubric">Returns:</p>
+<p>An opaque DPCTLSyclQueueRef pointer wrapping a sycl::queue*.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-dde-group-queue-manager-1gac4dacf08c61ae001907660867185ea7a"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<span class="n">DPCTLQueueMgr_GetQueueStackSize</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
+<p>A helper function meant for unit testing. Returns the current number of queues pushed to the queue manager’s internal stack of sycl::queue objects.</p>
+<p class="rubric">Returns:</p>
+<p>The current size of the queue manager’s stack of queues.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-dde-group-queue-manager-1ga38b8e0f4ea42601d27eda0d5413c5164"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<span class="n">DPCTLQueueMgr_GlobalQueueIsCurrent</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
+<p>Returns true if the global queue set for the queue manager is also the current queue.</p>
+<p>The default current queue provided by the queue manager is termed as the global queue. If DPCTLQueueMgr_PushQueue is used to make another queue the current queue, then the global queue no longer remains the current queue till all pushed queues are popped using DPCTLQueueMgr_PopQueue. The DPCTLQueueMgr_GlobalQueueIsCurrent checks if the global queue is also the current queue, i.e., no queues have been pushed and are yet to be popped.</p>
+<p class="rubric">Returns:</p>
+<p>True if the global queue is the current queue, else false.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-dde-group-queue-manager-1ga77d39c59561d3f427a1dde1ce81652db"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<span class="n">DPCTLQueueMgr_IsCurrentQueue</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
+<p>Check if the queue argument is also the current queue.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to a sycl::queue.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>True if QRef argument is the the current queue, else False.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-dde-group-queue-manager-1gac5fa7690c281328a070f2409b548df73"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<span class="n">DPCTLQueueMgr_PopQueue</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
+<p>Pops the top of stack sycl::queue object from the queue manager’s * internal stack of queues and makes the next queue in the stack the current queue.</p>
+<p>DPCTLPopSyclQueue removes the top of stack queue and changes the current queue. If no queue was previously pushed, then a DPCTLQueueMgr_PopQueue call is a no-op.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-dde-group-queue-manager-1gac9c2b3d22c3bfb0797c0b35551d331b7"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<span class="n">DPCTLQueueMgr_PushQueue</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
+<p>Pushes the passed in sycl::queue object to the queue manager’s internal stack of queues and makes the queue the current queue.</p>
+<p>The queue manager maintains a thread-local stack of sycl::queue objects. The <a class="reference internal" href="#doxid-d0-dde-group-queue-manager-1gac9c2b3d22c3bfb0797c0b35551d331b7"><span class="std std-ref">DPCTLQueueMgr_PushQueue()</span></a> function pushes to the stack and sets the passed in DPCTLSyclQueueRef object as the current queue. The current queue is the queue returned by the <a class="reference internal" href="#doxid-d0-dde-group-queue-manager-1gaa1e5044153f900fff9b779b30f3b0538"><span class="std std-ref">DPCTLQueueMgr_GetCurrentQueue()</span></a> function.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque reference to a syc::queue.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d0-dde-group-queue-manager-1gaf767ec0189383390b6bc63835eef1543"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<span class="n">DPCTLQueueMgr_SetGlobalQueue</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
+<p>Resets the global queue using the passed in DPCTLSyclQueueRef the previous global queue is deleted.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque reference to a sycl::device.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="group_QueueInterface.html" class="btn btn-neutral float-left" title="Queue class C wrapper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="group_Service.html" class="btn btn-neutral float-right" title="Service functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
