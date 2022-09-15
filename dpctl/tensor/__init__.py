@@ -33,6 +33,8 @@ from dpctl.tensor._ctors import (
     linspace,
     ones,
     ones_like,
+    tril,
+    triu,
     zeros,
     zeros_like,
 )
@@ -83,4 +85,6 @@ __all__ = [
     "to_numpy",
     "asnumpy",
     "from_dlpack",
+    "tril",
+    "triu",
 ]

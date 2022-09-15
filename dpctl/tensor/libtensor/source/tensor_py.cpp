@@ -1879,6 +1879,290 @@ eye(py::ssize_t k,
                           eye_event);
 }
 
+/* =========================== Tril and triu ============================== */
+// define function type
+typedef sycl::event (*tri_fn_ptr_t)(sycl::queue,
+                                    py::ssize_t,   // inner_range  //py::ssize_t
+                                    py::ssize_t,   // outer_range
+                                    char *,        // src_data_ptr
+                                    char *,        // dst_data_ptr
+                                    py::ssize_t,   // nd
+                                    py::ssize_t *, // shape_and_strides
+                                    int,           // k
+                                    const std::vector<sycl::event> &,
+                                    const std::vector<sycl::event> &);
+
+template <typename Ty, bool> class tri_kernel;
+template <typename Ty, bool l>
+sycl::event tri_impl(sycl::queue exec_q,
+                     py::ssize_t inner_range,
+                     py::ssize_t outer_range,
+                     char *src_p,
+                     char *dst_p,
+                     py::ssize_t nd,
+                     py::ssize_t *shape_and_strides,
+                     int k,
+                     const std::vector<sycl::event> &depends,
+                     const std::vector<sycl::event> &additional_depends)
+{
+    constexpr int d2 = 2;
+    py::ssize_t src_s = nd;
+    py::ssize_t dst_s = 2 * nd;
+    py::ssize_t nd_1 = nd - 1;
+    py::ssize_t nd_2 = nd - 2;
+    Ty *src = reinterpret_cast<Ty *>(src_p);
+    Ty *dst = reinterpret_cast<Ty *>(dst_p);
+
+    sycl::event tri_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.depends_on(additional_depends);
+        cgh.parallel_for<tri_kernel<Ty, l>>(
+            sycl::range<2>(inner_range, outer_range), [=](sycl::item<2> idx) {
+                py::ssize_t src_inner_offset, dst_inner_offset;
+                bool to_copy;
+
+                {
+                    py::ssize_t inner_gid = idx.get_id(0);
+                    CIndexer_array<d2, py::ssize_t> indexer_i(
+                        {shape_and_strides[nd_2], shape_and_strides[nd_1]});
+                    indexer_i.set(inner_gid);
+                    const std::array<py::ssize_t, d2> &inner = indexer_i.get();
+                    src_inner_offset =
+                        inner[0] * shape_and_strides[src_s + nd_2] +
+                        inner[1] * shape_and_strides[src_s + nd_1];
+                    dst_inner_offset =
+                        inner[0] * shape_and_strides[dst_s + nd_2] +
+                        inner[1] * shape_and_strides[dst_s + nd_1];
+
+                    if (l)
+                        to_copy = (inner[0] + k >= inner[1]);
+                    else
+                        to_copy = (inner[0] + k <= inner[1]);
+                }
+
+                py::ssize_t src_offset = 0;
+                py::ssize_t dst_offset = 0;
+                {
+                    py::ssize_t outer_gid = idx.get_id(1);
+                    CIndexer_vector<py::ssize_t> outer(nd - d2);
+                    outer.get_displacement(
+                        outer_gid, shape_and_strides, shape_and_strides + src_s,
+                        shape_and_strides + dst_s, src_offset, dst_offset);
+                }
+
+                src_offset += src_inner_offset;
+                dst_offset += dst_inner_offset;
+
+                dst[dst_offset] = (to_copy) ? src[src_offset] : Ty(0);
+            });
+    });
+    return tri_ev;
+}
+
+static tri_fn_ptr_t tril_generic_dispatch_vector[_ns::num_types];
+
+template <typename fnT, typename Ty> struct TrilGenericFactory
+{
+    fnT get()
+    {
+        fnT f = tri_impl<Ty, /*tril*/ true>;
+        return f;
+    }
+};
+
+static tri_fn_ptr_t triu_generic_dispatch_vector[_ns::num_types];
+
+template <typename fnT, typename Ty> struct TriuGenericFactory
+{
+    fnT get()
+    {
+        fnT f = tri_impl<Ty, /*triu*/ false>;
+        return f;
+    }
+};
+
+std::pair<sycl::event, sycl::event>
+tri(sycl::queue &exec_q,
+    dpctl::tensor::usm_ndarray src,
+    dpctl::tensor::usm_ndarray dst,
+    char part,
+    int k = 0,
+    const std::vector<sycl::event> &depends = {})
+{
+    // array dimensions must be the same
+    int src_nd = src.get_ndim();
+    int dst_nd = dst.get_ndim();
+    if (src_nd != dst_nd) {
+        throw py::value_error("Array dimensions are not the same.");
+    }
+
+    if (src_nd < 2) {
+        throw py::value_error("Array dimensions less than 2.");
+    }
+
+    // shapes must be the same
+    const py::ssize_t *src_shape = src.get_shape_raw();
+    const py::ssize_t *dst_shape = dst.get_shape_raw();
+
+    bool shapes_equal(true);
+    size_t src_nelems(1);
+
+    for (int i = 0; i < src_nd; ++i) {
+        src_nelems *= static_cast<size_t>(src_shape[i]);
+        shapes_equal = shapes_equal && (src_shape[i] == dst_shape[i]);
+    }
+    if (!shapes_equal) {
+        throw py::value_error("Array shapes are not the same.");
+    }
+
+    if (src_nelems == 0) {
+        // nothing to do
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
+    int src_typenum = src.get_typenum();
+    int dst_typenum = dst.get_typenum();
+    int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
+    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
+    if (dst_typeid != src_typeid) {
+        throw py::value_error("Array dtype are not the same.");
+    }
+
+    // check same contexts
+    sycl::queue src_q = src.get_queue();
+    sycl::queue dst_q = dst.get_queue();
+
+    sycl::context exec_ctx = exec_q.get_context();
+    sycl::device exec_d = exec_q.get_device();
+    if (src_q.get_context() != exec_ctx || dst_q.get_context() != exec_ctx ||
+        src_q.get_device() != exec_d || dst_q.get_device() != exec_d)
+    {
+        throw py::value_error(
+            "Execution queue context is not the same as allocation contexts");
+    }
+
+    using shT = std::vector<py::ssize_t>;
+    int src_flags = src.get_flags();
+    const py::ssize_t *src_strides_raw = src.get_strides_raw();
+    shT src_strides(src_nd);
+    bool is_src_c_contig = ((src_flags & USM_ARRAY_C_CONTIGUOUS) != 0);
+    bool is_src_f_contig = ((src_flags & USM_ARRAY_F_CONTIGUOUS) != 0);
+    if (src_strides_raw == nullptr) {
+        if (is_src_c_contig) {
+            src_strides = c_contiguous_strides(src_nd, src_shape);
+        }
+        else if (is_src_f_contig) {
+            src_strides = f_contiguous_strides(src_nd, src_shape);
+        }
+        else {
+            throw std::runtime_error("Source array has null strides but has "
+                                     "neither C- nor F- contiguous flag set");
+        }
+    }
+    else {
+        for (ssize_t i = 0; i < src_nd; i++) {
+            src_strides[i] = src_strides_raw[i];
+        }
+    }
+
+    int dst_flags = dst.get_flags();
+    const py::ssize_t *dst_strides_raw = dst.get_strides_raw();
+    shT dst_strides(src_nd);
+    bool is_dst_c_contig = ((dst_flags & USM_ARRAY_C_CONTIGUOUS) != 0);
+    bool is_dst_f_contig = ((dst_flags & USM_ARRAY_F_CONTIGUOUS) != 0);
+    if (dst_strides_raw == nullptr) {
+        if (is_dst_c_contig) {
+            dst_strides = c_contiguous_strides(src_nd, src_shape);
+        }
+        else if (is_dst_f_contig) {
+            dst_strides = f_contiguous_strides(src_nd, src_shape);
+        }
+        else {
+            throw std::runtime_error("Source array has null strides but has "
+                                     "neither C- nor F- contiguous flag set");
+        }
+    }
+    else {
+        for (ssize_t i = 0; i < src_nd; i++) {
+            dst_strides[i] = dst_strides_raw[i];
+        }
+    }
+
+    shT simplified_shape;
+    shT simplified_src_strides;
+    shT simplified_dst_strides;
+    py::ssize_t src_offset(0);
+    py::ssize_t dst_offset(0);
+
+    constexpr py::ssize_t src_itemsize = 1; // item size in elements
+    constexpr py::ssize_t dst_itemsize = 1; // item size in elements
+
+    int nd = src_nd - 2;
+    const py::ssize_t *shape = src_shape;
+    const py::ssize_t *p_src_strides = &src_strides[0];
+    const py::ssize_t *p_dst_strides = &dst_strides[0];
+    simplify_iteration_space(nd, shape, p_src_strides, src_itemsize,
+                             is_src_c_contig, is_src_f_contig, p_dst_strides,
+                             dst_itemsize, is_dst_c_contig, is_dst_f_contig,
+                             simplified_shape, simplified_src_strides,
+                             simplified_dst_strides, src_offset, dst_offset);
+
+    nd += 2;
+    std::vector<py::ssize_t> shape_and_strides(3 * nd);
+
+    std::copy(simplified_shape.begin(), simplified_shape.end(),
+              shape_and_strides.begin());
+    shape_and_strides[nd - 2] = src_shape[src_nd - 2];
+    shape_and_strides[nd - 1] = src_shape[src_nd - 1];
+    std::copy(simplified_src_strides.begin(), simplified_src_strides.end(),
+              shape_and_strides.begin() + nd);
+    shape_and_strides[2 * nd - 2] = src_strides[src_nd - 2];
+    shape_and_strides[2 * nd - 1] = src_strides[src_nd - 1];
+    std::copy(simplified_dst_strides.begin(), simplified_dst_strides.end(),
+              shape_and_strides.begin() + 2 * nd);
+    shape_and_strides[3 * nd - 2] = dst_strides[src_nd - 2];
+    shape_and_strides[3 * nd - 1] = dst_strides[src_nd - 1];
+
+    std::shared_ptr<shT> shp_shape_and_strides =
+        std::make_shared<shT>(shape_and_strides);
+
+    py::ssize_t *dev_shape_and_strides =
+        sycl::malloc_device<ssize_t>(3 * nd, exec_q);
+    if (dev_shape_and_strides == nullptr) {
+        throw std::runtime_error("Unabled to allocate device memory");
+    }
+    sycl::event copy_shape_and_strides = exec_q.copy<ssize_t>(
+        shp_shape_and_strides->data(), dev_shape_and_strides, 3 * nd);
+
+    py::ssize_t inner_range =
+        shape_and_strides[nd - 1] * shape_and_strides[nd - 2];
+    py::ssize_t outer_range = src_nelems / inner_range;
+
+    sycl::event tri_ev;
+    if (part == 'l') {
+        auto fn = tril_generic_dispatch_vector[src_typeid];
+        tri_ev =
+            fn(exec_q, inner_range, outer_range, src.get_data(), dst.get_data(),
+               nd, dev_shape_and_strides, k, depends, {copy_shape_and_strides});
+    }
+    else {
+        auto fn = triu_generic_dispatch_vector[src_typeid];
+        tri_ev =
+            fn(exec_q, inner_range, outer_range, src.get_data(), dst.get_data(),
+               nd, dev_shape_and_strides, k, depends, {copy_shape_and_strides});
+    }
+
+    exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on({tri_ev});
+        auto ctx = exec_q.get_context();
+        cgh.host_task([shp_shape_and_strides, dev_shape_and_strides, ctx]() {
+            sycl::free(dev_shape_and_strides, ctx);
+        });
+    });
+    return std::make_pair(keep_args_alive(exec_q, {src, dst}, {tri_ev}),
+                          tri_ev);
+}
+
 // populate dispatch tables
 void init_copy_and_cast_dispatch_tables(void)
 {
@@ -1935,6 +2219,12 @@ void init_copy_for_reshape_dispatch_vector(void)
 
     DispatchVectorBuilder<eye_fn_ptr_t, EyeFactory, num_types> dvb4;
     dvb4.populate_dispatch_vector(eye_dispatch_vector);
+
+    DispatchVectorBuilder<tri_fn_ptr_t, TrilGenericFactory, num_types> dvb5;
+    dvb5.populate_dispatch_vector(tril_generic_dispatch_vector);
+
+    DispatchVectorBuilder<tri_fn_ptr_t, TriuGenericFactory, num_types> dvb6;
+    dvb6.populate_dispatch_vector(triu_generic_dispatch_vector);
 
     return;
 }
@@ -2081,4 +2371,25 @@ PYBIND11_MODULE(_tensor_impl, m)
           [](sycl::device dev) -> std::string {
               return get_default_device_complex_type(dev);
           });
+    m.def(
+        "_tril",
+        [](sycl::queue exec_q, dpctl::tensor::usm_ndarray src,
+           dpctl::tensor::usm_ndarray dst, int k,
+           const std::vector<sycl::event> depends)
+            -> std::pair<sycl::event, sycl::event> {
+            return tri(exec_q, src, dst, 'l', k, depends);
+        },
+        "Tril helper function.", py::arg("sycl_queue"), py::arg("src"),
+        py::arg("dst"), py::arg("k") = 0, py::arg("depends") = py::list());
+
+    m.def(
+        "_triu",
+        [](sycl::queue exec_q, dpctl::tensor::usm_ndarray src,
+           dpctl::tensor::usm_ndarray dst, int k,
+           const std::vector<sycl::event> depends)
+            -> std::pair<sycl::event, sycl::event> {
+            return tri(exec_q, src, dst, 'u', k, depends);
+        },
+        "Triu helper function.", py::arg("sycl_queue"), py::arg("src"),
+        py::arg("dst"), py::arg("k") = 0, py::arg("depends") = py::list());
 }

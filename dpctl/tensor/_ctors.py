@@ -1116,3 +1116,35 @@ def eye(
         hev, _ = ti._eye(k, dst=res, sycl_queue=sycl_queue)
         hev.wait()
     return res
+
+
+def tril(X, k=0):
+    """
+    tril(X: usm_ndarray, k: int) -> usm_ndarray
+
+    Returns the lower triangular part of a matrix (or a stack of matrices) X.
+    """
+    if type(X) is not dpt.usm_ndarray:
+        raise TypeError
+
+    res = dpt.empty(X.shape, dtype=X.dtype, sycl_queue=X.sycl_queue)
+    hev, _ = ti._tril(sycl_queue=X.sycl_queue, src=X, dst=res, k=k)
+    hev.wait()
+
+    return res
+
+
+def triu(X, k=0):
+    """
+    triu(X: usm_ndarray, k: int) -> usm_ndarray
+
+    Returns the upper triangular part of a matrix (or a stack of matrices) X.
+    """
+    if type(X) is not dpt.usm_ndarray:
+        raise TypeError
+
+    res = dpt.empty(X.shape, dtype=X.dtype, sycl_queue=X.sycl_queue)
+    hev, _ = ti._triu(sycl_queue=X.sycl_queue, src=X, dst=res, k=k)
+    hev.wait()
+
+    return res
