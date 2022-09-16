@@ -1127,9 +1127,34 @@ def tril(X, k=0):
     if type(X) is not dpt.usm_ndarray:
         raise TypeError
 
-    res = dpt.empty(X.shape, dtype=X.dtype, sycl_queue=X.sycl_queue)
-    hev, _ = ti._tril(sycl_queue=X.sycl_queue, src=X, dst=res, k=k)
-    hev.wait()
+    k = operator.index(k)
+
+    # F_CONTIGUOUS = 2
+    order = "f" if (X.flags & 2) else "c"
+
+    shape = X.shape
+    nd = X.ndim
+    if nd < 2:
+        raise ValueError("Array dimensions less than 2.")
+
+    if k >= shape[nd - 1] - 1:
+        res = dpt.empty(
+            X.shape, dtype=X.dtype, order=order, sycl_queue=X.sycl_queue
+        )
+        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=X, dst=res, sycl_queue=X.sycl_queue
+        )
+        hev.wait()
+    elif k < -shape[nd - 2]:
+        res = dpt.zeros(
+            X.shape, dtype=X.dtype, order=order, sycl_queue=X.sycl_queue
+        )
+    else:
+        res = dpt.empty(
+            X.shape, dtype=X.dtype, order=order, sycl_queue=X.sycl_queue
+        )
+        hev, _ = ti._tril(src=X, dst=res, k=k, sycl_queue=X.sycl_queue)
+        hev.wait()
 
     return res
 
@@ -1143,8 +1168,33 @@ def triu(X, k=0):
     if type(X) is not dpt.usm_ndarray:
         raise TypeError
 
-    res = dpt.empty(X.shape, dtype=X.dtype, sycl_queue=X.sycl_queue)
-    hev, _ = ti._triu(sycl_queue=X.sycl_queue, src=X, dst=res, k=k)
-    hev.wait()
+    k = operator.index(k)
+
+    # F_CONTIGUOUS = 2
+    order = "f" if (X.flags & 2) else "c"
+
+    shape = X.shape
+    nd = X.ndim
+    if nd < 2:
+        raise ValueError("Array dimensions less than 2.")
+
+    if k > shape[nd - 1]:
+        res = dpt.zeros(
+            X.shape, dtype=X.dtype, order=order, sycl_queue=X.sycl_queue
+        )
+    elif k <= -shape[nd - 2] + 1:
+        res = dpt.empty(
+            X.shape, dtype=X.dtype, order=order, sycl_queue=X.sycl_queue
+        )
+        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=X, dst=res, sycl_queue=X.sycl_queue
+        )
+        hev.wait()
+    else:
+        res = dpt.empty(
+            X.shape, dtype=X.dtype, order=order, sycl_queue=X.sycl_queue
+        )
+        hev, _ = ti._triu(src=X, dst=res, k=k, sycl_queue=X.sycl_queue)
+        hev.wait()
 
     return res
