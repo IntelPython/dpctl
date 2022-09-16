@@ -1274,6 +1274,159 @@ def test_eye(dtype, usm_kind):
     assert np.array_equal(Xnp, dpt.asnumpy(X))
 
 
+@pytest.mark.parametrize("dtype", _all_dtypes[1:])
+def test_tril(dtype):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    if dtype in ["f8", "c16"] and q.sycl_device.has_aspect_fp64 is False:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
+    shape = (2, 3, 4, 5, 5)
+    X = dpt.reshape(
+        dpt.arange(np.prod(shape), dtype=dtype, sycl_queue=q), shape
+    )
+    Y = dpt.tril(X)
+    Xnp = np.arange(np.prod(shape), dtype=dtype).reshape(shape)
+    Ynp = np.tril(Xnp)
+    assert Y.dtype == Ynp.dtype
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize("dtype", _all_dtypes[1:])
+def test_triu(dtype):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    if dtype in ["f8", "c16"] and q.sycl_device.has_aspect_fp64 is False:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
+    shape = (4, 5)
+    X = dpt.reshape(
+        dpt.arange(np.prod(shape), dtype=dtype, sycl_queue=q), shape
+    )
+    Y = dpt.triu(X, 1)
+    Xnp = np.arange(np.prod(shape), dtype=dtype).reshape(shape)
+    Ynp = np.triu(Xnp, 1)
+    assert Y.dtype == Ynp.dtype
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_tril_slice():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+    shape = (6, 10)
+    X = dpt.reshape(
+        dpt.arange(np.prod(shape), dtype="int", sycl_queue=q), shape
+    )[1:, ::-2]
+    Y = dpt.tril(X)
+    Xnp = np.arange(np.prod(shape), dtype="int").reshape(shape)[1:, ::-2]
+    Ynp = np.tril(Xnp)
+    assert Y.dtype == Ynp.dtype
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_triu_permute_dims():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    shape = (2, 3, 4, 5)
+    X = dpt.permute_dims(
+        dpt.reshape(
+            dpt.arange(np.prod(shape), dtype="int", sycl_queue=q), shape
+        ),
+        (3, 2, 1, 0),
+    )
+    Y = dpt.triu(X)
+    Xnp = np.transpose(
+        np.arange(np.prod(shape), dtype="int").reshape(shape), (3, 2, 1, 0)
+    )
+    Ynp = np.triu(Xnp)
+    assert Y.dtype == Ynp.dtype
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_tril_broadcast_to():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+    shape = (5, 5)
+    X = dpt.broadcast_to(dpt.ones((1), dtype="int", sycl_queue=q), shape)
+    Y = dpt.tril(X)
+    Xnp = np.broadcast_to(np.ones((1), dtype="int"), shape)
+    Ynp = np.tril(Xnp)
+    assert Y.dtype == Ynp.dtype
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_triu_bool():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    shape = (4, 5)
+    X = dpt.ones((shape), dtype="bool", sycl_queue=q)
+    Y = dpt.triu(X)
+    Xnp = np.ones((shape), dtype="bool")
+    Ynp = np.triu(Xnp)
+    assert Y.dtype == Ynp.dtype
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize("order", ["F", "C"])
+@pytest.mark.parametrize("k", [-10, -2, -1, 3, 4, 10])
+def test_triu_order_k(order, k):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+    shape = (3, 3)
+    X = dpt.reshape(
+        dpt.arange(np.prod(shape), dtype="int", sycl_queue=q),
+        shape,
+        order=order,
+    )
+    Y = dpt.triu(X, k)
+    Xnp = np.arange(np.prod(shape), dtype="int").reshape(shape, order=order)
+    Ynp = np.triu(Xnp, k)
+    assert Y.dtype == Ynp.dtype
+    assert X.flags == Y.flags
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize("order", ["F", "C"])
+@pytest.mark.parametrize("k", [-10, -4, -3, 1, 2, 10])
+def test_tril_order_k(order, k):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+    shape = (3, 3)
+    X = dpt.reshape(
+        dpt.arange(np.prod(shape), dtype="int", sycl_queue=q),
+        shape,
+        order=order,
+    )
+    Y = dpt.tril(X, k)
+    Xnp = np.arange(np.prod(shape), dtype="int").reshape(shape, order=order)
+    Ynp = np.tril(Xnp, k)
+    assert Y.dtype == Ynp.dtype
+    assert X.flags == Y.flags
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
 def test_common_arg_validation():
     order = "I"
     # invalid order must raise ValueError
@@ -1306,3 +1459,7 @@ def test_common_arg_validation():
         dpt.ones_like(X)
     with pytest.raises(TypeError):
         dpt.full_like(X, 1)
+    with pytest.raises(TypeError):
+        dpt.tril(X)
+    with pytest.raises(TypeError):
+        dpt.triu(X)
