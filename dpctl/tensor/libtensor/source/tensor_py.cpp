@@ -2023,6 +2023,21 @@ tri(sycl::queue &exec_q,
         return std::make_pair(sycl::event(), sycl::event());
     }
 
+    // check that arrays do not overlap, and concurrent copying is safe.
+    auto src_offsets = src.get_minmax_offsets();
+    int src_elem_size = src.get_elemsize();
+    int dst_elem_size = dst.get_elemsize();
+
+    bool memory_overlap =
+        ((dst_data - src_data > src_offsets.second * src_elem_size -
+                                    dst_offsets.first * dst_elem_size) &&
+         (src_data - dst_data > dst_offsets.second * dst_elem_size -
+                                    src_offsets.first * src_elem_size));
+    if (memory_overlap) {
+        // TODO: could use a temporary, but this is done by the caller
+        throw py::value_error("Arrays index overlapping segments of memory");
+    }
+
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
     int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
