@@ -2024,7 +2024,10 @@ tri(sycl::queue &exec_q,
     }
 
     // check that arrays do not overlap, and concurrent copying is safe.
+    char *src_data = src.get_data();
+    char *dst_data = dst.get_data();
     auto src_offsets = src.get_minmax_offsets();
+    auto dst_offsets = dst.get_minmax_offsets();
     int src_elem_size = src.get_elemsize();
     int dst_elem_size = dst.get_elemsize();
 
@@ -2112,9 +2115,8 @@ tri(sycl::queue &exec_q,
     int nd = src_nd - 2;
     const py::ssize_t *shape = src_shape;
     const py::ssize_t *p_src_strides = src_strides.data();
-    ;
     const py::ssize_t *p_dst_strides = dst_strides.data();
-    ;
+
     simplify_iteration_space(nd, shape, p_src_strides, src_itemsize,
                              is_src_c_contig, is_src_f_contig, p_dst_strides,
                              dst_itemsize, is_dst_c_contig, is_dst_f_contig,
@@ -2160,14 +2162,14 @@ tri(sycl::queue &exec_q,
     if (part == 'l') {
         auto fn = tril_generic_dispatch_vector[src_typeid];
         tri_ev =
-            fn(exec_q, inner_range, outer_range, src.get_data(), dst.get_data(),
-               nd, dev_shape_and_strides, k, depends, {copy_shape_and_strides});
+            fn(exec_q, inner_range, outer_range, src_data, dst_data, nd,
+               dev_shape_and_strides, k, depends, {copy_shape_and_strides});
     }
     else {
         auto fn = triu_generic_dispatch_vector[src_typeid];
         tri_ev =
-            fn(exec_q, inner_range, outer_range, src.get_data(), dst.get_data(),
-               nd, dev_shape_and_strides, k, depends, {copy_shape_and_strides});
+            fn(exec_q, inner_range, outer_range, src_data, dst_data, nd,
+               dev_shape_and_strides, k, depends, {copy_shape_and_strides});
     }
 
     exec_q.submit([&](sycl::handler &cgh) {

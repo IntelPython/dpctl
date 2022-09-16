@@ -1130,7 +1130,7 @@ def tril(X, k=0):
     k = operator.index(k)
 
     # F_CONTIGUOUS = 2
-    order = "f" if (X.flags & 2) else "c"
+    order = "F" if (X.flags & 2) else "C"
 
     shape = X.shape
     nd = X.ndim
@@ -1171,7 +1171,7 @@ def triu(X, k=0):
     k = operator.index(k)
 
     # F_CONTIGUOUS = 2
-    order = "f" if (X.flags & 2) else "c"
+    order = "F" if (X.flags & 2) else "C"
 
     shape = X.shape
     nd = X.ndim
