@@ -69,6 +69,10 @@ Array Construction
       - Creates `usm_ndarray` from USM allocation initialized with zeros.
     * - :func:`to_numpy()`
       - Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary` into `numpy.ndarray` instance of the same shape and same data type.
+    * - :func:`tril()`
+      - -> usm_ndarray Returns the lower triangular part of a matrix (or a stack of matrices) X.
+    * - :func:`triu()`
+      - -> usm_ndarray Returns the upper triangular part of a matrix (or a stack of matrices) X.
     * - :func:`zeros()`
       - Creates `usm_ndarray` with zero elements.
     * - :func:`zeros_like()`

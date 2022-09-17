@@ -27,6 +27,8 @@ Array Construction
 .. autofunction:: ones
 .. autofunction:: ones_like
 .. autofunction:: to_numpy
+.. autofunction:: tril
+.. autofunction:: triu
 .. autofunction:: zeros
 .. autofunction:: zeros_like
 
