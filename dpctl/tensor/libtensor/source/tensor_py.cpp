@@ -487,13 +487,20 @@ sycl::event _populate_packed_shape_strides_for_copycast_kernel(
     const std::vector<py::ssize_t> &src_strides,
     const std::vector<py::ssize_t> &dst_strides)
 {
-    using shT = std::vector<py::ssize_t>;
+    // memory transfer optimization, use USM-host for temporary speeds up
+    // tranfer to device, especially on dGPUs
+    using usm_host_allocatorT =
+        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
+    using shT = std::vector<py::ssize_t, usm_host_allocatorT>;
     size_t nd = common_shape.size();
+
+    usm_host_allocatorT allocator(exec_q);
 
     // create host temporary for packed shape and strides managed by shared
     // pointer. Packed vector is concatenation of common_shape, src_stride and
     // std_strides
-    std::shared_ptr<shT> shp_host_shape_strides = std::make_shared<shT>(3 * nd);
+    std::shared_ptr<shT> shp_host_shape_strides =
+        std::make_shared<shT>(3 * nd, allocator);
     std::copy(common_shape.begin(), common_shape.end(),
               shp_host_shape_strides->begin());
 
@@ -943,9 +950,12 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
         throw std::runtime_error("Unabled to allocate device memory");
     }
 
-    using shT = std::vector<py::ssize_t>;
+    using usm_host_allocatorT =
+        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
+    using shT = std::vector<py::ssize_t, usm_host_allocatorT>;
+    usm_host_allocatorT allocator(exec_q);
     std::shared_ptr<shT> packed_host_shapes_strides_shp =
-        std::make_shared<shT>(2 * (src_nd + dst_nd));
+        std::make_shared<shT>(2 * (src_nd + dst_nd), allocator);
 
     std::copy(src_shape, src_shape + src_nd,
               packed_host_shapes_strides_shp->begin());
@@ -956,13 +966,13 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     if (src_strides == nullptr) {
         int src_flags = src.get_flags();
         if (src_flags & USM_ARRAY_C_CONTIGUOUS) {
-            const shT &src_contig_strides =
+            const auto &src_contig_strides =
                 c_contiguous_strides(src_nd, src_shape);
             std::copy(src_contig_strides.begin(), src_contig_strides.end(),
                       packed_host_shapes_strides_shp->begin() + src_nd);
         }
         else if (src_flags & USM_ARRAY_F_CONTIGUOUS) {
-            const shT &src_contig_strides =
+            const auto &src_contig_strides =
                 c_contiguous_strides(src_nd, src_shape);
             std::copy(src_contig_strides.begin(), src_contig_strides.end(),
                       packed_host_shapes_strides_shp->begin() + src_nd);
@@ -982,14 +992,14 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     if (dst_strides == nullptr) {
         int dst_flags = dst.get_flags();
         if (dst_flags & USM_ARRAY_C_CONTIGUOUS) {
-            const shT &dst_contig_strides =
+            const auto &dst_contig_strides =
                 c_contiguous_strides(dst_nd, dst_shape);
             std::copy(dst_contig_strides.begin(), dst_contig_strides.end(),
                       packed_host_shapes_strides_shp->begin() + 2 * src_nd +
                           dst_nd);
         }
         else if (dst_flags & USM_ARRAY_F_CONTIGUOUS) {
-            const shT &dst_contig_strides =
+            const auto &dst_contig_strides =
                 f_contiguous_strides(dst_nd, dst_shape);
             std::copy(dst_contig_strides.begin(), dst_contig_strides.end(),
                       packed_host_shapes_strides_shp->begin() + 2 * src_nd +
@@ -1349,7 +1359,12 @@ void copy_numpy_ndarray_into_usm_ndarray(
         throw std::runtime_error("Unabled to allocate device memory");
     }
 
-    std::shared_ptr<shT> host_shape_strides_shp = std::make_shared<shT>(3 * nd);
+    using usm_host_allocatorT =
+        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
+    using usmshT = std::vector<py::ssize_t, usm_host_allocatorT>;
+    usm_host_allocatorT alloc(exec_q);
+
+    auto host_shape_strides_shp = std::make_shared<usmshT>(3 * nd, alloc);
     std::copy(simplified_shape.begin(), simplified_shape.end(),
               host_shape_strides_shp->begin());
     std::copy(simplified_src_strides.begin(), simplified_src_strides.end(),
@@ -2023,9 +2038,10 @@ tri(sycl::queue &exec_q,
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    // check that arrays do not overlap, and concurrent copying is safe.
     char *src_data = src.get_data();
     char *dst_data = dst.get_data();
+
+    // check that arrays do not overlap, and concurrent copying is safe.
     auto src_offsets = src.get_minmax_offsets();
     auto dst_offsets = dst.get_minmax_offsets();
     int src_elem_size = src.get_elemsize();
@@ -2045,6 +2061,7 @@ tri(sycl::queue &exec_q,
     int dst_typenum = dst.get_typenum();
     int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
+
     if (dst_typeid != src_typeid) {
         throw py::value_error("Array dtype are not the same.");
     }
@@ -2059,11 +2076,13 @@ tri(sycl::queue &exec_q,
     }
 
     using shT = std::vector<py::ssize_t>;
-    int src_flags = src.get_flags();
-    const py::ssize_t *src_strides_raw = src.get_strides_raw();
     shT src_strides(src_nd);
+
+    int src_flags = src.get_flags();
     bool is_src_c_contig = ((src_flags & USM_ARRAY_C_CONTIGUOUS) != 0);
     bool is_src_f_contig = ((src_flags & USM_ARRAY_F_CONTIGUOUS) != 0);
+
+    const py::ssize_t *src_strides_raw = src.get_strides_raw();
     if (src_strides_raw == nullptr) {
         if (is_src_c_contig) {
             src_strides = c_contiguous_strides(src_nd, src_shape);
@@ -2081,11 +2100,13 @@ tri(sycl::queue &exec_q,
                   src_strides.begin());
     }
 
-    int dst_flags = dst.get_flags();
-    const py::ssize_t *dst_strides_raw = dst.get_strides_raw();
     shT dst_strides(src_nd);
+
+    int dst_flags = dst.get_flags();
     bool is_dst_c_contig = ((dst_flags & USM_ARRAY_C_CONTIGUOUS) != 0);
     bool is_dst_f_contig = ((dst_flags & USM_ARRAY_F_CONTIGUOUS) != 0);
+
+    const py::ssize_t *dst_strides_raw = dst.get_strides_raw();
     if (dst_strides_raw == nullptr) {
         if (is_dst_c_contig) {
             dst_strides = c_contiguous_strides(src_nd, src_shape);
@@ -2128,23 +2149,29 @@ tri(sycl::queue &exec_q,
     }
 
     nd += 2;
-    std::vector<py::ssize_t> shape_and_strides(3 * nd);
+
+    using usm_host_allocatorT =
+        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
+    using usmshT = std::vector<py::ssize_t, usm_host_allocatorT>;
+
+    usm_host_allocatorT allocator(exec_q);
+    auto shp_host_shape_and_strides =
+        std::make_shared<usmshT>(3 * nd, allocator);
 
     std::copy(simplified_shape.begin(), simplified_shape.end(),
-              shape_and_strides.begin());
-    shape_and_strides[nd - 2] = src_shape[src_nd - 2];
-    shape_and_strides[nd - 1] = src_shape[src_nd - 1];
-    std::copy(simplified_src_strides.begin(), simplified_src_strides.end(),
-              shape_and_strides.begin() + nd);
-    shape_and_strides[2 * nd - 2] = src_strides[src_nd - 2];
-    shape_and_strides[2 * nd - 1] = src_strides[src_nd - 1];
-    std::copy(simplified_dst_strides.begin(), simplified_dst_strides.end(),
-              shape_and_strides.begin() + 2 * nd);
-    shape_and_strides[3 * nd - 2] = dst_strides[src_nd - 2];
-    shape_and_strides[3 * nd - 1] = dst_strides[src_nd - 1];
+              shp_host_shape_and_strides->begin());
+    (*shp_host_shape_and_strides)[nd - 2] = src_shape[src_nd - 2];
+    (*shp_host_shape_and_strides)[nd - 1] = src_shape[src_nd - 1];
 
-    std::shared_ptr<shT> shp_host_shape_and_strides =
-        std::make_shared<shT>(shape_and_strides);
+    std::copy(simplified_src_strides.begin(), simplified_src_strides.end(),
+              shp_host_shape_and_strides->begin() + nd);
+    (*shp_host_shape_and_strides)[2 * nd - 2] = src_strides[src_nd - 2];
+    (*shp_host_shape_and_strides)[2 * nd - 1] = src_strides[src_nd - 1];
+
+    std::copy(simplified_dst_strides.begin(), simplified_dst_strides.end(),
+              shp_host_shape_and_strides->begin() + 2 * nd);
+    (*shp_host_shape_and_strides)[3 * nd - 2] = dst_strides[src_nd - 2];
+    (*shp_host_shape_and_strides)[3 * nd - 1] = dst_strides[src_nd - 1];
 
     py::ssize_t *dev_shape_and_strides =
         sycl::malloc_device<ssize_t>(3 * nd, exec_q);
@@ -2154,8 +2181,7 @@ tri(sycl::queue &exec_q,
     sycl::event copy_shape_and_strides = exec_q.copy<ssize_t>(
         shp_host_shape_and_strides->data(), dev_shape_and_strides, 3 * nd);
 
-    py::ssize_t inner_range =
-        shape_and_strides[nd - 1] * shape_and_strides[nd - 2];
+    py::ssize_t inner_range = src_shape[src_nd - 1] * src_shape[src_nd - 2];
     py::ssize_t outer_range = src_nelems / inner_range;
 
     sycl::event tri_ev;
@@ -2182,6 +2208,7 @@ tri(sycl::queue &exec_q,
                 sycl::free(dev_shape_and_strides, ctx);
             });
     });
+
     return std::make_pair(keep_args_alive(exec_q, {src, dst}, {tri_ev}),
                           tri_ev);
 }
