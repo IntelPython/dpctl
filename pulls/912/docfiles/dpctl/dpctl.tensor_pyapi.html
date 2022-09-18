@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.14.0dev0+118.g4fc21a291 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/target-highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="dpctl.tensor.Device" href="Device.html" />
+    <link rel="prev" title="dpctl.program.SyclProgram" href="SyclProgram.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          </a>
+              <div class="version">
+                0.14.0dev0+118.g4fc21a291
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/UserManual.html">User Manual</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dpctl_pyapi.html">dpctl</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dpctl_pyapi.html#sub-modules">Sub-modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dpctl.memory_pyapi.html">dpctl.memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program_pyapi.html">dpctl.program</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl.tensor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#array-construction">Array Construction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#array-manipulation">Array Manipulation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.utils_pyapi.html">dpctl.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#queue-management-functions">Queue Management Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#device-selection-functions">Device Selection Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#other-functions">Other Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#exceptions">Exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../libsyclinterface/index.html">libsyclinterface</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data-parallel Control (dpctl)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="dpctl_pyapi.html">dpctl</a> &raquo;</li>
+      <li>dpctl.tensor</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/docfiles/dpctl/dpctl.tensor_pyapi.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-dpctl.tensor">
+<span id="dpctl-tensor"></span><span id="dpctl-tensor-pyapi"></span><h1>dpctl.tensor<a class="headerlink" href="#module-dpctl.tensor" title="Permalink to this heading"></a></h1>
+<p><strong>Data Parallel Tensor Collection</strong> is a collection of tensor
+implementations that implement Python data API
+(<a class="reference external" href="https://data-apis.github.io/array-api/latest/">https://data-apis.github.io/array-api/latest/</a>) standard.</p>
+<section id="classes">
+<span id="dpctl-tensor-classes"></span><h2>Classes<a class="headerlink" href="#classes" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code></a></p></td>
+<td><p>Class representing Data-API concept of device.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">usm_ndarray</span></code></a></p></td>
+<td><p>See <a class="reference internal" href="MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a> for allowed keyword arguments.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="array-construction">
+<span id="dpctl-tensor-array-construction"></span><h2>Array Construction<a class="headerlink" href="#array-construction" title="Permalink to this heading"></a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.arange" title="dpctl.tensor.arange"><code class="xref py py-func docutils literal notranslate"><span class="pre">arange()</span></code></a></p></td>
+<td><p>-&gt; usm_ndarray Args: start: device (optional): array API concept of device where the output array is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a non-partitioned SYCL device, an instance of <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by <cite>dpctl.tensor.usm_array.device</cite>. Default: <cite>None</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.asarray" title="dpctl.tensor.asarray"><code class="xref py py-func docutils literal notranslate"><span class="pre">asarray()</span></code></a></p></td>
+<td><p>Converts <cite>obj</cite> to <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.asnumpy" title="dpctl.tensor.asnumpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">asnumpy()</span></code></a></p></td>
+<td><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <cite>usm_ary</cite> into <cite>numpy.ndarray</cite> instance of the same shape and same data type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.astype" title="dpctl.tensor.astype"><code class="xref py py-func docutils literal notranslate"><span class="pre">astype()</span></code></a></p></td>
+<td><p>Returns a copy of the array, cast to a specified type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.copy" title="dpctl.tensor.copy"><code class="xref py py-func docutils literal notranslate"><span class="pre">copy()</span></code></a></p></td>
+<td><p>Creates a copy of given instance of <cite>usm_ndarray</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.empty" title="dpctl.tensor.empty"><code class="xref py py-func docutils literal notranslate"><span class="pre">empty()</span></code></a></p></td>
+<td><p>Creates <cite>usm_ndarray</cite> from uninitialized USM allocation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.empty_like" title="dpctl.tensor.empty_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">empty_like()</span></code></a></p></td>
+<td><p>Creates <cite>usm_ndarray</cite> from uninitialized USM allocation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.eye" title="dpctl.tensor.eye"><code class="xref py py-func docutils literal notranslate"><span class="pre">eye()</span></code></a></p></td>
+<td><p>-&gt; usm_ndarray Creates <cite>usm_ndarray</cite> with ones on the <a href="#id1"><span class="problematic" id="id2">`</span></a>k`th diagonal.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.from_dlpack" title="dpctl.tensor.from_dlpack"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_dlpack()</span></code></a></p></td>
+<td><p>dpctl.tensor.from_dlpack(obj) Constructs <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance from a Python object <cite>obj</cite> that implements <cite>__dlpack__</cite> protocol. The output array is always a zero-copy view of the input.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.from_numpy" title="dpctl.tensor.from_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_numpy()</span></code></a></p></td>
+<td><p>Creates <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> from instance of <cite>numpy.ndarray</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.full" title="dpctl.tensor.full"><code class="xref py py-func docutils literal notranslate"><span class="pre">full()</span></code></a></p></td>
+<td><p>Creates <cite>usm_ndarray</cite> with elements of one.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.full_like" title="dpctl.tensor.full_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">full_like()</span></code></a></p></td>
+<td><p>Creates <cite>usm_ndarray</cite> from USM allocation initialized with zeros.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.linspace" title="dpctl.tensor.linspace"><code class="xref py py-func docutils literal notranslate"><span class="pre">linspace()</span></code></a></p></td>
+<td><p>: usm_ndarray Returns evenly spaced numbers of specified interval.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.ones" title="dpctl.tensor.ones"><code class="xref py py-func docutils literal notranslate"><span class="pre">ones()</span></code></a></p></td>
+<td><p>Creates <cite>usm_ndarray</cite> with elements of one.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.ones_like" title="dpctl.tensor.ones_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">ones_like()</span></code></a></p></td>
+<td><p>Creates <cite>usm_ndarray</cite> from USM allocation initialized with zeros.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.to_numpy" title="dpctl.tensor.to_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_numpy()</span></code></a></p></td>
+<td><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <cite>usm_ary</cite> into <cite>numpy.ndarray</cite> instance of the same shape and same data type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.tril" title="dpctl.tensor.tril"><code class="xref py py-func docutils literal notranslate"><span class="pre">tril()</span></code></a></p></td>
+<td><p>-&gt; usm_ndarray Returns the lower triangular part of a matrix (or a stack of matrices) X.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.triu" title="dpctl.tensor.triu"><code class="xref py py-func docutils literal notranslate"><span class="pre">triu()</span></code></a></p></td>
+<td><p>-&gt; usm_ndarray Returns the upper triangular part of a matrix (or a stack of matrices) X.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.zeros" title="dpctl.tensor.zeros"><code class="xref py py-func docutils literal notranslate"><span class="pre">zeros()</span></code></a></p></td>
+<td><p>Creates <cite>usm_ndarray</cite> with zero elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.zeros_like" title="dpctl.tensor.zeros_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">zeros_like()</span></code></a></p></td>
+<td><p>Creates <cite>usm_ndarray</cite> from USM allocation initialized with zeros.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="array-manipulation">
+<span id="dpctl-tensor-array-manipulation"></span><h2>Array Manipulation<a class="headerlink" href="#array-manipulation" title="Permalink to this heading"></a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.broadcast_arrays" title="dpctl.tensor.broadcast_arrays"><code class="xref py py-func docutils literal notranslate"><span class="pre">broadcast_arrays()</span></code></a></p></td>
+<td><p>-&gt; list of usm_ndarrays Broadcasts one or more usm_ndarrays against one another.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.broadcast_to" title="dpctl.tensor.broadcast_to"><code class="xref py py-func docutils literal notranslate"><span class="pre">broadcast_to()</span></code></a></p></td>
+<td><p>-&gt; usm_ndarray Broadcast an array to a new shape; returns the broadcasted array as a view.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.concat" title="dpctl.tensor.concat"><code class="xref py py-func docutils literal notranslate"><span class="pre">concat()</span></code></a></p></td>
+<td><p>-&gt; usm_ndarray Joins a sequence of arrays along an existing axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.expand_dims" title="dpctl.tensor.expand_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">expand_dims()</span></code></a></p></td>
+<td><p>-&gt; usm_ndarray Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axes; returns a view, if possible, a copy otherwise with the number of dimensions increased.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.flip" title="dpctl.tensor.flip"><code class="xref py py-func docutils literal notranslate"><span class="pre">flip()</span></code></a></p></td>
+<td><p>-&gt; usm_ndarray Reverses the order of elements in an array along the given axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.permute_dims" title="dpctl.tensor.permute_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">permute_dims()</span></code></a></p></td>
+<td><p>-&gt; usm_ndarray Permute the axes (dimensions) of an array; returns the permuted array as a view.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.reshape" title="dpctl.tensor.reshape"><code class="xref py py-func docutils literal notranslate"><span class="pre">reshape()</span></code></a></p></td>
+<td><p>-&gt; usm_ndarray Reshapes given usm_ndarray into new shape. Returns a view, if possible, a copy otherwise. Memory layout of the copy is controlled by order keyword.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.roll" title="dpctl.tensor.roll"><code class="xref py py-func docutils literal notranslate"><span class="pre">roll()</span></code></a></p></td>
+<td><p>-&gt; usm_ndarray Rolls array elements along a specified axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.squeeze" title="dpctl.tensor.squeeze"><code class="xref py py-func docutils literal notranslate"><span class="pre">squeeze()</span></code></a></p></td>
+<td><p>-&gt; usm_ndarray Removes singleton dimensions (axes) from X; returns a view, if possible, a copy otherwise, but with all or a subset of the dimensions of length 1 removed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.stack" title="dpctl.tensor.stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">stack()</span></code></a></p></td>
+<td><p>-&gt; usm_ndarray Joins a sequence of arrays along a new axis.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="SyclProgram.html" class="btn btn-neutral float-left" title="dpctl.program.SyclProgram" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Device.html" class="btn btn-neutral float-right" title="dpctl.tensor.Device" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
