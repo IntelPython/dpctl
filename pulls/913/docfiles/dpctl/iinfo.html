@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>numpy.iinfo &mdash; Data-parallel Control (dpctl) 0.14.0dev0+118.gd3ca4eb4 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/target-highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="dpctl.tensor.usm_ndarray" href="usm_ndarray.html" />
+    <link rel="prev" title="numpy.finfo" href="finfo.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          </a>
+              <div class="version">
+                0.14.0dev0+118.gd3ca4eb4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/UserManual.html">User Manual</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dpctl_pyapi.html">dpctl</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dpctl_pyapi.html#sub-modules">Sub-modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dpctl.memory_pyapi.html">dpctl.memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program_pyapi.html">dpctl.program</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="dpctl.tensor_pyapi.html">dpctl.tensor</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="dpctl.tensor_pyapi.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor_pyapi.html#array-construction">Array Construction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor_pyapi.html#array-manipulation">Array Manipulation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.utils_pyapi.html">dpctl.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#queue-management-functions">Queue Management Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#device-selection-functions">Device Selection Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#other-functions">Other Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#exceptions">Exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../libsyclinterface/index.html">libsyclinterface</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data-parallel Control (dpctl)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="dpctl_pyapi.html">dpctl</a> &raquo;</li>
+          <li><a href="dpctl.tensor_pyapi.html">dpctl.tensor</a> &raquo;</li>
+      <li>numpy.iinfo</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/docfiles/dpctl/iinfo.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="numpy-iinfo">
+<span id="iinfo-api"></span><h1>numpy.iinfo<a class="headerlink" href="#numpy-iinfo" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="numpy.iinfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">numpy.</span></span><span class="sig-name descname"><span class="pre">iinfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#numpy.iinfo" title="Permalink to this definition"></a></dt>
+<dd><p>Machine limits for integer types.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="numpy.iinfo.bits">
+<span class="sig-name descname"><span class="pre">bits</span></span><a class="headerlink" href="#numpy.iinfo.bits" title="Permalink to this definition"></a></dt>
+<dd><p>The number of bits occupied by the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="numpy.iinfo.min">
+<span class="sig-name descname"><span class="pre">min</span></span><a class="headerlink" href="#numpy.iinfo.min" title="Permalink to this definition"></a></dt>
+<dd><p>The smallest integer expressible by the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="numpy.iinfo.max">
+<span class="sig-name descname"><span class="pre">max</span></span><a class="headerlink" href="#numpy.iinfo.max" title="Permalink to this definition"></a></dt>
+<dd><p>The largest integer expressible by the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>int_type</strong> (<em>integer type</em><em>, </em><a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><em>dtype</em></a><em>, or </em><em>instance</em>) – The kind of integer data type to get information about.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="finfo.html#numpy.finfo" title="numpy.finfo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">finfo</span></code></a></dt><dd><p>The equivalent for floating point data types.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<p>With types:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ii16</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ii16</span><span class="o">.</span><span class="n">min</span>
+<span class="go">-32768</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ii16</span><span class="o">.</span><span class="n">max</span>
+<span class="go">32767</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ii32</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ii32</span><span class="o">.</span><span class="n">min</span>
+<span class="go">-2147483648</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ii32</span><span class="o">.</span><span class="n">max</span>
+<span class="go">2147483647</span>
+</pre></div>
+</div>
+<p>With instances:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ii32</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ii32</span><span class="o">.</span><span class="n">min</span>
+<span class="go">-2147483648</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ii32</span><span class="o">.</span><span class="n">max</span>
+<span class="go">2147483647</span>
+</pre></div>
+</div>
+<p class="rubric">Attributes:</p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id0" title="numpy.iinfo.max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code></a></p></td>
+<td><p>Maximum value of given dtype.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#id1" title="numpy.iinfo.min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span></code></a></p></td>
+<td><p>Minimum value of given dtype.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading"></a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-prename descclassname"><span class="pre">iinfo.</span></span><span class="sig-name descname"><span class="pre">max</span></span><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd><p>Maximum value of given dtype.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-prename descclassname"><span class="pre">iinfo.</span></span><span class="sig-name descname"><span class="pre">min</span></span><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
+<dd><p>Minimum value of given dtype.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="finfo.html" class="btn btn-neutral float-left" title="numpy.finfo" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="usm_ndarray.html" class="btn btn-neutral float-right" title="dpctl.tensor.usm_ndarray" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
