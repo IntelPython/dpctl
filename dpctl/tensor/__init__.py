@@ -21,7 +21,7 @@
 
 """
 
-from numpy import dtype, finfo, iinfo
+from numpy import dtype
 
 from dpctl.tensor._copy_utils import asnumpy, astype, copy, from_numpy, to_numpy
 from dpctl.tensor._ctors import (
@@ -45,10 +45,14 @@ from dpctl.tensor._dlpack import from_dlpack
 from dpctl.tensor._manipulation_functions import (
     broadcast_arrays,
     broadcast_to,
+    can_cast,
     concat,
     expand_dims,
+    finfo,
     flip,
+    iinfo,
     permute_dims,
+    result_type,
     roll,
     squeeze,
     stack,
@@ -121,4 +125,6 @@ __all__ = [
     "complex128",
     "iinfo",
     "finfo",
+    "can_cast",
+    "result_type",
 ]

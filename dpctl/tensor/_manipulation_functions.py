@@ -309,8 +309,7 @@ def _arrays_validation(arrays):
         raise ValueError("All the input arrays must have usm_type")
 
     X0 = arrays[0]
-    if not all(Xi.dtype.char in "?bBhHiIlLqQefdFD" for Xi in arrays):
-        raise ValueError("Unsupported dtype encountered.")
+    _support_dtype(Xi.dtype for Xi in arrays)
 
     res_dtype = X0.dtype
     for i in range(1, n):
@@ -421,3 +420,61 @@ def stack(arrays, axis=0):
     dpctl.SyclEvent.wait_for(hev_list)
 
     return res
+
+
+def can_cast(array_and_dtype_from, dtype_to):
+    """
+    can_cast(from: usm_ndarray or dtype, to: dtype) -> bool
+
+    Determines if one data type can be cast to another data type according \
+        Type Promotion Rules rules.
+    """
+    if not isinstance(dtype_to, dpt.dtype):
+        raise TypeError("Expected dtype type.")
+
+    dtype_from = dpt.dtype(array_and_dtype_from)
+
+    _support_dtype([dtype_to, dtype_from])
+
+    return np.can_cast(dtype_from, dtype_to)
+
+
+def result_type(*arrays_and_dtypes):
+    """
+    result_type(arrays_and_dtypes: an arbitrary number usm_ndarrays or dtypes)\
+         -> dtype
+
+    Returns the dtype that results from applying the Type Promotion Rules to \
+        the arguments.
+    """
+    dtypes = [dpt.dtype(X) for X in arrays_and_dtypes]
+
+    _support_dtype(dtypes)
+
+    return np.result_type(*dtypes)
+
+
+def iinfo(type):
+    """
+    iinfo(type: integer data-type) -> iinfo_object
+
+    Returns machine limits for integer data types.
+    """
+    _support_dtype(type)
+    return np.iinfo(type)
+
+
+def finfo(type):
+    """
+    finfo(type: float data-type) -> finfo_object
+
+    Returns machine limits for float data types.
+    """
+    _support_dtype(type)
+    return np.finfo(type)
+
+
+def _support_dtype(dtypes):
+    if not all(dtype.char in "?bBhHiIlLqQefdFD" for dtype in dtypes):
+        raise ValueError("Unsupported dtype encountered.")
+    return True
