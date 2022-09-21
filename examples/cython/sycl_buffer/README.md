@@ -1,7 +1,7 @@
-#1 Example of SYCL extension working NumPy array input via SYCL buffers
+# Example of SYCL extension working NumPy array input via SYCL buffers
 
 
-#2 Decription
+## Decription
 
 Cython function expecting a 2D array in C-contiguous layout that
 computes column-wise total by using SYCL oneMKL (as GEMV call with
@@ -10,7 +10,7 @@ an all units vector).
 Example illustrates compiling SYCL extension, linking to oneMKL.
 
 
-#2 Compiling
+## Compiling
 
 ```
 # make sure oneAPI is activated, $ONEAPI_ROOT must be set
@@ -18,7 +18,7 @@ CC=icx CXX=dpcpp python setup.py build_ext --inplace
 ```
 
 
-#2 Running
+## Running
 
 ```
 # SYCL_DEVICE_FILTER=opencl sets SYCL backend to OpenCL to avoid a
