@@ -371,6 +371,55 @@ protected:
 
 namespace tensor
 {
+
+std::vector<py::ssize_t> c_contiguous_strides(int nd,
+                                              const py::ssize_t *shape,
+                                              py::ssize_t element_size = 1)
+{
+    if (nd > 0) {
+        std::vector<py::ssize_t> c_strides(nd, element_size);
+        for (int ic = nd - 1; ic > 0;) {
+            py::ssize_t next_v = c_strides[ic] * shape[ic];
+            c_strides[--ic] = next_v;
+        }
+        return c_strides;
+    }
+    else {
+        return std::vector<py::ssize_t>();
+    }
+}
+
+std::vector<py::ssize_t> f_contiguous_strides(int nd,
+                                              const py::ssize_t *shape,
+                                              py::ssize_t element_size = 1)
+{
+    if (nd > 0) {
+        std::vector<py::ssize_t> f_strides(nd, element_size);
+        for (int i = 0; i < nd - 1;) {
+            py::ssize_t next_v = f_strides[i] * shape[i];
+            f_strides[++i] = next_v;
+        }
+        return f_strides;
+    }
+    else {
+        return std::vector<py::ssize_t>();
+    }
+}
+
+std::vector<py::ssize_t>
+c_contiguous_strides(const std::vector<py::ssize_t> &shape,
+                     py::ssize_t element_size = 1)
+{
+    return c_contiguous_strides(shape.size(), shape.data(), element_size);
+}
+
+std::vector<py::ssize_t>
+f_contiguous_strides(const std::vector<py::ssize_t> &shape,
+                     py::ssize_t element_size = 1)
+{
+    return f_contiguous_strides(shape.size(), shape.data(), element_size);
+}
+
 class usm_ndarray : public py::object
 {
 public:

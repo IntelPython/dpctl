@@ -34,245 +34,24 @@
 #include <type_traits>
 
 #include "dpctl4pybind11.hpp"
+#include "kernels/constructors.hpp"
+#include "kernels/copy_and_cast.hpp"
 #include "utils/strided_iters.hpp"
 #include "utils/type_dispatch.hpp"
+#include "utils/type_utils.hpp"
 
 namespace py = pybind11;
-
-template <typename srcT, typename dstT> class copy_cast_generic_kernel;
-template <typename srcT, typename dstT> class copy_cast_from_host_kernel;
-template <typename srcT, typename dstT, int nd> class copy_cast_spec_kernel;
-template <typename Ty> class copy_for_reshape_generic_kernel;
-template <typename Ty> class linear_sequence_step_kernel;
-template <typename Ty, typename wTy> class linear_sequence_affine_kernel;
-template <typename Ty> class eye_kernel;
 
 static dpctl::tensor::detail::usm_ndarray_types array_types;
 
 namespace
 {
 
-template <class T> struct is_complex : std::false_type
-{
-};
-template <class T> struct is_complex<std::complex<T>> : std::true_type
-{
-};
-template <typename dstTy, typename srcTy> dstTy convert_impl(const srcTy &v)
-{
-    if constexpr (std::is_same<dstTy, srcTy>::value) {
-        return v;
-    }
-    else if constexpr (std::is_same_v<dstTy, bool> && is_complex<srcTy>::value)
-    {
-        // bool(complex_v) == (complex_v.real() != 0) && (complex_v.imag() !=0)
-        return (convert_impl<bool, typename srcTy::value_type>(v.real()) ||
-                convert_impl<bool, typename srcTy::value_type>(v.imag()));
-    }
-    else if constexpr (is_complex<srcTy>::value && !is_complex<dstTy>::value) {
-        // real_t(complex_v) == real_t(complex_v.real())
-        return convert_impl<dstTy, typename srcTy::value_type>(v.real());
-    }
-    else if constexpr (!std::is_integral<srcTy>::value &&
-                       !std::is_same<dstTy, bool>::value &&
-                       std::is_integral<dstTy>::value &&
-                       std::is_unsigned<dstTy>::value)
-    {
-        // first cast to signed variant, the cast to unsigned one
-        using signedT = typename std::make_signed<dstTy>::type;
-        return static_cast<dstTy>(convert_impl<signedT, srcTy>(v));
-    }
-    else {
-        return static_cast<dstTy>(v);
-    }
-}
-
-template <typename srcT, typename dstT> class Caster
-{
-public:
-    Caster() = default;
-    void operator()(char *src,
-                    std::ptrdiff_t src_offset,
-                    char *dst,
-                    std::ptrdiff_t dst_offset) const
-    {
-        srcT *src_ = reinterpret_cast<srcT *>(src) + src_offset;
-        dstT *dst_ = reinterpret_cast<dstT *>(dst) + dst_offset;
-        *dst_ = convert_impl<dstT, srcT>(*src_);
-    }
-};
-
-template <typename CastFnT> class GenericCopyFunctor
-{
-private:
-    char *src_ = nullptr;
-    char *dst_ = nullptr;
-    py::ssize_t *shape_strides_ = nullptr;
-    int nd_ = 0;
-    py::ssize_t src_offset0 = 0;
-    py::ssize_t dst_offset0 = 0;
-
-public:
-    GenericCopyFunctor(char *src_cp,
-                       char *dst_cp,
-                       py::ssize_t *shape_strides,
-                       int nd,
-                       py::ssize_t src_offset,
-                       py::ssize_t dst_offset)
-        : src_(src_cp), dst_(dst_cp), shape_strides_(shape_strides), nd_(nd),
-          src_offset0(src_offset), dst_offset0(dst_offset)
-    {
-    }
-
-    void operator()(sycl::id<1> wiid) const
-    {
-        py::ssize_t src_offset(0);
-        py::ssize_t dst_offset(0);
-        CIndexer_vector<py::ssize_t> indxr(nd_);
-        indxr.get_displacement<const py::ssize_t *, const py::ssize_t *>(
-            static_cast<py::ssize_t>(wiid.get(0)),
-            const_cast<const py::ssize_t *>(shape_strides_), // common shape
-            const_cast<const py::ssize_t *>(shape_strides_ +
-                                            nd_), // src strides
-            const_cast<const py::ssize_t *>(shape_strides_ +
-                                            2 * nd_), // dst strides
-            src_offset,                               // modified by reference
-            dst_offset                                // modified by reference
-        );
-        CastFnT fn{};
-        fn(src_, src_offset0 + src_offset, dst_, dst_offset0 + dst_offset);
-    }
-};
-
-template <int nd, typename CastFnT> class NDSpecializedCopyFunctor
-{
-private:
-    char *src_ = nullptr;
-    char *dst_ = nullptr;
-    CIndexer_array<nd, py::ssize_t> indxr;
-    const std::array<py::ssize_t, nd> src_strides_;
-    const std::array<py::ssize_t, nd> dst_strides_;
-    static const int nd_ = nd;
-    py::ssize_t src_offset0 = 0;
-    py::ssize_t dst_offset0 = 0;
-
-public:
-    NDSpecializedCopyFunctor(char *src_cp, // USM pointer
-                             char *dst_cp, // USM pointer
-                             const std::array<py::ssize_t, nd> shape,
-                             const std::array<py::ssize_t, nd> src_strides,
-                             const std::array<py::ssize_t, nd> dst_strides,
-                             py::ssize_t src_offset,
-                             py::ssize_t dst_offset)
-        : src_(src_cp), dst_(dst_cp), indxr(shape), src_strides_(src_strides),
-          dst_strides_(dst_strides), src_offset0(src_offset),
-          dst_offset0(dst_offset)
-    {
-    }
-
-    void operator()(sycl::id<1> wiid) const
-    {
-        py::ssize_t src_offset = 0;
-        py::ssize_t dst_offset = 0;
-        CIndexer_array<nd, py::ssize_t> local_indxr(std::move(indxr));
-
-        local_indxr.set(wiid.get(0));
-        auto mi = local_indxr.get();
-        for (int i = 0; i < nd; ++i)
-            src_offset += mi[i] * src_strides_[i];
-        for (int i = 0; i < nd; ++i)
-            dst_offset += mi[i] * dst_strides_[i];
-
-        CastFnT fn{};
-        fn(src_, src_offset0 + src_offset, dst_, dst_offset0 + dst_offset);
-    }
-};
-
-typedef sycl::event (*copy_and_cast_generic_fn_ptr_t)(
-    sycl::queue,
-    size_t,
-    int,
-    py::ssize_t *,
-    char *,
-    py::ssize_t,
-    char *,
-    py::ssize_t,
-    const std::vector<sycl::event> &,
-    const std::vector<sycl::event> &);
-
-template <typename dstTy, typename srcTy>
-sycl::event
-copy_and_cast_generic_impl(sycl::queue q,
-                           size_t nelems,
-                           int nd,
-                           py::ssize_t *shape_and_strides,
-                           char *src_p,
-                           py::ssize_t src_offset,
-                           char *dst_p,
-                           py::ssize_t dst_offset,
-                           const std::vector<sycl::event> &depends,
-                           const std::vector<sycl::event> &additional_depends)
-{
-    sycl::event copy_and_cast_ev = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        cgh.depends_on(additional_depends);
-        cgh.parallel_for<copy_cast_generic_kernel<srcTy, dstTy>>(
-            sycl::range<1>(nelems),
-            GenericCopyFunctor<Caster<srcTy, dstTy>>(
-                src_p, dst_p, shape_and_strides, nd, src_offset, dst_offset));
-    });
-
-    return copy_and_cast_ev;
-}
-
-typedef sycl::event (*copy_and_cast_1d_fn_ptr_t)(
-    sycl::queue,
-    size_t,
-    const std::array<py::ssize_t, 1>,
-    const std::array<py::ssize_t, 1>,
-    const std::array<py::ssize_t, 1>,
-    char *,
-    py::ssize_t,
-    char *,
-    py::ssize_t,
-    const std::vector<sycl::event> &);
-
-typedef sycl::event (*copy_and_cast_2d_fn_ptr_t)(
-    sycl::queue,
-    size_t,
-    const std::array<py::ssize_t, 2>,
-    const std::array<py::ssize_t, 2>,
-    const std::array<py::ssize_t, 2>,
-    char *,
-    py::ssize_t,
-    char *,
-    py::ssize_t,
-    const std::vector<sycl::event> &);
-
-template <typename dstTy, typename srcTy, int nd>
-sycl::event
-copy_and_cast_nd_specialized_impl(sycl::queue q,
-                                  size_t nelems,
-                                  const std::array<py::ssize_t, nd> shape,
-                                  const std::array<py::ssize_t, nd> src_strides,
-                                  const std::array<py::ssize_t, nd> dst_strides,
-                                  char *src_p,
-                                  py::ssize_t src_offset,
-                                  char *dst_p,
-                                  py::ssize_t dst_offset,
-                                  const std::vector<sycl::event> &depends)
-{
-    sycl::event copy_and_cast_ev = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        cgh.parallel_for<copy_cast_spec_kernel<srcTy, dstTy, nd>>(
-            sycl::range<1>(nelems),
-            NDSpecializedCopyFunctor<nd, Caster<srcTy, dstTy>>(
-                src_p, dst_p, shape, src_strides, dst_strides, src_offset,
-                dst_offset));
-    });
-
-    return copy_and_cast_ev;
-}
+using dpctl::tensor::c_contiguous_strides;
+using dpctl::tensor::f_contiguous_strides;
+using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_1d_fn_ptr_t;
+using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_2d_fn_ptr_t;
+using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_generic_fn_ptr_t;
 
 namespace _ns = dpctl::tensor::detail;
 
@@ -282,67 +61,6 @@ static copy_and_cast_1d_fn_ptr_t
     copy_and_cast_1d_dispatch_table[_ns::num_types][_ns::num_types];
 static copy_and_cast_2d_fn_ptr_t
     copy_and_cast_2d_dispatch_table[_ns::num_types][_ns::num_types];
-
-template <typename fnT, typename D, typename S> struct CopyAndCastGenericFactory
-{
-    fnT get()
-    {
-        fnT f = copy_and_cast_generic_impl<D, S>;
-        return f;
-    }
-};
-
-template <typename fnT, typename D, typename S> struct CopyAndCast1DFactory
-{
-    fnT get()
-    {
-        fnT f = copy_and_cast_nd_specialized_impl<D, S, 1>;
-        return f;
-    }
-};
-
-template <typename fnT, typename D, typename S> struct CopyAndCast2DFactory
-{
-    fnT get()
-    {
-        fnT f = copy_and_cast_nd_specialized_impl<D, S, 2>;
-        return f;
-    }
-};
-
-std::vector<py::ssize_t> c_contiguous_strides(int nd,
-                                              const py::ssize_t *shape,
-                                              py::ssize_t element_size = 1)
-{
-    if (nd > 0) {
-        std::vector<py::ssize_t> c_strides(nd, element_size);
-        for (int ic = nd - 1; ic > 0;) {
-            py::ssize_t next_v = c_strides[ic] * shape[ic];
-            c_strides[--ic] = next_v;
-        }
-        return c_strides;
-    }
-    else {
-        return std::vector<py::ssize_t>();
-    }
-}
-
-std::vector<py::ssize_t> f_contiguous_strides(int nd,
-                                              const py::ssize_t *shape,
-                                              py::ssize_t element_size = 1)
-{
-    if (nd > 0) {
-        std::vector<py::ssize_t> f_strides(nd, element_size);
-        for (int i = 0; i < nd - 1;) {
-            py::ssize_t next_v = f_strides[i] * shape[i];
-            f_strides[++i] = next_v;
-        }
-        return f_strides;
-    }
-    else {
-        return std::vector<py::ssize_t>();
-    }
-}
 
 using dpctl::utils::keep_args_alive;
 
@@ -745,119 +463,13 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
         copy_and_cast_generic_ev);
 }
 
-/* =========================== Copy for reshape ==============================
- */
+/* =========================== Copy for reshape ============================= */
 
-template <typename Ty> class GenericCopyForReshapeFunctor
-{
-private:
-    py::ssize_t offset = 0;
-    py::ssize_t size = 1;
-    int src_nd = -1;
-    int dst_nd = -1;
-    // USM array of size 2*(src_nd + dst_nd)
-    //   [ src_shape; src_strides; dst_shape; dst_strides ]
-    const py::ssize_t *src_dst_shapes_and_strides = nullptr;
-    Ty *src_p = nullptr;
-    Ty *dst_p = nullptr;
-
-public:
-    GenericCopyForReshapeFunctor(py::ssize_t shift,
-                                 py::ssize_t nelems,
-                                 int src_ndim,
-                                 int dst_ndim,
-                                 const py::ssize_t *packed_shapes_and_strides,
-                                 char *src_ptr,
-                                 char *dst_ptr)
-        : offset(shift), size(nelems), src_nd(src_ndim), dst_nd(dst_ndim),
-          src_dst_shapes_and_strides(packed_shapes_and_strides),
-          src_p(reinterpret_cast<Ty *>(src_ptr)),
-          dst_p(reinterpret_cast<Ty *>(dst_ptr))
-    {
-    }
-
-    void operator()(sycl::id<1> wiid) const
-    {
-        py::ssize_t this_src_offset(0);
-        CIndexer_vector<py::ssize_t> src_indxr(src_nd);
-
-        src_indxr.get_displacement<const py::ssize_t *, const py::ssize_t *>(
-            static_cast<py::ssize_t>(wiid.get(0)),
-            const_cast<const py::ssize_t *>(
-                src_dst_shapes_and_strides), // src shape
-            const_cast<const py::ssize_t *>(src_dst_shapes_and_strides +
-                                            src_nd), // src strides
-            this_src_offset                          // modified by reference
-        );
-        const Ty *in = src_p + this_src_offset;
-
-        py::ssize_t this_dst_offset(0);
-        CIndexer_vector<py::ssize_t> dst_indxr(dst_nd);
-        py::ssize_t shifted_wiid =
-            (static_cast<py::ssize_t>(wiid.get(0)) + offset) % size;
-        shifted_wiid = (shifted_wiid >= 0) ? shifted_wiid : shifted_wiid + size;
-        dst_indxr.get_displacement<const py::ssize_t *, const py::ssize_t *>(
-            shifted_wiid,
-            const_cast<const py::ssize_t *>(src_dst_shapes_and_strides +
-                                            2 * src_nd), // dst shape
-            const_cast<const py::ssize_t *>(src_dst_shapes_and_strides +
-                                            2 * src_nd + dst_nd), // dst strides
-            this_dst_offset // modified by reference
-        );
-
-        Ty *out = dst_p + this_dst_offset;
-        *out = *in;
-    }
-};
-
-// define function type
-typedef sycl::event (*copy_for_reshape_fn_ptr_t)(
-    sycl::queue,
-    py::ssize_t, // shift
-    size_t,      // num_elements
-    int,
-    int,           // src_nd, dst_nd
-    py::ssize_t *, // packed shapes and strides
-    char *,        // src_data_ptr
-    char *,        // dst_data_ptr
-    const std::vector<sycl::event> &);
-
-template <typename Ty>
-sycl::event
-copy_for_reshape_generic_impl(sycl::queue q,
-                              py::ssize_t shift,
-                              size_t nelems,
-                              int src_nd,
-                              int dst_nd,
-                              py::ssize_t *packed_shapes_and_strides,
-                              char *src_p,
-                              char *dst_p,
-                              const std::vector<sycl::event> &depends)
-{
-    sycl::event copy_for_reshape_ev = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        cgh.parallel_for<copy_for_reshape_generic_kernel<Ty>>(
-            sycl::range<1>(nelems),
-            GenericCopyForReshapeFunctor<Ty>(shift, nelems, src_nd, dst_nd,
-                                             packed_shapes_and_strides, src_p,
-                                             dst_p));
-    });
-
-    return copy_for_reshape_ev;
-}
+using dpctl::tensor::kernels::copy_and_cast::copy_for_reshape_fn_ptr_t;
 
 // define static vector
 static copy_for_reshape_fn_ptr_t
     copy_for_reshape_generic_dispatch_vector[_ns::num_types];
-
-template <typename fnT, typename Ty> struct CopyForReshapeGenericFactory
-{
-    fnT get()
-    {
-        fnT f = copy_for_reshape_generic_impl<Ty>;
-        return f;
-    }
-};
 
 /*
  * Copies src into dst (same data type) of different shapes by using flat
@@ -973,7 +585,7 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
         }
         else if (src_flags & USM_ARRAY_F_CONTIGUOUS) {
             const auto &src_contig_strides =
-                c_contiguous_strides(src_nd, src_shape);
+                f_contiguous_strides(src_nd, src_shape);
             std::copy(src_contig_strides.begin(), src_contig_strides.end(),
                       packed_host_shapes_strides_shp->begin() + src_nd);
         }
@@ -1056,130 +668,12 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
 
 /* ============= Copy from numpy.ndarray to usm_ndarray ==================== */
 
-template <typename srcT, typename dstT, typename AccessorT>
-class CasterForAccessor
-{
-public:
-    CasterForAccessor() = default;
-    void operator()(AccessorT src,
-                    std::ptrdiff_t src_offset,
-                    char *dst,
-                    std::ptrdiff_t dst_offset) const
-    {
-        dstT *dst_ = reinterpret_cast<dstT *>(dst) + dst_offset;
-        *dst_ = convert_impl<dstT, srcT>(src[src_offset]);
-    }
-};
-
-template <typename CastFnT, typename AccessorT> class GenericCopyFromHostFunctor
-{
-private:
-    AccessorT src_acc_;
-    char *dst_ = nullptr;
-    py::ssize_t *shape_strides_ = nullptr;
-    int nd_ = 0;
-    py::ssize_t src_offset0 = 0;
-    py::ssize_t dst_offset0 = 0;
-
-public:
-    GenericCopyFromHostFunctor(AccessorT src_acc,
-                               char *dst_cp,
-                               py::ssize_t *shape_strides,
-                               int nd,
-                               py::ssize_t src_offset,
-                               py::ssize_t dst_offset)
-        : src_acc_(src_acc), dst_(dst_cp), shape_strides_(shape_strides),
-          nd_(nd), src_offset0(src_offset), dst_offset0(dst_offset)
-    {
-    }
-
-    void operator()(sycl::id<1> wiid) const
-    {
-        py::ssize_t src_offset(0);
-        py::ssize_t dst_offset(0);
-        CIndexer_vector<py::ssize_t> indxr(nd_);
-        indxr.get_displacement<const py::ssize_t *, const py::ssize_t *>(
-            static_cast<py::ssize_t>(wiid.get(0)),
-            const_cast<const py::ssize_t *>(shape_strides_), // common shape
-            const_cast<const py::ssize_t *>(shape_strides_ +
-                                            nd_), // src strides
-            const_cast<const py::ssize_t *>(shape_strides_ +
-                                            2 * nd_), // dst strides
-            src_offset,                               // modified by reference
-            dst_offset                                // modified by reference
-        );
-        CastFnT fn{};
-        fn(src_acc_, src_offset0 + src_offset, dst_, dst_offset0 + dst_offset);
-    }
-};
-
-typedef void (*copy_and_cast_from_host_blocking_fn_ptr_t)(
-    sycl::queue,
-    size_t,
-    int,
-    py::ssize_t *,
-    const char *,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
-    char *,
-    py::ssize_t,
-    const std::vector<sycl::event> &,
-    const std::vector<sycl::event> &);
-
-template <typename dstTy, typename srcTy>
-void copy_and_cast_from_host_impl(
-    sycl::queue q,
-    size_t nelems,
-    int nd,
-    py::ssize_t *shape_and_strides,
-    const char *host_src_p,
-    py::ssize_t src_offset,
-    py::ssize_t src_min_nelem_offset,
-    py::ssize_t src_max_nelem_offset,
-    char *dst_p,
-    py::ssize_t dst_offset,
-    const std::vector<sycl::event> &depends,
-    const std::vector<sycl::event> &additional_depends)
-{
-    py::ssize_t nelems_range = src_max_nelem_offset - src_min_nelem_offset + 1;
-    sycl::buffer<srcTy, 1> npy_buf(
-        reinterpret_cast<const srcTy *>(host_src_p) + src_min_nelem_offset,
-        sycl::range<1>(nelems_range), {sycl::property::buffer::use_host_ptr{}});
-
-    sycl::event copy_and_cast_from_host_ev = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        cgh.depends_on(additional_depends);
-
-        sycl::accessor npy_acc(npy_buf, cgh, sycl::read_only);
-
-        cgh.parallel_for<copy_cast_from_host_kernel<srcTy, dstTy>>(
-            sycl::range<1>(nelems),
-            GenericCopyFromHostFunctor<
-                CasterForAccessor<srcTy, dstTy, decltype(npy_acc)>,
-                decltype(npy_acc)>(npy_acc, dst_p, shape_and_strides, nd,
-                                   src_offset - src_min_nelem_offset,
-                                   dst_offset));
-    });
-
-    copy_and_cast_from_host_ev.wait_and_throw();
-
-    return;
-}
+using dpctl::tensor::kernels::copy_and_cast::
+    copy_and_cast_from_host_blocking_fn_ptr_t;
 
 static copy_and_cast_from_host_blocking_fn_ptr_t
     copy_and_cast_from_host_blocking_dispatch_table[_ns::num_types]
                                                    [_ns::num_types];
-
-template <typename fnT, typename D, typename S>
-struct CopyAndCastFromHostFactory
-{
-    fnT get()
-    {
-        fnT f = copy_and_cast_from_host_impl<D, S>;
-        return f;
-    }
-};
 
 void copy_numpy_ndarray_into_usm_ndarray(
     py::array npy_src,
@@ -1386,187 +880,16 @@ void copy_numpy_ndarray_into_usm_ndarray(
     return;
 }
 
-/* =========== Unboxing Python scalar =============== */
-
-template <typename T> T unbox_py_scalar(py::object o)
-{
-    return py::cast<T>(o);
-}
-
-template <> sycl::half unbox_py_scalar<sycl::half>(py::object o)
-{
-    float tmp = py::cast<float>(o);
-    return static_cast<sycl::half>(tmp);
-}
-
 /* ============= linear-sequence ==================== */
 
-typedef sycl::event (*lin_space_step_fn_ptr_t)(
-    sycl::queue,
-    size_t, // num_elements
-    py::object start,
-    py::object step,
-    char *, // dst_data_ptr
-    const std::vector<sycl::event> &);
+using dpctl::tensor::kernels::constructors::lin_space_step_fn_ptr_t;
 
 static lin_space_step_fn_ptr_t lin_space_step_dispatch_vector[_ns::num_types];
 
-template <typename Ty> class LinearSequenceStepFunctor
-{
-private:
-    Ty *p = nullptr;
-    Ty start_v;
-    Ty step_v;
-
-public:
-    LinearSequenceStepFunctor(char *dst_p, Ty v0, Ty dv)
-        : p(reinterpret_cast<Ty *>(dst_p)), start_v(v0), step_v(dv)
-    {
-    }
-
-    void operator()(sycl::id<1> wiid) const
-    {
-        auto i = wiid.get(0);
-        if constexpr (is_complex<Ty>::value) {
-            p[i] = Ty{start_v.real() + i * step_v.real(),
-                      start_v.imag() + i * step_v.imag()};
-        }
-        else {
-            p[i] = start_v + i * step_v;
-        }
-    }
-};
-
-template <typename Ty>
-sycl::event lin_space_step_impl(sycl::queue exec_q,
-                                size_t nelems,
-                                py::object start,
-                                py::object step,
-                                char *array_data,
-                                const std::vector<sycl::event> &depends)
-{
-    Ty start_v;
-    Ty step_v;
-    try {
-        start_v = unbox_py_scalar<Ty>(start);
-        step_v = unbox_py_scalar<Ty>(step);
-    } catch (const py::error_already_set &e) {
-        throw;
-    }
-
-    sycl::event lin_space_step_event = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        cgh.parallel_for<linear_sequence_step_kernel<Ty>>(
-            sycl::range<1>{nelems},
-            LinearSequenceStepFunctor<Ty>(array_data, start_v, step_v));
-    });
-
-    return lin_space_step_event;
-}
-
-template <typename fnT, typename Ty> struct LinSpaceStepFactory
-{
-    fnT get()
-    {
-        fnT f = lin_space_step_impl<Ty>;
-        return f;
-    }
-};
-
-typedef sycl::event (*lin_space_affine_fn_ptr_t)(
-    sycl::queue,
-    size_t, // num_elements
-    py::object start,
-    py::object end,
-    bool include_endpoint,
-    char *, // dst_data_ptr
-    const std::vector<sycl::event> &);
+using dpctl::tensor::kernels::constructors::lin_space_affine_fn_ptr_t;
 
 static lin_space_affine_fn_ptr_t
     lin_space_affine_dispatch_vector[_ns::num_types];
-
-template <typename Ty, typename wTy> class LinearSequenceAffineFunctor
-{
-private:
-    Ty *p = nullptr;
-    Ty start_v;
-    Ty end_v;
-    size_t n;
-
-public:
-    LinearSequenceAffineFunctor(char *dst_p, Ty v0, Ty v1, size_t den)
-        : p(reinterpret_cast<Ty *>(dst_p)), start_v(v0), end_v(v1),
-          n((den == 0) ? 1 : den)
-    {
-    }
-
-    void operator()(sycl::id<1> wiid) const
-    {
-        auto i = wiid.get(0);
-        wTy wc = wTy(i) / n;
-        wTy w = wTy(n - i) / n;
-        if constexpr (is_complex<Ty>::value) {
-            auto _w = static_cast<typename Ty::value_type>(w);
-            auto _wc = static_cast<typename Ty::value_type>(wc);
-            auto re_comb = start_v.real() * _w + end_v.real() * _wc;
-            auto im_comb = start_v.imag() * _w + end_v.imag() * _wc;
-            Ty affine_comb = Ty{re_comb, im_comb};
-            p[i] = affine_comb;
-        }
-        else {
-            auto affine_comb = start_v * w + end_v * wc;
-            p[i] = convert_impl<Ty, decltype(affine_comb)>(affine_comb);
-        }
-    }
-};
-
-template <typename Ty>
-sycl::event lin_space_affine_impl(sycl::queue exec_q,
-                                  size_t nelems,
-                                  py::object start,
-                                  py::object end,
-                                  bool include_endpoint,
-                                  char *array_data,
-                                  const std::vector<sycl::event> &depends)
-{
-    Ty start_v, end_v;
-    try {
-        start_v = unbox_py_scalar<Ty>(start);
-        end_v = unbox_py_scalar<Ty>(end);
-    } catch (const py::error_already_set &e) {
-        throw;
-    }
-
-    bool device_supports_doubles = exec_q.get_device().has(sycl::aspect::fp64);
-    sycl::event lin_space_affine_event = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        if (device_supports_doubles) {
-            cgh.parallel_for<linear_sequence_affine_kernel<Ty, double>>(
-                sycl::range<1>{nelems},
-                LinearSequenceAffineFunctor<Ty, double>(
-                    array_data, start_v, end_v,
-                    (include_endpoint) ? nelems - 1 : nelems));
-        }
-        else {
-            cgh.parallel_for<linear_sequence_affine_kernel<Ty, float>>(
-                sycl::range<1>{nelems},
-                LinearSequenceAffineFunctor<Ty, float>(
-                    array_data, start_v, end_v,
-                    (include_endpoint) ? nelems - 1 : nelems));
-        }
-    });
-
-    return lin_space_affine_event;
-}
-
-template <typename fnT, typename Ty> struct LinSpaceAffineFactory
-{
-    fnT get()
-    {
-        fnT f = lin_space_affine_impl<Ty>;
-        return f;
-    }
-};
 
 std::pair<sycl::event, sycl::event>
 usm_ndarray_linear_sequence_step(py::object start,
@@ -1668,45 +991,9 @@ usm_ndarray_linear_sequence_affine(py::object start,
 
 /* ================ Full ================== */
 
-typedef sycl::event (*full_contig_fn_ptr_t)(sycl::queue,
-                                            size_t,
-                                            py::object,
-                                            char *,
-                                            const std::vector<sycl::event> &);
+using dpctl::tensor::kernels::constructors::full_contig_fn_ptr_t;
 
 static full_contig_fn_ptr_t full_contig_dispatch_vector[_ns::num_types];
-
-template <typename dstTy>
-sycl::event full_contig_impl(sycl::queue q,
-                             size_t nelems,
-                             py::object py_value,
-                             char *dst_p,
-                             const std::vector<sycl::event> &depends)
-{
-    dstTy fill_v;
-    try {
-        fill_v = unbox_py_scalar<dstTy>(py_value);
-    } catch (const py::error_already_set &e) {
-        throw;
-    }
-
-    sycl::event fill_ev = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        dstTy *p = reinterpret_cast<dstTy *>(dst_p);
-        cgh.fill<dstTy>(p, fill_v, nelems);
-    });
-
-    return fill_ev;
-}
-
-template <typename fnT, typename Ty> struct FullContigFactory
-{
-    fnT get()
-    {
-        fnT f = full_contig_impl<Ty>;
-        return f;
-    }
-};
 
 std::pair<sycl::event, sycl::event>
 usm_ndarray_full(py::object py_value,
@@ -1758,73 +1045,9 @@ usm_ndarray_full(py::object py_value,
 
 /* ================ Eye ================== */
 
-typedef sycl::event (*eye_fn_ptr_t)(sycl::queue,
-                                    size_t nelems, // num_elements
-                                    py::ssize_t start,
-                                    py::ssize_t end,
-                                    py::ssize_t step,
-                                    char *, // dst_data_ptr
-                                    const std::vector<sycl::event> &);
+using dpctl::tensor::kernels::constructors::eye_fn_ptr_t;
 
 static eye_fn_ptr_t eye_dispatch_vector[_ns::num_types];
-
-template <typename Ty> class EyeFunctor
-{
-private:
-    Ty *p = nullptr;
-    py::ssize_t start_v;
-    py::ssize_t end_v;
-    py::ssize_t step_v;
-
-public:
-    EyeFunctor(char *dst_p,
-               const py::ssize_t v0,
-               const py::ssize_t v1,
-               const py::ssize_t dv)
-        : p(reinterpret_cast<Ty *>(dst_p)), start_v(v0), end_v(v1), step_v(dv)
-    {
-    }
-
-    void operator()(sycl::id<1> wiid) const
-    {
-        Ty set_v = 0;
-        py::ssize_t i = static_cast<py::ssize_t>(wiid.get(0));
-        if (i >= start_v and i <= end_v) {
-            if ((i - start_v) % step_v == 0) {
-                set_v = 1;
-            }
-        }
-        p[i] = set_v;
-    }
-};
-
-template <typename Ty>
-sycl::event eye_impl(sycl::queue exec_q,
-                     size_t nelems,
-                     const py::ssize_t start,
-                     const py::ssize_t end,
-                     const py::ssize_t step,
-                     char *array_data,
-                     const std::vector<sycl::event> &depends)
-{
-    sycl::event eye_event = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        cgh.parallel_for<eye_kernel<Ty>>(
-            sycl::range<1>{nelems},
-            EyeFunctor<Ty>(array_data, start, end, step));
-    });
-
-    return eye_event;
-}
-
-template <typename fnT, typename Ty> struct EyeFactory
-{
-    fnT get()
-    {
-        fnT f = eye_impl<Ty>;
-        return f;
-    }
-};
 
 std::pair<sycl::event, sycl::event>
 eye(py::ssize_t k,
@@ -1895,109 +1118,11 @@ eye(py::ssize_t k,
 }
 
 /* =========================== Tril and triu ============================== */
-// define function type
-typedef sycl::event (*tri_fn_ptr_t)(sycl::queue,
-                                    py::ssize_t,   // inner_range  //py::ssize_t
-                                    py::ssize_t,   // outer_range
-                                    char *,        // src_data_ptr
-                                    char *,        // dst_data_ptr
-                                    py::ssize_t,   // nd
-                                    py::ssize_t *, // shape_and_strides
-                                    py::ssize_t,   // k
-                                    const std::vector<sycl::event> &,
-                                    const std::vector<sycl::event> &);
 
-template <typename Ty, bool> class tri_kernel;
-template <typename Ty, bool l>
-sycl::event tri_impl(sycl::queue exec_q,
-                     py::ssize_t inner_range,
-                     py::ssize_t outer_range,
-                     char *src_p,
-                     char *dst_p,
-                     py::ssize_t nd,
-                     py::ssize_t *shape_and_strides,
-                     py::ssize_t k,
-                     const std::vector<sycl::event> &depends,
-                     const std::vector<sycl::event> &additional_depends)
-{
-    constexpr int d2 = 2;
-    py::ssize_t src_s = nd;
-    py::ssize_t dst_s = 2 * nd;
-    py::ssize_t nd_1 = nd - 1;
-    py::ssize_t nd_2 = nd - 2;
-    Ty *src = reinterpret_cast<Ty *>(src_p);
-    Ty *dst = reinterpret_cast<Ty *>(dst_p);
-
-    sycl::event tri_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        cgh.depends_on(additional_depends);
-        cgh.parallel_for<tri_kernel<Ty, l>>(
-            sycl::range<1>(inner_range * outer_range), [=](sycl::id<1> idx) {
-                py::ssize_t outer_gid = idx[0] / inner_range;
-                py::ssize_t inner_gid = idx[0] - inner_range * outer_gid;
-
-                py::ssize_t src_inner_offset, dst_inner_offset;
-                bool to_copy;
-
-                {
-                    // py::ssize_t inner_gid = idx.get_id(0);
-                    CIndexer_array<d2, py::ssize_t> indexer_i(
-                        {shape_and_strides[nd_2], shape_and_strides[nd_1]});
-                    indexer_i.set(inner_gid);
-                    const std::array<py::ssize_t, d2> &inner = indexer_i.get();
-                    src_inner_offset =
-                        inner[0] * shape_and_strides[src_s + nd_2] +
-                        inner[1] * shape_and_strides[src_s + nd_1];
-                    dst_inner_offset =
-                        inner[0] * shape_and_strides[dst_s + nd_2] +
-                        inner[1] * shape_and_strides[dst_s + nd_1];
-
-                    if (l)
-                        to_copy = (inner[0] + k >= inner[1]);
-                    else
-                        to_copy = (inner[0] + k <= inner[1]);
-                }
-
-                py::ssize_t src_offset = 0;
-                py::ssize_t dst_offset = 0;
-                {
-                    // py::ssize_t outer_gid = idx.get_id(1);
-                    CIndexer_vector<py::ssize_t> outer(nd - d2);
-                    outer.get_displacement(
-                        outer_gid, shape_and_strides, shape_and_strides + src_s,
-                        shape_and_strides + dst_s, src_offset, dst_offset);
-                }
-
-                src_offset += src_inner_offset;
-                dst_offset += dst_inner_offset;
-
-                dst[dst_offset] = (to_copy) ? src[src_offset] : Ty(0);
-            });
-    });
-    return tri_ev;
-}
+using dpctl::tensor::kernels::constructors::tri_fn_ptr_t;
 
 static tri_fn_ptr_t tril_generic_dispatch_vector[_ns::num_types];
-
-template <typename fnT, typename Ty> struct TrilGenericFactory
-{
-    fnT get()
-    {
-        fnT f = tri_impl<Ty, /*tril*/ true>;
-        return f;
-    }
-};
-
 static tri_fn_ptr_t triu_generic_dispatch_vector[_ns::num_types];
-
-template <typename fnT, typename Ty> struct TriuGenericFactory
-{
-    fnT get()
-    {
-        fnT f = tri_impl<Ty, /*triu*/ false>;
-        return f;
-    }
-};
 
 std::pair<sycl::event, sycl::event>
 tri(sycl::queue &exec_q,
@@ -2109,10 +1234,12 @@ tri(sycl::queue &exec_q,
     const py::ssize_t *dst_strides_raw = dst.get_strides_raw();
     if (dst_strides_raw == nullptr) {
         if (is_dst_c_contig) {
-            dst_strides = c_contiguous_strides(src_nd, src_shape);
+            dst_strides =
+                dpctl::tensor::c_contiguous_strides(src_nd, src_shape);
         }
         else if (is_dst_f_contig) {
-            dst_strides = f_contiguous_strides(src_nd, src_shape);
+            dst_strides =
+                dpctl::tensor::f_contiguous_strides(src_nd, src_shape);
         }
         else {
             throw std::runtime_error("Source array has null strides but has "
@@ -2218,6 +1345,11 @@ void init_copy_and_cast_dispatch_tables(void)
 {
     using namespace dpctl::tensor::detail;
 
+    using dpctl::tensor::kernels::copy_and_cast::CopyAndCast1DFactory;
+    using dpctl::tensor::kernels::copy_and_cast::CopyAndCast2DFactory;
+    using dpctl::tensor::kernels::copy_and_cast::CopyAndCastFromHostFactory;
+    using dpctl::tensor::kernels::copy_and_cast::CopyAndCastGenericFactory;
+
     DispatchTableBuilder<copy_and_cast_generic_fn_ptr_t,
                          CopyAndCastGenericFactory, num_types>
         dtb_generic;
@@ -2247,6 +1379,13 @@ void init_copy_and_cast_dispatch_tables(void)
 void init_copy_for_reshape_dispatch_vector(void)
 {
     using namespace dpctl::tensor::detail;
+    using dpctl::tensor::kernels::constructors::EyeFactory;
+    using dpctl::tensor::kernels::constructors::FullContigFactory;
+    using dpctl::tensor::kernels::constructors::LinSpaceAffineFactory;
+    using dpctl::tensor::kernels::constructors::LinSpaceStepFactory;
+    using dpctl::tensor::kernels::constructors::TrilGenericFactory;
+    using dpctl::tensor::kernels::constructors::TriuGenericFactory;
+    using dpctl::tensor::kernels::copy_and_cast::CopyForReshapeGenericFactory;
 
     DispatchVectorBuilder<copy_for_reshape_fn_ptr_t,
                           CopyForReshapeGenericFactory, num_types>
