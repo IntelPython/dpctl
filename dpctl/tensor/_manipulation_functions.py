@@ -309,7 +309,7 @@ def _arrays_validation(arrays):
         raise ValueError("All the input arrays must have usm_type")
 
     X0 = arrays[0]
-    _support_dtype(Xi.dtype for Xi in arrays)
+    _supported_dtype(Xi.dtype for Xi in arrays)
 
     res_dtype = X0.dtype
     for i in range(1, n):
@@ -422,7 +422,7 @@ def stack(arrays, axis=0):
     return res
 
 
-def can_cast(array_and_dtype_from, dtype_to):
+def can_cast(array_and_dtype_from, dtype_to, casting="safe"):
     """
     can_cast(from: usm_ndarray or dtype, to: dtype) -> bool
 
@@ -434,9 +434,9 @@ def can_cast(array_and_dtype_from, dtype_to):
 
     dtype_from = dpt.dtype(array_and_dtype_from)
 
-    _support_dtype([dtype_to, dtype_from])
+    _supported_dtype([dtype_to, dtype_from])
 
-    return np.can_cast(dtype_from, dtype_to)
+    return np.can_cast(dtype_from, dtype_to, casting)
 
 
 def result_type(*arrays_and_dtypes):
@@ -449,7 +449,7 @@ def result_type(*arrays_and_dtypes):
     """
     dtypes = [dpt.dtype(X) for X in arrays_and_dtypes]
 
-    _support_dtype(dtypes)
+    _supported_dtype(dtypes)
 
     return np.result_type(*dtypes)
 
@@ -460,7 +460,7 @@ def iinfo(type):
 
     Returns machine limits for integer data types.
     """
-    _support_dtype(type)
+    _supported_dtype([dpt.dtype(type)])
     return np.iinfo(type)
 
 
@@ -470,11 +470,11 @@ def finfo(type):
 
     Returns machine limits for float data types.
     """
-    _support_dtype(type)
+    _supported_dtype([dpt.dtype(type)])
     return np.finfo(type)
 
 
-def _support_dtype(dtypes):
+def _supported_dtype(dtypes):
     if not all(dtype.char in "?bBhHiIlLqQefdFD" for dtype in dtypes):
         raise ValueError("Unsupported dtype encountered.")
     return True

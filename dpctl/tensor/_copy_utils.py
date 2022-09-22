@@ -64,7 +64,7 @@ def _copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
     dt = Xnp.dtype
     if dt.char in "dD" and alloc_q.sycl_device.has_aspect_fp64 is False:
         Xusm_dtype = (
-            np.dtype("float32") if dt.char == "d" else np.dtype("complex64")
+            dpt.dtype("float32") if dt.char == "d" else dpt.dtype("complex64")
         )
     else:
         Xusm_dtype = dt
@@ -318,8 +318,8 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
             "Recognized values are 'A', 'C', 'F', or 'K'"
         )
     ary_dtype = usm_ary.dtype
-    target_dtype = np.dtype(newdtype)
-    if not np.can_cast(ary_dtype, target_dtype, casting=casting):
+    target_dtype = dpt.dtype(newdtype)
+    if not dpt.can_cast(ary_dtype, target_dtype, casting=casting):
         raise TypeError(
             "Can not cast from {} to {} according to rule {}".format(
                 ary_dtype, newdtype, casting
