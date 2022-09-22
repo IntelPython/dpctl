@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.14.0dev0+123.g22d9354cb documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.14.0dev0+124.g18b9e7f59 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+123.g22d9354cb
+                0.14.0dev0+124.g18b9e7f59
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -388,7 +388,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All the input arrays must have usm_type&quot;</span><span class="p">)</span>
 
     <span class="n">X0</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">_support_dtype</span><span class="p">(</span><span class="n">Xi</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">Xi</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">)</span>
+    <span class="n">_supported_dtype</span><span class="p">(</span><span class="n">Xi</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">Xi</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">)</span>
 
     <span class="n">res_dtype</span> <span class="o">=</span> <span class="n">X0</span><span class="o">.</span><span class="n">dtype</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
@@ -501,7 +501,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="can_cast"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.can_cast">[docs]</a><span class="k">def</span> <span class="nf">can_cast</span><span class="p">(</span><span class="n">array_and_dtype_from</span><span class="p">,</span> <span class="n">dtype_to</span><span class="p">):</span>
+<div class="viewcode-block" id="can_cast"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.can_cast">[docs]</a><span class="k">def</span> <span class="nf">can_cast</span><span class="p">(</span><span class="n">array_and_dtype_from</span><span class="p">,</span> <span class="n">dtype_to</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    can_cast(from: usm_ndarray or dtype, to: dtype) -&gt; bool</span>
 
@@ -513,9 +513,9 @@
 
     <span class="n">dtype_from</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">array_and_dtype_from</span><span class="p">)</span>
 
-    <span class="n">_support_dtype</span><span class="p">([</span><span class="n">dtype_to</span><span class="p">,</span> <span class="n">dtype_from</span><span class="p">])</span>
+    <span class="n">_supported_dtype</span><span class="p">([</span><span class="n">dtype_to</span><span class="p">,</span> <span class="n">dtype_from</span><span class="p">])</span>
 
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">dtype_from</span><span class="p">,</span> <span class="n">dtype_to</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">dtype_from</span><span class="p">,</span> <span class="n">dtype_to</span><span class="p">,</span> <span class="n">casting</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="result_type"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.result_type">[docs]</a><span class="k">def</span> <span class="nf">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays_and_dtypes</span><span class="p">):</span>
@@ -528,7 +528,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">arrays_and_dtypes</span><span class="p">]</span>
 
-    <span class="n">_support_dtype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">)</span>
+    <span class="n">_supported_dtype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">dtypes</span><span class="p">)</span></div>
 
@@ -539,7 +539,7 @@
 
 <span class="sd">    Returns machine limits for integer data types.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_support_dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+    <span class="n">_supported_dtype</span><span class="p">([</span><span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">)])</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span></div>
 
 
@@ -549,11 +549,11 @@
 
 <span class="sd">    Returns machine limits for float data types.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_support_dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+    <span class="n">_supported_dtype</span><span class="p">([</span><span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">)])</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_support_dtype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_supported_dtype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span> <span class="ow">in</span> <span class="s2">&quot;?bBhHiIlLqQefdFD&quot;</span> <span class="k">for</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unsupported dtype encountered.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">True</span>
