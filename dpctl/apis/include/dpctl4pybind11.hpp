@@ -563,6 +563,18 @@ public:
 
         return UsmNDArray_GetElementSize(raw_ar);
     }
+
+    bool is_c_contiguous() const
+    {
+        int flags = this->get_flags();
+        return static_cast<bool>(flags & USM_ARRAY_C_CONTIGUOUS);
+    }
+
+    bool is_f_contiguous() const
+    {
+        int flags = this->get_flags();
+        return static_cast<bool>(flags & USM_ARRAY_F_CONTIGUOUS);
+    }
 };
 
 } // end namespace tensor
