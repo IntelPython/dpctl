@@ -1,6 +1,6 @@
-Example of SYCL built pybind11 extension
+# Example of SYCL built pybind11 extension
 
-To build, use (assumes scikit-build and dpcpp is installed):
+## To build, use (assumes scikit-build and dpcpp is installed):
 
 ```sh
 python setup.py develop -- -G "Ninja" \
@@ -12,13 +12,13 @@ python setup.py develop -- -G "Ninja" \
      -DTBB_INCLUDE_DIR=${CONDA_PREFIX}/include
 ```
 
-To run test suite
+## To run test suite
 
 ```sh
 python -m pytest tests
 ```
 
-To compare Python overhead,
+## To compare Python overhead,
 
 ```
 # build standad-alone executable

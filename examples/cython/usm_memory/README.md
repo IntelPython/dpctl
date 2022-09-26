@@ -1,8 +1,8 @@
-#1 Example of working with USM memory
+# Example of working with USM memory
 
-#2 Description
+## Description
 
-#2 Building
+## Building
 
 Make sure oneAPI is activated. Environment variable `$ONEAPI_ROOT` must be set.
 
@@ -12,7 +12,7 @@ $ CC=icx CXX=dpcpp LD_SHARED="dpcpp -shared" \
   CXXFLAGS=-fno-sycl-early-optimizations python setup.py build_ext --inplace
 ```
 
-#2 Running
+## Running
 
 ```
 $ python run.py
