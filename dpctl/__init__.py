@@ -32,13 +32,17 @@
 """
 __author__ = "Intel Corp."
 
-from dpctl._sycl_context import SyclContext, SyclContextCreationError
-from dpctl._sycl_device import (
+import os
+import os.path
+
+from ._device_selection import select_device_with_aspects
+from ._sycl_context import SyclContext, SyclContextCreationError
+from ._sycl_device import (
     SyclDevice,
     SyclDeviceCreationError,
     SyclSubDeviceCreationError,
 )
-from dpctl._sycl_device_factory import (
+from ._sycl_device_factory import (
     get_devices,
     get_num_devices,
     has_accelerator_devices,
@@ -51,15 +55,15 @@ from dpctl._sycl_device_factory import (
     select_gpu_device,
     select_host_device,
 )
-from dpctl._sycl_event import SyclEvent
-from dpctl._sycl_platform import SyclPlatform, get_platforms, lsplatform
-from dpctl._sycl_queue import (
+from ._sycl_event import SyclEvent
+from ._sycl_platform import SyclPlatform, get_platforms, lsplatform
+from ._sycl_queue import (
     SyclKernelInvalidRangeError,
     SyclKernelSubmitError,
     SyclQueue,
     SyclQueueCreationError,
 )
-from dpctl._sycl_queue_manager import (
+from ._sycl_queue_manager import (
     device_context,
     get_current_backend,
     get_current_device_type,
@@ -69,8 +73,6 @@ from dpctl._sycl_queue_manager import (
     nested_context_factories,
     set_global_queue,
 )
-
-from ._device_selection import select_device_with_aspects
 from ._sycl_timer import SyclTimer
 from ._version import get_versions
 from .enum_types import (
@@ -145,6 +147,10 @@ __all__ += [
     "utils",
 ]
 
+if hasattr(os, "add_dll_directory"):
+    # Include folder containing DPCTLSyclInterface.dll to search path
+    os.add_dll_directory(os.path.dirname(__file__))
+
 
 def get_include():
     r"""
@@ -153,8 +159,6 @@ def get_include():
     Extension modules that need to be compiled against dpctl should use
     this function to locate the appropriate include directory.
     """
-    import os.path
-
     return os.path.join(os.path.dirname(__file__), "include")
 
 
