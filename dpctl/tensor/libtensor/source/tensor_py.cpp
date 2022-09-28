@@ -42,8 +42,6 @@
 
 namespace py = pybind11;
 
-static dpctl::tensor::detail::usm_ndarray_types array_types;
-
 namespace
 {
 
@@ -301,6 +299,7 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
     int src_type_id = array_types.typenum_to_lookup_id(src_typenum);
     int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -545,6 +544,7 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
     int type_id = array_types.typenum_to_lookup_id(src_typenum);
 
     auto fn = copy_for_reshape_generic_dispatch_vector[type_id];
@@ -729,6 +729,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
         py::detail::array_descriptor_proxy(npy_src.dtype().ptr())->type_num;
     int dst_typenum = dst.get_typenum();
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
     int src_type_id = array_types.typenum_to_lookup_id(src_typenum);
     int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -909,6 +910,7 @@ usm_ndarray_linear_sequence_step(py::object start,
             "Execution queue is not compatible with the allocation queue");
     }
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
     int dst_typenum = dst.get_typenum();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -957,6 +959,7 @@ usm_ndarray_linear_sequence_affine(py::object start,
             "Execution queue context is not the same as allocation context");
     }
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
     int dst_typenum = dst.get_typenum();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -1006,6 +1009,7 @@ usm_ndarray_full(py::object py_value,
             "Execution queue is not compatible with the allocation queue");
     }
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
     int dst_typenum = dst.get_typenum();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -1054,6 +1058,7 @@ eye(py::ssize_t k,
                               "allocation queue");
     }
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
     int dst_typenum = dst.get_typenum();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -1167,6 +1172,8 @@ tri(sycl::queue &exec_q,
         // TODO: could use a temporary, but this is done by the caller
         throw py::value_error("Arrays index overlapping segments of memory");
     }
+
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
@@ -1440,9 +1447,6 @@ PYBIND11_MODULE(_tensor_impl, m)
     init_copy_and_cast_dispatch_tables();
     init_copy_for_reshape_dispatch_vector();
     import_dpctl();
-
-    // populate types constants for type dispatching functions
-    array_types = dpctl::tensor::detail::usm_ndarray_types::get();
 
     m.def(
         "_contract_iter", &contract_iter,
