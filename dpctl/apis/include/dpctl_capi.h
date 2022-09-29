@@ -47,6 +47,9 @@
  * C functions can use dpctl's C-API functions without linking to
  * shared objects defining this symbols, if they call `import_dpctl()`
  * prior to using those symbols.
+ *
+ * It is declared inline to allow multiple definitions in
+ * different translation units
  */
 static inline void import_dpctl(void)
 {
