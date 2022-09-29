@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.14.0dev0+124.g18b9e7f59 documentation</title>
+  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.14.0dev0+133.gd79c8397 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/doxyrest-pygments.css" type="text/css" />
@@ -17,6 +17,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/target-highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -31,7 +32,7 @@
             <a href="../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+124.g18b9e7f59
+                0.14.0dev0+133.gd79c8397
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -110,13 +111,17 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Intel Corp.&quot;</span>
 
-<span class="kn">from</span> <span class="nn">dpctl._sycl_context</span> <span class="kn">import</span> <span class="n">SyclContext</span><span class="p">,</span> <span class="n">SyclContextCreationError</span>
-<span class="kn">from</span> <span class="nn">dpctl._sycl_device</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+
+<span class="kn">from</span> <span class="nn">._device_selection</span> <span class="kn">import</span> <span class="n">select_device_with_aspects</span>
+<span class="kn">from</span> <span class="nn">._sycl_context</span> <span class="kn">import</span> <span class="n">SyclContext</span><span class="p">,</span> <span class="n">SyclContextCreationError</span>
+<span class="kn">from</span> <span class="nn">._sycl_device</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">SyclDevice</span><span class="p">,</span>
     <span class="n">SyclDeviceCreationError</span><span class="p">,</span>
     <span class="n">SyclSubDeviceCreationError</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">dpctl._sycl_device_factory</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">._sycl_device_factory</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">get_devices</span><span class="p">,</span>
     <span class="n">get_num_devices</span><span class="p">,</span>
     <span class="n">has_accelerator_devices</span><span class="p">,</span>
@@ -129,15 +134,15 @@
     <span class="n">select_gpu_device</span><span class="p">,</span>
     <span class="n">select_host_device</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">dpctl._sycl_event</span> <span class="kn">import</span> <span class="n">SyclEvent</span>
-<span class="kn">from</span> <span class="nn">dpctl._sycl_platform</span> <span class="kn">import</span> <span class="n">SyclPlatform</span><span class="p">,</span> <span class="n">get_platforms</span><span class="p">,</span> <span class="n">lsplatform</span>
-<span class="kn">from</span> <span class="nn">dpctl._sycl_queue</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">._sycl_event</span> <span class="kn">import</span> <span class="n">SyclEvent</span>
+<span class="kn">from</span> <span class="nn">._sycl_platform</span> <span class="kn">import</span> <span class="n">SyclPlatform</span><span class="p">,</span> <span class="n">get_platforms</span><span class="p">,</span> <span class="n">lsplatform</span>
+<span class="kn">from</span> <span class="nn">._sycl_queue</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">SyclKernelInvalidRangeError</span><span class="p">,</span>
     <span class="n">SyclKernelSubmitError</span><span class="p">,</span>
     <span class="n">SyclQueue</span><span class="p">,</span>
     <span class="n">SyclQueueCreationError</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">dpctl._sycl_queue_manager</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">._sycl_queue_manager</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">device_context</span><span class="p">,</span>
     <span class="n">get_current_backend</span><span class="p">,</span>
     <span class="n">get_current_device_type</span><span class="p">,</span>
@@ -147,8 +152,6 @@
     <span class="n">nested_context_factories</span><span class="p">,</span>
     <span class="n">set_global_queue</span><span class="p">,</span>
 <span class="p">)</span>
-
-<span class="kn">from</span> <span class="nn">._device_selection</span> <span class="kn">import</span> <span class="n">select_device_with_aspects</span>
 <span class="kn">from</span> <span class="nn">._sycl_timer</span> <span class="kn">import</span> <span class="n">SyclTimer</span>
 <span class="kn">from</span> <span class="nn">._version</span> <span class="kn">import</span> <span class="n">get_versions</span>
 <span class="kn">from</span> <span class="nn">.enum_types</span> <span class="kn">import</span> <span class="p">(</span>
@@ -223,6 +226,10 @@
     <span class="s2">&quot;utils&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">os</span><span class="p">,</span> <span class="s2">&quot;add_dll_directory&quot;</span><span class="p">):</span>
+    <span class="c1"># Include folder containing DPCTLSyclInterface.dll to search path</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">add_dll_directory</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+
 
 <div class="viewcode-block" id="get_include"><a class="viewcode-back" href="../docfiles/dpctl/dpctl_functions_api.html#dpctl.get_include">[docs]</a><span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -231,8 +238,6 @@
 <span class="sd">    Extension modules that need to be compiled against dpctl should use</span>
 <span class="sd">    this function to locate the appropriate include directory.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">os.path</span>
-
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;include&quot;</span><span class="p">)</span></div>
 
 
