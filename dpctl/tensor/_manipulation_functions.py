@@ -422,19 +422,23 @@ def stack(arrays, axis=0):
     return res
 
 
-def can_cast(array_and_dtype_from, dtype_to, casting="safe"):
+def can_cast(from_, to, casting="safe"):
     """
     can_cast(from: usm_ndarray or dtype, to: dtype) -> bool
 
     Determines if one data type can be cast to another data type according \
         Type Promotion Rules rules.
     """
-    if not isinstance(dtype_to, dpt.dtype):
+    if isinstance(to, dpt.usm_ndarray):
         raise TypeError("Expected dtype type.")
 
-    dtype_from = dpt.dtype(array_and_dtype_from)
+    dtype_to = dpt.dtype(to)
 
-    _supported_dtype([dtype_to, dtype_from])
+    dtype_from = (
+        from_.dtype if isinstance(from_, dpt.usm_ndarray) else dpt.dtype(from_)
+    )
+
+    _supported_dtype([dtype_from, dtype_to])
 
     return np.can_cast(dtype_from, dtype_to, casting)
 
@@ -447,7 +451,10 @@ def result_type(*arrays_and_dtypes):
     Returns the dtype that results from applying the Type Promotion Rules to \
         the arguments.
     """
-    dtypes = [dpt.dtype(X) for X in arrays_and_dtypes]
+    dtypes = [
+        X.dtype if isinstance(X, dpt.usm_ndarray) else dpt.dtype(X)
+        for X in arrays_and_dtypes
+    ]
 
     _supported_dtype(dtypes)
 
@@ -460,6 +467,8 @@ def iinfo(type):
 
     Returns machine limits for integer data types.
     """
+    if isinstance(type, dpt.usm_ndarray):
+        raise TypeError("Expected dtype type, get {to}.")
     _supported_dtype([dpt.dtype(type)])
     return np.iinfo(type)
 
@@ -470,11 +479,14 @@ def finfo(type):
 
     Returns machine limits for float data types.
     """
+    if isinstance(type, dpt.usm_ndarray):
+        raise TypeError("Expected dtype type, get {to}.")
     _supported_dtype([dpt.dtype(type)])
     return np.finfo(type)
 
 
 def _supported_dtype(dtypes):
-    if not all(dtype.char in "?bBhHiIlLqQefdFD" for dtype in dtypes):
-        raise ValueError("Unsupported dtype encountered.")
+    for dtype in dtypes:
+        if dtype.char not in "?bBhHiIlLqQefdFD":
+            raise ValueError(f"Dpctl doesn't support dtype {dtype}.")
     return True
