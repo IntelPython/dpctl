@@ -21,6 +21,8 @@ pybind11_add_module(${python_module_name} MODULE
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_and_cast_usm_to_usm.cpp
 )
+# FIXME: remove this once issue with dpctl_capi loading is fixed
+target_compile_options(${python_module_name} PRIVATE -O1)
 target_link_options(${python_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
 target_include_directories(${python_module_name}
     PRIVATE
