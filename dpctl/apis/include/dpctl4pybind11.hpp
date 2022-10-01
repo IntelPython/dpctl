@@ -439,8 +439,7 @@ public:
 
     char *get_data() const
     {
-        PyObject *raw_o = this->ptr();
-        PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
+        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
         return UsmNDArray_GetData(raw_ar);
     }
@@ -452,16 +451,14 @@ public:
 
     int get_ndim() const
     {
-        PyObject *raw_o = this->ptr();
-        PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
+        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
         return UsmNDArray_GetNDim(raw_ar);
     }
 
     const py::ssize_t *get_shape_raw() const
     {
-        PyObject *raw_o = this->ptr();
-        PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
+        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
         return UsmNDArray_GetShape(raw_ar);
     }
@@ -474,16 +471,14 @@ public:
 
     const py::ssize_t *get_strides_raw() const
     {
-        PyObject *raw_o = this->ptr();
-        PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
+        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
         return UsmNDArray_GetStrides(raw_ar);
     }
 
     py::ssize_t get_size() const
     {
-        PyObject *raw_o = this->ptr();
-        PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
+        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
         int ndim = UsmNDArray_GetNDim(raw_ar);
         const py::ssize_t *shape = UsmNDArray_GetShape(raw_ar);
@@ -499,8 +494,7 @@ public:
 
     std::pair<py::ssize_t, py::ssize_t> get_minmax_offsets() const
     {
-        PyObject *raw_o = this->ptr();
-        PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
+        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
         int nd = UsmNDArray_GetNDim(raw_ar);
         const py::ssize_t *shape = UsmNDArray_GetShape(raw_ar);
@@ -533,8 +527,7 @@ public:
 
     sycl::queue get_queue() const
     {
-        PyObject *raw_o = this->ptr();
-        PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
+        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
         DPCTLSyclQueueRef QRef = UsmNDArray_GetQueueRef(raw_ar);
         return *(reinterpret_cast<sycl::queue *>(QRef));
@@ -542,24 +535,21 @@ public:
 
     int get_typenum() const
     {
-        PyObject *raw_o = this->ptr();
-        PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
+        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
         return UsmNDArray_GetTypenum(raw_ar);
     }
 
     int get_flags() const
     {
-        PyObject *raw_o = this->ptr();
-        PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
+        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
         return UsmNDArray_GetFlags(raw_ar);
     }
 
     int get_elemsize() const
     {
-        PyObject *raw_o = this->ptr();
-        PyUSMArrayObject *raw_ar = reinterpret_cast<PyUSMArrayObject *>(raw_o);
+        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
         return UsmNDArray_GetElementSize(raw_ar);
     }
@@ -574,6 +564,12 @@ public:
     {
         int flags = this->get_flags();
         return static_cast<bool>(flags & USM_ARRAY_F_CONTIGUOUS);
+    }
+
+private:
+    PyUSMArrayObject *usm_array_ptr() const
+    {
+        return reinterpret_cast<PyUSMArrayObject *>(m_ptr);
     }
 };
 
