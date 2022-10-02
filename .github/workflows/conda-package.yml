@@ -270,7 +270,8 @@ jobs:
                  Write-Output "OCL-ICD-Loader was not copied"
               }
               # Variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
-              echo "TBB_DLL_PATH=C:\Miniconda\Library\bin" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+              $cl_cfg="C:\Miniconda\Library\lib\cl.cfg"
+              (Get-Content $cl_cfg) -replace '^CL_CONFIG_TBB_DLL_PATH =', 'CL_CONFIG_TBB_DLL_PATH = C:\Miniconda\Library\bin' | Set-Content $cl_cfg
           }
       - name: Smoke test
         run: |
