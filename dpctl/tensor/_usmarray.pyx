@@ -33,6 +33,7 @@ from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
 cimport dpctl.tensor._dlpack as c_dlpack
+import dpctl.tensor._flags as _flags
 
 include "_stride_utils.pxi"
 include "_types.pxi"
@@ -503,9 +504,9 @@ cdef class usm_ndarray:
     @property
     def flags(self):
         """
-        Currently returns integer whose bits correspond to the flags.
+        Returns dpctl.tensor._flags object.
         """
-        return self.flags_
+        return _flags.Flags(self, self.flags_)
 
     @property
     def usm_type(self):
@@ -663,7 +664,7 @@ cdef class usm_ndarray:
                 strides=self.strides,
                 offset=self.get_offset()
             )
-            res.flags_ = self.flags
+            res.flags_ = self.flags.flags
             return res
         else:
             nbytes = self.usm_data.nbytes
@@ -678,7 +679,7 @@ cdef class usm_ndarray:
                 strides=self.strides,
                 offset=self.get_offset()
             )
-            res.flags_ = self.flags
+            res.flags_ = self.flags.flags
             return res
 
     def _set_namespace(self, mod):

@@ -59,13 +59,13 @@ def test_allocate_usm_ndarray(shape, usm_type):
 
 
 def test_usm_ndarray_flags():
-    assert dpt.usm_ndarray((5,)).flags == 3
-    assert dpt.usm_ndarray((5, 2)).flags == 1
-    assert dpt.usm_ndarray((5, 2), order="F").flags == 2
-    assert dpt.usm_ndarray((5, 1, 2), order="F").flags == 2
-    assert dpt.usm_ndarray((5, 1, 2), strides=(2, 0, 1)).flags == 1
-    assert dpt.usm_ndarray((5, 1, 2), strides=(1, 0, 5)).flags == 2
-    assert dpt.usm_ndarray((5, 1, 1), strides=(1, 0, 1)).flags == 3
+    assert dpt.usm_ndarray((5,)).flags.flags == 3
+    assert dpt.usm_ndarray((5, 2)).flags.flags == 1
+    assert dpt.usm_ndarray((5, 2), order="F").flags.flags == 2
+    assert dpt.usm_ndarray((5, 1, 2), order="F").flags.flags == 2
+    assert dpt.usm_ndarray((5, 1, 2), strides=(2, 0, 1)).flags.flags == 1
+    assert dpt.usm_ndarray((5, 1, 2), strides=(1, 0, 5)).flags.flags == 2
+    assert dpt.usm_ndarray((5, 1, 1), strides=(1, 0, 1)).flags.flags == 3
 
 
 @pytest.mark.parametrize(
@@ -326,7 +326,7 @@ def test_usm_ndarray_props():
     Xusm = dpt.usm_ndarray((10, 5), dtype="c16", order="F")
     Xusm.ndim
     repr(Xusm)
-    Xusm.flags
+    Xusm.flags.flags
     Xusm.__sycl_usm_array_interface__
     Xusm.device
     Xusm.strides
@@ -465,7 +465,7 @@ def test_pyx_capi_get_flags():
         fn_restype=ctypes.c_int,
     )
     flags = get_flags_fn(X)
-    assert type(flags) is int and flags == X.flags
+    assert type(flags) is int and flags == X.flags.flags
 
 
 def test_pyx_capi_get_offset():
@@ -753,7 +753,7 @@ def test_shape_setter():
     X.shape = sh_f
     assert X.shape == sh_f
     assert relaxed_strides_equal(X.strides, cc_strides(sh_f), sh_f)
-    assert X.flags & 1, "reshaped array expected to be C-contiguous"
+    assert X.flags.c_contiguous, "reshaped array expected to be C-contiguous"
 
     sh_s = (
         2,
@@ -919,7 +919,7 @@ def test_reshape():
 
     X = dpt.usm_ndarray((1,))
     Y = dpt.reshape(X, X.shape)
-    assert Y.flags == X.flags
+    assert Y.flags.flags == X.flags.flags
 
     A = dpt.usm_ndarray((0,), "i4")
     A1 = dpt.reshape(A, (0,))
@@ -1402,7 +1402,7 @@ def test_triu_order_k(order, k):
     Xnp = np.arange(np.prod(shape), dtype="int").reshape(shape, order=order)
     Ynp = np.triu(Xnp, k)
     assert Y.dtype == Ynp.dtype
-    assert X.flags == Y.flags
+    assert X.flags.flags == Y.flags.flags
     assert np.array_equal(Ynp, dpt.asnumpy(Y))
 
 
@@ -1423,7 +1423,7 @@ def test_tril_order_k(order, k):
     Xnp = np.arange(np.prod(shape), dtype="int").reshape(shape, order=order)
     Ynp = np.tril(Xnp, k)
     assert Y.dtype == Ynp.dtype
-    assert X.flags == Y.flags
+    assert X.flags.flags == Y.flags.flags
     assert np.array_equal(Ynp, dpt.asnumpy(Y))
 
 
