@@ -31,6 +31,7 @@ from dpctl.tensor._ctors import (
     full,
     full_like,
     linspace,
+    meshgrid,
     ones,
     ones_like,
     tril,
@@ -87,4 +88,5 @@ __all__ = [
     "from_dlpack",
     "tril",
     "triu",
+    "meshgrid",
 ]

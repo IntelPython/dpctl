@@ -1198,3 +1198,53 @@ def triu(X, k=0):
         hev.wait()
 
     return res
+
+
+def meshgrid(*arrays, indexing="xy"):
+
+    """
+    meshgrid(*arrays, indexing="xy") -> list[usm_ndarray]
+
+    Creates list of `usm_ndarray` coordinate matrices from vectors.
+
+    Args:
+        arrays: arbitrary number of one-dimensional `USM_ndarray` objects.
+            If vectors are not of the same data type,
+            or are not one-dimensional, raises `ValueError.`
+        indexing: Cartesian (`xy`) or matrix (`ij`) indexing of output.
+            For a set of `n` vectors with lengths X0, X1, X2, ...
+            Cartesian indexing results in arrays of shape
+            (X1, X0, X2, ...)
+            matrix indexing results in arrays of shape
+            (X0, X1, X2, ...)
+            Default: `xy`.
+    """
+    for array in arrays:
+        if not isinstance(array, dpt.usm_ndarray):
+            raise TypeError(
+                f"Expected instance of dpt.usm_ndarray, got {type(array)}."
+            )
+        if array.ndim != 1:
+            raise ValueError("All arrays must be one-dimensional.")
+    if len(set([array.dtype for array in arrays])) > 1:
+        raise ValueError("All arrays must be of the same numeric data type.")
+    if indexing not in ["xy", "ij"]:
+        raise ValueError(
+            "Unrecognized indexing keyword value, expecting 'xy' or 'ij.'"
+        )
+    n = len(arrays)
+    sh = (-1,) + (1,) * (n - 1)
+
+    res = []
+    if n > 1 and indexing == "xy":
+        res.append(dpt.reshape(arrays[0], (1, -1) + sh[2:], copy=True))
+        res.append(dpt.reshape(arrays[1], sh, copy=True))
+        arrays, sh = arrays[2:], sh[-2:] + sh[:-2]
+
+    for array in arrays:
+        res.append(dpt.reshape(array, sh, copy=True))
+        sh = sh[-1:] + sh[:-1]
+
+    output = dpt.broadcast_arrays(*res)
+
+    return output
