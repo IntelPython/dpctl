@@ -44,7 +44,7 @@ jobs:
         run: conda install conda-build
       - name: Build conda package
         run: |
-          CHANNELS="-c defaults -c intel --override-channels"
+          CHANNELS="-c intel -c main --override-channels"
           VERSIONS="--python ${{ matrix.python }}"
           TEST="--no-test"
           conda build \
@@ -89,7 +89,7 @@ jobs:
       - name: Install conda-build
         run: conda install conda-build
       - name: Build conda package
-        run: conda build --no-test --python ${{ matrix.python }} -c defaults -c intel --override-channels conda-recipe
+        run: conda build --no-test --python ${{ matrix.python }} -c intel -c main --override-channels conda-recipe
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
@@ -107,7 +107,7 @@ jobs:
         runner: [ubuntu-latest]
     continue-on-error: ${{ matrix.experimental }}
     env:
-      CHANNELS: -c defaults -c intel --override-channels
+      CHANNELS: -c intel -c main --override-channels
 
     steps:
       - name: Download artifact
@@ -154,7 +154,7 @@ jobs:
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
           conda create -n test_dpctl $PACKAGE_NAME=${PACKAGE_VERSION} pytest python=${{ matrix.python }} $CHANNELS
           # Test installed packages
-          conda list
+          conda list -n test_dpctl
       - name: Smoke test
         run: |
           . $CONDA/etc/profile.d/conda.sh
@@ -183,7 +183,7 @@ jobs:
         runner: [windows-latest]
     continue-on-error: ${{ matrix.experimental }}
     env:
-      CHANNELS: -c defaults -c intel --override-channels
+      CHANNELS: -c intel -c main --override-channels
 
     steps:
       - name: Download artifact
@@ -347,7 +347,7 @@ jobs:
         runner: [ubuntu-latest]
     continue-on-error: ${{ matrix.experimental }}
     env:
-      CHANNELS: -c defaults -c intel --override-channels
+      CHANNELS: -c intel -c main --override-channels
 
     steps:
       - name: Install conda-build
@@ -405,7 +405,7 @@ jobs:
         shell: bash -l {0}
         run: |
           source $CONDA/etc/profile.d/conda.sh
-          CHANNELS="-c $GITHUB_WORKSPACE/channel -c dppy/label/dev -c intel -c defaults --override-channels"
+          CHANNELS="-c $GITHUB_WORKSPACE/channel -c dppy/label/dev -c intel -c main --override-channels"
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
           conda install -n examples -y ${CHANNELS} dpctl=${PACKAGE_VERSION} dpnp">=0.10.1" || exit 1
       - name: Build and run examples with native extensions
@@ -489,7 +489,7 @@ jobs:
         runner: [ubuntu-latest]
     continue-on-error: ${{ matrix.experimental }}
     env:
-      CHANNELS: -c intel -c defaults --override-channels
+      CHANNELS: -c intel -c main --override-channels
     steps:
       - name: Cache array API tests
         id: cache-array-api-tests
