@@ -211,7 +211,9 @@ jobs:
         shell: cmd /C CALL {0}
         run: |
           @ECHO ON
-          copy /Y ${{ env.workdir }}\ver.json .
+          if not exist ver.json (
+              copy /Y ${{ env.workdir }}\ver.json .
+          )
           set "SCRIPT=%VER_SCRIPT1% %VER_SCRIPT2%"
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
              SET PACKAGE_VERSION=%%F
