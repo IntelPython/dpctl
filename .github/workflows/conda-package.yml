@@ -183,6 +183,7 @@ jobs:
         runner: [windows-latest]
     continue-on-error: ${{ matrix.experimental }}
     env:
+      workdir: '${{ github.workspace }}'
       CHANNELS: -c intel -c main --override-channels
 
     steps:
@@ -194,32 +195,28 @@ jobs:
         with:
           auto-activate-base: true
           activate-environment: ""
-      - name: Checkout repo
-        # We do not need the checkout, but it sets up GITHUB_WORKSPACE env. variable
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - name: Install conda-build
         # Needed to be able to run conda index
         run: conda install conda-build
       - name: Create conda channel
         run: |
-          mkdir ${{ env.GITHUB_WORKSPACE }}\channel\win-64
-          move ${{ env.PACKAGE_NAME }}-*.tar.bz2 ${{ env.GITHUB_WORKSPACE }}\channel\win-64
-          conda index ${{ env.GITHUB_WORKSPACE }}/channel
+          echo ${{ env.workdir }}
+          mkdir ${{ env.workdir }}\channel\win-64
+          move ${{ env.PACKAGE_NAME }}-*.tar.bz2 ${{ env.workdir }}\channel\win-64
+          conda index ${{ env.workdir }}/channel
           # Test channel
-          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.GITHUB_WORKSPACE }}/channel --override-channels --info --json > ${{ env.GITHUB_WORKSPACE }}\ver.json
-          more ${{ env.GITHUB_WORKSPACE }}\ver.json
+          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.workdir }}/channel --override-channels --info --json > ${{ env.workdir }}\ver.json
+          more ${{ env.workdir }}\ver.json
       - name: Collect dependencies
         shell: cmd /C CALL {0}
         run: |
           @ECHO ON
-          copy /Y ${{ env.GITHUB_WORKSPACE }}\ver.json .
+          copy /Y ${{ env.workdir }}\ver.json .
           set "SCRIPT=%VER_SCRIPT1% %VER_SCRIPT2%"
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
              SET PACKAGE_VERSION=%%F
           )
-          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.GITHUB_WORKSPACE }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
+          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
           more lockfile
       - name: Cache conda packages
         uses: actions/cache@v3
@@ -238,12 +235,12 @@ jobs:
         shell: cmd /C CALL {0}
         run: |
           @ECHO ON
-          copy /Y ${{ env.GITHUB_WORKSPACE }}\ver.json .
+          copy /Y ${{ env.workdir }}\ver.json .
           set "SCRIPT=%VER_SCRIPT1% %VER_SCRIPT2%"
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
              SET PACKAGE_VERSION=%%F
           )
-          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% pytest python=${{ matrix.python }} -c ${{ env.GITHUB_WORKSPACE }}/channel ${{ env.CHANNELS }}
+          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% pytest python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
           REM Test installed packages
           conda list
       - name: Add library
