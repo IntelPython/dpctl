@@ -86,11 +86,9 @@ def reshape(X, newshape, order="C", copy=None):
         raise TypeError
     if not isinstance(newshape, (list, tuple)):
         newshape = (newshape,)
-    if order in "c":
-        order = "C"
-    elif order in "f":
-        order = "F"
-    elif order not in ["C", "F"]:
+    if order in "cfCF":
+        order = order.upper()
+    else:
         raise ValueError(
             f"Keyword 'order' not recognized. Expecting 'C' or 'F', got {order}"
         )
