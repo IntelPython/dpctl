@@ -51,7 +51,7 @@
  * It is declared inline to allow multiple definitions in
  * different translation units
  */
-inline void import_dpctl(void)
+static inline void import_dpctl(void)
 {
     import_dpctl___sycl_device();
     import_dpctl___sycl_context();

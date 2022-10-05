@@ -1036,10 +1036,10 @@ std::string get_default_device_bool_type(sycl::device)
 
 PYBIND11_MODULE(_tensor_impl, m)
 {
+    import_dpctl();
 
     init_dispatch_tables();
     init_dispatch_vectors();
-    import_dpctl();
 
     m.def(
         "_contract_iter", &contract_iter<py::ssize_t, py::value_error>,
