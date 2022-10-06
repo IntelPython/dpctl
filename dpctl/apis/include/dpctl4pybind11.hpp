@@ -39,6 +39,21 @@ namespace dpctl
 namespace detail
 {
 
+// Lookup a type according to its size, and return a value corresponding to the
+// NumPy typenum.
+template <typename Concrete> constexpr int platform_typeid_lookup()
+{
+    return -1;
+}
+
+template <typename Concrete, typename T, typename... Ts, typename... Ints>
+constexpr int platform_typeid_lookup(int I, Ints... Is)
+{
+    return sizeof(Concrete) == sizeof(T)
+               ? I
+               : platform_typeid_lookup<Concrete, Ts...>(Is...);
+}
+
 struct dpctl_capi
 {
 
@@ -89,6 +104,16 @@ struct dpctl_capi
     int (*UsmNDArray_GetFlags_)(PyUSMArrayObject *);
     DPCTLSyclQueueRef (*UsmNDArray_GetQueueRef_)(PyUSMArrayObject *);
     py::ssize_t (*UsmNDArray_GetOffset_)(PyUSMArrayObject *);
+
+    int USM_ARRAY_C_CONTIGUOUS_;
+    int USM_ARRAY_F_CONTIGUOUS_;
+    int USM_ARRAY_WRITEABLE_;
+    int UAR_BOOL_, UAR_BYTE_, UAR_UBYTE_, UAR_SHORT_, UAR_USHORT_, UAR_INT_,
+        UAR_UINT_, UAR_LONG_, UAR_ULONG_, UAR_LONGLONG_, UAR_ULONGLONG_,
+        UAR_FLOAT_, UAR_DOUBLE_, UAR_CFLOAT_, UAR_CDOUBLE_, UAR_TYPE_SENTINEL_,
+        UAR_HALF_;
+    int UAR_INT8_, UAR_UINT8_, UAR_INT16_, UAR_UINT16_, UAR_INT32_, UAR_UINT32_,
+        UAR_INT64_, UAR_UINT64_;
 
     bool PySyclDevice_Check_(PyObject *obj) const
     {
@@ -204,6 +229,44 @@ private:
         this->UsmNDArray_GetFlags_ = UsmNDArray_GetFlags;
         this->UsmNDArray_GetQueueRef_ = UsmNDArray_GetQueueRef;
         this->UsmNDArray_GetOffset_ = UsmNDArray_GetOffset;
+
+        this->USM_ARRAY_C_CONTIGUOUS_ = USM_ARRAY_C_CONTIGUOUS;
+        this->USM_ARRAY_F_CONTIGUOUS_ = USM_ARRAY_F_CONTIGUOUS;
+        this->USM_ARRAY_WRITEABLE_ = USM_ARRAY_WRITEABLE;
+        this->UAR_BOOL_ = UAR_BOOL;
+        this->UAR_SHORT_ = UAR_SHORT;
+        this->UAR_USHORT_ = UAR_USHORT;
+        this->UAR_INT_ = UAR_INT;
+        this->UAR_UINT_ = UAR_UINT;
+        this->UAR_LONG_ = UAR_LONG;
+        this->UAR_ULONG_ = UAR_ULONG;
+        this->UAR_LONGLONG_ = UAR_LONGLONG;
+        this->UAR_ULONGLONG_ = UAR_ULONGLONG;
+        this->UAR_FLOAT_ = UAR_FLOAT;
+        this->UAR_DOUBLE_ = UAR_DOUBLE;
+        this->UAR_CFLOAT_ = UAR_CFLOAT;
+        this->UAR_CDOUBLE_ = UAR_CDOUBLE;
+        this->UAR_TYPE_SENTINEL_ = UAR_TYPE_SENTINEL;
+        this->UAR_HALF_ = UAR_HALF;
+
+        this->UAR_INT8_ = UAR_BYTE;
+        this->UAR_UINT8_ = UAR_UBYTE;
+        this->UAR_INT16_ = UAR_SHORT;
+        this->UAR_UINT16_ = UAR_USHORT;
+        this->UAR_INT32_ =
+            platform_typeid_lookup<std::int32_t, long, int, short>(
+                UAR_LONG, UAR_INT, UAR_SHORT);
+        this->UAR_UINT32_ =
+            platform_typeid_lookup<std::uint32_t, unsigned long, unsigned int,
+                                   unsigned short>(UAR_ULONG, UAR_UINT,
+                                                   UAR_USHORT);
+        this->UAR_INT64_ =
+            platform_typeid_lookup<std::int64_t, long, long long, int>(
+                UAR_LONG, UAR_LONGLONG, UAR_INT);
+        this->UAR_UINT64_ =
+            platform_typeid_lookup<std::uint64_t, unsigned long,
+                                   unsigned long long, unsigned int>(
+                UAR_ULONG, UAR_ULONGLONG, UAR_UINT);
 
         sycl::queue q_{};
         PySyclQueueObject *py_q_tmp =
@@ -709,13 +772,22 @@ public:
     bool is_c_contiguous() const
     {
         int flags = this->get_flags();
-        return static_cast<bool>(flags & USM_ARRAY_C_CONTIGUOUS);
+        auto api = ::dpctl::detail::dpctl_capi::get();
+        return static_cast<bool>(flags & api->USM_ARRAY_C_CONTIGUOUS_);
     }
 
     bool is_f_contiguous() const
     {
         int flags = this->get_flags();
-        return static_cast<bool>(flags & USM_ARRAY_F_CONTIGUOUS);
+        auto api = ::dpctl::detail::dpctl_capi::get();
+        return static_cast<bool>(flags & api->USM_ARRAY_F_CONTIGUOUS_);
+    }
+
+    bool is_writable() const
+    {
+        int flags = this->get_flags();
+        auto api = ::dpctl::detail::dpctl_capi::get();
+        return static_cast<bool>(flags & api->USM_ARRAY_WRITEABLE_);
     }
 
 private:

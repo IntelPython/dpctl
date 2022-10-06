@@ -172,7 +172,7 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
 
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
     int src_type_id = array_types.typenum_to_lookup_id(src_typenum);
     int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
 
