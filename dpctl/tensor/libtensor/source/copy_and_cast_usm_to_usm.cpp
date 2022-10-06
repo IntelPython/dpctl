@@ -40,7 +40,6 @@
 #include "utils/type_utils.hpp"
 
 #include "simplify_iteration_space.hpp"
-#include <iostream>
 
 namespace dpctl
 {
