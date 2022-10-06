@@ -57,15 +57,6 @@ using dpctl::utils::keep_args_alive;
 using dpctl::tensor::py_internal::copy_usm_ndarray_into_usm_ndarray;
 using dpctl::tensor::py_internal::simplify_iteration_space;
 
-std::pair<sycl::event, sycl::event> py_copy_usm_ndarray_into_usm_ndarray(
-    dpctl::tensor::usm_ndarray src,
-    dpctl::tensor::usm_ndarray dst,
-    sycl::queue exec_q,
-    const std::vector<sycl::event> &depends = {})
-{
-    return copy_usm_ndarray_into_usm_ndarray(src, dst, exec_q, depends);
-}
-
 /* =========================== Copy for reshape ============================= */
 
 using dpctl::tensor::kernels::copy_and_cast::copy_for_reshape_fn_ptr_t;
@@ -1047,7 +1038,7 @@ PYBIND11_MODULE(_tensor_impl, m)
         "iterator, possibly in a different order.");
 
     m.def("_copy_usm_ndarray_into_usm_ndarray",
-          &py_copy_usm_ndarray_into_usm_ndarray,
+          &copy_usm_ndarray_into_usm_ndarray,
           "Copies from usm_ndarray `src` into usm_ndarray `dst` of the same "
           "shape. "
           "Returns a tuple of events: (host_task_event, compute_task_event)",
