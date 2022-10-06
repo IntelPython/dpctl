@@ -165,58 +165,58 @@ struct usm_ndarray_types
     int typenum_to_lookup_id(int typenum)
     {
         using typenum_t = dpctl::tensor::detail::typenum_t;
-        auto api = ::dpctl::detail::dpctl_capi::get();
+        auto &api = ::dpctl::detail::dpctl_capi::get();
 
-        if (typenum == api->UAR_DOUBLE_) {
+        if (typenum == api.UAR_DOUBLE_) {
             return static_cast<int>(typenum_t::DOUBLE);
         }
-        else if (typenum == api->UAR_INT64_) {
+        else if (typenum == api.UAR_INT64_) {
             return static_cast<int>(typenum_t::INT64);
         }
-        else if (typenum == api->UAR_INT32_) {
+        else if (typenum == api.UAR_INT32_) {
             return static_cast<int>(typenum_t::INT32);
         }
-        else if (typenum == api->UAR_BOOL_) {
+        else if (typenum == api.UAR_BOOL_) {
             return static_cast<int>(typenum_t::BOOL);
         }
-        else if (typenum == api->UAR_CDOUBLE_) {
+        else if (typenum == api.UAR_CDOUBLE_) {
             return static_cast<int>(typenum_t::CDOUBLE);
         }
-        else if (typenum == api->UAR_FLOAT_) {
+        else if (typenum == api.UAR_FLOAT_) {
             return static_cast<int>(typenum_t::FLOAT);
         }
-        else if (typenum == api->UAR_INT16_) {
+        else if (typenum == api.UAR_INT16_) {
             return static_cast<int>(typenum_t::INT16);
         }
-        else if (typenum == api->UAR_INT8_) {
+        else if (typenum == api.UAR_INT8_) {
             return static_cast<int>(typenum_t::INT8);
         }
-        else if (typenum == api->UAR_UINT64_) {
+        else if (typenum == api.UAR_UINT64_) {
             return static_cast<int>(typenum_t::UINT64);
         }
-        else if (typenum == api->UAR_UINT32_) {
+        else if (typenum == api.UAR_UINT32_) {
             return static_cast<int>(typenum_t::UINT32);
         }
-        else if (typenum == api->UAR_UINT16_) {
+        else if (typenum == api.UAR_UINT16_) {
             return static_cast<int>(typenum_t::UINT16);
         }
-        else if (typenum == api->UAR_UINT8_) {
+        else if (typenum == api.UAR_UINT8_) {
             return static_cast<int>(typenum_t::UINT8);
         }
-        else if (typenum == api->UAR_CFLOAT_) {
+        else if (typenum == api.UAR_CFLOAT_) {
             return static_cast<int>(typenum_t::CFLOAT);
         }
-        else if (typenum == api->UAR_HALF_) {
+        else if (typenum == api.UAR_HALF_) {
             return static_cast<int>(typenum_t::HALF);
         }
-        else if (typenum == api->UAR_INT_ || typenum == api->UAR_UINT_) {
+        else if (typenum == api.UAR_INT_ || typenum == api.UAR_UINT_) {
             switch (sizeof(int)) {
             case sizeof(std::int32_t):
-                return ((typenum == api->UAR_INT_)
+                return ((typenum == api.UAR_INT_)
                             ? static_cast<int>(typenum_t::INT32)
                             : static_cast<int>(typenum_t::UINT32));
             case sizeof(std::int64_t):
-                return ((typenum == api->UAR_INT_)
+                return ((typenum == api.UAR_INT_)
                             ? static_cast<int>(typenum_t::INT64)
                             : static_cast<int>(typenum_t::UINT64));
             default:

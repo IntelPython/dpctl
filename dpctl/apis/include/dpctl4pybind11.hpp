@@ -132,13 +132,11 @@ struct dpctl_capi
         return PyObject_TypeCheck(obj, PySyclQueueType_) != 0;
     }
 
-    dpctl_capi(dpctl_capi const &) = delete;
-    void operator=(dpctl_capi const &) = delete;
     ~dpctl_capi(){};
 
-    static auto get()
+    static auto &get()
     {
-        static dpctl_capi *api = new dpctl_capi();
+        static dpctl_capi api = lookup();
         return api;
     }
 
@@ -300,8 +298,15 @@ private:
             new py::object{py_default_usm_ndarray}, Deleter{});
     }
 
-    friend std::unique_ptr<dpctl::detail::dpctl_capi>
-    std::make_unique<dpctl::detail::dpctl_capi>();
+    dpctl_capi(dpctl_capi const &) = default;
+    dpctl_capi &operator=(dpctl_capi const &) = default;
+
+    static dpctl_capi lookup()
+    {
+        static dpctl_capi api;
+        return api;
+    }
+
 }; // struct dpctl_capi
 } // namespace detail
 } // namespace dpctl
@@ -360,9 +365,9 @@ public:
     bool load(handle src, bool)
     {
         PyObject *source = src.ptr();
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        if (api->PySyclQueue_Check_(source)) {
-            DPCTLSyclQueueRef QRef = api->SyclQueue_GetQueueRef_(
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        if (api.PySyclQueue_Check_(source)) {
+            DPCTLSyclQueueRef QRef = api.SyclQueue_GetQueueRef_(
                 reinterpret_cast<PySyclQueueObject *>(source));
             value = std::make_unique<sycl::queue>(
                 *(reinterpret_cast<sycl::queue *>(QRef)));
@@ -376,9 +381,9 @@ public:
 
     static handle cast(sycl::queue src, return_value_policy, handle)
     {
-        auto api = ::dpctl::detail::dpctl_capi::get();
+        auto &api = ::dpctl::detail::dpctl_capi::get();
         auto tmp =
-            api->SyclQueue_Make_(reinterpret_cast<DPCTLSyclQueueRef>(&src));
+            api.SyclQueue_Make_(reinterpret_cast<DPCTLSyclQueueRef>(&src));
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 
@@ -395,9 +400,9 @@ public:
     bool load(handle src, bool)
     {
         PyObject *source = src.ptr();
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        if (api->PySyclDevice_Check_(source)) {
-            DPCTLSyclDeviceRef DRef = api->SyclDevice_GetDeviceRef_(
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        if (api.PySyclDevice_Check_(source)) {
+            DPCTLSyclDeviceRef DRef = api.SyclDevice_GetDeviceRef_(
                 reinterpret_cast<PySyclDeviceObject *>(source));
             value = std::make_unique<sycl::device>(
                 *(reinterpret_cast<sycl::device *>(DRef)));
@@ -411,9 +416,9 @@ public:
 
     static handle cast(sycl::device src, return_value_policy, handle)
     {
-        auto api = ::dpctl::detail::dpctl_capi::get();
+        auto &api = ::dpctl::detail::dpctl_capi::get();
         auto tmp =
-            api->SyclDevice_Make_(reinterpret_cast<DPCTLSyclDeviceRef>(&src));
+            api.SyclDevice_Make_(reinterpret_cast<DPCTLSyclDeviceRef>(&src));
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 
@@ -430,9 +435,9 @@ public:
     bool load(handle src, bool)
     {
         PyObject *source = src.ptr();
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        if (api->PySyclContext_Check_(source)) {
-            DPCTLSyclContextRef CRef = api->SyclContext_GetContextRef_(
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        if (api.PySyclContext_Check_(source)) {
+            DPCTLSyclContextRef CRef = api.SyclContext_GetContextRef_(
                 reinterpret_cast<PySyclContextObject *>(source));
             value = std::make_unique<sycl::context>(
                 *(reinterpret_cast<sycl::context *>(CRef)));
@@ -446,9 +451,9 @@ public:
 
     static handle cast(sycl::context src, return_value_policy, handle)
     {
-        auto api = ::dpctl::detail::dpctl_capi::get();
+        auto &api = ::dpctl::detail::dpctl_capi::get();
         auto tmp =
-            api->SyclContext_Make_(reinterpret_cast<DPCTLSyclContextRef>(&src));
+            api.SyclContext_Make_(reinterpret_cast<DPCTLSyclContextRef>(&src));
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 
@@ -465,9 +470,9 @@ public:
     bool load(handle src, bool)
     {
         PyObject *source = src.ptr();
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        if (api->PySyclEvent_Check_(source)) {
-            DPCTLSyclEventRef ERef = api->SyclEvent_GetEventRef_(
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        if (api.PySyclEvent_Check_(source)) {
+            DPCTLSyclEventRef ERef = api.SyclEvent_GetEventRef_(
                 reinterpret_cast<PySyclEventObject *>(source));
             value = std::make_unique<sycl::event>(
                 *(reinterpret_cast<sycl::event *>(ERef)));
@@ -481,9 +486,9 @@ public:
 
     static handle cast(sycl::event src, return_value_policy, handle)
     {
-        auto api = ::dpctl::detail::dpctl_capi::get();
+        auto &api = ::dpctl::detail::dpctl_capi::get();
         auto tmp =
-            api->SyclEvent_Make_(reinterpret_cast<DPCTLSyclEventRef>(&src));
+            api.SyclEvent_Make_(reinterpret_cast<DPCTLSyclEventRef>(&src));
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 
@@ -510,14 +515,14 @@ public:
         py::object,
         [](PyObject *o) -> bool {
             return PyObject_TypeCheck(
-                       o, ::dpctl::detail::dpctl_capi::get()->Py_MemoryType_) !=
+                       o, ::dpctl::detail::dpctl_capi::get().Py_MemoryType_) !=
                    0;
         },
         [](PyObject *o) -> PyObject * { return as_usm_memory(o); })
 
     usm_memory()
         : py::object(
-              ::dpctl::detail::dpctl_capi::get()->default_usm_memory_pyobj(),
+              ::dpctl::detail::dpctl_capi::get().default_usm_memory_pyobj(),
               borrowed_t{})
     {
         if (!m_ptr)
@@ -527,8 +532,8 @@ public:
     sycl::queue get_queue() const
     {
         Py_MemoryObject *mem_obj = reinterpret_cast<Py_MemoryObject *>(m_ptr);
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        DPCTLSyclQueueRef QRef = api->Memory_GetQueueRef_(mem_obj);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        DPCTLSyclQueueRef QRef = api.Memory_GetQueueRef_(mem_obj);
         sycl::queue *obj_q = reinterpret_cast<sycl::queue *>(QRef);
         return *obj_q;
     }
@@ -536,16 +541,16 @@ public:
     char *get_pointer() const
     {
         Py_MemoryObject *mem_obj = reinterpret_cast<Py_MemoryObject *>(m_ptr);
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        DPCTLSyclUSMRef MRef = api->Memory_GetUsmPointer_(mem_obj);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        DPCTLSyclUSMRef MRef = api.Memory_GetUsmPointer_(mem_obj);
         return reinterpret_cast<char *>(MRef);
     }
 
     size_t get_nbytes() const
     {
-        auto api = ::dpctl::detail::dpctl_capi::get();
+        auto &api = ::dpctl::detail::dpctl_capi::get();
         Py_MemoryObject *mem_obj = reinterpret_cast<Py_MemoryObject *>(m_ptr);
-        return api->Memory_GetNumBytes_(mem_obj);
+        return api.Memory_GetNumBytes_(mem_obj);
     }
 
 protected:
@@ -558,7 +563,7 @@ protected:
         }
 
         auto convertor =
-            ::dpctl::detail::dpctl_capi::get()->as_usm_memory_pyobj();
+            ::dpctl::detail::dpctl_capi::get().as_usm_memory_pyobj();
 
         py::object res;
         try {
@@ -630,12 +635,12 @@ class usm_ndarray : public py::object
 public:
     PYBIND11_OBJECT(usm_ndarray, py::object, [](PyObject *o) -> bool {
         return PyObject_TypeCheck(
-                   o, ::dpctl::detail::dpctl_capi::get()->PyUSMArrayType_) != 0;
+                   o, ::dpctl::detail::dpctl_capi::get().PyUSMArrayType_) != 0;
     })
 
     usm_ndarray()
         : py::object(
-              ::dpctl::detail::dpctl_capi::get()->default_usm_ndarray_pyobj(),
+              ::dpctl::detail::dpctl_capi::get().default_usm_ndarray_pyobj(),
               borrowed_t{})
     {
         if (!m_ptr)
@@ -646,8 +651,8 @@ public:
     {
         PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        return api->UsmNDArray_GetData_(raw_ar);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        return api.UsmNDArray_GetData_(raw_ar);
     }
 
     template <typename T> T *get_data() const
@@ -659,16 +664,16 @@ public:
     {
         PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        return api->UsmNDArray_GetNDim_(raw_ar);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        return api.UsmNDArray_GetNDim_(raw_ar);
     }
 
     const py::ssize_t *get_shape_raw() const
     {
         PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        return api->UsmNDArray_GetShape_(raw_ar);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        return api.UsmNDArray_GetShape_(raw_ar);
     }
 
     py::ssize_t get_shape(int i) const
@@ -681,17 +686,17 @@ public:
     {
         PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        return api->UsmNDArray_GetStrides_(raw_ar);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        return api.UsmNDArray_GetStrides_(raw_ar);
     }
 
     py::ssize_t get_size() const
     {
         PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        int ndim = api->UsmNDArray_GetNDim_(raw_ar);
-        const py::ssize_t *shape = api->UsmNDArray_GetShape_(raw_ar);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        int ndim = api.UsmNDArray_GetNDim_(raw_ar);
+        const py::ssize_t *shape = api.UsmNDArray_GetShape_(raw_ar);
 
         py::ssize_t nelems = 1;
         for (int i = 0; i < ndim; ++i) {
@@ -706,10 +711,10 @@ public:
     {
         PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        int nd = api->UsmNDArray_GetNDim_(raw_ar);
-        const py::ssize_t *shape = api->UsmNDArray_GetShape_(raw_ar);
-        const py::ssize_t *strides = api->UsmNDArray_GetStrides_(raw_ar);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        int nd = api.UsmNDArray_GetNDim_(raw_ar);
+        const py::ssize_t *shape = api.UsmNDArray_GetShape_(raw_ar);
+        const py::ssize_t *strides = api.UsmNDArray_GetStrides_(raw_ar);
 
         py::ssize_t offset_min = 0;
         py::ssize_t offset_max = 0;
@@ -721,7 +726,7 @@ public:
             }
         }
         else {
-            offset_min = api->UsmNDArray_GetOffset_(raw_ar);
+            offset_min = api.UsmNDArray_GetOffset_(raw_ar);
             offset_max = offset_min;
             for (int i = 0; i < nd; ++i) {
                 py::ssize_t delta = strides[i] * (shape[i] - 1);
@@ -740,8 +745,8 @@ public:
     {
         PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        DPCTLSyclQueueRef QRef = api->UsmNDArray_GetQueueRef_(raw_ar);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        DPCTLSyclQueueRef QRef = api.UsmNDArray_GetQueueRef_(raw_ar);
         return *(reinterpret_cast<sycl::queue *>(QRef));
     }
 
@@ -749,45 +754,45 @@ public:
     {
         PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        return api->UsmNDArray_GetTypenum_(raw_ar);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        return api.UsmNDArray_GetTypenum_(raw_ar);
     }
 
     int get_flags() const
     {
         PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        return api->UsmNDArray_GetFlags_(raw_ar);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        return api.UsmNDArray_GetFlags_(raw_ar);
     }
 
     int get_elemsize() const
     {
         PyUSMArrayObject *raw_ar = this->usm_array_ptr();
 
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        return api->UsmNDArray_GetElementSize_(raw_ar);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        return api.UsmNDArray_GetElementSize_(raw_ar);
     }
 
     bool is_c_contiguous() const
     {
         int flags = this->get_flags();
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        return static_cast<bool>(flags & api->USM_ARRAY_C_CONTIGUOUS_);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        return static_cast<bool>(flags & api.USM_ARRAY_C_CONTIGUOUS_);
     }
 
     bool is_f_contiguous() const
     {
         int flags = this->get_flags();
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        return static_cast<bool>(flags & api->USM_ARRAY_F_CONTIGUOUS_);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        return static_cast<bool>(flags & api.USM_ARRAY_F_CONTIGUOUS_);
     }
 
     bool is_writable() const
     {
         int flags = this->get_flags();
-        auto api = ::dpctl::detail::dpctl_capi::get();
-        return static_cast<bool>(flags & api->USM_ARRAY_WRITEABLE_);
+        auto &api = ::dpctl::detail::dpctl_capi::get();
+        return static_cast<bool>(flags & api.USM_ARRAY_WRITEABLE_);
     }
 
 private:
