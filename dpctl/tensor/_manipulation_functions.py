@@ -427,7 +427,7 @@ def can_cast(from_, to, casting="safe"):
     can_cast(from: usm_ndarray or dtype, to: dtype) -> bool
 
     Determines if one data type can be cast to another data type according \
-        Type Promotion Rules rules.
+        to Type Promotion Rules rules.
     """
     if isinstance(to, dpt.usm_ndarray):
         raise TypeError("Expected dtype type.")
