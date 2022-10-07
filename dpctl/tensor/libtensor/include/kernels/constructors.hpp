@@ -52,7 +52,7 @@ template <typename T> T unbox_py_scalar(py::object o)
     return py::cast<T>(o);
 }
 
-template <> sycl::half unbox_py_scalar<sycl::half>(py::object o)
+template <> inline sycl::half unbox_py_scalar<sycl::half>(py::object o)
 {
     float tmp = py::cast<float>(o);
     return static_cast<sycl::half>(tmp);
