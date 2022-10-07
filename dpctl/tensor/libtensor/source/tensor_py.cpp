@@ -42,6 +42,7 @@
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_for_reshape.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
+#include "full_ctor.hpp"
 #include "linear_sequences.hpp"
 #include "simplify_iteration_space.hpp"
 
@@ -74,54 +75,7 @@ using dpctl::tensor::py_internal::usm_ndarray_linear_sequence_step;
 
 /* ================ Full ================== */
 
-using dpctl::tensor::kernels::constructors::full_contig_fn_ptr_t;
-
-static full_contig_fn_ptr_t full_contig_dispatch_vector[_ns::num_types];
-
-std::pair<sycl::event, sycl::event>
-usm_ndarray_full(py::object py_value,
-                 dpctl::tensor::usm_ndarray dst,
-                 sycl::queue exec_q,
-                 const std::vector<sycl::event> &depends = {})
-{
-    // start, end should be coercible into data type of dst
-
-    py::ssize_t dst_nelems = dst.get_size();
-
-    if (dst_nelems == 0) {
-        // nothing to do
-        return std::make_pair(sycl::event(), sycl::event());
-    }
-
-    sycl::queue dst_q = dst.get_queue();
-    if (!dpctl::utils::queues_are_compatible(exec_q, {dst_q})) {
-        throw py::value_error(
-            "Execution queue is not compatible with the allocation queue");
-    }
-
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
-    int dst_typenum = dst.get_typenum();
-    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
-
-    char *dst_data = dst.get_data();
-    sycl::event full_event;
-
-    if (dst_nelems == 1 || dst.is_c_contiguous() || dst.is_f_contiguous()) {
-        auto fn = full_contig_dispatch_vector[dst_typeid];
-
-        sycl::event full_contig_event =
-            fn(exec_q, static_cast<size_t>(dst_nelems), py_value, dst_data,
-               depends);
-
-        return std::make_pair(
-            keep_args_alive(exec_q, {dst}, {full_contig_event}),
-            full_contig_event);
-    }
-    else {
-        throw std::runtime_error(
-            "Only population of contiguous usm_ndarray objects is supported.");
-    }
-}
+using dpctl::tensor::py_internal::usm_ndarray_full;
 
 /* ================ Eye ================== */
 
@@ -435,16 +389,12 @@ void init_dispatch_vectors(void)
 {
     dpctl::tensor::py_internal::init_copy_for_reshape_dispatch_vectors();
     dpctl::tensor::py_internal::init_linear_sequences_dispatch_vectors();
+    dpctl::tensor::py_internal::init_full_ctor_dispatch_vectors();
 
     using namespace dpctl::tensor::detail;
     using dpctl::tensor::kernels::constructors::EyeFactory;
-    using dpctl::tensor::kernels::constructors::FullContigFactory;
     using dpctl::tensor::kernels::constructors::TrilGenericFactory;
     using dpctl::tensor::kernels::constructors::TriuGenericFactory;
-
-    DispatchVectorBuilder<full_contig_fn_ptr_t, FullContigFactory, num_types>
-        dvb3;
-    dvb3.populate_dispatch_vector(full_contig_dispatch_vector);
 
     DispatchVectorBuilder<eye_fn_ptr_t, EyeFactory, num_types> dvb4;
     dvb4.populate_dispatch_vector(eye_dispatch_vector);
