@@ -25,6 +25,7 @@ pybind11_add_module(${python_module_name} MODULE
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/eye_ctor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/triul_ctor.cpp
 )
 target_link_options(${python_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
 target_include_directories(${python_module_name}
