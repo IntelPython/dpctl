@@ -26,7 +26,6 @@
 #include <algorithm>
 #include <complex>
 #include <cstdint>
-#include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <thread>
@@ -37,6 +36,7 @@
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_for_reshape.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
+#include "device_support_queries.hpp"
 #include "eye_ctor.hpp"
 #include "full_ctor.hpp"
 #include "linear_sequences.hpp"
@@ -100,36 +100,6 @@ void init_dispatch_vectors(void)
     init_triul_ctor_dispatch_vectors();
 
     return;
-}
-
-std::string get_default_device_fp_type(sycl::device d)
-{
-    if (d.has(sycl::aspect::fp64)) {
-        return "f8";
-    }
-    else {
-        return "f4";
-    }
-}
-
-std::string get_default_device_int_type(sycl::device)
-{
-    return "i8";
-}
-
-std::string get_default_device_complex_type(sycl::device d)
-{
-    if (d.has(sycl::aspect::fp64)) {
-        return "c16";
-    }
-    else {
-        return "c8";
-    }
-}
-
-std::string get_default_device_bool_type(sycl::device)
-{
-    return "b1";
 }
 
 } // namespace
@@ -209,57 +179,43 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("k"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    m.def("default_device_fp_type", [](sycl::queue q) -> std::string {
-        return get_default_device_fp_type(q.get_device());
-    });
-    m.def("default_device_fp_type_device", [](sycl::device dev) -> std::string {
-        return get_default_device_fp_type(dev);
-    });
+    m.def("default_device_fp_type",
+          dpctl::tensor::py_internal::default_device_fp_type,
+          "Gives default floating point type supported by device.",
+          py::arg("dev"));
 
-    m.def("default_device_int_type", [](sycl::queue q) -> std::string {
-        return get_default_device_int_type(q.get_device());
-    });
-    m.def("default_device_int_type_device",
-          [](sycl::device dev) -> std::string {
-              return get_default_device_int_type(dev);
-          });
+    m.def("default_device_int_type",
+          dpctl::tensor::py_internal::default_device_int_type,
+          "Gives default integer type supported by device.", py::arg("dev"));
 
-    m.def("default_device_bool_type", [](sycl::queue q) -> std::string {
-        return get_default_device_bool_type(q.get_device());
-    });
-    m.def("default_device_bool_type_device",
-          [](sycl::device dev) -> std::string {
-              return get_default_device_bool_type(dev);
-          });
+    m.def("default_device_bool_type",
+          dpctl::tensor::py_internal::default_device_bool_type,
+          "Gives default boolean type supported by device.", py::arg("dev"));
 
-    m.def("default_device_complex_type", [](sycl::queue q) -> std::string {
-        return get_default_device_complex_type(q.get_device());
-    });
-    m.def("default_device_complex_type_device",
-          [](sycl::device dev) -> std::string {
-              return get_default_device_complex_type(dev);
-          });
-    m.def(
-        "_tril",
-        [](dpctl::tensor::usm_ndarray src, dpctl::tensor::usm_ndarray dst,
-           py::ssize_t k, sycl::queue exec_q,
-           const std::vector<sycl::event> depends)
-            -> std::pair<sycl::event, sycl::event> {
-            return usm_ndarray_triul(exec_q, src, dst, 'l', k, depends);
-        },
-        "Tril helper function.", py::arg("src"), py::arg("dst"),
-        py::arg("k") = 0, py::arg("sycl_queue"),
-        py::arg("depends") = py::list());
+    m.def("default_device_complex_type",
+          dpctl::tensor::py_internal::default_device_complex_type,
+          "Gives default complex floating point type support by device.",
+          py::arg("dev"));
 
-    m.def(
-        "_triu",
-        [](dpctl::tensor::usm_ndarray src, dpctl::tensor::usm_ndarray dst,
-           py::ssize_t k, sycl::queue exec_q,
-           const std::vector<sycl::event> depends)
-            -> std::pair<sycl::event, sycl::event> {
-            return usm_ndarray_triul(exec_q, src, dst, 'u', k, depends);
-        },
-        "Triu helper function.", py::arg("src"), py::arg("dst"),
-        py::arg("k") = 0, py::arg("sycl_queue"),
-        py::arg("depends") = py::list());
+    auto tril_fn = [](dpctl::tensor::usm_ndarray src,
+                      dpctl::tensor::usm_ndarray dst, py::ssize_t k,
+                      sycl::queue exec_q,
+                      const std::vector<sycl::event> depends)
+        -> std::pair<sycl::event, sycl::event> {
+        return usm_ndarray_triul(exec_q, src, dst, 'l', k, depends);
+    };
+    m.def("_tril", tril_fn, "Tril helper function.", py::arg("src"),
+          py::arg("dst"), py::arg("k") = 0, py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
+
+    auto triu_fn = [](dpctl::tensor::usm_ndarray src,
+                      dpctl::tensor::usm_ndarray dst, py::ssize_t k,
+                      sycl::queue exec_q,
+                      const std::vector<sycl::event> depends)
+        -> std::pair<sycl::event, sycl::event> {
+        return usm_ndarray_triul(exec_q, src, dst, 'u', k, depends);
+    };
+    m.def("_triu", triu_fn, "Triu helper function.", py::arg("src"),
+          py::arg("dst"), py::arg("k") = 0, py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 }
