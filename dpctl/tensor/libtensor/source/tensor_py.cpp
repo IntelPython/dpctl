@@ -42,6 +42,7 @@
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_for_reshape.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
+#include "eye_ctor.hpp"
 #include "full_ctor.hpp"
 #include "linear_sequences.hpp"
 #include "simplify_iteration_space.hpp"
@@ -79,78 +80,7 @@ using dpctl::tensor::py_internal::usm_ndarray_full;
 
 /* ================ Eye ================== */
 
-using dpctl::tensor::kernels::constructors::eye_fn_ptr_t;
-
-static eye_fn_ptr_t eye_dispatch_vector[_ns::num_types];
-
-std::pair<sycl::event, sycl::event>
-eye(py::ssize_t k,
-    dpctl::tensor::usm_ndarray dst,
-    sycl::queue exec_q,
-    const std::vector<sycl::event> &depends = {})
-{
-    // dst must be 2D
-
-    if (dst.get_ndim() != 2) {
-        throw py::value_error(
-            "usm_ndarray_eye: Expecting 2D array to populate");
-    }
-
-    sycl::queue dst_q = dst.get_queue();
-    if (!dpctl::utils::queues_are_compatible(exec_q, {dst_q})) {
-        throw py::value_error("Execution queue is not compatible with the "
-                              "allocation queue");
-    }
-
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
-    int dst_typenum = dst.get_typenum();
-    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
-
-    const py::ssize_t nelem = dst.get_size();
-    const py::ssize_t rows = dst.get_shape(0);
-    const py::ssize_t cols = dst.get_shape(1);
-    if (rows == 0 || cols == 0) {
-        // nothing to do
-        return std::make_pair(sycl::event{}, sycl::event{});
-    }
-
-    bool is_dst_c_contig = dst.is_c_contiguous();
-    bool is_dst_f_contig = dst.is_f_contiguous();
-    if (!is_dst_c_contig && !is_dst_f_contig) {
-        throw py::value_error("USM array is not contiguous");
-    }
-
-    py::ssize_t start;
-    if (is_dst_c_contig) {
-        start = (k < 0) ? -k * cols : k;
-    }
-    else {
-        start = (k < 0) ? -k : k * rows;
-    }
-
-    const py::ssize_t *strides = dst.get_strides_raw();
-    py::ssize_t step;
-    if (strides == nullptr) {
-        step = (is_dst_c_contig) ? cols + 1 : rows + 1;
-    }
-    else {
-        step = strides[0] + strides[1];
-    }
-
-    const py::ssize_t length = std::min({rows, cols, rows + k, cols - k});
-    const py::ssize_t end = start + step * (length - 1);
-
-    char *dst_data = dst.get_data();
-    sycl::event eye_event;
-
-    auto fn = eye_dispatch_vector[dst_typeid];
-
-    eye_event = fn(exec_q, static_cast<size_t>(nelem), start, end, step,
-                   dst_data, depends);
-
-    return std::make_pair(keep_args_alive(exec_q, {dst}, {eye_event}),
-                          eye_event);
-}
+using dpctl::tensor::py_internal::usm_ndarray_eye;
 
 /* =========================== Tril and triu ============================== */
 
@@ -390,14 +320,11 @@ void init_dispatch_vectors(void)
     dpctl::tensor::py_internal::init_copy_for_reshape_dispatch_vectors();
     dpctl::tensor::py_internal::init_linear_sequences_dispatch_vectors();
     dpctl::tensor::py_internal::init_full_ctor_dispatch_vectors();
+    dpctl::tensor::py_internal::init_eye_ctor_dispatch_vectors();
 
     using namespace dpctl::tensor::detail;
-    using dpctl::tensor::kernels::constructors::EyeFactory;
     using dpctl::tensor::kernels::constructors::TrilGenericFactory;
     using dpctl::tensor::kernels::constructors::TriuGenericFactory;
-
-    DispatchVectorBuilder<eye_fn_ptr_t, EyeFactory, num_types> dvb4;
-    dvb4.populate_dispatch_vector(eye_dispatch_vector);
 
     DispatchVectorBuilder<tri_fn_ptr_t, TrilGenericFactory, num_types> dvb5;
     dvb5.populate_dispatch_vector(tril_generic_dispatch_vector);
@@ -505,7 +432,7 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("fill_value"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    m.def("_eye", &eye,
+    m.def("_eye", &usm_ndarray_eye,
           "Fills input 2D contiguous usm_ndarray `dst` with "
           "zeros outside of the diagonal "
           "specified by "
