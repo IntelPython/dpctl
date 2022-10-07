@@ -94,7 +94,7 @@ Array Manipulation
     * - :func:`broadcast_to()`
       - -> usm_ndarray Broadcast an array to a new shape; returns the broadcasted array as a view.
     * - :func:`can_cast()`
-      - -> bool Determines if one data type can be cast to another data type according Type Promotion Rules rules.
+      - -> bool Determines if one data type can be cast to another data type according to Type Promotion Rules rules.
     * - :func:`concat()`
       - -> usm_ndarray Joins a sequence of arrays along an existing axis.
     * - :func:`expand_dims()`
