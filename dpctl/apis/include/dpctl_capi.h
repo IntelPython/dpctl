@@ -48,7 +48,7 @@
  * shared objects defining this symbols, if they call `import_dpctl()`
  * prior to using those symbols.
  */
-void import_dpctl(void)
+static inline void import_dpctl(void)
 {
     import_dpctl___sycl_device();
     import_dpctl___sycl_context();

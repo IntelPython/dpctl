@@ -372,9 +372,10 @@ protected:
 namespace tensor
 {
 
-std::vector<py::ssize_t> c_contiguous_strides(int nd,
-                                              const py::ssize_t *shape,
-                                              py::ssize_t element_size = 1)
+inline std::vector<py::ssize_t>
+c_contiguous_strides(int nd,
+                     const py::ssize_t *shape,
+                     py::ssize_t element_size = 1)
 {
     if (nd > 0) {
         std::vector<py::ssize_t> c_strides(nd, element_size);
@@ -389,9 +390,10 @@ std::vector<py::ssize_t> c_contiguous_strides(int nd,
     }
 }
 
-std::vector<py::ssize_t> f_contiguous_strides(int nd,
-                                              const py::ssize_t *shape,
-                                              py::ssize_t element_size = 1)
+inline std::vector<py::ssize_t>
+f_contiguous_strides(int nd,
+                     const py::ssize_t *shape,
+                     py::ssize_t element_size = 1)
 {
     if (nd > 0) {
         std::vector<py::ssize_t> f_strides(nd, element_size);
@@ -406,14 +408,14 @@ std::vector<py::ssize_t> f_contiguous_strides(int nd,
     }
 }
 
-std::vector<py::ssize_t>
+inline std::vector<py::ssize_t>
 c_contiguous_strides(const std::vector<py::ssize_t> &shape,
                      py::ssize_t element_size = 1)
 {
     return c_contiguous_strides(shape.size(), shape.data(), element_size);
 }
 
-std::vector<py::ssize_t>
+inline std::vector<py::ssize_t>
 f_contiguous_strides(const std::vector<py::ssize_t> &shape,
                      py::ssize_t element_size = 1)
 {
