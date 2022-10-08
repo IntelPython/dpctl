@@ -1449,7 +1449,7 @@ PYBIND11_MODULE(_tensor_impl, m)
     import_dpctl();
 
     m.def(
-        "_contract_iter", &contract_iter,
+        "_contract_iter", &contract_iter<py::ssize_t, py::value_error>,
         "Simplifies iteration of array of given shape & stride. Returns "
         "a triple: shape, stride and offset for the new iterator of possible "
         "smaller dimension, which traverses the same elements as the original "
@@ -1464,7 +1464,7 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("depends") = py::list());
 
     m.def(
-        "_contract_iter2", &contract_iter2,
+        "_contract_iter2", &contract_iter2<py::ssize_t, py::value_error>,
         "Simplifies iteration over elements of pair of arrays of given shape "
         "with strides stride1 and stride2. Returns "
         "a 5-tuple: shape, stride and offset for the new iterator of possible "
