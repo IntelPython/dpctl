@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.0dev0+142.g5d1ecbaac documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.0dev0+150.g03d3553ac documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -32,7 +32,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+142.g5d1ecbaac
+                0.14.0dev0+150.g03d3553ac
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -1292,13 +1292,15 @@
 <span class="sd">            If vectors are not of the same data type,</span>
 <span class="sd">            or are not one-dimensional, raises `ValueError.`</span>
 <span class="sd">        indexing: Cartesian (`xy`) or matrix (`ij`) indexing of output.</span>
-<span class="sd">            For a set of `n` vectors with lengths X0, X1, X2, ...</span>
+<span class="sd">            For a set of `n` vectors with lengths N0, N1, N2, ...</span>
 <span class="sd">            Cartesian indexing results in arrays of shape</span>
-<span class="sd">            (X1, X0, X2, ...)</span>
+<span class="sd">            (N1, N0, N2, ...)</span>
 <span class="sd">            matrix indexing results in arrays of shape</span>
-<span class="sd">            (X0, X1, X2, ...)</span>
+<span class="sd">            (n0, N1, N2, ...)</span>
 <span class="sd">            Default: `xy`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ref_dt</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">ref_unset</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -1306,8 +1308,14 @@
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All arrays must be one-dimensional.&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All arrays must be of the same numeric data type.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ref_unset</span><span class="p">:</span>
+            <span class="n">ref_unset</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">ref_dt</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ref_dt</span> <span class="o">==</span> <span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;All arrays must be of the same numeric data type.&quot;</span>
+                <span class="p">)</span>
     <span class="k">if</span> <span class="n">indexing</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;xy&quot;</span><span class="p">,</span> <span class="s2">&quot;ij&quot;</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;Unrecognized indexing keyword value, expecting &#39;xy&#39; or &#39;ij.&#39;&quot;</span>

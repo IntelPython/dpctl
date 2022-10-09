@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.0dev0+142.g5d1ecbaac documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.0dev0+150.g03d3553ac documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+142.g5d1ecbaac
+                0.14.0dev0+150.g03d3553ac
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -462,11 +462,11 @@ interval. Default: <cite>True</cite>.</p></li>
 If vectors are not of the same data type,
 or are not one-dimensional, raises <cite>ValueError.</cite></p></li>
 <li><p><strong>indexing</strong> – Cartesian (<cite>xy</cite>) or matrix (<cite>ij</cite>) indexing of output.
-For a set of <cite>n</cite> vectors with lengths X0, X1, X2, …
+For a set of <cite>n</cite> vectors with lengths N0, N1, N2, …
 Cartesian indexing results in arrays of shape
-(X1, X0, X2, …)
+(N1, N0, N2, …)
 matrix indexing results in arrays of shape
-(X0, X1, X2, …)
+(n0, N1, N2, …)
 Default: <cite>xy</cite>.</p></li>
 </ul>
 </dd>
