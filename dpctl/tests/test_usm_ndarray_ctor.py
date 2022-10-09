@@ -1451,6 +1451,33 @@ def test_meshgrid():
         dpt.meshgrid(X, dpt.asarray(Y, dtype="b1"))
 
 
+def test_meshgrid2():
+    try:
+        q1 = dpctl.SyclQueue()
+        q2 = dpctl.SyclQueue()
+        q3 = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+    x1 = dpt.arange(0, 2, dtype="int16", sycl_queue=q1)
+    x2 = dpt.arange(3, 6, dtype="int16", sycl_queue=q2)
+    x3 = dpt.arange(6, 10, dtype="int16", sycl_queue=q3)
+    y1, y2, y3 = dpt.meshgrid(x1, x2, x3, indexing="xy")
+    z1, z2, z3 = dpt.meshgrid(x1, x2, x3, indexing="ij")
+    assert all(
+        x.sycl_queue == y.sycl_queue for x, y in zip((x1, x2, x3), (y1, y2, y3))
+    )
+    assert all(
+        x.sycl_queue == z.sycl_queue for x, z in zip((x1, x2, x3), (z1, z2, z3))
+    )
+    assert y1.shape == y2.shape and y2.shape == y3.shape
+    assert z1.shape == z2.shape and z2.shape == z3.shape
+    assert y1.shape == (len(x2), len(x1), len(x3))
+    assert z1.shape == (len(x1), len(x2), len(x3))
+    # FIXME: uncomment out once gh-921 is merged
+    # assert all(z.flags["C"]  for z in (z1, z2, z3))
+    # assert all(y.flags["C"]  for y in (y1, y2, y3))
+
+
 def test_common_arg_validation():
     order = "I"
     # invalid order must raise ValueError
