@@ -1212,13 +1212,15 @@ def meshgrid(*arrays, indexing="xy"):
             If vectors are not of the same data type,
             or are not one-dimensional, raises `ValueError.`
         indexing: Cartesian (`xy`) or matrix (`ij`) indexing of output.
-            For a set of `n` vectors with lengths X0, X1, X2, ...
+            For a set of `n` vectors with lengths N0, N1, N2, ...
             Cartesian indexing results in arrays of shape
-            (X1, X0, X2, ...)
+            (N1, N0, N2, ...)
             matrix indexing results in arrays of shape
-            (X0, X1, X2, ...)
+            (n0, N1, N2, ...)
             Default: `xy`.
     """
+    ref_dt = None
+    ref_unset = True
     for array in arrays:
         if not isinstance(array, dpt.usm_ndarray):
             raise TypeError(
@@ -1226,8 +1228,14 @@ def meshgrid(*arrays, indexing="xy"):
             )
         if array.ndim != 1:
             raise ValueError("All arrays must be one-dimensional.")
-    if len(set([array.dtype for array in arrays])) > 1:
-        raise ValueError("All arrays must be of the same numeric data type.")
+        if ref_unset:
+            ref_unset = False
+            ref_dt = array.dtype
+        else:
+            if not ref_dt == array.dtype:
+                raise ValueError(
+                    "All arrays must be of the same numeric data type."
+                )
     if indexing not in ["xy", "ij"]:
         raise ValueError(
             "Unrecognized indexing keyword value, expecting 'xy' or 'ij.'"
