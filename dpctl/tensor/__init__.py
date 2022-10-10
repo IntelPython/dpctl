@@ -33,6 +33,7 @@ from dpctl.tensor._ctors import (
     full,
     full_like,
     linspace,
+    meshgrid,
     ones,
     ones_like,
     tril,
@@ -127,4 +128,5 @@ __all__ = [
     "finfo",
     "can_cast",
     "result_type",
+    "meshgrid",
 ]

@@ -75,6 +75,6 @@ cdef public api class MemoryUSMHost(_Memory) [object PyMemoryUSMHostObject,
     pass
 
 
-cdef public class MemoryUSMDevice(_Memory) [object PyMemoryUSMDeviceObject,
+cdef public api class MemoryUSMDevice(_Memory) [object PyMemoryUSMDeviceObject,
                                             type PyMemoryUSMDeviceType]:
     pass

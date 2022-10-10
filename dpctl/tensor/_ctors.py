@@ -133,9 +133,9 @@ def _asarray_from_usm_ndarray(
     #    sycl_queue is unchanged
     can_zero_copy = can_zero_copy and copy_q is usm_ndary.sycl_queue
     #    order is unchanged
-    c_contig = usm_ndary.flags & 1
-    f_contig = usm_ndary.flags & 2
-    fc_contig = usm_ndary.flags & 3
+    c_contig = usm_ndary.flags.c_contiguous
+    f_contig = usm_ndary.flags.f_contiguous
+    fc_contig = usm_ndary.flags.forc
     if can_zero_copy:
         if order == "C" and c_contig:
             pass
@@ -1130,7 +1130,7 @@ def tril(X, k=0):
     k = operator.index(k)
 
     # F_CONTIGUOUS = 2
-    order = "F" if (X.flags & 2) else "C"
+    order = "F" if (X.flags.f_contiguous) else "C"
 
     shape = X.shape
     nd = X.ndim
@@ -1171,7 +1171,7 @@ def triu(X, k=0):
     k = operator.index(k)
 
     # F_CONTIGUOUS = 2
-    order = "F" if (X.flags & 2) else "C"
+    order = "F" if (X.flags.f_contiguous) else "C"
 
     shape = X.shape
     nd = X.ndim
@@ -1198,3 +1198,61 @@ def triu(X, k=0):
         hev.wait()
 
     return res
+
+
+def meshgrid(*arrays, indexing="xy"):
+
+    """
+    meshgrid(*arrays, indexing="xy") -> list[usm_ndarray]
+
+    Creates list of `usm_ndarray` coordinate matrices from vectors.
+
+    Args:
+        arrays: arbitrary number of one-dimensional `USM_ndarray` objects.
+            If vectors are not of the same data type,
+            or are not one-dimensional, raises `ValueError.`
+        indexing: Cartesian (`xy`) or matrix (`ij`) indexing of output.
+            For a set of `n` vectors with lengths N0, N1, N2, ...
+            Cartesian indexing results in arrays of shape
+            (N1, N0, N2, ...)
+            matrix indexing results in arrays of shape
+            (n0, N1, N2, ...)
+            Default: `xy`.
+    """
+    ref_dt = None
+    ref_unset = True
+    for array in arrays:
+        if not isinstance(array, dpt.usm_ndarray):
+            raise TypeError(
+                f"Expected instance of dpt.usm_ndarray, got {type(array)}."
+            )
+        if array.ndim != 1:
+            raise ValueError("All arrays must be one-dimensional.")
+        if ref_unset:
+            ref_unset = False
+            ref_dt = array.dtype
+        else:
+            if not ref_dt == array.dtype:
+                raise ValueError(
+                    "All arrays must be of the same numeric data type."
+                )
+    if indexing not in ["xy", "ij"]:
+        raise ValueError(
+            "Unrecognized indexing keyword value, expecting 'xy' or 'ij.'"
+        )
+    n = len(arrays)
+    sh = (-1,) + (1,) * (n - 1)
+
+    res = []
+    if n > 1 and indexing == "xy":
+        res.append(dpt.reshape(arrays[0], (1, -1) + sh[2:], copy=True))
+        res.append(dpt.reshape(arrays[1], sh, copy=True))
+        arrays, sh = arrays[2:], sh[-2:] + sh[:-2]
+
+    for array in arrays:
+        res.append(dpt.reshape(array, sh, copy=True))
+        sh = sh[-1:] + sh[:-1]
+
+    output = dpt.broadcast_arrays(*res)
+
+    return output
