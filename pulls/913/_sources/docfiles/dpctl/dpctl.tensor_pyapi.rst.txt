@@ -66,6 +66,8 @@ Array Construction
       - Creates `usm_ndarray` from USM allocation initialized with zeros.
     * - :func:`linspace()`
       - : usm_ndarray Returns evenly spaced numbers of specified interval.
+    * - :func:`meshgrid()`
+      - -> list[usm_ndarray] Creates list of `usm_ndarray` coordinate matrices from vectors.
     * - :func:`ones()`
       - Creates `usm_ndarray` with elements of one.
     * - :func:`ones_like()`
